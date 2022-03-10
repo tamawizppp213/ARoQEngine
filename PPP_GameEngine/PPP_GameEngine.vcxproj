@@ -118,6 +118,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>..\PPP_GameEngine</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,6 +135,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>..\PPP_GameEngine</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,10 +145,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameMath\Include\GMCollision.hpp" />
+    <ClInclude Include="GameMath\Include\GMColor.hpp" />
+    <ClInclude Include="GameMath\Include\GMDistribution.hpp" />
+    <ClInclude Include="GameMath\Include\GMInterpolation.hpp" />
+    <ClInclude Include="GameMath\Include\GMMath.hpp" />
+    <ClInclude Include="GameMath\Include\GMMatrix.hpp" />
+    <ClInclude Include="GameMath\Include\GMQuaternion.hpp" />
+    <ClInclude Include="GameMath\Include\GMQueue.hpp" />
+    <ClInclude Include="GameMath\Include\GMScalar.hpp" />
+    <ClInclude Include="GameMath\Include\GMSearch.hpp" />
+    <ClInclude Include="GameMath\Include\GMSort.hpp" />
+    <ClInclude Include="GameMath\Include\GMTransform.hpp" />
+    <ClInclude Include="GameMath\Include\GMVector.hpp" />
+    <ClInclude Include="GameMath\Include\GMVectorUtility.hpp" />
     <ClInclude Include="MainGame\Include\TemplateText.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameMath\Source\GMQuaternion.cpp" />
     <ClCompile Include="MainGame\Source\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GameMath\Include\GMCollisionFunctions.inl" />
+    <None Include="GameMath\Include\GMSimdFunctions.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
