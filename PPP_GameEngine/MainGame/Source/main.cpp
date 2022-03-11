@@ -2,7 +2,7 @@
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-
+#include <iostream>
 #ifdef _DEBUG
 int main()
 #else
@@ -20,13 +20,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCommand
     *********************************************/
 
     /********************************************
-    **         Termination Process
-    *********************************************/
-    exit(EXIT_SUCCESS);
-
-    /********************************************
     **         Check MemoryLeaks
     *********************************************/
     _CrtDumpMemoryLeaks();
+    /********************************************
+    **         Termination Process
+    *********************************************/
+    exit(EXIT_SUCCESS);
 }
 

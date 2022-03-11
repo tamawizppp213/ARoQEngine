@@ -145,32 +145,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GameMath\Include\GMCollision.hpp" />
-    <ClInclude Include="GameMath\Include\GMColor.hpp" />
-    <ClInclude Include="GameMath\Include\GMDistribution.hpp" />
-    <ClInclude Include="GameMath\Include\GMInterpolation.hpp" />
-    <ClInclude Include="GameMath\Include\GMMath.hpp" />
-    <ClInclude Include="GameMath\Include\GMMatrix.hpp" />
-    <ClInclude Include="GameMath\Include\GMQuaternion.hpp" />
-    <ClInclude Include="GameMath\Include\GMQueue.hpp" />
-    <ClInclude Include="GameMath\Include\GMScalar.hpp" />
-    <ClInclude Include="GameMath\Include\GMSearch.hpp" />
-    <ClInclude Include="GameMath\Include\GMSort.hpp" />
-    <ClInclude Include="GameMath\Include\GMTransform.hpp" />
-    <ClInclude Include="GameMath\Include\GMVector.hpp" />
-    <ClInclude Include="GameMath\Include\GMVectorUtility.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\DirectX12Core.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\DirectX12GraphicsDevice.hpp" />
+    <ClInclude Include="GameUtility\Audio.hpp" />
+    <ClInclude Include="GameUtility\File\Include\Json.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMCollision.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMColor.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMDistribution.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMInterpolation.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMMath.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMMatrix.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMQuaternion.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMQueue.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMScalar.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMSearch.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMSort.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMTransform.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMVector.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Core.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp" />
     <ClInclude Include="GraphicsCore\Interface\IGraphicsDevice.hpp" />
     <ClInclude Include="MainGame\Include\TemplateText.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameMath\Source\GMQuaternion.cpp" />
+    <ClCompile Include="GameUtility\File\Source\Json.cpp" />
+    <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp" />
     <ClCompile Include="MainGame\Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GameMath\Include\GMCollisionFunctions.inl" />
-    <None Include="GameMath\Include\GMSimdFunctions.inl" />
+    <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />
+    <None Include="GameUtility\Math\Include\GMSimdFunctions.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
