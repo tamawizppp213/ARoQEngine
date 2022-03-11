@@ -112,7 +112,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
@@ -159,11 +159,14 @@
     <ClInclude Include="GameMath\Include\GMTransform.hpp" />
     <ClInclude Include="GameMath\Include\GMVector.hpp" />
     <ClInclude Include="GameMath\Include\GMVectorUtility.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\DirectX12Core.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\DirectX12GraphicsDevice.hpp" />
+    <ClInclude Include="GraphicsCore\Interface\IGraphicsDevice.hpp" />
     <ClInclude Include="MainGame\Include\TemplateText.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameMath\Source\GMQuaternion.cpp" />
-    <ClCompile Include="MainGame\Source\main.cpp" />
+    <ClCompile Include="MainGame\Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameMath\Include\GMCollisionFunctions.inl" />
