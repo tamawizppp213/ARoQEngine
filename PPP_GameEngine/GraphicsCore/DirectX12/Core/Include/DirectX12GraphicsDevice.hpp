@@ -11,7 +11,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <GraphicsCore/Interface/IGraphicsDevice.hpp>
+#include "GraphicsCore/Interface/IGraphicsDevice.hpp"
+#include "DirectX12Core.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -47,15 +49,31 @@ public:
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-protected:
+private:
 	/****************************************************************************
-	**                Protected Function
+	**                Private Function
 	*****************************************************************************/
+	void LoadPipeline();
+	void LoadAssets();
 
+	/*-------------------------------------------------------------------
+	-                        Debug
+	---------------------------------------------------------------------*/
+	void EnabledDebugLayer();
+	void EnabledGPUBasedValidation();
+	void LogAdapters     ();
+	void LogAdapterOutputs(Adapter* adapter);
+	void LogOutputDisplayModes(Output* output, DXGI_FORMAT format);
 	/****************************************************************************
-	**                Protected Member Variables
+	**                Private Member Variables
 	*****************************************************************************/
-
+	/*-------------------------------------------------------------------
+	-                        Debug
+	---------------------------------------------------------------------*/
+	DeviceComPtr  _device;
+	FactoryComPtr _dxgiFactory;
+	AdapterComPtr _useAdapter;
+	SwapchainComPtr _swapchain;
 };
 
 #endif
