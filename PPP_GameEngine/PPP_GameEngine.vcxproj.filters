@@ -60,9 +60,18 @@
     <ClInclude Include="GameMath\Include\GMVector.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsCore\Interface\IGraphicsDevice.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\DirectX12\Core\DirectX12GraphicsDevice.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\DirectX12\Core\DirectX12Core.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MainGame\Source\main.cpp">
+    <ClCompile Include="MainGame\Source\Main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameMath\Source\GMQuaternion.cpp">
