@@ -24,6 +24,8 @@
 *****************************************************************************/
 class WavDecoder
 {
+protected:
+	using ByteArrayPtr = std::shared_ptr<BYTE[]>;
 public:
 	/****************************************************************************
 	**                Public Function
@@ -57,9 +59,11 @@ private:
 	**                Private Member Variables
 	*****************************************************************************/
 	HMMIO _handle = nullptr;
-	std::shared_ptr<BYTE[]> _waveData = nullptr;
-	size_t _waveDataSize = 0;
+	ByteArrayPtr _waveData = nullptr;
+	size_t       _waveDataSize   = 0;
 	std::wstring _filePath = L"";
 	WAVEFORMATEX _waveFormatEx;
+
+	char _padding[6];
 };
 #endif
