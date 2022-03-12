@@ -84,7 +84,7 @@ namespace gm
 		}
 
 		INLINE int  GetChildCount()           const { return static_cast<int>(_child.size()); }
-		INLINE Transform* GetChild(int index) const { return (_child.size() <= index) ? nullptr : _child[index]; }
+		INLINE Transform* GetChild(int index) const { return (_child.size() <= (size_t)index) ? nullptr : _child[index]; }
 		INLINE void SetChild(Transform* child) { _child.push_back(child); };
 		INLINE bool RemoveChild(Transform* child)
 		{
@@ -105,8 +105,8 @@ namespace gm
 		INLINE Transform(Quaternion rotate) : LocalPosition(kZero)   , LocalRotation(rotate)   , LocalScale(kIdentity) {}
 		INLINE Transform(Vector3 position)  : LocalPosition(position), LocalRotation(kIdentity), LocalScale(kIdentity) {}
 		INLINE Transform(float x, float y, float z)                          : LocalPosition(x,y,z), LocalRotation(kIdentity), LocalScale(kIdentity) {}
-		INLINE Transform(Quaternion rotate, Vector3 position)                : LocalRotation(rotate), LocalPosition(position), LocalScale(kIdentity) {}
-		INLINE Transform(Vector3 scale, Quaternion rotate, Vector3 position) : LocalRotation(rotate), LocalPosition(position), LocalScale(scale) {}
+		INLINE Transform(Quaternion rotate, Vector3 position)                : LocalPosition(position), LocalRotation(rotate), LocalScale(kIdentity) {}
+		INLINE Transform(Vector3 scale, Quaternion rotate, Vector3 position) : LocalPosition(position), LocalRotation(rotate), LocalScale(scale) {}
 		INLINE ~Transform() { SetParent(nullptr); }
 
 	private:
