@@ -46,12 +46,12 @@ bool FileSystem::ExistsFile(const std::string& filePath)
 *****************************************************************************/
 std::wstring FileSystem::GetExtension(const std::wstring& path)
 {
-	int index = static_cast<UINT>(path.find_last_of(L"."));
+	UINT index = static_cast<UINT>(path.find_last_of(L"."));
 	return path.substr((UINT64)index + 1, path.length() - index);
 }
 std::string FileSystem::GetExtension(const std::string& path)
 {
-	int index = static_cast<UINT>(path.find_last_of("."));
+	UINT index = static_cast<UINT>(path.find_last_of("."));
 	return path.substr((UINT64)index + 1, path.length() - index);
 }
 /****************************************************************************
