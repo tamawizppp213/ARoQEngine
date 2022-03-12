@@ -102,7 +102,7 @@ namespace gm
 		*****************************************************************************/
 		Float3x4()         : XMFLOAT3X4() {};
 		Float3x4(float ix) : XMFLOAT3X4(ix,ix,ix, ix, ix, ix, ix, ix, ix, ix, ix, ix) {};
-		Float3x4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33) 
+		Float3x4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23) 
 			               : XMFLOAT3X4(m00,m01,m02,m03, m10, m11, m12, m13, m20, m21, m22, m23) {};
 		Float3x4(const XMFLOAT3X4& M)
 		{
@@ -426,11 +426,13 @@ namespace gm
 		Vector3 translate = basis * -Vector3(xform.GetW());
 		return Matrix4(basis, translate);
 	}
-	INLINE bool DecomposeSRT(const Matrix4& matrix, Vector3& scale, Quaternion& rotation, Vector3& transration)
+	INLINE bool DecomposeSRT(const Matrix4& matrix, Vector3& scale, Quaternion& rotation, Vector3& translation)
 	{
 		DirectX::XMVECTOR s, r, t;
-		if (DirectX::XMMatrixDecompose(&s, &r, &t, matrix)) { return true; }
-		else { return false; }
+		if (!DirectX::XMMatrixDecompose(&s, &r, &t, matrix)) { return false; }
+		scale       = Vector3(s);
+		rotation    = Quaternion(r);
+		translation = Vector3(t);
 	}
 	
 	INLINE Matrix4  MatrixIdentity()   { return Matrix4(DirectX::XMMatrixIdentity()); }

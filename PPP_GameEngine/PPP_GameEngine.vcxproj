@@ -112,7 +112,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
@@ -145,7 +145,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameCore\Audio\Include\AudioClip.hpp" />
+    <ClInclude Include="GameCore\Audio\Include\AudioMaster.hpp" />
+    <ClInclude Include="GameCore\Audio\Include\AudioSource.hpp" />
     <ClInclude Include="GameCore\Audio\Include\WavDecoder.hpp" />
+    <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp" />
     <ClInclude Include="GameUtility\File\Include\FileSystem.hpp" />
     <ClInclude Include="GameUtility\File\Include\Json.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMCollision.hpp" />
@@ -168,7 +172,11 @@
     <ClInclude Include="MainGame\Include\TemplateText.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameCore\Audio\Source\AudioClip.cpp" />
+    <ClCompile Include="GameCore\Audio\Source\AudioMaster.cpp" />
+    <ClCompile Include="GameCore\Audio\Source\AudioSource.cpp" />
     <ClCompile Include="GameCore\Audio\Source\WavDecoder.cpp" />
+    <ClCompile Include="GameCore\Core\Source\ResourceManager.cpp" />
     <ClCompile Include="GameUtility\File\Source\FileSystem.cpp" />
     <ClCompile Include="GameUtility\File\Source\Json.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />

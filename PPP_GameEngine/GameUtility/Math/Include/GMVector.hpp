@@ -41,7 +41,7 @@ namespace gm
 	struct Float3;
 	struct Float4;
 
-	enum class Vector2Element{ X, Y };
+	enum class Vector2Element { X, Y };
 	enum class Vector3Element{ X,Y,Z };
 	enum class Vector4Element{X,Y,Z,W};
 	/****************************************************************************
@@ -231,7 +231,8 @@ namespace gm
 			switch (element)
 			{
 				case Vector2Element::X: { return GetX(); }
-				default:                { return GetY(); }
+				case Vector2Element::Y: { return GetY(); }
+				default: return 0.0f;
 			}
 		};
 
@@ -247,7 +248,8 @@ namespace gm
 			switch (element)
 			{
 			case Vector2Element::X: { SetX(scalar); return; }
-			default: { SetY(scalar); return; }
+			case Vector2Element::Y: { SetY(scalar); return; }
+			default: { return; }
 			}
 		}
 		INLINE void SetElement(int element, Scalar scalar)
@@ -255,7 +257,8 @@ namespace gm
 			switch ((Vector2Element)element)
 			{
 			case Vector2Element::X: { SetX(scalar); return; }
-			default: { SetY(scalar); return; }
+			case Vector2Element::Y: { SetY(scalar); return; }
+			default: { return; }
 			}
 		}
 
@@ -313,7 +316,8 @@ namespace gm
 			{
 				case Vector3Element::X: { return GetX(); }
 				case Vector3Element::Y: { return GetY(); }
-				default: { return GetZ(); }
+				case Vector3Element::Z: { return GetZ(); }
+				default: { return 0.0f; }
 			}
 		};
 		INLINE Scalar GetElement(int element) const
@@ -322,7 +326,8 @@ namespace gm
 			{
 				case Vector3Element::X: { return GetX(); }
 				case Vector3Element::Y: { return GetY(); }
-				default: { return GetZ(); }
+				case Vector3Element::Z: { return GetZ(); }
+				default: { return 0.0f; }
 			}
 		}
 		INLINE void SetElement(Vector3Element element, Scalar scalar)
@@ -331,7 +336,8 @@ namespace gm
 			{
 			case Vector3Element::X: { SetX(scalar); return; }
 			case Vector3Element::Y: { SetY(scalar); return; }
-			default: { SetZ(scalar); return; }
+			case Vector3Element::Z: { SetZ(scalar); return; }
+			default: { return; }
 			}
 		}
 		INLINE void SetElement(int element, Scalar scalar)
@@ -340,7 +346,8 @@ namespace gm
 			{
 			case Vector3Element::X: { SetX(scalar); return; }
 			case Vector3Element::Y: { SetY(scalar); return; }
-			default: { SetZ(scalar); return; }
+			case Vector3Element::Z: { SetZ(scalar); return; }
+			default: { return; }
 			}
 		}
 		INLINE void SetX(Scalar x) { _vector = DirectX::XMVectorPermute<4, 1, 2, 3>(_vector, x); }
@@ -454,7 +461,8 @@ namespace gm
 				case Vector4Element::X: { return GetX(); }
 				case Vector4Element::Y: { return GetY(); }
 				case Vector4Element::Z: { return GetZ(); }
-				default: { return GetW(); }
+				case Vector4Element::W: { return GetW(); }
+				default: { return Scalar(); }
 			}
 		};
 		
@@ -477,7 +485,8 @@ namespace gm
 			case Vector4Element::X: { SetX(scalar); return; }
 			case Vector4Element::Y: { SetY(scalar); return; }
 			case Vector4Element::Z: { SetZ(scalar); return; }
-			default: { SetW(scalar); return; }
+			case Vector4Element::W: { SetW(scalar); return; }
+			default: { return; }
 			}
 		}
 		INLINE void SetElement(int element, Scalar scalar)
@@ -487,7 +496,8 @@ namespace gm
 			case Vector4Element::X: { SetX(scalar); return; }
 			case Vector4Element::Y: { SetY(scalar); return; }
 			case Vector4Element::Z: { SetZ(scalar); return; }
-			default: { SetW(scalar); return; }
+			case Vector4Element::W: { SetW(scalar); return; }
+			default: { return; }
 			}
 		}
 		/****************************************************************************
