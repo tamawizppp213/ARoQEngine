@@ -1,82 +1,73 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   Keyboard.hpp
-///             @brief  Keyboard
-///             @author Toide Yutaro
-///             @date   2020_12_27
+//              Title:  Screen.hpp
+//            Content:  Screen Config
+//             Author:  Toide Yutaro
+//             Create:  2022_03_13
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef KEYBOARD_HPP
-#define KEYBOARD_HPP
+#ifndef SCREEN_HPP
+#define SCREEN_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <dinput.h>
-#include <Windows.h>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-#define MAX_KEY_BUFFER (256)
+
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Keyboard, class
+//                  Window Class (width, height static)
+//                  Default Size  width: 1920 Å~ height: 1080
 //////////////////////////////////////////////////////////////////////////////////
-
 /****************************************************************************
-*				  			Keyboard
+*				  			TemplateClass
 *************************************************************************//**
-*  @class     Keyboard
-*  @brief     Keyboard Input 
+*  @class     TemplateClass
+*  @brief     temp
 *****************************************************************************/
-class Keyboard
+class Screen
 {
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	bool Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd);
-	void Update();
-	void Finalize();
-	bool IsPress  (int keyCode);
-	bool IsTrigger(int keyCode);
-	bool IsRelease(int keyCode);
+
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
+	static int   GetScreenWidth();
+	static int   GetScreenHeight();
+	static float GetOnePixelWidth();
+	static float GetOnePixelHeight();
+	static float GetAspectRatio();
+	static int   GetFullScreenWidth();
+	static int   GetFullScreenHeight();
 	
+	static void SetScreenWidth(int width);
+	static void SetScreenHeight(int height);
+	static void SetFullScreenWidth(int width);
+	static void SetFullScreenHeight(int height);
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	Keyboard();
-	~Keyboard() = default;
-	Keyboard(const Keyboard&)            = default;
-	Keyboard& operator=(const Keyboard&) = default;
-	Keyboard(Keyboard&&)                 = default;
-	Keyboard& operator=(Keyboard&&)      = default;
-	
+	Screen() = default;
+	~Screen() = default;
 private:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
-	bool CreateHWND();
-	bool CreateHInstance();
-	bool CreateKeyboardDevice();
-	bool CreateDataFormat();
-	bool CreateCooperativeLevel();
-
 
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
-	LPDIRECTINPUT8       _dInput    = nullptr;
-	LPDIRECTINPUTDEVICE8 _keyboard  = nullptr;
-	HINSTANCE            _hInstance = nullptr;
-	HWND                 _hwnd      = nullptr;
-	
-	BYTE _keyState[MAX_KEY_BUFFER];
-	BYTE _keyStateTrigger[MAX_KEY_BUFFER];
-	BYTE _keyStateRelease[MAX_KEY_BUFFER];
-
+	static float _onePixelWidth;
+	static float _onePixelHeight;
+	static int   _currentPixelWidth;
+	static int   _currentPixelHeight;
+	static int   _fullScreenResolutionWidth;
+	static int   _fullScreenResolutionHeight;
+	static bool  _isFullScreen;
 };
-
 #endif
