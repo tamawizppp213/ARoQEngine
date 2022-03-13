@@ -161,6 +161,7 @@
     <ClInclude Include="GameUtility\Base\Include\Screen.hpp" />
     <ClInclude Include="GameUtility\File\Include\FileSystem.hpp" />
     <ClInclude Include="GameUtility\File\Include\Json.hpp" />
+    <ClInclude Include="GameUtility\File\Include\UnicodeUtility.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMCollision.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMColor.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMDistribution.hpp" />
@@ -196,6 +197,7 @@
     <ClCompile Include="GameUtility\Base\Source\Screen.cpp" />
     <ClCompile Include="GameUtility\File\Source\FileSystem.cpp" />
     <ClCompile Include="GameUtility\File\Source\Json.cpp" />
+    <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp" />
     <ClCompile Include="MainGame\Source\Main.cpp" />
