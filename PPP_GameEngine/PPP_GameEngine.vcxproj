@@ -151,6 +151,8 @@
     <ClInclude Include="GameCore\Audio\Include\AudioSource3D.hpp" />
     <ClInclude Include="GameCore\Audio\Include\WavDecoder.hpp" />
     <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp" />
+    <ClInclude Include="GameCore\Input\Include\GameInput.hpp" />
+    <ClInclude Include="GameCore\Input\Include\GamePad.hpp" />
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
     <ClInclude Include="GameUtility\File\Include\FileSystem.hpp" />
@@ -181,6 +183,8 @@
     <ClCompile Include="GameCore\Audio\Source\AudioSource3D.cpp" />
     <ClCompile Include="GameCore\Audio\Source\WavDecoder.cpp" />
     <ClCompile Include="GameCore\Core\Source\ResourceManager.cpp" />
+    <ClCompile Include="GameCore\Input\Source\GameInput.cpp" />
+    <ClCompile Include="GameCore\Input\Source\GamePad.cpp" />
     <ClCompile Include="GameCore\Input\Source\Keyboard.cpp" />
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
     <ClCompile Include="GameUtility\File\Source\FileSystem.cpp" />
