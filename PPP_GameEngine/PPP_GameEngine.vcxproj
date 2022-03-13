@@ -176,7 +176,10 @@
     <ClInclude Include="GameUtility\Math\Include\GMTransform.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVector.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12BaseStruct.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Core.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Debug.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Include.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp" />
     <ClInclude Include="GraphicsCore\Interface\Include\IGraphicsDevice.hpp" />
     <ClInclude Include="MainGame\Include\TemplateText.hpp" />
@@ -199,6 +202,7 @@
     <ClCompile Include="GameUtility\File\Source\Json.cpp" />
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Core.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp" />
     <ClCompile Include="MainGame\Source\Main.cpp" />
   </ItemGroup>
