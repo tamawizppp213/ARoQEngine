@@ -1,61 +1,46 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   Mouse.hpp
-///             @brief  Mouse interface
+///             @file   DirectX12GrahicsDevice.hpp
+///             @brief  Grahics Device for DirectX12
 ///             @author Toide Yutaro
-///             @date   2022_03_13
+///             @date   2022_03_11
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef MOUSE_HPP
-#define MOUSE_HPP
+#ifndef DIRECTX12_GRAPHICS_DEVICE_HPP
+#define DIRECTX12_GRAPHICS_DEVICE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <queue>
-#include <dinput.h>
-#include <Windows.h>
-#include "GameUtility/Include/Math/GMVector.hpp"
+#include "GraphicsCore/Interface/Include/IGraphicsDevice.hpp"
+#include "DirectX12Core.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                              Class
+//                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-struct MousePosition : POINT
-{
 
-};
-
-enum MouseButton
-{
-	LEFT        = 0,
-	RIGHT       = 1,
-	WHEEL       = 2,
-	TOTAL_COUNT = 3
-};
 /****************************************************************************
-*				  			Mouse
+*				  			TemplateClass
 *************************************************************************//**
-*  @class     Mouse
-*  @brief     mouse
+*  @class     TemplateClass
+*  @brief     temp
 *****************************************************************************/
-class Mouse
+class GraphicsDeviceDirectX12 : public IGraphicsDevice
 {
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	bool Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd);
-	void Update();
-	void Finalize();
-	bool IsPress  (int mouseButton);
-	bool IsTrigger(int mouseButton);
-	bool IsRelease(int mouseButton);
-	MousePosition& GetMousePosition();
-	gm::Float2 GetMouseVelocity();
-	int GetMousePosition_X();
-	int GetMousePosition_Y();
+	void Initialize        (HWND hwnd) override;
+	void OnResize          () override;
+	void Finalize          () override;
+	void ClearScreen       () override;
+	void CompleteInitialize() override;
+	void CompleteRendering () override;
+	void FlushCommandQueue () override;
 
 	/****************************************************************************
 	**                Public Member Variables
@@ -64,32 +49,31 @@ public:
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	Mouse();
-	~Mouse();
-
-	Mouse(const Mouse&)            = default;
-	Mouse& operator=(const Mouse&) = default;
-	Mouse(Mouse&&)                 = default;
-	Mouse& operator=(Mouse&&)      = default;
 private:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
-	bool CreateHWND();
-	bool CreateHInstance();
-	bool CreateMouseDevice();
-	bool CreateDataFormat();
-	bool CreateCooperativeLevel();
+	void LoadPipeline();
+	void LoadAssets();
 
+	/*-------------------------------------------------------------------
+	-                        Debug
+	---------------------------------------------------------------------*/
+	void EnabledDebugLayer();
+	void EnabledGPUBasedValidation();
+	void LogAdapters     ();
+	void LogAdapterOutputs(Adapter* adapter);
+	void LogOutputDisplayModes(Output* output, DXGI_FORMAT format);
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
-	LPDIRECTINPUT8       _dInput    = nullptr;
-	LPDIRECTINPUTDEVICE8 _mouse     = nullptr;
-	HINSTANCE            _hInstance = nullptr;
-	HWND                 _hwnd      = nullptr;
-	DIMOUSESTATE2        _currentMouseState;
-	DIMOUSESTATE2        _previousMouseState;
-	MousePosition        _mousePosition;
+	/*-------------------------------------------------------------------
+	-                        Debug
+	---------------------------------------------------------------------*/
+	DeviceComPtr  _device;
+	FactoryComPtr _dxgiFactory;
+	AdapterComPtr _useAdapter;
+	SwapchainComPtr _swapchain;
 };
+
 #endif
