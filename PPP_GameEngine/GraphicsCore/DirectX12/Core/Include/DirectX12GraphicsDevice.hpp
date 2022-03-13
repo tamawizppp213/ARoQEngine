@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/Interface/Include/IGraphicsDevice.hpp"
 #include "DirectX12Core.hpp"
-
+#include <dxgiformat.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -55,6 +55,14 @@ private:
 	*****************************************************************************/
 	void LoadPipeline();
 	void LoadAssets();
+	/*-------------------------------------------------------------------
+	-                        Initialize
+	---------------------------------------------------------------------*/
+	void CreateDevice();
+	void CreateCommandObject();
+	void CreateSwapChain();
+	void CreateDescriptorHeap();
+	void CreatePSOs();
 
 	/*-------------------------------------------------------------------
 	-                        Debug
@@ -64,16 +72,21 @@ private:
 	void LogAdapters     ();
 	void LogAdapterOutputs(Adapter* adapter);
 	void LogOutputDisplayModes(Output* output, DXGI_FORMAT format);
+	void ReportLiveObjects();
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
 	/*-------------------------------------------------------------------
 	-                        Debug
 	---------------------------------------------------------------------*/
-	DeviceComPtr  _device;
-	FactoryComPtr _dxgiFactory;
-	AdapterComPtr _useAdapter;
+	DeviceComPtr    _device;
+	FactoryComPtr   _dxgiFactory;
+	AdapterComPtr   _useAdapter;
 	SwapchainComPtr _swapchain;
+
+	DXGI_FORMAT _backBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+
+	bool _isWarpAdapter;
 };
 
 #endif
