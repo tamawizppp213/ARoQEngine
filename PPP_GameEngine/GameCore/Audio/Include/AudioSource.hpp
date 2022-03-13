@@ -42,7 +42,7 @@ enum class SoundType
 class AudioSource
 {
 protected:
-	using AudioClipPtr   = std::shared_ptr<AudioClip>;
+	using AudioClipPtr   = AudioClip*; // À‘Ì‚Íunordered map‚ÅŠÇ—‚µ‚Ä‚¢‚é‚½‚ß, ©“®‚Å”jŠü‚·‚é•K—v‚È‚µ.
 	using SourceVoucePtr =IXAudio2SourceVoice*;
 public:
 	/****************************************************************************

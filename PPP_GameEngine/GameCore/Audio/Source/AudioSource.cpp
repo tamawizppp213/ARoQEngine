@@ -463,7 +463,7 @@ bool AudioSource::LoadAudioClip(const std::wstring& filePath)
 	---------------------------------------------------------------------*/
 	if (ResourceManager::Instance().ExistsAudioClip(filePath))
 	{
-		_audioClip = std::make_shared<AudioClip>(ResourceManager::Instance().GetAudioClip(filePath));
+		_audioClip = &ResourceManager::Instance().GetAudioClip(filePath);
 		return true;
 	}
 
@@ -473,7 +473,7 @@ bool AudioSource::LoadAudioClip(const std::wstring& filePath)
 	AudioClip& audioClip = ResourceManager::Instance().GetAudioClip(filePath);
 	if (audioClip.LoadFromFile(filePath))
 	{
-		_audioClip = std::make_shared<AudioClip>(audioClip);
+		_audioClip = &audioClip;
 		return true;
 	}
 	else
