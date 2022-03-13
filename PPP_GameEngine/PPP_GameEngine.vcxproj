@@ -145,49 +145,53 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GameCore\Audio\Include\AudioClip.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\AudioMaster.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\AudioSource.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\AudioSource3D.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\WavDecoder.hpp" />
-    <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp" />
-    <ClInclude Include="GameUtility\File\Include\FileSystem.hpp" />
-    <ClInclude Include="GameUtility\File\Include\Json.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMCollision.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMColor.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMDistribution.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMInterpolation.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMMath.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMMatrix.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMQuaternion.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMQueue.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMScalar.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMSearch.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMSort.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMTransform.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMVector.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Core.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp" />
-    <ClInclude Include="GraphicsCore\Interface\IGraphicsDevice.hpp" />
+    <ClInclude Include="GameCore\Include\Audio\AudioClip.hpp" />
+    <ClInclude Include="GameCore\Include\Audio\AudioMaster.hpp" />
+    <ClInclude Include="GameCore\Include\Audio\AudioSource.hpp" />
+    <ClInclude Include="GameCore\Include\Audio\AudioSource3D.hpp" />
+    <ClInclude Include="GameCore\Include\Audio\WavDecoder.hpp" />
+    <ClInclude Include="GameCore\Include\Core\ResourceManager.hpp" />
+    <ClInclude Include="GameCore\Include\Input\Keyboard.hpp" />
+    <ClInclude Include="GameCore\Include\Input\Mouse.hpp" />
+    <ClInclude Include="GameUtility\Include\File\FileSystem.hpp" />
+    <ClInclude Include="GameUtility\Include\File\Json.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMCollision.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMColor.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMDistribution.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMInterpolation.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMMath.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMMatrix.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMQuaternion.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMQueue.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMScalar.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMSearch.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMSort.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMTransform.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMVector.hpp" />
+    <ClInclude Include="GameUtility\Include\Math\GMVectorUtility.hpp" />
+    <ClInclude Include="GraphicsCore\Include\DirectX12\Core\DirectX12Core.hpp" />
+    <ClInclude Include="GraphicsCore\Include\DirectX12\Core\DirectX12GraphicsDevice.hpp" />
+    <ClInclude Include="GraphicsCore\Include\Interface\IGraphicsDevice.hpp" />
     <ClInclude Include="MainGame\Include\TemplateText.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameCore\Audio\Source\AudioClip.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\AudioMaster.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\AudioSource.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\AudioSource3D.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\WavDecoder.cpp" />
-    <ClCompile Include="GameCore\Core\Source\ResourceManager.cpp" />
-    <ClCompile Include="GameUtility\File\Source\FileSystem.cpp" />
-    <ClCompile Include="GameUtility\File\Source\Json.cpp" />
-    <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp" />
+    <ClCompile Include="GameCore\Source\Audio\AudioClip.cpp" />
+    <ClCompile Include="GameCore\Source\Audio\AudioMaster.cpp" />
+    <ClCompile Include="GameCore\Source\Audio\AudioSource.cpp" />
+    <ClCompile Include="GameCore\Source\Audio\AudioSource3D.cpp" />
+    <ClCompile Include="GameCore\Source\Audio\WavDecoder.cpp" />
+    <ClCompile Include="GameCore\Source\Core\ResourceManager.cpp" />
+    <ClCompile Include="GameCore\Source\Input\Keyboard.cpp" />
+    <ClCompile Include="GameCore\Source\Input\Mouse.cpp" />
+    <ClCompile Include="GameUtility\Source\File\FileSystem.cpp" />
+    <ClCompile Include="GameUtility\Source\File\Json.cpp" />
+    <ClCompile Include="GameUtility\Source\Math\GMQuaternion.cpp" />
+    <ClCompile Include="GraphicsCore\Source\DirectX12\Core\DirectX12GraphicsDevice.cpp" />
     <ClCompile Include="MainGame\Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />
-    <None Include="GameUtility\Math\Include\GMSimdFunctions.inl" />
+    <None Include="GameUtility\Include\Math\GMCollisionFunctions.inl" />
+    <None Include="GameUtility\Include\Math\GMSimdFunctions.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
