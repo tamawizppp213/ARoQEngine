@@ -155,6 +155,9 @@
     <ClInclude Include="GameCore\Input\Include\GamePad.hpp" />
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\Screen.hpp" />
     <ClInclude Include="GameUtility\File\Include\FileSystem.hpp" />
     <ClInclude Include="GameUtility\File\Include\Json.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMCollision.hpp" />
@@ -187,6 +190,8 @@
     <ClCompile Include="GameCore\Input\Source\GamePad.cpp" />
     <ClCompile Include="GameCore\Input\Source\Keyboard.cpp" />
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
+    <ClCompile Include="GameUtility\Base\Source\GameTimer.cpp" />
+    <ClCompile Include="GameUtility\Base\Source\Screen.cpp" />
     <ClCompile Include="GameUtility\File\Source\FileSystem.cpp" />
     <ClCompile Include="GameUtility\File\Source\Json.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
