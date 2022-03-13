@@ -18,85 +18,85 @@
     <ClInclude Include="MainGame\Include\TemplateText.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMVectorUtility.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMCollision.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMCollision.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMColor.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMColor.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMDistribution.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMDistribution.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMInterpolation.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMInterpolation.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMMath.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMMath.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMMatrix.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMMatrix.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMQuaternion.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMQuaternion.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMQueue.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMQueue.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMScalar.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMScalar.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMSearch.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMSearch.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMSort.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMSort.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMTransform.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMTransform.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\Math\GMVector.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMVector.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\Include\Interface\IGraphicsDevice.hpp">
+    <ClInclude Include="GraphicsCore\Interface\Include\IGraphicsDevice.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\Include\DirectX12\Core\DirectX12GraphicsDevice.hpp">
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\Include\DirectX12\Core\DirectX12Core.hpp">
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Core.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\File\Json.hpp">
+    <ClInclude Include="GameUtility\File\Include\Json.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Include\Audio\WavDecoder.hpp">
+    <ClInclude Include="GameCore\Audio\Include\WavDecoder.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Include\File\FileSystem.hpp">
+    <ClInclude Include="GameUtility\File\Include\FileSystem.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Include\Audio\AudioClip.hpp">
+    <ClInclude Include="GameCore\Audio\Include\AudioClip.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Include\Audio\AudioMaster.hpp">
+    <ClInclude Include="GameCore\Audio\Include\AudioMaster.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Include\Audio\AudioSource.hpp">
+    <ClInclude Include="GameCore\Audio\Include\AudioSource.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Include\Core\ResourceManager.hpp">
+    <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Include\Audio\AudioSource3D.hpp">
+    <ClInclude Include="GameCore\Audio\Include\AudioSource3D.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Include\Input\Mouse.hpp">
+    <ClInclude Include="GameCore\Input\Include\Mouse.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Include\Input\Keyboard.hpp">
+    <ClInclude Include="GameCore\Input\Include\Keyboard.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -104,48 +104,48 @@
     <ClCompile Include="MainGame\Source\Main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameUtility\Source\Math\GMQuaternion.cpp">
+    <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\Source\DirectX12\Core\DirectX12GraphicsDevice.cpp">
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameUtility\Source\File\Json.cpp">
+    <ClCompile Include="GameUtility\File\Source\Json.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Source\Audio\WavDecoder.cpp">
+    <ClCompile Include="GameCore\Audio\Source\WavDecoder.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameUtility\Source\File\FileSystem.cpp">
+    <ClCompile Include="GameUtility\File\Source\FileSystem.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Source\Audio\AudioClip.cpp">
+    <ClCompile Include="GameCore\Audio\Source\AudioClip.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Source\Audio\AudioMaster.cpp">
+    <ClCompile Include="GameCore\Audio\Source\AudioMaster.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Source\Audio\AudioSource.cpp">
+    <ClCompile Include="GameCore\Audio\Source\AudioSource.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Source\Core\ResourceManager.cpp">
+    <ClCompile Include="GameCore\Core\Source\ResourceManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Source\Audio\AudioSource3D.cpp">
+    <ClCompile Include="GameCore\Audio\Source\AudioSource3D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Source\Input\Mouse.cpp">
+    <ClCompile Include="GameCore\Input\Source\Mouse.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Source\Input\Keyboard.cpp">
+    <ClCompile Include="GameCore\Input\Source\Keyboard.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GameUtility\Include\Math\GMCollisionFunctions.inl">
+    <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
       <Filter>ヘッダー ファイル</Filter>
     </None>
-    <None Include="GameUtility\Include\Math\GMSimdFunctions.inl">
+    <None Include="GameUtility\Math\Include\GMSimdFunctions.inl">
       <Filter>ヘッダー ファイル</Filter>
     </None>
   </ItemGroup>

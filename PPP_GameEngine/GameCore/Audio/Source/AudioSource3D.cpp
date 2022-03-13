@@ -7,8 +7,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Include/Audio/AudioSource3D.hpp"
-#include "GameCore/Include/Audio/AudioMaster.hpp"
+#include "GameCore/Audio/Include/AudioSource3D.hpp"
+#include "GameCore/Audio/Include/AudioMaster.hpp"
 #include <xaudio2.h>
 #include <x3daudio.h>
 
