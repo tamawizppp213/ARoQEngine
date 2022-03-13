@@ -148,6 +148,7 @@
     <ClInclude Include="GameCore\Audio\Include\AudioClip.hpp" />
     <ClInclude Include="GameCore\Audio\Include\AudioMaster.hpp" />
     <ClInclude Include="GameCore\Audio\Include\AudioSource.hpp" />
+    <ClInclude Include="GameCore\Audio\Include\AudioSource3D.hpp" />
     <ClInclude Include="GameCore\Audio\Include\WavDecoder.hpp" />
     <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp" />
     <ClInclude Include="GameUtility\File\Include\FileSystem.hpp" />
@@ -175,6 +176,7 @@
     <ClCompile Include="GameCore\Audio\Source\AudioClip.cpp" />
     <ClCompile Include="GameCore\Audio\Source\AudioMaster.cpp" />
     <ClCompile Include="GameCore\Audio\Source\AudioSource.cpp" />
+    <ClCompile Include="GameCore\Audio\Source\AudioSource3D.cpp" />
     <ClCompile Include="GameCore\Audio\Source\WavDecoder.cpp" />
     <ClCompile Include="GameCore\Core\Source\ResourceManager.cpp" />
     <ClCompile Include="GameUtility\File\Source\FileSystem.cpp" />
