@@ -38,9 +38,9 @@ Keyboard::Keyboard()
 *****************************************************************************/
 bool Keyboard::Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd)
 {
-	_dInput = dInput;
+	_dInput    = dInput;
 	_hInstance = hInstance;
-	_hwnd = hwnd;
+	_hwnd      = hwnd;
 
 	bool result = true;
 
