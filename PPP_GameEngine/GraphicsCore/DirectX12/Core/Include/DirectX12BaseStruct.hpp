@@ -13,8 +13,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "DirectX12Core.hpp"
 #include "DirectX12Include.hpp"
-#include "DirectX12Debug.hpp"
-
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -1263,13 +1261,19 @@ struct ROOT_SIGNATURE_DESC : public D3D12_ROOT_SIGNATURE_DESC
 		{
 			::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
 		}
-		ThrowIfFailed(hresult);
+		if (FAILED(hresult))
+		{
+			::OutputDebugStringA("Result False");
+		}
 
-		ThrowIfFailed(device->CreateRootSignature(
+		if (FAILED(device->CreateRootSignature(
 			0,
 			rootSigBlob->GetBufferPointer(),
 			rootSigBlob->GetBufferSize(),
-			IID_PPV_ARGS(rootSignature->GetAddressOf())));
+			IID_PPV_ARGS(rootSignature->GetAddressOf()))))
+		{
+			::OutputDebugStringA("Didn't create rootsignature");
+		};
 
 	}
 };

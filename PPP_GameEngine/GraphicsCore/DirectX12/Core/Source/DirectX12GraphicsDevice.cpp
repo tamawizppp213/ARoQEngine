@@ -11,6 +11,8 @@
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Include.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12ResourceAllocator.hpp"
+#include "GameUtility/Base/Include/Screen.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -23,6 +25,7 @@ enum class GPUVender
 	Intel,
 	CountOfGPUVender
 };
+
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,6 +45,14 @@ void GraphicsDeviceDirectX12::Initialize(HWND hwnd)
 	LoadPipeline();
 	LoadAssets();
 	_hasInitialized = true;
+}
+void GraphicsDeviceDirectX12::Finalize()
+{
+	if (_rtvAllocator) { delete _rtvAllocator; }
+	if (_dsvAllocator) { delete _dsvAllocator; }
+	if (_cbvAllocator) { delete _cbvAllocator; }
+	if (_srvAllocator) { delete _srvAllocator; }
+	if (_uavAllocator) { delete _uavAllocator; }
 }
 void GraphicsDeviceDirectX12::OnResize()
 {
@@ -227,65 +238,310 @@ void GraphicsDeviceDirectX12::CreateCommandObject()
 	_commandList->Close();
 }
 /****************************************************************************
-*							CreateDescriptorHeap
+*							CreateAllDescriptorHeap
 *************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::CreateDescriptorHeap(void)
+*  @fn        void GraphicsDeviceDirectX12::CreateAllDescriptorHeap(void)
 *  @brief     Create RTV and DSV descriptor heap
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void GraphicsDeviceDirectX12::CreateDescriptorHeap()
+void GraphicsDeviceDirectX12::CreateAllDescriptorHeap()
 {
-	/*-------------------------------------------------------------------
-	-                   Get Descriptor Inclement Size
-	---------------------------------------------------------------------*/
-	_rtvDescriptorSize       = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	_dsvDescriptorSize       = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-	_cbvSrvUavDescriptorSize = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	CreateDescriptorHeap(HeapFlag::RTV);
+	CreateDescriptorHeap(HeapFlag::DSV);
+	CreateDescriptorHeap(HeapFlag::SRV); // cbv, srv, uav
+	
+}
+void GraphicsDeviceDirectX12::CreateDescriptorHeap(HeapFlag heapFlag)
+{
+	switch (heapFlag)
+	{
+		/*-------------------------------------------------------------------
+		-			     Set RTV Heap
+		---------------------------------------------------------------------*/
+		case HeapFlag::RTV:
+		{
+			if (_rtvHeap) { _rtvHeap.Reset(); }
+			/*-------------------------------------------------------------------
+			-                   Get Descriptor Inclement Size
+			---------------------------------------------------------------------*/
+			_rtvDescriptorSize = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+			/*-------------------------------------------------------------------
+			-			     Describe heap desc
+			---------------------------------------------------------------------*/
+			D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+			rtvHeapDesc.NumDescriptors = RTV_DESC_COUNT;
+			rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+			rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			rtvHeapDesc.NodeMask = 0;
+			ThrowIfFailed(_device->CreateDescriptorHeap(
+				&rtvHeapDesc, IID_PPV_ARGS(_rtvHeap.GetAddressOf())));
+			_rtvHeap->SetName(L"DirectX12::RenderTargetHeap");
+			break;
+		}
+		/*-------------------------------------------------------------------
+		-			     Set DSV Heap
+		---------------------------------------------------------------------*/
+		case HeapFlag::DSV:
+		{
+			if (_dsvHeap) { _dsvHeap.Reset(); }
+			/*-------------------------------------------------------------------
+			-                   Get Descriptor Inclement Size
+			---------------------------------------------------------------------*/
+			_dsvDescriptorSize = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+			/*-------------------------------------------------------------------
+			-			     Describe heap desc
+			---------------------------------------------------------------------*/
+			D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+			dsvHeapDesc.NumDescriptors = DSV_DESC_COUNT;
+			dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+			dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			dsvHeapDesc.NodeMask = 0;
+			ThrowIfFailed(_device->CreateDescriptorHeap(
+				&dsvHeapDesc, IID_PPV_ARGS(_dsvHeap.GetAddressOf())));
+			_dsvHeap->SetName(L"DirectX12::DepthStencilViewHeap");
+			break;
+		}
+		case HeapFlag::CBV:
+		case HeapFlag::SRV:
+		case HeapFlag::UAV:
+		default:
+		{
+			if (_cbvSrvUavHeap) { _cbvSrvUavHeap.Reset(); }
+			_cbvSrvUavDescriptorSize = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			/*-------------------------------------------------------------------
+			-			     Set CBV, SRV, UAV Heap
+			---------------------------------------------------------------------*/
+			D3D12_DESCRIPTOR_HEAP_DESC csuHeapDesc = {};
+			csuHeapDesc.NumDescriptors = CBV_DESC_COUNT + SRV_DESC_COUNT + UAV_DESC_COUNT;
+			csuHeapDesc.Type     = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+			csuHeapDesc.Flags    = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			csuHeapDesc.NodeMask = 0;
+			ThrowIfFailed(_device->CreateDescriptorHeap(&csuHeapDesc, IID_PPV_ARGS(&_cbvSrvUavHeap)));
+			_cbvSrvUavHeap->SetName(L"DirectX12::CBV,SRV,UAVHeap");
+			break;
+		}
 
-	/*-------------------------------------------------------------------
-	-			     Set RTV Heap
-	---------------------------------------------------------------------*/
-	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-	rtvHeapDesc.NumDescriptors = RTV_DESC_COUNT;
-	rtvHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	rtvHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	rtvHeapDesc.NodeMask       = 0;
-	ThrowIfFailed(_device->CreateDescriptorHeap(
-		&rtvHeapDesc, IID_PPV_ARGS(_rtvHeap.GetAddressOf())));
-	_rtvHeap->SetName(L"DirectX12::RenderTargetHeap");
-
-	/*-------------------------------------------------------------------
-	-			     Set DSV Heap 
-	---------------------------------------------------------------------*/
-	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc={};
-	dsvHeapDesc.NumDescriptors = DSV_DESC_COUNT;
-	dsvHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	dsvHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	dsvHeapDesc.NodeMask       = 0;
-	ThrowIfFailed(_device->CreateDescriptorHeap(
-		&dsvHeapDesc, IID_PPV_ARGS(_dsvHeap.GetAddressOf())));
-	_dsvHeap->SetName(L"DirectX12::DepthStencilViewHeap");
-
-	/*-------------------------------------------------------------------
-	-			     Set CBV, SRV, UAV Heap 
-	---------------------------------------------------------------------*/
-	D3D12_DESCRIPTOR_HEAP_DESC csuHeapDesc={};
-	csuHeapDesc.NumDescriptors = CBV_DESC_COUNT + SRV_DESC_COUNT + UAV_DESC_COUNT;
-	csuHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	csuHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	csuHeapDesc.NodeMask       = 0;
-	ThrowIfFailed(_device->CreateDescriptorHeap(&csuHeapDesc, IID_PPV_ARGS(&_cbvSrvUavHeap)));
-	_cbvSrvUavHeap->SetName(L"DirectX12::CBV,SRV,UAVHeap");
+	}
 }
 /****************************************************************************
-*							BuildResourceAllocator
+*							BuildAllResourceAllocator
 *************************************************************************//**
-*  @fn        void DirectX12::BuildResourceAllocator()
+*  @fn        void DirectX12::BuildAllResourceAllocator()
 *  @brief     Build Resource Allocator
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
+void GraphicsDeviceDirectX12::BuildAllResourceAllocator()
+{
+	BuildResourceAllocator((int)HeapFlag::RTV | (int)HeapFlag::DSV | (int)HeapFlag::CBV | (int)HeapFlag::SRV | (int)HeapFlag::UAV);
+}
+void GraphicsDeviceDirectX12::BuildResourceAllocator(int heapFlag)
+{
+	/*-------------------------------------------------------------------
+	-			     Set RTV Allocator
+	---------------------------------------------------------------------*/
+	if ((int)heapFlag & (int)HeapFlag::RTV)
+	{
+		if (_rtvAllocator) { delete _rtvAllocator; }
+
+		auto rtvCpuHandler = _rtvHeap->GetCPUDescriptorHandleForHeapStart();
+		D3D12_GPU_DESCRIPTOR_HANDLE rtvGpuHandler = {};
+		rtvGpuHandler.ptr  = 0;// = _rtvHeap->GetGPUDescriptorHandleForHeapStart();
+		_rtvAllocator      = new ResourceAllocator();
+		_rtvAllocator->SetResourceAllocator(RTV_DESC_COUNT, _rtvDescriptorSize, rtvCpuHandler, rtvGpuHandler);
+	}
+	/*-------------------------------------------------------------------
+	-			     Set DSV Allocator
+	---------------------------------------------------------------------*/
+	if ((int)heapFlag & (int)HeapFlag::DSV)
+	{
+		if (_dsvAllocator) { delete _dsvAllocator; }
+
+		auto dsvCpuHandler = _dsvHeap->GetCPUDescriptorHandleForHeapStart();
+		D3D12_GPU_DESCRIPTOR_HANDLE dsvGpuHandler = {};
+		dsvGpuHandler.ptr  = 0;// = _dsvHeap->GetGPUDescriptorHandleForHeapStart();
+		_dsvAllocator      = new ResourceAllocator();
+		_dsvAllocator->SetResourceAllocator(DSV_DESC_COUNT, _dsvDescriptorSize, dsvCpuHandler, dsvGpuHandler);
+	}
+	/*-------------------------------------------------------------------
+	-			     Set CBV Allocator
+	---------------------------------------------------------------------*/
+	if ((int)heapFlag & (int)HeapFlag::CBV)
+	{
+		if (_cbvAllocator) { delete _cbvAllocator; }
+
+		auto cbvCpuHandler = _cbvSrvUavHeap->GetCPUDescriptorHandleForHeapStart();
+		auto cbvGpuHandler = _cbvSrvUavHeap->GetGPUDescriptorHandleForHeapStart();
+		_cbvAllocator = new ResourceAllocator();
+		_cbvAllocator->SetResourceAllocator(CBV_DESC_COUNT, _cbvSrvUavDescriptorSize, cbvCpuHandler, cbvGpuHandler);
+	}
+	/*-------------------------------------------------------------------
+	-			     Set SRV Heap
+	---------------------------------------------------------------------*/
+	if ((int)heapFlag & (int)HeapFlag::SRV)
+	{
+		if (_srvAllocator) { delete _srvAllocator; }
+
+		auto srvCpuHandler = _cbvSrvUavHeap->GetCPUDescriptorHandleForHeapStart();
+		srvCpuHandler.ptr += (UINT64)CBV_DESC_COUNT * _cbvSrvUavDescriptorSize;
+		auto srvGpuHandler = _cbvSrvUavHeap->GetGPUDescriptorHandleForHeapStart();
+		srvGpuHandler.ptr += (UINT64)CBV_DESC_COUNT * _cbvSrvUavDescriptorSize;
+		_srvAllocator = new ResourceAllocator();
+		_srvAllocator->SetResourceAllocator(SRV_DESC_COUNT, _cbvSrvUavDescriptorSize, srvCpuHandler, srvGpuHandler);
+	}
+	/*-------------------------------------------------------------------
+	-			     Set UAV Heap
+	---------------------------------------------------------------------*/
+	if ((int)heapFlag & (int)HeapFlag::UAV)
+	{
+		if (_uavAllocator) { delete _uavAllocator; }
+
+		auto uavCpuHandler = _cbvSrvUavHeap->GetCPUDescriptorHandleForHeapStart();
+		uavCpuHandler.ptr += (UINT64)(CBV_DESC_COUNT + SRV_DESC_COUNT) * _cbvSrvUavDescriptorSize;
+		auto uavGpuHandler = _cbvSrvUavHeap->GetGPUDescriptorHandleForHeapStart();
+		uavGpuHandler.ptr += (UINT64)(CBV_DESC_COUNT + SRV_DESC_COUNT) * _cbvSrvUavDescriptorSize;
+		_uavAllocator = new ResourceAllocator();
+		_uavAllocator->SetResourceAllocator(UAV_DESC_COUNT, _cbvSrvUavDescriptorSize, uavCpuHandler, uavGpuHandler);
+	}
+}
+/****************************************************************************
+*							BuildRenderTargetView
+*************************************************************************//**
+*  @fn        void DirectX12::BuildRenderTargetView(void)
+*  @brief     Create Render Target View
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void GraphicsDeviceDirectX12::BuildRenderTargetView()
+{
+	// for drawing 
+	CPU_DESC_HANDLER rtvHeapHandle(_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+	for (UINT i = 0; i < FRAME_BUFFER_COUNT; ++i)
+	{
+		ThrowIfFailed(_swapchain->GetBuffer(i, IID_PPV_ARGS(&_renderTargetList[i])));
+		_device->CreateRenderTargetView(_renderTargetList[i].Get(), nullptr, _rtvAllocator->GetCPUDescHandler(i));
+		_renderTargetList[i]->SetName(L"DirectX12::RenderTargetList");
+	}
+	
+}
+/****************************************************************************
+*							BuildDepthStencilView
+*************************************************************************//**
+*  @fn        void DirectX12::BuildDepthStencilView(void)
+*  @brief     Create Depth / Stencil View
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void GraphicsDeviceDirectX12::BuildDepthStencilView()
+{
+	/*-------------------------------------------------------------------
+	-				 Set Depth / Stencil Descriptor
+	---------------------------------------------------------------------*/
+
+	D3D12_RESOURCE_DESC depthStencilDesc ={};
+	depthStencilDesc.Dimension          = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	depthStencilDesc.Alignment          = 0;
+	depthStencilDesc.Width              = Screen::GetScreenWidth();
+	depthStencilDesc.Height             = Screen::GetScreenHeight();
+	depthStencilDesc.DepthOrArraySize   = 1;
+	depthStencilDesc.MipLevels          = 1;
+	depthStencilDesc.Format             = DXGI_FORMAT_R24G8_TYPELESS;
+	depthStencilDesc.SampleDesc.Count   = _4xMsaaState ? 4 : 1;
+	depthStencilDesc.SampleDesc.Quality = _4xMsaaState ? (_4xMsaaQuality - 1) : 0;
+	depthStencilDesc.Layout             = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	depthStencilDesc.Flags              = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+	/*-------------------------------------------------------------------
+	-					Set Clear Value
+	---------------------------------------------------------------------*/
+	D3D12_CLEAR_VALUE optClear={};
+	optClear.Format               = _depthStencilFormat;
+	optClear.DepthStencil.Depth   = 1.0f;
+	optClear.DepthStencil.Stencil = 0;
+
+	auto heapProp = HEAP_PROPERTY(D3D12_HEAP_TYPE_DEFAULT);
+	ThrowIfFailed(_device->CreateCommittedResource(
+		&heapProp,
+		D3D12_HEAP_FLAG_NONE,
+		&depthStencilDesc,
+		D3D12_RESOURCE_STATE_COMMON,
+		&optClear,
+		IID_PPV_ARGS(_depthStencilBuffer.GetAddressOf())));
+
+	/*-------------------------------------------------------------------
+	-				Create Depth Stencil View
+	---------------------------------------------------------------------*/
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc={};
+	dsvDesc.Flags              = D3D12_DSV_FLAG_NONE;
+	dsvDesc.ViewDimension      = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Format             = _depthStencilFormat;
+	dsvDesc.Texture2D.MipSlice = 0;
+	
+	_device->CreateDepthStencilView(_depthStencilBuffer.Get(), &dsvDesc, _dsvAllocator->GetCPUDescHandler(0));
+
+	/*-------------------------------------------------------------------
+	- Transition the resource from its initial state to be used as a depth buffer.
+	---------------------------------------------------------------------*/
+	auto barrier = BARRIER::Transition(_depthStencilBuffer.Get(),
+		D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+	_commandList->ResourceBarrier(1, &barrier);
+}
+/****************************************************************************
+*							CreateSwapChain
+*************************************************************************//**
+*  @fn        void DirectX12::CreateSwapChain(void)
+*  @brief     Create SwapChain
+*  @param[in] void
+*  @return 　　void 
+*****************************************************************************/
+void GraphicsDeviceDirectX12::CreateSwapChain()
+{
+	/*-------------------------------------------------------------------
+	-        Release the previous swapchain we will be recreating
+	---------------------------------------------------------------------*/
+	_swapchain.Reset();
+
+	/*-------------------------------------------------------------------
+	-                   Create Swapchain Descriptor
+	---------------------------------------------------------------------*/
+	DXGI_SWAP_CHAIN_DESC1 sd={};
+
+	sd.BufferCount = FRAME_BUFFER_COUNT;                     // Current: Double Buffer
+	sd.Width       = Screen::GetScreenWidth();               // Window Size Width
+	sd.Height      = Screen::GetScreenHeight();              // Window Size Height 
+	sd.Format      = _backBufferFormat;                      // Back Buffer Format 
+	sd.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED;            // Alpha Mode => transparency behavior is not specified
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;        // Use the surface or resource as an output render target
+	sd.Flags       = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // Allow Resize Window
+	sd.Scaling     = DXGI_SCALING_STRETCH;                   // scaling: stretch
+	sd.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD;          // bit-block transfer model
+	sd.Stereo      = false;
+	sd.SampleDesc.Count   = _4xMsaaState ? 4 : 1;                     // MSAA: Anti-Alias
+	sd.SampleDesc.Quality = _4xMsaaState ? (_4xMsaaQuality - 1) : 0;  // MSAA: Anti-Alias
+	
+
+	/*-------------------------------------------------------------------
+	-                   Create Swapchain for hwnd
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(_dxgiFactory->CreateSwapChainForHwnd(
+		_commandQueue.Get(),
+		_hwnd,
+		&sd,
+		nullptr,
+		nullptr,
+		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
+	));
+
+	/*-------------------------------------------------------------------
+	-                   Set HDR
+	---------------------------------------------------------------------*/
+#ifdef USE_HDR
+	EnsureSwapChainColorSpace();
+	SetHDRMetaData();
+#endif
+}
+
 
 #pragma endregion Initialize Function
 #pragma region           Debug      Function
