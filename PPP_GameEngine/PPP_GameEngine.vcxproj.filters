@@ -135,6 +135,9 @@
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Shader.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Config.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainGame\Source\Main.cpp">

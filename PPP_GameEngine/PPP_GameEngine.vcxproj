@@ -177,6 +177,7 @@
     <ClInclude Include="GameUtility\Math\Include\GMVector.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12BaseStruct.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Config.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Core.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Debug.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Include.hpp" />

@@ -13,6 +13,7 @@
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12ResourceAllocator.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include "GameUtility/Math/Include/GMColor.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -25,7 +26,7 @@ enum class GPUVender
 	Intel,
 	CountOfGPUVender
 };
-
+#define USE_HDR (1)
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +34,7 @@ enum class GPUVender
 /****************************************************************************
 *							Initialize
 *************************************************************************//**
-*  @fn        void DirectX12::Initialize(void)
+*  @fn        void GraphicsDeviceDirectX12::Initialize(void)
 *  @brief     Initialize Back Screen
 *  @param[in] HWND hwnd
 *  @return 　　void
@@ -46,6 +47,14 @@ void GraphicsDeviceDirectX12::Initialize(HWND hwnd)
 	LoadAssets();
 	_hasInitialized = true;
 }
+/****************************************************************************
+*							Finalize
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::Finalize()
+*  @brief     Release DirectX12 All Memory
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
 void GraphicsDeviceDirectX12::Finalize()
 {
 	if (_rtvAllocator) { delete _rtvAllocator; }
@@ -53,11 +62,358 @@ void GraphicsDeviceDirectX12::Finalize()
 	if (_cbvAllocator) { delete _cbvAllocator; }
 	if (_srvAllocator) { delete _srvAllocator; }
 	if (_uavAllocator) { delete _uavAllocator; }
+
+	if (_depthStencilBuffer) { _depthStencilBuffer = nullptr;}
+	for (auto& renderTarget : _renderTargetList) 
+	{ 
+		if (renderTarget)
+		{ 
+			renderTarget = nullptr;
+		}
+	}
+	//if (_pipelineState) { _pipelineState= nullptr;}
+	if (_rtvHeap      ) { _rtvHeap      = nullptr; }
+	if (_dsvHeap      ) { _dsvHeap      = nullptr; }
+	if (_cbvSrvUavHeap) { _cbvSrvUavHeap=nullptr; }
+	if (_useAdapter   ) { _useAdapter   = nullptr; }
+	if (_swapchain    ) { _swapchain    = nullptr;}
+	for (auto& allocator : _commandAllocator) 
+	{
+		if (allocator) { allocator = nullptr; }
+	}
+	if (_fence)        { _fence       = nullptr;}
+	if (_fenceEvent)   { _fenceEvent = nullptr; }
+	if (_commandQueue) { _commandQueue= nullptr;}
+	if (_commandList ) { _commandList = nullptr;}
+	if (_dxgiFactory ) { _dxgiFactory = nullptr;}
+
+#ifdef _DEBUG
+	ReportLiveObjects();
+#endif
+	_hwnd = nullptr;
+
+	if (_device) { _device = nullptr; }
+
+	
 }
+/****************************************************************************
+*							OnResize
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::OnResize(void)
+*  @brief     Use when doing screen resizing
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
 void GraphicsDeviceDirectX12::OnResize()
 {
+	/*-------------------------------------------------------------------
+	-              Nullptr check
+	---------------------------------------------------------------------*/
+#ifdef _DEBUG
+	assert(_device);
+	assert(_swapchain);
+	assert(_commandAllocator);
+#endif
+	/*-------------------------------------------------------------------
+	-              Flush before chainging any resources
+	---------------------------------------------------------------------*/
+	FlushCommandQueue();
+	ThrowIfFailed(_commandList->Reset(_commandAllocator[_currentFrameIndex].Get(), nullptr));
+	
+	/*-------------------------------------------------------------------
+	-              Release the previous resources
+	---------------------------------------------------------------------*/
+	for (int i = 0; i <FRAME_BUFFER_COUNT; ++i)
+	{
+		_renderTargetList[i].Reset();
+	}
+	_depthStencilBuffer.Reset();
+
+	/*-------------------------------------------------------------------
+	-                   Resize Swapchain
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(_swapchain->ResizeBuffers(
+		FRAME_BUFFER_COUNT,
+		Screen::GetScreenWidth(),
+		Screen::GetScreenHeight(),
+		_backBufferFormat,
+		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));	
+	_currentFrameIndex = 0;
+
+	BuildRenderTargetView();
+	BuildDepthStencilView();
+	CompleteInitialize();
+	FlushCommandQueue();
+	CreateViewport();
+}
+/****************************************************************************
+*                     ClearScreen
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::ClearScreen(void)
+*  @brief     Clear Screen. Describe in the first of Draw functions for each scene.
+*             The background color is SteelBlue.
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void GraphicsDeviceDirectX12::ClearScreen()
+{
+	/*-------------------------------------------------------------------
+	-                   Reset Commmand 
+	---------------------------------------------------------------------*/
+	ResetCommandList();
+
+	/*-------------------------------------------------------------------
+	-       Indicate a state transition (Present -> Render Target)
+	---------------------------------------------------------------------*/
+	auto barrier = BARRIER::Transition(GetCurrentRenderTarget().Get(),
+		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	_commandList->ResourceBarrier(1, &barrier);
+
+	/*-------------------------------------------------------------------
+	-          Set the viewport and scissor rect. 
+	-  This needs to be reset whenever the command list is reset.
+	---------------------------------------------------------------------*/
+	_commandList->RSSetViewports(1, &_screenViewport);
+	_commandList->RSSetScissorRects(1, &_scissorRect);
+	/*-------------------------------------------------------------------
+	-               Clear the back buffer and depth buffer.
+	---------------------------------------------------------------------*/
+	_commandList->ClearRenderTargetView(_rtvAllocator->GetCPUDescHandler(_currentFrameIndex), gm::color::SteelBlue, 0, nullptr);
+	_commandList->ClearDepthStencilView(_dsvAllocator->GetCPUDescHandler(0), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+	/*-------------------------------------------------------------------
+	-                   Set Render Target 
+	---------------------------------------------------------------------*/
+	auto rtv = _rtvAllocator->GetCPUDescHandler(_currentFrameIndex);
+	auto dsv = _dsvAllocator->GetCPUDescHandler(0);
+	_commandList->OMSetRenderTargets(1, &rtv, true, &dsv);
+	ID3D12DescriptorHeap* heapList[] = { _cbvSrvUavHeap.Get() };
+	_commandList->SetDescriptorHeaps(_countof(heapList), heapList);
+}
+
+/****************************************************************************
+*                     CompleteRendering
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::CompleteRendering(void)
+*  @brief     End of the drawing process (describe in the last of
+*             Draw functions for each scene)
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void GraphicsDeviceDirectX12::CompleteRendering()
+{
+	/*-------------------------------------------------------------------
+	-      // Indicate a state transition (Render Target -> Present)
+	---------------------------------------------------------------------*/
+	auto barrier = BARRIER::Transition(GetCurrentRenderTarget().Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	_commandList->ResourceBarrier(1, &barrier);
+
+	ThrowIfFailed(_commandList->Close());
+
+	/*-------------------------------------------------------------------
+	-          Add command list to the queue for execution
+	---------------------------------------------------------------------*/
+	ID3D12CommandList* commandLists[] = { _commandList.Get() };
+	_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+
+	/*-------------------------------------------------------------------
+	-						Flip screen
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(_swapchain->Present(VSYNC, 0));
+	_currentFrameIndex = (_currentFrameIndex + 1) % FRAME_BUFFER_COUNT;
+
+	FlushCommandQueue();
+}
+
+void GraphicsDeviceDirectX12::ResetCommandList()
+{
+	ThrowIfFailed(_commandAllocator[_currentFrameIndex]->Reset());
+	ThrowIfFailed(_commandList->Reset(_commandAllocator[_currentFrameIndex].Get(), nullptr));
+}
+/****************************************************************************
+*                     CompleteRendering
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::CompleteRendering(void)
+*  @brief     End of the drawing process (describe in the last of
+*             Draw functions for each scene)
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void GraphicsDeviceDirectX12::CopyTextureToBackBuffer(ResourceComPtr& resource, D3D12_RESOURCE_STATES resourceState)
+{
+	BARRIER before[] =
+	{
+		BARRIER::Transition(GetCurrentRenderTarget().Get(),
+		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_DEST),
+		BARRIER::Transition(resource.Get(),
+		resourceState, D3D12_RESOURCE_STATE_COPY_SOURCE),
+	};
+	_commandList->ResourceBarrier(_countof(before), before);
+	_commandList->CopyResource(GetCurrentRenderTarget().Get(), resource.Get());
+	BARRIER after[] =
+	{
+		BARRIER::Transition(GetCurrentRenderTarget().Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_RENDER_TARGET),
+		BARRIER::Transition(resource.Get(),
+		D3D12_RESOURCE_STATE_COPY_SOURCE, resourceState)
+	};
+	_commandList->ResourceBarrier(_countof(after), after);
+}
+/****************************************************************************
+*                     FlushCommandQueue
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::FlushCommandQueue(void)
+*  @brief     Flush Command Queue
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void GraphicsDeviceDirectX12::FlushCommandQueue()
+{
+	++_currentFenceValue[_currentFrameIndex];
+	ThrowIfFailed(_commandQueue->Signal(_fence.Get(), _currentFenceValue[_currentFrameIndex]));
+
+	/*-------------------------------------------------------------------
+	-   Wait until the GPU has completed commands up to this fence point
+	---------------------------------------------------------------------*/
+	if (_fence->GetCompletedValue() < _currentFenceValue[_currentFrameIndex])
+	{
+		_fenceEvent = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
+		ThrowIfFailed(_fence->SetEventOnCompletion(_currentFenceValue[_currentFrameIndex], _fenceEvent));
+
+		if (_fenceEvent != 0)
+		{
+			WaitForSingleObject(_fenceEvent, INFINITE);
+			CloseHandle(_fenceEvent);
+		}
+
+	}
+	_currentFrameIndex = _swapchain->GetCurrentBackBufferIndex();
+}
+void GraphicsDeviceDirectX12::OnTerminateRenderScene()
+{
+	FlushCommandQueue();
+	ResetCommandList();
+}
+/****************************************************************************
+*							CompleteInitialize
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::CompleteInitialize(void)
+*  @brief     Finish Initialize
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void GraphicsDeviceDirectX12::CompleteInitialize()
+{
+	ThrowIfFailed(_commandList->Close());
+
+	/*-------------------------------------------------------------------
+	-          Add command list to the queue for execution
+	---------------------------------------------------------------------*/
+	ID3D12CommandList* commandLists[] = { _commandList.Get() };
+	_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+
+	/*-------------------------------------------------------------------
+	-						Flip screen
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(_swapchain->Present(VSYNC, 0));
+	_currentFrameIndex = (_currentFrameIndex + 1) % FRAME_BUFFER_COUNT;
 
 }
+#pragma region Property
+/****************************************************************************
+*                        GetCPUResourceView
+*************************************************************************//**
+*  @fn        D3D12_CPU_DESCRIPTOR_HANDLE  GraphicsDeviceDirectX12::GetCPUResourceView(HeapType heapType, int offsetIndex) const
+*  @brief     Get current frame constant buffer view pointer
+*  @param[in] int offsetIndex
+*  @return 　　D3D12_CPU_DESCRIPTOR_HANDLE
+*****************************************************************************/
+D3D12_CPU_DESCRIPTOR_HANDLE  GraphicsDeviceDirectX12::GetCPUResourceView(HeapFlag heapFlag, int offsetIndex) const
+{
+	switch (heapFlag)
+	{
+		case HeapFlag::RTV:
+			return _rtvAllocator->GetCPUDescHandler(offsetIndex);
+		case HeapFlag::DSV:
+			return _dsvAllocator->GetCPUDescHandler(offsetIndex);
+		case HeapFlag::CBV:
+			return _cbvAllocator->GetCPUDescHandler(offsetIndex);
+		case HeapFlag::SRV:
+			return _srvAllocator->GetCPUDescHandler(offsetIndex);
+		default:
+			return _uavAllocator->GetCPUDescHandler(offsetIndex);
+	}
+}
+
+/****************************************************************************
+*                        GetGPUResourceView
+*************************************************************************//**
+*  @fn        D3D12_GPU_DESCRIPTOR_HANDLE DirectX12::GetGPUResourceView(HeapType heapType, int offsetIndex) const
+*  @brief     Get current frame constant buffer view pointer
+*  @param[in] int offsetIndex
+*  @return 　　D3D12_GPU_DESCRIPTOR_HANDLE
+*****************************************************************************/
+D3D12_GPU_DESCRIPTOR_HANDLE GraphicsDeviceDirectX12::GetGPUResourceView(HeapFlag heapType, int offsetIndex) const
+{
+	switch (heapType)
+	{
+		case HeapFlag::RTV:
+			return _rtvAllocator->GetGPUDescHandler(offsetIndex);
+		case HeapFlag::DSV:
+			return _dsvAllocator->GetGPUDescHandler(offsetIndex);
+		case HeapFlag::CBV:
+			return _cbvAllocator->GetGPUDescHandler(offsetIndex);
+		case HeapFlag::SRV:
+			return _srvAllocator->GetGPUDescHandler(offsetIndex);
+		default:
+			return _uavAllocator->GetGPUDescHandler(offsetIndex);
+	}
+}
+/****************************************************************************
+*                        GetCurrentBackBufferIndex
+*************************************************************************//**
+*  @fn        INT GraphicsDeviceDirectX12::GetCurrentBackBufferIndex() const
+*  @brief     Get Current BackBufferIndex
+*  @param[in] void
+*  @return 　　INT
+*****************************************************************************/
+INT GraphicsDeviceDirectX12::GetCurrentBackBufferIndex() const
+{
+	if (_currentFrameIndex != FRAME_BUFFER_COUNT - 1)
+	{
+		return _currentFrameIndex + 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+/****************************************************************************
+*                        IssueViewID
+*************************************************************************//**
+*  @fn        UINT GraphicsDeviceDirectX12::IssueViewID(HeapType heapType)
+*  @brief     Issue View ID
+*  @param[in] void
+*  @return 　　UINT
+*****************************************************************************/
+UINT GraphicsDeviceDirectX12::IssueViewID(HeapFlag heapType)
+{
+	switch (heapType)
+	{
+		case HeapFlag::RTV:
+			return _rtvAllocator->IssueID();
+		case HeapFlag::DSV:
+			return _dsvAllocator->IssueID();
+		case HeapFlag::CBV:
+			return _cbvAllocator->IssueID();
+		case HeapFlag::SRV:
+			return _srvAllocator->IssueID();
+		default:
+			return _uavAllocator->IssueID();
+	}
+}
+#pragma endregion Property
 #pragma endregion Public Function
 #pragma region Private Function
 /****************************************************************************
@@ -76,11 +432,60 @@ void GraphicsDeviceDirectX12::LoadPipeline()
 #if _DEBUG
 	EnabledDebugLayer();
 #endif
+	/*-------------------------------------------------------------------
+	-					 Create Device
+	---------------------------------------------------------------------*/
+	CreateDevice();
+	/*-------------------------------------------------------------------
+	-                   Log Adapters (for debug)
+	---------------------------------------------------------------------*/
+#if _DEBUG
+	LogAdapters();
+#endif
+	/*-------------------------------------------------------------------
+	-				     Check DXR support
+	---------------------------------------------------------------------*/
+	CheckDXRSupport();
+	/*-------------------------------------------------------------------
+	-				       Set 4xMsaa
+	---------------------------------------------------------------------*/
+	CheckMultiSampleQualityLevels();
+	/*-------------------------------------------------------------------
+	-				       Set 4xMsaa
+	---------------------------------------------------------------------*/
+	_isHDRSupport = CheckHDRDisplaySupport();
+	/*-------------------------------------------------------------------
+	-                     Create Fence
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
+	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i) { _currentFenceValue[i] = 0; }
+	/*-------------------------------------------------------------------
+	-                   Create Command Object
+	---------------------------------------------------------------------*/
+	CreateCommandObject();
+	/*-------------------------------------------------------------------
+	-                   Create Swapchain
+	---------------------------------------------------------------------*/
+	CreateSwapChain();
+	/*-------------------------------------------------------------------
+	-                 Create Descriptor Heap
+	---------------------------------------------------------------------*/
+	CreateAllDescriptorHeap();
+	BuildAllResourceAllocator();
+	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i) { IssueViewID(HeapFlag::RTV); }
+	IssueViewID(HeapFlag::DSV);
+
+
+	/*-------------------------------------------------------------------
+	-                 Create Default PSO
+	---------------------------------------------------------------------*/
+	//CreateDefaultPSOs();
+
 
 }
 void GraphicsDeviceDirectX12::LoadAssets()
 {
-	
+	OnResize();
 }
 #pragma region           Initialize Function
 /****************************************************************************
@@ -271,9 +676,9 @@ void GraphicsDeviceDirectX12::CreateDescriptorHeap(HeapFlag heapFlag)
 			---------------------------------------------------------------------*/
 			D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
 			rtvHeapDesc.NumDescriptors = RTV_DESC_COUNT;
-			rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-			rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			rtvHeapDesc.NodeMask = 0;
+			rtvHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+			rtvHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			rtvHeapDesc.NodeMask       = 0;
 			ThrowIfFailed(_device->CreateDescriptorHeap(
 				&rtvHeapDesc, IID_PPV_ARGS(_rtvHeap.GetAddressOf())));
 			_rtvHeap->SetName(L"DirectX12::RenderTargetHeap");
@@ -426,6 +831,27 @@ void GraphicsDeviceDirectX12::BuildRenderTargetView()
 	
 }
 /****************************************************************************
+*                     CreateViewport
+*************************************************************************//**
+*  @fn        void DirectX12::CreateViewport(void)
+*  @brief     Create default viewport
+*  @param[in] void
+*  @return 　　void @n
+*  @details   viewport: we use the viewport when we want to draw the 3D scene @n
+			  into a subrectangle of the back buffer.
+*****************************************************************************/
+void GraphicsDeviceDirectX12::CreateViewport()
+{
+	_screenViewport.TopLeftX = 0;
+	_screenViewport.TopLeftY = 0;
+	_screenViewport.Width = static_cast<float>(Screen::GetScreenWidth());
+	_screenViewport.Height = static_cast<float>(Screen::GetScreenHeight());
+	_screenViewport.MinDepth = 0.0f;
+	_screenViewport.MaxDepth = 1.0f;
+
+	_scissorRect = { 0,0, Screen::GetScreenWidth(), Screen::GetScreenHeight() };
+}
+/****************************************************************************
 *							BuildDepthStencilView
 *************************************************************************//**
 *  @fn        void DirectX12::BuildDepthStencilView(void)
@@ -541,8 +967,51 @@ void GraphicsDeviceDirectX12::CreateSwapChain()
 	SetHDRMetaData();
 #endif
 }
+/****************************************************************************
+*                     MultiSampleQualityLevels
+*************************************************************************//**
+*  @fn        void DirectX12::CheckMultiSampleQualityLevels(void)
+*  @brief     Multi Sample Quality Levels for 4xMsaa (Anti-Alias)
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void GraphicsDeviceDirectX12::CheckMultiSampleQualityLevels()
+{
+	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
+	msQualityLevels.Format           = _backBufferFormat;
+	msQualityLevels.SampleCount      = 4;
+	msQualityLevels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+	msQualityLevels.NumQualityLevels = 0;
 
+	ThrowIfFailed(_device->CheckFeatureSupport(
+		D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
+		&msQualityLevels,
+		sizeof(msQualityLevels)));
 
+	_4xMsaaQuality = msQualityLevels.NumQualityLevels;
+#ifdef _DEBUG
+	assert(_4xMsaaQuality > 0 && "Unexpected MSAA quality level.");
+#endif
+}
+/****************************************************************************
+*                     CheckTearingSupport
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::CheckTearingSupport()
+*  @brief     Tearing support
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void GraphicsDeviceDirectX12::CheckTearingSupport()
+{
+	if (!_dxgiFactory) { _isTearingSupport = false; return; }
+
+	if (FAILED(_dxgiFactory->CheckFeatureSupport(
+		DXGI_FEATURE_PRESENT_ALLOW_TEARING,
+		&_isTearingSupport, sizeof(_isTearingSupport))))
+	{
+		_isTearingSupport = false;
+	}
+}
 #pragma endregion Initialize Function
 #pragma region           Debug      Function
 /****************************************************************************

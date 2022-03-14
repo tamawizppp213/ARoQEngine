@@ -38,6 +38,7 @@ struct ID3D12Fence;
 struct  ID3D10Blob;
 struct ID3D12Debug5;
 
+
 using Device           = ID3D12Device9;
 using Factory          = IDXGIFactory7;
 using Adapter          = IDXGIAdapter4;
