@@ -1,27 +1,40 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   DirectX12GraphicsDevice.cpp
-///             @brief  Graphics Device
+///             @file   DirectX12Shader.hpp
+///             @brief  DirectX12 Compile Shader
 ///             @author Toide Yutaro
-///             @date   -
+///             @date   2022_03_14
 //////////////////////////////////////////////////////////////////////////////////
-
+#pragma once
+#ifndef DIRECTX12_SHADER_HPP
+#define DIRECTX12_SHADER_HPP
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Core.hpp"
-#include <d3d12.h>
-#include <dxgi1_6.h>
-
+#include "DirectX12Core.hpp"
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+struct _D3D_SHADER_MACRO;
+struct SimpleGraphicPipeline
+{
+	BlobComPtr VertexShader;
+	BlobComPtr PixelShader;
+};
 
 //////////////////////////////////////////////////////////////////////////////////
-//                          Implement
+//                         DirectX12 Shader Function (inline)
 //////////////////////////////////////////////////////////////////////////////////
-#pragma comment(lib,"d3dcompiler.lib")
-#pragma comment(lib, "dxcompiler.lib")
-#pragma comment(lib, "D3D12.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "dxguid.lib")
+BlobComPtr CompileShader(
+	const std::wstring& fileName,
+	const _D3D_SHADER_MACRO* defines,
+	const std::string& entryPoint,
+	const std::string& target);
+
+BlobComPtr CompileShader(
+	const std::wstring& fileName,
+	const std::wstring& entryPoint,
+	const std::wstring& target);
+
+BlobComPtr LoadBinary(const std::wstring& fileName);
+#endif

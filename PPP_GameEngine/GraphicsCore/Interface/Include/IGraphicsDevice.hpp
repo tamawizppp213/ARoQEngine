@@ -34,7 +34,7 @@ enum class GPUAPI
 class IGraphicsDevice
 {
 protected:
-	static const UINT32 FRAME_BUFFER_COUNT = 2;
+	static const UINT32 FRAME_BUFFER_COUNT = 3;
 	static const UINT32 VSYNC              = 1; // 0: don't wait, 1:wait(60fps)
 public:
 	/****************************************************************************

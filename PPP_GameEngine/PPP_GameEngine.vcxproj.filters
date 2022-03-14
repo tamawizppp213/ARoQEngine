@@ -129,6 +129,12 @@
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12BaseStruct.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Shader.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainGame\Source\Main.cpp">
@@ -189,6 +195,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Core.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Shader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

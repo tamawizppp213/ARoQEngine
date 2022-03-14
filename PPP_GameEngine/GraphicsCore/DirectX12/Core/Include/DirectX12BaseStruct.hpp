@@ -600,7 +600,7 @@ inline UINT64 GetRequiredIntermediateSize(
 	D3D12_RESOURCE_DESC Desc = pDestinationResource->GetDesc();
 	UINT64 RequiredSize = 0;
 
-	ID3D12Device* pDevice;
+	ID3D12Device* pDevice = nullptr;
 	pDestinationResource->GetDevice(__uuidof(*pDevice), reinterpret_cast<void**>(&pDevice));
 	pDevice->GetCopyableFootprints(&Desc, FirstSubresource, NumSubresources, 0, nullptr, nullptr, nullptr, &RequiredSize);
 	pDevice->Release();
@@ -661,7 +661,7 @@ inline UINT64 UpdateSubresources(
 		return 0;
 	}
 
-	BYTE* data;
+	BYTE* data = nullptr;
 	HRESULT hresult = intermediate->Map(0, NULL, reinterpret_cast<void**>(&data));
 	if (FAILED(hresult))
 	{
@@ -719,7 +719,7 @@ inline UINT64 UpdateSubresources(
 	UINT* numRows = reinterpret_cast<UINT*>(rowSizesInBytes + numSubresources);
 
 	D3D12_RESOURCE_DESC resourceDesc = destinationResource->GetDesc();
-	Device* device;
+	Device* device = nullptr;
 	destinationResource->GetDevice(__uuidof(*device), reinterpret_cast<void**>(&device));
 	device->GetCopyableFootprints(&resourceDesc, firstSubresource, numSubresources, intermediateOffset, layouts, numRows, rowSizesInBytes, &requiredSize);
 	device->Release();
@@ -748,7 +748,7 @@ inline UINT64 UpdateSubresources(
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT layouts[maxSubresources];
 
 	D3D12_RESOURCE_DESC resourceDesc = destinationResource->GetDesc();
-	Device* device;
+	Device* device = nullptr;
 	destinationResource->GetDevice(__uuidof(*device), reinterpret_cast<void**>(&device));
 	device->GetCopyableFootprints(&resourceDesc, firstSubresource, numSubresources, intermediateOffset, layouts, rows, rowSizesInBytes, &requiredSize);
 	device->Release();
