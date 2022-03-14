@@ -181,6 +181,8 @@
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Debug.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Include.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Shader.hpp" />
     <ClInclude Include="GraphicsCore\Interface\Include\IGraphicsDevice.hpp" />
     <ClInclude Include="MainGame\Include\TemplateText.hpp" />
   </ItemGroup>
@@ -204,6 +206,7 @@
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Core.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp" />
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Shader.cpp" />
     <ClCompile Include="MainGame\Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
