@@ -27,5 +27,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCommand
     **         Termination Process
     *********************************************/
     exit(EXIT_SUCCESS);
+   
 }
 

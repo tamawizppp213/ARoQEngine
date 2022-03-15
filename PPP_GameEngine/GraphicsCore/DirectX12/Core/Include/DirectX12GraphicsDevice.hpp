@@ -70,6 +70,8 @@ public:
 	const DeviceComPtr&      GetDevice              ()                      const { return _device; }
 	      CommandListComPtr& GetCommandList         ()                            { return _commandList; }
 	const CommandListComPtr& GetCommandList         ()                      const { return _commandList; }
+	      CommandQueueComPtr& GetCommandQueue       ()                            { return _commandQueue; }
+	const CommandQueueComPtr& GetCommandQueue       ()                      const { return _commandQueue; }
 	      ResourceComPtr&    GetDepthStencil        ()                            { return _depthStencilBuffer; }
 	const ResourceComPtr&    GetDepthStencil        ()                      const { return _depthStencilBuffer; }
 	      ResourceComPtr&    GetCurrentRenderTarget ()                            { return _renderTargetList[_currentFrameIndex]; }
@@ -101,7 +103,18 @@ public:
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
+	static GraphicsDeviceDirectX12& Instance()
+	{
+		static GraphicsDeviceDirectX12 directX12;
+		return directX12;
+	}
+	GraphicsDeviceDirectX12(const GraphicsDeviceDirectX12&)            = delete;
+	GraphicsDeviceDirectX12& operator=(const GraphicsDeviceDirectX12&) = delete;
+	GraphicsDeviceDirectX12(GraphicsDeviceDirectX12&&)                 = delete;
+	GraphicsDeviceDirectX12& operator=(GraphicsDeviceDirectX12&&)      = delete;
 private:
+	GraphicsDeviceDirectX12() = default;
+	
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
@@ -150,6 +163,10 @@ private:
 	-                        Tearing
 	---------------------------------------------------------------------*/
 	void CheckTearingSupport();
+	/*-------------------------------------------------------------------
+	-                 Variable Rate Shading
+	---------------------------------------------------------------------*/
+	void CheckVRSSupport();
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
@@ -179,17 +196,19 @@ private:
 	UINT _dsvDescriptorSize       = 0;
 	UINT _cbvSrvUavDescriptorSize = 0;
 	INT  _currentFrameIndex       = 0;
+	UINT _variableRateShadingImageTileSize = 0;
 	
 	DXGI_FORMAT _backBufferFormat   = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	DXGI_FORMAT _depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	/*-------------------------------------------------------------------
 	-                    Support
 	---------------------------------------------------------------------*/
-	bool _isWarpAdapter    = false;
-	bool _isHDRSupport     = true;
-	bool _isTearingSupport = true;
-	bool _enableRayTracing = true;
-	
+	bool _isWarpAdapter         = false;
+	bool _isHDRSupport          = true;
+	bool _isTearingSupport      = true;
+	bool _enableRayTracing      = true;
+	bool _isVariableRateShadingTier1Supported = true;
+	bool _isVariableRateShadingTier2Supported = true;
 	/*-------------------------------------------------------------------
 	-                     Syncronization object
 	---------------------------------------------------------------------*/
