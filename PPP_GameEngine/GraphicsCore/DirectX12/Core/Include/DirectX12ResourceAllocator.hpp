@@ -93,7 +93,7 @@ private:
 	D3D12_GPU_DESCRIPTOR_HANDLE _gpuHeapPtr         = D3D12_GPU_DESCRIPTOR_HANDLE();
 	UINT                        _descriptorSize     = 0;
 	UINT                        _maxDescriptorCount = 0;
-	UINT                        _currentID = INVALID_ID;
+	int                         _currentID = INVALID_ID;
 	static constexpr int INVALID_ID = -1;
 };
 

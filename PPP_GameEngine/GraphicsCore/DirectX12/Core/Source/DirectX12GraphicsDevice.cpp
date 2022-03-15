@@ -447,6 +447,14 @@ void GraphicsDeviceDirectX12::LoadPipeline()
 	---------------------------------------------------------------------*/
 	CheckDXRSupport();
 	/*-------------------------------------------------------------------
+	-				     Check Tearing support
+	---------------------------------------------------------------------*/
+	CheckTearingSupport();
+	/*-------------------------------------------------------------------
+	-				     Check Variable Rate Shading support
+	---------------------------------------------------------------------*/
+	CheckVRSSupport();
+	/*-------------------------------------------------------------------
 	-				       Set 4xMsaa
 	---------------------------------------------------------------------*/
 	CheckMultiSampleQualityLevels();
@@ -1012,6 +1020,40 @@ void GraphicsDeviceDirectX12::CheckTearingSupport()
 		_isTearingSupport = false;
 	}
 }
+/****************************************************************************
+*                     CheckVRSSupport
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::CheckVRSSupport()
+*  @brief     Variable Rate Shading support
+*  @param[in] void
+*  @return @@void
+*****************************************************************************/
+void GraphicsDeviceDirectX12::CheckVRSSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS6 options = {};
+	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS6, &options, sizeof(options))))
+	{
+		if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_1)
+		{
+			OutputDebugStringA("Gpu api: Variable Rate Shading Tier1 supported");
+			_isVariableRateShadingTier1Supported = true;
+			_isVariableRateShadingTier2Supported = false;
+		}
+		else if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2)
+		{
+			OutputDebugStringA("Gpu api: Valiable Rate Shading Tier2 supported");
+			_isVariableRateShadingTier1Supported = true;
+			_isVariableRateShadingTier2Supported = true;
+			_variableRateShadingImageTileSize    = options.ShadingRateImageTileSize;
+		}
+	}
+	else
+	{
+		OutputDebugStringA("GpuApi : Variable Rate Shading note supported on current gpu hardware.");
+		_isVariableRateShadingTier1Supported = false;
+		_isVariableRateShadingTier2Supported = false;
+	}
+}
 #pragma endregion Initialize Function
 #pragma region           Debug      Function
 /****************************************************************************
@@ -1092,10 +1134,10 @@ void GraphicsDeviceDirectX12::LogAdapters()
 	/*-------------------------------------------------------------------
 	-                  Show Adapter List
 	---------------------------------------------------------------------*/
-	for (size_t i = 0; i < adapterList.size(); ++i)
+	for (size_t j = 0; j < adapterList.size(); ++j)
 	{
-		LogAdapterOutputs(adapterList[i]);
-		SAFE_RELEASE(adapterList[i]);
+		LogAdapterOutputs(adapterList[j]);
+		SAFE_RELEASE(adapterList[j]);
 	}
 }
 
