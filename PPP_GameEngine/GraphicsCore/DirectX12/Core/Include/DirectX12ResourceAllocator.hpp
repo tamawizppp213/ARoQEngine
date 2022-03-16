@@ -52,7 +52,7 @@ public:
 
 	inline UINT IssueID()
 	{
-		if (_currentID + 1 > _maxDescriptorCount) { MessageBox(NULL, L"The number of IDs has exceeded the expected number. ", L"Warning", MB_ICONWARNING); }
+		if ((UINT)_currentID + 1 > _maxDescriptorCount) { MessageBox(NULL, L"The number of IDs has exceeded the expected number. ", L"Warning", MB_ICONWARNING); }
 		
 		_currentID++; return _currentID; 
 	}

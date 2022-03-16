@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 #include <iostream>
+
 #ifdef _DEBUG
 int main()
 #else
@@ -13,8 +14,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCommand
     /********************************************
     **         Initialize
     *********************************************/
-
-
+    
     /********************************************
     **         MainLoop
     *********************************************/
