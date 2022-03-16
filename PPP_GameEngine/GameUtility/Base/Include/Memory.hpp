@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   Memory.hpp
-///             @brief  SmartPointer
+///             @brief  Memory
 ///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @date   2022_03_16
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef MEMORY_HPP
@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <memory>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,63 +19,138 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-
-/****************************************************************************
-*				  			TemplateClass
-*************************************************************************//**
-*  @class     TemplateClass
-*  @brief     temp
-*****************************************************************************/
-class unique_ptr
+namespace gm
 {
-public:
 	/****************************************************************************
-	**                Public Function
+	*				  			UniquePointer
+	*************************************************************************//**
+	*  @class     UniquePointer
+	*  @brief     Simple unique pointer
 	*****************************************************************************/
+	template <typename T>
+	class UniquePointer
+	{
+	public:
+		using InterfaceType = T;
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		T* Get    () const { return _pointer; }
+		T* Release() noexcept { T* temp = _pointer; _pointer = nullptr; return temp; }
+		
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
 
-	/****************************************************************************
-	**                Public Member Variables
-	*****************************************************************************/
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		UniquePointer() = default;
+		UniquePointer(decltype(__nullptr)) :_pointer(nullptr) {};
+		explicit UniquePointer(T* pointer) : _pointer(pointer) {};
+		~UniquePointer() { if (_pointer) { delete _pointer; } }
 
-	/****************************************************************************
-	**                Constructor and Destructor
-	*****************************************************************************/
-private:
-	/****************************************************************************
-	**                Private Function
-	*****************************************************************************/
+		UniquePointer(const UniquePointer&)            = delete;
+		UniquePointer& operator=(const UniquePointer&) = delete;
 
-	/****************************************************************************
-	**                Private Member Variables
-	*****************************************************************************/
-};
-/****************************************************************************
-*				  			TemplateClass
-*************************************************************************//**
-*  @class     TemplateClass
-*  @brief     temp
-*****************************************************************************/
-class SharedPtr
-{
-public:
-	/****************************************************************************
-	**                Public Function
-	*****************************************************************************/
+		UniquePointer(UniquePointer&& right) : _pointer(right._pointer) { right._pointer = nullptr; }
+		UniquePointer& operator=(UniquePointer&& right)  noexcept
+		{
+			if (&right == this) { return *this; }
+			delete _pointer; _pointer = right._pointer; right._pointer = nullptr; return *this; 
+		}
 
-	/****************************************************************************
-	**                Public Member Variables
-	*****************************************************************************/
+		T& operator * () const { return *_pointer; }
+		T* operator ->() const { return _pointer; }
+		
+	protected:
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
 
-	/****************************************************************************
-	**                Constructor and Destructor
-	*****************************************************************************/
-private:
-	/****************************************************************************
-	**                Private Function
-	*****************************************************************************/
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		InterfaceType* _pointer;
+		
+	};
+	template <typename T>
+	class SharedPointer
+	{
+	public:
+		using InterfaceType = T;
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		T* Get() const { return _pointer; }
+		unsigned long RefCount() const { return *_refCount; }
+		void AddRef();
+		void Release();
+		void Swap(SharedPointer<T>& right);
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
 
-	/****************************************************************************
-	**                Private Member Variables
-	*****************************************************************************/
-};
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		SharedPointer() = default;
+		explicit SharedPointer(T* pointer) : _pointer(pointer), _refCount(new unsigned long(1)) {};
+		SharedPointer(decltype(__nullptr)) :_pointer(nullptr), _refCount(nullptr) {};
+		~SharedPointer() { Release(); }
+		SharedPointer(const SharedPointer& right) : _pointer(right._pointer), _refCount(right._refCount) { AddRef(); }
+		SharedPointer& operator=(const SharedPointer& right)
+		{
+			if (this == &right) { return *this; }
+			Release();
+			_pointer = right._pointer;
+			_refCount = right._refCount;
+			AddRef();
+			return *this;
+		}
+		SharedPointer(SharedPointer&& right) :_pointer(right._pointer), _refCount(right._refCount)
+		{
+			right._pointer = nullptr; right._refCount = nullptr;
+		}
+		SharedPointer& operator=(SharedPointer&& right)
+		{
+			Release(); 
+			_pointer = right._pointer; _refCount = right._refCount;
+			right._pointer = nullptr; right._refCount = nullptr;
+			return *this;
+		}
+
+		T& operator* () noexcept { return *_pointer; }
+		T* operator ->() noexcept { return _pointer; }
+	protected:
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+		
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		InterfaceType* _pointer  = nullptr;
+		unsigned long* _refCount = nullptr;
+	};
+	template<typename T> void SharedPointer<T>::AddRef()
+	{
+		if (_refCount) { ++(*_refCount); }
+	}
+	template<typename T> void SharedPointer<T>::Release()
+	{
+		if (_refCount == nullptr) { return; }
+		if (--(*_refCount) == 0)
+		{
+			delete _pointer ; _pointer  = nullptr;
+			delete _refCount; _refCount = nullptr;
+		}
+	}
+	template<typename T> void SharedPointer<T>::Swap(SharedPointer<T>& right)
+	{
+		T* temp        = _pointer;
+		pointer        = right._pointer;
+		right._pointer = temp;
+	}
+}
 #endif

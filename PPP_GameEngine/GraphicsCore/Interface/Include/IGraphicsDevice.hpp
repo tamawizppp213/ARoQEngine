@@ -65,7 +65,7 @@ protected:
 	*****************************************************************************/
 	bool _hasInitialized = false;
 	HWND _hwnd           = nullptr;
-	GPUAPI _gpuApi;
+	GPUAPI _gpuApi = GPUAPI::DirectX12;
 };
 
 #endif
