@@ -65,7 +65,7 @@ public:
 	**                Constructor and Destructor
 	*****************************************************************************/
 	Mouse();
-	~Mouse();
+	~Mouse() = default;
 
 	Mouse(const Mouse&)            = default;
 	Mouse& operator=(const Mouse&) = default;
