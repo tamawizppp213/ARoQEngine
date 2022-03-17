@@ -133,6 +133,17 @@ namespace gm
 		InterfaceType* _pointer  = nullptr;
 		unsigned long* _refCount = nullptr;
 	};
+#pragma region Unique Pointer
+	template <typename T> UniquePointer<T> MakeUnique()
+	{
+		return UniquePointer<T>(new T());
+	}
+	template <typename T, typename Types> UniquePointer<T> MakeUnique(Types&& types)
+	{
+		return UniquePointer<T>(new T(static_cast<Types&&>(types)));
+	}
+#pragma endregion Unique Pointer
+#pragma region Shared Pointer
 	template<typename T> void SharedPointer<T>::AddRef()
 	{
 		if (_refCount) { ++(*_refCount); }
@@ -152,5 +163,10 @@ namespace gm
 		pointer        = right._pointer;
 		right._pointer = temp;
 	}
+	template <typename T> SharedPointer<T> MakeShared()
+	{
+		return SharedPointer<T>(new T());
+	}
+#pragma endregion Shared Pointer
 }
 #endif

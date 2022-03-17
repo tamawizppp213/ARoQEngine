@@ -3,7 +3,17 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 #include <iostream>
-
+#include "GameUtility/Base/Include/Memory.hpp"
+class Test
+{
+public:
+    int a;
+    Test() = default;
+    ~Test()
+    {
+        std::cout << "Delete" << std::endl;
+    }
+};
 #ifdef _DEBUG
 int main()
 #else
@@ -18,7 +28,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCommand
     /********************************************
     **         MainLoop
     *********************************************/
-
+    
     /********************************************
     **         Check MemoryLeaks
     *********************************************/
