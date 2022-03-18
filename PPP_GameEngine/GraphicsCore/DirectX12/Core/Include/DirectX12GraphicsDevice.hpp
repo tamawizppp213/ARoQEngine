@@ -11,12 +11,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/Interface/Include/IGraphicsDevice.hpp"
 #include "DirectX12Core.hpp"
 #include "DirectX12Config.hpp"
 #include <dxgiformat.h>
 #include <d3d12.h>
-#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -48,19 +46,21 @@ class ResourceAllocator;
 *  @class     GraphicsDeviceDirectX12
 *  @brief     DirectX12
 *****************************************************************************/
-class GraphicsDeviceDirectX12 : public IGraphicsDevice
+class GraphicsDeviceDirectX12
 {
 public:
+	static const UINT32 FRAME_BUFFER_COUNT = 3;
+	static const UINT32 VSYNC = 1; // 0: don't wait, 1:wait(60fps)
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void Initialize        (HWND hwnd) override;
-	void OnResize          () override;
-	void Finalize          () override;
-	void ClearScreen       () override;
-	void CompleteInitialize() override;
-	void CompleteRendering () override;
-	void FlushCommandQueue () override;
+	void Initialize        (HWND hwnd);
+	void OnResize          ();
+	void Finalize          ();
+	void ClearScreen       ();
+	void CompleteInitialize();
+	void CompleteRendering ();
+	void FlushCommandQueue ();
 	void ResetCommandList();
 	void OnTerminateRenderScene();
 	void CopyTextureToBackBuffer(ResourceComPtr& resource, D3D12_RESOURCE_STATES resourceState);
@@ -98,9 +98,12 @@ public:
 	DXGI_FORMAT    GetBackBufferRenderFormat() const { return _backBufferFormat; }
 	INT  GetCbvSrvUavDescriptorHeapSize     () const { return _cbvSrvUavDescriptorSize; }
 	UINT IssueViewID(HeapFlag heapFlag);
-
+	void ResetViewID(HeapFlag heapFlag);
 	
 	bool Get4xMsaaState() const { return _4xMsaaState; }
+
+	void SetHWND(HWND hwnd) { _hwnd = hwnd; }
+	
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -201,6 +204,9 @@ private:
 	
 	DXGI_FORMAT _backBufferFormat   = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	DXGI_FORMAT _depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	bool _hasInitialized = false;
+	HWND _hwnd = nullptr;
 	/*-------------------------------------------------------------------
 	-                    Support
 	---------------------------------------------------------------------*/
