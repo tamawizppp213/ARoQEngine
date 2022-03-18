@@ -56,9 +56,9 @@ public:
 		
 		_currentID++; return _currentID; 
 	}
-	inline void ResetID()
+	inline void ResetID(UINT offsetIndex = 0)
 	{
-		_currentID = INVALID_ID;
+		_currentID = INVALID_ID + offsetIndex;
 	}
 	inline UINT GetHeapSize()  const { return _maxDescriptorCount * _descriptorSize; }
 	inline void SetResourceAllocator(UINT maxDescriptorCount, UINT descriptorSize, D3D12_CPU_DESCRIPTOR_HANDLE cpuHeapPtr, D3D12_GPU_DESCRIPTOR_HANDLE gpuHeapPtr)

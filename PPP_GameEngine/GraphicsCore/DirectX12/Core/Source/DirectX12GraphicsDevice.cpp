@@ -371,6 +371,30 @@ D3D12_GPU_DESCRIPTOR_HANDLE GraphicsDeviceDirectX12::GetGPUResourceView(HeapFlag
 	}
 }
 /****************************************************************************
+*                        GetGPUResourceView
+*************************************************************************//**
+*  @fn        void DirectX12::GetGPUResourceView(HeapType heapType, int offsetIndex) const
+*  @brief     Get current frame constant buffer view pointer
+*  @param[in] int offsetIndex
+*  @return @@D3D12_GPU_DESCRIPTOR_HANDLE
+*****************************************************************************/
+void GraphicsDeviceDirectX12::ResetViewID(HeapFlag heapType)
+{
+	switch (heapType)
+	{
+		case HeapFlag::RTV:
+			return _rtvAllocator->ResetID((UINT)RenderTargetType::CountOfRenderTarget);
+		case HeapFlag::DSV:
+			return _dsvAllocator->ResetID(1);
+		case HeapFlag::CBV:
+			return _cbvAllocator->ResetID();
+		case HeapFlag::SRV:
+			return _srvAllocator->ResetID();
+		default:
+			return _uavAllocator->ResetID();
+	}
+}
+/****************************************************************************
 *                        GetCurrentBackBufferIndex
 *************************************************************************//**
 *  @fn        INT GraphicsDeviceDirectX12::GetCurrentBackBufferIndex() const

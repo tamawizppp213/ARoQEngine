@@ -198,6 +198,7 @@
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Include.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12PipelineState.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12PrimitiveGeometry.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Shader.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Texture.hpp" />
@@ -227,6 +228,7 @@
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Buffer.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Core.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp" />
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12PrimitiveGeometry.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Shader.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Texture.cpp" />
     <ClCompile Include="MainGame\Source\Main.cpp" />
