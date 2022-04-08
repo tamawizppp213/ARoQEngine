@@ -8,7 +8,9 @@
 //                              Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Texture.hpp"
+#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
 #include <DirectXTex/DirectXTex.h>
@@ -31,17 +33,68 @@ Texture::~Texture()
 {
 	
 }
+
 void TextureManager::ClearTextureTable()
 {
 	
 	for (auto& table : _textureTable)
 	{
-		table.second.get()->Resource = nullptr;
+		table.second.get()->Resource.Destroy();
 	}
 	_textureTable.clear();
 	_id = 0;
 	
 }
+/****************************************************************************
+*							  CreateTexture2D
+*************************************************************************//**
+*  @fn         void TextureLoader::LoadTexture(const std::wstring& filePath, ResourceComPtr& texture)
+*  @brief      Load Texture (.tga, .dds, ,png, .jpg, .bmp, .hdr, .sph, .spa)
+*  @param[out] DirectX12& directX12,
+*  @param[in]  const std::wstring& filePath
+*  @param[out] Texture& texture
+*  @return 　　 int
+*****************************************************************************/
+void TextureManager::CreateTexture1D(const std::wstring& name, Texture& texture, TextureRGBA* data)
+{
+	
+}
+void TextureManager::CreateTexture2D(const std::wstring& name, Texture& texture, TextureRGBA* data)
+{
+	/*-------------------------------------------------------------------
+	-               If the file is loaded once, read from it
+	---------------------------------------------------------------------*/
+	if (_textureTable.find(name) != _textureTable.end())
+	{
+		texture = *_textureTable[name].get(); return;
+	}
+	/*-------------------------------------------------------------------
+	-                 Create texture buffer
+	---------------------------------------------------------------------*/
+	D3D12_RESOURCE_DESC resourceDesc = RESOURCE_DESC::Texture2D(texture.Format, (UINT64)texture.PixelSize.x, (UINT)texture.PixelSize.y, 1, 1);
+	CreateTextureBuffer(resourceDesc, &texture.Resource);
+	/*-------------------------------------------------------------------
+	-                 Create texture data
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(texture.Resource->WriteToSubresource(0, nullptr, (const void*)data,
+		sizeof(TextureRGBA) * (UINT)texture.PixelSize.x,
+		sizeof(TextureRGBA) * (UINT)texture.PixelSize.x * (UINT)texture.PixelSize.y));
+	/*-------------------------------------------------------------------
+	-                    Create SRV Desc
+	---------------------------------------------------------------------*/
+	_id = RegistSRV(TextureType::Texture2D, texture);
+	/*-------------------------------------------------------------------
+	-                    Add texture table
+	---------------------------------------------------------------------*/
+	_textureTable[name] = std::make_unique<Texture>(std::move(texture));
+	texture = *_textureTable[name].get();
+}
+
+void TextureManager::CreateTexture3D(const std::wstring& name, Texture& texture, TextureRGBA* data)
+{
+	
+}
+
 /****************************************************************************
 *							  LoadTexture
 *************************************************************************//**
@@ -54,7 +107,7 @@ void TextureManager::ClearTextureTable()
 *****************************************************************************/
 void TextureManager::LoadTexture(const std::wstring& filePath, Texture& texture, TextureType type)
 {
-	GraphicsDeviceDirectX12& directX12 = GraphicsDeviceDirectX12::Instance();
+	auto& engine = GraphicsCoreEngine::Instance();
 	/*-------------------------------------------------------------------
 	-               If the file is loaded once, read from it
 	---------------------------------------------------------------------*/
@@ -95,7 +148,11 @@ void TextureManager::LoadTexture(const std::wstring& filePath, Texture& texture,
 	auto image      = scratchImage.GetImage(0, 0, 0);
 	bool isDiscrete = true;
 
-	CreateTextureFromImageData(directX12.GetDevice().Get(), image, texture.Resource, isDiscrete, &metaData);
+	/*-------------------------------------------------------------------
+	-                 Create texture buffer
+	---------------------------------------------------------------------*/
+	D3D12_RESOURCE_DESC resourceDesc = RESOURCE_DESC::Texture2D(metaData.format, (UINT64)image->width, (UINT)image->height, (UINT16)metaData.arraySize, (UINT16)metaData.mipLevels);
+	CreateTextureBuffer(resourceDesc, &texture.Resource);
 
 	/*-------------------------------------------------------------------
 	-                 Transmit texture buffer to GPU
@@ -115,13 +172,13 @@ void TextureManager::LoadTexture(const std::wstring& filePath, Texture& texture,
 		-                 Prepare Upload Buffer Setting
 		---------------------------------------------------------------------*/
 		std::vector<D3D12_SUBRESOURCE_DATA> subResources;
-		ThrowIfFailed(PrepareUpload(directX12.GetDevice().Get(), image, scratchImage.GetImageCount(), metaData, subResources));
+		ThrowIfFailed(PrepareUpload(engine.GetGraphicsDevice()->GetDevice(), image, scratchImage.GetImageCount(), metaData, subResources));
 
 		/*-------------------------------------------------------------------
 		-                 Calculate Upload Buffer Size
 		---------------------------------------------------------------------*/
 		const UINT64 uploadBufferSize = GetRequiredIntermediateSize(
-			texture.Resource.Get(), 0, static_cast<UINT>(subResources.size()));
+			texture.Resource.GetResource(), 0, static_cast<UINT>(subResources.size()));
 
 		/*-------------------------------------------------------------------
 		-                 Create Upload Buffer
@@ -130,74 +187,40 @@ void TextureManager::LoadTexture(const std::wstring& filePath, Texture& texture,
 		D3D12_RESOURCE_DESC   resourceDesc = RESOURCE_DESC::Buffer(uploadBufferSize);
 		
 		ResourceComPtr uploadBuffer = nullptr;
-		ThrowIfFailed(directX12.GetDevice()->CreateCommittedResource(
+		engine.CreateCommittedResource(
 			&heapProperty,
 			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
-			IID_PPV_ARGS(uploadBuffer.GetAddressOf())));
+			IID_PPV_ARGS(uploadBuffer.GetAddressOf()));
 
 		/*-------------------------------------------------------------------
 		-                 Copy Texture Data 
 		---------------------------------------------------------------------*/
-		UpdateSubresources(directX12.GetCommandList().Get(),
-			texture.Resource.Get(), uploadBuffer.Get(),
+		UpdateSubresources(engine.GetCommandContext()->GetCommandList(),
+			texture.Resource.GetResource(), uploadBuffer.Get(),
 			0, 0, static_cast<unsigned int>(subResources.size()),
 			subResources.data());
 
 		/*-------------------------------------------------------------------
 		-                Execute Command List
 		---------------------------------------------------------------------*/
-		directX12.GetCommandList()->Close();
-		ID3D12CommandList* commandLists[] = { directX12.GetCommandList().Get()};
-		directX12.GetCommandQueue().Get()->ExecuteCommandLists(_countof(commandLists), commandLists);
-		directX12.FlushCommandQueue();
-		directX12.ResetCommandList();
-
-		
+		engine.ExecuteCommandContext();
+		engine.WaitNextFrame();	
 	}
 
 	/*-------------------------------------------------------------------
 	-                    Create SRV Desc
 	---------------------------------------------------------------------*/
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	ZeroMemory(&srvDesc, sizeof(srvDesc));
-	switch (type)
-	{
-		case TextureType::Texture2D:
-			srvDesc.Format                        = texture.Resource.Get()->GetDesc().Format;
-			srvDesc.Shader4ComponentMapping       = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-			srvDesc.ViewDimension                 = D3D12_SRV_DIMENSION_TEXTURE2D;
-			srvDesc.Texture2D.MipLevels           = 1;
-			srvDesc.Texture2D.PlaneSlice          = 0;
-			srvDesc.Texture2D.MostDetailedMip     = 0;
-			srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-			break;
-		case TextureType::TextureCube:
-			srvDesc.Format                          = texture.Resource.Get()->GetDesc().Format;
-			srvDesc.Shader4ComponentMapping         = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-			srvDesc.ViewDimension                   = D3D12_SRV_DIMENSION_TEXTURECUBE;
-			srvDesc.TextureCube.MipLevels           = texture.Resource.Get()->GetDesc().MipLevels;
-			srvDesc.TextureCube.MostDetailedMip     = 0;
-			srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
-			break;
-	}
-	/*-------------------------------------------------------------------
-	-                    Create SRV
-	---------------------------------------------------------------------*/
-	_id = directX12.IssueViewID(HeapFlag::SRV);
-	directX12.GetDevice()->CreateShaderResourceView(texture.Resource.Get(), &srvDesc,
-		directX12.GetCPUResourceView(HeapFlag::SRV, _id));
-
+	_id = RegistSRV(type, texture);
 	/*-------------------------------------------------------------------
 	-                    Describe texture infomation
 	---------------------------------------------------------------------*/
 	Texture addTexture;
 	addTexture.Resource   = texture.Resource;
-	addTexture.Format     = texture.Resource.Get()->GetDesc().Format;
-	addTexture.GPUHandler = directX12.GetGPUResourceView(HeapFlag::SRV, _id);
-	addTexture.ImageSize  = gm::Float2((float)image->width, (float)image->height);
+	addTexture.Format     = texture.Resource->GetDesc().Format;
+	addTexture.PixelSize  = gm::Float3((float)image->width, (float)image->height,0.0f);
 	addTexture.Resource->SetName(filePath.c_str());
 	/*-------------------------------------------------------------------
 	-                    Add texture table
@@ -205,20 +228,51 @@ void TextureManager::LoadTexture(const std::wstring& filePath, Texture& texture,
 	_textureTable[filePath] = std::make_unique<Texture>(addTexture);
 	texture = std::move(addTexture);
 }
-
 /****************************************************************************
-*					    CreateTextureFromImageData
+*							  CreateTexture
 *************************************************************************//**
-*  @fn         void Texture::CreateTextureFromImageData(Device* device, const DirectX::Image* image, ResourceComPtr& textureBuffer, bool isDiscreteGPU)
+*  @fn         void TextureLoader::LoadTexture(const std::wstring& filePath, ResourceComPtr& texture)
 *  @brief      Load Texture (.tga, .dds, ,png, .jpg, .bmp, .hdr, .sph, .spa)
-*  @param[out] Device* device
-*  @param[in]  const DirectX::Image* image
-*  @param[out] ResourceComPtr& textureBuffer
-*  @param[in]  bool isDiscreteGPU
-*  @return 　　 void
+*  @param[out] DirectX12& directX12,
+*  @param[in]  const std::wstring& filePath
+*  @param[out] Texture& texture
+*  @return 　　 int
 *****************************************************************************/
-void TextureManager::CreateTextureFromImageData(Device* device, const DirectX::Image* image, ResourceComPtr& textureBuffer, bool isDiscreteGPU, const DirectX::TexMetadata* metadata)
+int TextureManager::RegistSRV(TextureType type, Texture& texture)
 {
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(srvDesc));
+	switch (type)
+	{
+		case TextureType::Texture2D:
+			srvDesc.Format                        = texture.Resource.GetResource()->GetDesc().Format;
+			srvDesc.Shader4ComponentMapping       = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			srvDesc.ViewDimension                 = D3D12_SRV_DIMENSION_TEXTURE2D;
+			srvDesc.Texture2D.MipLevels           = texture.Resource->GetDesc().MipLevels;
+			srvDesc.Texture2D.PlaneSlice          = 0;
+			srvDesc.Texture2D.MostDetailedMip     = 0;
+			srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+			break;
+		case TextureType::TextureCube:
+			srvDesc.Format                          = texture.Resource->GetDesc().Format;
+			srvDesc.Shader4ComponentMapping         = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			srvDesc.ViewDimension                   = D3D12_SRV_DIMENSION_TEXTURECUBE;
+			srvDesc.TextureCube.MipLevels           = texture.Resource->GetDesc().MipLevels;
+			srvDesc.TextureCube.MostDetailedMip     = 0;
+			srvDesc.TextureCube.ResourceMinLODClamp = 0.0f;
+			break;
+	}
+	/*-------------------------------------------------------------------
+	-                    Create SRV
+	---------------------------------------------------------------------*/
+	return GraphicsCoreEngine::Instance().CreateShaderResourceView(&texture.Resource, &srvDesc);
+
+}
+void TextureManager::CreateTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, GPUResource* textureBuffer, bool isDiscreteGPU)
+{
+	/*-------------------------------------------------------------------
+	-             Setting heap property
+	---------------------------------------------------------------------*/
 	D3D12_HEAP_PROPERTIES heapProperty = {};
 	
 	if (isDiscreteGPU)
@@ -233,31 +287,28 @@ void TextureManager::CreateTextureFromImageData(Device* device, const DirectX::I
 		heapProperty.CreationNodeMask     = 0;
 		heapProperty.VisibleNodeMask      = 0;
 	}
-
 	/*-------------------------------------------------------------------
 	-             Setting the final write destination resource
 	---------------------------------------------------------------------*/
-	D3D12_RESOURCE_DESC resourceDesc = RESOURCE_DESC::Texture2D(metadata->format, (UINT64)image->width, (UINT)image->height, (UINT16)metadata->arraySize, (UINT16)metadata->mipLevels);
-
+	auto& engine = GraphicsCoreEngine::Instance();
 	if (isDiscreteGPU)
 	{
-		ThrowIfFailed(device->CreateCommittedResource(
+		engine.CreateCommittedResource(
 			&heapProperty,
 			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,
 			D3D12_RESOURCE_STATE_COPY_DEST,
 			nullptr,
-			IID_PPV_ARGS(textureBuffer.ReleaseAndGetAddressOf())))
+			IID_PPV_ARGS(textureBuffer->GetAddressOf()));
 	}
 	else
 	{
-		ThrowIfFailed(device->CreateCommittedResource(
+		engine.CreateCommittedResource(
 			&heapProperty,
 			D3D12_HEAP_FLAG_NONE,
 			&resourceDesc,
 			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 			nullptr,
-			IID_PPV_ARGS(textureBuffer.ReleaseAndGetAddressOf())));
+			IID_PPV_ARGS(textureBuffer->GetAddressOf()));
 	}
-	
 }

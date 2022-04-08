@@ -12,6 +12,7 @@
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Include.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12ResourceAllocator.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12VertexTypes.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameUtility/Math/Include/GMColor.hpp"
 #include <vector>
@@ -30,6 +31,14 @@ enum class GPUVender
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+GraphicsDeviceDirectX12::GraphicsDeviceDirectX12()
+{
+
+}
+GraphicsDeviceDirectX12::~GraphicsDeviceDirectX12()
+{
+	printf("DirectX12Finished\n");
+}
 #pragma region Public Function
 /****************************************************************************
 *							Initialize
@@ -71,7 +80,7 @@ void GraphicsDeviceDirectX12::Finalize()
 			renderTarget = nullptr;
 		}
 	}
-	//if (_pipelineState) { _pipelineState= nullptr;}
+	if (_pipelineState) { _pipelineState= nullptr;}
 	if (_rtvHeap      ) { _rtvHeap      = nullptr; }
 	if (_dsvHeap      ) { _dsvHeap      = nullptr; }
 	if (_cbvSrvUavHeap) { _cbvSrvUavHeap=nullptr; }
@@ -158,14 +167,14 @@ void GraphicsDeviceDirectX12::OnResize()
 void GraphicsDeviceDirectX12::ClearScreen()
 {
 	/*-------------------------------------------------------------------
-	-                   Reset Commmand 
+	-                   Reset Commmand (移動FlushCommandQueueに移動)
 	---------------------------------------------------------------------*/
-	ResetCommandList();
+	//ResetCommandList();
 
 	/*-------------------------------------------------------------------
 	-       Indicate a state transition (Present -> Render Target)
 	---------------------------------------------------------------------*/
-	auto barrier = BARRIER::Transition(GetCurrentRenderTarget().Get(),
+	auto barrier = BARRIER::Transition(GetCurrentRenderTarget(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	_commandList->ResourceBarrier(1, &barrier);
 
@@ -205,7 +214,7 @@ void GraphicsDeviceDirectX12::CompleteRendering()
 	/*-------------------------------------------------------------------
 	-      // Indicate a state transition (Render Target -> Present)
 	---------------------------------------------------------------------*/
-	auto barrier = BARRIER::Transition(GetCurrentRenderTarget().Get(),
+	auto barrier = BARRIER::Transition(GetCurrentRenderTarget(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	_commandList->ResourceBarrier(1, &barrier);
 
@@ -244,16 +253,16 @@ void GraphicsDeviceDirectX12::CopyTextureToBackBuffer(ResourceComPtr& resource, 
 {
 	BARRIER before[] =
 	{
-		BARRIER::Transition(GetCurrentRenderTarget().Get(),
+		BARRIER::Transition(GetCurrentRenderTarget(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_DEST),
 		BARRIER::Transition(resource.Get(),
 		resourceState, D3D12_RESOURCE_STATE_COPY_SOURCE),
 	};
 	_commandList->ResourceBarrier(_countof(before), before);
-	_commandList->CopyResource(GetCurrentRenderTarget().Get(), resource.Get());
+	_commandList->CopyResource(GetCurrentRenderTarget(), resource.Get());
 	BARRIER after[] =
 	{
-		BARRIER::Transition(GetCurrentRenderTarget().Get(),
+		BARRIER::Transition(GetCurrentRenderTarget(),
 		D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_RENDER_TARGET),
 		BARRIER::Transition(resource.Get(),
 		D3D12_RESOURCE_STATE_COPY_SOURCE, resourceState)
@@ -289,11 +298,14 @@ void GraphicsDeviceDirectX12::FlushCommandQueue()
 
 	}
 	_currentFrameIndex = _swapchain->GetCurrentBackBufferIndex();
+	/*-------------------------------------------------------------------
+	-                   Reset Commmand
+	---------------------------------------------------------------------*/
+	ResetCommandList();
 }
 void GraphicsDeviceDirectX12::OnTerminateRenderScene()
 {
 	FlushCommandQueue();
-	ResetCommandList();
 }
 /****************************************************************************
 *							CompleteInitialize
@@ -436,6 +448,73 @@ UINT GraphicsDeviceDirectX12::IssueViewID(HeapFlag heapType)
 		default:
 			return _uavAllocator->IssueID();
 	}
+}
+
+GraphicsDeviceDirectX12::StaticSamplerArray GraphicsDeviceDirectX12::GetStaticSamplers()
+{
+	const STATIC_SAMPLER_DESC samplerPointWrap
+	(
+		0,
+		D3D12_FILTER_MIN_MAG_MIP_POINT,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP
+	);
+
+	const STATIC_SAMPLER_DESC samplerPointClamp
+	(
+		1,
+		D3D12_FILTER_MIN_MAG_MIP_POINT,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP
+	);
+
+	const STATIC_SAMPLER_DESC samplerLinearWrap
+	(
+		2,
+		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP
+	);
+
+	const STATIC_SAMPLER_DESC samplerLinearClamp
+	(
+		3,
+		D3D12_FILTER_MIN_MAG_MIP_LINEAR,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP
+	);
+
+	const STATIC_SAMPLER_DESC samplerAnisotropicWrap
+	(
+		4,
+		D3D12_FILTER_ANISOTROPIC,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+		D3D12_TEXTURE_ADDRESS_MODE_WRAP
+	);
+
+	const STATIC_SAMPLER_DESC samplerAnisotropicClamp
+	(
+		5,
+		D3D12_FILTER_ANISOTROPIC,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP,
+		D3D12_TEXTURE_ADDRESS_MODE_CLAMP
+	);
+
+	return
+	{
+		samplerPointWrap,
+		samplerPointClamp,
+		samplerLinearWrap,
+		samplerLinearClamp,
+		samplerAnisotropicWrap,
+		samplerAnisotropicClamp
+	};
 }
 #pragma endregion Property
 #pragma endregion Public Function
@@ -884,6 +963,42 @@ void GraphicsDeviceDirectX12::CreateViewport()
 	_scissorRect = { 0,0, Screen::GetScreenWidth(), Screen::GetScreenHeight() };
 }
 /****************************************************************************
+*                     CreateDefaultPSO
+*************************************************************************//**
+*  @fn        void DirectX12::CreateDefaultPSO(void)
+*  @brief     Create default pipeline default object
+*  @param[in] void
+*  @return 　　void @n
+*****************************************************************************/
+void GraphicsDeviceDirectX12::CreateDefaultPSO()
+{
+	VertexPositionNormalColorTexture vertex;
+
+	ZeroMemory(&_defaultPSODesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+	_defaultPSODesc.InputLayout           = vertex.InputLayout;
+	_defaultPSODesc.pRootSignature        = nullptr;
+	_defaultPSODesc.RasterizerState       = RASTERIZER_DESC(D3D12_DEFAULT);
+	_defaultPSODesc.BlendState            = BLEND_DESC(D3D12_DEFAULT);
+	_defaultPSODesc.SampleMask            = D3D12_DEFAULT_SAMPLE_MASK;
+	_defaultPSODesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	_defaultPSODesc.NumRenderTargets      = 1;
+	_defaultPSODesc.RTVFormats[0]         = _backBufferFormat;
+	_defaultPSODesc.SampleDesc.Count      = _4xMsaaState ? 4 : 1;
+	_defaultPSODesc.SampleDesc.Quality    = _4xMsaaState ? (_4xMsaaQuality - 1) : 0;
+	_defaultPSODesc.DSVFormat             = _depthStencilFormat;
+	_defaultPSODesc.DepthStencilState = DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	_defaultPSODesc.DepthStencilState.DepthEnable = true;
+	_defaultPSODesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+	_defaultPSODesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	_defaultPSODesc.DepthStencilState.StencilEnable = true;
+	//pipeline.DSVFormat                        = DXGI_FORMAT_D32_FLOAT;
+	_defaultPSODesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	if (_isWarpAdapter)
+	{
+		_defaultPSODesc.Flags = D3D12_PIPELINE_STATE_FLAG_TOOL_DEBUG;
+	}
+}
+/****************************************************************************
 *							BuildDepthStencilView
 *************************************************************************//**
 *  @fn        void DirectX12::BuildDepthStencilView(void)
@@ -1133,8 +1248,8 @@ void GraphicsDeviceDirectX12::EnabledGPUBasedValidation()
 void GraphicsDeviceDirectX12::LogAdapters()
 {
 	UINT i = 0;
-	Adapter* adapter = nullptr;
-	std::vector<Adapter*> adapterList;
+	IAdapter* adapter = nullptr;
+	std::vector<IAdapter*> adapterList;
 
 	/*-------------------------------------------------------------------
 	-                  Enum Adapter List
@@ -1173,13 +1288,13 @@ void GraphicsDeviceDirectX12::LogAdapters()
 *  @param[in] Adapter* adapter
 *  @return 　　void
 *****************************************************************************/
-void GraphicsDeviceDirectX12::LogAdapterOutputs(Adapter* adapter)
+void GraphicsDeviceDirectX12::LogAdapterOutputs(IAdapter* adapter)
 {
 	/*-------------------------------------------------------------------
 	-                     Initialize
 	---------------------------------------------------------------------*/
 	UINT i = 0;
-	Output* output = nullptr;
+	IOutput* output = nullptr;
 
 	/*-------------------------------------------------------------------
 	-                Show all adapter name
@@ -1211,7 +1326,7 @@ void GraphicsDeviceDirectX12::LogAdapterOutputs(Adapter* adapter)
 *  @param[in] DXGI_FORMAT   : format
 *  @return 　　void
 *****************************************************************************/
-void GraphicsDeviceDirectX12::LogOutputDisplayModes(Output* output, DXGI_FORMAT format)
+void GraphicsDeviceDirectX12::LogOutputDisplayModes(IOutput* output, DXGI_FORMAT format)
 {
 	UINT count = 0;
 	UINT flags = 0;

@@ -11,40 +11,30 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
+#include "DirectX12GPUResource.hpp"
+#include "GraphicsCore/Engine/Include/GraphicsCoreResourceType.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
 #include <unordered_map>
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-struct Texture
-{
-	ResourceComPtr    Resource;
-	DXGI_FORMAT       Format;
-	GPU_DESC_HANDLER  GPUHandler;
-	gm::Float2        ImageSize;
-	~Texture();
-};
 namespace DirectX
 {
 	struct Image;
 	struct TexMetadata;
 }
-enum class TextureType : unsigned int
+struct Texture
 {
-	Unknown          = 0,
-	Buffer           = 1,
-	Texture1D        = 2,
-	Texture1DArray   = 3,
-	Texture2D        = 4,
-	Texture2DArray   = 5,
-	Texture2DMS      = 6,
-	Texture2DMSArray = 7,
-	Texture3D        = 8,
-	TextureCube      = 9,
-	TextureCubeArray = 10,
-	RayTracing_Acceleration_Structure = 11
+	GPUResource Resource;
+	DXGI_FORMAT Format;
+	gm::Float3  PixelSize;
+	~Texture();
+};
+
+struct TextureRGBA
+{
+	unsigned char R, G, B, A;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -64,6 +54,9 @@ public:
 	**                Public Function
 	*****************************************************************************/
 	static void LoadTexture(const std::wstring& filePath, Texture& texture, TextureType type = TextureType::Texture2D);
+	static void CreateTexture1D(const std::wstring& name, Texture& texture, TextureRGBA* data);
+	static void CreateTexture2D(const std::wstring& name, Texture& texture, TextureRGBA* data);
+	static void CreateTexture3D(const std::wstring& name, Texture& texture, TextureRGBA* data);
 	static void ClearTextureTable();
 	/****************************************************************************
 	**                Public Member Variables
@@ -76,7 +69,8 @@ private:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
-	static void CreateTextureFromImageData(Device* device, const DirectX::Image* image, ResourceComPtr& textureBuffer, bool isDiscreteGPU, const DirectX::TexMetadata* metadata);
+	static int  RegistSRV(TextureType type, Texture& texture);
+	static void CreateTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, GPUResource* textureBuffer, bool isDiscreteGPU = true);
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
