@@ -62,6 +62,7 @@ void CommandContext::CopyBuffer(GPUResource* dest, GPUResource* source)
 {
 	PrepareCopyBuffer(dest, source);
 	_commandList->CopyResource(dest->GetResource(), source->GetResource());
+	PrepareCopyBuffer(source, dest);
 }
 /****************************************************************************
 *                   CopyBufferRegion
@@ -79,6 +80,7 @@ void CommandContext::CopyBufferRegion(GPUResource* dest, size_t destOffset, GPUR
 {
 	PrepareCopyBuffer(dest, source);
 	_commandList->CopyBufferRegion(dest->GetResource(), destOffset, source->GetResource(), sourceOffset, numBytes);
+	PrepareCopyBuffer(source, dest);
 }
 /****************************************************************************
 *                   CopyTextureRegion
@@ -99,6 +101,7 @@ void CommandContext::CopyTextureRegion(GPUResource* dest, GPUResource* source, D
 	D3D12_TEXTURE_COPY_LOCATION destLocation   = TEXTURE_COPY_LOCATION(dest->GetResource(), 0);
 	D3D12_TEXTURE_COPY_LOCATION sourceLocation = TEXTURE_COPY_LOCATION(source->GetResource(), 0);
 	_commandList->CopyTextureRegion(&destLocation, x, y, z, &sourceLocation, &rect);
+	PrepareCopyBuffer(source, dest);
 }
 #pragma region Protected Function
 void CommandContext::PrepareCopyBuffer(GPUResource* dest, GPUResource* source)

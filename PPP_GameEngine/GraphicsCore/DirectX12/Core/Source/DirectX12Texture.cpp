@@ -31,7 +31,7 @@ int TextureManager::_id = 0;
 
 Texture::~Texture()
 {
-	
+	Resource.Destroy();
 }
 
 void TextureManager::ClearTextureTable()

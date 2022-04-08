@@ -110,6 +110,12 @@ void GraphicsCoreEngine::CreateShaderResourceView(GPUResource* resource, const D
 {
 	_device->GetDevice()->CreateShaderResourceView(resource->GetResource(), desc, destDescriptor);
 }
+UINT GraphicsCoreEngine::CreateUnorderedAccessView(GPUResource* resource, const D3D12_UNORDERED_ACCESS_VIEW_DESC* desc)
+{
+	UINT id = _device->IssueViewID(HeapFlag::UAV);
+	_device->GetDevice()->CreateUnorderedAccessView(resource->GetResource(), nullptr, desc, _device->GetCPUResourceView(HeapFlag::UAV, id));
+	return id;
+}
 void GraphicsCoreEngine::CreateCommittedResource(const D3D12_HEAP_PROPERTIES* heapProperties, D3D12_HEAP_FLAGS heapFlags, const D3D12_RESOURCE_DESC* descriptor, D3D12_RESOURCE_STATES initialResourceState, const D3D12_CLEAR_VALUE* optimizedClearValue, const IID& riidResource, void** resource)
 {
 	ThrowIfFailed(_device->GetDevice()->CreateCommittedResource(heapProperties, heapFlags, descriptor, initialResourceState, optimizedClearValue, riidResource, resource));

@@ -171,6 +171,12 @@
     <ClInclude Include="GameUtility\Math\Include\GMTypeDef.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12BLASBuffer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainGame\Source\Main.cpp">
@@ -258,6 +264,12 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12VertexTypes.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12BLASBuffer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
