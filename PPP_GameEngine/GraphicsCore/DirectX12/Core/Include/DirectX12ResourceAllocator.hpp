@@ -2,7 +2,7 @@
 ///             @file   DirectX12ResourceAllocator.hpp
 ///             @brief  DirectX12Resource Allocator
 ///             @author Toide Yutaro
-///             @date   2022_03_14
+///             @date   2022_03_14 (OK)
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_RESOURCE_ALLOCATOR_HPP

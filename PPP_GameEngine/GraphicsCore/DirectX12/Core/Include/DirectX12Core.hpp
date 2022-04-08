@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include <wrl/client.h>
-
+#include "GameUtility/Math/Include/GMTypeDef.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                         Forward Declaration
 //////////////////////////////////////////////////////////////////////////////////
@@ -39,37 +39,37 @@ struct  ID3D10Blob;
 struct ID3D12Debug5;
 
 
-using Device           = ID3D12Device9;
-using Factory          = IDXGIFactory7;
-using Adapter          = IDXGIAdapter4;
-using Output           = IDXGIOutput6;
-using CommandList      = ID3D12GraphicsCommandList6;
-using CommandQueue     = ID3D12CommandQueue;
-using CommandAllocator = ID3D12CommandAllocator;
-using SwapChain        = IDXGISwapChain4;
+using IDevice           = ID3D12Device9;
+using IFactory          = IDXGIFactory7;
+using IAdapter          = IDXGIAdapter4;
+using IOutput           = IDXGIOutput6;
+using ICommandList      = ID3D12GraphicsCommandList6;
+using ICommandQueue     = ID3D12CommandQueue;
+using ICommandAllocator = ID3D12CommandAllocator;
+using ISwapChain        = IDXGISwapChain4;
 using Resource         = ID3D12Resource2;
-using PSODesc          = D3D12_GRAPHICS_PIPELINE_STATE_DESC;
-using RootSignature    = ID3D12RootSignature;
-using PipelineState    = ID3D12PipelineState;
-using DescriptorHeap   = ID3D12DescriptorHeap;
-using Fence            = ID3D12Fence;
-using Blob             = ID3D10Blob;
+using PSODesc           = D3D12_GRAPHICS_PIPELINE_STATE_DESC;
+using IRootSignature    = ID3D12RootSignature;
+using IPipelineState    = ID3D12PipelineState;
+using IDescriptorHeap   = ID3D12DescriptorHeap;
+using IFence            = ID3D12Fence;
+using IBlob             = ID3D10Blob;
 using IDebug           = ID3D12Debug5;
 
-using DeviceComPtr           = ComPtr<Device>;
-using AdapterComPtr          = ComPtr<Adapter>;
-using FactoryComPtr          = ComPtr<Factory>;
-using SwapchainComPtr        = ComPtr<SwapChain>;
-using OutputComPtr           = ComPtr<Output>;
-using CommandAllocatorComPtr = ComPtr<CommandAllocator>;
-using CommandQueueComPtr     = ComPtr<CommandQueue>;
-using CommandListComPtr      = ComPtr<CommandList>;
-using FenceComPtr            = ComPtr<Fence>;
+using DeviceComPtr           = ComPtr<IDevice>;
+using AdapterComPtr          = ComPtr<IAdapter>;
+using FactoryComPtr          = ComPtr<IFactory>;
+using SwapchainComPtr        = ComPtr<ISwapChain>;
+using OutputComPtr           = ComPtr<IOutput>;
+using CommandAllocatorComPtr = ComPtr<ICommandAllocator>;
+using CommandQueueComPtr     = ComPtr<ICommandQueue>;
+using CommandListComPtr      = ComPtr<ICommandList>;
+using FenceComPtr            = ComPtr<IFence>;
 using ResourceComPtr         = ComPtr<Resource>;
-using DescriptorHeapComPtr   = ComPtr<DescriptorHeap>;
-using PipelineStateComPtr    = ComPtr<PipelineState>;
-using RootSignatureComPtr    = ComPtr<RootSignature>;
-using BlobComPtr             = ComPtr<Blob>;
+using DescriptorHeapComPtr   = ComPtr<IDescriptorHeap>;
+using PipelineStateComPtr    = ComPtr<IPipelineState>;
+using RootSignatureComPtr    = ComPtr<IRootSignature>;
+using BlobComPtr             = ComPtr<IBlob>;
 using DebugComPtr            = ComPtr<IDebug>;
 
 #endif DirectX12_CORE_HPP

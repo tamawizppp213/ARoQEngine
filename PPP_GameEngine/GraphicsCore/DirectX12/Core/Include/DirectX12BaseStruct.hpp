@@ -18,6 +18,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 struct NULL_STRUCT {};
 extern const DECLSPEC_SELECTANY NULL_STRUCT D3D12_DEFAULT;
+#pragma region Box
 /****************************************************************************
 *					DIRECTX12_BOX : public D3D12_BOX
 *************************************************************************//**
@@ -68,7 +69,8 @@ inline bool operator!=(const D3D12_BOX& l, const D3D12_BOX& r)
 {
 	return !(l == r);
 }
-
+#pragma endregion Box
+#pragma region DepthStencil
 /****************************************************************************
 *			DEPTH_STENCIL_DESC   public  D3D12_DEPTH_STENCIL_DESC
 *************************************************************************//**
@@ -128,7 +130,8 @@ struct DEPTH_STENCIL_DESC : public D3D12_DEPTH_STENCIL_DESC
 	~DEPTH_STENCIL_DESC() {};
 	operator const D3D12_DEPTH_STENCIL_DESC& () const { return *this; }
 };
-
+#pragma endregion   DepthStencil
+#pragma region BlendDesc
 /****************************************************************************
 *					BLEND_DESC : public D3D12_BLEND_DESC
 *************************************************************************//**
@@ -158,7 +161,8 @@ struct BLEND_DESC : public D3D12_BLEND_DESC
 		}
 	}
 };
-
+#pragma endregion      BlendDesc
+#pragma region RasterizerDesc
 /****************************************************************************
 *				RASTERIZER_DESC : public D3D12_RASTERIZER_DESC
 *************************************************************************//**
@@ -213,7 +217,7 @@ struct RASTERIZER_DESC : public D3D12_RASTERIZER_DESC
 	~RASTERIZER_DESC() {};
 	operator const D3D12_RASTERIZER_DESC& () const { return *this; }
 };
-
+#pragma endregion RasterizerDesc
 /****************************************************************************
 *		RESOURCE_ALLOCATION_INFO : public D3D12_RESOURCE_ALLOCATION_INFO
 *************************************************************************//**
@@ -235,7 +239,7 @@ struct RESOURCE_ALLOCATION_INFO : public D3D12_RESOURCE_ALLOCATION_INFO
 	operator const D3D12_RESOURCE_ALLOCATION_INFO& () const { return *this; }
 };
 
-
+#pragma region HeapProperty
 /****************************************************************************
 *			HEAP_PROPERTY : public D3D12_HEAP_PROPERTIES
 *************************************************************************//**
@@ -303,7 +307,8 @@ inline bool operator!=(const D3D12_HEAP_PROPERTIES& l, const D3D12_HEAP_PROPERTI
 {
 	return !(l == r);
 }
-
+#pragma endregion HeapProperty
+#pragma region HeapDesc
 /****************************************************************************
 *					HEAP_DESC : public D3D12_HEAP_DESC
 *************************************************************************//**
@@ -399,11 +404,11 @@ inline bool operator!=(const D3D12_HEAP_DESC& l, const D3D12_HEAP_DESC& r)
 {
 	return !(l == r);
 }
-
+#pragma endregion HeapDesc
 //////////////////////////////////////////////////////////////////////////////////
 //               D3D12GetFormatPlaneCount
 //////////////////////////////////////////////////////////////////////////////////
-inline UINT8 D3D12GetFormatPlaneCount(_In_ Device* device, DXGI_FORMAT format)
+inline UINT8 D3D12GetFormatPlaneCount(_In_ IDevice* device, DXGI_FORMAT format)
 {
 	D3D12_FEATURE_DATA_FORMAT_INFO formatInfo = { format };
 	if (FAILED(device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_INFO, &formatInfo, sizeof(formatInfo))))
@@ -534,12 +539,12 @@ struct RESOURCE_DESC : public D3D12_RESOURCE_DESC
 		return (Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE3D ? DepthOrArraySize : 1);
 	}
 
-	inline UINT8 PlaneCount(_In_ Device* device) const
+	inline UINT8 PlaneCount(_In_ IDevice* device) const
 	{
 		return D3D12GetFormatPlaneCount(device, Format);
 	}
 
-	inline UINT Subresource(_In_ Device* device) const
+	inline UINT Subresource(_In_ IDevice* device) const
 	{
 		return MipLevels * ArraySize() * PlaneCount(device);
 	}
@@ -637,7 +642,7 @@ struct TEXTURE_COPY_LOCATION : public D3D12_TEXTURE_COPY_LOCATION
 *****************************************************************************/
 // All arrays must be populated (e.g. by calling GetCopyableFootprints)
 inline UINT64 UpdateSubresources(
-	_In_ CommandList* commandList,
+	_In_ ICommandList* commandList,
 	_In_ Resource* destinationResource,
 	_In_ Resource* intermediate,
 	_In_range_(0, D3D12_REQ_SUBRESOURCES) UINT firstSubresource,
@@ -697,7 +702,7 @@ inline UINT64 UpdateSubresources(
 *****************************************************************************/
 // Heap - allocating UpdateSubresources implementation
 inline UINT64 UpdateSubresources(
-	_In_ CommandList* commandList,
+	_In_ ICommandList* commandList,
 	_In_ Resource* destinationResource,
 	_In_ Resource* intermediate,
 	UINT64 intermediateOffset,
@@ -717,7 +722,7 @@ inline UINT64 UpdateSubresources(
 	UINT* numRows = reinterpret_cast<UINT*>(rowSizesInBytes + numSubresources);
 
 	D3D12_RESOURCE_DESC resourceDesc = destinationResource->GetDesc();
-	Device* device = nullptr;
+	IDevice* device = nullptr;
 	destinationResource->GetDevice(__uuidof(*device), reinterpret_cast<void**>(&device));
 	device->GetCopyableFootprints(&resourceDesc, firstSubresource, numSubresources, intermediateOffset, layouts, numRows, rowSizesInBytes, &requiredSize);
 	device->Release();
@@ -732,7 +737,7 @@ inline UINT64 UpdateSubresources(
 *****************************************************************************/
 template <UINT maxSubresources>
 inline UINT64 UpdateSubresources(
-	_In_ CommandList* commandList,
+	_In_ ICommandList* commandList,
 	_In_ Resource* destinationResource,
 	_In_ Resource* intermediate,
 	UINT64 intermediateOffset,
@@ -741,9 +746,9 @@ inline UINT64 UpdateSubresources(
 	_In_reads_(numSubresources) D3D12_SUBRESOURCE_DATA* sourceData)
 {
 	UINT64 requiredSize = 0;
-	UINT   rows[maxSubresources];
-	UINT64 rowSizesInBytes[maxSubresources];
-	D3D12_PLACED_SUBRESOURCE_FOOTPRINT layouts[maxSubresources];
+	UINT   rows[maxSubresources] = {};
+	UINT64 rowSizesInBytes[maxSubresources] = {};
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT layouts[maxSubresources] = {};
 
 	D3D12_RESOURCE_DESC resourceDesc = destinationResource->GetDesc();
 	Device* device = nullptr;
@@ -1250,7 +1255,7 @@ struct ROOT_SIGNATURE_DESC : public D3D12_ROOT_SIGNATURE_DESC
 		desc.Flags = flags;
 	}
 
-	inline void Create(Device* device, RootSignatureComPtr* rootSignature)
+	inline void Create(IDevice* device, RootSignatureComPtr* rootSignature)
 	{
 		BlobComPtr rootSigBlob = nullptr;
 		BlobComPtr errorBlob = nullptr;
@@ -1413,6 +1418,5 @@ struct GPU_DESC_HANDLER : public D3D12_GPU_DESCRIPTOR_HANDLE
 		handle.ptr = base.ptr + (SIZE_T)offsetInDescriptors * descriptorIncrementSize;
 	}
 };
-
 
 #endif

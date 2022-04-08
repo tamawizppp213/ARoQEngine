@@ -11,10 +11,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "DirectX12Core.hpp"
-#include "DirectX12Config.hpp"
+#include "DirectX12BaseStruct.hpp"
 #include <dxgiformat.h>
-#include <d3d12.h>
+#include <array>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +47,7 @@ class ResourceAllocator;
 *****************************************************************************/
 class GraphicsDeviceDirectX12
 {
+	using StaticSamplerArray = std::array<const STATIC_SAMPLER_DESC, 6>;
 public:
 	static const UINT32 FRAME_BUFFER_COUNT = 3;
 	static const UINT32 VSYNC = 1; // 0: don't wait, 1:wait(60fps)
@@ -67,57 +67,54 @@ public:
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	      DeviceComPtr&      GetDevice              ()                            { return _device; }
-	const DeviceComPtr&      GetDevice              ()                      const { return _device; }
-	      CommandListComPtr& GetCommandList         ()                            { return _commandList; }
-	const CommandListComPtr& GetCommandList         ()                      const { return _commandList; }
-	      CommandQueueComPtr& GetCommandQueue       ()                            { return _commandQueue; }
-	const CommandQueueComPtr& GetCommandQueue       ()                      const { return _commandQueue; }
-	      ResourceComPtr&    GetDepthStencil        ()                            { return _depthStencilBuffer; }
-	const ResourceComPtr&    GetDepthStencil        ()                      const { return _depthStencilBuffer; }
-	      ResourceComPtr&    GetCurrentRenderTarget ()                            { return _renderTargetList[_currentFrameIndex]; }
-	const ResourceComPtr&    GetCurrentRenderTarget ()                      const { return _renderTargetList[_currentFrameIndex]; }
-	      ResourceComPtr&    GetRenderTargetResource(RenderTargetType type)       { return _renderTargetList[(int)type]; }
-	const ResourceComPtr&    GetRenderTargetResource(RenderTargetType type) const { return _renderTargetList[(int)type]; }
-	      DescriptorHeapComPtr& GetCbvSrvUavHeap()       { return _cbvSrvUavHeap; }
-	const DescriptorHeapComPtr& GetCbvSrvUavHeap() const { return _cbvSrvUavHeap; }
+	inline       IDevice*      GetDevice              ()                           { return _device.Get(); }
+	inline const IDevice*      GetDevice              ()                     const { return _device.Get(); }
+	inline       ICommandList* GetCommandList         ()                           { return _commandList.Get(); }
+	inline const ICommandList* GetCommandList         ()                     const { return _commandList.Get(); }
+	inline      ICommandQueue* GetCommandQueue       ()                           { return _commandQueue.Get(); }
+	inline const ICommandQueue* GetCommandQueue       ()                     const { return _commandQueue.Get(); }
+	inline       Resource*    GetDepthStencil        ()                            { return _depthStencilBuffer.Get(); }
+	inline const Resource*    GetDepthStencil        ()                      const { return _depthStencilBuffer.Get(); }
+	inline       Resource*    GetCurrentRenderTarget ()                            { return _renderTargetList[_currentFrameIndex].Get(); }
+	inline const Resource*    GetCurrentRenderTarget ()                      const { return _renderTargetList[_currentFrameIndex].Get(); }
+	inline       Resource*    GetRenderTargetResource(RenderTargetType type)       { return _renderTargetList[(int)type].Get(); }
+	inline const Resource*    GetRenderTargetResource(RenderTargetType type) const { return _renderTargetList[(int)type].Get(); }
+	inline      IDescriptorHeap* GetCbvSrvUavHeap()       { return _cbvSrvUavHeap.Get(); }
+	inline const IDescriptorHeap* GetCbvSrvUavHeap() const { return _cbvSrvUavHeap.Get(); }
 
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDsvHeapStart      () const { return _dsvHeap.Get()->GetCPUDescriptorHandleForHeapStart(); }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDsvHeapStart      () const { return _dsvHeap.Get()->GetGPUDescriptorHandleForHeapStart(); }
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPURtvHeapStart      () const { return _rtvHeap.Get()->GetCPUDescriptorHandleForHeapStart(); }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPURtvHeapStart      () const { return _rtvHeap.Get()->GetGPUDescriptorHandleForHeapStart(); }
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUCbvSrvUavHeapStart() const { return _cbvSrvUavHeap.Get()->GetCPUDescriptorHandleForHeapStart(); }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUCbvSrvUavHeapStart() const { return _cbvSrvUavHeap.Get()->GetGPUDescriptorHandleForHeapStart(); }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDsvHeapStart      () const { return _dsvHeap.Get()->GetCPUDescriptorHandleForHeapStart(); }
+	inline D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDsvHeapStart      () const { return _dsvHeap.Get()->GetGPUDescriptorHandleForHeapStart(); }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPURtvHeapStart      () const { return _rtvHeap.Get()->GetCPUDescriptorHandleForHeapStart(); }
+	inline D3D12_GPU_DESCRIPTOR_HANDLE GetGPURtvHeapStart      () const { return _rtvHeap.Get()->GetGPUDescriptorHandleForHeapStart(); }
+	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPUCbvSrvUavHeapStart() const { return _cbvSrvUavHeap.Get()->GetCPUDescriptorHandleForHeapStart(); }
+	inline D3D12_GPU_DESCRIPTOR_HANDLE GetGPUCbvSrvUavHeapStart() const { return _cbvSrvUavHeap.Get()->GetGPUDescriptorHandleForHeapStart(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUResourceView(HeapFlag heapFlag, int offsetIndex) const;
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUResourceView(HeapFlag heapFlag, int offsetIndex) const;
 
-	D3D12_VIEWPORT GetViewport              () const { return _screenViewport; }
-	D3D12_RECT     GetScissorRect           () const { return _scissorRect; }
-	INT            GetCurrentFrameIndex     () const { return _currentFrameIndex; }
+	inline D3D12_VIEWPORT GetViewport              () const { return _screenViewport; }
+	inline D3D12_RECT     GetScissorRect           () const { return _scissorRect; }
+	inline INT            GetCurrentFrameIndex     () const { return _currentFrameIndex; }
 	INT            GetCurrentBackBufferIndex() const;
-	DXGI_FORMAT    GetBackBufferRenderFormat() const { return _backBufferFormat; }
-	INT  GetCbvSrvUavDescriptorHeapSize     () const { return _cbvSrvUavDescriptorSize; }
+	inline DXGI_FORMAT    GetBackBufferRenderFormat() const { return _backBufferFormat; }
+	inline INT  GetCbvSrvUavDescriptorHeapSize     () const { return _cbvSrvUavDescriptorSize; }
+	StaticSamplerArray GetStaticSamplers();
 	UINT IssueViewID(HeapFlag heapFlag);
 	void ResetViewID(HeapFlag heapFlag);
-	
-	bool Get4xMsaaState() const { return _4xMsaaState; }
+	inline bool Get4xMsaaState() const { return _4xMsaaState; }
 
-	void SetHWND(HWND hwnd) { _hwnd = hwnd; }
+	inline void SetHWND(HWND hwnd) { _hwnd = hwnd; }
 	
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	static GraphicsDeviceDirectX12& Instance()
-	{
-		static GraphicsDeviceDirectX12 directX12;
-		return directX12;
-	}
+	GraphicsDeviceDirectX12();
+	~GraphicsDeviceDirectX12();
 	GraphicsDeviceDirectX12(const GraphicsDeviceDirectX12&)            = delete;
 	GraphicsDeviceDirectX12& operator=(const GraphicsDeviceDirectX12&) = delete;
-	GraphicsDeviceDirectX12(GraphicsDeviceDirectX12&&)                 = delete;
-	GraphicsDeviceDirectX12& operator=(GraphicsDeviceDirectX12&&)      = delete;
+	GraphicsDeviceDirectX12(GraphicsDeviceDirectX12&&)                 = default;
+	GraphicsDeviceDirectX12& operator=(GraphicsDeviceDirectX12&&)      = default;
 private:
-	GraphicsDeviceDirectX12() = default;
+	
 	
 	/****************************************************************************
 	**                Private Function
@@ -134,7 +131,7 @@ private:
 	void CreateDescriptorHeap(HeapFlag heapFlag);
 	void BuildAllResourceAllocator();
 	void BuildResourceAllocator(int heapFlag);
-	void CreatePSOs();
+	void CreateDefaultPSO();
 	void CreateViewport();
 	void BuildRenderTargetView();
 	void BuildDepthStencilView();
@@ -146,8 +143,8 @@ private:
 	void EnabledDebugLayer();
 	void EnabledGPUBasedValidation();
 	void LogAdapters     ();
-	void LogAdapterOutputs(Adapter* adapter);
-	void LogOutputDisplayModes(Output* output, DXGI_FORMAT format);
+	void LogAdapterOutputs(IAdapter* adapter);
+	void LogOutputDisplayModes(IOutput* output, DXGI_FORMAT format);
 	void ReportLiveObjects();
 	/*-------------------------------------------------------------------
 	-                        HDR
@@ -177,23 +174,24 @@ private:
 	/*-------------------------------------------------------------------
 	-                        Standard
 	---------------------------------------------------------------------*/
-	DeviceComPtr                 _device;             /// Device
-	FactoryComPtr                _dxgiFactory;        /// DXGI
-	AdapterComPtr                _useAdapter;
-	SwapchainComPtr              _swapchain;          /// SwapChain
-	CommandQueueComPtr           _commandQueue;       /// Command Queue (Command Execution Unit)
-	CommandListComPtr            _commandList;        /// Graphics Command List
+	DeviceComPtr                 _device       = nullptr;        /// Device
+	FactoryComPtr                _dxgiFactory  = nullptr;        /// DXGI
+	AdapterComPtr                _useAdapter   = nullptr;
+	SwapchainComPtr              _swapchain    = nullptr;        /// SwapChain
+	CommandQueueComPtr           _commandQueue = nullptr;        /// Command Queue (Command Execution Unit)
+	CommandListComPtr            _commandList  = nullptr;        /// Graphics Command List
 	CommandAllocatorComPtr       _commandAllocator[FRAME_BUFFER_COUNT];
-	DescriptorHeapComPtr         _rtvHeap;            /// Heap For Render Target View 
-	DescriptorHeapComPtr         _dsvHeap;            /// Heap For Depth Stencil View
-	DescriptorHeapComPtr         _cbvSrvUavHeap;      /// Heap For Constant Buffer View
-	ResourceComPtr               _depthStencilBuffer; /// DepthStencl Buffer   
+	DescriptorHeapComPtr         _rtvHeap = nullptr;            /// Heap For Render Target View 
+	DescriptorHeapComPtr         _dsvHeap = nullptr;            /// Heap For Depth Stencil View
+	DescriptorHeapComPtr         _cbvSrvUavHeap = nullptr;      /// Heap For Constant Buffer View
+	PipelineStateComPtr          _pipelineState = nullptr;      /// Graphic Pipeline State
+	ResourceComPtr               _depthStencilBuffer = nullptr; /// DepthStencl Buffer   
 	ResourceComPtr               _renderTargetList[FRAME_BUFFER_COUNT];
-	ResourceAllocator*           _rtvAllocator;
-	ResourceAllocator*           _dsvAllocator;
-	ResourceAllocator*           _cbvAllocator;
-	ResourceAllocator*           _srvAllocator;
-	ResourceAllocator*           _uavAllocator;
+	ResourceAllocator*           _rtvAllocator = nullptr;
+	ResourceAllocator*           _dsvAllocator = nullptr;
+	ResourceAllocator*           _cbvAllocator = nullptr;
+	ResourceAllocator*           _srvAllocator = nullptr;
+	ResourceAllocator*           _uavAllocator = nullptr;
 	D3D12_VIEWPORT              _screenViewport;
 	D3D12_RECT                 _scissorRect;
 	UINT _rtvDescriptorSize       = 0;
@@ -201,7 +199,8 @@ private:
 	UINT _cbvSrvUavDescriptorSize = 0;
 	INT  _currentFrameIndex       = 0;
 	UINT _variableRateShadingImageTileSize = 0;
-	
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC _defaultPSODesc = D3D12_GRAPHICS_PIPELINE_STATE_DESC();
+
 	DXGI_FORMAT _backBufferFormat   = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	DXGI_FORMAT _depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
@@ -220,7 +219,7 @@ private:
 	-                     Syncronization object
 	---------------------------------------------------------------------*/
 	UINT64      _currentFenceValue[FRAME_BUFFER_COUNT] = { 0,0 };
-	FenceComPtr _fence;
+	FenceComPtr _fence = nullptr;
 	HANDLE      _fenceEvent = nullptr;
 	/*-------------------------------------------------------------------
 	-                     MSAA: One of the Anti-Alias

@@ -2,7 +2,7 @@
 //              Title:  DirectX12PrimitiveGeometry.hpp
 //            Content:  DirectX12 2D or 3D Primitive Geometry
 //             Author:  Toide Yutaro
-//             Create:  2020_11_23
+//             Create:  2022_03_14
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_PRIMITIVE_GEOMETRY_HPP

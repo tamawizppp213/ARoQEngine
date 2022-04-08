@@ -167,6 +167,7 @@ namespace gm
 	{
 		return SharedPointer<T>(new T());
 	}
+	
 #pragma endregion Shared Pointer
 }
 #endif

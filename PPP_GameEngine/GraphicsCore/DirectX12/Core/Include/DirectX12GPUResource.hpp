@@ -1,60 +1,62 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GraphicsDevice.hpp
-///             @brief  Graphics device
+///             @file   TemplateText.hpp
+///             @brief  TemplateText
 ///             @author Toide Yutaro
 ///             @date   2022_03_11
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef IGRAPHICS_DEVICE_HPP
-#define IGRAPHICS_DEVICE_HPP
+#ifndef DIRECTX12_GPU_RESOURCE_HPP
+#define DIRECTX12_GPU_RESOURCE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <Windows.h>
+#include "DirectX12Core.hpp"
+#include <d3d12.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-enum class GPUAPI
-{
-	DirectX12,
-	CountOfAPI
-};
-//////////////////////////////////////////////////////////////////////////////////
-//                               Class
-//////////////////////////////////////////////////////////////////////////////////
 
-
+//////////////////////////////////////////////////////////////////////////////////
+//                              Class
+//////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
-*				  			IGraphicsDevice
+*				  			GPUResource
 *************************************************************************//**
-*  @class     IGrahicsDevice
-*  @brief     Graphics device interface
+*  @class     GPUResource
+*  @brief     GPUResource
 *****************************************************************************/
-class IGraphicsDevice
+class GPUResource
 {
-protected:
-	static const UINT32 FRAME_BUFFER_COUNT = 3;
-	static const UINT32 VSYNC              = 1; // 0: don't wait, 1:wait(60fps)
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	virtual void Initialize(HWND hwnd) = 0;
-	virtual void OnResize  () = 0;
-	virtual void Finalize  () = 0;
-	virtual void ClearScreen() = 0;
-	virtual void CompleteInitialize() = 0;
-	virtual void CompleteRendering() = 0;
-	virtual void FlushCommandQueue() = 0;
-		
+	virtual void Destroy()
+	{
+		_resource   = nullptr;
+	}
+	virtual void TransitionState(D3D12_RESOURCE_STATES after)
+	{
+		if (_usageState != after) { _usageState = after; }
+	}
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	void SetHWND(HWND hwnd) { _hwnd = hwnd; }
+	      Resource* GetResource()       { return _resource.Get(); }
+	const Resource* GetResource() const { return _resource.Get(); }
+	Resource**      GetAddressOf()      { return _resource.GetAddressOf(); }
+	D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return _resource->GetGPUVirtualAddress(); }
+	D3D12_RESOURCE_STATES GetUsageState(){ return _usageState; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
+	GPUResource() :_usageState(D3D12_RESOURCE_STATE_COMMON) {};
+	GPUResource(Resource* resource, D3D12_RESOURCE_STATES currentState) : _usageState(currentState),_resource(resource) {};
+	~GPUResource() { Destroy(); }
+
+	      Resource* operator->()       { return _resource.Get(); }
+	const Resource* operator->() const { return _resource.Get(); }
 protected:
 	/****************************************************************************
 	**                Protected Function
@@ -63,9 +65,7 @@ protected:
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
-	bool _hasInitialized = false;
-	HWND _hwnd           = nullptr;
-	GPUAPI _gpuApi = GPUAPI::DirectX12;
+	ResourceComPtr            _resource = nullptr;
+	D3D12_RESOURCE_STATES     _usageState;
 };
-
 #endif
