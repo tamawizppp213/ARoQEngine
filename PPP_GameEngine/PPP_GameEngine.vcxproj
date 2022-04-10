@@ -113,7 +113,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -174,6 +174,7 @@
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Memory.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Screen.hpp" />
+    <ClInclude Include="GameUtility\File\Include\Csv.hpp" />
     <ClInclude Include="GameUtility\File\Include\FileSystem.hpp" />
     <ClInclude Include="GameUtility\File\Include\Json.hpp" />
     <ClInclude Include="GameUtility\File\Include\UnicodeUtility.hpp" />
@@ -227,6 +228,7 @@
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
     <ClCompile Include="GameUtility\Base\Source\GameTimer.cpp" />
     <ClCompile Include="GameUtility\Base\Source\Screen.cpp" />
+    <ClCompile Include="GameUtility\File\Source\Csv.cpp" />
     <ClCompile Include="GameUtility\File\Source\FileSystem.cpp" />
     <ClCompile Include="GameUtility\File\Source\Json.cpp" />
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />

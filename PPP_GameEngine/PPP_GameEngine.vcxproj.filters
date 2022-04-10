@@ -177,6 +177,9 @@
     <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameUtility\File\Include\Csv.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainGame\Source\Main.cpp">
@@ -270,6 +273,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Source\Csv.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

@@ -44,6 +44,8 @@ namespace file
 		static std::wstring GetFileName(const std::wstring& path, bool useExtension = true);
 		static std::string  GetFileName(const std::string& path, bool useExtension = true);
 
+		static FILE* OpenFile(const std::wstring& filePath, const std::string& mode = "rb");
+		static FILE* OpenFile(const std::string & filePath, const std::string& mode = "rb");
 	};
 }
 #endif

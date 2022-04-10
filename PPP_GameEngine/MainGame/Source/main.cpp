@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 #include <iostream>
-#include "GameUtility/Base/Include/Memory.hpp"
+#include "GameUtility/File/Include/Csv.hpp"
 #ifdef _DEBUG
 int main()
 #else
@@ -14,8 +14,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCommand
     /********************************************
     **         Initialize
     *********************************************/
-    gm::SharedPointer<int> a = gm::MakeShared<int>();
-    std::cout << a.RefCount() << std::endl;
+    
     /********************************************
     **         MainLoop
     *********************************************/

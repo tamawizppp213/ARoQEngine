@@ -95,7 +95,8 @@ namespace unicode
 		/*-------------------------------------------------------------------
 		-              wchar_t <=> char_16_t
 		---------------------------------------------------------------------*/
-		if (sizeof(wchar_t) == sizeof(char16_t))
+		size_t wcharSize = 0; wcharSize = sizeof(wchar_t);
+		if (wcharSize == sizeof(char16_t))
 		{
 			std::u16string utf16String;
 			if (!ConvertU8ToU16(utf8String, utf16String))
@@ -107,7 +108,7 @@ namespace unicode
 		/*-------------------------------------------------------------------
 		-              wchar_t <=> char_32_t
 		---------------------------------------------------------------------*/
-		else if (sizeof(wchar_t) == sizeof(char32_t))
+		else if (wcharSize == sizeof(char32_t))
 		{
 			std::u32string utf32String;
 			if (!ConvertU8ToU32(utf8String, utf32String))
@@ -406,7 +407,7 @@ namespace unicode
 			auto numBytes = GetU8ByteCount((*u8It));
 			if (numBytes == 0) { return false; }
 
-			std::array<char, 4> u8Char;
+			std::array<char, 4> u8Char = {};
 			u8Char[0] = (*u8It);
 			for (int i = 1; i < numBytes; i++)
 			{
@@ -443,7 +444,7 @@ namespace unicode
 			auto numBytes = GetU8ByteCount((*u8It));
 			if (numBytes == 0) { return false; }
 
-			std::array<char, 4> u8Char;
+			std::array<char, 4> u8Char = {};
 			u8Char[0] = (*u8It);
 			for (int i = 1; i < numBytes; i++)
 			{
@@ -473,7 +474,7 @@ namespace unicode
 	{
 		for (auto u16It = u16String.begin(); u16It != u16String.end(); ++u16It)
 		{
-			std::array<char16_t, 2> u16Char;
+			std::array<char16_t, 2> u16Char = {};
 			if (IsU16HighSurrogate((*u16It)))
 			{
 				u16Char[0] = (*u16It);
@@ -510,7 +511,7 @@ namespace unicode
 	{
 		for (auto u16It = u16String.begin(); u16It != u16String.end(); ++u16It)
 		{
-			std::array<char16_t, 2> u16Char;
+			std::array<char16_t, 2> u16Char = {};
 			if (IsU16HighSurrogate((*u16It)))
 			{
 				u16Char[0] = (*u16It);
