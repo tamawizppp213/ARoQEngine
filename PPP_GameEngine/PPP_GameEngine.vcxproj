@@ -211,6 +211,7 @@
     <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreEngine.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreResourceType.hpp" />
+    <ClInclude Include="MainGame\Include\Application.hpp" />
     <ClInclude Include="MainGame\Include\TemplateText.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +246,7 @@
     <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12BLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\GraphicsCoreEngine.cpp" />
+    <ClCompile Include="MainGame\Source\Application.cpp" />
     <ClCompile Include="MainGame\Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>

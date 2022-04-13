@@ -131,7 +131,7 @@ void Screen::SetFullScreenHeight(int height)
 *****************************************************************************/
 void Screen::SetScreenWidth(int width)
 {
-	_currentPixelWidth= width;
+	_currentPixelWidth= width <= _fullScreenResolutionWidth ? width : _fullScreenResolutionWidth;
 	_onePixelWidth = width >= 1.0f ? 1.0f / width : 0.0f;
 }
 /****************************************************************************
@@ -144,7 +144,7 @@ void Screen::SetScreenWidth(int width)
 *****************************************************************************/
 void Screen::SetScreenHeight(int height)
 {
-	_currentPixelHeight = height;
+	_currentPixelHeight = height <= _fullScreenResolutionHeight ? height : _fullScreenResolutionHeight;
 	_onePixelHeight = height >= 1.0f ? 1.0f / height : 0.0f;
 }
 /****************************************************************************
