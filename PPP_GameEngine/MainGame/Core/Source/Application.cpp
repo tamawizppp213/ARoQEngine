@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Include/Application.hpp"
+#include "MainGame/Core/Include/Application.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-
+#include "resource.h"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,8 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 bool Application::StartUp()
 {
-	if (!CreateMainWindow()) { return false; }
+	if (!CreateMainWindow())                               { return false; }
+	if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
 	return true;
 }
 
@@ -37,6 +38,7 @@ void Application::Run()
 {
 	MSG message = { NULL };
 
+	_gameTimer.Reset();
 	/*---------------------------------------------------------------
 						Main Loop
 	-----------------------------------------------------------------*/
@@ -49,14 +51,19 @@ void Application::Run()
 		}
 		else
 		{
-
+			_gameTimer.Tick();
+			if (!_isApplicationPaused)
+			{
+				_gameTimer.AverageFrame(_mainWindow);
+				_gameInput.Update();
+			}
 		}
 	}
 }
 
 void Application::ShutDown()
 {
-
+	_gameInput.Finalize();
 }
 
 #pragma region Private Function
@@ -84,7 +91,7 @@ bool Application::CreateMainWindow()
 	windowClass.hIcon         = LoadIcon(NULL, IDI_APPLICATION); //Load Default Icon
 	windowClass.hCursor       = LoadCursor(NULL, IDC_ARROW)    ; // Set default mouse cursor
 	windowClass.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-	windowClass.lpszMenuName  = NULL;
+	windowClass.lpszMenuName  = MAKEINTRESOURCE(GAME_MENU);
 	windowClass.lpszClassName = CLASS_NAME;
 
 	if (!RegisterClass(&windowClass))
@@ -141,6 +148,7 @@ bool Application::CreateMainWindow()
 	-----------------------------------------------------------------*/
 	ShowWindow(_mainWindow, SW_SHOW);
 	UpdateWindow(_mainWindow);
+	return true;
 }
 
 LRESULT Application::WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -152,10 +160,52 @@ LRESULT Application::WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wPar
 		--------------------------------------------------------------------*/
 		case WM_ACTIVATE:
 		{
-			break;
+			return 0;
+		}
+		case WM_SIZE: 
+		{
+			Screen::SetScreenWidth(LOWORD(lParam));
+			Screen::SetScreenHeight(HIWORD(lParam));
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+			WM_CLOSE is sent when the window is closed
+		--------------------------------------------------------------------*/
+		case WM_CLOSE:
+		{
+			DestroyWindow(hwnd); 
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+			WM_DESTROY is sent when the window is deleted
+		--------------------------------------------------------------------*/
+		case WM_DESTROY:
+		{
+			PostQuitMessage(0);
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+			WM_DESTROY is sent when the window is deleted
+		--------------------------------------------------------------------*/
+		case WM_COMMAND:
+		{
+			ExecuteWindowsCommand(wParam);
+			return 0;
 		}
 	}
 
 	return DefWindowProc(hwnd, message, wParam, lParam);
+}
+
+LRESULT Application::ExecuteWindowsCommand(WPARAM wParam)
+{
+	switch (LOWORD(wParam))
+	{
+		case ID_FILE_OPEN:
+		{
+			break;
+		}
+	}
+	return 0;
 }
 #pragma endregion Private Function

@@ -87,7 +87,7 @@ namespace csv
 				FormatErrorMessage();
 				return ErrorMessageBuffer;
 			}
-			mutable char ErrorMessageBuffer[512];
+			mutable char ErrorMessageBuffer[512] = {0};
 		};
 		/*-------------------------------------------------------------------
 		-               Line Reader
@@ -719,7 +719,7 @@ namespace csv
 	{
 		columnOrder.clear();
 
-		bool found[ColumnCount];
+		bool found[ColumnCount] = {};
 		std::fill(found, found + ColumnCount, false);
 		while (line)
 		{

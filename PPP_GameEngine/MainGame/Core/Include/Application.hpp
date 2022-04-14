@@ -5,48 +5,74 @@
 ///             @date   2022_03_11
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef NULL_TEXTURE_MAP_HPP
-#define NULL_TEXTURE_MAP_HPP
+#ifndef APPLICATION_HPP
+#define APPLICATION_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GameUtility/Base/Include/GameTimer.hpp"
+#include "GameCore/Input/Include/GameInput.hpp"
+#include <Windows.h>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                              Class 
 //////////////////////////////////////////////////////////////////////////////////
 
 /****************************************************************************
-*				  			NullTextureMap
+*				  			Application
 *************************************************************************//**
-*  @class     NullTextureMap
-*  @brief     Null Texture Map
+*  @class     Application
+*  @brief     Create Main Window Class
 *****************************************************************************/
-class NullTextureMap
+class Application final
 {
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
+	bool StartUp();
+	void Run();
+	void ShutDown();
 
+	LRESULT WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-
+	
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
+	static Application& Instance()
+	{
+		static Application application;
+		return application;
+	}
+	Application(const Application&)            = delete;
+	Application& operator=(const Application&) = delete;
+	Application(Application&&)                 = delete;
+	Application& operator=(Application&&)      = delete;
 private:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
-
+	Application () = default;
+	~Application() = default;
+	bool CreateMainWindow();
+	
+	LRESULT ExecuteWindowsCommand(WPARAM wParam);
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
+	HINSTANCE  _appInstance = nullptr;
+	HWND       _mainWindow  = nullptr;
+	WNDCLASSEX _windowClass = {};
+	GameTimer  _gameTimer;
+	GameInput& _gameInput = GameInput::Instance();
+	bool _isApplicationPaused = false;
 };
 #endif

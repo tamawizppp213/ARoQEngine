@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -137,7 +137,7 @@
       <WarningLevel>Level4</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -163,6 +163,7 @@
     <ClInclude Include="GameCore\Audio\Include\AudioSource3D.hpp" />
     <ClInclude Include="GameCore\Audio\Include\WavDecoder.hpp" />
     <ClInclude Include="GameCore\Core\Include\Camera.hpp" />
+    <ClInclude Include="GameCore\Core\Include\GameComponent.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameObject.hpp" />
     <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp" />
     <ClInclude Include="GameCore\Input\Include\GameInput.hpp" />
@@ -211,8 +212,10 @@
     <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreEngine.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreResourceType.hpp" />
-    <ClInclude Include="MainGame\Include\Application.hpp" />
-    <ClInclude Include="MainGame\Include\TemplateText.hpp" />
+    <ClInclude Include="MainGame\Core\Include\Application.hpp" />
+    <ClInclude Include="MainGame\Core\Include\Scene.hpp" />
+    <ClInclude Include="MainGame\Core\Include\TemplateText.hpp" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameCore\Audio\Source\AudioClip.cpp" />
@@ -221,6 +224,7 @@
     <ClCompile Include="GameCore\Audio\Source\AudioSource3D.cpp" />
     <ClCompile Include="GameCore\Audio\Source\WavDecoder.cpp" />
     <ClCompile Include="GameCore\Core\Source\Camera.cpp" />
+    <ClCompile Include="GameCore\Core\Source\GameComponent.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameObject.cpp" />
     <ClCompile Include="GameCore\Core\Source\ResourceManager.cpp" />
     <ClCompile Include="GameCore\Input\Source\GameInput.cpp" />
@@ -246,12 +250,16 @@
     <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12BLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\GraphicsCoreEngine.cpp" />
-    <ClCompile Include="MainGame\Source\Application.cpp" />
-    <ClCompile Include="MainGame\Source\Main.cpp" />
+    <ClCompile Include="MainGame\Core\Source\Application.cpp" />
+    <ClCompile Include="MainGame\Core\Source\Main.cpp" />
+    <ClCompile Include="MainGame\Core\Source\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />
     <None Include="GameUtility\Math\Include\GMSimdFunctions.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MenuResource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

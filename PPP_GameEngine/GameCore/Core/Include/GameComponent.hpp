@@ -1,70 +1,60 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TemplateText.hpp
-///             @brief  TemplateText
+///             @file   GameComponent.hpp
+///             @brief  GameObject Component
 ///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @date   2022_04_15
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef APPLICATION_HPP
-#define APPLICATION_HPP
+#ifndef GAME_COMPONENT_HPP
+#define GAME_COMPONENT_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <Windows.h>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+class GameObject;
 //////////////////////////////////////////////////////////////////////////////////
-//                              Class 
+//                          Component
 //////////////////////////////////////////////////////////////////////////////////
-
 /****************************************************************************
-*				  			Application
+*				  			TemplateClass
 *************************************************************************//**
-*  @class     Application
-*  @brief     Create Main Window Class
+*  @class     TemplateClass
+*  @brief     temp
 *****************************************************************************/
-class Application final
+class Component
 {
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	bool StartUp();
-	void Run();
-	void ShutDown();
-
-	LRESULT WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	virtual void Update(float deltaTime) = 0;
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	
+	inline unsigned int GetUpdateOrder() const { return _updateOrder; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	static Application& Instance()
-	{
-		static Application application;
-		return application;
-	}
-	Application(const Application&)            = delete;
-	Application& operator=(const Application&) = delete;
-	Application(Application&&)                 = delete;
-	Application& operator=(Application&&)      = delete;
+	Component();
+	Component(GameObject* gameObject, unsigned int updateOrder = DEFAULT_UPDATE_ORDER);
+	virtual ~Component() {};
+	Component(const Component&) = default;
+	Component& operator=(const Component&) = default;
+	Component(Component&&)                 = default;
+	Component& operator=(Component&&)      = default;
 private:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
-	Application () = default;
-	~Application() = default;
-	bool CreateMainWindow();
+	enum {DEFAULT_UPDATE_ORDER = 100};
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
-	HINSTANCE  _appInstance;
-	HWND       _mainWindow;
-	WNDCLASSEX _windowClass;
+	GameObject* _owner          = nullptr;
+	unsigned int _updateOrder   = DEFAULT_UPDATE_ORDER; // The smaller its value, the faster the update order.
 };
 #endif
