@@ -56,7 +56,7 @@ GameObject* GameObject::Find(const std::wstring& name)
 			return (*it);
 		}
 	}
-	return nullptr;
+	return nullptr; // Failed to find
 }
 /****************************************************************************
 *                          GameObjectsWithTag
@@ -76,7 +76,7 @@ std::vector<GameObject*> GameObject::GameObjectsWithTag(const std::wstring& tag)
 			gameObjects.emplace_back((*it));
 		}
 	}
-	return gameObjects;
+	return gameObjects; // Return Value Optimization (C++17)
 }
 
 #pragma region Destroy

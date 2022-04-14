@@ -64,39 +64,39 @@ public:
 	/*-------------------------------------------------------------------
 	-               GameObject Transform
 	---------------------------------------------------------------------*/
-	      gm::Transform & GetTransform()       { return _transform; }
-	const gm::Transform & GetTransform() const { return _transform; }
-	      gm::Vector3   & GetPosition ()       { return _transform.LocalPosition; }
-	const gm::Vector3   & GetPosition () const { return _transform.LocalPosition; }
-	      gm::Quaternion& GetRotation ()       { return _transform.LocalRotation; }
-	const gm::Quaternion& GetRotation () const { return _transform.LocalRotation; }
-	      gm::Vector3   & GetScale    ()       { return _transform.LocalScale; }
-	const gm::Vector3   & GetScale    () const { return _transform.LocalScale; }
+	inline       gm::Transform & GetTransform()       { return _transform; }
+	inline const gm::Transform & GetTransform() const { return _transform; }
+	inline       gm::Vector3   & GetPosition ()       { return _transform.LocalPosition; }
+	inline const gm::Vector3   & GetPosition () const { return _transform.LocalPosition; }
+	inline       gm::Quaternion& GetRotation ()       { return _transform.LocalRotation; }
+	inline const gm::Quaternion& GetRotation () const { return _transform.LocalRotation; }
+	inline       gm::Vector3   & GetScale    ()       { return _transform.LocalScale; }
+	inline const gm::Vector3   & GetScale    () const { return _transform.LocalScale; }
 
-	void SetPosition(float x, float y, float z)      { _transform.LocalPosition = gm::Vector3(x, y, z); }
-	void SetPosition(const gm::Vector3& position)    { _transform.LocalPosition = position; }
-	void SetScale   (float x, float y, float z)      { _transform.LocalScale    = gm::Vector3(x, y, z); }
-	void SetScale   (const gm::Vector3& scale)       { _transform.LocalScale    = scale; }
-	void SetRotation(const gm::Quaternion& rotation) { _transform.LocalRotation = rotation; }
+	inline void SetPosition(float x, float y, float z)      { _transform.LocalPosition = gm::Vector3(x, y, z); }
+	inline void SetPosition(const gm::Vector3& position)    { _transform.LocalPosition = position; }
+	inline void SetScale   (float x, float y, float z)      { _transform.LocalScale    = gm::Vector3(x, y, z); }
+	inline void SetScale   (const gm::Vector3& scale)       { _transform.LocalScale    = scale; }
+	inline void SetRotation(const gm::Quaternion& rotation) { _transform.LocalRotation = rotation; }
 	/*-------------------------------------------------------------------
 	-               GameObject Default Infomation
 	---------------------------------------------------------------------*/
-	std::wstring GetName     () const { return _name; }
-	std::wstring GetTag      () const { return _tag; }
-	std::wstring GetLayerName() const { return _layerList[_layer]; }
-	bool         IsActive    () const { return _isActive; }
+	inline std::wstring GetName     () const { return _name; }
+	inline std::wstring GetTag      () const { return _tag; }
+	inline std::wstring GetLayerName() const { return _layerList[_layer]; }
+	inline bool         IsActive    () const { return _isActive; }
 
-	void SetName(const std::wstring& name) { _name = name; }
-	void SetTag (const std::wstring& name) { _tag = name; }
-	void SetLayer(const std::wstring& name) { int bit = GetLayerBit(name); if (bit >= 0) { _layer = (1 << bit); } }
-	void SetActive(bool isActive) { _isActive = isActive; }
+	inline void SetName(const std::wstring& name) { _name = name; }
+	inline void SetTag (const std::wstring& name) { _tag = name; }
+	inline void SetLayer(const std::wstring& name) { int bit = GetLayerBit(name); if (bit >= 0) { _layer = (1 << bit); } }
+	inline void SetActive(bool isActive) { _isActive = isActive; }
 	/*-------------------------------------------------------------------
 	-               GameObject Child
 	---------------------------------------------------------------------*/
 	GameObject* GetChild   (int index) { return  (index < _children.size()) ? _children[index] : nullptr; }
 	bool        RemoveChild(GameObject* child);
 	void        ClearChildren();
-	int  GetChildCount() const { return static_cast<int>(_children.size()); }
+	inline int  GetChildCount() const { return static_cast<int>(_children.size()); }
 	
 	/****************************************************************************
 	**                Constructor and Destructor
