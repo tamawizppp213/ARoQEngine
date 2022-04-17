@@ -122,9 +122,9 @@ private:
 	**                Private Function
 	*****************************************************************************/
 	gm::Float3 _position = { 0.0f, 0.0f, 0.0f };
-	gm::Float3 _right = { 1.0f, 0.0f, 0.0f };
-	gm::Float3 _up = { 0.0f, 1.0f, 0.0f };
-	gm::Float3 _look = { 0.0f, 0.0f, 1.0f };
+	gm::Float3 _right    = { 1.0f, 0.0f, 0.0f };
+	gm::Float3 _up       = { 0.0f, 1.0f, 0.0f };
+	gm::Float3 _look     = { 0.0f, 0.0f, 1.0f };
 
 	bool _viewDirty = true;
 

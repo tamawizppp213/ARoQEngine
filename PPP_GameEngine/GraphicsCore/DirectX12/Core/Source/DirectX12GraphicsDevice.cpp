@@ -1424,6 +1424,7 @@ void GraphicsDeviceDirectX12::SetHDRMetaData()
 	---------------------------------------------------------------------*/
 	if (!_isHDRSupport)
 	{
+		// not supported
 		ThrowIfFailed(_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_NONE, 0, nullptr));
 		return;
 	}
@@ -1433,9 +1434,9 @@ void GraphicsDeviceDirectX12::SetHDRMetaData()
 	---------------------------------------------------------------------*/
 	struct DisplayChromacities
 	{
-		float RedX; float RedY;
+		float RedX  ; float RedY;
 		float GreenX; float GreenY;
-		float BlueX; float BlueY;
+		float BlueX ; float BlueY;
 		float WhiteX; float WhiteY;
 	};
 
@@ -1459,17 +1460,17 @@ void GraphicsDeviceDirectX12::SetHDRMetaData()
 	---------------------------------------------------------------------*/
 	const auto& chroma = DisplayChromacityList[selectedChroma];
 	DXGI_HDR_METADATA_HDR10 HDR10MetaData = {};
-	HDR10MetaData.RedPrimary[0] = UINT16(chroma.RedX * 50000.0f);
-	HDR10MetaData.RedPrimary[1] = UINT16(chroma.RedY * 50000.0f);
+	HDR10MetaData.RedPrimary[0]   = UINT16(chroma.RedX * 50000.0f);
+	HDR10MetaData.RedPrimary[1]   = UINT16(chroma.RedY * 50000.0f);
 	HDR10MetaData.GreenPrimary[0] = UINT16(chroma.GreenX * 50000.0f);
 	HDR10MetaData.GreenPrimary[1] = UINT16(chroma.GreenY * 50000.0f);
-	HDR10MetaData.BluePrimary[0] = UINT16(chroma.BlueX * 50000.0f);
-	HDR10MetaData.BluePrimary[1] = UINT16(chroma.BlueY * 50000.0f);
-	HDR10MetaData.WhitePoint[0] = UINT16(chroma.WhiteX * 50000.0f);
-	HDR10MetaData.WhitePoint[1] = UINT16(chroma.WhiteY * 50000.0f);
+	HDR10MetaData.BluePrimary[0]  = UINT16(chroma.BlueX * 50000.0f);
+	HDR10MetaData.BluePrimary[1]  = UINT16(chroma.BlueY * 50000.0f);
+	HDR10MetaData.WhitePoint[0]   = UINT16(chroma.WhiteX * 50000.0f);
+	HDR10MetaData.WhitePoint[1]   = UINT16(chroma.WhiteY * 50000.0f);
 	HDR10MetaData.MaxMasteringLuminance = UINT(1000.0f * 10000.0f);
-	HDR10MetaData.MinMasteringLuminance = UINT(0.001f * 10000.0f);
-	HDR10MetaData.MaxContentLightLevel = UINT16(2000.0f);
+	HDR10MetaData.MinMasteringLuminance = UINT(0.001f  * 10000.0f);
+	HDR10MetaData.MaxContentLightLevel  = UINT16(2000.0f);
 	HDR10MetaData.MaxFrameAverageLightLevel = UINT16(500.0f);
 
 	/*-------------------------------------------------------------------

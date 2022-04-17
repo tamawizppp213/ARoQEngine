@@ -9,7 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Core/Include/GameObject.hpp"
-
+#include "GameCore/Core/Include/GameComponent.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ GameObject::GameObject()
 
 GameObject::~GameObject()
 {
-
+	_components.clear(); _components.shrink_to_fit();
 }
 
 /****************************************************************************
@@ -229,7 +229,6 @@ bool GameObject::RemoveChild(GameObject* child)
 	}
 	return false;
 }
-
 /****************************************************************************
 *                          ClearChildren
 *************************************************************************//**
@@ -258,7 +257,47 @@ bool GameObject::ClearAllGameObjects()
 	_gameObjects.shrink_to_fit();
 	return true;
 }
-
+/****************************************************************************
+*                          AddComponent
+*************************************************************************//**
+*  @fn        void GameObject::AddComponent(Component* component)
+*  @brief     Add GameComponent
+*  @param[in] Component* component
+*  @return 　　void
+*****************************************************************************/
+void GameObject::AddComponent(Component* component)
+{
+	/*-------------------------------------------------------------------
+	-        Find insert position in order to decide update order.
+	---------------------------------------------------------------------*/
+	int myOrder   = component->GetUpdateOrder();
+	auto iterator = _components.begin();
+	for (; iterator != _components.end(); ++iterator)
+	{
+		if (myOrder < (*iterator)->GetUpdateOrder()) { break; }
+	}
+	_components.insert(iterator, component);
+	/*-------------------------------------------------------------------
+	-              Regist gameobject to component
+	---------------------------------------------------------------------*/
+	if (!component->ExistsOwner()) { component->SetOwner(this); }
+}
+/****************************************************************************
+*                          RemoveComponent
+*************************************************************************//**
+*  @fn        void GameObject::RemoveComponent(Component* component)
+*  @brief     Remove GameComponent. (Erase same component )
+*  @param[in] Component* component
+*  @return 　　void
+*****************************************************************************/
+void GameObject::RemoveComponent(Component* component)
+{
+	auto iterator = std::find(_components.begin(), _components.end(), component);
+	if (iterator != _components.end()) 
+	{
+		_components.erase(iterator);
+	}
+}
 #pragma region Private Function
 int GameObject::GetLayerBit(const std::wstring& layer)
 {

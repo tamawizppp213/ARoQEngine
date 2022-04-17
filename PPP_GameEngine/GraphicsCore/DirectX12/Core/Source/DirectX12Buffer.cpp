@@ -249,7 +249,7 @@ bool ColorBuffer::CreateTexture(UINT width, UINT height,UINT arraySize, DXGI_FOR
 	/*-------------------------------------------------------------------
 	-                  Set clear color
 	---------------------------------------------------------------------*/
-	D3D12_CLEAR_VALUE clearValue;
+	D3D12_CLEAR_VALUE clearValue = {};
 	clearValue.Format = format;
 	if (clearColor != nullptr)
 	{
@@ -319,7 +319,7 @@ void ColorBuffer::PrepareDescriptor(DXGI_FORMAT format)
 	/*-------------------------------------------------------------------
 	-      Create descriptor for srv
 	---------------------------------------------------------------------*/
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format                        = format;
 	srvDesc.Shader4ComponentMapping       = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.ViewDimension                 = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -335,7 +335,7 @@ void ColorBuffer::PrepareDescriptor(DXGI_FORMAT format)
 	/*-------------------------------------------------------------------
 	-      Create descriptor for uav
 	---------------------------------------------------------------------*/
-	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
+	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 	uavDesc.ViewDimension        = D3D12_UAV_DIMENSION_TEXTURE2D;
 	uavDesc.Texture2D.MipSlice   = 0;
 	uavDesc.Texture2D.PlaneSlice = 0;

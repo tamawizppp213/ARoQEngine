@@ -33,16 +33,19 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-
+	static void DestroyAll();
+	
+	virtual void CompleteSetting(IDevice* device) = 0;
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	IPipelineState* GetPipelineState() { return _pipelineState.Get(); }
-	virtual void SetRootSignature(IRootSignature* rootSignature) = 0;
+	inline IPipelineState*       GetPipelineState() const { return _pipelineState; }
+	inline const IRootSignature& GetRootSignature() const { return *_rootSignature; }
+	virtual void SetRootSignature(IRootSignature& rootSignature) { _rootSignature = &rootSignature; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	PipelineState() = default;
+	PipelineState(const wchar_t* name) : _name(name), _rootSignature(nullptr), _pipelineState(nullptr){};
 	virtual ~PipelineState();
 protected:
 	/****************************************************************************
@@ -52,8 +55,9 @@ protected:
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
-	PipelineStateComPtr _pipelineState = nullptr;
-	
+	IRootSignature* _rootSignature = nullptr;
+	IPipelineState* _pipelineState = nullptr;
+	const wchar_t* _name;
 };
 
 /****************************************************************************
@@ -68,12 +72,11 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void SetGraphicsPipelineStateDescriptor(D3D12_GRAPHICS_PIPELINE_STATE_DESC& descriptor){}
-	
+	void SetGraphicsPipelineStateDescriptor(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& descriptor) { _psoDescriptor = descriptor; }
+	void CompleteSetting(IDevice* device) override;
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	void SetRootSignature(IRootSignature* rootSignature) override;
 	void SetBlendState         (const D3D12_BLEND_DESC& blendStateDesc);
 	void SetRasterizerState    (const D3D12_RASTERIZER_DESC& rasterizerDesc);
 	void SetDepthStencilState  (const D3D12_DEPTH_STENCIL_DESC& depthStencilDesc);
@@ -87,10 +90,12 @@ public:
 	void SetGeometryShader     (const D3D12_SHADER_BYTECODE& byteCode);
 	void SetHullShader         (const D3D12_SHADER_BYTECODE& byteCode);
 	void SetDomainShader       (const D3D12_SHADER_BYTECODE& byteCode);
+
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	GraphicsPipelineState() = default;
+	// Start with empty state
+	GraphicsPipelineState(const wchar_t* name = L"Unnamed Graphics PSO");
 	~GraphicsPipelineState() {};
 protected:
 	/****************************************************************************
@@ -110,22 +115,21 @@ protected:
 *  @class     ComputePipelineState
 *  @brief     Compute PSO
 *****************************************************************************/
-class ComputePipelineState
+class ComputePipelineState : public PipelineState
 {
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-
+	void CompleteSetting(IDevice* device) override;
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
 	void SetComputeShader(const D3D12_SHADER_BYTECODE& byteCode);
-	void SetRootSignature(IRootSignature* rootSignature);
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	ComputePipelineState () = default;
+	ComputePipelineState (const wchar_t* name = L"Unnamed Compute PSO");
 	~ComputePipelineState() = default;
 protected:
 	/****************************************************************************
@@ -137,8 +141,7 @@ protected:
 	*****************************************************************************/
 	D3D12_COMPUTE_PIPELINE_STATE_DESC _psoDescriptor;
 };
-inline void GraphicsPipelineState::SetRootSignature(IRootSignature* rootSignature) { _psoDescriptor.pRootSignature = rootSignature; }
-inline void ComputePipelineState::SetRootSignature(IRootSignature* rootSignature) { _psoDescriptor.pRootSignature = rootSignature; }
+
 inline void GraphicsPipelineState::SetBlendState(const D3D12_BLEND_DESC& blendStateDesc)
 {
 	_psoDescriptor.BlendState = blendStateDesc;

@@ -36,6 +36,8 @@ public:
 	**                Public Member Variables
 	*****************************************************************************/
 	inline unsigned int GetUpdateOrder() const { return _updateOrder; }
+	inline bool ExistsOwner() { return _owner != nullptr; }
+	inline void SetOwner(GameObject* gameObject) { _owner = gameObject; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
