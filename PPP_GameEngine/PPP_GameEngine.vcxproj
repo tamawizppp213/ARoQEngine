@@ -163,6 +163,7 @@
     <ClInclude Include="GameCore\Audio\Include\AudioSource3D.hpp" />
     <ClInclude Include="GameCore\Audio\Include\WavDecoder.hpp" />
     <ClInclude Include="GameCore\Core\Include\Camera.hpp" />
+    <ClInclude Include="GameCore\Core\Include\GameActor.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameComponent.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameObject.hpp" />
     <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp" />
@@ -170,7 +171,11 @@
     <ClInclude Include="GameCore\Input\Include\GamePad.hpp" />
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
-    <ClInclude Include="GameCore\Sprite\NullTextureMap.hpp" />
+    <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\Skybox.hpp" />
+    <ClInclude Include="GameCore\Rendering\Light\LightType.hpp" />
+    <ClInclude Include="GameCore\Rendering\Sprite\Include\Image.hpp" />
+    <ClInclude Include="GameCore\Rendering\Sprite\Include\NullTextureMap.hpp" />
+    <ClInclude Include="GameCore\Rendering\Sprite\Include\Sprite.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Memory.hpp" />
@@ -182,6 +187,7 @@
     <ClInclude Include="GameUtility\Math\Include\GMCollision.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMColor.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMDistribution.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMHash.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMInterpolation.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMMath.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMMatrix.hpp" />
@@ -208,6 +214,7 @@
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Shader.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Texture.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12VertexTypes.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12RootSignature.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12BLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreEngine.hpp" />
@@ -224,6 +231,7 @@
     <ClCompile Include="GameCore\Audio\Source\AudioSource3D.cpp" />
     <ClCompile Include="GameCore\Audio\Source\WavDecoder.cpp" />
     <ClCompile Include="GameCore\Core\Source\Camera.cpp" />
+    <ClCompile Include="GameCore\Core\Source\GameActor.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameComponent.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameObject.cpp" />
     <ClCompile Include="GameCore\Core\Source\ResourceManager.cpp" />
@@ -231,6 +239,9 @@
     <ClCompile Include="GameCore\Input\Source\GamePad.cpp" />
     <ClCompile Include="GameCore\Input\Source\Keyboard.cpp" />
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
+    <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\Skybox.cpp" />
+    <ClCompile Include="GameCore\Rendering\Sprite\Source\Image.cpp" />
+    <ClCompile Include="GameCore\Rendering\Sprite\Source\Sprite.cpp" />
     <ClCompile Include="GameUtility\Base\Source\GameTimer.cpp" />
     <ClCompile Include="GameUtility\Base\Source\Screen.cpp" />
     <ClCompile Include="GameUtility\File\Source\Csv.cpp" />
@@ -247,6 +258,7 @@
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Shader.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Texture.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12VertexTypes.cpp" />
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12RootSignature.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12BLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\GraphicsCoreEngine.cpp" />
@@ -257,6 +269,7 @@
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />
     <None Include="GameUtility\Math\Include\GMSimdFunctions.inl" />
+    <None Include="Shader\Core\ShaderVertexType.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc" />

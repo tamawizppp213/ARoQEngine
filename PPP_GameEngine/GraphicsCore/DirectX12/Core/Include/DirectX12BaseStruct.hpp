@@ -1005,7 +1005,7 @@ struct ROOT_PARAMETER : public D3D12_ROOT_PARAMETER
 		_In_reads_(numDescriptorRanges) const D3D12_DESCRIPTOR_RANGE* descriptorRanges,
 		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
 	{
-		rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		rootParameter.ParameterType    = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 		rootParameter.ShaderVisibility = visibility;
 		ROOT_DESCRIPTOR_TABLE::Init(rootParameter.DescriptorTable, numDescriptorRanges, descriptorRanges);
 	}
@@ -1017,7 +1017,7 @@ struct ROOT_PARAMETER : public D3D12_ROOT_PARAMETER
 		UINT registerSpace = 0,
 		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
 	{
-		rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		rootParameter.ParameterType    = D3D12_ROOT_PARAMETER_TYPE_CBV;
 		rootParameter.ShaderVisibility = visibility;
 		ROOT_CONSTANTS::Init(rootParameter.Constants, num32BitValues, shaderRegister, registerSpace);
 	}
@@ -1028,7 +1028,7 @@ struct ROOT_PARAMETER : public D3D12_ROOT_PARAMETER
 		UINT registerSpace = 0,
 		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
 	{
-		rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		rootParameter.ParameterType    = D3D12_ROOT_PARAMETER_TYPE_CBV;
 		rootParameter.ShaderVisibility = visibility;
 		ROOT_DESCRIPTOR::Init(rootParameter.Descriptor, shaderRegister, registerSpace);
 	}
@@ -1039,7 +1039,7 @@ struct ROOT_PARAMETER : public D3D12_ROOT_PARAMETER
 		UINT registerSpace = 0,
 		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
 	{
-		rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+		rootParameter.ParameterType    = D3D12_ROOT_PARAMETER_TYPE_SRV;
 		rootParameter.ShaderVisibility = visibility;
 		ROOT_DESCRIPTOR::Init(rootParameter.Descriptor, shaderRegister, registerSpace);
 	}
@@ -1050,7 +1050,7 @@ struct ROOT_PARAMETER : public D3D12_ROOT_PARAMETER
 		UINT registerSpace = 0,
 		D3D12_SHADER_VISIBILITY visibility = D3D12_SHADER_VISIBILITY_ALL)
 	{
-		rootParameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_UAV;
+		rootParameter.ParameterType    = D3D12_ROOT_PARAMETER_TYPE_UAV;
 		rootParameter.ShaderVisibility = visibility;
 		ROOT_DESCRIPTOR::Init(rootParameter.Descriptor, shaderRegister, registerSpace);
 	}
@@ -1248,10 +1248,10 @@ struct ROOT_SIGNATURE_DESC : public D3D12_ROOT_SIGNATURE_DESC
 		_In_reads_opt_(numStaticSamplers) const D3D12_STATIC_SAMPLER_DESC* staticSamplers = NULL,
 		D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_NONE)
 	{
-		desc.NumParameters = numParameters;
-		desc.pParameters = parameters;
+		desc.NumParameters     = numParameters;
+		desc.pParameters       = parameters;
 		desc.NumStaticSamplers = numStaticSamplers;
-		desc.pStaticSamplers = staticSamplers;
+		desc.pStaticSamplers   = staticSamplers;
 		desc.Flags = flags;
 	}
 

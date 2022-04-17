@@ -80,7 +80,7 @@ BlobComPtr CompileShader(
 
 	HRESULT hresult = S_OK;
 	BlobComPtr byteCode = nullptr;
-	BlobComPtr errors = nullptr;
+	BlobComPtr errors   = nullptr;
 
 	hresult = compiler->Compile(
 		source.Get(),

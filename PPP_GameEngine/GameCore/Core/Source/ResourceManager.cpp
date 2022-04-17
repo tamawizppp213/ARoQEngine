@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Core/Include/ResourceManager.hpp"
 #include "GameCore/Audio/Include/AudioClip.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12Texture.hpp"
 #include <unordered_map>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -46,6 +47,7 @@ private:
 	**                Private Member Variables
 	*****************************************************************************/
 	std::unordered_map<std::wstring, AudioClip> AudioTable;
+
 
 };
 ResourceManager::Implementation::Implementation()

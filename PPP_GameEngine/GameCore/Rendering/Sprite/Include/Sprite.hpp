@@ -1,40 +1,51 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TemplateText.hpp
-///             @brief  TemplateText
+///             @file   Sprite.hpp
+///             @brief  Sprite
 ///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @date   2022_04_16
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SCENE_HPP
-#define SCENE_HPP
+#ifndef SPRITE_HPP
+#define SPRITE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12VertexTypes.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class GameTimer;
+
 //////////////////////////////////////////////////////////////////////////////////
-//                             Scene class
+//                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+
 /****************************************************************************
-*				  			 Scene
+*				  			Sprite
 *************************************************************************//**
-*  @class     Scene
-*  @brief     Scene
+*  @class     Sprite
+*  @brief     2D Sprite 
 *****************************************************************************/
-class Scene
+class Sprite
 {
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	virtual void Initialize(GameTimer* gameTimer);
-	virtual void Update   () = 0;
-	virtual void Draw     () = 0;
-	virtual void Terminate() = 0;
+	void CreateInScreenSpace(
+		const gm::Float2& position,
+		const gm::Float2& rectSize,
+		const gm::Float2& u        = gm::Float2(0,1),
+		const gm::Float2& v        = gm::Float2(0,1),
+		const gm::Float4 color     = gm::Float4(1,1,1,1), 
+		float radian = 0);
+	void CreateInNDCSpace(
+		const gm::Float2& position = gm::Float2(0, 0),
+		const gm::Float2& rectSize = gm::Float2(2, 2),
+		const gm::Float2& u        = gm::Float2(0, 1),
+		const gm::Float2& v        = gm::Float2(0, 1),
+		const gm::Float4 color     = gm::Float4(1, 1, 1, 1));
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
@@ -42,19 +53,20 @@ public:
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	Scene();
-	virtual ~Scene();
+	Sprite()                         = default;
+	Sprite(const Sprite&)            = default;
+	Sprite& operator=(const Sprite&) = default;
+	Sprite(Sprite&&)                 = default;
+	Sprite& operator=(Sprite&&)      = default;
 protected:
 	/****************************************************************************
 	**                Protected Function
 	*****************************************************************************/
-	virtual void LoadMaterials(GameTimer* gameTimer) = 0;
-	virtual void OnKeyboardInput() {};
-	virtual void OnMouseInput   () {};
-	virtual void OnGamePadInput () {};
+
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
-
+	VertexPositionNormalColorTexture _vertices[4] = {};
+	UINT16 _indices[6] = { 0,1,2,2,1,3 };
 };
 #endif

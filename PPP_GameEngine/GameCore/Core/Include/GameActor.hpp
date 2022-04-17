@@ -5,36 +5,34 @@
 ///             @date   2022_03_11
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SCENE_HPP
-#define SCENE_HPP
+#ifndef GAME_ACTOR_HPP
+#define GAME_ACTOR_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
+#include "GameObject.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class GameTimer;
+
 //////////////////////////////////////////////////////////////////////////////////
-//                             Scene class
+//                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+
 /****************************************************************************
-*				  			 Scene
+*				  			GameActor
 *************************************************************************//**
-*  @class     Scene
-*  @brief     Scene
+*  @class     GameActor
+*  @brief     Updatable object
 *****************************************************************************/
-class Scene
+class GameActor : public GameObject
 {
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	virtual void Initialize(GameTimer* gameTimer);
-	virtual void Update   () = 0;
-	virtual void Draw     () = 0;
-	virtual void Terminate() = 0;
+	virtual void Update(float deltaTime) = 0;
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
@@ -42,19 +40,20 @@ public:
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	Scene();
-	virtual ~Scene();
+	GameActor();
+	GameActor(const GameActor&)            = default;
+	GameActor& operator=(const GameActor&) = default;
+	GameActor(GameActor&&)                 = default;
+	GameActor& operator=(GameActor&&)      = default;
+	~GameActor();
 protected:
 	/****************************************************************************
 	**                Protected Function
 	*****************************************************************************/
-	virtual void LoadMaterials(GameTimer* gameTimer) = 0;
-	virtual void OnKeyboardInput() {};
-	virtual void OnMouseInput   () {};
-	virtual void OnGamePadInput () {};
+	void UpdateComponents(float deltaTime);
+
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
-
 };
 #endif

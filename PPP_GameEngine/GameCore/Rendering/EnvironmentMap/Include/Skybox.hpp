@@ -5,36 +5,37 @@
 ///             @date   2022_03_11
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SCENE_HPP
-#define SCENE_HPP
+#ifndef SKYBOX_HPP
+#define SKYBOX_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12Texture.hpp"
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class GameTimer;
+
 //////////////////////////////////////////////////////////////////////////////////
-//                             Scene class
+//                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
-*				  			 Scene
+*				  			TemplateClass
 *************************************************************************//**
-*  @class     Scene
-*  @brief     Scene
+*  @class     TemplateClass
+*  @brief     temp
 *****************************************************************************/
-class Scene
+class Skybox
 {
+	using SceneGPUAddress = UINT64;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	virtual void Initialize(GameTimer* gameTimer);
-	virtual void Update   () = 0;
-	virtual void Draw     () = 0;
-	virtual void Terminate() = 0;
+	void Initialze(const std::wstring& texturePath);
+	void Draw(SceneGPUAddress scene);
+	void Finalize();
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
@@ -42,19 +43,16 @@ public:
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	Scene();
-	virtual ~Scene();
+	Skybox() = default;
+	~Skybox() = default;
 protected:
 	/****************************************************************************
-	**                Protected Function
-	*****************************************************************************/
-	virtual void LoadMaterials(GameTimer* gameTimer) = 0;
-	virtual void OnKeyboardInput() {};
-	virtual void OnMouseInput   () {};
-	virtual void OnGamePadInput () {};
-	/****************************************************************************
-	**                Protected Member Variables
+	**                Private Function
 	*****************************************************************************/
 
+	/****************************************************************************
+	**                Private Member Variables
+	*****************************************************************************/
+	Texture _texture;
 };
 #endif
