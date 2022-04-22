@@ -96,12 +96,13 @@ public:
 	inline INT            GetCurrentFrameIndex     () const { return _currentFrameIndex; }
 	INT            GetCurrentBackBufferIndex() const;
 	inline DXGI_FORMAT    GetBackBufferRenderFormat() const { return _backBufferFormat; }
-	inline INT  GetCbvSrvUavDescriptorHeapSize     () const { return _cbvSrvUavDescriptorSize; }
+	inline DXGI_FORMAT    GetDepthStencilViewFormat() const { return _depthStencilFormat; }
+	inline INT         GetCbvSrvUavDescriptorHeapSize     () const { return _cbvSrvUavDescriptorSize; }
 	StaticSamplerArray GetStaticSamplers();
 	UINT IssueViewID(HeapFlag heapFlag);
 	void ResetViewID(HeapFlag heapFlag);
 	inline bool Get4xMsaaState() const { return _4xMsaaState; }
-
+	inline UINT Get4xMsaaQuality() const { return _4xMsaaQuality; }
 	inline void SetHWND(HWND hwnd) { _hwnd = hwnd; }
 	
 	/****************************************************************************
@@ -219,7 +220,7 @@ private:
 	-                     Syncronization object
 	---------------------------------------------------------------------*/
 	UINT64      _currentFenceValue[FRAME_BUFFER_COUNT] = { 0,0 };
-	FenceComPtr _fence = nullptr;
+	FenceComPtr _fence      = nullptr;
 	HANDLE      _fenceEvent = nullptr;
 	/*-------------------------------------------------------------------
 	-                     MSAA: One of the Anti-Alias

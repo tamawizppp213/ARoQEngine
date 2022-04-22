@@ -9,6 +9,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12PipelineState.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12RootSignature.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GameUtility/Math/Include/GMHash.hpp"
 #include <thread>
@@ -39,9 +41,20 @@ GraphicsPipelineState::GraphicsPipelineState(const wchar_t* name) : PipelineStat
 {
 	ZeroMemory(&_psoDescriptor, sizeof(_psoDescriptor));
 	_psoDescriptor.NodeMask                = 1;
-	_psoDescriptor.SampleMask              = 0xFFFFFFFFu;
-	_psoDescriptor.SampleDesc.Count        = 1;
+	_psoDescriptor.pRootSignature          = nullptr;
+	_psoDescriptor.SampleMask              = D3D12_DEFAULT_SAMPLE_MASK;
 	_psoDescriptor.InputLayout.NumElements = 0;
+	_psoDescriptor.RasterizerState         = RASTERIZER_DESC(D3D12_DEFAULT);
+	_psoDescriptor.BlendState              = BLEND_DESC(D3D12_DEFAULT);
+	_psoDescriptor.PrimitiveTopologyType   = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	_psoDescriptor.SampleDesc.Count        = 1;
+	_psoDescriptor.SampleDesc.Quality      = 0;
+	_psoDescriptor.DepthStencilState       = DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	_psoDescriptor.DepthStencilState.DepthEnable    = true;
+	_psoDescriptor.DepthStencilState.DepthFunc      = D3D12_COMPARISON_FUNC_LESS;
+	_psoDescriptor.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	_psoDescriptor.DepthStencilState.StencilEnable  = true;
+
 }
 /****************************************************************************
 *                       SetRenderTargetFormats
@@ -110,7 +123,7 @@ void GraphicsPipelineState::CompleteSetting(IDevice* device)
 	/*-------------------------------------------------------------------
 	-                      Set  RootSignature
 	---------------------------------------------------------------------*/
-	_psoDescriptor.pRootSignature = _rootSignature;
+	_psoDescriptor.pRootSignature = _rootSignature->GetSignature();
 	assert(_psoDescriptor.pRootSignature != nullptr);
 	/*-------------------------------------------------------------------
 	-                      Set Input layout 
@@ -180,7 +193,7 @@ void ComputePipelineState::CompleteSetting(IDevice* device)
 	/*-------------------------------------------------------------------
 	-                      Set  RootSignature
 	---------------------------------------------------------------------*/
-	_psoDescriptor.pRootSignature = _rootSignature;
+	_psoDescriptor.pRootSignature = _rootSignature->GetSignature();
 	assert(_psoDescriptor.pRootSignature != nullptr);
 	/*-------------------------------------------------------------------
 	-                      Set Input layout 

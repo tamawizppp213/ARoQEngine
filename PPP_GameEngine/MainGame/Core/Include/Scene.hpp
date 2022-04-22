@@ -12,10 +12,12 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
+#include "GameCore/Input/Include/GameInput.hpp"
+#include "GameUtility/Base/Include/GameTimer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class GameTimer;
+
 //////////////////////////////////////////////////////////////////////////////////
 //                             Scene class
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +34,7 @@ public:
 	**                Public Function
 	*****************************************************************************/
 	virtual void Initialize(GameTimer* gameTimer);
-	virtual void Update   () = 0;
+	virtual void Update   ();
 	virtual void Draw     () = 0;
 	virtual void Terminate() = 0;
 	/****************************************************************************
@@ -42,8 +44,8 @@ public:
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	Scene();
-	virtual ~Scene();
+	Scene() = default;
+	virtual ~Scene() = default;
 protected:
 	/****************************************************************************
 	**                Protected Function
@@ -52,9 +54,15 @@ protected:
 	virtual void OnKeyboardInput() {};
 	virtual void OnMouseInput   () {};
 	virtual void OnGamePadInput () {};
+	virtual void ExecuteSceneTransition(){};
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
+	GraphicsCoreEngine& _engine      = GraphicsCoreEngine::Instance();
+	GameInput& _gameInput            = GameInput::Instance();
+	GameTimer* _gameTimer            = nullptr;
+	bool _hasExecutedSceneTransition = false;
+	bool _hasExecutedBackScene       = false;
 
 };
 #endif

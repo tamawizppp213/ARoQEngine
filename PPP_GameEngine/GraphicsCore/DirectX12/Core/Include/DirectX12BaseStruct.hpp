@@ -145,7 +145,7 @@ struct BLEND_DESC : public D3D12_BLEND_DESC
 
 	explicit BLEND_DESC(NULL_STRUCT)
 	{
-		AlphaToCoverageEnable = FALSE;
+		AlphaToCoverageEnable  = FALSE;
 		IndependentBlendEnable = FALSE;
 		const D3D12_RENDER_TARGET_BLEND_DESC defaultRenderTargetBlendDesc =
 		{

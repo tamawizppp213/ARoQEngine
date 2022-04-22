@@ -12,11 +12,17 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Texture.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
 #include <string>
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+struct MeshBuffer;
+namespace gm
+{
+	struct Matrix4;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,17 +35,19 @@
 class Skybox
 {
 	using SceneGPUAddress = UINT64;
+	using MeshBufferPtr     = std::unique_ptr<MeshBuffer[]>;
+	using ObjectConstantPtr = std::unique_ptr<UploadBuffer>;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void Initialze(const std::wstring& texturePath);
+	void Initialze(const std::wstring& texturePath, const std::wstring& addName = L"");
 	void Draw(SceneGPUAddress scene);
 	void Finalize();
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-
+	
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -47,12 +55,17 @@ public:
 	~Skybox() = default;
 protected:
 	/****************************************************************************
-	**                Private Function
+	**                Protected Function
 	*****************************************************************************/
-
+	void PrepareRootSignature(const std::wstring& addName);
+	void PreparePipelineState(const std::wstring& addName);
+	void PrepareVertexAndIndexBuffer(const std::wstring& addName);
+	void PrepareSkyObject(const std::wstring& addName);
 	/****************************************************************************
-	**                Private Member Variables
+	**                Protected Member Variables
 	*****************************************************************************/
-	Texture _texture;
+	Texture           _texture;
+	MeshBufferPtr     _meshBuffer = nullptr;
+	ObjectConstantPtr _skyObject  = nullptr;
 };
 #endif

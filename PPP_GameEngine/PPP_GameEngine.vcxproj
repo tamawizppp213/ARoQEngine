@@ -201,6 +201,7 @@
     <ClInclude Include="GameUtility\Math\Include\GMVector.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12BaseStruct.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12BlendState.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Buffer.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Core.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Debug.hpp" />
@@ -212,16 +213,21 @@
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12CommandContext.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Shader.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12StaticSampler.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Texture.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12VertexTypes.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12RootSignature.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12BLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp" />
+    <ClInclude Include="GraphicsCore\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreEngine.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreResourceType.hpp" />
     <ClInclude Include="MainGame\Core\Include\Application.hpp" />
     <ClInclude Include="MainGame\Core\Include\Scene.hpp" />
+    <ClInclude Include="MainGame\Core\Include\SceneManager.hpp" />
     <ClInclude Include="MainGame\Core\Include\TemplateText.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -249,6 +255,7 @@
     <ClCompile Include="GameUtility\File\Source\Json.cpp" />
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12BlendState.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Buffer.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Core.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp" />
@@ -256,6 +263,7 @@
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12PrimitiveGeometry.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12CommandContext.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Shader.cpp" />
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12StaticSampler.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Texture.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12VertexTypes.cpp" />
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12RootSignature.cpp" />
@@ -265,14 +273,29 @@
     <ClCompile Include="MainGame\Core\Source\Application.cpp" />
     <ClCompile Include="MainGame\Core\Source\Main.cpp" />
     <ClCompile Include="MainGame\Core\Source\Scene.cpp" />
+    <ClCompile Include="MainGame\Core\Source\SceneManager.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleEmpty.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleSky.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />
     <None Include="GameUtility\Math\Include\GMSimdFunctions.inl" />
+    <None Include="Shader\Core\ShaderColor.hlsli" />
+    <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
     <None Include="Shader\Core\ShaderVertexType.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\EnvironmentMap\ShaderSkybox.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.6</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

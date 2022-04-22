@@ -34,12 +34,14 @@ public:
 	/*-------------------------------------------------------------------
 	-                        Clear
 	---------------------------------------------------------------------*/
-	void ClearAudioTable() { AudioTable.clear(); }
+	inline void ClearAudioTable() { AudioTable.clear(); }
+	inline void ClearTexture() { TextureManager::ClearTextureTable(); }
 	void ClearAllResources();
 	/*-------------------------------------------------------------------
 	-                        Get
 	---------------------------------------------------------------------*/
-	AudioClip& GetAudioClip(const std::wstring& name) { return AudioTable[name]; }
+	inline AudioClip& GetAudioClip(const std::wstring& name) { return AudioTable[name]; }
+	inline const Texture& GetTexture(const std::wstring& name, TextureType type = TextureType::Texture2D) { return TextureManager::LoadTexture(name, type); }
 	Implementation();
 	~Implementation();
 private:
@@ -47,7 +49,6 @@ private:
 	**                Private Member Variables
 	*****************************************************************************/
 	std::unordered_map<std::wstring, AudioClip> AudioTable;
-
 
 };
 ResourceManager::Implementation::Implementation()
@@ -61,6 +62,7 @@ ResourceManager::Implementation::~Implementation()
 void ResourceManager::Implementation::ClearAllResources()
 {
 	ClearAudioTable();
+	ClearTexture();
 }
 
 #pragma region Public Function
@@ -72,6 +74,11 @@ ResourceManager::~ResourceManager()
 {
 
 }
+const Texture& ResourceManager::LoadTexture(const std::wstring& name, TextureType type)
+{
+	return TextureManager::LoadTexture(name, type);
+}
+
 #pragma region Exists
 /****************************************************************************
 *                       ExistsAudioClip

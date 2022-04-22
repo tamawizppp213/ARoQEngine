@@ -18,7 +18,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class AudioClip;
-class Texture;
+struct Texture;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,8 +35,8 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	AudioClip& LoadAudio  (const std::wstring& name);
-	Texture&   LoadTexture(const std::wstring& name, TextureType type = TextureType::Texture2D);
+	//AudioClip& LoadAudio  (const std::wstring& name);
+	const Texture& LoadTexture(const std::wstring& name, TextureType type = TextureType::Texture2D);
 	/*-------------------------------------------------------------------
 	-                        Clear
 	---------------------------------------------------------------------*/

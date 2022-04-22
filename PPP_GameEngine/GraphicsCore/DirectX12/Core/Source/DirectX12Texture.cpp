@@ -105,7 +105,7 @@ void TextureManager::CreateTexture3D(const std::wstring& name, Texture& texture,
 *  @param[out] Texture& texture
 *  @return @@ int
 *****************************************************************************/
-void TextureManager::LoadTexture(const std::wstring& filePath, Texture& texture, TextureType type)
+const Texture& TextureManager::LoadTexture(const std::wstring& filePath, TextureType type)
 {
 	auto& engine = GraphicsCoreEngine::Instance();
 	/*-------------------------------------------------------------------
@@ -113,13 +113,13 @@ void TextureManager::LoadTexture(const std::wstring& filePath, Texture& texture,
 	---------------------------------------------------------------------*/
 	if (_textureTable.find(filePath) != _textureTable.end())
 	{
-		texture = *_textureTable[filePath].get();
-		return;
+		return *_textureTable[filePath].get();
 	}
 
 	/*-------------------------------------------------------------------
 	-                Choose Extension and Load Texture Data
 	---------------------------------------------------------------------*/
+	Texture texture;
 	TexMetadata  metaData     = {};
 	ScratchImage scratchImage = {};
 	bool isDXT                = false;
@@ -217,16 +217,14 @@ void TextureManager::LoadTexture(const std::wstring& filePath, Texture& texture,
 	/*-------------------------------------------------------------------
 	-                    Describe texture infomation
 	---------------------------------------------------------------------*/
-	Texture addTexture;
-	addTexture.Resource   = texture.Resource;
-	addTexture.Format     = texture.Resource->GetDesc().Format;
-	addTexture.PixelSize  = gm::Float3((float)image->width, (float)image->height,0.0f);
-	addTexture.Resource->SetName(filePath.c_str());
+	texture.Format     = texture.Resource->GetDesc().Format;
+	texture.PixelSize  = gm::Float3((float)image->width, (float)image->height,0.0f);
+	texture.Resource->SetName(filePath.c_str());
 	/*-------------------------------------------------------------------
 	-                    Add texture table
 	---------------------------------------------------------------------*/
-	_textureTable[filePath] = std::make_unique<Texture>(addTexture);
-	texture = std::move(addTexture);
+	_textureTable[filePath] = std::make_unique<Texture>(texture);
+	return *_textureTable[filePath].get();
 }
 /****************************************************************************
 *							  CreateTexture

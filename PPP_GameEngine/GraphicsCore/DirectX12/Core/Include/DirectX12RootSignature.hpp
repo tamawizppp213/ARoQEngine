@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "DirectX12Core.hpp"
-#include <d3d12.h>
+#include "DirectX12StaticSampler.hpp"
 #include <memory>
 #include <string>
 
@@ -83,6 +83,8 @@ public:
 	**                Public Function
 	*****************************************************************************/
 	static void DestroyAll();
+	void SetStaticSampler(SamplerType type);
+	void SetStaticSampler(const D3D12_STATIC_SAMPLER_DESC& sampler);
 	void Reset(UINT numParameter = 0, UINT numStaticSampler = 0);
 	void Create(IDevice* device, const std::wstring& name, D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_NONE);
 	/****************************************************************************
@@ -113,6 +115,7 @@ protected:
 	bool            _hasFinalized    = false;
 	UINT            _numStaticSampler = 0;
 	UINT            _numRootParameter = 0;
+	UINT            _numInitializedStaticSamplers = 0;
 	UINT32          _descriptorTableBitMap; // One bit is set for root parameters that are non-sampler descriptor tables
 	UINT32          _samplerTableBitMap;
 	UINT32          _descriptorTableSize[16];

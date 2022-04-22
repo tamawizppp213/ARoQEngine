@@ -26,6 +26,18 @@ void RootSignature::DestroyAll()
 {
 	g_RootSignatureHashMap.clear();
 }
+void RootSignature::SetStaticSampler(const D3D12_STATIC_SAMPLER_DESC& sampler)
+{
+	assert(_numInitializedStaticSamplers < _numStaticSampler);
+	D3D12_STATIC_SAMPLER_DESC& desc = _staticSamplers[_numInitializedStaticSamplers++];
+	desc = sampler;
+}
+void RootSignature::SetStaticSampler(SamplerType type)
+{
+	assert(_numInitializedStaticSamplers < _numStaticSampler);
+	_staticSamplers[_numInitializedStaticSamplers] = GetStaticSampler(type, _numInitializedStaticSamplers);
+	_numInitializedStaticSamplers++;
+}
 
 void RootSignature::Reset(UINT numParameter, UINT numStaticSampler)
 {
@@ -40,8 +52,8 @@ void RootSignature::Reset(UINT numParameter, UINT numStaticSampler)
 	---------------------------------------------------------------------*/
 	if (numStaticSampler > 0){ _staticSamplers.reset(new D3D12_STATIC_SAMPLER_DESC[numStaticSampler]); }
 	else                     { _staticSamplers = nullptr; }
-	_numStaticSampler = numStaticSampler;
-	
+	_numStaticSampler             = numStaticSampler;
+	_numInitializedStaticSamplers = 0;
 	_hasFinalized = false;
 }
 
@@ -152,4 +164,5 @@ void RootSignature::Create(IDevice* device, const std::wstring& name, D3D12_ROOT
 	}
 	_hasFinalized = true;
 }
+
 #pragma endregion RootSignature

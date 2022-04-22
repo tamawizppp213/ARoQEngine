@@ -33,7 +33,7 @@ enum class GPUVender
 //////////////////////////////////////////////////////////////////////////////////
 GraphicsDeviceDirectX12::GraphicsDeviceDirectX12()
 {
-
+	printf("DirectX12Started");
 }
 GraphicsDeviceDirectX12::~GraphicsDeviceDirectX12()
 {
@@ -1368,7 +1368,7 @@ void GraphicsDeviceDirectX12::ReportLiveObjects()
 	ID3D12DebugDevice2* debugInterface = nullptr;
 	if (SUCCEEDED(_device.Get()->QueryInterface(&debugInterface)))
 	{
-		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
+		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL); // Only Objects with external reference counts
 		debugInterface->Release();
 	}
 }
@@ -1514,8 +1514,8 @@ bool GraphicsDeviceDirectX12::CheckHDRDisplaySupport()
 
 		if (!isDisplayHDR10)
 		{
-			//_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-			//isEnabledHDR = false;
+			_backBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			isEnabledHDR = false;
 		}
 	}
 

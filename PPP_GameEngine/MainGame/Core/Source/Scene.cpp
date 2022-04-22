@@ -17,3 +17,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Public Function
+void Scene::Initialize(GameTimer* gameTimer)
+{
+	_gameTimer = gameTimer;
+	LoadMaterials(gameTimer);
+}
+void Scene::Update()
+{
+	OnKeyboardInput();
+	OnMouseInput();
+	OnGamePadInput();
+}
+#pragma endregion Public Function
