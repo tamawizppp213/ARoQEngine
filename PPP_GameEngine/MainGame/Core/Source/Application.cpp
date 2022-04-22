@@ -31,6 +31,7 @@ bool Application::StartUp()
 {
 	if (!CreateMainWindow())                               { return false; }
 	if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
+
 	return true;
 }
 

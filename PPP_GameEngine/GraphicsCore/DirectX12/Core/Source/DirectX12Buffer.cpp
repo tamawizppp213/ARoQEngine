@@ -18,7 +18,9 @@
 #pragma region Upload Buffer
 UploadBuffer::UploadBuffer(IDevice* device, UINT elementByteSize, UINT elementCount, bool isConstantBuffer, const std::wstring& addName)
 {
+	_isConstantBuffer = isConstantBuffer;
 	_elementByteSize = _isConstantBuffer ? CalcConstantBufferByteSize(elementByteSize) : elementByteSize;
+	_elementCount    = elementCount;
 	/*-------------------------------------------------------------------
 	-           Create 
 	---------------------------------------------------------------------*/
@@ -40,36 +42,7 @@ UploadBuffer::UploadBuffer(IDevice* device, UINT elementByteSize, UINT elementCo
 	_resource->SetName(name.c_str());
 
 }
-/****************************************************************************
-*                       CopyData
-*************************************************************************//**
-*  @fn        void UploadBuffer::CopyData(int elementIndex, const void* data)
-*  @brief     Copy data to gpu
-*  @param[in] int elementIndex
-*  @param[in] void* data
-*  @return 　　void
-*****************************************************************************/
-void UploadBuffer::CopyData(int elementIndex, const void* data)
-{
-	ThrowIfFailed(_resource->Map(0, nullptr, reinterpret_cast<void**>(&_mappedData)));
-	std::memcpy(&_mappedData[elementIndex * _elementByteSize], &data, _elementByteSize);
-	_resource->Unmap(0, nullptr);
-}
-/****************************************************************************
-*                       CopyTotalData
-*************************************************************************//**
-*  @fn        void UploadBuffer::CopyTotalData(const void* data, int dataLength)
-*  @brief     Copy total data to gpu
-*  @param[in] const void* data
-*  @param[in] int dataLength
-*  @return 　　void
-*****************************************************************************/
-void UploadBuffer::CopyTotalData(const void* data, int dataLength)
-{
-	ThrowIfFailed(_resource->Map(0, nullptr, reinterpret_cast<void**>(&_mappedData)));
-	std::memcpy(&_mappedData[0], data, _elementByteSize * (size_t)dataLength);
-	_resource->Unmap(0, nullptr);
-}
+
 #pragma endregion      Upload Buffer
 #pragma region GPUBuffer
 

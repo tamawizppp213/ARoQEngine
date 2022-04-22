@@ -213,6 +213,24 @@
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12RootSignature.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12StaticSampler.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12BlendState.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGame\Core\Include\SceneManager.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -335,6 +353,21 @@
     <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12RootSignature.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12StaticSampler.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12BlendState.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGame\Sample\Source\SampleSky.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGame\Core\Source\SceneManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGame\Sample\Source\SampleEmpty.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -344,10 +377,15 @@
       <Filter>ヘッダー ファイル</Filter>
     </None>
     <None Include="Shader\Core\ShaderVertexType.hlsli" />
+    <None Include="Shader\Core\ShaderColor.hlsli" />
+    <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc">
       <Filter>リソース ファイル</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\EnvironmentMap\ShaderSkybox.hlsl" />
   </ItemGroup>
 </Project>

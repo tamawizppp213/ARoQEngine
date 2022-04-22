@@ -46,8 +46,10 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void CopyData(int elementIndex, const void* data);
-	void CopyTotalData(const void* data, int dataLength);
+	inline void CopyStart() { ThrowIfFailed(_resource->Map(0, nullptr, reinterpret_cast<void**>(&_mappedData))); }
+	inline void CopyData(int elementIndex, const void* data){ std::memcpy(&_mappedData[elementIndex * _elementByteSize], &data, _elementByteSize); }
+	inline void CopyTotalData(const void* data, int dataLength){ std::memcpy(&_mappedData[0], data, _elementByteSize * (size_t)dataLength); }
+	inline void CopyEnd(){ _resource->Unmap(0, nullptr); }
 	void Destroy() override
 	{
 		if (_resource)     { _resource = nullptr; }
@@ -57,7 +59,9 @@ public:
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-
+	inline UINT GetElementCount   () { return _elementCount; }
+	inline UINT GetElementByteSize() { return _elementByteSize; }
+	inline UINT GetTotalByteSize  () { return _elementByteSize * _elementCount; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -77,6 +81,7 @@ private:
 	*****************************************************************************/
 	BYTE* _mappedData      = nullptr;
 	UINT  _elementByteSize = 0;
+	UINT  _elementCount    = 0;
 	bool _isConstantBuffer = false;
 };
 #pragma endregion  UploadBuffer
@@ -90,68 +95,44 @@ private:
 *****************************************************************************/
 struct MeshBuffer
 {
+	using VertexBufferPtr = std::unique_ptr<UploadBuffer>;
+	using IndexBufferPtr  = std::unique_ptr<UploadBuffer>;
 public:
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	BlobComPtr     VertexBufferCPU      = nullptr;
-	BlobComPtr     IndexBufferCPU       = nullptr;
-	ResourceComPtr VertexBufferGPU      = nullptr;
-	ResourceComPtr IndexBufferGPU       = nullptr;
-	ResourceComPtr VertexBufferUploader = nullptr;
-	ResourceComPtr IndexBufferUploader  = nullptr;
-
-	UINT IndexCount = 0;
-	UINT StartIndexLocation   = 0;
-	INT  BaseVertexLocation   = 0;
-	UINT VertexByteStride     = 0;
-	UINT VertexBufferByteSize = 0;
-	UINT IndexBufferByteSize  = 0;
-	DXGI_FORMAT IndexFormat   = DXGI_FORMAT_R16_UINT;
+	VertexBufferPtr VertexBuffer = nullptr;
+	IndexBufferPtr  IndexBuffer = nullptr;
+	DXGI_FORMAT  IndexFormat   = DXGI_FORMAT_R16_UINT;
 
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	inline D3D12_VERTEX_BUFFER_VIEW VertexBufferView() const
+	inline D3D12_VERTEX_BUFFER_VIEW VertexBufferView()
 	{
 		D3D12_VERTEX_BUFFER_VIEW vbv={};
-		vbv.BufferLocation = VertexBufferGPU->GetGPUVirtualAddress();
-		vbv.StrideInBytes  = VertexByteStride;
-		vbv.SizeInBytes    = VertexBufferByteSize;
+		vbv.BufferLocation = VertexBuffer->GetGPUVirtualAddress();
+		vbv.StrideInBytes  = VertexBuffer->GetElementByteSize();
+		vbv.SizeInBytes    = VertexBuffer->GetTotalByteSize();
 
 		return vbv;
 	}
 
-	inline D3D12_INDEX_BUFFER_VIEW IndexBufferView() const
+	inline D3D12_INDEX_BUFFER_VIEW IndexBufferView()
 	{
 		D3D12_INDEX_BUFFER_VIEW ibv={};
-		ibv.BufferLocation = IndexBufferGPU->GetGPUVirtualAddress();
+		ibv.BufferLocation = IndexBuffer->GetGPUVirtualAddress();
 		ibv.Format         = IndexFormat;
-		ibv.SizeInBytes    = IndexBufferByteSize;
+		ibv.SizeInBytes    = IndexBuffer->GetTotalByteSize();
 
 		return ibv;
 	}
 
-	inline void DisposeUploaders()
-	{
-		VertexBufferUploader = nullptr;
-		IndexBufferUploader  = nullptr;
-	}
 
 	inline void Dispose()
 	{
-		IndexCount = 0;
-		StartIndexLocation   = 0;
-		BaseVertexLocation   = 0;
-		VertexByteStride     = 0;
-		VertexBufferByteSize = 0;
-		IndexBufferByteSize  = 0;
-		if (VertexBufferCPU) { VertexBufferCPU = nullptr; }
-		if (IndexBufferCPU)  { IndexBufferCPU  = nullptr; }
-		if (VertexBufferGPU) { VertexBufferGPU = nullptr; }
-		if (IndexBufferGPU)  { IndexBufferGPU  = nullptr; }
-		if (VertexBufferUploader) { VertexBufferUploader = nullptr; }
-		if (IndexBufferUploader) { IndexBufferUploader   = nullptr; }
+		if (VertexBuffer != nullptr) { VertexBuffer.reset(); }
+		if (IndexBuffer  != nullptr) { IndexBuffer.reset(); }
 	}
 	/****************************************************************************
 	**                Constructor
@@ -161,7 +142,10 @@ public:
 	MeshBuffer& operator=(const MeshBuffer&) = default;
 	MeshBuffer(MeshBuffer&&)                 = default;
 	MeshBuffer& operator=(MeshBuffer&&)      = default;
-	~MeshBuffer() {};
+	~MeshBuffer() 
+	{
+		Dispose();
+	};
 private:
 };
 #pragma endregion MeshBuffer
@@ -187,7 +171,7 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSRV() const;
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUUAV() const;
 
-	UINT64 GetBufferSize     () const { return _elementByteSize * _elementCount; }
+	UINT64 GetBufferSize     () const { return (UINT64)_elementByteSize * _elementCount; }
 	UINT   GetElementByteSize() const { return _elementByteSize; }
 	UINT   GetElementCount   () const { return _elementCount; }
 	/****************************************************************************

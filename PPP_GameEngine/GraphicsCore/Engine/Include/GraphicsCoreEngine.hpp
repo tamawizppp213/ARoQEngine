@@ -39,7 +39,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	static GraphicsCoreEngine& Instance() { static GraphicsCoreEngine engine; return engine; }
+	inline static GraphicsCoreEngine& Instance() { static GraphicsCoreEngine engine; return engine; }
 	/*-------------------------------------------------------------------
 	-          Start up application and ShutDown application
 	---------------------------------------------------------------------*/
@@ -71,14 +71,16 @@ public:
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	      GraphicsDeviceDirectX12* GetGraphicsDevice()       { return _device.get(); }
-	const GraphicsDeviceDirectX12* GetGraphicsDevice() const { return _device.get(); }
-	      CommandContext* GetCommandContext()       { return _commandContext.get(); }
-	const CommandContext* GetCommandContext() const { return _commandContext.get(); }
-	
+	inline       GraphicsDeviceDirectX12* GetGraphicsDevice()       { return _device.get(); }
+	inline const GraphicsDeviceDirectX12* GetGraphicsDevice() const { return _device.get(); }
+	inline       CommandContext* GetCommandContext()       { return _commandContext.get(); }
+	inline const CommandContext* GetCommandContext() const { return _commandContext.get(); }
+	inline       IDevice* GetDevice()       { return _device->GetDevice(); }
+	inline const IDevice* GetDevice() const { return _device->GetDevice(); }
+
 	int GetCurrentFrameIndex();
 	int GetNextFrameBufferIndex();
-
+	int GetFrameBufferCount();
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
