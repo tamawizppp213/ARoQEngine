@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "DirectX12BaseStruct.hpp"
+#include "DirectX12GPUResource.hpp"
 #include <dxgiformat.h>
 #include <array>
 //////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +51,7 @@ class GraphicsDeviceDirectX12
 	using StaticSamplerArray = std::array<const STATIC_SAMPLER_DESC, 6>;
 public:
 	static const UINT32 FRAME_BUFFER_COUNT = 3;
-	static const UINT32 VSYNC = 1; // 0: don't wait, 1:wait(60fps)
+	static const UINT32 VSYNC = 0; // 0: don't wait, 1:wait(60fps)
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
@@ -75,13 +76,13 @@ public:
 	inline const ICommandQueue* GetCommandQueue       ()                     const { return _commandQueue.Get(); }
 	inline       Resource*    GetDepthStencil        ()                            { return _depthStencilBuffer.Get(); }
 	inline const Resource*    GetDepthStencil        ()                      const { return _depthStencilBuffer.Get(); }
-	inline       Resource*    GetCurrentRenderTarget ()                            { return _renderTargetList[_currentFrameIndex].Get(); }
-	inline const Resource*    GetCurrentRenderTarget ()                      const { return _renderTargetList[_currentFrameIndex].Get(); }
-	inline       Resource*    GetRenderTargetResource(RenderTargetType type)       { return _renderTargetList[(int)type].Get(); }
-	inline const Resource*    GetRenderTargetResource(RenderTargetType type) const { return _renderTargetList[(int)type].Get(); }
+	inline       GPUResource* GetCurrentRenderTarget ()                            { return &_renderTargetList[_currentFrameIndex]; }
+	inline const GPUResource*    GetCurrentRenderTarget ()                      const { return &_renderTargetList[_currentFrameIndex]; }
+	inline       Resource*    GetRenderTargetResource(RenderTargetType type)       { return _renderTargetList[(int)type].GetResource(); }
+	inline const Resource*    GetRenderTargetResource(RenderTargetType type) const { return _renderTargetList[(int)type].GetResource(); }
 	inline      IDescriptorHeap* GetCbvSrvUavHeap()       { return _cbvSrvUavHeap.Get(); }
 	inline const IDescriptorHeap* GetCbvSrvUavHeap() const { return _cbvSrvUavHeap.Get(); }
-
+	inline D3D12_GRAPHICS_PIPELINE_STATE_DESC GetDefaultPSOConfig() const { return _defaultPSODesc; }
 	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDsvHeapStart      () const { return _dsvHeap.Get()->GetCPUDescriptorHandleForHeapStart(); }
 	inline D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDsvHeapStart      () const { return _dsvHeap.Get()->GetGPUDescriptorHandleForHeapStart(); }
 	inline D3D12_CPU_DESCRIPTOR_HANDLE GetCPURtvHeapStart      () const { return _rtvHeap.Get()->GetCPUDescriptorHandleForHeapStart(); }
@@ -187,7 +188,7 @@ private:
 	DescriptorHeapComPtr         _cbvSrvUavHeap = nullptr;      /// Heap For Constant Buffer View
 	PipelineStateComPtr          _pipelineState = nullptr;      /// Graphic Pipeline State
 	ResourceComPtr               _depthStencilBuffer = nullptr; /// DepthStencl Buffer   
-	ResourceComPtr               _renderTargetList[FRAME_BUFFER_COUNT];
+	GPUResource                  _renderTargetList[FRAME_BUFFER_COUNT];
 	ResourceAllocator*           _rtvAllocator = nullptr;
 	ResourceAllocator*           _dsvAllocator = nullptr;
 	ResourceAllocator*           _cbvAllocator = nullptr;

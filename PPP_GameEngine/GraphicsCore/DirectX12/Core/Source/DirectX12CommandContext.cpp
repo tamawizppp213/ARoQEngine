@@ -60,9 +60,11 @@ void CommandContext::TransitionResourceState(Resource* resource, D3D12_RESOURCE_
 *****************************************************************************/
 void CommandContext::CopyBuffer(GPUResource* dest, GPUResource* source)
 {
+	auto initSourceState = source->GetUsageState();
+	auto initDestState   = dest->GetUsageState();
 	PrepareCopyBuffer(dest, source);
 	_commandList->CopyResource(dest->GetResource(), source->GetResource());
-	PrepareCopyBuffer(source, dest);
+	CompleteCopyBuffer(dest, source, initDestState, initSourceState);
 }
 /****************************************************************************
 *                   CopyBufferRegion
@@ -78,9 +80,11 @@ void CommandContext::CopyBuffer(GPUResource* dest, GPUResource* source)
 *****************************************************************************/
 void CommandContext::CopyBufferRegion(GPUResource* dest, size_t destOffset, GPUResource* source, size_t sourceOffset, size_t numBytes)
 {
+	auto initSourceState = source->GetUsageState();
+	auto initDestState   = dest->GetUsageState();
 	PrepareCopyBuffer(dest, source);
 	_commandList->CopyBufferRegion(dest->GetResource(), destOffset, source->GetResource(), sourceOffset, numBytes);
-	PrepareCopyBuffer(source, dest);
+	CompleteCopyBuffer(dest, source, initDestState, initSourceState);
 }
 /****************************************************************************
 *                   CopyTextureRegion
@@ -97,11 +101,13 @@ void CommandContext::CopyBufferRegion(GPUResource* dest, size_t destOffset, GPUR
 *****************************************************************************/
 void CommandContext::CopyTextureRegion(GPUResource* dest, GPUResource* source, D3D12_BOX& rect, UINT x, UINT y, UINT z)
 {
+	auto initSourceState = source->GetUsageState();
+	auto initDestState   = dest->GetUsageState();
 	PrepareCopyBuffer(dest, source);
 	D3D12_TEXTURE_COPY_LOCATION destLocation   = TEXTURE_COPY_LOCATION(dest->GetResource(), 0);
 	D3D12_TEXTURE_COPY_LOCATION sourceLocation = TEXTURE_COPY_LOCATION(source->GetResource(), 0);
 	_commandList->CopyTextureRegion(&destLocation, x, y, z, &sourceLocation, &rect);
-	PrepareCopyBuffer(source, dest);
+	CompleteCopyBuffer(dest, source, initDestState, initSourceState);
 }
 #pragma region Protected Function
 void CommandContext::PrepareCopyBuffer(GPUResource* dest, GPUResource* source)
@@ -113,6 +119,18 @@ void CommandContext::PrepareCopyBuffer(GPUResource* dest, GPUResource* source)
 	};
 	source->TransitionState(D3D12_RESOURCE_STATE_COPY_SOURCE);
 	dest->TransitionState(D3D12_RESOURCE_STATE_COPY_DEST);
+	ResourceBarriers(_countof(barrier), barrier);
+}
+
+void CommandContext::CompleteCopyBuffer(GPUResource* dest, GPUResource* source, const D3D12_RESOURCE_STATES& toDestState, const D3D12_RESOURCE_STATES& toSourceState)
+{
+	BARRIER barrier[] =
+	{
+		BARRIER::Transition(source->GetResource(), source->GetUsageState(), toSourceState),
+		BARRIER::Transition(dest->GetResource()  , dest->GetUsageState()  , toDestState)
+	};
+	source->TransitionState(toSourceState);
+	dest->TransitionState(toDestState);
 	ResourceBarriers(_countof(barrier), barrier);
 }
 #pragma endregion Protected Function

@@ -231,6 +231,15 @@
     <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="MainGame\Core\Include\GameManager.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Format\Include\PMXFormat.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -368,6 +377,12 @@
     <ClCompile Include="MainGame\Sample\Source\SampleEmpty.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="MainGame\Core\Source\GameManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\ColorChange.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -379,6 +394,7 @@
     <None Include="Shader\Core\ShaderVertexType.hlsli" />
     <None Include="Shader\Core\ShaderColor.hlsli" />
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
+    <None Include="Shader\Lighting\ShaderBRDF.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc">
@@ -387,5 +403,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\EnvironmentMap\ShaderSkybox.hlsl" />
+    <FxCompile Include="Shader\Sprite\ShaderDefault2D.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderColorChange.hlsl" />
   </ItemGroup>
 </Project>

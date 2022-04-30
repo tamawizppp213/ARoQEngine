@@ -106,11 +106,11 @@ struct VSOutputPositionNormalColor
     float4 Color : COLOR;
 };
 
-struct VSIOutputPositionNormalTexture
+struct VSOutputPositionNormalTexture
 {
     float4 Position : SV_POSITION;
-    float4 Normal : NORMAL;
-    float2 UV : TEXCOORD0;
+    float4 Normal   : NORMAL;
+    float2 UV       : TEXCOORD0;
 };
 
 struct VSOutputPositionNormalColorTexture

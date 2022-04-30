@@ -20,8 +20,11 @@
 D3D12_BLEND_DESC GetBlendState(BlendStateType type)
 {
 	D3D12_BLEND_DESC blendDesc;
-	blendDesc.IndependentBlendEnable      = false; // all blend states is the same setting.
-	blendDesc.AlphaToCoverageEnable       = true;
+	blendDesc.IndependentBlendEnable      = FALSE; // all blend states is the same setting.
+	blendDesc.AlphaToCoverageEnable       = TRUE;
+
+	blendDesc.RenderTarget[0].LogicOp               = D3D12_LOGIC_OP_NOOP;
+	blendDesc.RenderTarget[0].LogicOpEnable         = FALSE;
 	blendDesc.RenderTarget[0].SrcBlend              = D3D12_BLEND_SRC_ALPHA;
 	blendDesc.RenderTarget[0].DestBlend             = D3D12_BLEND_INV_SRC_ALPHA;
 	blendDesc.RenderTarget[0].BlendOp               = D3D12_BLEND_OP_ADD;
@@ -51,5 +54,9 @@ D3D12_BLEND_DESC GetBlendState(BlendStateType type)
 		}
 	}
 
-	return blendDesc;
+	for (UINT i = 1; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
+	{
+		blendDesc.RenderTarget[i] = blendDesc.RenderTarget[0];
+	}
+	return blendDesc;	
 }

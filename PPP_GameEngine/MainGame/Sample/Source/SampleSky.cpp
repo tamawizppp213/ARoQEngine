@@ -10,11 +10,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Sample/Include/SampleSky.hpp"
 #include "GameCore/Rendering/EnvironmentMap/Include/Skybox.hpp"
+#include "GameCore/Core/Include/Camera.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace sample;
+namespace
+{
 
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -38,6 +42,7 @@ SampleSky::~SampleSky()
 void SampleSky::Initialize(GameTimer* gameTimer)
 {
 	Scene::Initialize(gameTimer);
+	PrepareCamera();
 }
 /****************************************************************************
 *                       Update
@@ -50,6 +55,7 @@ void SampleSky::Initialize(GameTimer* gameTimer)
 void SampleSky::Update()
 {
 	Scene::Update();
+	_camera->Update(_gameTimer);
 }
 /****************************************************************************
 *                       Draw
@@ -61,7 +67,10 @@ void SampleSky::Update()
 *****************************************************************************/
 void SampleSky::Draw()
 {
-	_skybox->Draw(0);
+	_engine.BeginDrawFrame();
+	_skybox->Draw(_camera->GetSceneGPUAddress());
+	
+	_engine.EndDrawFrame();
 }
 /****************************************************************************
 *                       Terminate
@@ -79,6 +88,24 @@ void SampleSky::Terminate()
 
 #pragma region Protected Function
 /****************************************************************************
+*                       PrepareCamera
+*************************************************************************//**
+*  @fn        void SampleSky::PrepareCamera()
+*  @brief     Prepare camera
+*  @param[in] void
+*  @return Å@Å@void
+*****************************************************************************/
+void SampleSky::PrepareCamera()
+{
+	/*-------------------------------------------------------------------
+	-           Camera
+	---------------------------------------------------------------------*/
+	_camera = std::make_unique<Camera>();
+	_camera->StartUp(_engine.GetDevice());
+	_camera->SetPosition(0.0f, 10.0f, -20.0f);
+
+}
+/****************************************************************************
 *                       LoadMaterials
 *************************************************************************//**
 *  @fn        void SampleSky::LoadMaterials(GameTimer* gameTimer)
@@ -88,6 +115,9 @@ void SampleSky::Terminate()
 *****************************************************************************/
 void SampleSky::LoadMaterials(GameTimer* gameTimer)
 {
+	/*-------------------------------------------------------------------
+	-           Skybox
+	---------------------------------------------------------------------*/
 	_skybox = std::make_unique<Skybox>();
 	_skybox->Initialze(L"Resources/grasscube1024.dds");
 }
@@ -101,6 +131,22 @@ void SampleSky::LoadMaterials(GameTimer* gameTimer)
 *****************************************************************************/
 void SampleSky::OnKeyboardInput()
 {
+	const float deltaTime = _gameTimer->DeltaTime();
+	const float speed     = 0.25f;
+	/*-------------------------------------------------------------------
+	-           Keyboad Input W (Move Camera )
+	---------------------------------------------------------------------*/
+	if (_gameInput.GetKeyboard().IsPress(DIK_W))
+	{
+		_camera->Walk(speed * deltaTime);
+	}
+	/*-------------------------------------------------------------------
+	-           Keyboad Input S (Move Camera)
+	---------------------------------------------------------------------*/
+	if (_gameInput.GetKeyboard().IsPress(DIK_S))
+	{
+		_camera->Walk(-speed * deltaTime);
+	}
 
 }
 /****************************************************************************
@@ -113,7 +159,17 @@ void SampleSky::OnKeyboardInput()
 *****************************************************************************/
 void SampleSky::OnMouseInput()
 {
+	/*-------------------------------------------------------------------
+	-           Mouse Input Left Button
+	---------------------------------------------------------------------*/
+	if (_gameInput.GetMouse().IsPress(MouseButton::LEFT))
+	{
+		float dx = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse().GetMouseVelocity().x)); // 0.25f: ä¥ìxê›íËÇµÇΩÇ¢
+		float dy = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse().GetMouseVelocity().y));
 
+		_camera->RotatePitch(dy);
+		_camera->RotateWorldY(dx);
+	}
 }
 /****************************************************************************
 *                       OnGamePadInput

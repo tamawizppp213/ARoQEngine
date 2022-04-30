@@ -217,6 +217,7 @@ const Texture& TextureManager::LoadTexture(const std::wstring& filePath, Texture
 	/*-------------------------------------------------------------------
 	-                    Describe texture infomation
 	---------------------------------------------------------------------*/
+	texture.TextureID  = _id;
 	texture.Format     = texture.Resource->GetDesc().Format;
 	texture.PixelSize  = gm::Float3((float)image->width, (float)image->height,0.0f);
 	texture.Resource->SetName(filePath.c_str());

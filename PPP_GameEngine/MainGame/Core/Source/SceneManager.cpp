@@ -45,6 +45,7 @@ void SceneManager::TransitScene(ScenePtr scene, GameTimer* gameTimer)
 void SceneManager::CallSceneInitialize(GameTimer* gameTimer)
 {
 	_currentScene.top()->Initialize(gameTimer);
+	//GraphicsCoreEngine::Instance().OnInitializeRenderScene();
 }
 void SceneManager::CallSceneUpdate()
 {
@@ -57,6 +58,7 @@ void SceneManager::CallSceneDraw()
 void SceneManager::CallSceneTerminate()
 {
 	_currentScene.top()->Terminate();
+	GraphicsCoreEngine::Instance().OnTerminateRenderScene();
 }
 void SceneManager::PushScene(ScenePtr scene)
 {

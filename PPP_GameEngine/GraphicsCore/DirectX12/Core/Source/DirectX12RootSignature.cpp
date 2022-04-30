@@ -16,7 +16,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-static std::map<size_t, RootSignatureComPtr> g_RootSignatureHashMap;
+static std::map<size_t, RootSignatureComPtr> s_RootSignatureHashMap;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -24,7 +24,7 @@ static std::map<size_t, RootSignatureComPtr> g_RootSignatureHashMap;
 #pragma region RootSignature
 void RootSignature::DestroyAll()
 {
-	g_RootSignatureHashMap.clear();
+	s_RootSignatureHashMap.clear();
 }
 void RootSignature::SetStaticSampler(const D3D12_STATIC_SAMPLER_DESC& sampler)
 {
@@ -32,13 +32,29 @@ void RootSignature::SetStaticSampler(const D3D12_STATIC_SAMPLER_DESC& sampler)
 	D3D12_STATIC_SAMPLER_DESC& desc = _staticSamplers[_numInitializedStaticSamplers++];
 	desc = sampler;
 }
+/****************************************************************************
+*							SetStaticSampler
+*************************************************************************//**
+*  @fn        void RootSignature::SetStaticSampler(SamplerType type)
+*  @brief     Set static sampler
+*  @param[in] SamplerType type
+*  @return Å@ void
+*****************************************************************************/
 void RootSignature::SetStaticSampler(SamplerType type)
 {
 	assert(_numInitializedStaticSamplers < _numStaticSampler);
 	_staticSamplers[_numInitializedStaticSamplers] = GetStaticSampler(type, _numInitializedStaticSamplers);
 	_numInitializedStaticSamplers++;
 }
-
+/****************************************************************************
+*							Reset
+*************************************************************************//**
+*  @fn        void RootSignature::Reset(UINT numParameter, UINT numStaticSampler)
+*  @brief     Reset root parameter and static sampler
+*  @param[in] UINT numParameter
+*  @param[in] UINT numStaticSampler
+*  @return Å@  void
+*****************************************************************************/
 void RootSignature::Reset(UINT numParameter, UINT numStaticSampler)
 {
 	/*-------------------------------------------------------------------
@@ -56,10 +72,19 @@ void RootSignature::Reset(UINT numParameter, UINT numStaticSampler)
 	_numInitializedStaticSamplers = 0;
 	_hasFinalized = false;
 }
-
-void RootSignature::Create(IDevice* device, const std::wstring& name, D3D12_ROOT_SIGNATURE_FLAGS flags)
+/****************************************************************************
+*							CompleteSetting
+*************************************************************************//**
+*  @fn        void RootSignature::CompleteSetting(IDevice* device, const std::wstring& name, D3D12_ROOT_SIGNATURE_FLAGS flags)
+*  @brief     Complete Setting
+*  @param[in,out] IDevice* device
+*  @param[in]     const std::wstring& name
+*  @param[in]     D3D12_ROOT_SIGNATURE_FLAG flag
+*  @return Å@ void
+*****************************************************************************/
+void RootSignature::CompleteSetting(IDevice* device, const std::wstring& name, D3D12_ROOT_SIGNATURE_FLAGS flags)
 {
-	if (_hasFinalized) { return; }
+	if (_hasFinalized) { printf("Already complete rootSignature\n"); return; }
 
 	/*-------------------------------------------------------------------
 	-               Set Root Signature Desc
@@ -67,7 +92,7 @@ void RootSignature::Create(IDevice* device, const std::wstring& name, D3D12_ROOT
 	size_t hashCode = 0;
 	D3D12_ROOT_SIGNATURE_DESC rootDescriptor = {};
 	rootDescriptor.NumParameters     = _numRootParameter;
-	rootDescriptor.pParameters       = (const D3D12_ROOT_PARAMETER*)_rootParameters.get();
+	rootDescriptor.pParameters       = _rootParameters.get()->GetAddress();
 	rootDescriptor.NumStaticSamplers = _numStaticSampler;
 	rootDescriptor.pStaticSamplers   = (const D3D12_STATIC_SAMPLER_DESC*)_staticSamplers.get();
 	rootDescriptor.Flags             = flags;
@@ -77,32 +102,14 @@ void RootSignature::Create(IDevice* device, const std::wstring& name, D3D12_ROOT
 	/*-------------------------------------------------------------------
 	-               Set Root Signature Desc
 	---------------------------------------------------------------------*/
-	_descriptorTableBitMap = 0;
-	_samplerTableBitMap    = 0;
 	for (UINT parameter = 0; parameter < _numRootParameter; ++parameter)
 	{
 		const D3D12_ROOT_PARAMETER& rootParameter = rootDescriptor.pParameters[parameter];
-		_descriptorTableSize[parameter] = 0;
 
 		if (rootParameter.ParameterType == D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE)
 		{
 			assert(rootParameter.DescriptorTable.pDescriptorRanges != nullptr);
 			hashCode = gm::HashState(rootParameter.DescriptorTable.pDescriptorRanges, rootParameter.DescriptorTable.NumDescriptorRanges, hashCode);
-			
-			// We keep track of sampler descriptor tables separately from CBV_SRV_UAV descriptor tables
-			if (rootParameter.DescriptorTable.pDescriptorRanges->RangeType == D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER)
-			{
-				_samplerTableBitMap |= (1 << parameter);
-			}
-			else
-			{
-				_descriptorTableBitMap |= (1 << parameter);
-			}
-
-			for (UINT tableRange = 0; tableRange < rootParameter.DescriptorTable.NumDescriptorRanges; ++tableRange)
-			{
-				_descriptorTableSize[parameter] += rootParameter.DescriptorTable.pDescriptorRanges[tableRange].NumDescriptors;
-			}
 		}
 		else
 		{
@@ -118,10 +125,10 @@ void RootSignature::Create(IDevice* device, const std::wstring& name, D3D12_ROOT
 		static std::mutex hashMapMutex;
 		std::lock_guard<std::mutex> lockGuard(hashMapMutex);
 
-		auto iterator = g_RootSignatureHashMap.find(hashCode);
-		if (iterator == g_RootSignatureHashMap.end())
+		auto iterator = s_RootSignatureHashMap.find(hashCode);
+		if (iterator == s_RootSignatureHashMap.end())
 		{
-			g_RootSignatureHashMap[hashCode].GetAddressOf();
+			rootSignatureReference = s_RootSignatureHashMap[hashCode].GetAddressOf();
 			firstComplile = true;
 		}
 		else
@@ -138,7 +145,7 @@ void RootSignature::Create(IDevice* device, const std::wstring& name, D3D12_ROOT
 		BlobComPtr rootSigBlob = nullptr;
 		BlobComPtr errorBlob   = nullptr;
 
-		HRESULT hresult = D3D12SerializeRootSignature(&rootDescriptor, D3D_ROOT_SIGNATURE_VERSION_1, &rootSigBlob, &errorBlob);
+		HRESULT hresult = D3D12SerializeRootSignature(&rootDescriptor, D3D_ROOT_SIGNATURE_VERSION_1, rootSigBlob.GetAddressOf(), errorBlob.GetAddressOf());
 
 		if (errorBlob != nullptr)
 		{
@@ -149,13 +156,14 @@ void RootSignature::Create(IDevice* device, const std::wstring& name, D3D12_ROOT
 			::OutputDebugStringA("Result False");
 		}
 
-		if (FAILED(device->CreateRootSignature( 0, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(&_rootSignature))))
+		if (FAILED(device->CreateRootSignature( 1, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(&_rootSignature))))
 		{
 			::OutputDebugStringA("Failed to create rootsignature");
 		};
 
 		_rootSignature->SetName(name.c_str());
-		g_RootSignatureHashMap[hashCode].Attach(_rootSignature);
+		s_RootSignatureHashMap[hashCode].Attach(_rootSignature);
+		assert(*rootSignatureReference == _rootSignature);
 	}
 	else
 	{

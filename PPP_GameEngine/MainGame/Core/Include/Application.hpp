@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/GameTimer.hpp"
 #include "GameCore/Input/Include/GameInput.hpp"
+#include "GameManager.hpp"
 #include <Windows.h>
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -73,6 +74,7 @@ private:
 	WNDCLASSEX _windowClass = {};
 	GameTimer  _gameTimer;
 	GameInput& _gameInput = GameInput::Instance();
+	GameManager& _gameManager = GameManager::Instance();
 	bool _isApplicationPaused = false;
 };
 #endif

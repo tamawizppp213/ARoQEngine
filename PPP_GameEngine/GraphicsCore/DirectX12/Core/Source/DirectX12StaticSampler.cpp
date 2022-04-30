@@ -20,8 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 D3D12_STATIC_SAMPLER_DESC GetStaticSampler(SamplerType type, UINT shaderRegister)
 {
-	STATIC_SAMPLER_DESC samplerDesc;
-	samplerDesc.ShaderRegister = shaderRegister;
+	STATIC_SAMPLER_DESC samplerDesc(shaderRegister);
 	switch (type)
 	{
 		case SamplerType::SamplerPointWrap:

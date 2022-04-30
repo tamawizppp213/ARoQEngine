@@ -48,6 +48,7 @@ void GraphicsCoreEngine::StartUp(HWND hwnd)
 	-            Complete Initialize
 	---------------------------------------------------------------------*/
 	_hasInitialized = true;
+	_device->ResetCommandList();
 }
 /****************************************************************************
 *							OnResize

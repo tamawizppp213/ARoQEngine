@@ -11,11 +11,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12Core.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+class UploadBuffer;
+class GameTimer;
 //////////////////////////////////////////////////////////////////////////////////
 //								Camera 
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +37,7 @@ struct Frustum
 	float NearWindowHeight;
 	float FarWindowHeight;
 };
+
 /****************************************************************************
 *				  			Camera
 *************************************************************************//**
@@ -42,10 +46,36 @@ struct Frustum
 *****************************************************************************/
 class Camera
 {
+	struct SceneConstants
+	{
+		gm::Float4x4 View                    = gm::MatrixIdentityF();
+		gm::Float4x4 InverseView             = gm::MatrixIdentityF();
+		gm::Float4x4 Projection              = gm::MatrixIdentityF();
+		gm::Float4x4 InverseProjection       = gm::MatrixIdentityF();
+		gm::Float4x4 ViewProjection          = gm::MatrixIdentityF();
+		gm::Float4x4 InverseViewProjection   = gm::MatrixIdentityF();
+		gm::Float3   EyePosition             = { 0.0f, 0.0f, 0.0f };
+		float        cbPerObjectPad1         = 0.0f;
+		gm::Float2   RenderTargetSize        = { 0.0f, 0.0f };
+		gm::Float2   InverseRenderTargetSize = { 0.0f, 0.0f };
+
+		float  NearZ                         = 0.0f;
+		float  FarZ                          = 0.0f;
+		float  TotalTime                     = 0.0f;
+		float  DeltaTime                     = 0.0f;
+	};
+	using SceneConstantBuffer = std::unique_ptr<UploadBuffer>;
+	using SceneGPUAddress = UINT64;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
+	void StartUp(IDevice* device);
+	void Update(GameTimer* gameTimer);
+	/****************************************************************************
+	**                Public Member Variables
+	*****************************************************************************/
+	SceneGPUAddress GetSceneGPUAddress() const;
 	// World Camera Position
 	gm::Vector3 GetPosition()   const;
 	gm::Float3  GetPosition3f() const;
@@ -101,12 +131,7 @@ public:
 	void Strafe(float distance);
 	void Walk(float distance);
 
-	// After modifying camera position / orientation, call to rebuild the matrix.
-	void UpdateViewMatrix();
-	/****************************************************************************
-	**                Public Member Variables
-	*****************************************************************************/
-
+	
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -117,9 +142,15 @@ public:
 	Camera& operator=(Camera&&) = default;
 
 	~Camera();
-private:
+protected:
 	/****************************************************************************
-	**                Private Function
+	**                Protected Function
+	*****************************************************************************/
+	void UpdateSceneConstants(GameTimer* gameTimer);
+	// After modifying camera position / orientation, call to rebuild the matrix.
+	void UpdateViewMatrix();
+	/****************************************************************************
+	**                Public Member Variables
 	*****************************************************************************/
 	gm::Float3 _position = { 0.0f, 0.0f, 0.0f };
 	gm::Float3 _right    = { 1.0f, 0.0f, 0.0f };
@@ -132,10 +163,6 @@ private:
 
 	gm::Float4x4 _view = gm::MatrixIdentityF();
 	gm::Float4x4 _proj = gm::MatrixIdentityF();
-
-	/****************************************************************************
-	**                Public Member Variables
-	*****************************************************************************/
-
+	SceneConstantBuffer _sceneConstantBuffer = nullptr;
 };
 #endif

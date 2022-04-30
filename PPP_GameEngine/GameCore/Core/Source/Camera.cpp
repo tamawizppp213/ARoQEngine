@@ -10,6 +10,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Core/Include/Camera.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include "GameUtility/Base/Include/GameTimer.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,7 +22,7 @@ using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
 Camera::Camera()
 {
-	SetLens(0.25f * GM_PI, Screen::GetAspectRatio(), 1.0f, 1000.0f);
+
 }
 
 Camera::~Camera()
@@ -28,6 +30,17 @@ Camera::~Camera()
 
 }
 
+void Camera::StartUp(IDevice* device)
+{
+	SetLens(0.25f * GM_PI, Screen::GetAspectRatio(), 1.0f, 1000.0f);
+	_sceneConstantBuffer = std::make_unique<UploadBuffer>(device,sizeof(SceneConstants), 1, true, L"SceneConstants");
+}
+
+void Camera::Update(GameTimer* gameTimer)
+{
+	UpdateViewMatrix();
+	UpdateSceneConstants(gameTimer);
+}
 
 /****************************************************************************
 *                       RotateRoll
@@ -353,6 +366,10 @@ void Camera::UpdateViewMatrix()
 }
 
 #pragma region Property
+Camera::SceneGPUAddress Camera::GetSceneGPUAddress() const
+{
+	return _sceneConstantBuffer->GetGPUVirtualAddress();
+}
 Vector3 Camera::GetPosition() const
 {
 	return Vector3(_position);
@@ -474,3 +491,42 @@ Float4x4 Camera::GetProjectionMatrix4x4f() const
 	return _proj;
 }
 #pragma endregion Property
+
+#pragma region Protected Function
+void Camera::UpdateSceneConstants(GameTimer* gameTimer)
+{
+	SceneConstants scene;
+
+	Matrix4 view                      = GetViewMatrix();
+	Matrix4 projection                = GetProjectionMatrix();
+	Matrix4 viewProjection            = view * projection; 
+
+	Vector4 viewDeterminant           = Determinant(view);
+	Vector4 projectionDeterminant     = Determinant(projection);
+	Vector4 viewProjectionDeterminant = Determinant(viewProjection);
+
+	Matrix4 inverseView               = Inverse(viewDeterminant          , view);
+	Matrix4 inverseProjection         = Inverse(projectionDeterminant    , projection);
+	Matrix4 inverseViewProjection = Inverse(viewProjectionDeterminant, viewProjection);
+	// note: Texture and shadow related features will be added later.
+
+	scene.View                  = view.ToFloat4x4();
+	scene.InverseView           = inverseView.ToFloat4x4();
+	scene.Projection            = projection .ToFloat4x4();
+	scene.InverseProjection     = inverseProjection.ToFloat4x4();
+	scene.ViewProjection        = viewProjection.ToFloat4x4();
+	scene.InverseViewProjection = inverseViewProjection.ToFloat4x4();
+
+	scene.EyePosition             = GetPosition3f();
+	scene.RenderTargetSize        = Float2((float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight());
+	scene.InverseRenderTargetSize = Float2(1.0f / Screen::GetScreenWidth(), 1.0f / Screen::GetScreenHeight());
+	scene.NearZ                   = GetNearZ();
+	scene.FarZ                    = GetFarZ();
+	scene.TotalTime               = gameTimer->TotalTime();
+	scene.DeltaTime               = gameTimer->DeltaTime();
+
+	_sceneConstantBuffer->CopyStart();
+	_sceneConstantBuffer->CopyData(0, &scene);
+	_sceneConstantBuffer->CopyEnd();
+}
+#pragma endregion Protected Function

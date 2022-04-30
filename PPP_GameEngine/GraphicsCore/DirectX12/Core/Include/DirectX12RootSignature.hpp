@@ -24,10 +24,10 @@
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
-*				  			TemplateClass
+*				  			RootParameter
 *************************************************************************//**
-*  @class     TemplateClass
-*  @brief     temp
+*  @class     RootParameter
+*  @brief     Root parameter
 *****************************************************************************/
 class RootParameter
 {
@@ -48,13 +48,17 @@ public:
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-
+	const D3D12_ROOT_PARAMETER* GetAddress() const { return &_rootParameter; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
 	RootParameter(){ _rootParameter.ParameterType = (D3D12_ROOT_PARAMETER_TYPE)0xFFFFFFFF; }
-	explicit RootParameter(const D3D12_ROOT_PARAMETER& rootParameter) { _rootParameter = rootParameter; }
-	virtual ~RootParameter() { Clear(); }
+	explicit RootParameter(const D3D12_ROOT_PARAMETER& rootParameter) { _rootParameter = rootParameter;}
+	~RootParameter() { Clear(); }
+	RootParameter(const RootParameter&)            = default;
+	RootParameter& operator=(const RootParameter&) = default;
+	RootParameter(RootParameter&&)                 = default;
+	RootParameter& operator=(RootParameter&&)      = default;
 
 	const D3D12_ROOT_PARAMETER& operator()(void) const { return _rootParameter; }
 protected:
@@ -69,10 +73,10 @@ protected:
 };
 
 /****************************************************************************
-*				  			TemplateClass
+*				  			RootSignature
 *************************************************************************//**
-*  @class     TemplateClass
-*  @brief     temp
+*  @class     RootSignature
+*  @brief     RootSignature
 *****************************************************************************/
 class RootSignature
 {
@@ -86,11 +90,11 @@ public:
 	void SetStaticSampler(SamplerType type);
 	void SetStaticSampler(const D3D12_STATIC_SAMPLER_DESC& sampler);
 	void Reset(UINT numParameter = 0, UINT numStaticSampler = 0);
-	void Create(IDevice* device, const std::wstring& name, D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_NONE);
+	void CompleteSetting(IDevice* device, const std::wstring& name, D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	IRootSignature* GetSignature() const { return _rootSignature; }
+	IRootSignature* GetSignature(){ return _rootSignature; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -116,9 +120,6 @@ protected:
 	UINT            _numStaticSampler = 0;
 	UINT            _numRootParameter = 0;
 	UINT            _numInitializedStaticSamplers = 0;
-	UINT32          _descriptorTableBitMap; // One bit is set for root parameters that are non-sampler descriptor tables
-	UINT32          _samplerTableBitMap;
-	UINT32          _descriptorTableSize[16];
 	IRootSignature*  _rootSignature  = nullptr;
 	RootParameterPtr _rootParameters = nullptr;
 	StaticSamplerPtr _staticSamplers = nullptr;
