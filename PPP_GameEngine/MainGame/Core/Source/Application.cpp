@@ -40,6 +40,7 @@ void Application::Run()
 	MSG message = { NULL };
 
 	_gameTimer.Reset();
+	_gameManager.GameStart(_gameTimer, _mainWindow);
 	/*---------------------------------------------------------------
 						Main Loop
 	-----------------------------------------------------------------*/
@@ -57,6 +58,7 @@ void Application::Run()
 			{
 				_gameTimer.AverageFrame(_mainWindow);
 				_gameInput.Update();
+				_gameManager.GameMain();
 			}
 		}
 	}
@@ -65,6 +67,7 @@ void Application::Run()
 void Application::ShutDown()
 {
 	_gameInput.Finalize();
+	_gameManager.GameEnd();
 }
 
 #pragma region Private Function

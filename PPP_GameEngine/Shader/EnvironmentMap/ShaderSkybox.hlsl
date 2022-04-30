@@ -2,7 +2,7 @@
 //              Title:  ShaderSkybox.hlsli
 //            Content:  Create Skybox
 //             Author:  Toide Yutaro
-//             Create:  2020_03_21
+//             Create:  2020_04_25
 //////////////////////////////////////////////////////////////////////////////////
 #ifndef SHADER_SKYBOX_HLSL
 #define SHADER_SKYBOX_HLSL
@@ -53,9 +53,10 @@ VertexOut VSMain(VertexIn vertexIn)
     result.Position = mul(ProjectionView, positionWorld).xyww;
     return result;
 }
+
 float4 PSMain(VertexOut input) : SV_TARGET
 {
-    float4 result = CubeMap.Sample(SamplerLinearWrap, input.LookDirection);
+    float4 result = float4(CubeMap.Sample(SamplerLinearWrap, input.LookDirection));
     result.rgb    = SRGBToLinear(result.rgb);
     return result;
 }

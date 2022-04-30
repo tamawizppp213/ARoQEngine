@@ -27,6 +27,7 @@ namespace DirectX
 struct Texture
 {
 	GPUResource Resource;
+	int         TextureID;
 	DXGI_FORMAT Format;
 	gm::Float3  PixelSize;
 	~Texture();

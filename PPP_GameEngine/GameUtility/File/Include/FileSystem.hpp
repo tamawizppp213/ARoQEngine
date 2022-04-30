@@ -47,5 +47,7 @@ namespace file
 		static FILE* OpenFile(const std::wstring& filePath, const std::string& mode = "rb");
 		static FILE* OpenFile(const std::string & filePath, const std::string& mode = "rb");
 	};
+
+	
 }
 #endif

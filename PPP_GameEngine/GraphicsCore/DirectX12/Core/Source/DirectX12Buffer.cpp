@@ -137,7 +137,10 @@ void ColorBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT width, UI
 	-                  Create Texture 
 	---------------------------------------------------------------------*/
 	CreateTexture(width, height, arraySize, colorFormat, clearColor);
-
+	/*-------------------------------------------------------------------
+	-                  Prepare Descriptor
+	---------------------------------------------------------------------*/
+	PrepareDescriptor(colorFormat);
 	/*-------------------------------------------------------------------
 	-           Set Resource Name
 	---------------------------------------------------------------------*/

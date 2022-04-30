@@ -46,6 +46,8 @@ public:
 	---------------------------------------------------------------------*/
 	void SetVertexBuffer(const D3D12_VERTEX_BUFFER_VIEW* view);
 	void SetIndexBuffer (const D3D12_INDEX_BUFFER_VIEW * view);
+	void SetVertexBuffer(const D3D12_VERTEX_BUFFER_VIEW& view);
+	void SetIndexBuffer (const D3D12_INDEX_BUFFER_VIEW& view);
 	void SetPrimitiveTopology   (D3D12_PRIMITIVE_TOPOLOGY topology);
 	void SetViewport            (const D3D12_VIEWPORT& viewport, UINT numViewport = 1);
 	void SetScissor             (const D3D12_RECT    & rect    , UINT numRect = 1);
@@ -125,6 +127,7 @@ protected:
 	*****************************************************************************/
 	enum {MAX_DESCRIPTOR_HEAP = 4};
 	void PrepareCopyBuffer(GPUResource* dest, GPUResource* source);
+	void CompleteCopyBuffer(GPUResource* dest, GPUResource* source, const D3D12_RESOURCE_STATES& toDestState, const D3D12_RESOURCE_STATES& toSourceState);
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
@@ -173,6 +176,14 @@ inline void CommandContext::SetVertexBuffer(const D3D12_VERTEX_BUFFER_VIEW* view
 inline void CommandContext::SetIndexBuffer (const D3D12_INDEX_BUFFER_VIEW* view)
 {
 	_commandList->IASetIndexBuffer(view);
+}
+inline void CommandContext::SetVertexBuffer(const D3D12_VERTEX_BUFFER_VIEW& view)
+{
+	_commandList->IASetVertexBuffers(0, 1, &view);
+}
+inline void CommandContext::SetIndexBuffer(const D3D12_INDEX_BUFFER_VIEW& view)
+{
+	_commandList->IASetIndexBuffer(&view);
 }
 inline void CommandContext::SetViewport    (const D3D12_VIEWPORT& viewport, UINT numViewport)
 {

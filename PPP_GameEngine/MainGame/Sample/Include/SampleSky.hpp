@@ -17,6 +17,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class Skybox;
+class Camera;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,6 +33,7 @@ namespace sample
 	class SampleSky : public Scene
 	{
 		using SkyboxPtr = std::unique_ptr<Skybox>;
+		using CameraPtr = std::unique_ptr<Camera>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -53,6 +55,7 @@ namespace sample
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		void PrepareCamera();
 		void LoadMaterials(GameTimer* gameTimer) override;
 		void OnKeyboardInput() override;
 		void OnMouseInput  () override;
@@ -61,6 +64,7 @@ namespace sample
 		**                Protected Member Variables
 		*****************************************************************************/
 		SkyboxPtr _skybox = nullptr;
+		CameraPtr _camera = nullptr;
 	};
 }
 #endif

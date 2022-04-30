@@ -16,26 +16,29 @@
 #include <thread>
 #include <map>
 #include <mutex>
+#pragma warning(disable: 6011)
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-static std::map<size_t, PipelineStateComPtr> g_GraphicsPSOHashMap; //文字列の代わりにhashIDで管理
-static std::map<size_t, PipelineStateComPtr> g_ComputePSOHashMap;
+static std::map<size_t, PipelineStateComPtr> s_GraphicsPSOHashMap; //文字列の代わりにhashIDで管理
+static std::map<size_t, PipelineStateComPtr> s_ComputePSOHashMap;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 void PipelineState::DestroyAll()
 {
-	g_GraphicsPSOHashMap.clear();
-	g_ComputePSOHashMap .clear();
+	s_GraphicsPSOHashMap.clear();
+	s_ComputePSOHashMap .clear();
 }
-
 PipelineState::~PipelineState()
 {
-	
-}
 
+}
+GraphicsPipelineState::~GraphicsPipelineState()
+{
+
+}
 #pragma region Graphics PSO
 GraphicsPipelineState::GraphicsPipelineState(const wchar_t* name) : PipelineState(name)
 {
@@ -43,17 +46,11 @@ GraphicsPipelineState::GraphicsPipelineState(const wchar_t* name) : PipelineStat
 	_psoDescriptor.NodeMask                = 1;
 	_psoDescriptor.pRootSignature          = nullptr;
 	_psoDescriptor.SampleMask              = D3D12_DEFAULT_SAMPLE_MASK;
-	_psoDescriptor.InputLayout.NumElements = 0;
 	_psoDescriptor.RasterizerState         = RASTERIZER_DESC(D3D12_DEFAULT);
 	_psoDescriptor.BlendState              = BLEND_DESC(D3D12_DEFAULT);
 	_psoDescriptor.PrimitiveTopologyType   = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	_psoDescriptor.SampleDesc.Count        = 1;
 	_psoDescriptor.SampleDesc.Quality      = 0;
-	_psoDescriptor.DepthStencilState       = DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	_psoDescriptor.DepthStencilState.DepthEnable    = true;
-	_psoDescriptor.DepthStencilState.DepthFunc      = D3D12_COMPARISON_FUNC_LESS;
-	_psoDescriptor.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	_psoDescriptor.DepthStencilState.StencilEnable  = true;
 
 }
 /****************************************************************************
@@ -70,10 +67,11 @@ GraphicsPipelineState::GraphicsPipelineState(const wchar_t* name) : PipelineStat
 *****************************************************************************/
 void GraphicsPipelineState::SetRenderTargetFormats(UINT numRTVs, const DXGI_FORMAT* rtvFormats, DXGI_FORMAT dsvFormat, UINT msaaCount, UINT msaaQuality)
 {
-	if (numRTVs == 0 || rtvFormats == nullptr) { OutputDebugString(L"Null format array conflicts with non-zero length"); return; }
+	if (!(numRTVs == 0 || rtvFormats != nullptr)) { OutputDebugString(L"Null format array conflicts with non-zero length"); return; }
 
 	for (UINT i = 0; i < numRTVs; ++i)
 	{
+		assert(rtvFormats[i] != DXGI_FORMAT_UNKNOWN);
 		_psoDescriptor.RTVFormats[i] = rtvFormats[i];
 	}
 	for (UINT i = numRTVs; i < _psoDescriptor.NumRenderTargets; ++i)
@@ -94,21 +92,9 @@ void GraphicsPipelineState::SetRenderTargetFormats(UINT numRTVs, const DXGI_FORM
 *  @param[in] const D3D12_INPUT_ELEMENT_DESC* inputElementDesc
 *  @return 　　void
 *****************************************************************************/
-void GraphicsPipelineState::SetInputLayouts(UINT elementCount, const D3D12_INPUT_ELEMENT_DESC* inputElementDesc)
+void GraphicsPipelineState::SetInputLayouts(const D3D12_INPUT_LAYOUT_DESC& desc)
 {
-	_psoDescriptor.InputLayout.NumElements = elementCount;
-
-	if (elementCount > 0)
-	{
-		size_t memorySize = sizeof(D3D12_INPUT_ELEMENT_DESC) * elementCount;
-		D3D12_INPUT_ELEMENT_DESC* newElements = (D3D12_INPUT_ELEMENT_DESC*)std::malloc(memorySize);
-		if (newElements) { std::memcpy(newElements, inputElementDesc, memorySize); };
-		_inputLayouts.reset(newElements,std::default_delete<D3D12_INPUT_ELEMENT_DESC>());
-	}
-	else
-	{
-		_inputLayouts = nullptr;
-	}
+	_psoDescriptor.InputLayout = desc;
 }
 /****************************************************************************
 *                       CompleteSetting
@@ -128,10 +114,8 @@ void GraphicsPipelineState::CompleteSetting(IDevice* device)
 	/*-------------------------------------------------------------------
 	-                      Set Input layout 
 	---------------------------------------------------------------------*/
-	_psoDescriptor.InputLayout.pInputElementDescs = nullptr;
 	size_t hashCode = gm::HashState(&_psoDescriptor);
-	hashCode        = gm::HashState(_inputLayouts.get(), _psoDescriptor.InputLayout.NumElements, hashCode);
-	_psoDescriptor.InputLayout.pInputElementDescs = _inputLayouts.get();
+	hashCode        = gm::HashState(_psoDescriptor.InputLayout.pInputElementDescs, _psoDescriptor.InputLayout.NumElements, hashCode);
 	/*-------------------------------------------------------------------
 	-                 Find pipelineState From HashMap
 	---------------------------------------------------------------------*/
@@ -141,11 +125,11 @@ void GraphicsPipelineState::CompleteSetting(IDevice* device)
 		static std::mutex hashMapMutex;
 		std::lock_guard<std::mutex> lockGuard(hashMapMutex); // グローバル変数を扱うためにロック.
 		
-		auto iterator = g_GraphicsPSOHashMap.find(hashCode);
-		if (iterator == g_GraphicsPSOHashMap.end())
+		auto iterator = s_GraphicsPSOHashMap.find(hashCode);
+		if (iterator == s_GraphicsPSOHashMap.end())
 		{
 			firstCompile = true;
-			psoReference = g_GraphicsPSOHashMap[hashCode].GetAddressOf();
+			psoReference = s_GraphicsPSOHashMap[hashCode].GetAddressOf();
 		}
 		else
 		{
@@ -159,9 +143,10 @@ void GraphicsPipelineState::CompleteSetting(IDevice* device)
 	---------------------------------------------------------------------*/
 	if (firstCompile)
 	{
+
 		assert(_psoDescriptor.DepthStencilState.DepthEnable != (_psoDescriptor.DSVFormat == DXGI_FORMAT_UNKNOWN));
 		ThrowIfFailed(device->CreateGraphicsPipelineState(&_psoDescriptor, IID_PPV_ARGS(&_pipelineState)));
-		g_GraphicsPSOHashMap[hashCode].Attach(_pipelineState);
+		s_GraphicsPSOHashMap[hashCode].Attach(_pipelineState);
 		_pipelineState->SetName(_name);
 	}
 	else
@@ -208,11 +193,11 @@ void ComputePipelineState::CompleteSetting(IDevice* device)
 		static std::mutex hashMapMutex;
 		std::lock_guard<std::mutex> lockGuard(hashMapMutex);
 		
-		auto iterator = g_ComputePSOHashMap.find(hashCode);
-		if (iterator == g_ComputePSOHashMap.end())
+		auto iterator = s_ComputePSOHashMap.find(hashCode);
+		if (iterator == s_ComputePSOHashMap.end())
 		{
 			firstCompile = true;
-			psoReference = g_ComputePSOHashMap[hashCode].GetAddressOf();
+			psoReference = s_ComputePSOHashMap[hashCode].GetAddressOf();
 		}
 		else
 		{
@@ -225,7 +210,7 @@ void ComputePipelineState::CompleteSetting(IDevice* device)
 	if (firstCompile)
 	{
 		ThrowIfFailed(device->CreateComputePipelineState(&_psoDescriptor, IID_PPV_ARGS(&_pipelineState)));
-		g_ComputePSOHashMap[hashCode].Attach(_pipelineState);
+		s_ComputePSOHashMap[hashCode].Attach(_pipelineState);
 		_pipelineState->SetName(_name);
 	}
 	else

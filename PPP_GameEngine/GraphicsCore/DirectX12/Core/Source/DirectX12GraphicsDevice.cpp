@@ -33,7 +33,7 @@ enum class GPUVender
 //////////////////////////////////////////////////////////////////////////////////
 GraphicsDeviceDirectX12::GraphicsDeviceDirectX12()
 {
-	printf("DirectX12Started");
+	printf("DirectX12Started\n");
 }
 GraphicsDeviceDirectX12::~GraphicsDeviceDirectX12()
 {
@@ -75,10 +75,7 @@ void GraphicsDeviceDirectX12::Finalize()
 	if (_depthStencilBuffer) { _depthStencilBuffer = nullptr;}
 	for (auto& renderTarget : _renderTargetList) 
 	{ 
-		if (renderTarget)
-		{ 
-			renderTarget = nullptr;
-		}
+		renderTarget.Destroy();
 	}
 	if (_pipelineState) { _pipelineState= nullptr;}
 	if (_rtvHeap      ) { _rtvHeap      = nullptr; }
@@ -134,7 +131,7 @@ void GraphicsDeviceDirectX12::OnResize()
 	---------------------------------------------------------------------*/
 	for (int i = 0; i <FRAME_BUFFER_COUNT; ++i)
 	{
-		_renderTargetList[i].Reset();
+		_renderTargetList[i].Destroy();
 	}
 	_depthStencilBuffer.Reset();
 
@@ -169,14 +166,16 @@ void GraphicsDeviceDirectX12::ClearScreen()
 	/*-------------------------------------------------------------------
 	-                   Reset Commmand (ˆÚ“®FlushCommandQueue‚ÉˆÚ“®)
 	---------------------------------------------------------------------*/
-	//ResetCommandList();
+	ResetCommandList();
 
 	/*-------------------------------------------------------------------
 	-       Indicate a state transition (Present -> Render Target)
 	---------------------------------------------------------------------*/
-	auto barrier = BARRIER::Transition(GetCurrentRenderTarget(),
+	auto barrier = BARRIER::Transition(GetCurrentRenderTarget()->GetResource(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	GetCurrentRenderTarget()->TransitionState(D3D12_RESOURCE_STATE_RENDER_TARGET);
 	_commandList->ResourceBarrier(1, &barrier);
+
 
 	/*-------------------------------------------------------------------
 	-          Set the viewport and scissor rect. 
@@ -214,8 +213,9 @@ void GraphicsDeviceDirectX12::CompleteRendering()
 	/*-------------------------------------------------------------------
 	-      // Indicate a state transition (Render Target -> Present)
 	---------------------------------------------------------------------*/
-	auto barrier = BARRIER::Transition(GetCurrentRenderTarget(),
+	auto barrier = BARRIER::Transition(GetCurrentRenderTarget()->GetResource(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+	GetCurrentRenderTarget()->TransitionState(D3D12_RESOURCE_STATE_PRESENT);
 	_commandList->ResourceBarrier(1, &barrier);
 
 	ThrowIfFailed(_commandList->Close());
@@ -253,20 +253,22 @@ void GraphicsDeviceDirectX12::CopyTextureToBackBuffer(ResourceComPtr& resource, 
 {
 	BARRIER before[] =
 	{
-		BARRIER::Transition(GetCurrentRenderTarget(),
+		BARRIER::Transition(GetCurrentRenderTarget()->GetResource(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_DEST),
 		BARRIER::Transition(resource.Get(),
 		resourceState, D3D12_RESOURCE_STATE_COPY_SOURCE),
 	};
+	GetCurrentRenderTarget()->TransitionState(D3D12_RESOURCE_STATE_COPY_DEST);
 	_commandList->ResourceBarrier(_countof(before), before);
-	_commandList->CopyResource(GetCurrentRenderTarget(), resource.Get());
+	_commandList->CopyResource(GetCurrentRenderTarget()->GetResource(), resource.Get());
 	BARRIER after[] =
 	{
-		BARRIER::Transition(GetCurrentRenderTarget(),
+		BARRIER::Transition(GetCurrentRenderTarget()->GetResource(),
 		D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_RENDER_TARGET),
 		BARRIER::Transition(resource.Get(),
 		D3D12_RESOURCE_STATE_COPY_SOURCE, resourceState)
 	};
+	GetCurrentRenderTarget()->TransitionState(D3D12_RESOURCE_STATE_RENDER_TARGET);
 	_commandList->ResourceBarrier(_countof(after), after);
 }
 /****************************************************************************
@@ -298,10 +300,7 @@ void GraphicsDeviceDirectX12::FlushCommandQueue()
 
 	}
 	_currentFrameIndex = _swapchain->GetCurrentBackBufferIndex();
-	/*-------------------------------------------------------------------
-	-                   Reset Commmand
-	---------------------------------------------------------------------*/
-	ResetCommandList();
+
 }
 void GraphicsDeviceDirectX12::OnTerminateRenderScene()
 {
@@ -381,6 +380,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE GraphicsDeviceDirectX12::GetGPUResourceView(HeapFlag
 		default:
 			return _uavAllocator->GetGPUDescHandler(offsetIndex);
 	}
+	
 }
 /****************************************************************************
 *                        GetGPUResourceView
@@ -590,7 +590,7 @@ void GraphicsDeviceDirectX12::LoadPipeline()
 	/*-------------------------------------------------------------------
 	-                 Create Default PSO
 	---------------------------------------------------------------------*/
-	//CreateDefaultPSOs();
+	CreateDefaultPSO();
 
 
 }
@@ -935,8 +935,8 @@ void GraphicsDeviceDirectX12::BuildRenderTargetView()
 	CPU_DESC_HANDLER rtvHeapHandle(_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 	for (UINT i = 0; i < FRAME_BUFFER_COUNT; ++i)
 	{
-		ThrowIfFailed(_swapchain->GetBuffer(i, IID_PPV_ARGS(&_renderTargetList[i])));
-		_device->CreateRenderTargetView(_renderTargetList[i].Get(), nullptr, _rtvAllocator->GetCPUDescHandler(i));
+		ThrowIfFailed(_swapchain->GetBuffer(i, IID_PPV_ARGS(_renderTargetList[i].GetAddressOf())));
+		_device->CreateRenderTargetView(_renderTargetList[i].GetResource(), nullptr, _rtvAllocator->GetCPUDescHandler(i));
 		_renderTargetList[i]->SetName(L"DirectX12::RenderTargetList");
 	}
 	
@@ -1152,12 +1152,18 @@ void GraphicsDeviceDirectX12::CheckTearingSupport()
 {
 	if (!_dxgiFactory) { _isTearingSupport = false; return; }
 
+	int allowTearing = false;
 	if (FAILED(_dxgiFactory->CheckFeatureSupport(
 		DXGI_FEATURE_PRESENT_ALLOW_TEARING,
-		&_isTearingSupport, sizeof(_isTearingSupport))))
+		&allowTearing, sizeof(allowTearing))))
 	{
 		_isTearingSupport = false;
 	}
+	else
+	{
+		_isTearingSupport = true;
+	}
+	
 }
 /****************************************************************************
 *                     CheckVRSSupport
@@ -1392,7 +1398,7 @@ void GraphicsDeviceDirectX12::EnsureSwapChainColorSpace()
 	switch (desc.Format)
 	{
 		case DXGI_FORMAT_R16G16B16A16_FLOAT:
-			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;    // scrgb
 			break;
 		case DXGI_FORMAT_R10G10B10A2_UNORM:
 			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
@@ -1514,8 +1520,8 @@ bool GraphicsDeviceDirectX12::CheckHDRDisplaySupport()
 
 		if (!isDisplayHDR10)
 		{
-			_backBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
-			isEnabledHDR = false;
+			//_backBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			//isEnabledHDR = false;
 		}
 	}
 

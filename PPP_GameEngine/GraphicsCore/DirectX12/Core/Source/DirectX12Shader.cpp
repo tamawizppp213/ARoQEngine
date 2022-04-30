@@ -11,14 +11,14 @@
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Shader.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Include.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include <sstream>
 #include <fstream>
 #include <d3dcompiler.h>
 #include <dxcapi.h>
-#include <filesystem>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -43,67 +43,97 @@ BlobComPtr CompileShader(const std::wstring& fileName, const _D3D_SHADER_MACRO* 
 	}
 
 	ThrowIfFailed(hresult);
-
+	
 	return byteCode;
 }
-
+/****************************************************************************
+*                       Compile Shader
+*************************************************************************//**
+*  @fn        BlobComPtr CompileShader( const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target)
+*  @brief     Compile shader
+*  @param[in] test
+*  @return Å@Å@void
+*****************************************************************************/
 BlobComPtr CompileShader(
 	const std::wstring& fileName,
 	const std::wstring& entryPoint,
 	const std::wstring& target)
 {
-	std::filesystem::path filePath = fileName;
-	std::ifstream infile(filePath);
-	std::vector<char> sourceData;
+	/*-------------------------------------------------------------------
+	-                  Open shader file
+	---------------------------------------------------------------------*/
+	std::ifstream shaderFile(fileName, std::ios::binary);
+	if (shaderFile.good() == false)
+	{
+		std::wstring errorMessage = L"Failed to open your shader file. " + fileName;
+		MessageBoxW(nullptr, errorMessage.c_str(), L"Error", MB_OK);
+		std::abort();
+	}
+	
+	std::stringstream stringStream(std::ios::binary);
+	stringStream << shaderFile.rdbuf();
+	std::string shader = stringStream.str();
 
-	if (!infile) { throw std::runtime_error("shader not found"); }
-	sourceData.resize(uint32_t(infile.seekg(0, infile.end).tellg()));
-	infile.seekg(0, infile.beg).read(sourceData.data(), sourceData.size());
+	/*-------------------------------------------------------------------
+	-                  Create blob data from shader text file.
+	---------------------------------------------------------------------*/
+	ComPtr<IDxcLibrary> dxcLibrary = nullptr;
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&dxcLibrary)));
 
-	// Compile using DXC
-	ComPtr<IDxcLibrary>         library;
-	ComPtr<IDxcCompiler>        compiler;
-	ComPtr<IDxcBlobEncoding>    source;
-	ComPtr<IDxcOperationResult> dxcResult;
+	ComPtr<IDxcIncludeHandler> includeHandler = nullptr;
+	ThrowIfFailed(dxcLibrary->CreateIncludeHandler(&includeHandler));
+	/*-------------------------------------------------------------------
+	-                  Create dxc compliler
+	---------------------------------------------------------------------*/
+	ComPtr<IDxcCompiler> dxcCompiler = nullptr;
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler)));
+	/*-------------------------------------------------------------------
+	-                  Create Blob data of the source code
+	---------------------------------------------------------------------*/
+	ComPtr<IDxcBlobEncoding> sourceBlob = nullptr; 
+	UINT32 codePage = CP_UTF8;
+	ThrowIfFailed(dxcLibrary->CreateBlobFromFile(fileName.c_str(), &codePage, &sourceBlob));
 
-	DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&library));
-	library->CreateBlobWithEncodingFromPinned(sourceData.data(), UINT(sourceData.size()), CP_ACP, &source);
-	DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler));
-
-	LPCWSTR compilerFlags[] = {
-#if _DEBUG
-	L"/Zi", L"/O0",
-#else
-	L"/O2"
-#endif
-	};
-
-	HRESULT hresult = S_OK;
-	BlobComPtr byteCode = nullptr;
-	BlobComPtr errors   = nullptr;
-
-	hresult = compiler->Compile(
-		source.Get(),
-		filePath.wstring().c_str(),
+	ComPtr<IDxcIncludeHandler> dxcIncludeHandler = nullptr;
+	dxcLibrary->CreateIncludeHandler(&dxcIncludeHandler);
+	/*-------------------------------------------------------------------
+	-                  Create Blob data of the source code
+	---------------------------------------------------------------------*/
+	ComPtr<IDxcOperationResult> result = nullptr;
+	HRESULT hresult = dxcCompiler->Compile(
+		sourceBlob.Get(),
+		fileName.c_str(),
 		entryPoint.c_str(),
 		target.c_str(),
-		compilerFlags, _countof(compilerFlags),
-		nullptr, 0, // Defines
-		nullptr,
-		&dxcResult);
+		nullptr, 0,
+		nullptr, 0,
+		dxcIncludeHandler.Get(),
+		&result
+		);
 
-	if (SUCCEEDED(hresult))
+	if (SUCCEEDED(hresult)) { result->GetStatus(&hresult);}
+	BlobComPtr data = nullptr;
+	BlobComPtr byteCode = nullptr;
+	if (FAILED(hresult))
 	{
-		dxcResult->GetResult(reinterpret_cast<IDxcBlob**>(byteCode.GetAddressOf()));
+		if (result)
+		{
+			ComPtr <IDxcBlobEncoding> errorBlob;
+			hresult = result->GetErrorBuffer(&errorBlob);
+			if (SUCCEEDED(hresult) && errorBlob)
+			{
+				std::string errorMessage = "Compilation failed with errors: \n%hs\n";
+				errorMessage += (const char*)errorBlob->GetBufferPointer();
+				MessageBoxA(nullptr, errorMessage.c_str(), "Error", MB_OK);
+			}
+		}
 	}
 	else
 	{
-		dxcResult->GetErrorBuffer(reinterpret_cast<IDxcBlobEncoding**>(errors.GetAddressOf()));
+		result->GetResult(reinterpret_cast<IDxcBlob**>(byteCode.GetAddressOf()));
 	}
-	ThrowIfFailed(hresult);
-
+	
 	return byteCode;
-
 }
 /****************************************************************************
 *							LoadBinary
