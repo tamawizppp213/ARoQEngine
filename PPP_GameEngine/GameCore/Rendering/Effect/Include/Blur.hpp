@@ -1,68 +1,83 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TemplateText.hpp
-///             @brief  TemplateText
+///             @file   Blur.hpp
+///             @brief  Blur effect
 ///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @date   2022_05_01
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SCENE_HPP
-#define SCENE_HPP
+#ifndef BLUR_HPP
+#define BLUR_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GameCore/Input/Include/GameInput.hpp"
-#include "GameUtility/Base/Include/GameTimer.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include "GameUtility/Math/Include/GMVector.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                             Scene class
+//                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+
 /****************************************************************************
-*				  			 Scene
+*				  			GaussianBlur
 *************************************************************************//**
-*  @class     Scene
-*  @brief     Scene
+*  @class     GaussianBlur
+*  @brief     Gaussian + HalfDownSampling + Bilinear Filter
 *****************************************************************************/
-class Scene
+class GaussianBlur
 {
+	struct BlurParameter
+	{
+		gm::Float4 Weights[2];
+	};
+	struct TextureSizeParameter
+	{
+		int OriginalTexture[2];
+		int XBlurTexture[2];
+		int YBlurTexture[2];
+	};
+	using BlurParameterPtr     = std::unique_ptr<UploadBuffer>;
+	using TextureSizeBufferPtr = std::unique_ptr<UploadBuffer>;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	virtual void Initialize(GameTimer* gameTimer);
-	virtual void Update   ();
-	virtual void Draw     () = 0;
-	virtual void Terminate() = 0;
+	void StartOn(int width, int height, const std::wstring& addName = L"");
+	void OnResize(int newWidth, int newHeight);
+	void Draw(GPUResource* renderTarget);
+	void ShutDown();
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-
+	void SetUpWeightTable(float sigma);
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	Scene();
-	virtual ~Scene();
+	GaussianBlur();
+	~GaussianBlur();
+	GaussianBlur(const GaussianBlur&)            = delete;
+	GaussianBlur& operator=(const GaussianBlur&) = delete;
+	GaussianBlur(GaussianBlur&&)                 = default;
+	GaussianBlur& operator=(GaussianBlur&&)      = default;
 protected:
 	/****************************************************************************
 	**                Protected Function
 	*****************************************************************************/
-	virtual void LoadMaterials() = 0;
-	virtual void OnKeyboardInput() {};
-	virtual void OnMouseInput   () {};
-	virtual void OnGamePadInput () {};
-	virtual void ExecuteSceneTransition(){};
+	void PrepareBlurParameters();
+	void PrepareTextureSizeBuffer(int width, int height);
+	void PreparePipelineState();
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
-	GraphicsCoreEngine& _engine      = GraphicsCoreEngine::Instance();
-	GameInput& _gameInput            = GameInput::Instance();
-	GameTimer* _gameTimer            = nullptr;
-	bool _hasExecutedSceneTransition = false;
-	bool _hasExecutedBackScene       = false;
-
+	std::wstring     _addName = L"";
+	TextureSizeParameter _textureSize;
+	BlurParameterPtr     _blurParameter     = nullptr;
+	TextureSizeBufferPtr _textureSizeBuffer = nullptr;
+	ColorBuffer          _colorBuffer[4];
 };
+
 #endif

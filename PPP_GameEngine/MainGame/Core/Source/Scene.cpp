@@ -29,7 +29,7 @@ Scene::~Scene()
 void Scene::Initialize(GameTimer* gameTimer)
 {
 	_gameTimer = gameTimer;
-	LoadMaterials(gameTimer);
+	LoadMaterials();
 }
 void Scene::Update()
 {

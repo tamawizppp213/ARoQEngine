@@ -40,7 +40,7 @@ VertexOut VSMain(VertexIn vertexIn)
 float4 PSMonochrome(VertexOut input) : SV_TARGET
 {
     float4 dest = float4(DestDiffuseMap.Sample(SamplerLinearClamp, input.UV));
-    float  Y Å@Å@Å@= dot(dest.rgb, float3(0.299, 0.587, 0.114));
+    float  Y = dot(dest.rgb, float3(0.299, 0.587, 0.114));
     return float4(Y, Y, Y, 1);
 }
 /****************************************************************************

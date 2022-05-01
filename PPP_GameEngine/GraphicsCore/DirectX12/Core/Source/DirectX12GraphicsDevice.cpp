@@ -13,6 +13,8 @@
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12ResourceAllocator.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12VertexTypes.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12RootSignature.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12PipelineState.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameUtility/Math/Include/GMColor.hpp"
 #include <vector>
@@ -66,6 +68,8 @@ void GraphicsDeviceDirectX12::Initialize(HWND hwnd)
 *****************************************************************************/
 void GraphicsDeviceDirectX12::Finalize()
 {
+	RootSignature::DestroyAll();
+	PipelineState::DestroyAll();
 	if (_rtvAllocator) { delete _rtvAllocator; }
 	if (_dsvAllocator) { delete _dsvAllocator; }
 	if (_cbvAllocator) { delete _cbvAllocator; }

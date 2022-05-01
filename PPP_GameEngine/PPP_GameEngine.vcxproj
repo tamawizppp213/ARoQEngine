@@ -135,6 +135,7 @@
     </Link>
     <FxCompile>
       <ShaderModel>6.4</ShaderModel>
+      <EntryPointName>VSMain</EntryPointName>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,6 +161,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\PPP_GameEngine/Pluguins</AdditionalLibraryDirectories>
     </Link>
+    <FxCompile>
+      <EntryPointName>VSMain</EntryPointName>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>6.4</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GameCore\Audio\Include\AudioClip.hpp" />
@@ -176,6 +183,7 @@
     <ClInclude Include="GameCore\Input\Include\GamePad.hpp" />
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
+    <ClInclude Include="GameCore\Rendering\Effect\Include\Blur.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp" />
     <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\Skybox.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\LightType.hpp" />
@@ -253,6 +261,7 @@
     <ClCompile Include="GameCore\Input\Source\GamePad.cpp" />
     <ClCompile Include="GameCore\Input\Source\Keyboard.cpp" />
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
+    <ClCompile Include="GameCore\Rendering\Effect\Source\Blur.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\ColorChange.cpp" />
     <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\Skybox.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Image.cpp" />
@@ -305,6 +314,19 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Shader\Effect\ShaderGaussianBlur.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.4</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XBlur</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XBlur</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Sprite\ShaderDefault2D.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -312,6 +334,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\EnvironmentMap\ShaderSkybox.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>

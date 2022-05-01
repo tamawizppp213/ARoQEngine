@@ -85,7 +85,7 @@ void SampleEmpty::Terminate()
 *  @param[in] void
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleEmpty::LoadMaterials(GameTimer* gameTimer)
+void SampleEmpty::LoadMaterials()
 {
 
 }
