@@ -240,6 +240,9 @@
     <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\Blur.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -383,6 +386,9 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\ColorChange.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\Blur.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -405,5 +411,6 @@
     <FxCompile Include="Shader\EnvironmentMap\ShaderSkybox.hlsl" />
     <FxCompile Include="Shader\Sprite\ShaderDefault2D.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderColorChange.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderGaussianBlur.hlsl" />
   </ItemGroup>
 </Project>

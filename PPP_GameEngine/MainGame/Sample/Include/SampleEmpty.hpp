@@ -51,7 +51,7 @@ namespace sample
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void LoadMaterials(GameTimer* gameTimer) override;
+		void LoadMaterials() override;
 		void OnKeyboardInput() override;
 		void OnMouseInput  () override;
 		void OnGamePadInput() override;

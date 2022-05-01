@@ -113,7 +113,7 @@ void SampleSky::PrepareCamera()
 *  @param[in] void
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleSky::LoadMaterials(GameTimer* gameTimer)
+void SampleSky::LoadMaterials()
 {
 	/*-------------------------------------------------------------------
 	-           Skybox

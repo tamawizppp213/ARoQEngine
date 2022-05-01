@@ -12,13 +12,13 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Texture.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
 #include <string>
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 struct MeshBuffer;
+class UploadBuffer;
 namespace gm
 {
 	struct Matrix4;
@@ -51,8 +51,8 @@ public:
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	Skybox() = default;
-	~Skybox() = default;
+	Skybox() ;
+	~Skybox();
 protected:
 	/****************************************************************************
 	**                Protected Function

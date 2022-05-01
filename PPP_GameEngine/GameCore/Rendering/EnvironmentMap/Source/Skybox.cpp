@@ -15,6 +15,7 @@
 #include "GraphicsCore/DirectX12/SimpleInclude/IncludeGraphicsPSO.hpp"
 #include "GameCore/Core/Include/ResourceManager.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
 #include <d3dcompiler.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -30,6 +31,8 @@ namespace
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+Skybox::Skybox() {};
+Skybox::~Skybox() {};
 void Skybox::Initialze(const std::wstring& texturePath, const std::wstring& addName)
 {
 	/*-------------------------------------------------------------------

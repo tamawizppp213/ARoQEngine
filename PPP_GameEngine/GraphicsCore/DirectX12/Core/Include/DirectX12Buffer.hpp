@@ -53,7 +53,6 @@ public:
 	void Destroy() override
 	{
 		if (_resource)     { _resource = nullptr; }
-		if (_mappedData  ) { delete[] _mappedData; }
 		_elementByteSize = 0;
 	}
 	/****************************************************************************
