@@ -55,7 +55,7 @@ uint GetPixelIndexFromXYCoordinate(int x, int y, int width)
 {
     return width * y + x;
 } 
-[numthreads(4, 4, 1)]
+[numthreads(16, 16, 1)]
 void XBlur(uint3 id : SV_DispatchThreadID)
 {
     uint2 basePosition = uint2(id.x * 2, id.y);
@@ -80,7 +80,7 @@ void XBlur(uint3 id : SV_DispatchThreadID)
     //outputImage[pixelIndex] = ConvertFloat4ToRGBA32(color);
 }
 
-[numthreads(4, 4, 1)]
+[numthreads(16, 16, 1)]
 void YBlur(uint3 id : SV_DispatchThreadID)
 {
     uint2 basePosition = uint2(id.x, id.y * 2);
@@ -107,7 +107,7 @@ void YBlur(uint3 id : SV_DispatchThreadID)
 }
 
 
-[numthreads(4, 4, 1)]
+[numthreads(16, 16, 1)]
 void FinalBlur(uint3 id : SV_DispatchThreadID)
 {
     uint2 basePosition = uint2(id.x / 2, id.y / 2);

@@ -46,6 +46,9 @@ namespace file
 
 		static FILE* OpenFile(const std::wstring& filePath, const std::string& mode = "rb");
 		static FILE* OpenFile(const std::string & filePath, const std::string& mode = "rb");
+
+		static std::pair<std::string , std::string > Split(const std::string& string, const char splitter = '*');
+		static std::pair<std::wstring, std::wstring> Split(const std::wstring& string, const char splitter = '*');
 	};
 
 	

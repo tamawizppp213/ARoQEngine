@@ -30,6 +30,7 @@
 *****************************************************************************/
 class GaussianBlur
 {
+protected:
 	struct BlurParameter
 	{
 		gm::Float4 Weights[2];

@@ -47,5 +47,7 @@ namespace unicode
 	bool ConvertU32ToU8(const std::u32string& u32String, std::string& u8String);
 	bool ConvertU32ToU16(const std::u32string& u32String, std::u16string& u16String);
 
+
+
 }
 #endif

@@ -1,17 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TemplateText.hpp
-///             @brief  TemplateText
+///             @file   DepthOfField.hpp
+///             @brief  DepthOfField
 ///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @date   2022_05_01
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GAME_ACTOR_HPP
-#define GAME_ACTOR_HPP
+#ifndef DEPTH_OF_FIELD_HPP
+#define DEPTH_OF_FIELD_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameObject.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,44 +20,68 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-
 /****************************************************************************
-*				  			GameActor
+*				  			Dof
 *************************************************************************//**
-*  @class     GameActor
-*  @brief     Updatable object
+*  @class     Dof
+*  @brief     Depth Of Field (linear depth) 
+*  @note      ñ‚ëËì_: zPrepassÇ™çÏÇÁÇÍÇƒÇ»Ç¢. 
 *****************************************************************************/
-class GameActor : public GameObject
+class Dof
 {
 protected:
-	using SceneGPUAddress = uint64_t;
+	struct BlurParameter
+	{
+		float TextureSize[2];
+		float Radius;
+	};
+	struct ClipSize
+	{
+		float Near;
+		float Far;
+	};
+	using  ClipSizePtr   = std::unique_ptr<UploadBuffer>;
+	using  BlurBufferPtr = std::unique_ptr<UploadBuffer>;
+
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	virtual void Update(float deltaTime) = 0;
-	virtual void Draw(SceneGPUAddress address) = 0;
+	void StartOn(float width, float height, float radius = 4.0f, float nearClip = 0.2f, float farClip = 0.8f, const std::wstring& addname = L"");
+	void OnResize(float newWidth, float newHeight);
+	void Draw(GPUResource* renderTarget, GPUResource* zPrepass);
+	void ShutDown();
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-
+	void SetUpBlurParameter(float width, float height, float radius = 8.0f);
+	void SetUpClipSize(float nearClip = 0.2f, float farClip = 0.8f);
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	GameActor();
-	GameActor(const GameActor&)            = default;
-	GameActor& operator=(const GameActor&) = default;
-	GameActor(GameActor&&)                 = default;
-	GameActor& operator=(GameActor&&)      = default;
-	~GameActor();
+	Dof();
+	Dof(const Dof&)            = delete;
+	Dof& operator=(const Dof&) = delete;
+	Dof(Dof&&)                 = default;
+	Dof& operator=(Dof&&)      = default;
+	~Dof();
 protected:
 	/****************************************************************************
 	**                Protected Function
 	*****************************************************************************/
-	void UpdateComponents(float deltaTime);
+	void PrepareBlurParameterBuffer(float width, float height, float radius);
+	void PrepareClipSizeBuffer(float nearClip, float farClip);
+	void PreparePipelineState();
 
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
+	BlurBufferPtr _blurParameterBuffer  = nullptr;
+	BlurParameter _blurParameter;
+	ClipSizePtr   _clipSizeBuffer       = nullptr;
+	ClipSize      _clipSize;
+	ColorBuffer   _colorBuffer[6];
+	std::wstring  _addName = L"";
 };
+
 #endif

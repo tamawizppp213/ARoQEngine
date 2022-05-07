@@ -234,13 +234,34 @@
     <ClInclude Include="MainGame\Core\Include\GameManager.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Model\Format\Include\PMXFormat.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameCore\Rendering\Effect\Include\Blur.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\DepthOfField.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassGBuffer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassZPrepass.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassLightCulling.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\PMDParser.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\PMXParser.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\VMDParser.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\ObjParser.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -389,6 +410,30 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\Blur.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\DepthOfField.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassGBuffer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassZPrepass.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassLightCulling.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\PMDParser.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\PMXParser.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\VMDParser.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\ObjParser.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -401,6 +446,7 @@
     <None Include="Shader\Core\ShaderColor.hlsli" />
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
     <None Include="Shader\Lighting\ShaderBRDF.hlsli" />
+    <None Include="Shader\Lighting\ShaderLightType.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc">
@@ -412,5 +458,7 @@
     <FxCompile Include="Shader\Sprite\ShaderDefault2D.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderColorChange.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderGaussianBlur.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderDepthOfField.hlsl" />
+    <FxCompile Include="Shader\Lighting\ShaderLightCulling.hlsl" />
   </ItemGroup>
 </Project>

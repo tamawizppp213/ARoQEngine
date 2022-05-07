@@ -113,21 +113,21 @@ void GaussianBlur::Draw(GPUResource* renderTarget)
 	context->SetPipelineState(s_xBlurPipeline.GetPipelineState());
 	context->SetComputeRootDescriptorTable(2, _colorBuffer[0].GetGPUSRV());
 	context->SetComputeRootDescriptorTable(3, _colorBuffer[1].GetGPUUAV());
-	context->Dispatch( _textureSize.XBlurTexture[0] / 4, _textureSize.XBlurTexture[1] / 4, 1);
+	context->Dispatch( _textureSize.XBlurTexture[0] / 16, _textureSize.XBlurTexture[1] / 16, 1);
 	/*-------------------------------------------------------------------
 	-               Execute YBlur Command
 	---------------------------------------------------------------------*/
 	context->SetPipelineState(s_yBlurPipeline.GetPipelineState());
 	context->SetComputeRootDescriptorTable(2, _colorBuffer[1].GetGPUSRV());
 	context->SetComputeRootDescriptorTable(3, _colorBuffer[2].GetGPUUAV());
-	context->Dispatch( _textureSize.YBlurTexture[0] / 4, _textureSize.YBlurTexture[1] / 4, 1);
+	context->Dispatch( _textureSize.YBlurTexture[0] / 16, _textureSize.YBlurTexture[1] / 16, 1);
 	/*-------------------------------------------------------------------
 	-               Execute FinalBlur Command
 	---------------------------------------------------------------------*/
 	context->SetPipelineState(s_finalBlurPipeline.GetPipelineState());
 	context->SetComputeRootDescriptorTable(2, _colorBuffer[2].GetGPUSRV());
 	context->SetComputeRootDescriptorTable(3, _colorBuffer[3].GetGPUUAV());
-	context->Dispatch(_textureSize.OriginalTexture[0] / 4, _textureSize.OriginalTexture[1] / 4, 1);
+	context->Dispatch(_textureSize.OriginalTexture[0] / 16, _textureSize.OriginalTexture[1] / 16, 1);
 	context->CopyBuffer(renderTarget, &_colorBuffer[3].GetColorBuffer()->Resource);
 }
 /****************************************************************************

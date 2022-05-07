@@ -19,6 +19,10 @@
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
+GameActor::GameActor() : GameObject()
+{
+
+}
 GameActor::~GameActor()
 {
 	
