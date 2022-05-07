@@ -46,7 +46,7 @@ bool PMDFile::Load(const std::wstring& filePath)
 	ReadToonTextures       (filePtr);
 	ReadPhysics            (filePtr);
 
-	if (feof(filePtr) != NULL) { std::cerr << "There is unknown data" << std::endl; }
+	return true;
 }
 PMDFile::~PMDFile()
 {

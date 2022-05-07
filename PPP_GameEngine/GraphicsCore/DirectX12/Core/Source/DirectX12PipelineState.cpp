@@ -40,7 +40,7 @@ GraphicsPipelineState::~GraphicsPipelineState()
 
 }
 #pragma region Graphics PSO
-GraphicsPipelineState::GraphicsPipelineState(const wchar_t* name) : PipelineState(name)
+GraphicsPipelineState::GraphicsPipelineState() : PipelineState()
 {
 	ZeroMemory(&_psoDescriptor, sizeof(_psoDescriptor));
 	_psoDescriptor.NodeMask                = 1;
@@ -104,7 +104,7 @@ void GraphicsPipelineState::SetInputLayouts(const D3D12_INPUT_LAYOUT_DESC& desc)
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void GraphicsPipelineState::CompleteSetting(IDevice* device)
+void GraphicsPipelineState::CompleteSetting(IDevice* device, const std::wstring& name)
 {
 	/*-------------------------------------------------------------------
 	-                      Set  RootSignature
@@ -147,7 +147,7 @@ void GraphicsPipelineState::CompleteSetting(IDevice* device)
 		assert(_psoDescriptor.DepthStencilState.DepthEnable != (_psoDescriptor.DSVFormat == DXGI_FORMAT_UNKNOWN));
 		ThrowIfFailed(device->CreateGraphicsPipelineState(&_psoDescriptor, IID_PPV_ARGS(&_pipelineState)));
 		s_GraphicsPSOHashMap[hashCode].Attach(_pipelineState);
-		_pipelineState->SetName(_name);
+		_pipelineState->SetName(name.c_str());
 	}
 	else
 	{
@@ -160,7 +160,7 @@ void GraphicsPipelineState::CompleteSetting(IDevice* device)
 }
 #pragma endregion Graphics PSO
 #pragma region Compute PSO
-ComputePipelineState::ComputePipelineState(const wchar_t* name) : PipelineState(name)
+ComputePipelineState::ComputePipelineState() : PipelineState()
 {
 	ZeroMemory(&_psoDescriptor, sizeof(_psoDescriptor));
 	_psoDescriptor.NodeMask = 1;
@@ -173,7 +173,7 @@ ComputePipelineState::ComputePipelineState(const wchar_t* name) : PipelineState(
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void ComputePipelineState::CompleteSetting(IDevice* device)
+void ComputePipelineState::CompleteSetting(IDevice* device, const std::wstring& name)
 {
 	/*-------------------------------------------------------------------
 	-                      Set  RootSignature
@@ -211,7 +211,7 @@ void ComputePipelineState::CompleteSetting(IDevice* device)
 	{
 		ThrowIfFailed(device->CreateComputePipelineState(&_psoDescriptor, IID_PPV_ARGS(&_pipelineState)));
 		s_ComputePSOHashMap[hashCode].Attach(_pipelineState);
-		_pipelineState->SetName(_name);
+		_pipelineState->SetName(name.c_str());
 	}
 	else
 	{

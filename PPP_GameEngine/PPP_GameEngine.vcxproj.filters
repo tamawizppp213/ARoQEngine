@@ -261,7 +261,10 @@
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\VMDParser.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\ObjParser.hpp">
+    <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\OBJParser.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\OBJUtils.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -431,7 +434,10 @@
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\VMDParser.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\ObjParser.cpp">
+    <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJParser.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJUtils.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

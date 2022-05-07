@@ -11,7 +11,6 @@
 #include "GameCore/Rendering/Model/External/MMD/Include/VMDParser.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
-#include <sys/stat.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

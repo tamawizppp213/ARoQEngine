@@ -40,7 +40,7 @@
 #include "GameUtility/File/Include/Csv.hpp"
 #include <cassert>
 #include <cerrno>
-
+#pragma warning(disable: 4996)
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ void WithColumnName   ::SetColumnName   (const char* columnName)
 {
 	if (_columnName != nullptr)
 	{
-		std::strncpy(this->_columnName, _columnName, MaxColumnNameLength);
+		strncpy_s(this->_columnName, columnName, MaxColumnNameLength);
 		this->_columnName[MaxColumnNameLength] = '\0';
 	}
 	else
@@ -79,7 +79,7 @@ void WithColumnContent::SetColumnContent(const char* columnContent)
 {
 	if (_columnContent != nullptr)
 	{
-		std::strncpy(this->_columnContent, _columnContent, MaxColumnContentLength);
+		strncpy_s(this->_columnContent, columnContent, MaxColumnContentLength);
 		this->_columnContent[MaxColumnContentLength] = '\0';
 	}
 	else
@@ -184,7 +184,7 @@ void error::InvalidSingleCharacter  ::FormatErrorMessage() const
 int NonOwningStringByteSource::Read(char* buffer, int desiredByteCount)
 {
 	int copyByteCount = desiredByteCount;
-	if (_remainingByteCount < copyByteCount) { copyByteCount = _remainingByteCount; }
+	if (_remainingByteCount < copyByteCount) { copyByteCount = static_cast<int>(_remainingByteCount); }
 	std::memcpy(buffer, _string, copyByteCount);
 	_remainingByteCount -= copyByteCount;
 	_string             += copyByteCount;
@@ -313,7 +313,8 @@ int AsynchronousReader::FinishRead()
 *****************************************************************************/
 LineReader::ByteSourcePtr LineReader::OpenFile(const std::string& fileName)
 {
-	FILE* filePtr = std::fopen(fileName.c_str(), "rb");
+	FILE* filePtr = nullptr;
+	fopen_s(&filePtr, fileName.c_str(), "rb");
 	if (filePtr == nullptr)
 	{
 		int errorNo = errno;

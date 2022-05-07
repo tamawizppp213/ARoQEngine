@@ -46,7 +46,7 @@ UploadBuffer::UploadBuffer(IDevice* device, UINT elementByteSize, UINT elementCo
 #pragma endregion      Upload Buffer
 #pragma region GPUBuffer
 
-void GPUBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT elementByteSize, UINT elementCount, const std::wstring& addName, const void* data)
+void GPUBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT elementByteSize, UINT elementCount, const std::wstring& addName)
 {
 	/*-------------------------------------------------------------------
 	-                  Check Initialize
@@ -117,7 +117,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE GPUBuffer::GetGPUUAV() const
 *  @param[in] UINT  fragmentCount
 *  @param[in] addName
 *****************************************************************************/
-void ColorBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT width, UINT height,UINT arraySize, const std::wstring& addName, DXGI_FORMAT colorFormat, float clearColor[4], UINT mipmaps, UINT  fragmentCount)
+void ColorBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT width, UINT height,UINT arraySize, const std::wstring& addName, DXGI_FORMAT colorFormat, float clearColor[4], UINT mipmaps)
 {
 	/*-------------------------------------------------------------------
 	-                  Check Initialize
@@ -328,7 +328,7 @@ void ColorBuffer::PrepareDescriptor(DXGI_FORMAT format)
 #pragma region RWStructuredBuffer
 void RWStructuredBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT elementByteSize, UINT elementCount, const std::wstring& addName)
 {
-	GPUBuffer::Create(graphicsDevice, elementByteSize, elementCount, addName, nullptr);
+	GPUBuffer::Create(graphicsDevice, elementByteSize, elementCount, addName);
 }
 void RWStructuredBuffer::OnResize(UINT elementCount)
 {

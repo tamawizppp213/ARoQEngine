@@ -20,9 +20,9 @@
 namespace
 {
 	RootSignature s_RootSignature;
-	ComputePipelineState s_xBlurPipeline(L"Blur::XPipelineState");
-	ComputePipelineState s_yBlurPipeline(L"Blur::YPipelineState");
-	ComputePipelineState s_finalBlurPipeline(L"Blur::FinalBlurPipelineState");
+	ComputePipelineState s_xBlurPipeline;
+	ComputePipelineState s_yBlurPipeline;
+	ComputePipelineState s_finalBlurPipeline;
 	constexpr int WEIGHT_TABLE_SIZE = 8;
 	constexpr float DEFAULT_BLUR_SIGMA = 8.0f;
 }
@@ -57,6 +57,7 @@ GaussianBlur::~GaussianBlur()
 void GaussianBlur::StartOn(int width, int height, const std::wstring& addName)
 {
 	if (addName != L"") { _addName = addName; _addName += L"::"; }
+	_addName += L"GaussianBlur::";
 
 	for(auto& buffer : _colorBuffer)
 	{
@@ -98,7 +99,6 @@ void GaussianBlur::Draw(GPUResource* renderTarget)
 {
 	auto& engine       = GraphicsCoreEngine::Instance();
 	auto  context      = engine.GetCommandContext();
-	int   currentFrame = engine.GetGraphicsDevice()->GetCurrentFrameIndex();
 
 	_colorBuffer[0].CopyFrom(context, renderTarget);
 	/*-------------------------------------------------------------------
@@ -153,7 +153,7 @@ void GaussianBlur::ShutDown()
 *****************************************************************************/
 void GaussianBlur::SetUpWeightTable(float sigma)
 {
-	float weights[WEIGHT_TABLE_SIZE];
+	float weights[WEIGHT_TABLE_SIZE]={0.0f};
 	float total = 0.0f;
 	for (int i = 0; i < WEIGHT_TABLE_SIZE; ++i)
 	{
@@ -195,7 +195,7 @@ void GaussianBlur::PrepareBlurParameters()
 	parameter.Weights[0] = gm::Float4(0, 0, 0, 0);
 	parameter.Weights[1] = gm::Float4(0, 0, 0, 0);
 
-	_blurParameter = std::make_unique<UploadBuffer>(engine.GetDevice(), sizeof(BlurParameter), 1, true, _addName + L"BlurParameter");
+	_blurParameter = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(sizeof(BlurParameter)), 1, true, _addName + L"BlurParameter");
 	_blurParameter->CopyStart();
 	_blurParameter->CopyData(0, &parameter);
 	_blurParameter->CopyEnd();
@@ -212,7 +212,7 @@ void GaussianBlur::PrepareBlurParameters()
 void GaussianBlur::PrepareTextureSizeBuffer(int width, int height)
 {
 	auto& engine         = GraphicsCoreEngine::Instance();
-	auto parameterBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), sizeof(TextureSizeParameter), 1, true, _addName + L"TextureSizeParameter");
+	auto parameterBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(sizeof(TextureSizeParameter)), 1, true, _addName + L"TextureSizeParameter");
 	/*-------------------------------------------------------------------
 	-			Set Texture Size Parameter
 	---------------------------------------------------------------------*/
@@ -266,8 +266,8 @@ void GaussianBlur::PreparePipelineState()
 	s_xBlurPipeline    .SetComputeShader(xBlurCS);
 	s_yBlurPipeline    .SetComputeShader(yBlurCS);
 	s_finalBlurPipeline.SetComputeShader(finalBlurCS);
-	s_xBlurPipeline    .CompleteSetting(device);
-	s_yBlurPipeline    .CompleteSetting(device);
-	s_finalBlurPipeline.CompleteSetting(device);
+	s_xBlurPipeline    .CompleteSetting(device, _addName + L"XBlurPSO");
+	s_yBlurPipeline    .CompleteSetting(device, _addName + L"YBlurPSO");
+	s_finalBlurPipeline.CompleteSetting(device, _addName + L"FinalBlurPSO");
 }
 #pragma endregion Protected Function
