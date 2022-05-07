@@ -223,7 +223,7 @@ namespace csv
 			explicit NonOwningIStreamByteSource(std::istream& in) : _in(in) {};
 			int Read(char* buffer, int bufferSize) override
 			{
-				_in.read(buffer, bufferSize); return _in.gcount();
+				_in.read(buffer, bufferSize); return static_cast<int>(_in.gcount());
 			}
 			~NonOwningIStreamByteSource() {};
 		private:

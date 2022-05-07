@@ -90,8 +90,8 @@ private:
 	*****************************************************************************/
 	static void SubDivide(MeshData& meshData);
 	static VertexPositionNormalTexture MidPoint(const VertexPositionNormalTexture& v0, const VertexPositionNormalTexture& v1);
-	static void BuildCylinderTopCap(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, MeshData& meshData);
-	static void BuildCylinderBottomCap(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, MeshData& meshData);
+	static void BuildCylinderTopCap(float topRadius, float height, UINT32 sliceCount, MeshData& meshData);
+	static void BuildCylinderBottomCap(float bottomRadius, float height, UINT32 sliceCount,  MeshData& meshData);
 	static void IsInvertNormal(MeshData& meshData);
 
 	/****************************************************************************

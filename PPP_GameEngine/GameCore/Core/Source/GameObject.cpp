@@ -270,7 +270,7 @@ void GameObject::AddComponent(Component* component)
 	/*-------------------------------------------------------------------
 	-        Find insert position in order to decide update order.
 	---------------------------------------------------------------------*/
-	int myOrder   = component->GetUpdateOrder();
+	unsigned int myOrder   = component->GetUpdateOrder();
 	auto iterator = _components.begin();
 	for (; iterator != _components.end(); ++iterator)
 	{

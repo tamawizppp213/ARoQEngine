@@ -73,9 +73,9 @@ private:
 	HINSTANCE            _hInstance = nullptr;
 	HWND                 _hwnd      = nullptr;
 	
-	BYTE _keyState[MAX_KEY_BUFFER];
-	BYTE _keyStateTrigger[MAX_KEY_BUFFER];
-	BYTE _keyStateRelease[MAX_KEY_BUFFER];
+	BYTE _keyState[MAX_KEY_BUFFER] = {0};
+	BYTE _keyStateTrigger[MAX_KEY_BUFFER] = {0};
+	BYTE _keyStateRelease[MAX_KEY_BUFFER] = {0};
 
 };
 

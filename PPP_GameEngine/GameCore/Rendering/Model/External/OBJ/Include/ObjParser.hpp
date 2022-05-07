@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   PMDParser.hpp
-///             @brief  PMD File Parser
+///             @file   OBJParser.hpp
+///             @brief  OBJ File Parser
 ///             @author Toide Yutaro
-///             @date   2022_05_05
+///             @date   2022_05_07
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef OBJ_PARSER_HPP

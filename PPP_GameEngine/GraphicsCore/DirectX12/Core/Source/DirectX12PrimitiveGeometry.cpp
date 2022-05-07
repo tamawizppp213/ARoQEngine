@@ -113,7 +113,7 @@ MeshData GeometryGenerator::Box(float width, float height, float depth, UINT32 n
 	constexpr int faceCount = 6;
 	float w2 = 0.5f * width;
 	float h2 = 0.5f * height;
-	float d2 = 0.5f * height;
+	float d2 = 0.5f * depth;
 
 	MeshData meshData;
 	Vertex   v[faceCount * 4];
@@ -160,9 +160,9 @@ MeshData GeometryGenerator::Box(float width, float height, float depth, UINT32 n
 	/*-------------------------------------------------------------------
 	-					     Set index data
 	---------------------------------------------------------------------*/
-	UINT32 index[faceCount * 6];
+	UINT16 index[faceCount * 6] ={0};
 	// Fill front-> back -> top -> bottom -> left -> right
-	for (int i = 0; i < faceCount; ++i)
+	for (UINT16 i = 0; i < faceCount; ++i)
 	{
 		index[6 * i + 0] = 4 * i + 0;
 		index[6 * i + 1] = 4 * i + 1;
@@ -177,7 +177,7 @@ MeshData GeometryGenerator::Box(float width, float height, float depth, UINT32 n
 	/*-------------------------------------------------------------------
 	-					     SubDivide
 	---------------------------------------------------------------------*/
-	numSubdivisions = std::min<UINT16>(numSubdivisions, 6u);
+	numSubdivisions = std::min<UINT16>(static_cast<UINT16>(numSubdivisions), 6u);
 	for (UINT16 i = 0; i < numSubdivisions; ++i)
 	{
 		SubDivide(meshData);
@@ -261,7 +261,7 @@ MeshData GeometryGenerator::Sphere(float radius, UINT32 sliceCount, UINT32 stack
 	}
 
 	UINT16 baseIndex = 1;
-	UINT16 ringVertexCount = sliceCount + 1;
+	UINT16 ringVertexCount = static_cast<UINT16>(sliceCount) + 1;
 	for (UINT16 i = 0; i < stackCount - 2; ++i)
 	{
 		for (UINT16 j = 0; j < sliceCount; ++j)
@@ -310,7 +310,7 @@ MeshData GeometryGenerator::GeoSphere(float radius, UINT32 numSubdivisions, bool
 {
 	MeshData meshData;
 
-	numSubdivisions = std::min<UINT16>(numSubdivisions, 6u);;
+	numSubdivisions = std::min<UINT16>(static_cast<UINT16>(numSubdivisions), 6u);;
 
 	// Approximate a sphere by tessellating an icosahedron
 	const float X = 0.525731f;
@@ -431,7 +431,7 @@ MeshData GeometryGenerator::Cylinder(float bottomRadius, float topRadius, float 
 		}
 	}
 
-	UINT16 ringVertexCount = sliceCount + 1;
+	UINT16 ringVertexCount = static_cast<UINT16>(sliceCount) + 1;
 
 	// Compute indices for each stack.
 	for (UINT16 i = 0; i < stackCount; ++i)
@@ -448,8 +448,8 @@ MeshData GeometryGenerator::Cylinder(float bottomRadius, float topRadius, float 
 		}
 	}
 
-	BuildCylinderTopCap(bottomRadius, topRadius, height, sliceCount, stackCount, meshData);
-	BuildCylinderBottomCap(bottomRadius, topRadius, height, sliceCount, stackCount, meshData);
+	BuildCylinderTopCap(topRadius, height, sliceCount, meshData);
+	BuildCylinderBottomCap(bottomRadius, height, sliceCount, meshData);
 
 	if (isInvertNormal)
 	{
@@ -475,8 +475,8 @@ MeshData GeometryGenerator::Grid(float width, float depth, UINT32 rows, UINT32 c
 {
 	MeshData meshData;
 
-	UINT16 vertexCount = rows * columns;
-	UINT16 faceCount = (rows - 1) * (columns - 1) * 2;
+	UINT64 vertexCount = (UINT64)rows * columns;
+	UINT64 faceCount = ((UINT64)rows - 1) * (UINT64)(columns - 1) * 2;
 
 	/*-------------------------------------------------------------------
 	-					  Fill Vertex data
@@ -517,13 +517,13 @@ MeshData GeometryGenerator::Grid(float width, float depth, UINT32 rows, UINT32 c
 	{
 		for (UINT16 j = 0; j < columns - 1; ++j)
 		{
-			meshData.Indices[(UINT64)k] = (i)*columns + (j);
-			meshData.Indices[(UINT64)k + 1] = (i)*columns + (j + 1);
-			meshData.Indices[(UINT64)k + 2] = (i + 1) * columns + (j);
+			meshData.Indices[(UINT64)k]     = (i    ) * (UINT16)columns + (j);
+			meshData.Indices[(UINT64)k + 1] = (i    ) * (UINT16)columns + (j + 1);
+			meshData.Indices[(UINT64)k + 2] = (i + 1) * (UINT16)columns + (j);
 
-			meshData.Indices[(UINT64)k + 3] = (i + 1) * columns + (j);
-			meshData.Indices[(UINT64)k + 4] = (i)*columns + (j + 1);
-			meshData.Indices[(UINT64)k + 5] = (i + 1) * columns + (j + 1);
+			meshData.Indices[(UINT64)k + 3] = (i + 1) * (UINT16)columns + (j);
+			meshData.Indices[(UINT64)k + 4] = (i)     * (UINT16)columns + (j + 1);
+			meshData.Indices[(UINT64)k + 5] = (i + 1) * (UINT16)columns + (j + 1);
 
 			k += 6;
 		}
@@ -684,7 +684,7 @@ VertexPositionNormalTexture GeometryGenerator::MidPoint(const VertexPositionNorm
 *  @param[out] MeshData& meshData,
 *  @return 　　 void
 *****************************************************************************/
-void GeometryGenerator::BuildCylinderTopCap(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, MeshData& meshData)
+void GeometryGenerator::BuildCylinderTopCap(float topRadius, float height, UINT32 sliceCount, MeshData& meshData)
 {
 	UINT16 baseIndex = (UINT16)meshData.Vertices.size();
 
@@ -728,7 +728,7 @@ void GeometryGenerator::BuildCylinderTopCap(float bottomRadius, float topRadius,
 *  @param[out] MeshData& meshData,
 *  @return 　　 void
 *****************************************************************************/
-void GeometryGenerator::BuildCylinderBottomCap(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, MeshData& meshData)
+void GeometryGenerator::BuildCylinderBottomCap(float bottomRadius, float height, UINT32 sliceCount, MeshData& meshData)
 {
 	UINT16 baseIndex = (UINT16)meshData.Vertices.size();
 
@@ -738,8 +738,8 @@ void GeometryGenerator::BuildCylinderBottomCap(float bottomRadius, float topRadi
 	// Duplicate cap ring vertices because the texture coordinates and normals differ.
 	for (UINT16 i = 0; i <= sliceCount; ++i)
 	{
-		float x = topRadius * cosf(i * dTheta);
-		float z = topRadius * sinf(i * dTheta);
+		float x = bottomRadius * cosf(i * dTheta);
+		float z = bottomRadius * sinf(i * dTheta);
 
 		float u = x / height + 0.5f;
 		float v = z / height + 0.5f;

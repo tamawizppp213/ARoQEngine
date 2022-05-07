@@ -55,9 +55,9 @@ public:
 	**                Public Function
 	*****************************************************************************/
 	static const Texture& LoadTexture(const std::wstring& filePath, TextureType type = TextureType::Texture2D);
-	static void CreateTexture1D(const std::wstring& name, Texture& texture, TextureRGBA* data);
+	//static void CreateTexture1D(const std::wstring& name, Texture& texture, TextureRGBA* data);
 	static void CreateTexture2D(const std::wstring& name, Texture& texture, TextureRGBA* data);
-	static void CreateTexture3D(const std::wstring& name, Texture& texture, TextureRGBA* data);
+	//static void CreateTexture3D(const std::wstring& name, Texture& texture, TextureRGBA* data);
 	static void ClearTextureTable();
 	/****************************************************************************
 	**                Public Member Variables

@@ -26,7 +26,7 @@
 namespace vmd
 {
 	using namespace gm;
-#pragma pack(1)
+
 	struct VMDHeader
 	{
 		std::string Header;
@@ -164,6 +164,6 @@ namespace vmd
 		**                Private Member Variables
 		*****************************************************************************/
 	};
-#pragma pack()
+
 }
 #endif

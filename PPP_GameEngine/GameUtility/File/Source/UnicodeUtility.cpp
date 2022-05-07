@@ -138,7 +138,7 @@ namespace unicode
 		/*-------------------------------------------------------------------
 		-              wchar_t <=> char_16_t
 		---------------------------------------------------------------------*/
-		if (sizeof(wchar_t) == sizeof(char16_t))
+		if constexpr(sizeof(wchar_t) == sizeof(char16_t))
 		{
 			const char16_t* utf16String = reinterpret_cast<const char16_t*>(wString.c_str());
 			if (!ConvertU16ToU8(utf16String, utf8String))
@@ -149,7 +149,7 @@ namespace unicode
 		/*-------------------------------------------------------------------
 		-              wchar_t <=> char_32_t
 		---------------------------------------------------------------------*/
-		else if (sizeof(wchar_t) == sizeof(char32_t))
+		else if constexpr(sizeof(wchar_t) == sizeof(char32_t))
 		{
 			const char32_t* utf32String = reinterpret_cast<const char32_t*>(wString.c_str());
 			if (!ConvertU32ToU8(utf32String, utf8String))

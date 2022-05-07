@@ -25,7 +25,7 @@ namespace
 {
 	constexpr float SKY_SCALE = 5000.0f;
 	RootSignature         s_RootSignature;
-	GraphicsPipelineState s_PipelineState(L"Skybox::PipelineState");
+	GraphicsPipelineState s_PipelineState;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -114,12 +114,12 @@ void Skybox::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 		/*-------------------------------------------------------------------
 		-            Set Vertex Buffer and Index Buffer
 		---------------------------------------------------------------------*/
-		meshBuffer.VertexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), vertexByteSize, vertexCount, false, addName + L"VertexBuffer");
+		meshBuffer.VertexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(vertexByteSize), static_cast<UINT>(vertexCount), false, addName + L"VertexBuffer");
 		meshBuffer.VertexBuffer->CopyStart();
 		meshBuffer.VertexBuffer->CopyTotalData(sphereMesh.Vertices.data(), static_cast<int>(vertexCount));
 		meshBuffer.VertexBuffer->CopyEnd();
 
-		meshBuffer.IndexBuffer  = std::make_unique<UploadBuffer>(engine.GetDevice(), indexByteSize, indexCount, false, addName + L"IndexBuffer");
+		meshBuffer.IndexBuffer  = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(indexByteSize), static_cast<UINT>(indexCount), false, addName + L"IndexBuffer");
 		meshBuffer.IndexBuffer->CopyStart();
 		meshBuffer.IndexBuffer->CopyTotalData(sphereMesh.Indices.data(), static_cast<int>(indexCount));
 		meshBuffer.IndexBuffer->CopyEnd();
@@ -137,7 +137,7 @@ void Skybox::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 void Skybox::PrepareSkyObject(const std::wstring& addName)
 {
 	auto& engine = GraphicsCoreEngine::Instance();
-	auto skyObject = std::make_unique<UploadBuffer>(engine.GetDevice(), sizeof(gm::Matrix4), 1, true, addName + L"ObjectConstant");
+	auto skyObject = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(sizeof(gm::Matrix4)), 1, true, addName + L"ObjectConstant");
 	/*-------------------------------------------------------------------
 	-			Set Skydata
 	---------------------------------------------------------------------*/
@@ -200,6 +200,6 @@ void Skybox::PreparePipelineState(const std::wstring& addName)
 	s_PipelineState.SetBlendState(GetBlendState(BlendStateType::OverWrite));
 	s_PipelineState.SetVertexShader(vs);
 	s_PipelineState.SetPixelShader (ps);
-	s_PipelineState.CompleteSetting(GraphicsCoreEngine::Instance().GetDevice());
+	s_PipelineState.CompleteSetting(GraphicsCoreEngine::Instance().GetDevice(), addName + L"PipelineState");
 }
 #pragma endregion Private Function

@@ -22,7 +22,7 @@
 #define TILE_HEIGHT (16)
 #define TILE_SIZE (TILE_WIDTH * TILE_HEIGHT)
 
-Texture2D<float>         DepthTexture     : register(t0);Å@
+Texture2D<float> DepthTexture             : register(t0);
 RWStructuredBuffer<uint> LightIndices     : register(u0);
 RWStructuredBuffer<uint> SpotLightIndices : register(u1);
 //////////////////////////////////////////////////////////////////////////////////

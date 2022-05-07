@@ -33,7 +33,7 @@ Camera::~Camera()
 void Camera::StartUp(IDevice* device)
 {
 	SetLens(0.25f * GM_PI, Screen::GetAspectRatio(), 1.0f, 1000.0f);
-	_sceneConstantBuffer = std::make_unique<UploadBuffer>(device,sizeof(SceneConstants), 1, true, L"SceneConstants");
+	_sceneConstantBuffer = std::make_unique<UploadBuffer>(device, static_cast<UINT>(sizeof(SceneConstants)), 1, true, L"SceneConstants");
 }
 
 void Camera::Update(GameTimer* gameTimer)

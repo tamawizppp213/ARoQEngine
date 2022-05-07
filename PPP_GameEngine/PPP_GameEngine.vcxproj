@@ -136,6 +136,7 @@
     <FxCompile>
       <ShaderModel>6.4</ShaderModel>
       <EntryPointName>VSMain</EntryPointName>
+      <EnableDebuggingInformation>false</EnableDebuggingInformation>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -194,7 +195,8 @@
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\PMDParser.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\PMXParser.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\VMDParser.hpp" />
-    <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\ObjParser.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\OBJParser.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\OBJUtils.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Image.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\NullTextureMap.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Sprite.hpp" />
@@ -278,7 +280,8 @@
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\PMDParser.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\PMXParser.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\VMDParser.cpp" />
-    <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\ObjParser.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJParser.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJUtils.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Image.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Sprite.cpp" />
     <ClCompile Include="GameUtility\Base\Source\GameTimer.cpp" />

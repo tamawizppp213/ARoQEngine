@@ -25,7 +25,6 @@
 namespace pmx
 {
 	using namespace gm;
-#pragma pack(1)
 	enum class PMXEncode : UINT8
 	{
 		UTF16 = 0,
@@ -577,7 +576,7 @@ namespace pmx
 		void ReadJoints(FILE* filePtr);
 		void ReadSoftBodies(FILE* filePtr);
 	};
-#pragma pack()
+
 }
 
 #endif

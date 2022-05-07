@@ -186,7 +186,7 @@ protected:
 	/****************************************************************************
 	**                Protected Function
 	*****************************************************************************/
-	virtual void Create(GraphicsDeviceDirectX12& graphicsDevice, UINT elementByteSize, UINT elementCount, const std::wstring& addName = L"", const void* data = nullptr);
+	virtual void Create(GraphicsDeviceDirectX12& graphicsDevice, UINT elementByteSize, UINT elementCount, const std::wstring& addName = L"");
 	virtual void PrepareDescriptor() = 0;
 	virtual void PrepareResource() = 0;
 	/****************************************************************************
@@ -219,7 +219,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void Create(GraphicsDeviceDirectX12& graphicsDevice, UINT width, UINT height, UINT arraySize = 0, const std::wstring& addName = L"", DXGI_FORMAT colorFormat = DXGI_FORMAT_R8G8B8A8_UNORM, float clearColor[4] = nullptr, UINT mipmaps = 1, UINT  fragmentCount = 1);
+	void Create(GraphicsDeviceDirectX12& graphicsDevice, UINT width, UINT height, UINT arraySize = 0, const std::wstring& addName = L"", DXGI_FORMAT colorFormat = DXGI_FORMAT_R8G8B8A8_UNORM, float clearColor[4] = nullptr, UINT mipmaps = 1);
 	void OnResize(UINT newWidth, UINT newHeight, UINT arraySize);
 	void CopyFrom(CommandContext* commandContext, GPUResource* source);
 	/****************************************************************************

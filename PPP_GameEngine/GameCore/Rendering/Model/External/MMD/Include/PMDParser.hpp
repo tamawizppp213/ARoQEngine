@@ -25,7 +25,7 @@
 namespace pmd
 {
 	using namespace gm;
-#pragma pack(1)
+
 	struct PMDHeader
 	{
 		char  Signature[3];
@@ -254,6 +254,6 @@ namespace pmd
 		**                Private Member Variables
 		*****************************************************************************/
 	};
-#pragma pack()
+
 }
 #endif

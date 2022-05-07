@@ -21,9 +21,7 @@
 #pragma region Public Function
 Keyboard::Keyboard()
 {
-	std::fill_n(_keyState, MAX_KEY_BUFFER, 0);
-	std::fill_n(_keyStateTrigger, MAX_KEY_BUFFER, 0);
-	std::fill_n(_keyStateRelease, MAX_KEY_BUFFER, 0);
+	
 }
 
 /****************************************************************************

@@ -342,6 +342,7 @@ bool PMXVertex      ::Read(FILE* filePtr, const PMXSetting* setting)
 		}
 	}
 	fread_s(&EdgeMagnitude, sizeof(EdgeMagnitude), sizeof(float), 1, filePtr);
+	return true;
 }
 void PMXMaterial    ::Read(FILE* filePtr, const PMXSetting* setting)
 {
@@ -801,8 +802,8 @@ bool ReadPMXString(FILE* filePtr, std::string* string, PMXEncode encode)
 {
 	using namespace pmx;
 
-	UINT32 bufferSize = -1;
-	fread_s(&bufferSize, sizeof(bufferSize), sizeof(UINT32), 1, filePtr);
+	INT32 bufferSize = -1;
+	fread_s(&bufferSize, sizeof(bufferSize), sizeof(INT32), 1, filePtr);
 
 	/*-------------------------------------------------------------------
 	-             Error Check

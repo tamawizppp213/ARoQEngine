@@ -14,6 +14,7 @@
 #include "DirectX12Core.hpp"
 #include <d3d12.h>
 #include <memory>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +49,7 @@ public:
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	PipelineState(const wchar_t* name) : _name(name), _rootSignature(nullptr), _pipelineState(nullptr){};
+	PipelineState() = default;
 	~PipelineState();
 protected:
 	/****************************************************************************
@@ -60,7 +61,6 @@ protected:
 	*****************************************************************************/
 	RootSignature* _rootSignature = nullptr;
 	IPipelineState* _pipelineState = nullptr;
-	const wchar_t* _name;
 };
 
 /****************************************************************************
@@ -76,7 +76,7 @@ public:
 	**                Public Function
 	*****************************************************************************/
 	void SetGraphicsPipelineStateDescriptor(const D3D12_GRAPHICS_PIPELINE_STATE_DESC& descriptor) { _psoDescriptor = descriptor; }
-	void CompleteSetting(IDevice* device);
+	void CompleteSetting(IDevice* device, const std::wstring& name = L"Unnamed Graphics PSO");
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
@@ -112,7 +112,7 @@ public:
 	**                Constructor and Destructor
 	*****************************************************************************/
 	// Start with empty state
-	GraphicsPipelineState(const wchar_t* name = L"Unnamed Graphics PSO");
+	GraphicsPipelineState();
 	~GraphicsPipelineState();
 protected:
 	/****************************************************************************
@@ -137,7 +137,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void CompleteSetting(IDevice* device);
+	void CompleteSetting(IDevice* device, const std::wstring& name = L"Unnamed Compute PSO");
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
@@ -147,7 +147,7 @@ public:
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	ComputePipelineState (const wchar_t* name = L"Unnamed Compute PSO");
+	ComputePipelineState ();
 protected:
 	/****************************************************************************
 	**                Protected Function

@@ -55,10 +55,10 @@ void TextureManager::ClearTextureTable()
 *  @param[out] Texture& texture
 *  @return Å@Å@ int
 *****************************************************************************/
-void TextureManager::CreateTexture1D(const std::wstring& name, Texture& texture, TextureRGBA* data)
-{
-	
-}
+//void TextureManager::CreateTexture1D(const std::wstring& name, Texture& texture, TextureRGBA* data)
+//{
+//	
+//}
 void TextureManager::CreateTexture2D(const std::wstring& name, Texture& texture, TextureRGBA* data)
 {
 	/*-------------------------------------------------------------------
@@ -90,10 +90,10 @@ void TextureManager::CreateTexture2D(const std::wstring& name, Texture& texture,
 	texture = *_textureTable[name].get();
 }
 
-void TextureManager::CreateTexture3D(const std::wstring& name, Texture& texture, TextureRGBA* data)
-{
-	
-}
+//void TextureManager::CreateTexture3D(const std::wstring& name, Texture& texture, TextureRGBA* data)
+//{
+//	
+//}
 
 /****************************************************************************
 *							  LoadTexture
@@ -184,13 +184,13 @@ const Texture& TextureManager::LoadTexture(const std::wstring& filePath, Texture
 		-                 Create Upload Buffer
 		---------------------------------------------------------------------*/
 		D3D12_HEAP_PROPERTIES heapProperty = HEAP_PROPERTY(D3D12_HEAP_TYPE_UPLOAD);
-		D3D12_RESOURCE_DESC   resourceDesc = RESOURCE_DESC::Buffer(uploadBufferSize);
+		D3D12_RESOURCE_DESC   uploadDesc   = RESOURCE_DESC::Buffer(uploadBufferSize);
 		
 		ResourceComPtr uploadBuffer = nullptr;
 		engine.CreateCommittedResource(
 			&heapProperty,
 			D3D12_HEAP_FLAG_NONE,
-			&resourceDesc,
+			&uploadDesc,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
 			IID_PPV_ARGS(uploadBuffer.GetAddressOf()));
