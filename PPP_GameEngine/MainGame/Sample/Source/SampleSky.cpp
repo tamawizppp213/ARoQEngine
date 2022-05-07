@@ -17,7 +17,6 @@
 using namespace sample;
 namespace
 {
-
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -69,7 +68,6 @@ void SampleSky::Draw()
 {
 	_engine.BeginDrawFrame();
 	_skybox->Draw(_camera->GetSceneGPUAddress());
-	
 	_engine.EndDrawFrame();
 }
 /****************************************************************************

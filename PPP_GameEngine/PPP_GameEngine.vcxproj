@@ -183,11 +183,18 @@
     <ClInclude Include="GameCore\Input\Include\GamePad.hpp" />
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassGBuffer.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassLightCulling.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassZPrepass.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Blur.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp" />
+    <ClInclude Include="GameCore\Rendering\Effect\Include\DepthOfField.hpp" />
     <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\Skybox.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\LightType.hpp" />
-    <ClInclude Include="GameCore\Rendering\Model\Format\Include\PMXFormat.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\PMDParser.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\PMXParser.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\VMDParser.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\ObjParser.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Image.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\NullTextureMap.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Sprite.hpp" />
@@ -261,9 +268,17 @@
     <ClCompile Include="GameCore\Input\Source\GamePad.cpp" />
     <ClCompile Include="GameCore\Input\Source\Keyboard.cpp" />
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
+    <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassGBuffer.cpp" />
+    <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassLightCulling.cpp" />
+    <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassZPrepass.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Blur.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\ColorChange.cpp" />
+    <ClCompile Include="GameCore\Rendering\Effect\Source\DepthOfField.cpp" />
     <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\Skybox.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\PMDParser.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\PMXParser.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\VMDParser.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\ObjParser.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Image.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Sprite.cpp" />
     <ClCompile Include="GameUtility\Base\Source\GameTimer.cpp" />
@@ -303,6 +318,7 @@
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
     <None Include="Shader\Core\ShaderVertexType.hlsli" />
     <None Include="Shader\Lighting\ShaderBRDF.hlsli" />
+    <None Include="Shader\Lighting\ShaderLightType.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc" />
@@ -316,6 +332,18 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
     </FxCompile>
+    <FxCompile Include="Shader\Effect\ShaderDepthOfField.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.4</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VerticalBlur</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VerticalBlur</EntryPointName>
+    </FxCompile>
     <FxCompile Include="Shader\Effect\ShaderGaussianBlur.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
@@ -327,6 +355,18 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.4</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XBlur</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XBlur</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Shader\Lighting\ShaderLightCulling.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.4</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">LightCulling</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">LightCulling</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Sprite\ShaderDefault2D.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

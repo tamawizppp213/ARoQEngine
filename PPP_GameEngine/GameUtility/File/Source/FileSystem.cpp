@@ -9,6 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/File/Include/FileSystem.hpp"
+#include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -101,4 +102,79 @@ std::string FileSystem::GetFileName(const std::string& path, bool useExtension)
 	}
 	return fileName;
 }
+/****************************************************************************
+*							OpenFile
+*************************************************************************//**
+*  @fn        FILE* FileSystem::OpenFile(const std::wstring& filePath, const std::string& mode)
+*  @brief     OpenFile
+*  @param[in] const std::wstring& filePath
+*  @param[in] const std::string& readMode
+*  @return 　　FILE*
+*****************************************************************************/
+FILE* FileSystem::OpenFile(const std::wstring& filePath, const std::string& mode)
+{
+	FILE* filePtr = nullptr;
+	auto error = fopen_s(&filePtr, unicode::ToUtf8String(filePath).c_str(), mode.c_str());
+	//_ASSERT(filePtr != nullptr);
+	if (filePtr == nullptr)
+	{
+		std::string message = unicode::ToUtf8String(filePath) + " couldn't open.";
+		MessageBoxA(NULL, message.c_str(), "Error", MB_ICONERROR);
+		std::cout << "errorNo" << error << std::endl;
+	}
+	return filePtr;
+}
+FILE* FileSystem::OpenFile(const std::string& filePath, const std::string& mode)
+{
+	FILE* filePtr = nullptr;
+	auto error = fopen_s(&filePtr, filePath.c_str(), mode.c_str());
+	//_ASSERT(filePtr != nullptr);
+	if (filePtr == nullptr)
+	{
+		std::string message = filePath + " couldn't open.";
+		MessageBoxA(NULL, message.c_str(), "Error", MB_ICONERROR);
+		std::cout << "errorNo" << error << std::endl;
+	}
+	return filePtr;
+}
+/****************************************************************************
+*							Split
+*************************************************************************//**
+*  @fn        std::pair<std::string, std::string> FileSystem::Split(const std::string& string, const char splitter = '*')
+*  @brief     Split string
+*  @param[in] const std::wstring& filePath
+*  @param[in] const char splitter
+*  @return 　　std::pair<std::string, std::string>
+*****************************************************************************/
+std::pair<std::string, std::string> FileSystem::Split(const std::string& string, const char splitter)
+{
+	/*-------------------------------------------------------------------
+	-               Find splitter index
+	---------------------------------------------------------------------*/
+	UINT64 index = string.find(splitter);
 
+	/*-------------------------------------------------------------------
+	-               Split string
+	---------------------------------------------------------------------*/
+	std::pair<std::string, std::string> result;
+	result.first = string.substr(0, index);
+	result.second = string.substr(index + 1, string.length() - index - 1);
+
+	return result;
+}
+std::pair<std::wstring, std::wstring> FileSystem::Split(const std::wstring& string, const char splitter)
+{
+	/*-------------------------------------------------------------------
+	-               Find splitter index
+	---------------------------------------------------------------------*/
+	UINT64 index = string.find(splitter);
+
+	/*-------------------------------------------------------------------
+	-               Split string
+	---------------------------------------------------------------------*/
+	std::pair<std::wstring, std::wstring> result;
+	result.first  = string.substr(0, index);
+	result.second = string.substr(index + 1, string.length() - index - 1);
+
+	return result;
+}
