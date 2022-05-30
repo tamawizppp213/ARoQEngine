@@ -34,7 +34,7 @@ namespace gltf
 	SerializeFlags& operator&=(SerializeFlags& lhs, SerializeFlags rhs);
 
 	class ExtensionSerializer;
-	std::string Serialize(const GLTFDocument& gltfDocument, SerializeFlags flags = SerializeFlags::None);
+	std::string Serialize(const GLTFDocument& gltfDocument, SerializeFlags flags = SerializeFlags::Pretty);
 	std::string Serialize(const GLTFDocument& gltfDocument, const ExtensionSerializer& extensionHandler, SerializeFlags flags = SerializeFlags::None);
 
 

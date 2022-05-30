@@ -18,7 +18,10 @@ using namespace gltf::detail::asset;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GLTFDocument::GLTFDocument() = default;
+GLTFDocument::GLTFDocument()
+{
+
+}
 GLTFDocument::GLTFDocument(GLTFAsset && asset) : Asset(std::move(asset)) {};
 
 bool GLTFDocument::operator==(const GLTFDocument& rhs) const
