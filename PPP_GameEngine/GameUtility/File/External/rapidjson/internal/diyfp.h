@@ -130,7 +130,7 @@ struct DiyFp {
 
     double ToDouble() const {
         union {
-            double d;
+            double d = 0;
             uint64_t u64;
         }u;
         RAPIDJSON_ASSERT(f <= kDpHiddenBit + kDpSignificandMask);

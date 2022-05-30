@@ -11,7 +11,6 @@
 #include "MainGame/Sample/Include/SampleSky.hpp"
 #include "GameCore/Rendering/EnvironmentMap/Include/Skybox.hpp"
 #include "GameCore/Core/Include/Camera.hpp"
-#include "GameCore/Rendering/Model/External/OBJ/Include/ObjParser.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,8 +41,6 @@ SampleSky::~SampleSky()
 void SampleSky::Initialize(GameTimer* gameTimer)
 {
 	Scene::Initialize(gameTimer);
-	obj::OBJFile file;
-	file.Load(L"Resources/Cube.obj");
 	PrepareCamera();
 }
 /****************************************************************************

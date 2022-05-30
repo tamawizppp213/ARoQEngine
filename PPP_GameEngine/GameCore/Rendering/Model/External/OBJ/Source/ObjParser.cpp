@@ -43,7 +43,7 @@ bool OBJFile::Load(const std::wstring& filePath)
 	std::vector<Float3> normals;
 	std::vector<Float2> uvs;
 	std::vector<Face>   faces;
-	std::string         materialName;
+	std::string         materialName = "";
 
 	/*-------------------------------------------------------------------
 	-           The OBJ format does not have a data sequence rule,
@@ -146,9 +146,9 @@ bool OBJFile::Load(const std::wstring& filePath)
 			{
 				if (prefix == "mtllib")
 				{
-					std::string materialName;
-					stringStream >> materialName;
-					LoadMaterial(Directory + materialName);
+					std::string name;
+					stringStream >> name;
+					LoadMaterial(Directory + name);
 				}
 				break;
 			}
@@ -247,7 +247,7 @@ void OBJFile::LoadMaterial(const std::string& filePath)
 				if (prefix == "newmtl")
 				{
 					Materials.push_back(OBJMaterial());
-					index = Materials.size() - 1;
+					index = (UINT32)Materials.size() - 1;
 					stringStream >> Materials[index].Name;
 				}
 				else if (prefix == "norm")

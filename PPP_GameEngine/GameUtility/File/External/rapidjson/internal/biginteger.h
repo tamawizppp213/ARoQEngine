@@ -25,7 +25,7 @@
 #pragma comment(lib,"softintrin")
 #endif
 #endif
-
+#pragma warning(disable: 26451)
 RAPIDJSON_NAMESPACE_BEGIN
 namespace internal {
 

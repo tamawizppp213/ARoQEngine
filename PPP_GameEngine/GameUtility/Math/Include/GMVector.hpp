@@ -60,8 +60,8 @@ namespace gm
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		INLINE bool operator == (const Float2& V) const noexcept { DirectX::XMVector2Equal(*this, V); };
-		INLINE bool operator != (const Float2& V) const noexcept { DirectX::XMVector2NotEqual(*this, V); };
+		INLINE bool operator == (const Float2& V) const noexcept { return DirectX::XMVector2Equal(*this, V); };
+		INLINE bool operator != (const Float2& V) const noexcept { return DirectX::XMVector2NotEqual(*this, V); };
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -106,8 +106,8 @@ namespace gm
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		INLINE bool operator == (const Float3& V) const noexcept { DirectX::XMVector3Equal(*this, V); };
-		INLINE bool operator != (const Float3& V) const noexcept { DirectX::XMVector3NotEqual(*this, V); };
+		INLINE bool operator == (const Float3& V) const noexcept { return DirectX::XMVector3Equal(*this, V); };
+		INLINE bool operator != (const Float3& V) const noexcept { return DirectX::XMVector3NotEqual(*this, V); };
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -152,8 +152,8 @@ namespace gm
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		INLINE bool operator == (const Float4& V) const noexcept { DirectX::XMVector4Equal(*this, V); };
-		INLINE bool operator != (const Float4& V) const noexcept { DirectX::XMVector4NotEqual(*this, V); };
+		INLINE bool operator == (const Float4& V) const noexcept { return DirectX::XMVector4Equal(*this, V); };
+		INLINE bool operator != (const Float4& V) const noexcept { return DirectX::XMVector4NotEqual(*this, V); };
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -218,8 +218,8 @@ namespace gm
 		INLINE friend Vector2 operator* (float   v1, Vector2 v2) { return Scalar(v1) * v2; }
 		INLINE friend Vector2 operator/ (float   v1, Vector2 v2) { return Scalar(v1) / v2; }
 
-		INLINE bool operator == (const Vector2& V) const noexcept { DirectX::XMVector2Equal(*this, V); };
-		INLINE bool operator != (const Vector2& V) const noexcept { DirectX::XMVector2NotEqual(*this, V); };
+		INLINE bool operator == (const Vector2& V) const noexcept { return DirectX::XMVector2Equal(*this, V); };
+		INLINE bool operator != (const Vector2& V) const noexcept { return DirectX::XMVector2NotEqual(*this, V); };
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -444,8 +444,8 @@ namespace gm
 		INLINE friend Vector4 operator* (float   v1, Vector4 v2) { return Scalar(v1) * v2; }
 		INLINE friend Vector4 operator/ (float   v1, Vector4 v2) { return Scalar(v1) / v2; }
 
-		INLINE bool operator == (const Vector4& V) const noexcept { DirectX::XMVector4Equal(*this, V); };
-		INLINE bool operator != (const Vector4& V) const noexcept { DirectX::XMVector4NotEqual(*this, V); };
+		INLINE bool operator == (const Vector4& V) const noexcept { return DirectX::XMVector4Equal(*this, V); };
+		INLINE bool operator != (const Vector4& V) const noexcept { return DirectX::XMVector4NotEqual(*this, V); };
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

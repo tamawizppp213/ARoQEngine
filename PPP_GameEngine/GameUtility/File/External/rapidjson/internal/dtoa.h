@@ -18,7 +18,7 @@
 
 #ifndef RAPIDJSON_DTOA_
 #define RAPIDJSON_DTOA_
-
+#pragma warning(disable: 26451)
 #include "itoa.h" // GetDigitsLut()
 #include "diyfp.h"
 #include "ieee754.h"

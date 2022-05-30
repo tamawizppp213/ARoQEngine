@@ -61,6 +61,7 @@ RAPIDJSON_NAMESPACE_BEGIN
 /*! \ingroup RAPIDJSON_ERRORS
     \see GenericReader::Parse, GenericReader::GetParseErrorCode
 */
+#pragma warning(disable: 26812 26495)
 enum ParseErrorCode {
     kParseErrorNone = 0,                        //!< No error.
 
