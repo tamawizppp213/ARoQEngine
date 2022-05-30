@@ -177,12 +177,12 @@ namespace gltf
 				*****************************************************************************/
 				struct GLTFSparse
 				{
-					size_t        Count;                // Number of deviating accessor values stored in the sparcse array
-					std::string   IndicesBufferViewID;  // The index of the buffer view 
-					size_t        IndicesByteOffset;    // The offset relative to the start of the buffer view in bytes
-					ComponentType IndicesComponentType; // The datatype of the accessor's components
-					std::string   ValuesBufferViewID;   // The index of the buffer view with sparse values
-					size_t        ValuesByteOffset;     // The offset relatice to the start of the bufferView in bytes
+					size_t        Count = 0;                  // Number of deviating accessor values stored in the sparcse array
+					std::string   IndicesBufferViewID  = "";   // The index of the buffer view 
+					size_t        IndicesByteOffset    = 0;   // The offset relative to the start of the buffer view in bytes
+					ComponentType IndicesComponentType = ComponentType::Component_Unknown; // The datatype of the accessor's components
+					std::string   ValuesBufferViewID   = "";   // The index of the buffer view with sparse values
+					size_t        ValuesByteOffset     = 0;   // The offset relatice to the start of the bufferView in bytes
 
 					bool operator==(const GLTFSparse& rhs) const
 					{
