@@ -14,7 +14,7 @@
 
 #ifndef RAPIDJSON_STRTOD_
 #define RAPIDJSON_STRTOD_
-
+#pragma warning(disable: 26451)
 #include "ieee754.h"
 #include "biginteger.h"
 #include "diyfp.h"
