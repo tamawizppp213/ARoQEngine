@@ -73,7 +73,14 @@ void SkyDome::Draw(SkyDome::SceneGPUAddress scene)
 	context->DrawIndexedInstanced(_meshBuffer[currentFrame].IndexBuffer->GetElementCount(),1);
 
 }
-
+/****************************************************************************
+*							Finalize
+*************************************************************************//**
+*  @fn        void SkyDome::Finalize()
+*  @brief     Finalize
+*  @param[in] void
+*  @return Å@Å@void
+*****************************************************************************/
 void SkyDome::Finalize()
 {
 	_meshBuffer.reset();
