@@ -29,7 +29,7 @@ enum class GPUVender
 	Intel,
 	CountOfGPUVender
 };
-#define USE_HDR (1)
+
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -70,11 +70,12 @@ void GraphicsDeviceDirectX12::Finalize()
 {
 	RootSignature::DestroyAll();
 	PipelineState::DestroyAll();
-	if (_rtvAllocator) { delete _rtvAllocator; }
-	if (_dsvAllocator) { delete _dsvAllocator; }
-	if (_cbvAllocator) { delete _cbvAllocator; }
-	if (_srvAllocator) { delete _srvAllocator; }
-	if (_uavAllocator) { delete _uavAllocator; }
+	if (_rtvAllocator)     { delete _rtvAllocator; }
+	if (_dsvAllocator)     { delete _dsvAllocator; }
+	if (_cbvAllocator)     { delete _cbvAllocator; }
+	if (_srvAllocator)     { delete _srvAllocator; }
+	if (_uavAllocator)     { delete _uavAllocator; }
+	if (_samplerAllocator) { delete _samplerAllocator; }
 
 	if (_depthStencilBuffer) { _depthStencilBuffer = nullptr;}
 	for (auto& renderTarget : _renderTargetList) 
@@ -85,6 +86,7 @@ void GraphicsDeviceDirectX12::Finalize()
 	if (_rtvHeap      ) { _rtvHeap      = nullptr; }
 	if (_dsvHeap      ) { _dsvHeap      = nullptr; }
 	if (_cbvSrvUavHeap) { _cbvSrvUavHeap=nullptr; }
+	if (_cbvSrvUavHeap) { _samplerHeap  = nullptr; }
 	if (_useAdapter   ) { _useAdapter   = nullptr; }
 	if (_swapchain    ) { _swapchain    = nullptr;}
 	for (auto& allocator : _commandAllocator) 
@@ -147,14 +149,15 @@ void GraphicsDeviceDirectX12::OnResize()
 		Screen::GetScreenWidth(),
 		Screen::GetScreenHeight(),
 		_backBufferFormat,
-		DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));	
+		_swapchainFlag));	
 	_currentFrameIndex = 0;
 
+	CreateViewport();
 	BuildRenderTargetView();
 	BuildDepthStencilView();
 	CompleteInitialize();
 	FlushCommandQueue();
-	CreateViewport();
+	
 }
 /****************************************************************************
 *                     ClearScreen
@@ -168,9 +171,9 @@ void GraphicsDeviceDirectX12::OnResize()
 void GraphicsDeviceDirectX12::ClearScreen()
 {
 	/*-------------------------------------------------------------------
-	-                   Reset Commmand (ˆÚ“®FlushCommandQueue‚ÉˆÚ“®)
+	-               Start recording commands (ˆÚ“®FlushCommandQueue‚ÉˆÚ“®)
 	---------------------------------------------------------------------*/
-	ResetCommandList();
+	ResetCommandList(); // start recording
 
 	/*-------------------------------------------------------------------
 	-       Indicate a state transition (Present -> Render Target)
@@ -179,7 +182,6 @@ void GraphicsDeviceDirectX12::ClearScreen()
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	GetCurrentRenderTarget()->TransitionState(D3D12_RESOURCE_STATE_RENDER_TARGET);
 	_commandList->ResourceBarrier(1, &barrier);
-
 
 	/*-------------------------------------------------------------------
 	-          Set the viewport and scissor rect. 
@@ -190,15 +192,21 @@ void GraphicsDeviceDirectX12::ClearScreen()
 	/*-------------------------------------------------------------------
 	-               Clear the back buffer and depth buffer.
 	---------------------------------------------------------------------*/
+	// rtv : current frame, clear color : steel blue, not use rects, all render target clear = nullptr
 	_commandList->ClearRenderTargetView(_rtvAllocator->GetCPUDescHandler(_currentFrameIndex), gm::color::SteelBlue, 0, nullptr);
 	_commandList->ClearDepthStencilView(_dsvAllocator->GetCPUDescHandler(0), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	/*-------------------------------------------------------------------
-	-                   Set Render Target 
+	-                   Set Render Target
 	---------------------------------------------------------------------*/
 	auto rtv = _rtvAllocator->GetCPUDescHandler(_currentFrameIndex);
 	auto dsv = _dsvAllocator->GetCPUDescHandler(0);
-	_commandList->OMSetRenderTargets(1, &rtv, true, &dsv);
+
+	// Descriptor handle : 1, rtv, Single handle to descriptor range, dsv
+	_commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+	/*-------------------------------------------------------------------
+	-                   Set Descriptor Heaps
+	---------------------------------------------------------------------*/
 	ID3D12DescriptorHeap* heapList[] = { _cbvSrvUavHeap.Get() };
 	_commandList->SetDescriptorHeaps(_countof(heapList), heapList);
 }
@@ -222,13 +230,16 @@ void GraphicsDeviceDirectX12::CompleteRendering()
 	GetCurrentRenderTarget()->TransitionState(D3D12_RESOURCE_STATE_PRESENT);
 	_commandList->ResourceBarrier(1, &barrier);
 
+	/*-------------------------------------------------------------------
+	-      Finish recording commands list
+	---------------------------------------------------------------------*/
 	ThrowIfFailed(_commandList->Close());
 
 	/*-------------------------------------------------------------------
 	-          Add command list to the queue for execution
 	---------------------------------------------------------------------*/
 	ID3D12CommandList* commandLists[] = { _commandList.Get() };
-	_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+	_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists); // Send command list contents to command queue 
 
 	/*-------------------------------------------------------------------
 	-						Flip screen
@@ -236,11 +247,12 @@ void GraphicsDeviceDirectX12::CompleteRendering()
 	ThrowIfFailed(_swapchain->Present(VSYNC, 0));
 	_currentFrameIndex = (_currentFrameIndex + 1) % FRAME_BUFFER_COUNT;
 
-	FlushCommandQueue();
+	FlushCommandQueue(); // Flush command queue
 }
 
 void GraphicsDeviceDirectX12::ResetCommandList()
 {
+	// Start recording commands.
 	ThrowIfFailed(_commandAllocator[_currentFrameIndex]->Reset());
 	ThrowIfFailed(_commandList->Reset(_commandAllocator[_currentFrameIndex].Get(), nullptr));
 }
@@ -320,7 +332,7 @@ void GraphicsDeviceDirectX12::OnTerminateRenderScene()
 *****************************************************************************/
 void GraphicsDeviceDirectX12::CompleteInitialize()
 {
-	ThrowIfFailed(_commandList->Close());
+	ThrowIfFailed(_commandList->Close());// Finish recording commands
 
 	/*-------------------------------------------------------------------
 	-          Add command list to the queue for execution
@@ -356,8 +368,10 @@ D3D12_CPU_DESCRIPTOR_HANDLE  GraphicsDeviceDirectX12::GetCPUResourceView(HeapFla
 			return _cbvAllocator->GetCPUDescHandler(offsetIndex);
 		case HeapFlag::SRV:
 			return _srvAllocator->GetCPUDescHandler(offsetIndex);
-		default:
+		case HeapFlag::UAV:
 			return _uavAllocator->GetCPUDescHandler(offsetIndex);
+		default:
+			return _samplerAllocator->GetCPUDescHandler(offsetIndex);
 	}
 }
 
@@ -381,8 +395,10 @@ D3D12_GPU_DESCRIPTOR_HANDLE GraphicsDeviceDirectX12::GetGPUResourceView(HeapFlag
 			return _cbvAllocator->GetGPUDescHandler(offsetIndex);
 		case HeapFlag::SRV:
 			return _srvAllocator->GetGPUDescHandler(offsetIndex);
-		default:
+		case HeapFlag::UAV:
 			return _uavAllocator->GetGPUDescHandler(offsetIndex);
+		default:
+			return _samplerAllocator->GetGPUDescHandler(offsetIndex);
 	}
 	
 }
@@ -406,8 +422,10 @@ void GraphicsDeviceDirectX12::ResetViewID(HeapFlag heapType)
 			return _cbvAllocator->ResetID();
 		case HeapFlag::SRV:
 			return _srvAllocator->ResetID();
-		default:
+		case HeapFlag::UAV:
 			return _uavAllocator->ResetID();
+		default:
+			return _samplerAllocator->ResetID();
 	}
 }
 /****************************************************************************
@@ -449,8 +467,10 @@ UINT GraphicsDeviceDirectX12::IssueViewID(HeapFlag heapType)
 			return _cbvAllocator->IssueID();
 		case HeapFlag::SRV:
 			return _srvAllocator->IssueID();
-		default:
+		case HeapFlag::UAV:
 			return _uavAllocator->IssueID();
+		default:
+			return _samplerAllocator->IssueID();
 	}
 }
 
@@ -582,6 +602,15 @@ void GraphicsDeviceDirectX12::LoadPipeline()
 	-                   Create Swapchain
 	---------------------------------------------------------------------*/
 	CreateSwapChain();
+	
+	/*-------------------------------------------------------------------
+	-                   Set HDR
+	---------------------------------------------------------------------*/
+	if (_isHDRSupport)
+	{
+		EnsureSwapChainColorSpace();
+		SetHDRMetaData();
+	}
 	/*-------------------------------------------------------------------
 	-                 Create Descriptor Heap
 	---------------------------------------------------------------------*/
@@ -676,8 +705,8 @@ void GraphicsDeviceDirectX12::CreateDevice()
 	-                   Create Hardware Device
 	---------------------------------------------------------------------*/
 	HRESULT hardwareResult = D3D12CreateDevice(
-		_useAdapter.Get(),                // default adapter
-		D3D_FEATURE_LEVEL_11_0, // minimum feature level
+		_useAdapter.Get(),      // default adapter
+		D3D_FEATURE_LEVEL_12_0, // minimum feature level
 		IID_PPV_ARGS(&_device));
 
 
@@ -691,9 +720,9 @@ void GraphicsDeviceDirectX12::CreateDevice()
 		ThrowIfFailed(_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)));
 
 		ThrowIfFailed(D3D12CreateDevice(
-			warpAdapter.Get(),
-			D3D_FEATURE_LEVEL_11_0,
-			IID_PPV_ARGS(&_device)));
+			warpAdapter.Get(),        // video adapter
+			D3D_FEATURE_LEVEL_12_0,   // minimum feature level
+			IID_PPV_ARGS(&_device))); // device interface
 		_isWarpAdapter = true;
 	}
 	_device->SetName(L"DirectX12::Device");
@@ -721,10 +750,10 @@ void GraphicsDeviceDirectX12::CreateCommandObject()
 	-                   Create Command Queue
 	---------------------------------------------------------------------*/
 	D3D12_COMMAND_QUEUE_DESC cmdQDesc = {};
-	cmdQDesc.NodeMask = 0;  // No Adapter Mask
-	cmdQDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL; 
-	cmdQDesc.Type     = D3D12_COMMAND_LIST_TYPE_DIRECT;// enable to execute all command 
-	cmdQDesc.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE;
+	cmdQDesc.NodeMask = SINGLE_GPU;                          // Single GPU
+	cmdQDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL; // Command queue priority
+	cmdQDesc.Type     = D3D12_COMMAND_LIST_TYPE_DIRECT;      // Enable to execute all command 
+	cmdQDesc.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE;       // Default 
 
 	ThrowIfFailed(_device->CreateCommandQueue(&cmdQDesc, IID_PPV_ARGS(&_commandQueue)));
 	_commandQueue->SetName(L"DirectX12::CommandQueue");
@@ -735,7 +764,7 @@ void GraphicsDeviceDirectX12::CreateCommandObject()
 	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i)
 	{
 		ThrowIfFailed(_device->CreateCommandAllocator(
-			D3D12_COMMAND_LIST_TYPE_DIRECT,
+			D3D12_COMMAND_LIST_TYPE_DIRECT,              // Enable to execute all command 
 			IID_PPV_ARGS(&_commandAllocator[i])));
 		_commandAllocator[i]->SetName(L"DirectX12::CommandAllocator");
 	}
@@ -749,7 +778,7 @@ void GraphicsDeviceDirectX12::CreateCommandObject()
 		0,
 		D3D12_COMMAND_LIST_TYPE_DIRECT,
 		_commandAllocator[_currentFrameIndex].Get(), // Associated command allocator
-		nullptr,                 // Initial PipeLine State Object
+		nullptr,                                     // Initial PipeLine State Object
 		IID_PPV_ARGS(_commandList.GetAddressOf())));
 	_commandList->SetName(L"DirectX12::CommandList");
 
@@ -770,7 +799,7 @@ void GraphicsDeviceDirectX12::CreateAllDescriptorHeap()
 	CreateDescriptorHeap(HeapFlag::RTV);
 	CreateDescriptorHeap(HeapFlag::DSV);
 	CreateDescriptorHeap(HeapFlag::SRV); // cbv, srv, uav
-	
+	CreateDescriptorHeap(HeapFlag::Sampler);
 }
 void GraphicsDeviceDirectX12::CreateDescriptorHeap(HeapFlag heapFlag)
 {
@@ -793,7 +822,7 @@ void GraphicsDeviceDirectX12::CreateDescriptorHeap(HeapFlag heapFlag)
 			rtvHeapDesc.NumDescriptors = RTV_DESC_COUNT;
 			rtvHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 			rtvHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			rtvHeapDesc.NodeMask       = 0;
+			rtvHeapDesc.NodeMask       = SINGLE_GPU;
 			ThrowIfFailed(_device->CreateDescriptorHeap(
 				&rtvHeapDesc, IID_PPV_ARGS(_rtvHeap.GetAddressOf())));
 			_rtvHeap->SetName(L"DirectX12::RenderTargetHeap");
@@ -814,9 +843,9 @@ void GraphicsDeviceDirectX12::CreateDescriptorHeap(HeapFlag heapFlag)
 			---------------------------------------------------------------------*/
 			D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
 			dsvHeapDesc.NumDescriptors = DSV_DESC_COUNT;
-			dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-			dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			dsvHeapDesc.NodeMask = 0;
+			dsvHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+			dsvHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			dsvHeapDesc.NodeMask       = SINGLE_GPU;
 			ThrowIfFailed(_device->CreateDescriptorHeap(
 				&dsvHeapDesc, IID_PPV_ARGS(_dsvHeap.GetAddressOf())));
 			_dsvHeap->SetName(L"DirectX12::DepthStencilViewHeap");
@@ -825,7 +854,6 @@ void GraphicsDeviceDirectX12::CreateDescriptorHeap(HeapFlag heapFlag)
 		case HeapFlag::CBV:
 		case HeapFlag::SRV:
 		case HeapFlag::UAV:
-		default:
 		{
 			if (_cbvSrvUavHeap) { _cbvSrvUavHeap.Reset(); }
 			_cbvSrvUavDescriptorSize = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
@@ -834,14 +862,28 @@ void GraphicsDeviceDirectX12::CreateDescriptorHeap(HeapFlag heapFlag)
 			---------------------------------------------------------------------*/
 			D3D12_DESCRIPTOR_HEAP_DESC csuHeapDesc = {};
 			csuHeapDesc.NumDescriptors = CBV_DESC_COUNT + SRV_DESC_COUNT + UAV_DESC_COUNT;
-			csuHeapDesc.Type     = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-			csuHeapDesc.Flags    = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-			csuHeapDesc.NodeMask = 0;
+			csuHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+			csuHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			csuHeapDesc.NodeMask       = SINGLE_GPU;
 			ThrowIfFailed(_device->CreateDescriptorHeap(&csuHeapDesc, IID_PPV_ARGS(&_cbvSrvUavHeap)));
 			_cbvSrvUavHeap->SetName(L"DirectX12::CBV,SRV,UAVHeap");
 			break;
 		}
-
+		default:
+		{
+			if (_samplerHeap) { _samplerHeap.Reset(); }
+			_samplerDescriptorSize = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+			/*-------------------------------------------------------------------
+			-			     Set CBV, SRV, UAV Heap
+			---------------------------------------------------------------------*/
+			D3D12_DESCRIPTOR_HEAP_DESC samplerHeapDesc = {};
+			samplerHeapDesc.NumDescriptors = MAX_SAMPLER_STATE;
+			samplerHeapDesc.Type           = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+			samplerHeapDesc.Flags          = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			samplerHeapDesc.NodeMask       = SINGLE_GPU;
+			ThrowIfFailed(_device->CreateDescriptorHeap(&samplerHeapDesc, IID_PPV_ARGS(&_samplerHeap)));
+			_cbvSrvUavHeap->SetName(L"DirectX12::SamplerHeap");
+		}
 	}
 }
 /****************************************************************************
@@ -854,7 +896,7 @@ void GraphicsDeviceDirectX12::CreateDescriptorHeap(HeapFlag heapFlag)
 *****************************************************************************/
 void GraphicsDeviceDirectX12::BuildAllResourceAllocator()
 {
-	BuildResourceAllocator((int)HeapFlag::RTV | (int)HeapFlag::DSV | (int)HeapFlag::CBV | (int)HeapFlag::SRV | (int)HeapFlag::UAV);
+	BuildResourceAllocator((int)HeapFlag::RTV | (int)HeapFlag::DSV | (int)HeapFlag::CBV | (int)HeapFlag::SRV | (int)HeapFlag::UAV | (int)HeapFlag::Sampler);
 }
 void GraphicsDeviceDirectX12::BuildResourceAllocator(int heapFlag)
 {
@@ -924,6 +966,20 @@ void GraphicsDeviceDirectX12::BuildResourceAllocator(int heapFlag)
 		_uavAllocator = new ResourceAllocator();
 		_uavAllocator->SetResourceAllocator(UAV_DESC_COUNT, _cbvSrvUavDescriptorSize, uavCpuHandler, uavGpuHandler);
 	}
+	/*-------------------------------------------------------------------
+	-			     Set UAV Heap
+	---------------------------------------------------------------------*/
+	if ((int)heapFlag & (int)HeapFlag::Sampler)
+	{
+		if (_samplerAllocator) { delete _samplerAllocator; }
+
+		auto samplerCpuHandler = _samplerHeap->GetCPUDescriptorHandleForHeapStart();
+		samplerCpuHandler.ptr += (UINT64)(MAX_SAMPLER_STATE) * _samplerDescriptorSize;
+		auto samplerGpuHandler = _samplerHeap->GetGPUDescriptorHandleForHeapStart();
+		samplerGpuHandler.ptr += (UINT64)(MAX_SAMPLER_STATE) * _samplerDescriptorSize;
+		_samplerAllocator = new ResourceAllocator();
+		_samplerAllocator->SetResourceAllocator(MAX_SAMPLER_STATE, _samplerDescriptorSize, samplerCpuHandler, samplerGpuHandler);
+	}
 }
 /****************************************************************************
 *							BuildRenderTargetView
@@ -959,8 +1015,8 @@ void GraphicsDeviceDirectX12::CreateViewport()
 {
 	_screenViewport.TopLeftX = 0;
 	_screenViewport.TopLeftY = 0;
-	_screenViewport.Width = static_cast<float>(Screen::GetScreenWidth());
-	_screenViewport.Height = static_cast<float>(Screen::GetScreenHeight());
+	_screenViewport.Width    = static_cast<float>(Screen::GetScreenWidth());
+	_screenViewport.Height   = static_cast<float>(Screen::GetScreenHeight());
 	_screenViewport.MinDepth = 0.0f;
 	_screenViewport.MaxDepth = 1.0f;
 
@@ -991,10 +1047,10 @@ void GraphicsDeviceDirectX12::CreateDefaultPSO()
 	_defaultPSODesc.SampleDesc.Quality    = _4xMsaaState ? (_4xMsaaQuality - 1) : 0;
 	_defaultPSODesc.DSVFormat             = _depthStencilFormat;
 	_defaultPSODesc.DepthStencilState = DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	_defaultPSODesc.DepthStencilState.DepthEnable = true;
-	_defaultPSODesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+	_defaultPSODesc.DepthStencilState.DepthEnable    = true;
+	_defaultPSODesc.DepthStencilState.DepthFunc      = D3D12_COMPARISON_FUNC_LESS;
 	_defaultPSODesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	_defaultPSODesc.DepthStencilState.StencilEnable = true;
+	_defaultPSODesc.DepthStencilState.StencilEnable  = true;
 	//pipeline.DSVFormat                        = DXGI_FORMAT_D32_FLOAT;
 	_defaultPSODesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	if (_isWarpAdapter)
@@ -1080,23 +1136,28 @@ void GraphicsDeviceDirectX12::CreateSwapChain()
 	_swapchain.Reset();
 
 	/*-------------------------------------------------------------------
+	-        SwapChain Flag
+	---------------------------------------------------------------------*/
+	int flag = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	if (_isTearingSupport) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
+	_swapchainFlag = static_cast<DXGI_SWAP_CHAIN_FLAG>(flag);
+	/*-------------------------------------------------------------------
 	-                   Create Swapchain Descriptor
 	---------------------------------------------------------------------*/
 	DXGI_SWAP_CHAIN_DESC1 sd={};
 
-	sd.BufferCount = FRAME_BUFFER_COUNT;                     // Current: Double Buffer
+	sd.BufferCount = FRAME_BUFFER_COUNT;                     // Current: Triple Buffer
 	sd.Width       = Screen::GetScreenWidth();               // Window Size Width
 	sd.Height      = Screen::GetScreenHeight();              // Window Size Height 
 	sd.Format      = _backBufferFormat;                      // Back Buffer Format 
 	sd.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED;            // Alpha Mode => transparency behavior is not specified
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;        // Use the surface or resource as an output render target
-	sd.Flags       = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; // Allow Resize Window
+	sd.Flags       = _swapchainFlag;                         // Allow Resize Window
 	sd.Scaling     = DXGI_SCALING_STRETCH;                   // scaling: stretch
 	sd.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD;          // bit-block transfer model
 	sd.Stereo      = false;
 	sd.SampleDesc.Count   = _4xMsaaState ? 4 : 1;                     // MSAA: Anti-Alias
 	sd.SampleDesc.Quality = _4xMsaaState ? (_4xMsaaQuality - 1) : 0;  // MSAA: Anti-Alias
-	
 
 	/*-------------------------------------------------------------------
 	-                   Create Swapchain for hwnd
@@ -1106,17 +1167,11 @@ void GraphicsDeviceDirectX12::CreateSwapChain()
 		_hwnd,
 		&sd,
 		nullptr,
-		nullptr,
+		nullptr, // main monitor display
 		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
 	));
 
-	/*-------------------------------------------------------------------
-	-                   Set HDR
-	---------------------------------------------------------------------*/
-#ifdef USE_HDR
-	EnsureSwapChainColorSpace();
-	SetHDRMetaData();
-#endif
+
 }
 /****************************************************************************
 *                     MultiSampleQualityLevels
@@ -1382,7 +1437,7 @@ void GraphicsDeviceDirectX12::ReportLiveObjects()
 		debugInterface->Release();
 	}
 }
-#pragma endregion  Debug Function
+#pragma endregion      Debug Function
 #pragma region HDR Function
 /****************************************************************************
 *                     EnsureSwapChainColorSpace
@@ -1402,7 +1457,7 @@ void GraphicsDeviceDirectX12::EnsureSwapChainColorSpace()
 	switch (desc.Format)
 	{
 		case DXGI_FORMAT_R16G16B16A16_FLOAT:
-			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;    // scrgb
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;    // scrgb
 			break;
 		case DXGI_FORMAT_R10G10B10A2_UNORM:
 			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
@@ -1489,6 +1544,16 @@ void GraphicsDeviceDirectX12::SetHDRMetaData()
 	_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(HDR10MetaData), &HDR10MetaData);
 }
 
+void GraphicsDeviceDirectX12::IsEnabledHDR()
+{
+	if (CheckHDRDisplaySupport())
+	{
+		OnResize();
+		EnsureSwapChainColorSpace();
+		SetHDRMetaData();
+	}
+
+}
 /****************************************************************************
 *                     CheckHDRDisplaySupport
 *************************************************************************//**
@@ -1509,7 +1574,8 @@ bool GraphicsDeviceDirectX12::CheckHDRDisplaySupport()
 		bool isDisplayHDR10 = false;
 		UINT index = 0;
 
-		ComPtr<IDXGIOutput> currentOutput;
+		ComPtr<IDXGIOutput> currentOutput = nullptr;
+		ComPtr<IDXGIOutput> bestOutput    = nullptr;
 		while (_useAdapter->EnumOutputs(index, &currentOutput) != DXGI_ERROR_NOT_FOUND)
 		{
 			OutputComPtr output;
@@ -1518,13 +1584,14 @@ bool GraphicsDeviceDirectX12::CheckHDRDisplaySupport()
 			DXGI_OUTPUT_DESC1 desc;
 			output->GetDesc1(&desc);
 
-			isDisplayHDR10 |= desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+			isDisplayHDR10 = (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
 			++index;
+			if (isDisplayHDR10) { break; }
 		}
 
 		if (!isDisplayHDR10)
 		{
-			//_backBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			//_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 			//isEnabledHDR = false;
 		}
 	}

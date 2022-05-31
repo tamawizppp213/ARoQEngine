@@ -25,6 +25,7 @@ enum class HeapFlag
 	CBV = 0x0004,
 	SRV = 0x0008,
 	UAV = 0x0010,
+	Sampler = 0x0020
 };
 enum class RenderTargetType
 {
@@ -65,6 +66,7 @@ public:
 	void ResetCommandList();
 	void OnTerminateRenderScene();
 	void CopyTextureToBackBuffer(ResourceComPtr& resource, D3D12_RESOURCE_STATES resourceState);
+	void IsEnabledHDR();
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
@@ -176,35 +178,39 @@ private:
 	/*-------------------------------------------------------------------
 	-                        Standard
 	---------------------------------------------------------------------*/
-	DeviceComPtr                 _device       = nullptr;        /// Device
+	DeviceComPtr                 _device       = nullptr;        /// Device 
 	FactoryComPtr                _dxgiFactory  = nullptr;        /// DXGI
 	AdapterComPtr                _useAdapter   = nullptr;
 	SwapchainComPtr              _swapchain    = nullptr;        /// SwapChain
 	CommandQueueComPtr           _commandQueue = nullptr;        /// Command Queue (Command Execution Unit)
 	CommandListComPtr            _commandList  = nullptr;        /// Graphics Command List
 	CommandAllocatorComPtr       _commandAllocator[FRAME_BUFFER_COUNT];
-	DescriptorHeapComPtr         _rtvHeap = nullptr;            /// Heap For Render Target View 
-	DescriptorHeapComPtr         _dsvHeap = nullptr;            /// Heap For Depth Stencil View
-	DescriptorHeapComPtr         _cbvSrvUavHeap = nullptr;      /// Heap For Constant Buffer View
-	PipelineStateComPtr          _pipelineState = nullptr;      /// Graphic Pipeline State
+	DescriptorHeapComPtr         _rtvHeap            = nullptr;      /// Heap For Render Target View 
+	DescriptorHeapComPtr         _dsvHeap            = nullptr;      /// Heap For Depth Stencil View
+	DescriptorHeapComPtr         _cbvSrvUavHeap      = nullptr;      /// Heap For Constant Buffer View
+	DescriptorHeapComPtr         _samplerHeap        = nullptr;
+	PipelineStateComPtr          _pipelineState      = nullptr;      /// Graphic Pipeline State
 	ResourceComPtr               _depthStencilBuffer = nullptr; /// DepthStencl Buffer   
 	GPUResource                  _renderTargetList[FRAME_BUFFER_COUNT];
-	ResourceAllocator*           _rtvAllocator = nullptr;
-	ResourceAllocator*           _dsvAllocator = nullptr;
-	ResourceAllocator*           _cbvAllocator = nullptr;
-	ResourceAllocator*           _srvAllocator = nullptr;
-	ResourceAllocator*           _uavAllocator = nullptr;
+	ResourceAllocator*           _rtvAllocator     = nullptr;
+	ResourceAllocator*           _dsvAllocator     = nullptr;
+	ResourceAllocator*           _cbvAllocator     = nullptr;
+	ResourceAllocator*           _srvAllocator     = nullptr;
+	ResourceAllocator*           _uavAllocator     = nullptr;
+	ResourceAllocator*           _samplerAllocator = nullptr;
 	D3D12_VIEWPORT              _screenViewport;
 	D3D12_RECT                 _scissorRect;
-	UINT _rtvDescriptorSize       = 0;
-	UINT _dsvDescriptorSize       = 0;
-	UINT _cbvSrvUavDescriptorSize = 0;
-	INT  _currentFrameIndex       = 0;
+	UINT _rtvDescriptorSize       = 0; // Dependency: GPU type
+	UINT _dsvDescriptorSize       = 0; // Dependency: GPU type
+	UINT _cbvSrvUavDescriptorSize = 0; // Dependency: GPU type
+	UINT _samplerDescriptorSize   = 0; // Dependency: GPU type
+	INT  _currentFrameIndex       = 0; // Dependency: GPU type
 	UINT _variableRateShadingImageTileSize = 0;
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC _defaultPSODesc = D3D12_GRAPHICS_PIPELINE_STATE_DESC();
 
 	DXGI_FORMAT _backBufferFormat   = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	DXGI_FORMAT _depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	DXGI_SWAP_CHAIN_FLAG _swapchainFlag;
 
 	bool _hasInitialized = false;
 	HWND _hwnd = nullptr;
@@ -237,7 +243,7 @@ private:
 	static constexpr int UAV_DESC_COUNT    = 1024 * 10;
 	static constexpr int SRV_DESC_COUNT    = 1024 * 10;
 	static constexpr int MAX_SAMPLER_STATE = 16;
-	
+	static constexpr UINT SINGLE_GPU = 0;
 };
 
 #endif

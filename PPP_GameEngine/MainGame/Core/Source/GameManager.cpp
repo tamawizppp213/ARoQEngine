@@ -20,9 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 void GameManager::GameStart(GameTimer& gameTimer, HWND hwnd)
 {
-	_mainWindow = hwnd;
 	_engine.StartUp(hwnd);
-
 	_sceneManager.StartUp(&gameTimer);
 }
 
