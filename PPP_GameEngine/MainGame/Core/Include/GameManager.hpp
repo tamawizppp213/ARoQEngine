@@ -41,6 +41,7 @@ public:
 	**                Public Member Variables
 	*****************************************************************************/
 	void SetHWND(HWND hwnd);
+	GraphicsCoreEngine& GetGraphicsEngine() { return _engine; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/

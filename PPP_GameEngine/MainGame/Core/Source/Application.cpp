@@ -115,9 +115,9 @@ bool Application::CreateMainWindow()
 	/*---------------------------------------------------------------
 						Set Game screen window size
 	-----------------------------------------------------------------*/
-	RECT gameWindowRect = { 0,0, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT };
-	Screen::SetScreenWidth (GAME_WINDOW_WIDTH);
-	Screen::SetScreenHeight(GAME_WINDOW_HEIGHT);
+	RECT gameWindowRect = { 0,0, Screen::GetFullScreenWidth(), Screen::GetFullScreenHeight()};
+	Screen::SetScreenWidth (Screen::GetFullScreenWidth());
+	Screen::SetScreenHeight(Screen::GetFullScreenHeight());
 
 	/*---------------------------------------------------------------
 						CenteringWindow
@@ -180,6 +180,7 @@ LRESULT Application::WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wPar
 			DestroyWindow(hwnd); 
 			return 0;
 		}
+		
 		/*-----------------------------------------------------------------
 			WM_DESTROY is sent when the window is deleted
 		--------------------------------------------------------------------*/
@@ -194,6 +195,15 @@ LRESULT Application::WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wPar
 		case WM_COMMAND:
 		{
 			ExecuteWindowsCommand(wParam);
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+			WM_DisplayChange is sent when the window is changed
+		--------------------------------------------------------------------*/
+		case WM_DISPLAYCHANGE:
+		{
+			_gameManager.GameEnd();
+			_gameManager.GameStart(_gameTimer, _mainWindow);
 			return 0;
 		}
 	}
