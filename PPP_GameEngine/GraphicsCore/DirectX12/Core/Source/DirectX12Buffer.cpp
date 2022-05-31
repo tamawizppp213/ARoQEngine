@@ -19,13 +19,13 @@
 UploadBuffer::UploadBuffer(IDevice* device, UINT elementByteSize, UINT elementCount, bool isConstantBuffer, const std::wstring& addName)
 {
 	_isConstantBuffer = isConstantBuffer;
-	_elementByteSize = _isConstantBuffer ? CalcConstantBufferByteSize(elementByteSize) : elementByteSize;
-	_elementCount    = elementCount;
+	_elementByteSize  = _isConstantBuffer ? CalcConstantBufferByteSize(elementByteSize) : elementByteSize;
+	_elementCount     = elementCount;
 	/*-------------------------------------------------------------------
 	-           Create 
 	---------------------------------------------------------------------*/
-	auto heapProp = HEAP_PROPERTY(D3D12_HEAP_TYPE_UPLOAD);
-	auto buffer   = RESOURCE_DESC::Buffer((UINT64)_elementByteSize * elementCount);
+	auto heapProp = HEAP_PROPERTY(D3D12_HEAP_TYPE_UPLOAD);                          // Heap Type: Upload: data transmission heap for GPU. I want to use MAP function
+	auto buffer   = RESOURCE_DESC::Buffer((UINT64)_elementByteSize * elementCount); // Buffer 
 	device->CreateCommittedResource(
 		&heapProp,
 		D3D12_HEAP_FLAG_NONE,
@@ -42,7 +42,6 @@ UploadBuffer::UploadBuffer(IDevice* device, UINT elementByteSize, UINT elementCo
 	_resource->SetName(name.c_str());
 
 }
-
 #pragma endregion      Upload Buffer
 #pragma region GPUBuffer
 
@@ -75,7 +74,7 @@ void GPUBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT elementByte
 	-                  Set Name
 	---------------------------------------------------------------------*/
 	std::wstring name; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"RWStructured::";
+	name += L"GPUBuffer::";
 	_resource->SetName(name.c_str());
 
 	_hasCreated = true;

@@ -198,7 +198,7 @@
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Sprite.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\Skybox.hpp">
+    <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\SkyDome.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameCore\Rendering\Light\LightType.hpp">
@@ -587,7 +587,7 @@
     <ClCompile Include="GameCore\Core\Source\GameActor.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\Skybox.cpp">
+    <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\SkyDome.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Sprite.cpp">

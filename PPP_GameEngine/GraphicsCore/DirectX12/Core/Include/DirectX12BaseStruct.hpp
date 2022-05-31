@@ -277,10 +277,10 @@ struct HEAP_PROPERTY : public D3D12_HEAP_PROPERTIES
 		UINT nodeMask = 1)
 	{
 		Type = type;
-		CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
 		MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-		CreationNodeMask = creationNodeMask;
-		VisibleNodeMask = nodeMask;
+		CreationNodeMask     = creationNodeMask;
+		VisibleNodeMask      = nodeMask;
 	}
 
 	// Return oneself pointer (unary operator )

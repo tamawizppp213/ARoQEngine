@@ -46,10 +46,10 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	inline void CopyStart() { ThrowIfFailed(_resource->Map(0, nullptr, reinterpret_cast<void**>(&_mappedData))); }
-	inline void CopyData(int elementIndex, const void* data){ std::memcpy(&_mappedData[elementIndex * _elementByteSize], data, _elementByteSize); }
-	inline void CopyTotalData(const void* data, int dataLength){ std::memcpy(&_mappedData[0], data, _elementByteSize * (size_t)dataLength); }
-	inline void CopyEnd(){ _resource->Unmap(0, nullptr); }
+	inline void CopyStart()  { ThrowIfFailed(_resource->Map(0, nullptr, reinterpret_cast<void**>(&_mappedData))); }
+	inline void CopyData     (int elementIndex, const void* data){ std::memcpy(&_mappedData[elementIndex * _elementByteSize], data, _elementByteSize); }
+	inline void CopyTotalData(const void* data, int dataLength)  { std::memcpy(&_mappedData[0], data, _elementByteSize * (size_t)dataLength); }
+	inline void CopyEnd()    { _resource->Unmap(0, nullptr); }
 	void Destroy() override
 	{
 		if (_resource)     { _resource = nullptr; }
@@ -102,7 +102,7 @@ public:
 	*****************************************************************************/
 	VertexBufferPtr VertexBuffer = nullptr;
 	IndexBufferPtr  IndexBuffer  = nullptr;
-	DXGI_FORMAT  IndexFormat   = DXGI_FORMAT_R16_UINT;
+	DXGI_FORMAT     IndexFormat  = DXGI_FORMAT_R32_UINT;
 
 	/****************************************************************************
 	**                Public Function

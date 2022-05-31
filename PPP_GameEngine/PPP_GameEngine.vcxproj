@@ -190,7 +190,7 @@
     <ClInclude Include="GameCore\Rendering\Effect\Include\Blur.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\DepthOfField.hpp" />
-    <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\Skybox.hpp" />
+    <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\SkyDome.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProfiler.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\LightType.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\GLTF\Private\Include\GLTFAnimationUtils.hpp" />
@@ -346,7 +346,7 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\Blur.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\ColorChange.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\DepthOfField.cpp" />
-    <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\Skybox.cpp" />
+    <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\SkyDome.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\External\Source\IESProfiler.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\GLTF\Private\Source\GLTFAnimationUtils.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\GLTF\Private\Source\GLTFColor.cpp" />

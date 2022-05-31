@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Rendering/EnvironmentMap/Include/Skybox.hpp"
+#include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
 #include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
 #include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
@@ -31,9 +31,9 @@ namespace
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-Skybox::Skybox() {};
-Skybox::~Skybox() {};
-void Skybox::Initialze(const std::wstring& texturePath, const std::wstring& addName)
+SkyDome::SkyDome() {};
+SkyDome::~SkyDome() {};
+void SkyDome::Initialze(const std::wstring& texturePath, const std::wstring& addName)
 {
 	/*-------------------------------------------------------------------
 	-            Set debug name
@@ -54,7 +54,7 @@ void Skybox::Initialze(const std::wstring& texturePath, const std::wstring& addN
 
 }
 
-void Skybox::Draw(Skybox::SceneGPUAddress scene) 
+void SkyDome::Draw(SkyDome::SceneGPUAddress scene) 
 {
 	auto& engine       = GraphicsCoreEngine::Instance();
 	auto  context      = engine.GetCommandContext();
@@ -74,7 +74,7 @@ void Skybox::Draw(Skybox::SceneGPUAddress scene)
 
 }
 
-void Skybox::Finalize()
+void SkyDome::Finalize()
 {
 	_meshBuffer.reset();
 	_skyObject.reset();
@@ -89,12 +89,12 @@ void Skybox::Finalize()
 *  @param[in] void
 *  @return 　　bool
 *****************************************************************************/
-void Skybox::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 {
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
-	MeshData sphereMesh = GeometryGenerator::Sphere(0.5f, 20, 20, false);
+	MeshData sphereMesh = GeometryGenerator::Sphere(0.5f, 20, 20, false);    // Sphere mesh
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/
@@ -107,8 +107,8 @@ void Skybox::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 		/*-------------------------------------------------------------------
 		-            Calcurate Buffer Size
 		---------------------------------------------------------------------*/
-		auto vertexByteSize = sizeof(VertexPositionNormalTexture);
-		auto indexByteSize  = sizeof(UINT16);
+		auto vertexByteSize = sizeof(VertexPositionNormalTexture);           // Color必要かな? 
+		auto indexByteSize  = sizeof(UINT32);                                // 32 byte index
 		auto vertexCount    = sphereMesh.Vertices.size();
 		auto indexCount     = sphereMesh.Indices.size();
 		/*-------------------------------------------------------------------
@@ -134,7 +134,7 @@ void Skybox::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 *  @param[in] std::wstring& addName
 *  @return 　　void
 *****************************************************************************/
-void Skybox::PrepareSkyObject(const std::wstring& addName)
+void SkyDome::PrepareSkyObject(const std::wstring& addName)
 {
 	auto& engine = GraphicsCoreEngine::Instance();
 	auto skyObject = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(sizeof(gm::Matrix4)), 1, true, addName + L"ObjectConstant");
@@ -163,12 +163,12 @@ void Skybox::PrepareSkyObject(const std::wstring& addName)
 *  @param[in] std::wstring& addName
 *  @return 　　void
 *****************************************************************************/
-void Skybox::PrepareRootSignature(const std::wstring& addName)
+void SkyDome::PrepareRootSignature(const std::wstring& addName)
 {
 	s_RootSignature.Reset(3, 1);
 	s_RootSignature.SetStaticSampler(SamplerType::SamplerLinearWrap);
-	s_RootSignature[0].InitAsCBV(0); // Scene Constants
-	s_RootSignature[1].InitAsCBV(1); // World Matrix
+	s_RootSignature[0].InitAsCBV(0);                                               // Scene Constants
+	s_RootSignature[1].InitAsCBV(1);                                               // World Matrix
 	s_RootSignature[2].InitAsDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,0,1); // TextureCube Cubemap
 	s_RootSignature.CompleteSetting(GraphicsCoreEngine::Instance().GetDevice(), addName + L"RootSignature");
 }
@@ -180,13 +180,13 @@ void Skybox::PrepareRootSignature(const std::wstring& addName)
 *  @param[in] std::wstring& addName
 *  @return 　　void
 *****************************************************************************/
-void Skybox::PreparePipelineState(const std::wstring& addName)
+void SkyDome::PreparePipelineState(const std::wstring& addName)
 {
 	auto device = GraphicsCoreEngine::Instance().GetGraphicsDevice();
 	RASTERIZER_DESC rasterizerState = RASTERIZER_DESC(D3D12_DEFAULT);
-	rasterizerState.CullMode        = D3D12_CULL_MODE_NONE;
+	rasterizerState.CullMode        = D3D12_CULL_MODE_NONE;               // All culling 
 
-	DEPTH_STENCIL_DESC depthStencil = DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	DEPTH_STENCIL_DESC depthStencil = DEPTH_STENCIL_DESC(D3D12_DEFAULT);  
 	depthStencil.DepthFunc          = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 
 	BlobComPtr vs = CompileShader(L"Shader\\EnvironmentMap\\ShaderSkybox.hlsl", L"VSMain", L"vs_6_4");
