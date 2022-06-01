@@ -15,6 +15,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+MeshBuffer::~MeshBuffer()
+{
+	Dispose();
+}
 #pragma region Upload Buffer
 UploadBuffer::UploadBuffer(IDevice* device, UINT elementByteSize, UINT elementCount, bool isConstantBuffer, const std::wstring& addName)
 {

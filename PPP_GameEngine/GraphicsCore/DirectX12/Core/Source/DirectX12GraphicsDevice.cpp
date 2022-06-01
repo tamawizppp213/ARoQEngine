@@ -1073,14 +1073,14 @@ void GraphicsDeviceDirectX12::BuildDepthStencilView()
 	---------------------------------------------------------------------*/
 
 	D3D12_RESOURCE_DESC depthStencilDesc ={};
-	depthStencilDesc.Dimension          = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	depthStencilDesc.Alignment          = 0;
-	depthStencilDesc.Width              = Screen::GetScreenWidth();
-	depthStencilDesc.Height             = Screen::GetScreenHeight();
-	depthStencilDesc.DepthOrArraySize   = 1;
-	depthStencilDesc.MipLevels          = 1;
-	depthStencilDesc.Format             = DXGI_FORMAT_R24G8_TYPELESS;
-	depthStencilDesc.SampleDesc.Count   = _4xMsaaState ? 4 : 1;
+	depthStencilDesc.Dimension          = D3D12_RESOURCE_DIMENSION_TEXTURE2D;       // Depth Texture 2D
+	depthStencilDesc.Alignment          = 0;                                        // No alignment
+	depthStencilDesc.Width              = Screen::GetScreenWidth();                 // Screen width
+	depthStencilDesc.Height             = Screen::GetScreenHeight();                // Screen height
+	depthStencilDesc.DepthOrArraySize   = 1;                                        // Not array
+	depthStencilDesc.MipLevels          = 1;                                        // Miplevel: 1
+	depthStencilDesc.Format             = DXGI_FORMAT_R24G8_TYPELESS;               // R24 Depth G8: Stencil View
+	depthStencilDesc.SampleDesc.Count   = _4xMsaaState ? 4 : 1; 
 	depthStencilDesc.SampleDesc.Quality = _4xMsaaState ? (_4xMsaaQuality - 1) : 0;
 	depthStencilDesc.Layout             = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 	depthStencilDesc.Flags              = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
@@ -1457,7 +1457,7 @@ void GraphicsDeviceDirectX12::EnsureSwapChainColorSpace()
 	switch (desc.Format)
 	{
 		case DXGI_FORMAT_R16G16B16A16_FLOAT:
-			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;    // scrgb
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;    // scrgb
 			break;
 		case DXGI_FORMAT_R10G10B10A2_UNORM:
 			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;

@@ -33,7 +33,7 @@ VertexOut VSMain(VertexIn vertexIn)
 
 float4 PSMain(VertexOut input) : SV_Target
 {
-    return float4(DestDiffuseMap.Sample(SamplerLinearWrap, input.UV));
+    return float4(DestDiffuseMap.Sample(SamplerLinearWrap, input.UV)) * input.Color;
 }
 
 #endif

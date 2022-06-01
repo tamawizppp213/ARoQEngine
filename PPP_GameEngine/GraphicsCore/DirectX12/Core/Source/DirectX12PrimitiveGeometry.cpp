@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using Vertex = VertexPositionNormalTexture;
+using Vertex = VertexPositionNormalColorTexture;
 using namespace gm;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ MeshData::~MeshData()
 *  @param[in]  float depth
 *  @return 　　 MeshData
 *****************************************************************************/
-MeshData GeometryGenerator::Rect(float width, float height, float depth)
+MeshData GeometryGenerator::Rect(float width, float height, float depth, const gm::Float4& color)
 {
 	MeshData meshData;
 
@@ -45,10 +45,10 @@ MeshData GeometryGenerator::Rect(float width, float height, float depth)
 	meshData.Vertices.resize(4);
 	meshData.Indices.resize(6);
 
-	meshData.Vertices[0] = Vertex(Float3(-w2, -h2, depth), Float3(0.0f, 0.0f, -1.0f), Float2(0.0f, 1.0f));
-	meshData.Vertices[1] = Vertex(Float3(-w2, +h2, depth), Float3(0.0f, 0.0f, -1.0f), Float2(0.0f, 0.0f));
-	meshData.Vertices[2] = Vertex(Float3(+w2, +h2, depth), Float3(0.0f, 0.0f, -1.0f), Float2(1.0f, 0.0f));
-	meshData.Vertices[3] = Vertex(Float3(+w2, -h2, depth), Float3(0.0f, 0.0f, -1.0f), Float2(1.0f, 1.0f));
+	meshData.Vertices[0] = Vertex(Float3(-w2, -h2, depth), Float3(0.0f, 0.0f, -1.0f), color, Float2(0.0f, 1.0f));
+	meshData.Vertices[1] = Vertex(Float3(-w2, +h2, depth), Float3(0.0f, 0.0f, -1.0f), color, Float2(0.0f, 0.0f));
+	meshData.Vertices[2] = Vertex(Float3(+w2, +h2, depth), Float3(0.0f, 0.0f, -1.0f), color, Float2(1.0f, 0.0f));
+	meshData.Vertices[3] = Vertex(Float3(+w2, -h2, depth), Float3(0.0f, 0.0f, -1.0f), color, Float2(1.0f, 1.0f));
 
 	meshData.Indices[0] = 0;
 	meshData.Indices[1] = 1;
@@ -72,17 +72,17 @@ MeshData GeometryGenerator::Rect(float width, float height, float depth)
 *  @param[in]  float depth
 *  @return 　　 MeshData
 *****************************************************************************/
-MeshData GeometryGenerator::Quadrangle(float x, float y, float w, float h, float depth)
+MeshData GeometryGenerator::Quadrangle(float x, float y, float w, float h, float depth, const Float4& color)
 {
 	MeshData meshData;
 
 	meshData.Vertices.resize(4);
 	meshData.Indices.resize(6);
 
-	meshData.Vertices[0] = Vertex(Float3(x, y - h, depth), Float3(0.0f, 0.0f, -1.0f), Float2(0.0f, 1.0f));
-	meshData.Vertices[1] = Vertex(Float3(x, y, depth), Float3(0.0f, 0.0f, -1.0f), Float2(0.0f, 0.0f));
-	meshData.Vertices[2] = Vertex(Float3(x + w, y, depth), Float3(0.0f, 0.0f, -1.0f), Float2(1.0f, 0.0f));
-	meshData.Vertices[3] = Vertex(Float3(x + w, y - h, depth), Float3(0.0f, 0.0f, -1.0f), Float2(1.0f, 1.0f));
+	meshData.Vertices[0] = Vertex(Float3(x    , y - h, depth), Float3(0.0f, 0.0f, -1.0f), color, Float2(0.0f, 1.0f));
+	meshData.Vertices[1] = Vertex(Float3(x    , y    , depth), Float3(0.0f, 0.0f, -1.0f), color, Float2(0.0f, 0.0f));
+	meshData.Vertices[2] = Vertex(Float3(x + w, y    , depth), Float3(0.0f, 0.0f, -1.0f), color, Float2(1.0f, 0.0f));
+	meshData.Vertices[3] = Vertex(Float3(x + w, y - h, depth), Float3(0.0f, 0.0f, -1.0f), color, Float2(1.0f, 1.0f));
 
 	meshData.Indices[0] = 0;
 	meshData.Indices[1] = 1;
@@ -107,7 +107,7 @@ MeshData GeometryGenerator::Quadrangle(float x, float y, float w, float h, float
 *  @param[in]  bool isInvertNormal
 *  @return 　　 MeshData
 *****************************************************************************/
-MeshData GeometryGenerator::Box(float width, float height, float depth, UINT32 numSubdivisions, bool isInvertNormal)
+MeshData GeometryGenerator::Box(float width, float height, float depth, UINT32 numSubdivisions, bool isInvertNormal, const Float4& color)
 {
 	// set half width, height and depth
 	constexpr int faceCount = 6;
@@ -121,40 +121,40 @@ MeshData GeometryGenerator::Box(float width, float height, float depth, UINT32 n
 	-					  Fill Vertex data
 	---------------------------------------------------------------------*/
 	// Fill in the front face vertex data.
-	v[0] = Vertex(Float3(-w2, -h2, -d2), Float3(0.0f, 0.0f, -1.0f), Float2(0.0f, 1.0f));
-	v[1] = Vertex(Float3(-w2, +h2, -d2), Float3(0.0f, 0.0f, -1.0f), Float2(0.0f, 0.0f));
-	v[2] = Vertex(Float3(+w2, +h2, -d2), Float3(0.0f, 0.0f, -1.0f), Float2(1.0f, 0.0f));
-	v[3] = Vertex(Float3(+w2, -h2, -d2), Float3(0.0f, 0.0f, -1.0f), Float2(1.0f, 1.0f));
+	v[0] = Vertex(Float3(-w2, -h2, -d2), Float3(0.0f, 0.0f, -1.0f), color, Float2(0.0f, 1.0f));
+	v[1] = Vertex(Float3(-w2, +h2, -d2), Float3(0.0f, 0.0f, -1.0f), color, Float2(0.0f, 0.0f));
+	v[2] = Vertex(Float3(+w2, +h2, -d2), Float3(0.0f, 0.0f, -1.0f), color, Float2(1.0f, 0.0f));
+	v[3] = Vertex(Float3(+w2, -h2, -d2), Float3(0.0f, 0.0f, -1.0f), color, Float2(1.0f, 1.0f));
 
 	// Fill in the back face vertex data.
-	v[4] = Vertex(Float3(-w2, -h2, +d2), Float3(0.0f, 0.0f, +1.0f), Float2(1.0f, 1.0f));
-	v[5] = Vertex(Float3(+w2, -h2, +d2), Float3(0.0f, 0.0f, +1.0f), Float2(0.0f, 1.0f));
-	v[6] = Vertex(Float3(+w2, +h2, +d2), Float3(0.0f, 0.0f, +1.0f), Float2(0.0f, 0.0f));
-	v[7] = Vertex(Float3(-w2, +h2, +d2), Float3(0.0f, 0.0f, +1.0f), Float2(1.0f, 0.0f));
+	v[4] = Vertex(Float3(-w2, -h2, +d2), Float3(0.0f, 0.0f, +1.0f), color, Float2(1.0f, 1.0f));
+	v[5] = Vertex(Float3(+w2, -h2, +d2), Float3(0.0f, 0.0f, +1.0f), color, Float2(0.0f, 1.0f));
+	v[6] = Vertex(Float3(+w2, +h2, +d2), Float3(0.0f, 0.0f, +1.0f), color, Float2(0.0f, 0.0f));
+	v[7] = Vertex(Float3(-w2, +h2, +d2), Float3(0.0f, 0.0f, +1.0f), color, Float2(1.0f, 0.0f));
 
 	// Fill in the top face vertex data.
-	v[8] = Vertex(Float3(-w2, +h2, -d2), Float3(0.0f, +1.0f, 0.0f), Float2(0.0f, 1.0f));
-	v[9] = Vertex(Float3(-w2, +h2, +d2), Float3(0.0f, +1.0f, 0.0f), Float2(0.0f, 0.0f));
-	v[10] = Vertex(Float3(+w2, +h2, +d2), Float3(0.0f, +1.0f, 0.0f), Float2(1.0f, 0.0f));
-	v[11] = Vertex(Float3(+w2, +h2, -d2), Float3(0.0f, +1.0f, 0.0f), Float2(1.0f, 1.0f));
+	v[8] = Vertex(Float3(-w2, +h2, -d2), Float3(0.0f, +1.0f, 0.0f), color, Float2(0.0f, 1.0f));
+	v[9] = Vertex(Float3(-w2, +h2, +d2), Float3(0.0f, +1.0f, 0.0f), color, Float2(0.0f, 0.0f));
+	v[10] = Vertex(Float3(+w2, +h2, +d2), Float3(0.0f, +1.0f, 0.0f), color, Float2(1.0f, 0.0f));
+	v[11] = Vertex(Float3(+w2, +h2, -d2), Float3(0.0f, +1.0f, 0.0f), color, Float2(1.0f, 1.0f));
 
 	// Fill in the bottom face vertex data.
-	v[12] = Vertex(Float3(-w2, -h2, -d2), Float3(0.0f, -1.0f, 0.0f), Float2(1.0f, 1.0f));
-	v[13] = Vertex(Float3(+w2, -h2, -d2), Float3(0.0f, -1.0f, 0.0f), Float2(0.0f, 1.0f));
-	v[14] = Vertex(Float3(+w2, -h2, +d2), Float3(0.0f, -1.0f, 0.0f), Float2(0.0f, 0.0f));
-	v[15] = Vertex(Float3(-w2, -h2, +d2), Float3(0.0f, -1.0f, 0.0f), Float2(1.0f, 1.0f));
+	v[12] = Vertex(Float3(-w2, -h2, -d2), Float3(0.0f, -1.0f, 0.0f), color, Float2(1.0f, 1.0f));
+	v[13] = Vertex(Float3(+w2, -h2, -d2), Float3(0.0f, -1.0f, 0.0f), color, Float2(0.0f, 1.0f));
+	v[14] = Vertex(Float3(+w2, -h2, +d2), Float3(0.0f, -1.0f, 0.0f), color, Float2(0.0f, 0.0f));
+	v[15] = Vertex(Float3(-w2, -h2, +d2), Float3(0.0f, -1.0f, 0.0f), color, Float2(1.0f, 1.0f));
 
 	// Fill in the left face vertex data.
-	v[16] = Vertex(Float3(-w2, -h2, +d2), Float3(-1.0f, 0.0f, 0.0f), Float2(0.0f, 1.0f));
-	v[17] = Vertex(Float3(-w2, +h2, +d2), Float3(-1.0f, 0.0f, 0.0f), Float2(0.0f, 0.0f));
-	v[18] = Vertex(Float3(-w2, +h2, -d2), Float3(-1.0f, 0.0f, 0.0f), Float2(1.0f, 0.0f));
-	v[19] = Vertex(Float3(-w2, -h2, -d2), Float3(-1.0f, 0.0f, 0.0f), Float2(1.0f, 1.0f));
+	v[16] = Vertex(Float3(-w2, -h2, +d2), Float3(-1.0f, 0.0f, 0.0f), color, Float2(0.0f, 1.0f));
+	v[17] = Vertex(Float3(-w2, +h2, +d2), Float3(-1.0f, 0.0f, 0.0f), color, Float2(0.0f, 0.0f));
+	v[18] = Vertex(Float3(-w2, +h2, -d2), Float3(-1.0f, 0.0f, 0.0f), color, Float2(1.0f, 0.0f));
+	v[19] = Vertex(Float3(-w2, -h2, -d2), Float3(-1.0f, 0.0f, 0.0f), color, Float2(1.0f, 1.0f));
 
 	// Fill in the right face vertex data.
-	v[20] = Vertex(Float3(+w2, -h2, -d2), Float3(+1.0f, 0.0f, 0.0f), Float2(0.0f, 1.0f));
-	v[21] = Vertex(Float3(+w2, +h2, -d2), Float3(+1.0f, 0.0f, 0.0f), Float2(0.0f, 0.0f));
-	v[22] = Vertex(Float3(+w2, +h2, +d2), Float3(+1.0f, 0.0f, 0.0f), Float2(1.0f, 0.0f));
-	v[23] = Vertex(Float3(+w2, -h2, +d2), Float3(+1.0f, 0.0f, 0.0f), Float2(1.0f, 1.0f));
+	v[20] = Vertex(Float3(+w2, -h2, -d2), Float3(+1.0f, 0.0f, 0.0f), color, Float2(0.0f, 1.0f));
+	v[21] = Vertex(Float3(+w2, +h2, -d2), Float3(+1.0f, 0.0f, 0.0f), color, Float2(0.0f, 0.0f));
+	v[22] = Vertex(Float3(+w2, +h2, +d2), Float3(+1.0f, 0.0f, 0.0f), color, Float2(1.0f, 0.0f));
+	v[23] = Vertex(Float3(+w2, -h2, +d2), Float3(+1.0f, 0.0f, 0.0f), color, Float2(1.0f, 1.0f));
 
 	meshData.Vertices.assign(&v[0], &v[24]);
 	/*-------------------------------------------------------------------
@@ -205,12 +205,12 @@ MeshData GeometryGenerator::Box(float width, float height, float depth, UINT32 n
 *  @param[in]  bool isInvertNormal
 *  @return 　　 MeshData
 *****************************************************************************/
-MeshData GeometryGenerator::Sphere(float radius, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal)
+MeshData GeometryGenerator::Sphere(float radius, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal, const Float4& color)
 {
 	MeshData meshData;
 
-	Vertex topVertex = Vertex(Float3(0.0f, +radius, 0.0f), Float3(0.0f, +1.0f, 0.0f), Float2(0.0f, 0.0f));
-	Vertex bottomVertex = Vertex(Float3(0.0f, -radius, 0.0f), Float3(0.0f, -1.0f, 0.0f), Float2(0.0f, 1.0f));
+	Vertex topVertex    = Vertex(Float3(0.0f, +radius, 0.0f), Float3(0.0f, +1.0f, 0.0f), color, Float2(0.0f, 0.0f));
+	Vertex bottomVertex = Vertex(Float3(0.0f, -radius, 0.0f), Float3(0.0f, -1.0f, 0.0f), color, Float2(0.0f, 1.0f));
 
 	/*-------------------------------------------------------------------
 	-					  Fill Vertex data
@@ -306,7 +306,7 @@ MeshData GeometryGenerator::Sphere(float radius, UINT32 sliceCount, UINT32 stack
 *  @param[in]  bool isInvertNormal
 *  @return 　　 MeshData
 *****************************************************************************/
-MeshData GeometryGenerator::GeoSphere(float radius, UINT32 numSubdivisions, bool isInvertNormal)
+MeshData GeometryGenerator::GeoSphere(float radius, UINT32 numSubdivisions, bool isInvertNormal, const Float4& color)
 {
 	MeshData meshData;
 
@@ -391,7 +391,7 @@ MeshData GeometryGenerator::GeoSphere(float radius, UINT32 numSubdivisions, bool
 *  @param[in]  bool isInvertNormal
 *  @return 　　 MeshData
 *****************************************************************************/
-MeshData GeometryGenerator::Cylinder(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal)
+MeshData GeometryGenerator::Cylinder(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal, const Float4& color)
 {
 	MeshData meshData;
 
@@ -448,8 +448,8 @@ MeshData GeometryGenerator::Cylinder(float bottomRadius, float topRadius, float 
 		}
 	}
 
-	BuildCylinderTopCap(topRadius, height, sliceCount, meshData);
-	BuildCylinderBottomCap(bottomRadius, height, sliceCount, meshData);
+	BuildCylinderTopCap(topRadius, height, sliceCount, meshData, color);
+	BuildCylinderBottomCap(bottomRadius, height, sliceCount, meshData, color);
 
 	if (isInvertNormal)
 	{
@@ -471,7 +471,7 @@ MeshData GeometryGenerator::Cylinder(float bottomRadius, float topRadius, float 
 *  @param[in]  bool isInvertNormal
 *  @return 　　 MeshData
 *****************************************************************************/
-MeshData GeometryGenerator::Grid(float width, float depth, UINT32 rows, UINT32 columns, bool isInvertNormal)
+MeshData GeometryGenerator::Grid(float width, float depth, UINT32 rows, UINT32 columns, bool isInvertNormal, const Float4& color)
 {
 	MeshData meshData;
 
@@ -639,7 +639,7 @@ void GeometryGenerator::SubDivide(MeshData& meshData)
 	}
 }
 
-VertexPositionNormalTexture GeometryGenerator::MidPoint(const VertexPositionNormalTexture& v0, const VertexPositionNormalTexture& v1)
+VertexPositionNormalColorTexture GeometryGenerator::MidPoint(const VertexPositionNormalColorTexture& v0, const VertexPositionNormalColorTexture& v1)
 {
 	/*-------------------------------------------------------------------
 	-						Load vertex data
@@ -650,6 +650,8 @@ VertexPositionNormalTexture GeometryGenerator::MidPoint(const VertexPositionNorm
 	Vector3 n1 = Vector3(v1.Normal);
 	Vector2 t0 = Vector2(v0.UV);
 	Vector2 t1 = Vector2(v1.UV);
+	Vector4 c0 = Vector4(v0.Color);
+	Vector4 c1 = Vector4(v1.Color);
 
 
 	/*-------------------------------------------------------------------
@@ -658,7 +660,7 @@ VertexPositionNormalTexture GeometryGenerator::MidPoint(const VertexPositionNorm
 	Vector3 pos = 0.5f * (p0 + p1);
 	Vector3 normal = Normalize(0.5f * (n0 + n1));
 	Vector2 uv = 0.5f * (t0 + t1);
-
+	Vector4 color = 0.5f * (c0 + c1);
 
 	/*-------------------------------------------------------------------
 	-						Set vertex data
@@ -667,7 +669,7 @@ VertexPositionNormalTexture GeometryGenerator::MidPoint(const VertexPositionNorm
 	vertex.Position = pos.ToFloat3();
 	vertex.Normal = normal.ToFloat3();
 	vertex.UV = uv.ToFloat2();
-
+	vertex.Color = color.ToFloat4();
 	return vertex;
 }
 
@@ -684,7 +686,7 @@ VertexPositionNormalTexture GeometryGenerator::MidPoint(const VertexPositionNorm
 *  @param[out] MeshData& meshData,
 *  @return 　　 void
 *****************************************************************************/
-void GeometryGenerator::BuildCylinderTopCap(float topRadius, float height, UINT32 sliceCount, MeshData& meshData)
+void GeometryGenerator::BuildCylinderTopCap(float topRadius, float height, UINT32 sliceCount, MeshData& meshData, const Float4& color)
 {
 	UINT16 baseIndex = (UINT16)meshData.Vertices.size();
 
@@ -700,10 +702,10 @@ void GeometryGenerator::BuildCylinderTopCap(float topRadius, float height, UINT3
 		float u = x / height + 0.5f;
 		float v = z / height + 0.5f;
 
-		meshData.Vertices.push_back(Vertex(Float3(x, y, z), Float3(0.0f, 1.0f, 0.0f), Float2(u, v)));
+		meshData.Vertices.push_back(Vertex(Float3(x, y, z), Float3(0.0f, 1.0f, 0.0f), color, Float2(u, v)));
 
 	}
-	meshData.Vertices.push_back(Vertex(Float3(0.0f, y, 0.0f), Float3(0.0f, 1.0f, 0.0f), Float2(0.5f, 0.5f)));
+	meshData.Vertices.push_back(Vertex(Float3(0.0f, y, 0.0f), Float3(0.0f, 1.0f, 0.0f), color, Float2(0.5f, 0.5f)));
 
 	UINT16 centerIndex = (UINT16)meshData.Vertices.size() - 1;
 
@@ -728,7 +730,7 @@ void GeometryGenerator::BuildCylinderTopCap(float topRadius, float height, UINT3
 *  @param[out] MeshData& meshData,
 *  @return 　　 void
 *****************************************************************************/
-void GeometryGenerator::BuildCylinderBottomCap(float bottomRadius, float height, UINT32 sliceCount, MeshData& meshData)
+void GeometryGenerator::BuildCylinderBottomCap(float bottomRadius, float height, UINT32 sliceCount, MeshData& meshData, const Float4& color)
 {
 	UINT16 baseIndex = (UINT16)meshData.Vertices.size();
 
@@ -744,10 +746,10 @@ void GeometryGenerator::BuildCylinderBottomCap(float bottomRadius, float height,
 		float u = x / height + 0.5f;
 		float v = z / height + 0.5f;
 
-		meshData.Vertices.push_back(Vertex(Float3(x, y, z), Float3(0.0f, -1.0f, 0.0f), Float2(u, v)));
+		meshData.Vertices.push_back(Vertex(Float3(x, y, z), Float3(0.0f, -1.0f, 0.0f), color, Float2(u, v)));
 
 	}
-	meshData.Vertices.push_back(Vertex(Float3(0.0f, y, 0.0f), Float3(0.0f, -1.0f, 0.0f), Float2(0.5f, 0.5f)));
+	meshData.Vertices.push_back(Vertex(Float3(0.0f, y, 0.0f), Float3(0.0f, -1.0f, 0.0f), color, Float2(0.5f, 0.5f)));
 
 	UINT16 centerIndex = (UINT16)meshData.Vertices.size() - 1;
 
@@ -760,3 +762,4 @@ void GeometryGenerator::BuildCylinderBottomCap(float bottomRadius, float height,
 }
 
 #pragma endregion Private Function
+

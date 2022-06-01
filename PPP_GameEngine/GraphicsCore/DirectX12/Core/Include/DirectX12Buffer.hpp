@@ -141,10 +141,7 @@ public:
 	MeshBuffer& operator=(const MeshBuffer&) = default;
 	MeshBuffer(MeshBuffer&&)                 = default;
 	MeshBuffer& operator=(MeshBuffer&&)      = default;
-	~MeshBuffer() 
-	{
-		Dispose();
-	};
+	~MeshBuffer();
 private:
 };
 #pragma endregion MeshBuffer

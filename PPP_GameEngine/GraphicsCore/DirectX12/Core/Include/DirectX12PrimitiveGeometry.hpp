@@ -28,7 +28,7 @@
 struct MeshData
 {
 public:
-	std::vector<VertexPositionNormalTexture> Vertices; /// Vertex (Position, Normal, UV)
+	std::vector<VertexPositionNormalColorTexture> Vertices; /// Vertex (Position, Normal, UV)
 	std::vector<UINT32> Indices;                       /// Index  (note: Index uses UINT16)
 
 	MeshData()                           = default;
@@ -62,13 +62,13 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	static MeshData Rect      (float width, float height, float depth);
-	static MeshData Quadrangle(float x, float y, float w, float h, float depth);
-	static MeshData Box       (float width, float height, float depth, UINT32 numSubdivisions, bool isInvertNormal);
-	static MeshData Sphere    (float radius, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal);
-	static MeshData GeoSphere (float radius, UINT32 numSubdivisions, bool isInvertNormal);
-	static MeshData Cylinder  (float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal);
-	static MeshData Grid      (float width, float depth, UINT32 rows, UINT32 columns, bool isInvertNormal);
+	static MeshData Rect(float width, float height, float depth, const gm::Float4& color = gm::Float4(1, 1, 1, 1));
+	static MeshData Quadrangle(float x, float y, float w, float h, float depth, const gm::Float4& color = gm::Float4(1, 1, 1, 1));
+	static MeshData Box(float width, float height, float depth, UINT32 numSubdivisions, bool isInvertNormal, const gm::Float4& color = gm::Float4(1, 1, 1, 1));
+	static MeshData Sphere(float radius, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal, const gm::Float4& color = gm::Float4(1, 1, 1, 1));
+	static MeshData GeoSphere(float radius, UINT32 numSubdivisions, bool isInvertNormal, const gm::Float4& color = gm::Float4(1, 1, 1, 1));
+	static MeshData Cylinder(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal, const gm::Float4& color = gm::Float4(1, 1, 1, 1));
+	static MeshData Grid(float width, float depth, UINT32 rows, UINT32 columns, bool isInvertNormal, const gm::Float4& color = gm::Float4(1, 1, 1, 1));
 
 	/****************************************************************************
 	**                Public Member Variables
@@ -89,9 +89,9 @@ private:
 	**                Private Function
 	*****************************************************************************/
 	static void SubDivide(MeshData& meshData);
-	static VertexPositionNormalTexture MidPoint(const VertexPositionNormalTexture& v0, const VertexPositionNormalTexture& v1);
-	static void BuildCylinderTopCap(float topRadius, float height, UINT32 sliceCount, MeshData& meshData);
-	static void BuildCylinderBottomCap(float bottomRadius, float height, UINT32 sliceCount,  MeshData& meshData);
+	static VertexPositionNormalColorTexture MidPoint(const VertexPositionNormalColorTexture& v0, const VertexPositionNormalColorTexture& v1);
+	static void BuildCylinderTopCap(float topRadius, float height, UINT32 sliceCount, MeshData& meshData, const gm::Float4& color);
+	static void BuildCylinderBottomCap(float bottomRadius, float height, UINT32 sliceCount,  MeshData& meshData, const gm::Float4& color);
 	static void IsInvertNormal(MeshData& meshData);
 
 	/****************************************************************************

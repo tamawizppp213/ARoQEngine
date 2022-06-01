@@ -232,6 +232,7 @@
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Image.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\NullTextureMap.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Sprite.hpp" />
+    <ClInclude Include="GameCore\Rendering\Sprite\Include\UIRenderer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Memory.hpp" />
@@ -323,6 +324,7 @@
     <ClInclude Include="MainGame\Core\Include\TemplateText.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -372,6 +374,7 @@
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJUtils.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Image.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Sprite.cpp" />
+    <ClCompile Include="GameCore\Rendering\Sprite\Source\UIRenderer.cpp" />
     <ClCompile Include="GameUtility\Base\Source\GameTimer.cpp" />
     <ClCompile Include="GameUtility\Base\Source\Screen.cpp" />
     <ClCompile Include="GameUtility\File\Source\Csv.cpp" />
@@ -401,6 +404,7 @@
     <ClCompile Include="MainGame\Core\Source\SceneManager.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleEmpty.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleSky.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />

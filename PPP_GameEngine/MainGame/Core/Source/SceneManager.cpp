@@ -12,6 +12,7 @@
 #include "GameUtility/Base/Include/GameTimer.hpp"
 #include "MainGame/Core/Include/Scene.hpp"
 #include "MainGame/Sample/Include/SampleSky.hpp"
+#include "MainGame/Sample/Include/SampleTexture.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,7 +23,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 void SceneManager::StartUp(GameTimer* gameTimer)
 {
-	PushScene(new sample::SampleSky());
+	PushScene(new sample::SampleTexture());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

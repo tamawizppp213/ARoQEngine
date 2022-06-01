@@ -89,12 +89,12 @@ void SkyDome::Finalize()
 
 #pragma region Private Function
 /****************************************************************************
-*							PrepareVertexBuffer
+*							PrepareVertexAndIndexBuffer
 *************************************************************************//**
 *  @fn        void Skybox::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 *  @brief     Prepare Sphere Vertex Buffer
-*  @param[in] void
-*  @return 　　bool
+*  @param[in] const std::wstring& addName
+*  @return 　　void
 *****************************************************************************/
 void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 {
@@ -114,7 +114,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 		/*-------------------------------------------------------------------
 		-            Calcurate Buffer Size
 		---------------------------------------------------------------------*/
-		auto vertexByteSize = sizeof(VertexPositionNormalTexture);           // Color必要かな? 
+		auto vertexByteSize = sizeof(VertexPositionNormalColorTexture);       
 		auto indexByteSize  = sizeof(UINT32);                                // 32 byte index
 		auto vertexCount    = sphereMesh.Vertices.size();
 		auto indexCount     = sphereMesh.Indices.size();
@@ -201,7 +201,7 @@ void SkyDome::PreparePipelineState(const std::wstring& addName)
 	
 	s_PipelineState.SetGraphicsPipelineStateDescriptor(device->GetDefaultPSOConfig());
 	s_PipelineState.SetRasterizerState(rasterizerState);
-	s_PipelineState.SetInputLayouts(VertexPositionNormalTexture::InputLayout);
+	s_PipelineState.SetInputLayouts(VertexPositionNormalColorTexture::InputLayout);
 	s_PipelineState.SetRootSignature(s_RootSignature);
 	s_PipelineState.SetDepthStencilState(depthStencil);
 	s_PipelineState.SetBlendState(GetBlendState(BlendStateType::OverWrite));

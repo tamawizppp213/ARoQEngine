@@ -40,7 +40,7 @@ namespace
             return value * 12.92f;
         }
 
-        return 1.055f * pow(value, 1.0f / 2.4f) - 0.055f;
+        return 1.055f * static_cast<float>(pow(value, 1.0f / 2.4f)) - 0.055f;
     }
     // https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation
     inline float ToLinear(float value)
@@ -50,7 +50,7 @@ namespace
             return value / 12.92f;
         }
 
-        return pow((value + 0.055f) / 1.055f, 2.4f);
+        return static_cast<float>(pow((value + 0.055f) / 1.055f, 2.4f));
     }
 }
 
@@ -166,7 +166,7 @@ uint32_t Color3::AsUint32RGBA() const
     const uint8_t rByte = FloatToByte(r);
     const uint8_t gByte = FloatToByte(g);
     const uint8_t bByte = FloatToByte(b);
-    const uint8_t aByte = std::numeric_limits<uint8_t>::max();
+    constexpr uint8_t aByte = std::numeric_limits<uint8_t>::max();
 
     const uint32_t rgba = aByte << 24 | bByte << 16 | gByte << 8 | rByte;
     return rgba;
@@ -177,7 +177,7 @@ uint32_t Color3::AsUint32BGRA() const
     const uint8_t bByte = FloatToByte(b);
     const uint8_t gByte = FloatToByte(g);
     const uint8_t rByte = FloatToByte(r);
-    const uint8_t aByte = std::numeric_limits<uint8_t>::max();
+    constexpr uint8_t aByte = std::numeric_limits<uint8_t>::max();
 
     const uint32_t bgra = aByte << 24 | rByte << 16 | gByte << 8 | bByte;
     return bgra;
