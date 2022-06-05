@@ -30,7 +30,7 @@ struct MeshData
 public:
 	std::vector<VertexPositionNormalColorTexture> Vertices; /// Vertex (Position, Normal, UV)
 	std::vector<UINT32> Indices;                       /// Index  (note: Index uses UINT16)
-
+	UINT32              MaterialID = 0;
 	MeshData()                           = default;
 	MeshData(const MeshData&)            = default;
 	MeshData& operator=(const MeshData&) = default;

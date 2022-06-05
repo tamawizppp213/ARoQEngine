@@ -153,9 +153,6 @@
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12PrimitiveGeometry.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Sprite\Include\NullTextureMap.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12CommandContext.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -483,6 +480,21 @@
     <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Include\Mesh.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Include\Material.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Core\Engine\Include\RenderingEngine.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Include\Model.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Include\MaterialType.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -714,6 +726,18 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\Source\Mesh.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\Source\Material.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Core\Engine\Source\RenderingEngine.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\Source\Model.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

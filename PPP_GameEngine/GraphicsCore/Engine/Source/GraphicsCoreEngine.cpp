@@ -145,6 +145,6 @@ INT GraphicsCoreEngine::GetNextFrameBufferIndex()
 }
 int GraphicsCoreEngine::GetFrameBufferCount()
 {
-	return _device->FRAME_BUFFER_COUNT;
+	return GraphicsDeviceDirectX12::FRAME_BUFFER_COUNT;
 }
 #pragma endregion Graphics Engine Property

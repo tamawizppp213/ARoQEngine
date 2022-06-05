@@ -55,10 +55,36 @@ void TextureManager::ClearTextureTable()
 *  @param[out] Texture& texture
 *  @return @@ int
 *****************************************************************************/
-//void TextureManager::CreateTexture1D(const std::wstring& name, Texture& texture, TextureRGBA* data)
-//{
-//	
-//}
+void TextureManager::CreateTexture1D(const std::wstring& name, Texture& texture, TextureRGBA* data)
+{
+	/*-------------------------------------------------------------------
+	-               If the file is loaded once, read from it
+	---------------------------------------------------------------------*/
+	if (_textureTable.find(name) != _textureTable.end())
+	{
+		texture = *_textureTable[name].get(); return;
+	}
+	/*-------------------------------------------------------------------
+	-                 Create texture buffer
+	---------------------------------------------------------------------*/
+	D3D12_RESOURCE_DESC resourceDesc = RESOURCE_DESC::Texture1D(texture.Format, (UINT64)texture.PixelSize.x);
+	CreateTextureBuffer(resourceDesc, &texture.Resource);
+	/*-------------------------------------------------------------------
+	-                 Create texture data
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(texture.Resource->WriteToSubresource(0, nullptr, (const void*)data,
+		sizeof(TextureRGBA) * (UINT)texture.PixelSize.x,
+		sizeof(TextureRGBA) * (UINT)texture.PixelSize.x));
+	/*-------------------------------------------------------------------
+	-                    Create SRV Desc
+	---------------------------------------------------------------------*/
+	_id = RegistSRV(TextureType::Texture1D, texture);
+	/*-------------------------------------------------------------------
+	-                    Add texture table
+	---------------------------------------------------------------------*/
+	_textureTable[name] = std::make_unique<Texture>(std::move(texture));
+	texture = *_textureTable[name].get();
+}
 void TextureManager::CreateTexture2D(const std::wstring& name, Texture& texture, TextureRGBA* data)
 {
 	/*-------------------------------------------------------------------
@@ -90,10 +116,37 @@ void TextureManager::CreateTexture2D(const std::wstring& name, Texture& texture,
 	texture = *_textureTable[name].get();
 }
 
-//void TextureManager::CreateTexture3D(const std::wstring& name, Texture& texture, TextureRGBA* data)
-//{
-//	
-//}
+void TextureManager::CreateTexture3D(const std::wstring& name, Texture& texture, TextureRGBA* data)
+{
+	/*-------------------------------------------------------------------
+	-               If the file is loaded once, read from it
+	---------------------------------------------------------------------*/
+	if (_textureTable.find(name) != _textureTable.end())
+	{
+		texture = *_textureTable[name].get(); return;
+	}
+	/*-------------------------------------------------------------------
+	-                 Create texture buffer
+	---------------------------------------------------------------------*/
+	D3D12_RESOURCE_DESC resourceDesc = RESOURCE_DESC::Texture3D(texture.Format, (UINT64)texture.PixelSize.x, (UINT64)texture.PixelSize.y, (UINT64)texture.PixelSize.z);
+	CreateTextureBuffer(resourceDesc, &texture.Resource);
+	/*-------------------------------------------------------------------
+	-                 Create texture data
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(texture.Resource->WriteToSubresource(0, nullptr, (const void*)data,
+		sizeof(TextureRGBA) * (UINT)texture.PixelSize.x,
+		sizeof(TextureRGBA) * (UINT)texture.PixelSize.x * (UINT)texture.PixelSize.y));
+	/*-------------------------------------------------------------------
+	-                    Create SRV Desc
+	---------------------------------------------------------------------*/
+	_id = RegistSRV(TextureType::Texture3D, texture);
+	/*-------------------------------------------------------------------
+	-                    Add texture table
+	---------------------------------------------------------------------*/
+	_textureTable[name] = std::make_unique<Texture>(std::move(texture));
+	texture = *_textureTable[name].get();
+	
+}
 
 /****************************************************************************
 *							  LoadTexture

@@ -1,52 +1,69 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TemplateText.hpp
-///             @brief  TemplateText
-///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @file   Mesh.hpp
+///             @brief  Mesh 
+///             @author Copyright(c) Pocol. All right reserved.
+///                     Partially edit by Toide Reference : DirectX12 é¿ëHÉKÉCÉh 
+///             @date   2022_06_02
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef NULL_TEXTURE_MAP_HPP
-#define NULL_TEXTURE_MAP_HPP
+#ifndef MESH_HPP
+#define MESH_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+struct MeshData;
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                         Mesh Class
 //////////////////////////////////////////////////////////////////////////////////
 
 /****************************************************************************
-*				  			NullTextureMap
+*				  			Mesh
 *************************************************************************//**
-*  @class     NullTextureMap
-*  @brief     Null Texture Map
+*  @class     Mesh
+*  @brief     Mesh
 *****************************************************************************/
-class NullTextureMap
+class Mesh
 {
+	using MeshBufferPtr   = std::unique_ptr<MeshBuffer[]>;
+	using SceneGPUAddress = UINT64;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
+	bool Initialize(const MeshData& meshData, const std::wstring& addName = L"");
+	void Draw(CommandContext* context, int currentFrameIndex);
+	void Terminate();
 
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-
+	inline UINT32 GetMaterialID() const { return _materialID; }
+	inline UINT32 GetIndexCount() const { return _indexCount; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-private:
+	Mesh() = default;
+	virtual ~Mesh();
+	Mesh(Mesh&&)            = default;
+	Mesh& operator=(Mesh&&) = default;
+protected:
 	/****************************************************************************
-	**                Private Function
+	**                Protected Function                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 	*****************************************************************************/
+	Mesh(const Mesh&)            = delete; 
+	Mesh operator= (const Mesh&) = delete;
 
+	void PrepareVertexAndIndexBuffer(const MeshData& meshData, const std::wstring& name);
 	/****************************************************************************
-	**                Private Member Variables
+	**                Protected Member Variables
 	*****************************************************************************/
+	MeshBufferPtr   _meshBuffer;  // vertex and index buffer
+	UINT32          _materialID;  // material ID in CBV Allocator
+	UINT32          _indexCount;  // index Count
 };
 #endif

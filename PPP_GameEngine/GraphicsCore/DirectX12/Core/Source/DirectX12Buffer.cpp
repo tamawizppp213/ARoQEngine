@@ -30,11 +30,9 @@ UploadBuffer::UploadBuffer(IDevice* device, UINT elementByteSize, UINT elementCo
 	---------------------------------------------------------------------*/
 	auto heapProp = HEAP_PROPERTY(D3D12_HEAP_TYPE_UPLOAD);                          // Heap Type: Upload: data transmission heap for GPU. I want to use MAP function
 	auto buffer   = RESOURCE_DESC::Buffer((UINT64)_elementByteSize * elementCount); // Buffer 
-	device->CreateCommittedResource(
-		&heapProp,
-		D3D12_HEAP_FLAG_NONE,
-		&buffer,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
+	device->CreateCommittedResource(                                                // Malloc GPU Heap
+		&heapProp, D3D12_HEAP_FLAG_NONE, &buffer,
+		D3D12_RESOURCE_STATE_GENERIC_READ,                                          // Generic Read
 		nullptr,
 		IID_PPV_ARGS(&_resource));
 
@@ -48,7 +46,17 @@ UploadBuffer::UploadBuffer(IDevice* device, UINT elementByteSize, UINT elementCo
 }
 #pragma endregion      Upload Buffer
 #pragma region GPUBuffer
-
+/****************************************************************************
+*				  			Create
+*************************************************************************//**
+*  @fn        void GPUBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT elementByteSize, UINT elementCount, const std::wstring& addName)
+*  @brief     Create GPU Buffer
+*  @param[in] GraphicsDeviceDirectX12& graphicsDevice
+*  @param[in] UINT elementByteSize
+*  @param[in] UINT elementCount
+*  @param[in] std::wstring addName
+*  @return    void
+*****************************************************************************/
 void GPUBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT elementByteSize, UINT elementCount, const std::wstring& addName)
 {
 	/*-------------------------------------------------------------------
@@ -58,7 +66,7 @@ void GPUBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT elementByte
 	/*-------------------------------------------------------------------
 	-                  Set up buffer infomation
 	---------------------------------------------------------------------*/
-	_graphicsDevice  = &graphicsDevice;
+	_graphicsDevice  = &graphicsDevice; 
 	_elementByteSize = elementByteSize;
 	_elementCount    = elementCount;
 	/*-------------------------------------------------------------------
@@ -119,6 +127,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE GPUBuffer::GetGPUUAV() const
 *  @@aram[in] UINT mipmaps,
 *  @param[in] UINT  fragmentCount
 *  @param[in] addName
+*  @return    void
 *****************************************************************************/
 void ColorBuffer::Create(GraphicsDeviceDirectX12& graphicsDevice, UINT width, UINT height,UINT arraySize, const std::wstring& addName, DXGI_FORMAT colorFormat, float clearColor[4], UINT mipmaps)
 {
@@ -222,8 +231,8 @@ D3D12_GPU_DESCRIPTOR_HANDLE ColorBuffer::GetGPUUAV() const
 *****************************************************************************/
 bool ColorBuffer::CreateTexture(UINT width, UINT height,UINT arraySize, DXGI_FORMAT format, float clearColor[4])
 {
-	D3D12_HEAP_PROPERTIES heapProperty = HEAP_PROPERTY(D3D12_HEAP_TYPE_DEFAULT);
-	D3D12_RESOURCE_DESC resourceDesc   = RESOURCE_DESC::Texture2D(format, width, height, 1, 1, 1, 0,
+	D3D12_HEAP_PROPERTIES heapProperty = HEAP_PROPERTY(D3D12_HEAP_TYPE_DEFAULT);                       // Default heap
+	D3D12_RESOURCE_DESC   resourceDesc = RESOURCE_DESC::Texture2D(format, width, height, 1, 1, 1, 0,   // Texture 2D resource
 		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS | D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 	/*-------------------------------------------------------------------
 	-                  Set clear color
@@ -249,7 +258,7 @@ bool ColorBuffer::CreateTexture(UINT width, UINT height,UINT arraySize, DXGI_FOR
 	/*-------------------------------------------------------------------
 	-                  Commit resource to GPU
 	---------------------------------------------------------------------*/
-	_graphicsDevice->GetDevice()->CreateCommittedResource(
+	_graphicsDevice->GetDevice()->CreateCommittedResource(                                            // Malloc GPU texture resource
 			&heapProperty, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_COMMON, &clearValue,
 			IID_PPV_ARGS(_texture.get()->Resource.GetAddressOf()));
 	/*-------------------------------------------------------------------
@@ -363,7 +372,7 @@ void RWStructuredBuffer::PrepareResource()
 	heapProp.Type                 = D3D12_HEAP_TYPE_CUSTOM;
 	heapProp.VisibleNodeMask      = 1;
 
-	auto buffer = RESOURCE_DESC::Buffer((UINT64)_elementByteSize * _elementCount);
+	auto buffer  = RESOURCE_DESC::Buffer((UINT64)_elementByteSize * _elementCount);
 	buffer.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 	ThrowIfFailed(_graphicsDevice->GetDevice()->CreateCommittedResource(
@@ -400,10 +409,10 @@ void RWStructuredBuffer::PrepareDescriptor()
 	---------------------------------------------------------------------*/
 	D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc;
 	ZeroMemory(&uavDesc, sizeof(uavDesc));
-	uavDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-	uavDesc.Buffer.NumElements = _elementCount;
+	uavDesc.ViewDimension              = D3D12_UAV_DIMENSION_BUFFER;
+	uavDesc.Buffer.NumElements         = _elementCount;
 	uavDesc.Buffer.StructureByteStride = _elementByteSize;
-	uavDesc.Format = DXGI_FORMAT_UNKNOWN;
+	uavDesc.Format                     = DXGI_FORMAT_UNKNOWN;
 
 	_graphicsDevice->GetDevice()->CreateUnorderedAccessView(
 		_resource.Get(), nullptr,

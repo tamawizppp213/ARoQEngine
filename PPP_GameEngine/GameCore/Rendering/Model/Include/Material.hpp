@@ -1,81 +1,83 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12Texture.hpp
-///             @brief  .tga, .dds, ,png, .jpg, .bmp, .hdr
-///             @author Toide Yutaro
-///             @date   2020_12_06
+///             @file   Material.hpp
+///             @brief  Material
+///             @author Copyright(c) Pocol. All right reserved.
+///                     Partially edit by Toide Reference : DirectX12 é¿ëHÉKÉCÉh 
+///             @date   2022_06_04
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_TEXTURE_HPP
-#define DIRECTX12_TEXTURE_HPP
+#ifndef MATERIAL_HPP
+#define MATERIAL_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "DirectX12GPUResource.hpp"
-#include "GraphicsCore/Engine/Include/GraphicsCoreResourceType.hpp"
-#include "GameUtility/Math/Include/GMVector.hpp"
-#include <unordered_map>
+#include "MaterialType.hpp"
+#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include <vector>
 #include <memory>
+#include <map>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace DirectX
-{
-	struct Image;
-	struct TexMetadata;
-}
-struct Texture
-{
-	GPUResource Resource;
-	int         TextureID;
-	DXGI_FORMAT Format;
-	gm::Float3  PixelSize;
-	~Texture();
-};
-
-struct TextureRGBA
-{
-	unsigned char R, G, B, A;
-};
-
+class Texture;
 //////////////////////////////////////////////////////////////////////////////////
-//                              Class
+//                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+
 /****************************************************************************
-*				  			    Texture
+*				  			Material
 *************************************************************************//**
-*  @class     Texture
-*  @brief     Texture Manager .tga, .dds, ,png, .jpg, .bmp, .hdr
+*  @class     Material
+*  @brief     Material Buffer
 *****************************************************************************/
-class TextureManager
+class MaterialBuffer
 {
-	using TextureTable = std::unordered_map<std::wstring, std::unique_ptr<Texture>>;
+	using TexturePtr        = std::shared_ptr<const Texture>;
+	using ConstantBufferPtr = std::shared_ptr<UploadBuffer>;
 public:
+	enum class UsageTexture
+	{
+		Diffuse,
+		Specular,
+		Normal,
+		CountOfUsageTexture
+	};
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	static const Texture& LoadTexture(const std::wstring& filePath, TextureType type = TextureType::Texture2D);
-	static void CreateTexture1D(const std::wstring& name, Texture& texture, TextureRGBA* data);
-	static void CreateTexture2D(const std::wstring& name, Texture& texture, TextureRGBA* data);
-	static void CreateTexture3D(const std::wstring& name, Texture& texture, TextureRGBA* data);
-	static void ClearTextureTable();
+	bool Initialize(size_t materialByteSize, size_t materialCount, const std::wstring& addName = L""); // 256 alignment 
+	void Finalize();
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-
+	std::shared_ptr<UploadBuffer> GetBufferPtr() { return std::shared_ptr<UploadBuffer>(_constantBuffer.get()); }
+	bool SetTexture(const std::wstring& texturePath, UsageTexture usage);
+	
+	size_t GetMaterialCount   () const { return _constantBuffer->GetElementCount(); }
+	size_t GetMaterialByteSize() const { return _constantBuffer->GetElementByteSize(); }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
+	MaterialBuffer();
+	~MaterialBuffer();
+	MaterialBuffer(const MaterialBuffer&)            = delete;
+	MaterialBuffer& operator=(const MaterialBuffer&) = delete;
+	MaterialBuffer(MaterialBuffer&&)                 = delete;
+	MaterialBuffer& operator=(MaterialBuffer&&)      = delete;
 private:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
-	static int  RegistSRV(TextureType type, Texture& texture);
-	static void CreateTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, GPUResource* textureBuffer, bool isDiscreteGPU = true);
+	struct TextureList
+	{
+		TexturePtr Textures[(int)UsageTexture::CountOfUsageTexture];
+	};
+
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
-	static TextureTable _textureTable;
-	static int _id;
+	ConstantBufferPtr _constantBuffer = nullptr;
+	std::vector<TextureList> _textures ;
 };
 #endif

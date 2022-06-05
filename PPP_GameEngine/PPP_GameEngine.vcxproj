@@ -187,6 +187,7 @@
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassGBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassLightCulling.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassZPrepass.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\Engine\Include\RenderingEngine.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Blur.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\DepthOfField.hpp" />
@@ -229,8 +230,11 @@
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\VMDParser.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\OBJParser.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\OBJUtils.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\Material.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\MaterialType.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\Mesh.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\Model.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Image.hpp" />
-    <ClInclude Include="GameCore\Rendering\Sprite\Include\NullTextureMap.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Sprite.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\UIRenderer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
@@ -345,6 +349,7 @@
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassGBuffer.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassLightCulling.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassZPrepass.cpp" />
+    <ClCompile Include="GameCore\Rendering\Core\Engine\Source\RenderingEngine.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Blur.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\ColorChange.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\DepthOfField.cpp" />
@@ -372,6 +377,9 @@
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\VMDParser.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJParser.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJUtils.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\Material.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\Mesh.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\Model.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Image.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Sprite.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\UIRenderer.cpp" />
