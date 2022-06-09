@@ -10,12 +10,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
 #include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
-#include "GraphicsCore/DirectX12/SimpleInclude/IncludeGraphicsPSO.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/SimpleInclude/IncludeGraphicsPSO.hpp"
 #include "GameCore/Core/Include/ResourceManager.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
 #include <d3dcompiler.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

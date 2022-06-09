@@ -41,7 +41,7 @@ struct PBRMaterial
 		this->EmissiveIntensity = 0.0f;
 		this->Ambient           = gm::Float3(0.5f, 0.5f, 0.5f);
 		this->Metalness         = 0.0f;
-		this->Padding           = 0.0f;
+		this->Padding           = gm::Float3(0.0f, 0.0f, 0.0f);
 	}
 	~PBRMaterial()                             = default;
 	PBRMaterial(const PBRMaterial&)            = default;
@@ -49,4 +49,6 @@ struct PBRMaterial
 	PBRMaterial(PBRMaterial&&)                 = default;
 	PBRMaterial& operator=(PBRMaterial&&)      = default;
 };
+
+
 #endif

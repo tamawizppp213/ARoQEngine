@@ -10,9 +10,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Sprite/Include/UIRenderer.hpp"
 #include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
-#include "GraphicsCore/DirectX12/SimpleInclude/IncludeGraphicsPSO.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
+#include "GraphicsCore/RHI/DirectX12/SimpleInclude/IncludeGraphicsPSO.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

@@ -9,9 +9,9 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12CommandContext.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandContext.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

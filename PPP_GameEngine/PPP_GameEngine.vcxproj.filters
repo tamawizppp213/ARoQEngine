@@ -60,10 +60,10 @@
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreEngine.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Core.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Core.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\File\Include\Json.hpp">
@@ -117,46 +117,46 @@
     <ClInclude Include="GameUtility\File\Include\UnicodeUtility.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Debug.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Debug.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Include.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Include.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12BaseStruct.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12BaseStruct.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Shader.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Shader.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Texture.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Texture.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12PipelineState.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12PipelineState.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Buffer.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Buffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameCore\Core\Include\GameObject.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12VertexTypes.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12VertexTypes.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\Memory.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12PrimitiveGeometry.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12PrimitiveGeometry.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12CommandContext.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12CommandContext.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12GPUResource.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12GPUResource.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreResourceType.hpp">
@@ -165,10 +165,10 @@
     <ClInclude Include="GameUtility\Math\Include\GMTypeDef.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12BLASBuffer.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12BLASBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\File\Include\Csv.hpp">
@@ -207,16 +207,16 @@
     <ClInclude Include="GameUtility\Math\Include\GMHash.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12RootSignature.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12RootSignature.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12StaticSampler.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12StaticSampler.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12BlendState.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12BlendState.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp">
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp">
@@ -495,12 +495,15 @@
     <ClInclude Include="GameCore\Rendering\Model\Include\MaterialType.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Include\ModelConverter.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameUtility\File\Source\Json.cpp">
@@ -551,40 +554,40 @@
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Core.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Core.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Shader.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Shader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Buffer.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Buffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Texture.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Texture.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Core\Source\GameObject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12PrimitiveGeometry.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12PrimitiveGeometry.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12PipelineState.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12PipelineState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\Engine\Source\GraphicsCoreEngine.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12CommandContext.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12CommandContext.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12VertexTypes.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12VertexTypes.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12BLASBuffer.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12BLASBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameUtility\File\Source\Csv.cpp">
@@ -614,13 +617,13 @@
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Image.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12RootSignature.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12RootSignature.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12StaticSampler.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12StaticSampler.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12BlendState.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12BlendState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="MainGame\Sample\Source\SampleSky.cpp">
@@ -738,6 +741,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Rendering\Model\Source\Model.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\Source\ModelConverter.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

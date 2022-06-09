@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Model/Include/Mesh.hpp"
 #include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +34,19 @@ bool Mesh::Initialize(const MeshData& meshData, const std::wstring& addName)
 
 	PrepareVertexAndIndexBuffer(meshData, name);
 	_materialID = meshData.MaterialID;
+	return true;
+}
+bool Mesh::Initialize(const void* vertexData, UINT vertexByteSize, UINT vertexCount, const void* indexData, UINT indexByteSize, UINT indexCount, UINT materialID, bool hasSkin, const std::wstring& addName)
+{
+	/*-------------------------------------------------------------------
+	-            Set name
+	---------------------------------------------------------------------*/
+	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	name += L"Mesh::";
+
+	PrepareVertexAndIndexBuffer(vertexData, vertexByteSize, vertexCount, indexData, indexByteSize, indexCount,name);
+	_materialID = materialID;
+	_hasSkin    = hasSkin;
 	return true;
 }
 /****************************************************************************
@@ -97,6 +110,45 @@ void Mesh::PrepareVertexAndIndexBuffer(const MeshData& meshData, const std::wstr
 		meshBuffer.IndexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(indexByteSize), static_cast<UINT>(indexCount), false, name + L"IndexBuffer");
 		meshBuffer.IndexBuffer->CopyStart();
 		meshBuffer.IndexBuffer->CopyTotalData(meshData.Indices.data(), indexCount);
+		meshBuffer.IndexBuffer->CopyEnd();
+	}
+}
+/****************************************************************************
+*					PrepareVertexAndIndexBuffer
+*************************************************************************//**
+*  @fn        void Mesh::PrepareVertexAndIndexBuffer(const void* vertexData, UINT vertexByteSize, UINT vertexCount, const void* indexData, UINT indexByteSize, UINT indexCount, const std::wstring& name)
+*  @brief     Prepare Rect vertex and index buffer
+*  @param[in] const void* vertexData
+*  @param[in] UINT vertexByteSize
+*  @param[in] UINT vertexCount
+*  @param[in] const void* indexData
+*  @param[in] UINT indexByteSize
+*  @param[in] UINT indexCount
+*  @return Å@Å@void
+*****************************************************************************/
+void Mesh::PrepareVertexAndIndexBuffer(const void* vertexData, UINT vertexByteSize, UINT vertexCount, const void* indexData, UINT indexByteSize, UINT indexCount, const std::wstring& name)
+{
+	auto& engine         = GraphicsCoreEngine::Instance();
+	int   totalFrameSize = engine.GetFrameBufferCount();
+	_meshBuffer          = std::make_unique<MeshBuffer[]>(totalFrameSize);
+
+	for (int i = 0; i < totalFrameSize; ++i)
+	{
+		auto& meshBuffer = _meshBuffer[i];
+		/*-------------------------------------------------------------------
+		-            Calcurate Buffer Size
+		---------------------------------------------------------------------*/
+		/*-------------------------------------------------------------------
+		-            Set Vertex Buffer and Index Buffer
+		---------------------------------------------------------------------*/
+		meshBuffer.VertexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(vertexByteSize), static_cast<UINT>(vertexCount), false, name + L"VertexBuffer");
+		meshBuffer.VertexBuffer->CopyStart();
+		meshBuffer.VertexBuffer->CopyTotalData(vertexData, vertexCount);
+		meshBuffer.VertexBuffer->CopyEnd();
+
+		meshBuffer.IndexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(indexByteSize), static_cast<UINT>(indexCount), false, name + L"IndexBuffer");
+		meshBuffer.IndexBuffer->CopyStart();
+		meshBuffer.IndexBuffer->CopyTotalData(indexData, indexCount);
 		meshBuffer.IndexBuffer->CopyEnd();
 	}
 }

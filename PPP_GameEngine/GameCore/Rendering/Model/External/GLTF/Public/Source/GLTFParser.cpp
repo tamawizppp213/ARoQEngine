@@ -108,6 +108,7 @@ void GLTFFile::Load(const std::string& filePath)
 	try
 	{
 		Document = Deserialize(manifest);
+		resourceReader = std::move(resourceReader);
 	}
 	catch(const detail::error::GLTFException& exception)
 	{
@@ -167,4 +168,5 @@ void GLTFFile::Save(const std::string& filePath, SerializeFlags flags)
 	{
 		throw gltf::detail::error::GLTFException("Invalid extension type.");
 	}
+	ResourceWriter = std::move(resourceWriter);
 }

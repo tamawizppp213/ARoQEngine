@@ -11,8 +11,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Texture.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Texture.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
 #include "Image.hpp"
 #include <vector>
 #include <string>

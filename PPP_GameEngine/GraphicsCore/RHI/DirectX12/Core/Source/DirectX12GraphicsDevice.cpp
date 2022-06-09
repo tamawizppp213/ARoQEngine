@@ -8,13 +8,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Include.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12ResourceAllocator.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12VertexTypes.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12RootSignature.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12PipelineState.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Include.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12ResourceAllocator.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12VertexTypes.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RootSignature.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PipelineState.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameUtility/Math/Include/GMColor.hpp"
 #include <vector>

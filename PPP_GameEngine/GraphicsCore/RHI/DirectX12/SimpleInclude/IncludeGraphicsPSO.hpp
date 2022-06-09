@@ -11,13 +11,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12RootSignature.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12PipelineState.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12StaticSampler.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Shader.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12BlendState.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12VertexTypes.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RootSignature.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PipelineState.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12StaticSampler.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Shader.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BlendState.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12VertexTypes.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

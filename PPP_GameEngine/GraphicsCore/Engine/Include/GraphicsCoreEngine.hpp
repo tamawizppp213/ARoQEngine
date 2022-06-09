@@ -11,10 +11,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12CommandContext.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12GPUResource.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandContext.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12GPUResource.hpp"
 #include <memory>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

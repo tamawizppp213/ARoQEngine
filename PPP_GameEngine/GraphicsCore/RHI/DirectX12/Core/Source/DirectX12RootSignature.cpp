@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12RootSignature.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RootSignature.hpp"
 #include "GameUtility/Math/Include/GMHash.hpp"
 #include <thread>
 #include <map>

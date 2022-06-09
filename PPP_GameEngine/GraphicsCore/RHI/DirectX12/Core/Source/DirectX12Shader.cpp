@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Shader.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Include.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Shader.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Include.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <sstream>
 #include <fstream>
 #include <d3dcompiler.h>

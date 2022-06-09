@@ -13,14 +13,14 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "MaterialType.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
 #include <vector>
 #include <memory>
 #include <map>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class Texture;
+struct Texture;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -63,8 +63,8 @@ public:
 	~MaterialBuffer();
 	MaterialBuffer(const MaterialBuffer&)            = delete;
 	MaterialBuffer& operator=(const MaterialBuffer&) = delete;
-	MaterialBuffer(MaterialBuffer&&)                 = delete;
-	MaterialBuffer& operator=(MaterialBuffer&&)      = delete;
+	MaterialBuffer(MaterialBuffer&&)                 = default;
+	MaterialBuffer& operator=(MaterialBuffer&&)      = default;
 private:
 	/****************************************************************************
 	**                Private Function

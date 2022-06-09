@@ -51,7 +51,7 @@ bool MaterialBuffer::Initialize(size_t materialByteSize, size_t materialCount, c
 	/*-------------------------------------------------------------------
 	-            Set Constant Buffer
 	---------------------------------------------------------------------*/
-	_constantBuffer = std::make_unique<UploadBuffer>(GraphicsCoreEngine::Instance().GetDevice(), materialByteSize, materialCount, name);
+	_constantBuffer = std::make_unique<UploadBuffer>(GraphicsCoreEngine::Instance().GetDevice(), materialByteSize, materialCount, true, name);
 	/*-------------------------------------------------------------------
 	-            Set Null Texture 
 	---------------------------------------------------------------------*/

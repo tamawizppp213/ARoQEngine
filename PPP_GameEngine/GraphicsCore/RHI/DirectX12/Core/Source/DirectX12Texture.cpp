@@ -7,11 +7,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Texture.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Texture.hpp"
 #include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
 #include <DirectXTex/DirectXTex.h>
 //////////////////////////////////////////////////////////////////////////////////

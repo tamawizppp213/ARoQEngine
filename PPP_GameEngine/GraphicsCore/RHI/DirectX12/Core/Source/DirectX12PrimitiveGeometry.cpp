@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -368,7 +368,7 @@ MeshData GeometryGenerator::GeoSphere(float radius, UINT32 numSubdivisions, bool
 
 		meshData.Vertices[i].UV.x = theta / DirectX::XM_2PI;
 		meshData.Vertices[i].UV.y = phi / DirectX::XM_PI;
-
+		meshData.Vertices[i].Color = color;
 	}
 
 	if (isInvertNormal)
@@ -504,6 +504,7 @@ MeshData GeometryGenerator::Grid(float width, float depth, UINT32 rows, UINT32 c
 			meshData.Vertices[(UINT64)i * columns + j].UV.x = j * du;
 			meshData.Vertices[(UINT64)i * columns + j].UV.y = i * dv;
 
+			meshData.Vertices[(UINT64)i * columns + j].Color = color;
 		}
 	}
 

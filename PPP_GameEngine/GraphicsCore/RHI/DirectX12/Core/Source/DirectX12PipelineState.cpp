@@ -8,10 +8,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12PipelineState.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12RootSignature.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PipelineState.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RootSignature.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GameUtility/Math/Include/GMHash.hpp"
 #include <thread>
 #include <map>
