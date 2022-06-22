@@ -1,91 +1,75 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   UIRenderer.hpp
-///             @brief  UIRenderer
+///             @file   RHIDevice.hpp
+///             @brief  Device
 ///             @author Toide Yutaro
-///             @date   2022_06_01
+///             @date   2022_06_09
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef UI_RENDERER_HPP
-#define UI_RENDERER_HPP
+#ifndef RHI_DEVICE_HPP
+#define RHI_DEVICE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Texture.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
-#include "Image.hpp"
-#include <vector>
-#include <string>
+#include "RHICommonState.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
+#include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-//struct MeshBuffer;
-//class  UploadBuffer;
-namespace rhi::directX12
-{
-	class  CommandContext;
-}
-struct Texture;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace ui
+namespace rhi::core
 {
+	class RHIFence;
+	class RHICommandList;
+	class RHICommandQueue;
+	class RHICommandAllocator;
+	class RHISwapchain;
 	/****************************************************************************
-	*				  			Sprite
+	*				  			RHIDevice
 	*************************************************************************//**
-	*  @class     Sprite
-	*  @brief     2D Sprite
+	*  @class     RHIDevice 
+	*  @brief     Logical Device interface. Device : GPU resources generator.
 	*****************************************************************************/
-	class UIRenderer
+	class RHIDevice : public NonCopyable, std::enable_shared_from_this<RHIDevice>
 	{
-		using SceneGPUAddress   = uint64_t;
-		using MeshBufferPtr     = std::unique_ptr<MeshBuffer[]>;
-		using CommandContextPtr = rhi::directX12::CommandContext*;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void StartUp(const std::wstring& addName = L"");
-		void AddFrameObject(const std::vector<ui::Image>& images, const Texture& texture);
-		void Draw();
-		virtual void ShutDown();
+		virtual bool Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing = false) = 0;
+		virtual std::shared_ptr<RHIFence>            CreateFence() = 0;
+		virtual std::shared_ptr<RHICommandList>      CreateCommandList() = 0;
+		virtual std::shared_ptr<RHICommandQueue>     CreateCommandQueue() = 0;
+		virtual std::shared_ptr<RHICommandAllocator> CreateCommandAllocator() = 0;
+		virtual std::shared_ptr<RHISwapchain>        CreateSwapchain() = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		APIVersion GetAPIVersion() const noexcept { return _apiVersion; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		UIRenderer() = default;
-		virtual ~UIRenderer();
-		UIRenderer(const UIRenderer&)            = delete;
-		UIRenderer& operator=(const UIRenderer&) = delete;
-		UIRenderer(UIRenderer&&)                 = default;
-		UIRenderer& operator=(UIRenderer&&)      = default;
+		~RHIDevice() = default;
+		RHIDevice(APIVersion version = APIVersion::Unknown) { _apiVersion = version; }
 	protected:
+		
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareRootSignature(const std::wstring& name);
-		void PreparePipelineState(const std::wstring& name);
-		void PrepareVertexAndIndexBuffer(const std::wstring& name);
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		MeshBufferPtr        _meshBuffer = nullptr;
-		CommandContextPtr    _context    = nullptr;
-		std::vector<Texture> _textures;
-		int  _currentFrame     = 0;
-		int  _imageStackCount  = 0;
-		int  _drawCallNum      = 0;
-		bool _isFrameStart     = false;
-		bool _isFrameEnd       = true;
-		std::vector<int> _imageCountList;
-	private:
-		static constexpr int MAX_WRITABLE_UI_COUNT = 1024;
+		APIVersion _apiVersion = APIVersion::Unknown;
+		HWND _hwnd = nullptr;
+		HINSTANCE _hInstance = nullptr;
+		bool _isInitialize = false;
 	};
 }
 #endif

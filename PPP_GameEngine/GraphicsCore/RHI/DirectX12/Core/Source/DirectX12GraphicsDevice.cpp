@@ -45,15 +45,15 @@ GraphicsDeviceDirectX12::~GraphicsDeviceDirectX12()
 /****************************************************************************
 *							Initialize
 *************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::Initialize(void)
+*  @fn        void GraphicsDeviceDirectX12::StartUp(void)
 *  @brief     Initialize Back Screen
 *  @param[in] HWND hwnd
 *  @return 　　void
 *****************************************************************************/
-void GraphicsDeviceDirectX12::Initialize(HWND hwnd)
+void GraphicsDeviceDirectX12::StartUp(HWND hwnd, HINSTANCE hInstance)
 {
 	if (_hasInitialized) { return; }
-	SetHWND(hwnd);
+	SetHWND(hwnd); _hInstance = hInstance;
 	LoadPipeline();
 	LoadAssets();
 	_hasInitialized = true;
@@ -61,12 +61,12 @@ void GraphicsDeviceDirectX12::Initialize(HWND hwnd)
 /****************************************************************************
 *							Finalize
 *************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::Finalize()
+*  @fn        void GraphicsDeviceDirectX12::ShutDown()
 *  @brief     Release DirectX12 All Memory
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void GraphicsDeviceDirectX12::Finalize()
+void GraphicsDeviceDirectX12::ShutDown()
 {
 	RootSignature::DestroyAll();
 	PipelineState::DestroyAll();
@@ -168,7 +168,7 @@ void GraphicsDeviceDirectX12::OnResize()
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void GraphicsDeviceDirectX12::ClearScreen()
+void GraphicsDeviceDirectX12::BeginDrawFrame()
 {
 	/*-------------------------------------------------------------------
 	-               Start recording commands (移動FlushCommandQueueに移動)
@@ -220,7 +220,7 @@ void GraphicsDeviceDirectX12::ClearScreen()
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void GraphicsDeviceDirectX12::CompleteRendering()
+void GraphicsDeviceDirectX12::EndDrawFrame()
 {
 	/*-------------------------------------------------------------------
 	-      // Indicate a state transition (Render Target -> Present)
@@ -1468,6 +1468,7 @@ void GraphicsDeviceDirectX12::EnsureSwapChainColorSpace()
 	}
 
 	_swapchain->SetColorSpace1(colorSpace);
+	
 }
 
 /****************************************************************************
@@ -1481,9 +1482,6 @@ void GraphicsDeviceDirectX12::EnsureSwapChainColorSpace()
 void GraphicsDeviceDirectX12::SetHDRMetaData()
 {
 
-	DXGI_SWAP_CHAIN_DESC1 desc;
-	ThrowIfFailed(_swapchain->GetDesc1(&desc));
-
 	/*-------------------------------------------------------------------
 	-          In case False (isHDRSupport)
 	---------------------------------------------------------------------*/
@@ -1493,6 +1491,9 @@ void GraphicsDeviceDirectX12::SetHDRMetaData()
 		ThrowIfFailed(_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_NONE, 0, nullptr));
 		return;
 	}
+
+	DXGI_SWAP_CHAIN_DESC1 desc;
+	ThrowIfFailed(_swapchain->GetDesc1(&desc));
 
 	/*-------------------------------------------------------------------
 	-          Define Display Chromacity
@@ -1564,7 +1565,6 @@ void GraphicsDeviceDirectX12::IsEnabledHDR()
 *****************************************************************************/
 bool GraphicsDeviceDirectX12::CheckHDRDisplaySupport()
 {
-	_backBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	bool isEnabledHDR =
 		_backBufferFormat == DXGI_FORMAT_R16G16B16A16_FLOAT ||
 		_backBufferFormat == DXGI_FORMAT_R10G10B10A2_UNORM;
@@ -1592,7 +1592,7 @@ bool GraphicsDeviceDirectX12::CheckHDRDisplaySupport()
 		if (!isDisplayHDR10)
 		{
 			//_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-			//isEnabledHDR = false;
+			isEnabledHDR = false;
 		}
 	}
 

@@ -1,18 +1,17 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GameManager.hpp
-///             @brief  GameManager class
+///             @file   ClassUtility.hpp
+///             @brief  Noncopyable
 ///             @author Toide Yutaro
-///             @date   2022_0423
+///             @date   2022_06_21
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GAME_MANAGER_HPP
-#define GAME_MANAGER_HPP
+#ifndef CLASS_UTILITY_HPP
+#define CLASS_UTILITY_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "SceneManager.hpp"
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,56 +21,40 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 /****************************************************************************
-*				  			TemplateClass
+*				  			NonCopyable
 *************************************************************************//**
-*  @class     TemplateClass
-*  @brief     temp
+*  @class     NonCopyable
+*  @brief     Prohibit copy class
 *****************************************************************************/
-class GameManager final
+class NonCopyable
 {
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void GameStart(GameTimer& gameTimer, HWND hwnd, HINSTANCE hInstance);
-	void GameMain();
-	void GameEnd();
 
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	void SetHWND(HWND hwnd);
-	GraphicsCoreEngine& GetGraphicsEngine() { return _engine; }
+	
+
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
-	/*---------------------------------------------------------------------------
-	                 Singleton 
-	-----------------------------------------------------------------------------*/
-	static GameManager& Instance()
-	{
-		static GameManager gameManager;
-		return gameManager;
-	}
-
-	// Prohibit move and copy.
-	// Singleton answer (public or private): https://stackoverflow.com/questions/18931133/must-a-deleted-constructor-be-private
-	GameManager(const GameManager&)            = delete;
-	GameManager& operator=(const GameManager&) = delete;
-	GameManager(GameManager&&)                 = delete;
-	GameManager& operator=(GameManager&&)      = delete;
-private:
+	NonCopyable() = default;
+	virtual ~NonCopyable() = default;
+	NonCopyable(const NonCopyable&)            = delete;
+	NonCopyable& operator=(const NonCopyable&) = delete;
+	NonCopyable(NonCopyable&&)        noexcept = default;
+	NonCopyable& operator=(NonCopyable&&)      = default;
+protected:
 	/****************************************************************************
-	**                Private Function
+	**                Protected Function
 	*****************************************************************************/
-	GameManager() = default;
-	~GameManager() = default;
 
 	/****************************************************************************
-	**                Private Member Variables
+	**                Protected Member Variables
 	*****************************************************************************/
-	SceneManager& _sceneManager = SceneManager::Instance();
-	GraphicsCoreEngine& _engine = GraphicsCoreEngine::Instance();
-	HWND _mainWindow = nullptr;
 };
+
 #endif

@@ -19,7 +19,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 struct Texture;
 class GraphicsDeviceDirectX12;
-class CommandContext;
+namespace rhi::directX12
+{
+	class CommandContext;
+}
+
 static inline UINT CalcConstantBufferByteSize(UINT byteSize)
 {
 	return (byteSize + 255) & ~255;
@@ -218,7 +222,7 @@ public:
 	*****************************************************************************/
 	void Create(GraphicsDeviceDirectX12& graphicsDevice, UINT width, UINT height, UINT arraySize = 0, const std::wstring& addName = L"", DXGI_FORMAT colorFormat = DXGI_FORMAT_R8G8B8A8_UNORM, float clearColor[4] = nullptr, UINT mipmaps = 1);
 	void OnResize(UINT newWidth, UINT newHeight, UINT arraySize);
-	void CopyFrom(CommandContext* commandContext, GPUResource* source);
+	void CopyFrom(rhi::directX12::CommandContext* commandContext, GPUResource* source);
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/

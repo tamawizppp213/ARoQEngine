@@ -64,7 +64,7 @@ void SkyDome::Draw(SkyDome::SceneGPUAddress scene)
 	---------------------------------------------------------------------*/
 	context->SetRootSignature(s_RootSignature.GetSignature());
 	context->SetPipelineState(s_PipelineState.GetPipelineState());
-	context->SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->SetPrimitiveTopology(rhi::core::PrimitiveTopology::TriangleList);
 	context->SetVertexBuffer(_meshBuffer[currentFrame].VertexBufferView());
 	context->SetIndexBuffer (_meshBuffer[currentFrame].IndexBufferView());
 	context->SetGraphicsConstantBufferView(0, scene);

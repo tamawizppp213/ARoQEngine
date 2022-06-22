@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Core/Include/Application.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
 #include "resource.h"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -18,7 +19,7 @@ static constexpr LPCWSTR CLASS_NAME = L"Game Window";
 static constexpr LPCWSTR GAME_TITLE = L"PPP Engine";
 static constexpr int GAME_WINDOW_WIDTH  = 1920;
 static constexpr int GAME_WINDOW_HEIGHT = 1080;
-
+rhi::vulkan::RHIDevice a;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +32,8 @@ bool Application::StartUp()
 {
 	if (!CreateMainWindow())                               { return false; }
 	if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
-
+	
+	a.Create(_mainWindow, _appInstance, true);
 	return true;
 }
 
@@ -40,7 +42,7 @@ void Application::Run()
 	MSG message = { NULL };
 
 	_gameTimer.Reset();
-	_gameManager.GameStart(_gameTimer, _mainWindow);
+	_gameManager.GameStart(_gameTimer, _mainWindow, _appInstance);
 	/*---------------------------------------------------------------
 						Main Loop
 	-----------------------------------------------------------------*/
@@ -59,6 +61,8 @@ void Application::Run()
 				_gameTimer.AverageFrame(_mainWindow);
 				_gameInput.Update();
 				_gameManager.GameMain();
+				//a.BeginDrawFrame();
+				//a.EndDrawFrame();
 			}
 		}
 	}
@@ -203,7 +207,7 @@ LRESULT Application::WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wPar
 		case WM_DISPLAYCHANGE:
 		{
 			_gameManager.GameEnd();
-			_gameManager.GameStart(_gameTimer, _mainWindow);
+			_gameManager.GameStart(_gameTimer, _mainWindow, _appInstance);
 			return 0;
 		}
 	}

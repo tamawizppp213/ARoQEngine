@@ -1,91 +1,80 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   UIRenderer.hpp
-///             @brief  UIRenderer
+///             @file   DirectX12Device.hpp
+///             @brief  Device
 ///             @author Toide Yutaro
-///             @date   2022_06_01
+///             @date   2022_06_21
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef UI_RENDERER_HPP
-#define UI_RENDERER_HPP
+#ifndef DIRECTX12_DEVICE_HPP
+#define DIRECTX12_DEVICE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Texture.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
-#include "Image.hpp"
-#include <vector>
-#include <string>
-#include <memory>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDevice.hpp"
+#include "DirectX12Core.hpp"
+#include <dxgiformat.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-//struct MeshBuffer;
-//class  UploadBuffer;
-namespace rhi::directX12
-{
-	class  CommandContext;
-}
-struct Texture;
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                          Device class
 //////////////////////////////////////////////////////////////////////////////////
-namespace ui
+namespace rhi::directX12
 {
 	/****************************************************************************
-	*				  			Sprite
+	*				  			Device class
 	*************************************************************************//**
-	*  @class     Sprite
-	*  @brief     2D Sprite
+	*  @class     Device
+	*  @brief     temp
 	*****************************************************************************/
-	class UIRenderer
+	class RHIDevice : public core::RHIDevice
 	{
-		using SceneGPUAddress   = uint64_t;
-		using MeshBufferPtr     = std::unique_ptr<MeshBuffer[]>;
-		using CommandContextPtr = rhi::directX12::CommandContext*;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void StartUp(const std::wstring& addName = L"");
-		void AddFrameObject(const std::vector<ui::Image>& images, const Texture& texture);
-		void Draw();
-		virtual void ShutDown();
+		bool Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing = false) override;
+		std::shared_ptr<core::RHIFence>            CreateFence();
+		std::shared_ptr<core::RHICommandList>      CreateCommandList();
+		std::shared_ptr<core::RHICommandQueue>     CreateCommandQueue();
+		std::shared_ptr<core::RHICommandAllocator> CreateCommandAllocator();
+		std::shared_ptr<core::RHISwapchain>        CreateSwapchain();
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		DeviceComPtr GetDevice() const noexcept { return _device; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		UIRenderer() = default;
-		virtual ~UIRenderer();
-		UIRenderer(const UIRenderer&)            = delete;
-		UIRenderer& operator=(const UIRenderer&) = delete;
-		UIRenderer(UIRenderer&&)                 = default;
-		UIRenderer& operator=(UIRenderer&&)      = default;
+		RHIDevice();
+		~RHIDevice();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareRootSignature(const std::wstring& name);
-		void PreparePipelineState(const std::wstring& name);
-		void PrepareVertexAndIndexBuffer(const std::wstring& name);
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		MeshBufferPtr        _meshBuffer = nullptr;
-		CommandContextPtr    _context    = nullptr;
-		std::vector<Texture> _textures;
-		int  _currentFrame     = 0;
-		int  _imageStackCount  = 0;
-		int  _drawCallNum      = 0;
-		bool _isFrameStart     = false;
-		bool _isFrameEnd       = true;
-		std::vector<int> _imageCountList;
+		DeviceComPtr  _device        = nullptr;
+		FactoryComPtr _dxgiFactory   = nullptr;
+		AdapterComPtr _useAdapter    = nullptr;
+		bool          _isWarpAdapter = true;
+		DXGI_FORMAT   _backBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		bool          _enableRayTracing = false;
 	private:
-		static constexpr int MAX_WRITABLE_UI_COUNT = 1024;
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		void EnabledDebugLayer();
+		void SearchHardwareAdapter();
+		void LogAdapters();
+		void LogAdapterOutputs(IAdapter* adapter);
+		void LogOutputDisplayModes(IOutput* output, DXGI_FORMAT format);
+		void ReportLiveObjects();
+		void CheckDXRSupport();
 	};
 }
 #endif

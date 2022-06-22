@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+using namespace rhi::directX12;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -58,10 +58,10 @@ bool Mesh::Initialize(const void* vertexData, UINT vertexByteSize, UINT vertexCo
 *  @param[in] int currentFrameIndex
 *  @return Å@Å@void
 *****************************************************************************/
-void Mesh::Draw(CommandContext* context, int currentFrameIndex)
+void Mesh::Draw(rhi::directX12::CommandContext* context, int currentFrameIndex)
 {
 	assert(currentFrameIndex < GraphicsCoreEngine::Instance().GetFrameBufferCount());
-	context->SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->SetPrimitiveTopology(rhi::core::PrimitiveTopology::TriangleList);
 	context->SetVertexBuffer(_meshBuffer[currentFrameIndex].VertexBufferView());
 	context->SetIndexBuffer (_meshBuffer[currentFrameIndex].IndexBufferView());
 	context->DrawIndexedInstanced(_indexCount, 1, 0);
@@ -104,12 +104,12 @@ void Mesh::PrepareVertexAndIndexBuffer(const MeshData& meshData, const std::wstr
 		---------------------------------------------------------------------*/
 		meshBuffer.VertexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(vertexByteSize), static_cast<UINT>(vertexCount), false, name + L"VertexBuffer");
 		meshBuffer.VertexBuffer->CopyStart();
-		meshBuffer.VertexBuffer->CopyTotalData(meshData.Vertices.data(), vertexCount);
+		meshBuffer.VertexBuffer->CopyTotalData(meshData.Vertices.data(), static_cast<int>(vertexCount));
 		meshBuffer.VertexBuffer->CopyEnd();
 
 		meshBuffer.IndexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(indexByteSize), static_cast<UINT>(indexCount), false, name + L"IndexBuffer");
 		meshBuffer.IndexBuffer->CopyStart();
-		meshBuffer.IndexBuffer->CopyTotalData(meshData.Indices.data(), indexCount);
+		meshBuffer.IndexBuffer->CopyTotalData(meshData.Indices.data(), static_cast<int>(indexCount));
 		meshBuffer.IndexBuffer->CopyEnd();
 	}
 }

@@ -1,91 +1,65 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   UIRenderer.hpp
-///             @brief  UIRenderer
+///             @file   VulkanCommandList.hpp
+///             @brief  CommandList
 ///             @author Toide Yutaro
-///             @date   2022_06_01
+///             @date   2022_06_09
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef UI_RENDERER_HPP
-#define UI_RENDERER_HPP
+#ifndef VULKAN_COMMANDLIST_HPP
+#define VULKAN_COMMANDLIST_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Texture.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
-#include "Image.hpp"
-#include <vector>
-#include <string>
-#include <memory>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
+#include <vulkan/vulkan.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-//struct MeshBuffer;
-//class  UploadBuffer;
-namespace rhi::directX12
-{
-	class  CommandContext;
-}
-struct Texture;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace ui
+namespace rhi::vulkan
 {
 	/****************************************************************************
-	*				  			Sprite
+	*				  			TemplateClass
 	*************************************************************************//**
-	*  @class     Sprite
-	*  @brief     2D Sprite
+	*  @class     TemplateClass
+	*  @brief     temp
 	*****************************************************************************/
-	class UIRenderer
+	class RHICommandList : public rhi::core::RHICommandList
 	{
-		using SceneGPUAddress   = uint64_t;
-		using MeshBufferPtr     = std::unique_ptr<MeshBuffer[]>;
-		using CommandContextPtr = rhi::directX12::CommandContext*;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void StartUp(const std::wstring& addName = L"");
-		void AddFrameObject(const std::vector<ui::Image>& images, const Texture& texture);
-		void Draw();
-		virtual void ShutDown();
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		/*-------------------------------------------------------------------
+		-                Compute Command
+		---------------------------------------------------------------------*/
+		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		UIRenderer() = default;
-		virtual ~UIRenderer();
-		UIRenderer(const UIRenderer&)            = delete;
-		UIRenderer& operator=(const UIRenderer&) = delete;
-		UIRenderer(UIRenderer&&)                 = default;
-		UIRenderer& operator=(UIRenderer&&)      = default;
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareRootSignature(const std::wstring& name);
-		void PreparePipelineState(const std::wstring& name);
-		void PrepareVertexAndIndexBuffer(const std::wstring& name);
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		MeshBufferPtr        _meshBuffer = nullptr;
-		CommandContextPtr    _context    = nullptr;
-		std::vector<Texture> _textures;
-		int  _currentFrame     = 0;
-		int  _imageStackCount  = 0;
-		int  _drawCallNum      = 0;
-		bool _isFrameStart     = false;
-		bool _isFrameEnd       = true;
-		std::vector<int> _imageCountList;
-	private:
-		static constexpr int MAX_WRITABLE_UI_COUNT = 1024;
+		VkCommandBuffer _commandBuffer = nullptr;
 	};
+
+	inline void rhi::vulkan::RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t threadGroupCountY, std::uint32_t threadGroupCountZ)
+	{
+		vkCmdDispatch(_commandBuffer, threadGroupCountX, threadGroupCountY, threadGroupCountZ);
+	}
 }
 #endif

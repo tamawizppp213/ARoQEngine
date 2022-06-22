@@ -16,7 +16,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+using namespace rhi::directX12;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -30,7 +30,7 @@
 *  @param[in] HWND hwnd
 *  @return Å@Å@void
 *****************************************************************************/
-void GraphicsCoreEngine::StartUp(HWND hwnd)
+void GraphicsCoreEngine::StartUp(HWND hwnd, HINSTANCE hInstance)
 {
 	if (_hasInitialized) { return; }
 
@@ -38,7 +38,7 @@ void GraphicsCoreEngine::StartUp(HWND hwnd)
 	-            Initialize GraphicsDevice DirectX12
 	---------------------------------------------------------------------*/
 	_device = std::make_unique<GraphicsDeviceDirectX12>();
-	_device->Initialize(hwnd);
+	_device->StartUp(hwnd, hInstance);
 	/*-------------------------------------------------------------------
 	-            Initialize CommandContext
 	---------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ void GraphicsCoreEngine::OnResize()
 *****************************************************************************/
 void GraphicsCoreEngine::ShutDown()
 {
-	_device->Finalize();
+	_device->ShutDown();
 	_commandContext.reset();
 	_device.reset();
 }
@@ -84,11 +84,11 @@ void GraphicsCoreEngine::OnInitializeRenderScene()
 }
 void GraphicsCoreEngine::BeginDrawFrame()
 {
-	_device->ClearScreen();
+	_device->BeginDrawFrame();
 }
 void GraphicsCoreEngine::EndDrawFrame()
 {
-	_device->CompleteRendering();
+	_device->EndDrawFrame();
 }
 void GraphicsCoreEngine::OnTerminateRenderScene()
 {

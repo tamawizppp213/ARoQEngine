@@ -246,6 +246,7 @@
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Image.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Sprite.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\UIRenderer.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\ClassUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Memory.hpp" />
@@ -313,6 +314,7 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Buffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Core.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Debug.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Device.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12GPUResource.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Include.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp" />
@@ -330,6 +332,15 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreEngine.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreResourceType.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHICommandList.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHICommonState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIDevice.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIFence.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIGPUResource.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIGraphicsDevice.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanCommandList.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanDevice.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanGraphicsDevice.hpp" />
     <ClInclude Include="MainGame\Core\Include\Application.hpp" />
     <ClInclude Include="MainGame\Core\Include\GameManager.hpp" />
     <ClInclude Include="MainGame\Core\Include\Scene.hpp" />
@@ -403,6 +414,7 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12BlendState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Buffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Core.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Device.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12PipelineState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12PrimitiveGeometry.cpp" />
@@ -415,6 +427,8 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12BLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\GraphicsCoreEngine.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanDevice.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanGraphicsDevice.cpp" />
     <ClCompile Include="MainGame\Core\Source\Application.cpp" />
     <ClCompile Include="MainGame\Core\Source\GameManager.cpp" />
     <ClCompile Include="MainGame\Core\Source\Main.cpp" />

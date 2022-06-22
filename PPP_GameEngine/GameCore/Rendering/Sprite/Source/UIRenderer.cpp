@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+using namespace rhi::directX12;
 using namespace ui;
 using namespace gm;
 namespace
@@ -122,7 +123,7 @@ void UIRenderer::Draw()
 {
 	_context->SetRootSignature(s_RootSignature.GetSignature());
 	_context->SetPipelineState(s_PipelineState.GetPipelineState());
-	_context->SetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	_context->SetPrimitiveTopology(rhi::core::PrimitiveTopology::TriangleList);
 	_context->SetVertexBuffer(_meshBuffer[_currentFrame].VertexBufferView());
 	_context->SetIndexBuffer(_meshBuffer[_currentFrame].IndexBufferView());
 

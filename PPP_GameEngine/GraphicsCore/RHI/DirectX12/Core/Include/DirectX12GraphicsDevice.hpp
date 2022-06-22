@@ -11,10 +11,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIGraphicsDevice.hpp"
 #include "DirectX12BaseStruct.hpp"
 #include "DirectX12GPUResource.hpp"
 #include <dxgiformat.h>
 #include <array>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -47,21 +49,19 @@ class ResourceAllocator;
 *  @class     GraphicsDeviceDirectX12
 *  @brief     DirectX12
 *****************************************************************************/
-class GraphicsDeviceDirectX12
+class GraphicsDeviceDirectX12 : public rhi::core::RHIGraphicsDevice
 {
 	using StaticSamplerArray = std::array<const STATIC_SAMPLER_DESC, 6>;
 public:
-	static const UINT32 FRAME_BUFFER_COUNT = 3;
-	static const UINT32 VSYNC = 0; // 0: don't wait, 1:wait(60fps)
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void Initialize        (HWND hwnd);
-	void OnResize          ();
-	void Finalize          ();
-	void ClearScreen       ();
+	void StartUp        (HWND hwnd, HINSTANCE hInstance) override;
+	void OnResize          () override;
+	void ShutDown          () override;
+	void BeginDrawFrame    () override;
 	void CompleteInitialize();
-	void CompleteRendering ();
+	void EndDrawFrame () override;
 	void FlushCommandQueue ();
 	void ResetCommandList();
 	void OnTerminateRenderScene();
@@ -213,7 +213,7 @@ private:
 	DXGI_SWAP_CHAIN_FLAG _swapchainFlag;
 
 	bool _hasInitialized = false;
-	HWND _hwnd = nullptr;
+	
 	/*-------------------------------------------------------------------
 	-                    Support
 	---------------------------------------------------------------------*/

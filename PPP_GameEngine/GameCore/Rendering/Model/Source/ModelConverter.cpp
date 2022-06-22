@@ -119,7 +119,7 @@ namespace
 		gltf::GLTFFile file;
 		file.Load(unicode::ToUtf8String(filePath));
 		const auto& document = file.Document;
-		auto        reader   = file.ResourceReader;
+		auto&       reader   = file.ResourceReader;
 		/*-------------------------------------------------------------------
 		-            Convert
 		---------------------------------------------------------------------*/

@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 D3D12_BLEND_DESC GetBlendState(BlendStateType type)
 {
-	D3D12_BLEND_DESC blendDesc;
+	D3D12_BLEND_DESC blendDesc = {};
 	blendDesc.IndependentBlendEnable      = FALSE; // all blend states is the same setting.
 	blendDesc.AlphaToCoverageEnable       = TRUE;
 

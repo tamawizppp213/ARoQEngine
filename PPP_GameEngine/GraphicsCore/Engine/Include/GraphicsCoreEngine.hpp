@@ -35,7 +35,7 @@ class GraphicsCoreEngine
 public:
 	using HWND = HWND__*;
 	using GraphicsDevicePtr = std::unique_ptr<GraphicsDeviceDirectX12>;
-	using CommandContextPtr = std::unique_ptr<CommandContext>;
+	using CommandContextPtr = std::unique_ptr<rhi::directX12::CommandContext>;
 
 	/****************************************************************************
 	**                Public Function
@@ -44,7 +44,7 @@ public:
 	/*-------------------------------------------------------------------
 	-          Start up application and ShutDown application
 	---------------------------------------------------------------------*/
-	void StartUp(HWND hwnd);
+	void StartUp(HWND hwnd, HINSTANCE hInstance);
 	void OnResize();
 	void ShutDown();
 	/*-------------------------------------------------------------------
@@ -74,8 +74,8 @@ public:
 	*****************************************************************************/
 	inline       GraphicsDeviceDirectX12* GetGraphicsDevice()       { return _device.get(); }
 	inline const GraphicsDeviceDirectX12* GetGraphicsDevice() const { return _device.get(); }
-	inline       CommandContext* GetCommandContext()       { return _commandContext.get(); }
-	inline const CommandContext* GetCommandContext() const { return _commandContext.get(); }
+	inline       rhi::directX12::CommandContext* GetCommandContext()       { return _commandContext.get(); }
+	inline const rhi::directX12::CommandContext* GetCommandContext() const { return _commandContext.get(); }
 	inline       IDevice* GetDevice()       { return _device->GetDevice(); }
 	inline const IDevice* GetDevice() const { return _device->GetDevice(); }
 

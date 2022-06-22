@@ -37,7 +37,7 @@ public:
 	*****************************************************************************/
 	bool Initialize(const MeshData& meshData, const std::wstring& addName = L"");
 	bool Initialize(const void* vertexData, UINT vertexByteSize, UINT vertexCount, const void* indexData, UINT indexByteSize, UINT indexCount, UINT materialID = 0, bool hasSkin = false, const std::wstring& addName = L"");
-	void Draw(CommandContext* context, int currentFrameIndex);
+	void Draw(rhi::directX12::CommandContext* context, int currentFrameIndex);
 	void Terminate();
 
 	/****************************************************************************

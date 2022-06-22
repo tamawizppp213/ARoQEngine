@@ -11,11 +11,12 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandContext.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12GPUResource.hpp"
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
-
+using namespace rhi::directX12;
+using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +35,66 @@ void CommandContext::WaitUntilToPossibleSetRenderTarget(Resource* renderTarget)
 	BARRIER barrier = BARRIER::Transition(renderTarget, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
 	_commandList->ResourceBarrier(1, &barrier);
 }
+#pragma region Command
+void CommandContext::SetPrimitiveTopology(PrimitiveTopology topology)
+{
+	static D3D12_PRIMITIVE_TOPOLOGY topologies[] =
+	{
+		D3D_PRIMITIVE_TOPOLOGY_UNDEFINED,
+		D3D_PRIMITIVE_TOPOLOGY_POINTLIST,
+		D3D_PRIMITIVE_TOPOLOGY_LINELIST,
+		D3D_PRIMITIVE_TOPOLOGY_LINESTRIP,
+		D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+		D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
+	};
+	_commandList->IASetPrimitiveTopology(topologies[(int)topology]);
+}
+void CommandContext::SetViewport(const rhi::core::Viewport* viewport, UINT numViewport)
+{
+	std::vector<D3D12_VIEWPORT> v(numViewport);
+	for (UINT i = 0; i < numViewport; ++i)
+	{
+		v[i].TopLeftX = viewport->TopLeftX;
+		v[i].TopLeftY = viewport->TopLeftY;
+		v[i].Width    = viewport->Width;
+		v[i].Height   = viewport->Height;
+		v[i].MaxDepth = viewport->MaxDepth;
+		v[i].MinDepth = viewport->MinDepth;
+	}
+	_commandList->RSSetViewports(numViewport, v.data());
+}
+void CommandContext::SetScissor(const ScissorRect* rect, UINT numRect)
+{
+	std::vector<D3D12_RECT> r(numRect);
+	for (UINT i = 0; i < numRect; ++i)
+	{
+		r[i].left   = rect->Left;
+		r[i].right  = rect->Right;
+		r[i].bottom = rect->Bottom;
+		r[i].top    = rect->Top;
+	}
+	_commandList->RSSetScissorRects(numRect, r.data());
+}
+void CommandContext::SetViewportAndScissor(const Viewport& viewport, const ScissorRect& rect)
+{
+	D3D12_VIEWPORT v = {};
+	v.TopLeftX = viewport.TopLeftX;
+	v.TopLeftY = viewport.TopLeftY;
+	v.Width    = viewport.Width;
+	v.Height   = viewport.Height;
+	v.MaxDepth = viewport.MaxDepth;
+	v.MinDepth = viewport.MinDepth;
+
+	D3D12_RECT r = {};
+	r.left   = rect.Left;
+	r.right  = rect.Right;
+	r.bottom = rect.Bottom;
+	r.top    = rect.Top;
+
+	_commandList->RSSetViewports(1, &v);
+	_commandList->RSSetScissorRects(1, &r);
+}
+#pragma endregion Command
 /****************************************************************************
 *                     TransitionResourceState
 *************************************************************************//**
