@@ -35,7 +35,7 @@ struct SkinMeshVertex
 	SkinMeshVertex(const SkinMeshVertex&)             = default;
 	SkinMeshVertex& operator=(const SkinMeshVertex&) = default;
 	SkinMeshVertex& operator=(SkinMeshVertex&&)       = default;
-	SkinMeshVertex(DirectX::XMFLOAT3 const& position, DirectX::XMFLOAT3 const& normal, DirectX::XMFLOAT2 const& uv, DirectX::XMFLOAT3 const& tangent)
+	SkinMeshVertex(DirectX::XMFLOAT3 const& position, DirectX::XMFLOAT3 const& normal, DirectX::XMFLOAT2 const& uv)
 		: Position(position), Normal(normal), UV(uv)
 	{
 	};

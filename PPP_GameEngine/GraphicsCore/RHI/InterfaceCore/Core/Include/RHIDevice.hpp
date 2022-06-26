@@ -35,7 +35,7 @@ namespace rhi::core
 	*  @class     RHIDevice 
 	*  @brief     Logical Device interface. Device : GPU resources generator.
 	*****************************************************************************/
-	class RHIDevice : public NonCopyable, std::enable_shared_from_this<RHIDevice>
+	class RHIDevice : public NonCopyable, public std::enable_shared_from_this<RHIDevice>
 	{
 	public:
 		/****************************************************************************
@@ -43,10 +43,10 @@ namespace rhi::core
 		*****************************************************************************/
 		virtual bool Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing = false) = 0;
 		virtual std::shared_ptr<RHIFence>            CreateFence() = 0;
-		virtual std::shared_ptr<RHICommandList>      CreateCommandList() = 0;
+		virtual std::shared_ptr<RHICommandList>      CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator) = 0;
 		virtual std::shared_ptr<RHICommandQueue>     CreateCommandQueue() = 0;
 		virtual std::shared_ptr<RHICommandAllocator> CreateCommandAllocator() = 0;
-		virtual std::shared_ptr<RHISwapchain>        CreateSwapchain() = 0;
+		virtual std::shared_ptr<RHISwapchain>        CreateSwapchain(const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

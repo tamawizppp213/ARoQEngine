@@ -15,6 +15,12 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12VertexTypes.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RootSignature.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PipelineState.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandAllocator.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Swapchain.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameUtility/Math/Include/GMColor.hpp"
 #include <vector>
@@ -99,9 +105,6 @@ void GraphicsDeviceDirectX12::ShutDown()
 	if (_commandList ) { _commandList = nullptr;}
 	if (_dxgiFactory ) { _dxgiFactory = nullptr;}
 
-#ifdef _DEBUG
-	ReportLiveObjects();
-#endif
 	_hwnd = nullptr;
 
 	if (_device) { _device = nullptr; }
@@ -144,12 +147,7 @@ void GraphicsDeviceDirectX12::OnResize()
 	/*-------------------------------------------------------------------
 	-                   Resize Swapchain
 	---------------------------------------------------------------------*/
-	ThrowIfFailed(_swapchain->ResizeBuffers(
-		FRAME_BUFFER_COUNT,
-		Screen::GetScreenWidth(),
-		Screen::GetScreenHeight(),
-		_backBufferFormat,
-		_swapchainFlag));	
+	_rhiSwapchain->Resize(Screen::GetScreenWidth(), Screen::GetScreenHeight());
 	_currentFrameIndex = 0;
 
 	CreateViewport();
@@ -220,6 +218,7 @@ void GraphicsDeviceDirectX12::BeginDrawFrame()
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
+
 void GraphicsDeviceDirectX12::EndDrawFrame()
 {
 	/*-------------------------------------------------------------------
@@ -238,13 +237,13 @@ void GraphicsDeviceDirectX12::EndDrawFrame()
 	/*-------------------------------------------------------------------
 	-          Add command list to the queue for execution
 	---------------------------------------------------------------------*/
-	ID3D12CommandList* commandLists[] = { _commandList.Get() };
-	_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists); // Send command list contents to command queue 
-
+	std::vector<std::shared_ptr<rhi::core::RHICommandList>> commandLists;
+	commandLists.push_back(_rhiCommandList);
+	_rhiCommandQueue->Execute(commandLists);
 	/*-------------------------------------------------------------------
 	-						Flip screen
 	---------------------------------------------------------------------*/
-	ThrowIfFailed(_swapchain->Present(VSYNC, 0));
+	_rhiSwapchain->Present();
 	_currentFrameIndex = (_currentFrameIndex + 1) % FRAME_BUFFER_COUNT;
 
 	FlushCommandQueue(); // Flush command queue
@@ -253,7 +252,7 @@ void GraphicsDeviceDirectX12::EndDrawFrame()
 void GraphicsDeviceDirectX12::ResetCommandList()
 {
 	// Start recording commands.
-	ThrowIfFailed(_commandAllocator[_currentFrameIndex]->Reset());
+	_commandAllocator[_currentFrameIndex]->Reset();
 	ThrowIfFailed(_commandList->Reset(_commandAllocator[_currentFrameIndex].Get(), nullptr));
 }
 /****************************************************************************
@@ -343,7 +342,7 @@ void GraphicsDeviceDirectX12::CompleteInitialize()
 	/*-------------------------------------------------------------------
 	-						Flip screen
 	---------------------------------------------------------------------*/
-	ThrowIfFailed(_swapchain->Present(VSYNC, 0));
+	_rhiSwapchain->Present();
 	_currentFrameIndex = (_currentFrameIndex + 1) % FRAME_BUFFER_COUNT;
 
 }
@@ -553,38 +552,12 @@ GraphicsDeviceDirectX12::StaticSamplerArray GraphicsDeviceDirectX12::GetStaticSa
 *****************************************************************************/
 void GraphicsDeviceDirectX12::LoadPipeline()
 {
-	/*-------------------------------------------------------------------
-	-                   Set Debug Layer
-	---------------------------------------------------------------------*/
-#if _DEBUG
-	EnabledDebugLayer();
-#endif
-	/*-------------------------------------------------------------------
-	-					 Create Device
-	---------------------------------------------------------------------*/
-	CreateDevice();
-	/*-------------------------------------------------------------------
-	-                   Log Adapters (for debug)
-	---------------------------------------------------------------------*/
-#if _DEBUG
-	LogAdapters();
-#endif
-	/*-------------------------------------------------------------------
-	-				     Check DXR support
-	---------------------------------------------------------------------*/
-	CheckDXRSupport();
-	/*-------------------------------------------------------------------
-	-				     Check Tearing support
-	---------------------------------------------------------------------*/
-	CheckTearingSupport();
-	/*-------------------------------------------------------------------
-	-				     Check Variable Rate Shading support
-	---------------------------------------------------------------------*/
-	CheckVRSSupport();
-	/*-------------------------------------------------------------------
-	-				       Set 4xMsaa
-	---------------------------------------------------------------------*/
-	CheckMultiSampleQualityLevels();
+	_rhiDevice = std::make_shared<rhi::directX12::RHIDevice>();
+	_rhiDevice.get()->Create(_hwnd, _hInstance, _enableRayTracing);
+	_device      = _rhiDevice.get()->GetDevice();
+	_dxgiFactory = _rhiDevice.get()->GetFactory();
+	_useAdapter  = _rhiDevice.get()->GetAdapter();
+	
 	/*-------------------------------------------------------------------
 	-				       Set 4xMsaa
 	---------------------------------------------------------------------*/
@@ -592,6 +565,11 @@ void GraphicsDeviceDirectX12::LoadPipeline()
 	/*-------------------------------------------------------------------
 	-                     Create Fence
 	---------------------------------------------------------------------*/
+	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i)
+	{
+		_fences[i] = _rhiDevice->CreateFence();
+	}
+
 	ThrowIfFailed(_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
 	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i) { _currentFenceValue[i] = 0; }
 	/*-------------------------------------------------------------------
@@ -633,109 +611,6 @@ void GraphicsDeviceDirectX12::LoadAssets()
 }
 #pragma region           Initialize Function
 /****************************************************************************
-*                     CreateDevice
-*************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::CreateDevice(void)
-*  @brief     Create DirectX12 Device
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::CreateDevice()
-{
-	/*-------------------------------------------------------------------
-	-                   Crate DXGIFactory
-	---------------------------------------------------------------------*/
-#ifdef _DEBUG
-	ThrowIfFailed(CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&_dxgiFactory)));
-#else
-	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&_dxgiFactory)));
-#endif
-
-	/*-------------------------------------------------------------------
-	-                   Search Hardware Adapter
-	---------------------------------------------------------------------*/
-	AdapterComPtr adapter;
-	AdapterComPtr adapterVender[(int)GPUVender::CountOfGPUVender];
-	size_t maxVideoMemory[(int)GPUVender::CountOfGPUVender] = { 0 };
-	for (int i = 0; _dxgiFactory->EnumAdapters1(i, (IDXGIAdapter1**)adapter.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
-	{
-		DXGI_ADAPTER_DESC1 adapterDesc;
-		adapter->GetDesc1(&adapterDesc);
-		if (adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) { continue; }
-		if (FAILED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr))) { continue; }
-		if (wcsstr(adapterDesc.Description, L"NVIDIA") != nullptr)
-		{
-			if (adapterDesc.DedicatedVideoMemory > maxVideoMemory[(int)GPUVender::NVidia])
-			{
-				if (adapterVender[(int)GPUVender::NVidia]) { adapterVender[(int)GPUVender::NVidia]->Release(); }
-				adapterVender[(int)GPUVender::NVidia] = adapter;
-				adapterVender[(int)GPUVender::NVidia]->AddRef();
-			}
-		}
-		else if (wcsstr(adapterDesc.Description, L"AMD") != nullptr)
-		{
-			if (adapterDesc.DedicatedVideoMemory > maxVideoMemory[(int)GPUVender::AMD])
-			{
-				if (adapterVender[(int)GPUVender::AMD]) { adapterVender[(int)GPUVender::AMD]->Release(); }
-				adapterVender[(int)GPUVender::AMD] = adapter;
-				adapterVender[(int)GPUVender::AMD]->AddRef();
-			}
-		}
-		else if (wcsstr(adapterDesc.Description, L"Intel") != nullptr)
-		{
-			if (adapterDesc.DedicatedVideoMemory > maxVideoMemory[(int)GPUVender::Intel])
-			{
-				if (adapterVender[(int)GPUVender::Intel]) { adapterVender[(int)GPUVender::Intel]->Release(); }
-				adapterVender[(int)GPUVender::Intel] = adapter;
-				adapterVender[(int)GPUVender::Intel]->AddRef();
-			}
-		}
-		//adapter->Release();
-	}
-	for (int i = 0; i < (int)GPUVender::CountOfGPUVender; ++i)
-	{
-		if (adapterVender[i] != nullptr)
-		{
-			_useAdapter = adapterVender[i].Detach();
-			break;
-		}
-	}
-
-	/*-------------------------------------------------------------------
-	-                   Create Hardware Device
-	---------------------------------------------------------------------*/
-	HRESULT hardwareResult = D3D12CreateDevice(
-		_useAdapter.Get(),      // default adapter
-		D3D_FEATURE_LEVEL_12_0, // minimum feature level
-		IID_PPV_ARGS(&_device));
-
-
-	/*-------------------------------------------------------------------
-	-                  Fallback to WARP Device
-	-    (WARP: hight speed fully conformant software rasterizer)
-	---------------------------------------------------------------------*/
-	if (FAILED(hardwareResult))
-	{
-		AdapterComPtr warpAdapter;
-		ThrowIfFailed(_dxgiFactory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)));
-
-		ThrowIfFailed(D3D12CreateDevice(
-			warpAdapter.Get(),        // video adapter
-			D3D_FEATURE_LEVEL_12_0,   // minimum feature level
-			IID_PPV_ARGS(&_device))); // device interface
-		_isWarpAdapter = true;
-	}
-	_device->SetName(L"DirectX12::Device");
-
-	for (int i = 0; i < (int)GPUVender::CountOfGPUVender; ++i)
-	{
-		if (adapterVender[i] != nullptr)
-		{
-			adapterVender[i]->Release();
-		}
-	}
-}
-/****************************************************************************
 *							CreateCommandObject
 *************************************************************************//**
 *  @fn        void GraphicsDeviceDirectX12::CreateCommandObject(void)
@@ -746,45 +621,19 @@ void GraphicsDeviceDirectX12::CreateDevice()
 *****************************************************************************/
 void GraphicsDeviceDirectX12::CreateCommandObject()
 {
-	/*-------------------------------------------------------------------
-	-                   Create Command Queue
-	---------------------------------------------------------------------*/
-	D3D12_COMMAND_QUEUE_DESC cmdQDesc = {};
-	cmdQDesc.NodeMask = SINGLE_GPU;                          // Single GPU
-	cmdQDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL; // Command queue priority
-	cmdQDesc.Type     = D3D12_COMMAND_LIST_TYPE_DIRECT;      // Enable to execute all command 
-	cmdQDesc.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE;       // Default 
-
-	ThrowIfFailed(_device->CreateCommandQueue(&cmdQDesc, IID_PPV_ARGS(&_commandQueue)));
-	_commandQueue->SetName(L"DirectX12::CommandQueue");
-
+	_rhiCommandQueue = _rhiDevice->CreateCommandQueue();
+	_commandQueue    = static_pointer_cast<rhi::directX12::RHICommandQueue>(_rhiCommandQueue)->GetCommandQueue();
 	/*-------------------------------------------------------------------
 	-                   Create Command Allocator
 	---------------------------------------------------------------------*/
 	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i)
 	{
-		ThrowIfFailed(_device->CreateCommandAllocator(
-			D3D12_COMMAND_LIST_TYPE_DIRECT,              // Enable to execute all command 
-			IID_PPV_ARGS(&_commandAllocator[i])));
-		_commandAllocator[i]->SetName(L"DirectX12::CommandAllocator");
+		_rhiCommandAllocator[i] = _rhiDevice->CreateCommandAllocator();
+		_commandAllocator[i]    = static_pointer_cast<rhi::directX12::RHICommandAllocator>(_rhiCommandAllocator[i])->GetAllocator();
 	}
+	_rhiCommandList = _rhiDevice->CreateCommandList(_rhiCommandAllocator[_currentFrameIndex]);
+	_commandList    = static_pointer_cast<rhi::directX12::RHICommandList>(_rhiCommandList)->GetCommandList();
 	
-
-	/*-------------------------------------------------------------------
-	-                   Create Command List
-	---------------------------------------------------------------------*/
-
-	ThrowIfFailed(_device->CreateCommandList(
-		0,
-		D3D12_COMMAND_LIST_TYPE_DIRECT,
-		_commandAllocator[_currentFrameIndex].Get(), // Associated command allocator
-		nullptr,                                     // Initial PipeLine State Object
-		IID_PPV_ARGS(_commandList.GetAddressOf())));
-	_commandList->SetName(L"DirectX12::CommandList");
-
-	// Start off in a closed state.
-	// This is because the first time we refer to the command list when it is reset.
-	_commandList->Close();
 }
 /****************************************************************************
 *							CreateAllDescriptorHeap
@@ -1135,309 +984,13 @@ void GraphicsDeviceDirectX12::CreateSwapChain()
 	---------------------------------------------------------------------*/
 	_swapchain.Reset();
 
-	/*-------------------------------------------------------------------
-	-        SwapChain Flag
-	---------------------------------------------------------------------*/
-	int flag = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	if (_isTearingSupport) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
-	_swapchainFlag = static_cast<DXGI_SWAP_CHAIN_FLAG>(flag);
-	/*-------------------------------------------------------------------
-	-                   Create Swapchain Descriptor
-	---------------------------------------------------------------------*/
-	DXGI_SWAP_CHAIN_DESC1 sd={};
-
-	sd.BufferCount = FRAME_BUFFER_COUNT;                     // Current: Triple Buffer
-	sd.Width       = Screen::GetScreenWidth();               // Window Size Width
-	sd.Height      = Screen::GetScreenHeight();              // Window Size Height 
-	sd.Format      = _backBufferFormat;                      // Back Buffer Format 
-	sd.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED;            // Alpha Mode => transparency behavior is not specified
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;        // Use the surface or resource as an output render target
-	sd.Flags       = _swapchainFlag;                         // Allow Resize Window
-	sd.Scaling     = DXGI_SCALING_STRETCH;                   // scaling: stretch
-	sd.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD;          // bit-block transfer model
-	sd.Stereo      = false;
-	sd.SampleDesc.Count   = _4xMsaaState ? 4 : 1;                     // MSAA: Anti-Alias
-	sd.SampleDesc.Quality = _4xMsaaState ? (_4xMsaaQuality - 1) : 0;  // MSAA: Anti-Alias
-
-	/*-------------------------------------------------------------------
-	-                   Create Swapchain for hwnd
-	---------------------------------------------------------------------*/
-	ThrowIfFailed(_dxgiFactory->CreateSwapChainForHwnd(
-		_commandQueue.Get(),
-		_hwnd,
-		&sd,
-		nullptr,
-		nullptr, // main monitor display
-		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
-	));
-
-
+	rhi::core::WindowInfo windowInfo   = { static_cast<size_t>(Screen::GetScreenWidth()), static_cast<size_t>(Screen::GetScreenHeight()), _hwnd };
+	rhi::core::PixelFormat pixelFormat = rhi::core::PixelFormat::R16G16B16A16_FLOAT;
+	_rhiSwapchain = _rhiDevice->CreateSwapchain(_rhiCommandQueue, windowInfo, pixelFormat, FRAME_BUFFER_COUNT, VSYNC);
+	_swapchain    = static_pointer_cast<rhi::directX12::RHISwapchain>(_rhiSwapchain)->GetSwapchain();
 }
-/****************************************************************************
-*                     MultiSampleQualityLevels
-*************************************************************************//**
-*  @fn        void DirectX12::CheckMultiSampleQualityLevels(void)
-*  @brief     Multi Sample Quality Levels for 4xMsaa (Anti-Alias)
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::CheckMultiSampleQualityLevels()
-{
-	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
-	msQualityLevels.Format           = _backBufferFormat;
-	msQualityLevels.SampleCount      = 4;
-	msQualityLevels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
-	msQualityLevels.NumQualityLevels = 0;
 
-	ThrowIfFailed(_device->CheckFeatureSupport(
-		D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
-		&msQualityLevels,
-		sizeof(msQualityLevels)));
-
-	_4xMsaaQuality = msQualityLevels.NumQualityLevels;
-#ifdef _DEBUG
-	assert(_4xMsaaQuality > 0 && "Unexpected MSAA quality level.");
-#endif
-}
-/****************************************************************************
-*                     CheckTearingSupport
-*************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::CheckTearingSupport()
-*  @brief     Tearing support
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::CheckTearingSupport()
-{
-	if (!_dxgiFactory) { _isTearingSupport = false; return; }
-
-	int allowTearing = false;
-	if (FAILED(_dxgiFactory->CheckFeatureSupport(
-		DXGI_FEATURE_PRESENT_ALLOW_TEARING,
-		&allowTearing, sizeof(allowTearing))))
-	{
-		_isTearingSupport = false;
-	}
-	else
-	{
-		_isTearingSupport = true;
-	}
-	
-}
-/****************************************************************************
-*                     CheckVRSSupport
-*************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::CheckVRSSupport()
-*  @brief     Variable Rate Shading support
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::CheckVRSSupport()
-{
-	D3D12_FEATURE_DATA_D3D12_OPTIONS6 options = {};
-	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS6, &options, sizeof(options))))
-	{
-		if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_1)
-		{
-			OutputDebugStringA("Gpu api: Variable Rate Shading Tier1 supported");
-			_isVariableRateShadingTier1Supported = true;
-			_isVariableRateShadingTier2Supported = false;
-		}
-		else if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2)
-		{
-			OutputDebugStringA("Gpu api: Valiable Rate Shading Tier2 supported");
-			_isVariableRateShadingTier1Supported = true;
-			_isVariableRateShadingTier2Supported = true;
-			_variableRateShadingImageTileSize    = options.ShadingRateImageTileSize;
-		}
-	}
-	else
-	{
-		OutputDebugStringA("GpuApi : Variable Rate Shading note supported on current gpu hardware.");
-		_isVariableRateShadingTier1Supported = false;
-		_isVariableRateShadingTier2Supported = false;
-	}
-}
 #pragma endregion Initialize Function
-#pragma region           Debug      Function
-/****************************************************************************
-*                     EnabledDebugLayer
-*************************************************************************//**
-*  @fn        void DirectX12::EnabledDebugLayer(void)
-*  @brief     Enabled CPU debug layer
-*  @param[in] void
-*  @return 　　void @n
-*  @details   it must be called before the D3D12 device is created.
-*****************************************************************************/
-void GraphicsDeviceDirectX12::EnabledDebugLayer()
-{
-	DebugComPtr debugController;
-	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
-	debugController->EnableDebugLayer();
-	debugController.Reset();
-}
-
-/****************************************************************************
-*                   EnabledGPUBasedValiation
-*************************************************************************//**
-*  @fn        void DirectX12::EnabledGPUBasedValidation(void)
-*  @brief     Enabled GPU debugger
-*  @param[in] void
-*  @return 　　void
-*  @details   GPU-based valiation helps to identify the following errors.@n
-*             1. Use of uninitialized or incompatible descriptors in a shader.@n
-*             2. Use of descriptors referencing deleted Resources in a shader.@n
-*             3. Validation of promoted resource states and resource state decay.@n
-*             4. Indexing beyond the end of the descriptor heap in a shader.@n
-*             5. Shader accesses of resources in incompatible state.@n
-*             6. Use of uninitialized or incompatible Samplers in a shader.@n
-*****************************************************************************/
-void GraphicsDeviceDirectX12::EnabledGPUBasedValidation()
-{
-	DebugComPtr debugController;
-	DebugComPtr debug;
-	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
-	ThrowIfFailed(debugController->QueryInterface(IID_PPV_ARGS(&debug)));
-	debug->SetEnableGPUBasedValidation(true);
-
-}
-
-/****************************************************************************
-*                     LogAdapters
-*************************************************************************//**
-*  @fn        void DirectX12::LogAdapters(void)
-*  @brief     Show all adapter name (GeForce... )
-*  @param[in] Adapter* adapter
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::LogAdapters()
-{
-	UINT i = 0;
-	IAdapter* adapter = nullptr;
-	std::vector<IAdapter*> adapterList;
-
-	/*-------------------------------------------------------------------
-	-                  Enum Adapter List
-	---------------------------------------------------------------------*/
-	while (_dxgiFactory->EnumAdapters(i, (IDXGIAdapter**)&adapter) != DXGI_ERROR_NOT_FOUND)
-	{
-		DXGI_ADAPTER_DESC desc;
-		adapter->GetDesc(&desc);
-
-		std::wstring text = L"***Adapter: ";
-		text += desc.Description;
-		text += L"\n";
-
-		OutputDebugString(text.c_str());
-
-		adapterList.push_back(adapter);
-
-		++i;
-	}
-
-	/*-------------------------------------------------------------------
-	-                  Show Adapter List
-	---------------------------------------------------------------------*/
-	for (size_t j = 0; j < adapterList.size(); ++j)
-	{
-		LogAdapterOutputs(adapterList[j]);
-		SAFE_RELEASE(adapterList[j]);
-	}
-}
-
-/****************************************************************************
-*                     LogAdapterOutputs
-*************************************************************************//**
-*  @fn        void DirectX12::LogAdapterOutputs(Adapter* adapter)
-*  @brief     Show all display output name
-*  @param[in] Adapter* adapter
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::LogAdapterOutputs(IAdapter* adapter)
-{
-	/*-------------------------------------------------------------------
-	-                     Initialize
-	---------------------------------------------------------------------*/
-	UINT i = 0;
-	IOutput* output = nullptr;
-
-	/*-------------------------------------------------------------------
-	-                Show all adapter name
-	---------------------------------------------------------------------*/
-	while (adapter->EnumOutputs(i, (IDXGIOutput**)&output) != DXGI_ERROR_NOT_FOUND)
-	{
-		DXGI_OUTPUT_DESC desc;
-		output->GetDesc(&desc);
-
-		std::wstring text = L"***Output: ";
-		text += desc.DeviceName;
-		text += L"n";
-		OutputDebugString(text.c_str());
-
-		LogOutputDisplayModes(output, _backBufferFormat);
-
-		SAFE_RELEASE(output);
-
-		++i;
-	}
-}
-
-/****************************************************************************
-*                     LogOutputDisplayModes
-*************************************************************************//**
-*  @fn        void DirectX12::LogOutputDisplayModes(Output* output, DXGI_FORMAT format)
-*  @brief     Show display modes (output screen width, height and refresh rates)
-*  @param[in] Output* output: for display modelist
-*  @param[in] DXGI_FORMAT   : format
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::LogOutputDisplayModes(IOutput* output, DXGI_FORMAT format)
-{
-	UINT count = 0;
-	UINT flags = 0;
-
-	/*-------------------------------------------------------------------
-	-             Call with nullptr to get list count
-	---------------------------------------------------------------------*/
-	output->GetDisplayModeList(format, flags, &count, nullptr);
-
-	std::vector<DXGI_MODE_DESC> modeList(count);
-	output->GetDisplayModeList(format, flags, &count, &modeList[0]);
-
-	/*-------------------------------------------------------------------
-	-                 Show display modes
-	---------------------------------------------------------------------*/
-	for (auto& x : modeList)
-	{
-		UINT n = x.RefreshRate.Numerator;
-		UINT d = x.RefreshRate.Denominator;
-		std::wstring text =
-			L"Width = " + std::to_wstring(x.Width) + L" " +
-			L"Height = " + std::to_wstring(x.Height) + L" " +
-			L"Refresh = " + std::to_wstring(n) + L"/" + std::to_wstring(d) +
-			L"\n";
-
-		::OutputDebugString(text.c_str());
-	}
-}
-/****************************************************************************
-*                     ReportLiveObjects
-*************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::ReportLiveObjects()
-*  @brief     ReportLiveObjects
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::ReportLiveObjects()
-{
-	ID3D12DebugDevice2* debugInterface = nullptr;
-	if (SUCCEEDED(_device.Get()->QueryInterface(&debugInterface)))
-	{
-		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL); // Only Objects with external reference counts
-		debugInterface->Release();
-	}
-}
-#pragma endregion      Debug Function
 #pragma region HDR Function
 /****************************************************************************
 *                     EnsureSwapChainColorSpace
@@ -1600,28 +1153,5 @@ bool GraphicsDeviceDirectX12::CheckHDRDisplaySupport()
 
 }
 #pragma endregion    HDR Function
-#pragma region DXR Function
-/****************************************************************************
-*						CheckDXRSupport
-*************************************************************************//**
-*  @fn        void DirectX12::CheckDXRSupport
-*  @brief     Check DXRSupport
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::CheckDXRSupport()
-{
-	bool enableRayTracing = true;
-	D3D12_FEATURE_DATA_D3D12_OPTIONS5 options{};
-	HRESULT result = _device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &options, UINT(sizeof(options)));
-	if (FAILED(result) || options.RaytracingTier == D3D12_RAYTRACING_TIER_NOT_SUPPORTED)
-	{
-		std::wstring errorMessage = L"DirectX Raytracing not supported.";
-		OutputDebugString(errorMessage.c_str());
-		enableRayTracing = false;
-	}
 
-	_enableRayTracing = enableRayTracing;
-}
-#pragma endregion    DXR Function
 #pragma endregion Private Function

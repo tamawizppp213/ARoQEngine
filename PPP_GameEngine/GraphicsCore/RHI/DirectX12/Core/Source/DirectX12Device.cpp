@@ -9,6 +9,11 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandAllocator.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Swapchain.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -59,11 +64,12 @@ bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing)
 	_apiVersion = rhi::core::APIVersion::DirectX12;
 	_hwnd = hwnd; _hInstance = hInstance;
 	_enableRayTracing = useRaytracing;
-	EnabledDebugLayer();
 	/*-------------------------------------------------------------------
 	-                   Create DXGIFactory
 	---------------------------------------------------------------------*/
 #ifdef _DEBUG
+	EnabledDebugLayer();
+	//EnabledGPUBasedValidation();
 	ThrowIfFailed(CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&_dxgiFactory)));
 #else
 	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&_dxgiFactory)));
@@ -105,29 +111,34 @@ bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing)
 #endif
 
 	if (useRaytracing) { CheckDXRSupport();}
+	/*-------------------------------------------------------------------
+	-                  Tearing support check
+	---------------------------------------------------------------------*/
+	CheckTearingSupport();
 	_isInitialize = true;
 	return true;
 }
 
 std::shared_ptr<core::RHIFence> RHIDevice::CreateFence()
 {
-	return nullptr;
+	// https://suzulang.com/stdshared_ptr%E3%81%A7this%E3%82%92%E4%BD%BF%E3%81%84%E3%81%9F%E3%81%84%E6%99%82%E3%81%AB%E6%B3%A8%E6%84%8F%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8/
+	return std::static_pointer_cast<core::RHIFence>(std::make_shared<directX12::RHIFence>(shared_from_this()));
 }
-std::shared_ptr<core::RHICommandList>      RHIDevice::CreateCommandList()
+std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
 {
-	return nullptr;
+	return std::static_pointer_cast<core::RHICommandList>(std::make_shared<directX12::RHICommandList>(shared_from_this(),commandAllocator));
 }
-std::shared_ptr<core::RHICommandQueue>     RHIDevice::CreateCommandQueue()
+std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue()
 {
-	return nullptr;
+	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<directX12::RHICommandQueue>(shared_from_this()));
 }
 std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator()
 {
-	return nullptr;
+	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<directX12::RHICommandAllocator>(shared_from_this()));
 }
-std::shared_ptr<core::RHISwapchain>        RHIDevice::CreateSwapchain()
+std::shared_ptr<core::RHISwapchain> RHIDevice::CreateSwapchain(const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync)
 {
-	return nullptr;
+	return std::static_pointer_cast<core::RHISwapchain>(std::make_shared<directX12::RHISwapchain>(shared_from_this(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync));
 }
 
 #pragma region Private Function
@@ -147,6 +158,34 @@ void RHIDevice::EnabledDebugLayer()
 	debugController->EnableDebugLayer();
 	debugController.Reset();
 }
+/****************************************************************************
+*                   EnabledGPUBasedValiation
+*************************************************************************//**
+*  @fn        void DirectX12::EnabledGPUBasedValidation(void)
+*  @brief     Enabled GPU debugger (fpsに大きな影響を与えます.)
+*  @param[in] void
+*  @return 　　void
+*  @details   GPU-based valiation helps to identify the following errors.@n
+*             1. Use of uninitialized or incompatible descriptors in a shader.@n
+*             2. Use of descriptors referencing deleted Resources in a shader.@n
+*             3. Validation of promoted resource states and resource state decay.@n
+*             4. Indexing beyond the end of the descriptor heap in a shader.@n
+*             5. Shader accesses of resources in incompatible state.@n
+*             6. Use of uninitialized or incompatible Samplers in a shader.@n
+*****************************************************************************/
+void RHIDevice::EnabledGPUBasedValidation()
+{
+	DebugComPtr debugController;
+	ComPtr<ID3D12Debug3> debug3;
+	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
+	ThrowIfFailed(debugController->QueryInterface(IID_PPV_ARGS(&debug3)));
+	debug3->SetEnableGPUBasedValidation(true);
+	debugController.Reset();
+	debug3.Reset();
+
+
+}
+
 /****************************************************************************
 *                     SearchHardwareAdapter
 *************************************************************************//**
@@ -374,5 +413,90 @@ void RHIDevice::CheckDXRSupport()
 	}
 
 	_enableRayTracing = enableRayTracing;
+}
+/****************************************************************************
+*                     CheckTearingSupport
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::CheckTearingSupport()
+*  @brief     Tearing support
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckTearingSupport()
+{
+	if (!_dxgiFactory) { _isTearingSupport = false; return; }
+
+	int allowTearing = false;
+	if (FAILED(_dxgiFactory->CheckFeatureSupport(
+		DXGI_FEATURE_PRESENT_ALLOW_TEARING,
+		&allowTearing, sizeof(allowTearing))))
+	{
+		_isTearingSupport = false;
+	}
+	else
+	{
+		_isTearingSupport = true;
+	}
+
+}
+/****************************************************************************
+*                     CheckVRSSupport
+*************************************************************************//**
+*  @fn        void GraphicsDeviceDirectX12::CheckVRSSupport()
+*  @brief     Variable Rate Shading support
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckVRSSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS6 options = {};
+	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS6, &options, sizeof(options))))
+	{
+		if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_1)
+		{
+			OutputDebugStringA("Gpu api: Variable Rate Shading Tier1 supported");
+			_isVariableRateShadingTier1Supported = true;
+			_isVariableRateShadingTier2Supported = false;
+		}
+		else if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2)
+		{
+			OutputDebugStringA("Gpu api: Valiable Rate Shading Tier2 supported");
+			_isVariableRateShadingTier1Supported = true;
+			_isVariableRateShadingTier2Supported = true;
+			_variableRateShadingImageTileSize = options.ShadingRateImageTileSize;
+		}
+	}
+	else
+	{
+		OutputDebugStringA("GpuApi : Variable Rate Shading note supported on current gpu hardware.");
+		_isVariableRateShadingTier1Supported = false;
+		_isVariableRateShadingTier2Supported = false;
+	}
+}
+/****************************************************************************
+*                     MultiSampleQualityLevels
+*************************************************************************//**
+*  @fn        void DirectX12::CheckMultiSampleQualityLevels(void)
+*  @brief     Multi Sample Quality Levels for 4xMsaa (Anti-Alias)
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckMultiSampleQualityLevels()
+{
+	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
+	msQualityLevels.Format = _backBufferFormat;
+	msQualityLevels.SampleCount = 4;
+	msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+	msQualityLevels.NumQualityLevels = 0;
+
+	ThrowIfFailed(_device->CheckFeatureSupport(
+		D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
+		&msQualityLevels,
+		sizeof(msQualityLevels)));
+
+	_4xMsaaQuality = msQualityLevels.NumQualityLevels;
+#ifdef _DEBUG
+	assert(_4xMsaaQuality > 0 && "Unexpected MSAA quality level.");
+#endif
 }
 #pragma endregion Private Function

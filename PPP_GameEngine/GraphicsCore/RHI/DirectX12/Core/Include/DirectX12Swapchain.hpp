@@ -1,18 +1,19 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   VulkanCommandList.hpp
-///             @brief  CommandList
+///             @file   DirectX12Swapchain.hpp
+///             @brief  Swapchain
 ///             @author Toide Yutaro
-///             @date   2022_06_09
+///             @date   2022_06_24
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef VULKAN_COMMANDLIST_HPP
-#define VULKAN_COMMANDLIST_HPP
+#ifndef DIRECTX12_SWAP_CHAIN_HPP
+#define DIRECTX12_SWAP_CHAIN_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
-#include <vulkan/vulkan.h>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHISwapchain.hpp"
+#include "DirectX12Core.hpp"
+#include <dxgi1_6.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,47 +21,49 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::vulkan
+namespace rhi::directX12
 {
+
 	/****************************************************************************
-	*				  			TemplateClass
+	*				  			RHIFence
 	*************************************************************************//**
-	*  @class     TemplateClass
-	*  @brief     temp
+	*  @class     RHIFence
+	*  @brief     CPU-GPU synchronization
 	*****************************************************************************/
-	class RHICommandList : public rhi::core::RHICommandList
+	class RHISwapchain : public  rhi::core::RHISwapchain
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
+		virtual void Present() override ;
+		virtual void Resize(const size_t width, const size_t height) override ;
+		virtual size_t GetCurrentBufferIndex() const override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkCommandBuffer GetCommandList() { return _commandBuffer; }
-		/*-------------------------------------------------------------------
-		-                Compute Command
-		---------------------------------------------------------------------*/
-		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override;
+		SwapchainComPtr GetSwapchain() const noexcept { return _swapchain; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-
+		~RHISwapchain() = default;
+		explicit RHISwapchain(
+			const std::shared_ptr<rhi::core::RHIDevice>& device,
+			const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
+			const rhi::core::WindowInfo& windowInfo,
+			const rhi::core::PixelFormat& piexlFormat,
+			const size_t frameBufferCount = 2, std::uint32_t vsync = 0);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VkCommandBuffer _commandBuffer = nullptr;
+		SwapchainComPtr _swapchain = nullptr;
+		DXGI_SWAP_CHAIN_FLAG _swapchainFlag;
+		DXGI_FORMAT          _backBufferFormat;
 	};
-
-	inline void rhi::vulkan::RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t threadGroupCountY, std::uint32_t threadGroupCountZ)
-	{
-		vkCmdDispatch(_commandBuffer, threadGroupCountX, threadGroupCountY, threadGroupCountZ);
-	}
 }
 #endif

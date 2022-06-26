@@ -1,52 +1,52 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   VulkanCommandList.hpp
-///             @brief  CommandList
+///             @file   DirectX12CommandAllocator.hpp
+///             @brief  DirectX12CommandAllocator
 ///             @author Toide Yutaro
-///             @date   2022_06_09
+///             @date   2022_06_24
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef VULKAN_COMMANDLIST_HPP
-#define VULKAN_COMMANDLIST_HPP
+#ifndef DIRECTX12_COMMAND_ALLOCATOR_HPP
+#define DIRECTX12_COMMAND_ALLOCATOR_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
-#include <vulkan/vulkan.h>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandAllocator.hpp"
+#include "DirectX12Core.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                          CommandAllocatorClass
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::vulkan
+namespace rhi::directX12
 {
 	/****************************************************************************
-	*				  			TemplateClass
+	*				  			RHICommandAllocator
 	*************************************************************************//**
-	*  @class     TemplateClass
-	*  @brief     temp
+	*  @class     RHICommandAllocator
+	*  @brief     Command allocator
 	*****************************************************************************/
-	class RHICommandList : public rhi::core::RHICommandList
+	class RHICommandAllocator : public rhi::core::RHICommandAllocator
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
+		void Reset() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkCommandBuffer GetCommandList() { return _commandBuffer; }
-		/*-------------------------------------------------------------------
-		-                Compute Command
-		---------------------------------------------------------------------*/
-		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override;
+		CommandAllocatorComPtr GetAllocator() { return _commandAllocator; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-
+		RHICommandAllocator() = default;
+		~RHICommandAllocator();
+		explicit RHICommandAllocator(const std::shared_ptr<rhi::core::RHIDevice>& device);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -55,12 +55,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VkCommandBuffer _commandBuffer = nullptr;
+		CommandAllocatorComPtr _commandAllocator = nullptr;
 	};
-
-	inline void rhi::vulkan::RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t threadGroupCountY, std::uint32_t threadGroupCountZ)
-	{
-		vkCmdDispatch(_commandBuffer, threadGroupCountX, threadGroupCountY, threadGroupCountZ);
-	}
 }
 #endif

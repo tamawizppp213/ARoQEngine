@@ -1,18 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   VulkanCommandList.hpp
-///             @brief  CommandList
+///             @file   DirectX12Fence.hpp
+///             @brief  Fence
 ///             @author Toide Yutaro
-///             @date   2022_06_09
+///             @date   2022_06_23
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef VULKAN_COMMANDLIST_HPP
-#define VULKAN_COMMANDLIST_HPP
+#ifndef DIRECTX12_FENCE_HPP
+#define DIRECTX12_FENCE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
-#include <vulkan/vulkan.h>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFence.hpp"
+#include "DirectX12Core.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,33 +20,30 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::vulkan
+namespace rhi::directX12
 {
 	/****************************************************************************
-	*				  			TemplateClass
+	*				  			RHIFence
 	*************************************************************************//**
-	*  @class     TemplateClass
-	*  @brief     temp
+	*  @class     RHIFence
+	*  @brief     CPU-GPU synchronization
 	*****************************************************************************/
-	class RHICommandList : public rhi::core::RHICommandList
+	class RHIFence : public rhi::core::RHIFence
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
+		void Signal(const std::shared_ptr<rhi::core::RHICommandQueue>& queue) override ;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkCommandBuffer GetCommandList() { return _commandBuffer; }
-		/*-------------------------------------------------------------------
-		-                Compute Command
-		---------------------------------------------------------------------*/
-		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override;
+		FenceComPtr GetFence() const noexcept { return _fence; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-
+		RHIFence() = default;
+		explicit RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -55,12 +52,8 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VkCommandBuffer _commandBuffer = nullptr;
+		FenceComPtr   _fence      = nullptr;
+		std::uint64_t _fenceValue = 0;
 	};
-
-	inline void rhi::vulkan::RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t threadGroupCountY, std::uint32_t threadGroupCountZ)
-	{
-		vkCmdDispatch(_commandBuffer, threadGroupCountX, threadGroupCountY, threadGroupCountZ);
-	}
 }
 #endif

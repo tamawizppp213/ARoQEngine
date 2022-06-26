@@ -16,6 +16,7 @@
 #include "DirectX12GPUResource.hpp"
 #include <dxgiformat.h>
 #include <array>
+#include <memory>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -39,6 +40,18 @@ enum class RenderTargetType
 	CountOfRenderTarget
 };
 class ResourceAllocator;
+namespace rhi::core
+{
+	class RHICommandQueue;
+	class RHIFence;
+	class RHICommandAllocator;
+	class RHICommandList;
+	class RHISwapchain;
+}
+namespace rhi::directX12
+{
+	class RHIDevice;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +141,6 @@ private:
 	/*-------------------------------------------------------------------
 	-                        Initialize
 	---------------------------------------------------------------------*/
-	void CreateDevice();
 	void CreateCommandObject();
 	void CreateSwapChain();
 	void CreateAllDescriptorHeap();
@@ -140,44 +152,24 @@ private:
 	void BuildRenderTargetView();
 	void BuildDepthStencilView();
 
-
-	/*-------------------------------------------------------------------
-	-                        Debug
-	---------------------------------------------------------------------*/
-	void EnabledDebugLayer();
-	void EnabledGPUBasedValidation();
-	void LogAdapters     ();
-	void LogAdapterOutputs(IAdapter* adapter);
-	void LogOutputDisplayModes(IOutput* output, DXGI_FORMAT format);
-	void ReportLiveObjects();
 	/*-------------------------------------------------------------------
 	-                        HDR
 	---------------------------------------------------------------------*/
 	void EnsureSwapChainColorSpace();
 	bool CheckHDRDisplaySupport();
 	void SetHDRMetaData();
-	/*-------------------------------------------------------------------
-	-                        DXR
-	---------------------------------------------------------------------*/
-	void CheckDXRSupport();
-	/*-------------------------------------------------------------------
-	-                        MSAA
-	---------------------------------------------------------------------*/
-	void CheckMultiSampleQualityLevels();
-	/*-------------------------------------------------------------------
-	-                        Tearing
-	---------------------------------------------------------------------*/
-	void CheckTearingSupport();
-	/*-------------------------------------------------------------------
-	-                 Variable Rate Shading
-	---------------------------------------------------------------------*/
-	void CheckVRSSupport();
+	
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
 	/*-------------------------------------------------------------------
 	-                        Standard
 	---------------------------------------------------------------------*/
+	std::shared_ptr<rhi::directX12::RHIDevice>      _rhiDevice;
+	std::shared_ptr<rhi::core::RHICommandQueue>     _rhiCommandQueue;
+	std::shared_ptr<rhi::core::RHICommandAllocator> _rhiCommandAllocator[FRAME_BUFFER_COUNT];
+	std::shared_ptr<rhi::core::RHICommandList>      _rhiCommandList;
+	std::shared_ptr<rhi::core::RHISwapchain>        _rhiSwapchain = nullptr;
 	DeviceComPtr                 _device       = nullptr;        /// Device 
 	FactoryComPtr                _dxgiFactory  = nullptr;        /// DXGI
 	AdapterComPtr                _useAdapter   = nullptr;
@@ -228,6 +220,7 @@ private:
 	---------------------------------------------------------------------*/
 	UINT64      _currentFenceValue[FRAME_BUFFER_COUNT] = { 0,0 };
 	FenceComPtr _fence      = nullptr;
+	std::shared_ptr<rhi::core::RHIFence> _fences[FRAME_BUFFER_COUNT] = {nullptr};
 	HANDLE      _fenceEvent = nullptr;
 	/*-------------------------------------------------------------------
 	-                     MSAA: One of the Anti-Alias

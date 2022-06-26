@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #pragma comment (lib, "vulkan-1.lib")
 using namespace rhi::vulkan;
-#pragma warning(disable: 26812)
+#pragma warning(disable: 26812 4100)
 
 namespace 
 {
@@ -124,6 +124,7 @@ void GraphicsDeviceVulkan::StartUp(HWND hwnd, HINSTANCE hInstance)
 	CreateFrameBuffer();
 	CreateCommandBuffers();
 	CreateSyncObjects();
+	
 }
 
 void GraphicsDeviceVulkan::ShutDown()
@@ -389,7 +390,7 @@ bool GraphicsDeviceVulkan::CreateInstance()
 	{
 		throw std::runtime_error("failed to create vulkan instance.");
 	}
-	
+	return true;
 }
 
 /****************************************************************************
@@ -907,8 +908,8 @@ void GraphicsDeviceVulkan::CreateFrameBuffer()
 
 	_viewport.x        = 0.0f;
 	_viewport.y        = 0.0f;
-	_viewport.width    = _swapchainExtent.width;
-	_viewport.height   = _swapchainExtent.height;
+	_viewport.width    = static_cast<float>(_swapchainExtent.width);
+	_viewport.height   = static_cast<float>(_swapchainExtent.height);
 	_viewport.minDepth = 0.0f;
 	_viewport.maxDepth = 1.0f;
 
@@ -973,8 +974,14 @@ VkPresentModeKHR GraphicsDeviceVulkan::SelectSwapchainPresentMode(const std::vec
 {
 	for (const auto& presentMode : presentModes)
 	{
-		if (VSYNC == 0 && presentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) { return presentMode; } // No Vsync  
-		if (VSYNC  > 0 && presentMode == VK_PRESENT_MODE_MAILBOX_KHR)   { return presentMode; }   // Vsync
+		if constexpr (VSYNC == 0)
+		{
+			if (presentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) { return presentMode; }
+		}
+		else if constexpr(VSYNC > 0)
+		{
+			if (presentMode == VK_PRESENT_MODE_MAILBOX_KHR) { return presentMode; }
+		}
 	}
 	return VK_PRESENT_MODE_FIFO_KHR;
 }

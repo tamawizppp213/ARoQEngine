@@ -9,6 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandQueue.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <iostream>
 #include <string>
@@ -19,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-#pragma warning(disable: 26812, 4100)
+#pragma warning(disable: 26812 4100)
 using namespace rhi;
 using namespace rhi::vulkan;
 #pragma comment(lib, "vulkan-1.lib")
@@ -109,12 +110,15 @@ RHIDevice::~RHIDevice()
 #endif
 	vkDestroySurfaceKHR(_instance, _surface, nullptr);
 	vkDestroyInstance(_instance, nullptr);
+
+	_deviceExtensions.clear(); _deviceExtensions.shrink_to_fit();
+	_instanceLayers.clear(); _instanceLayers.shrink_to_fit();
 }
 
 bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing)
 {
 	_apiVersion = rhi::core::APIVersion::Vulkan;
-	_hwnd = hwnd;
+	_hwnd = hwnd; _hInstance = hInstance;
 	_useRaytracing = useRaytracing;
 	CreateInstance();
 	SetUpDebugMessenger();
@@ -233,7 +237,7 @@ bool RHIDevice::CreateInstance()
 
 #ifdef _DEBUG
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-	createInfo.enabledLayerCount       = _instanceLayers.size();                 // enable layer count
+	createInfo.enabledLayerCount       = static_cast<std::uint32_t>(_instanceLayers.size());                 // enable layer count
 	createInfo.ppEnabledLayerNames     = _instanceLayers.data();                 // layer name list 
 	PopulateDebugMessengerCreateInfo(debugCreateInfo);                           
 	createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
@@ -533,7 +537,7 @@ void RHIDevice::FindGraphicsQueueFamilies(VkPhysicalDevice device)
 	/*-------------------------------------------------------------------
 	-               Find Queue famiky
 	---------------------------------------------------------------------*/
-	for (int i = 0; i < queueFamilyCount; ++i)
+	for (std::uint32_t i = 0; i < queueFamilyCount; ++i)
 	{
 //#ifdef _WIN32
 //		if (!vkGetPhysicalDeviceWin32PresentationSupportKHR(_physicalDevice, static_cast<std::uint32_t>(i))) { continue; }
@@ -546,5 +550,8 @@ void RHIDevice::FindGraphicsQueueFamilies(VkPhysicalDevice device)
 
 	if (_freeQueues.size() == 0) { throw std::runtime_error("Free queue's size is 0."); }
 }
-
+std::shared_ptr<core::RHISwapchain>  RHIDevice::CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync)
+{
+	return nullptr;
+}
 #pragma endregion Private Function

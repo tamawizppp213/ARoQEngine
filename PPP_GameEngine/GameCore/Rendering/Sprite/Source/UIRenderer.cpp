@@ -94,7 +94,7 @@ void UIRenderer::AddFrameObject(const std::vector<ui::Image>& images, const Text
 	-               Add vertex data
 	---------------------------------------------------------------------*/
 	_meshBuffer[_currentFrame].VertexBuffer->CopyStart();
-	for (int i = 0; i < (int)gm::Min((INT64)images.size(), (INT64)MAX_WRITABLE_UI_COUNT - (INT64)_imageStackCount); ++i)
+	for (int i = 0; i < (int)gm::Min((float)images.size(), (float)MAX_WRITABLE_UI_COUNT - (float)_imageStackCount); ++i)
 	{
 		for (int j = 0; j < 4; ++j)
 		{
@@ -142,7 +142,7 @@ void UIRenderer::Draw()
 	-               Add vertex data
 	---------------------------------------------------------------------*/
 	_meshBuffer[_currentFrame].VertexBuffer->CopyStart();
-	for (int i = 0; i < (int)gm::Min((INT64)_imageStackCount, (INT64)MAX_WRITABLE_UI_COUNT); ++i)
+	for (int i = 0; i < (int)gm::Min((float)_imageStackCount, (float)MAX_WRITABLE_UI_COUNT); ++i)
 	{
 		for (int j = 0; j < 4; ++j)
 		{

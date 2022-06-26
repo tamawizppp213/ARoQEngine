@@ -32,21 +32,22 @@ namespace
 	{
 	public :
 		virtual bool ToModel(const std::wstring& filePath, Model* model) = 0;
-		virtual bool FromModel(const std::wstring& filePath, const Model* model) = 0;
+		//virtual bool FromModel(const std::wstring& filePath, const Model* model) = 0;
 	};
-
 	class ModelConverterPMD : public IModelConverter
 	{
 	public:
-		bool ToModel(const std::wstring& filePath, Model* model) override;
-		bool FromModel(const std::wstring& filePath, const Model* model) override;
+		bool ToModel(const std::wstring& filePath, Model* model) override { std::wcout << filePath << std::endl;  return true; };
+		//bool FromModel(const std::wstring& filePath, const Model* model) override { return true; };
+	private:
+		void ConvertMaterial(MaterialBuffer& buffer, const pmx::PMXFile& file) { std::cout << buffer.GetMaterialByteSize() << std::endl; std::cout << file.Directory << std::endl; };
 	};
-
+	
 	class ModelConverterPMX : public IModelConverter
 	{
 	public:
 		bool ToModel(const std::wstring& filePath, Model* model) override;
-		bool FromModel(const std::wstring& filePath, const Model* model) override;
+		//bool FromModel(const std::wstring& filePath, const Model* model) override { return true; };
 	private:
 		void ConvertMaterial(MaterialBuffer& buffer, const pmx::PMXFile& file);
 	};
@@ -55,25 +56,9 @@ namespace
 	{
 	public:
 		bool ToModel(const std::wstring& filePath, Model* model) override;
-		bool FromModel(const std::wstring& filePath, const Model* model) override;
+		//bool FromModel(const std::wstring& filePath, const Model* model) override { return true; };
 	};
 
-	bool ModelConverterPMD::ToModel(const std::wstring& filePath, Model* model)
-	{
-		/*-------------------------------------------------------------------
-		-            PMDFile Load
-		---------------------------------------------------------------------*/
-		pmd::PMDFile file;
-		if (!file.Load(filePath)) { return false; }
-		/*-------------------------------------------------------------------
-		-            Convert
-		---------------------------------------------------------------------*/
-		return true;
-	}
-	bool ModelConverterPMD::FromModel(const std::wstring& filePath, const Model* model)
-	{
-		return true;
-	}
 
 	bool ModelConverterPMX::ToModel(const std::wstring& filePath, Model* model)
 	{
@@ -99,17 +84,14 @@ namespace
 
 	void ModelConverterPMX::ConvertMaterial(MaterialBuffer& buffer, const pmx::PMXFile& file)
 	{
+		std::cout << file.Directory << std::endl;
 		std::shared_ptr<UploadBuffer> uploadBuffer = buffer.GetBufferPtr();
 		uploadBuffer->CopyStart();
 		
 		
 		uploadBuffer->CopyEnd();
 	}
-	bool ModelConverterPMX::FromModel(const std::wstring& filePath, const Model* model)
-	{
-		return true;
-	}
-
+	
 
 	bool ModelConverterGLTF::ToModel(const std::wstring& filePath, Model* model)
 	{
@@ -118,21 +100,20 @@ namespace
 		---------------------------------------------------------------------*/
 		gltf::GLTFFile file;
 		file.Load(unicode::ToUtf8String(filePath));
-		const auto& document = file.Document;
-		auto&       reader   = file.ResourceReader;
-		/*-------------------------------------------------------------------
-		-            Convert
-		---------------------------------------------------------------------*/
-		for (const auto& mesh : document.Meshes.Elements())
-		{
+		model = nullptr;
+		std::wcout << filePath;
+		//const auto& document = file.Document;
+		//auto&       reader   = file.ResourceReader;
+		///*-------------------------------------------------------------------
+		//-            Convert
+		//---------------------------------------------------------------------*/
+		//for (const auto& mesh : document.Meshes.Elements())
+		//{
 
-		}
+		//}
 		return true;
 	}
-	bool ModelConverterGLTF::FromModel(const std::wstring& filePath, const Model* model)
-	{
-		return true;
-	}
+
 }
 #pragma endregion ModelConverter Interface
 #pragma region Model Converter class
@@ -183,7 +164,8 @@ bool ModelConverter::FromModel(const std::wstring& filePath, const Model* model)
 	/*-------------------------------------------------------------------
 	-            Model Load
 	---------------------------------------------------------------------*/
-	converter->FromModel(filePath, model);
+	std::wcout << model->GetName() << std::endl;
+	//converter->FromModel(filePath, model);
 	return true;
 }
 #pragma endregion Model Converter class

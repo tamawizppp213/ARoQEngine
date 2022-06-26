@@ -56,7 +56,15 @@ namespace rhi::core
 
 	enum class PixelFormat
 	{
-
+		Unknown,
+		R8G8B8A8_UNORM,
+		B8G8R8A8_UNORM,
+		R10G10B10A2_UNORM,
+		R32G32B32A32_FLOAT,
+		R16G16B16A16_FLOAT,
+		D32_FLOAT,
+		D24_UNORM_S8_UINT,
+		CountOfPixelFormat
 	};
 
 	/****************************************************************************
@@ -99,6 +107,7 @@ namespace rhi::core
 		float Height    = 0.0f;
 		float MinDepth  = 0.0f;
 		float MaxDepth  = 1.0f;
+		Viewport() = default;
 		Viewport(float topLeftX, float topLeftY, float width, float height, float minDepth = 0.0f, float maxDepth = 1.0f)
 		{
 			this->TopLeftX = topLeftX; this->TopLeftY = topLeftY; this->Width = width; this->Height = height; this->MinDepth = minDepth; this->MaxDepth = maxDepth;
@@ -116,11 +125,28 @@ namespace rhi::core
 		long Top    = 0;
 		long Right  = 0;
 		long Bottom = 0;
+		ScissorRect() = default;
 		ScissorRect(long left, long top, long right, long bottom)
 		{
 			this->Left = left; this->Top = top; this->Right = right; this->Bottom = bottom;
 		}
 	};
-
+	/****************************************************************************
+	*				  			WindowInfo
+	*************************************************************************//**
+	*  @class     WindowInfo
+	*  @brief     Window
+	*****************************************************************************/
+	struct WindowInfo
+	{
+		size_t Width  = 0;
+		size_t Height = 0;
+		void*  Handle = nullptr;
+		WindowInfo()  = default;
+		WindowInfo(size_t width, size_t height, void* handle)
+		{
+			this->Width = width; this->Height = height; this->Handle = handle;
+		}
+	};
 }
 #endif

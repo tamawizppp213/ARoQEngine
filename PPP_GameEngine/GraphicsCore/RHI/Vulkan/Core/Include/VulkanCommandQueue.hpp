@@ -1,24 +1,24 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   VulkanCommandList.hpp
-///             @brief  CommandList
+///             @file   VulkanCommandQueue.hpp
+///             @brief  Command Queue
 ///             @author Toide Yutaro
-///             @date   2022_06_09
+///             @date   2022_06_23
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef VULKAN_COMMANDLIST_HPP
-#define VULKAN_COMMANDLIST_HPP
+#ifndef VULKAN_COMMAND_QUEUE_HPP
+#define VULKAN_COMMAND_QUEUE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandQueue.hpp"
 #include <vulkan/vulkan.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                             Fence
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::vulkan
 {
@@ -28,25 +28,23 @@ namespace rhi::vulkan
 	*  @class     TemplateClass
 	*  @brief     temp
 	*****************************************************************************/
-	class RHICommandList : public rhi::core::RHICommandList
+	class RHICommandQueue : public rhi::core::RHICommandQueue
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
+		void Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists) override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkCommandBuffer GetCommandList() { return _commandBuffer; }
-		/*-------------------------------------------------------------------
-		-                Compute Command
-		---------------------------------------------------------------------*/
-		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override;
+		VkQueue GetQueue() const noexcept { return _queue; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-
+		RHICommandQueue() = default;
+		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device);
+		~RHICommandQueue();
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -55,12 +53,8 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VkCommandBuffer _commandBuffer = nullptr;
+		VkQueue       _queue = nullptr;
+		std::uint32_t _queueFamilyIndex = 0;
 	};
-
-	inline void rhi::vulkan::RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t threadGroupCountY, std::uint32_t threadGroupCountZ)
-	{
-		vkCmdDispatch(_commandBuffer, threadGroupCountX, threadGroupCountY, threadGroupCountZ);
-	}
 }
 #endif

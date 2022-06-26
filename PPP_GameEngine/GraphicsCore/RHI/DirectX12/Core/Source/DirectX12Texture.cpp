@@ -128,7 +128,7 @@ void TextureManager::CreateTexture3D(const std::wstring& name, Texture& texture,
 	/*-------------------------------------------------------------------
 	-                 Create texture buffer
 	---------------------------------------------------------------------*/
-	D3D12_RESOURCE_DESC resourceDesc = RESOURCE_DESC::Texture3D(texture.Format, (UINT64)texture.PixelSize.x, (UINT64)texture.PixelSize.y, (UINT64)texture.PixelSize.z);
+	D3D12_RESOURCE_DESC resourceDesc = RESOURCE_DESC::Texture3D(texture.Format, (UINT64)texture.PixelSize.x, (UINT64)texture.PixelSize.y, (UINT16)texture.PixelSize.z);
 	CreateTextureBuffer(resourceDesc, &texture.Resource);
 	/*-------------------------------------------------------------------
 	-                 Create texture data

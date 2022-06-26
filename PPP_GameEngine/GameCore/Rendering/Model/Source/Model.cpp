@@ -9,6 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Model/Include/Model.hpp"
+#include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,14 +36,15 @@ const D3D12_INPUT_LAYOUT_DESC SkinMeshVertex::InputLayout =
 #pragma region Model
 void Model::Initialize(const std::wstring& filePath, const std::wstring& addName)
 {
-
+    std::wcout << filePath << std::endl;
+    std::wcout << addName << std::endl;
 }
 void Model::Update(float deltaTime)
 {
-
+    deltaTime = 0;
 }
 void Model::Draw(SceneGPUAddress address)
 {
-
+    address = 0;
 }
 #pragma endregion Model

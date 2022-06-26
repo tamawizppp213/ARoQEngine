@@ -25,14 +25,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::vulkan
 {
+	class RHICommandQueue;
+	class RHISwapchain;
 	/****************************************************************************
 	*				  			Device class
 	*************************************************************************//**
 	*  @class     Device
-	*  @brief     temp
+	*  @brief     Logical device
 	*****************************************************************************/
 	class RHIDevice : public core::RHIDevice
 	{
+		friend class rhi::vulkan::RHICommandQueue;
 	public:
 		struct GraphicsQueueFamilyIndices
 		{
@@ -43,11 +46,13 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		bool Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing = false) override;
-		std::shared_ptr<core::RHIFence>            CreateFence()            { return nullptr; };
-		std::shared_ptr<core::RHICommandList>      CreateCommandList()      { return nullptr; };
-		std::shared_ptr<core::RHICommandQueue>     CreateCommandQueue()     { return nullptr; };
-		std::shared_ptr<core::RHICommandAllocator> CreateCommandAllocator() { return nullptr; };
-		std::shared_ptr<core::RHISwapchain>        CreateSwapchain()        { return nullptr; };
+		std::shared_ptr<core::RHIFence>            CreateFence()          override  { return nullptr; };
+		std::shared_ptr<core::RHICommandList>      CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& allocator) override { return nullptr; };
+		std::shared_ptr<core::RHICommandQueue>     CreateCommandQueue() override { return nullptr; };
+		std::shared_ptr<core::RHICommandAllocator> CreateCommandAllocator() override { return nullptr; };
+		std::shared_ptr<core::RHISwapchain>        CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0) override;
+
+		size_t GetGraphicsQueueFamilyIndex() { return _queueFamilyIndex.GraphicsFamily.value(); }
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -62,13 +67,13 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-
+		size_t AllocateQueue() { return 0; };
+		void FreeQueue(const size_t index){};
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		static inline VkInstance _instance = nullptr;
-		static inline std::vector<const char*> _instanceExtensions;
-		static inline std::vector<const char*> _deviceExtensions;
+		std::vector<const char*> _deviceExtensions;
 		static inline std::vector<const char*> _instanceLayers;
 		static inline bool _enableValidationLayer = true;
 

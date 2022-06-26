@@ -35,7 +35,7 @@ public:
 	*****************************************************************************/
 	virtual void Destroy()
 	{
-		_resource   = nullptr;
+		_resource.Reset();
 	}
 	virtual void TransitionState(D3D12_RESOURCE_STATES after)
 	{

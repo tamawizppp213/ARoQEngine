@@ -23,6 +23,7 @@
 namespace rhi::core
 {
 	class RHIDevice;
+	class RHICommandAllocator;
 	/****************************************************************************
 	*				  			RHIDevice
 	*************************************************************************//**
@@ -65,8 +66,8 @@ namespace rhi::core
 		*****************************************************************************/
 		RHICommandList()          = default;
 		virtual ~RHICommandList() = default;
-		explicit RHICommandList(std::shared_ptr<RHIDevice> device) { _device = device; }
-	private:
+		explicit RHICommandList(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandAllocator>& commandAllocator) { _device = device; _commandAllocator = commandAllocator; }
+	protected:
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
@@ -74,7 +75,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		std::shared_ptr<RHIDevice>           _device           = nullptr;
+		std::shared_ptr<RHICommandAllocator> _commandAllocator = nullptr;
 	};
 }
 #endif
