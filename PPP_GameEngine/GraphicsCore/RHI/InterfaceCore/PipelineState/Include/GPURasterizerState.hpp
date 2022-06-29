@@ -1,18 +1,19 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12BlendState.hpp
-///             @brief  DirectX12BlendState.hpp
+///             @file   GPUBlendState.hpp
+///             @brief  Blend State
 ///             @author Toide Yutaro
-///             @date   2022_06_29
+///             @date   2022_06_28
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_GPU_BLEND_STATE_HPP
-#define DIRECTX12_GPU_BLEND_STATE_HPP
+#ifndef GPU_BLEND_STATE_HPP
+#define GPU_BLEND_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUBlendState.hpp"
-#include <d3d12.h>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,16 +21,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::directX12
+namespace rhi::core
 {
-
+	class RHIDevice;
 	/****************************************************************************
-	*				  			GPUBlendState
+	*				  			RHIPipelineState
 	*************************************************************************//**
-	*  @class     GPUBlendState
-	*  @brief     BlendState
+	*  @class     RHIPipelineState
+	*  @brief     PipelineState
 	*****************************************************************************/
-	class GPUBlendState : public rhi::core::GPUBlendState
+	class GPURasterizerState : public NonCopyable
 	{
 	public:
 		/****************************************************************************
@@ -39,16 +40,27 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		D3D12_BLEND_DESC&       GetBlendState()       { return _blendState; }
-		const D3D12_BLEND_DESC& GetBlendState() const { return _blendState; }
+		FrontFace   GetFrontFace  () const noexcept { return _frontFace; }
+		CullingMode GetCullingMode() const noexcept { return _cullingMode; }
+		FillMode    GetFillMode   () const noexcept { return _fillMode; }
+		bool        UseDepthClamp () const noexcept { return _useDepthClamp; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUBlendState() = default;
-		~GPUBlendState() = default;
-		explicit GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties);
-		explicit GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty);
+		GPURasterizerState() = default;
+		virtual ~GPURasterizerState() = default;
+		explicit GPURasterizerState(
+			const std::shared_ptr<rhi::core::RHIDevice>& device,
+			const FrontFace   frontFace   = FrontFace::Clockwise,
+			const CullingMode cullingMode = CullingMode::None,
+			const FillMode    fillMode    = FillMode::Solid,
+			const bool        depthClamp  = true) 
+			: _device(device), _frontFace(frontFace), _cullingMode(cullingMode), _fillMode(fillMode), _useDepthClamp(depthClamp){};
 	protected:
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -56,7 +68,12 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		D3D12_BLEND_DESC _blendState = {};
+		std::shared_ptr<RHIDevice> _device = nullptr;
+		FrontFace   _frontFace   = FrontFace::Clockwise;
+		CullingMode _cullingMode = CullingMode::None;
+		FillMode    _fillMode    = FillMode::Solid;
+		bool _useDepthClamp = true;
 	};
+
 }
 #endif

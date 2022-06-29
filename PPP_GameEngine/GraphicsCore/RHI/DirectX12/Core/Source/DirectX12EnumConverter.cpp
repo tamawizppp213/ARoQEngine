@@ -41,6 +41,7 @@ DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 			throw std::runtime_error("not supported Pixel Format type");
 	}
 }
+#pragma region BlendState
 D3D12_BLEND_OP EnumConverter::Convert(const rhi::core::BlendOperator blendOperator)
 {
 	return static_cast<D3D12_BLEND_OP>(blendOperator); // all the same
@@ -53,3 +54,31 @@ D3D12_COLOR_WRITE_ENABLE EnumConverter::Convert(const rhi::core::ColorMask color
 {
 	return static_cast<D3D12_COLOR_WRITE_ENABLE>(colorMask); // all the same
 }
+#pragma endregion BlendState
+#pragma region RasterizerState
+D3D12_FILL_MODE EnumConverter::Convert(const rhi::core::FillMode    fillMode)
+{
+	switch (fillMode)
+	{
+		case core::FillMode::Solid    : return D3D12_FILL_MODE::D3D12_FILL_MODE_SOLID;
+		case core::FillMode::WireFrame: return D3D12_FILL_MODE::D3D12_FILL_MODE_WIREFRAME;
+		default:
+			throw std::runtime_error("not supported fill mode type");
+	}
+}
+D3D12_CULL_MODE EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
+{
+	switch (cullingMode)
+	{
+		case core::CullingMode::None : return D3D12_CULL_MODE::D3D12_CULL_MODE_NONE;
+		case core::CullingMode::Front: return D3D12_CULL_MODE::D3D12_CULL_MODE_FRONT;
+		case core::CullingMode::Back : return D3D12_CULL_MODE::D3D12_CULL_MODE_BACK;
+		default:
+			throw std::runtime_error("not supported culling mode type");
+	}
+}
+bool EnumConverter::Convert(const rhi::core::FrontFace   frontFace)
+{
+	return frontFace == rhi::core::FrontFace::CounterClockwise;
+}
+#pragma endregion RasterizerState

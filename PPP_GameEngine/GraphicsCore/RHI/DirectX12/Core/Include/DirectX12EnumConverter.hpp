@@ -37,10 +37,16 @@ namespace rhi::directX12
 		*****************************************************************************/
 		static D3D12_TEXTURE_ADDRESS_MODE Convert(const rhi::core::TextureAddressingMode addressingMode);
 		static DXGI_FORMAT                Convert(const rhi::core::PixelFormat pixelFormat);
+#pragma region BlendState
 		static D3D12_BLEND_OP             Convert(const rhi::core::BlendOperator blendOperator);
 		static D3D12_BLEND                Convert(const rhi::core::BlendFactor blendFactor);
 		static D3D12_COLOR_WRITE_ENABLE   Convert(const rhi::core::ColorMask colorMask);
-
+#pragma endregion BlendState
+#pragma region RasterizerState
+		static D3D12_FILL_MODE            Convert(const rhi::core::FillMode    fillMode);
+		static D3D12_CULL_MODE            Convert(const rhi::core::CullingMode cullingMode);
+		static bool                       Convert(const rhi::core::FrontFace   frontFace);
+#pragma endregion RasterizerState
 	};
 }
 #endif
