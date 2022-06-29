@@ -59,11 +59,12 @@ RHIDevice::~RHIDevice()
 *  @param[in] void
 *  @return 　　bool
 *****************************************************************************/
-bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing)
+bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useHDR, bool useRaytracing)
 {
 	_apiVersion = rhi::core::APIVersion::DirectX12;
 	_hwnd = hwnd; _hInstance = hInstance;
-	_enableRayTracing = useRaytracing;
+	_enableRayTracing        = useRaytracing;
+	_isHDRSupport            = useHDR;
 	/*-------------------------------------------------------------------
 	-                   Create DXGIFactory
 	---------------------------------------------------------------------*/
@@ -115,6 +116,7 @@ bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing)
 	-                  Tearing support check
 	---------------------------------------------------------------------*/
 	CheckTearingSupport();
+	if (useHDR) { CheckHDRDisplaySupport(); }
 	_isInitialize = true;
 	return true;
 }
@@ -498,5 +500,50 @@ void RHIDevice::CheckMultiSampleQualityLevels()
 #ifdef _DEBUG
 	assert(_4xMsaaQuality > 0 && "Unexpected MSAA quality level.");
 #endif
+}
+
+/****************************************************************************
+*                     CheckHDRDisplaySupport
+*************************************************************************//**
+*  @fn        bool DirectX12::CheckHDRDisplaySupport()
+*  @brief     CheckHDRDisplaySupport()
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckHDRDisplaySupport()
+{
+	bool isEnabledHDR =
+		_backBufferFormat == DXGI_FORMAT_R16G16B16A16_FLOAT ||
+		_backBufferFormat == DXGI_FORMAT_R10G10B10A2_UNORM;
+
+	if (isEnabledHDR)
+	{
+		bool isDisplayHDR10 = false;
+		UINT index = 0;
+
+		ComPtr<IDXGIOutput> currentOutput = nullptr;
+		ComPtr<IDXGIOutput> bestOutput = nullptr;
+		while (_useAdapter->EnumOutputs(index, &currentOutput) != DXGI_ERROR_NOT_FOUND)
+		{
+			OutputComPtr output;
+			currentOutput.As(&output);
+
+			DXGI_OUTPUT_DESC1 desc;
+			output->GetDesc1(&desc);
+
+			isDisplayHDR10 = (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+			++index;
+			if (isDisplayHDR10) { break; }
+		}
+
+		if (!isDisplayHDR10)
+		{
+			//_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+			isEnabledHDR = false;
+		}
+	}
+
+	_isHDRSupport = isEnabledHDR;
+
 }
 #pragma endregion Private Function

@@ -35,7 +35,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing = false) override;
+		bool Create(HWND hwnd, HINSTANCE hInstance, bool useHDR = false, bool useRaytracing = false) override;
 		std::shared_ptr<core::RHIFence>            CreateFence() override;
 		std::shared_ptr<core::RHICommandList>      CreateCommandList(const std::shared_ptr<core::RHICommandAllocator>& commandAllocator) override;
 		std::shared_ptr<core::RHICommandQueue>     CreateCommandQueue() override;
@@ -49,6 +49,7 @@ namespace rhi::directX12
 		AdapterComPtr GetAdapter         () const noexcept { return _useAdapter; }
 		DXGI_FORMAT   GetBackBufferFormat() const noexcept { return _backBufferFormat; }
 		bool          IsTearingSupport   () const noexcept { return _isTearingSupport; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -87,6 +88,7 @@ namespace rhi::directX12
 		void CheckDXRSupport();
 		void CheckTearingSupport();
 		void CheckVRSSupport();
+		void CheckHDRDisplaySupport();
 		void CheckMultiSampleQualityLevels();
 	};
 }

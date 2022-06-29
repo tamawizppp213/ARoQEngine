@@ -45,19 +45,21 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing = false) override;
+		bool Create(HWND hwnd, HINSTANCE hInstance, bool useHDR = false, bool useRaytracing = false) override;
 		std::shared_ptr<core::RHIFence>            CreateFence()          override  { return nullptr; };
 		std::shared_ptr<core::RHICommandList>      CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& allocator) override { return nullptr; };
 		std::shared_ptr<core::RHICommandQueue>     CreateCommandQueue() override { return nullptr; };
-		std::shared_ptr<core::RHICommandAllocator> CreateCommandAllocator() override { return nullptr; };
+		std::shared_ptr<core::RHICommandAllocator> CreateCommandAllocator() override;
 		std::shared_ptr<core::RHISwapchain>        CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0) override;
 
 		size_t GetGraphicsQueueFamilyIndex() { return _queueFamilyIndex.GraphicsFamily.value(); }
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		static VkInstance GetInstance() { return _instance; }
-		VkDevice          GetDevice()   { return _logicalDevice; }
+		static VkInstance        GetInstance()       { return _instance; }
+		inline VkDevice          GetDevice()         { return _logicalDevice; }
+		inline VkPhysicalDevice  GetPhysicalDevice() { return _physicalDevice; }
+		inline VkSurfaceKHR      GetSurface()        { return _surface; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

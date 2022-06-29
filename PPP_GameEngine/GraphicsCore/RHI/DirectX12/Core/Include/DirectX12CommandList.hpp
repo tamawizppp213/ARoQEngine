@@ -40,19 +40,19 @@ namespace rhi::directX12
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/
-		void SetPrimitiveTopology(core::PrimitiveTopology topology) override{};
-		void SetViewport(const core::Viewport* viewport, std::uint32_t numViewport = 1) override{};
-		void SetScissor(const core::ScissorRect* rect, std::uint32_t numRect = 1) override{};
-		void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override{};
+		void SetPrimitiveTopology(core::PrimitiveTopology topology) override;
+		void SetViewport(const core::Viewport* viewport, std::uint32_t numViewport = 1) override;
+		void SetScissor(const core::ScissorRect* rect, std::uint32_t numRect = 1) override;
+		void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
-		void DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0) override {};
-		void DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0, std::uint32_t startInstanceLocation = 0) override {};
+		void DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0) override;
+		void DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0, std::uint32_t startInstanceLocation = 0) override;
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/
-		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override {};
+		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override;
 
 		/****************************************************************************
 		**                Public Member Variables

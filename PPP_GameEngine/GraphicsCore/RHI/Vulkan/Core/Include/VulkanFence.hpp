@@ -23,12 +23,12 @@
 namespace rhi::vulkan
 {
 	/****************************************************************************
-	*				  			TemplateClass
+	*				  			RHIFence
 	*************************************************************************//**
-	*  @class     TemplateClass
-	*  @brief     temp
+	*  @class     RHIFence
+	*  @brief     Fence
 	*****************************************************************************/
-	class RHIFence : rhi::core::RHIFence
+	class RHIFence : public rhi::core::RHIFence
 	{
 	public:
 		/****************************************************************************

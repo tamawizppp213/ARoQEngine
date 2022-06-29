@@ -28,12 +28,86 @@ namespace rhi::core
 		Vulkan     = 2
 	};
 
+#pragma region Blend State
+	/****************************************************************************
+	*				  			BlendFactor
+	*************************************************************************//**
+	*  @class     BlendFactor
+	*  @brief     Color blend factor (directX12 based)
+	*****************************************************************************/
+	enum class BlendFactor : std::uint32_t
+	{
+		Zero = 1,
+		One,
+		Source_Color,
+		Inverse_Source_Color,
+		Source_Alpha,
+		Inverse_Source_Alpha,
+		Dest_Alpha,
+		Inverse_Dest_Alpha,
+		Dest_Color,
+		Inverse_Dest_Color,
+		Source_Alpha_Saturate,
+	};
+	/****************************************************************************
+	*				  			BlendOperator
+	*************************************************************************//**
+	*  @class     BlendOperator
+	*  @brief     Color blend calculate opration (directX12 based)
+	*****************************************************************************/
+	enum class BlendOperator : std::uint32_t
+	{
+		Add = 1,
+		Subtract = 2,
+		Reverse_Subtract = 3,
+		Min = 4,
+		Max = 5
+	};
+	/****************************************************************************
+	*				  			ColorMask
+	*************************************************************************//**
+	*  @class     ColorMask 
+	*  @brief     Color mask bit flag
+	*****************************************************************************/
+	enum class ColorMask : std::uint8_t
+	{
+		None  = 0,
+		Red   = 0x1,
+		Green = 0x2,
+		Blue  = 0x4,
+		Alpha = 0x8,
+		All   = Red | Green | Blue | Alpha
+	};
+	inline ColorMask operator | (const ColorMask& left, const ColorMask& right)
+	{
+		return static_cast<ColorMask>( static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
+	}
+	/****************************************************************************
+	*				  			BlendProperty
+	*************************************************************************//**
+	*  @class     BlendProperty
+	*  @brief     Property
+	*****************************************************************************/
+	struct BlendProperty
+	{
+		BlendOperator ColorOperator    = BlendOperator::Add;
+		BlendOperator AlphaOperator    = BlendOperator::Add;
+		BlendFactor   DestinationAlpha = BlendFactor::Zero;
+		BlendFactor   Destination      = BlendFactor::Zero;
+		BlendFactor   SourceAlpha      = BlendFactor::One;
+		BlendFactor   Source           = BlendFactor::One;
+		ColorMask     ColorMask        = ColorMask::All;
+
+		bool Enable = false;
+		BlendProperty() = default;
+	};
+#pragma endregion Blend State
 	enum class TextureAddressingMode : std::uint8_t
 	{
-		Wrap     = 0,
-		Mirror   = 1,
-		Clamp    = 2,
-		Boarder  = 3,
+		Wrap     = 1,
+		Mirror   = 2,
+		Clamp    = 3,
+		Boarder  = 4,
 	};
 
 	enum class PrimitiveTopology : std::uint8_t
@@ -64,6 +138,7 @@ namespace rhi::core
 		R16G16B16A16_FLOAT,
 		D32_FLOAT,
 		D24_UNORM_S8_UINT,
+		R32G32B32_FLOAT,
 		CountOfPixelFormat
 	};
 
@@ -141,11 +216,12 @@ namespace rhi::core
 	{
 		size_t Width  = 0;
 		size_t Height = 0;
-		void*  Handle = nullptr;
+		void*  Handle    = nullptr;
+		void*  HInstance = nullptr; // windows—p
 		WindowInfo()  = default;
-		WindowInfo(size_t width, size_t height, void* handle)
+		WindowInfo(size_t width, size_t height, void* handle, void* hInstance = nullptr)
 		{
-			this->Width = width; this->Height = height; this->Handle = handle;
+			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
 		}
 	};
 }

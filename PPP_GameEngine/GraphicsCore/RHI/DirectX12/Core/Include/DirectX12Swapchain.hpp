@@ -36,8 +36,11 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Display front buffer */
 		virtual void Present() override ;
+		/* @brief : Resize screen size. (set resized swapchain buffers )*/
 		virtual void Resize(const size_t width, const size_t height) override ;
+		/* @brief : Return current frame buffer*/
 		virtual size_t GetCurrentBufferIndex() const override;
 		/****************************************************************************
 		**                Public Member Variables
@@ -61,9 +64,16 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		SwapchainComPtr _swapchain = nullptr;
+		SwapchainComPtr      _swapchain = nullptr;
 		DXGI_SWAP_CHAIN_FLAG _swapchainFlag;
 		DXGI_FORMAT          _backBufferFormat;
+		bool                 _isHDRSupport;
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		void EnsureSwapChainColorSpace();
+		void SetHDRMetaData();
 	};
 }
 #endif

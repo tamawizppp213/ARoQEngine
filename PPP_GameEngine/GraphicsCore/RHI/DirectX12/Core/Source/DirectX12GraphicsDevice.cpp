@@ -99,8 +99,6 @@ void GraphicsDeviceDirectX12::ShutDown()
 	{
 		if (allocator) { allocator = nullptr; }
 	}
-	if (_fence)        { _fence       = nullptr;}
-	if (_fenceEvent)   { _fenceEvent = nullptr; }
 	if (_commandQueue) { _commandQueue= nullptr;}
 	if (_commandList ) { _commandList = nullptr;}
 	if (_dxgiFactory ) { _dxgiFactory = nullptr;}
@@ -296,24 +294,8 @@ void GraphicsDeviceDirectX12::CopyTextureToBackBuffer(ResourceComPtr& resource, 
 *****************************************************************************/
 void GraphicsDeviceDirectX12::FlushCommandQueue()
 {
-	++_currentFenceValue[_currentFrameIndex];
-	ThrowIfFailed(_commandQueue->Signal(_fence.Get(), _currentFenceValue[_currentFrameIndex]));
 
-	/*-------------------------------------------------------------------
-	-   Wait until the GPU has completed commands up to this fence point
-	---------------------------------------------------------------------*/
-	if (_fence->GetCompletedValue() < _currentFenceValue[_currentFrameIndex])
-	{
-		_fenceEvent = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
-		ThrowIfFailed(_fence->SetEventOnCompletion(_currentFenceValue[_currentFrameIndex], _fenceEvent));
-
-		if (_fenceEvent != 0)
-		{
-			WaitForSingleObject(_fenceEvent, INFINITE);
-			CloseHandle(_fenceEvent);
-		}
-
-	}
+	_rhiFences[_currentFrameIndex]->Signal(_rhiCommandQueue);
 	_currentFrameIndex = _swapchain->GetCurrentBackBufferIndex();
 
 }
@@ -336,8 +318,9 @@ void GraphicsDeviceDirectX12::CompleteInitialize()
 	/*-------------------------------------------------------------------
 	-          Add command list to the queue for execution
 	---------------------------------------------------------------------*/
-	ID3D12CommandList* commandLists[] = { _commandList.Get() };
-	_commandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+	std::vector<std::shared_ptr<rhi::core::RHICommandList>> commandLists;
+	commandLists.push_back(_rhiCommandList);
+	_rhiCommandQueue->Execute(commandLists);
 
 	/*-------------------------------------------------------------------
 	-						Flip screen
@@ -553,25 +536,21 @@ GraphicsDeviceDirectX12::StaticSamplerArray GraphicsDeviceDirectX12::GetStaticSa
 void GraphicsDeviceDirectX12::LoadPipeline()
 {
 	_rhiDevice = std::make_shared<rhi::directX12::RHIDevice>();
-	_rhiDevice.get()->Create(_hwnd, _hInstance, _enableRayTracing);
+	_rhiDevice.get()->Create(_hwnd, _hInstance, _useHDR, _enableRayTracing);
 	_device      = _rhiDevice.get()->GetDevice();
 	_dxgiFactory = _rhiDevice.get()->GetFactory();
 	_useAdapter  = _rhiDevice.get()->GetAdapter();
 	
 	/*-------------------------------------------------------------------
-	-				       Set 4xMsaa
-	---------------------------------------------------------------------*/
-	_isHDRSupport = CheckHDRDisplaySupport();
-	/*-------------------------------------------------------------------
 	-                     Create Fence
 	---------------------------------------------------------------------*/
 	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i)
 	{
-		_fences[i] = _rhiDevice->CreateFence();
+		_rhiFences[i] = _rhiDevice->CreateFence();
 	}
 
-	ThrowIfFailed(_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
-	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i) { _currentFenceValue[i] = 0; }
+	/*ThrowIfFailed(_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
+	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i) { _currentFenceValue[i] = 0; }*/
 	/*-------------------------------------------------------------------
 	-                   Create Command Object
 	---------------------------------------------------------------------*/
@@ -580,15 +559,7 @@ void GraphicsDeviceDirectX12::LoadPipeline()
 	-                   Create Swapchain
 	---------------------------------------------------------------------*/
 	CreateSwapChain();
-	
-	/*-------------------------------------------------------------------
-	-                   Set HDR
-	---------------------------------------------------------------------*/
-	if (_isHDRSupport)
-	{
-		EnsureSwapChainColorSpace();
-		SetHDRMetaData();
-	}
+
 	/*-------------------------------------------------------------------
 	-                 Create Descriptor Heap
 	---------------------------------------------------------------------*/
@@ -984,174 +955,24 @@ void GraphicsDeviceDirectX12::CreateSwapChain()
 	---------------------------------------------------------------------*/
 	_swapchain.Reset();
 
-	rhi::core::WindowInfo windowInfo   = { static_cast<size_t>(Screen::GetScreenWidth()), static_cast<size_t>(Screen::GetScreenHeight()), _hwnd };
+	rhi::core::WindowInfo  windowInfo   = { static_cast<size_t>(Screen::GetScreenWidth()), static_cast<size_t>(Screen::GetScreenHeight()), _hwnd };
 	rhi::core::PixelFormat pixelFormat = rhi::core::PixelFormat::R16G16B16A16_FLOAT;
 	_rhiSwapchain = _rhiDevice->CreateSwapchain(_rhiCommandQueue, windowInfo, pixelFormat, FRAME_BUFFER_COUNT, VSYNC);
 	_swapchain    = static_pointer_cast<rhi::directX12::RHISwapchain>(_rhiSwapchain)->GetSwapchain();
 }
 
 #pragma endregion Initialize Function
-#pragma region HDR Function
-/****************************************************************************
-*                     EnsureSwapChainColorSpace
-*************************************************************************//**
-*  @fn        void DirectX12::EnsureSwapChainColorSpace()
-*  @brief     Check SwapChain Color Space
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::EnsureSwapChainColorSpace()
-{
 
-	DXGI_SWAP_CHAIN_DESC1 desc;
-	ThrowIfFailed(_swapchain->GetDesc1(&desc));
-
-	DXGI_COLOR_SPACE_TYPE colorSpace;
-	switch (desc.Format)
-	{
-		case DXGI_FORMAT_R16G16B16A16_FLOAT:
-			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;    // scrgb
-			break;
-		case DXGI_FORMAT_R10G10B10A2_UNORM:
-			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
-			break;
-		default:
-			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
-			break;
-	}
-
-	_swapchain->SetColorSpace1(colorSpace);
-	
-}
-
-/****************************************************************************
-*                     SetHDRMetaData
-*************************************************************************//**
-*  @fn        void DirectX12::SetHDRMetaData()
-*  @brief     Set HDR Meta Data
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceDirectX12::SetHDRMetaData()
-{
-
-	/*-------------------------------------------------------------------
-	-          In case False (isHDRSupport)
-	---------------------------------------------------------------------*/
-	if (!_isHDRSupport)
-	{
-		// not supported
-		ThrowIfFailed(_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_NONE, 0, nullptr));
-		return;
-	}
-
-	DXGI_SWAP_CHAIN_DESC1 desc;
-	ThrowIfFailed(_swapchain->GetDesc1(&desc));
-
-	/*-------------------------------------------------------------------
-	-          Define Display Chromacity
-	---------------------------------------------------------------------*/
-	struct DisplayChromacities
-	{
-		float RedX  ; float RedY;
-		float GreenX; float GreenY;
-		float BlueX ; float BlueY;
-		float WhiteX; float WhiteY;
-	};
-
-	static const DisplayChromacities DisplayChromacityList[] =
-	{
-		 { 0.64000f, 0.33000f, 0.30000f, 0.60000f, 0.15000f, 0.06000f, 0.31270f, 0.32900f }, // Display Gamut Rec709 
-		 { 0.70800f, 0.29200f, 0.17000f, 0.79700f, 0.13100f, 0.04600f, 0.31270f, 0.32900f }  // Display Gamut Rec2020
-	};
-
-	/*-------------------------------------------------------------------
-	-          Select Chroma Format
-	---------------------------------------------------------------------*/
-	int selectedChroma = 0;
-	if (desc.Format == DXGI_FORMAT_R16G16B16A16_FLOAT)
-	{
-		selectedChroma = 1;
-	}
-
-	/*-------------------------------------------------------------------
-	-          Set HDR10Meta Data
-	---------------------------------------------------------------------*/
-	const auto& chroma = DisplayChromacityList[selectedChroma];
-	DXGI_HDR_METADATA_HDR10 HDR10MetaData = {};
-	HDR10MetaData.RedPrimary[0]   = UINT16(chroma.RedX * 50000.0f);
-	HDR10MetaData.RedPrimary[1]   = UINT16(chroma.RedY * 50000.0f);
-	HDR10MetaData.GreenPrimary[0] = UINT16(chroma.GreenX * 50000.0f);
-	HDR10MetaData.GreenPrimary[1] = UINT16(chroma.GreenY * 50000.0f);
-	HDR10MetaData.BluePrimary[0]  = UINT16(chroma.BlueX * 50000.0f);
-	HDR10MetaData.BluePrimary[1]  = UINT16(chroma.BlueY * 50000.0f);
-	HDR10MetaData.WhitePoint[0]   = UINT16(chroma.WhiteX * 50000.0f);
-	HDR10MetaData.WhitePoint[1]   = UINT16(chroma.WhiteY * 50000.0f);
-	HDR10MetaData.MaxMasteringLuminance = UINT(1000.0f * 10000.0f);
-	HDR10MetaData.MinMasteringLuminance = UINT(0.001f  * 10000.0f);
-	HDR10MetaData.MaxContentLightLevel  = UINT16(2000.0f);
-	HDR10MetaData.MaxFrameAverageLightLevel = UINT16(500.0f);
-
-	/*-------------------------------------------------------------------
-	-          Set HDRMetaData
-	---------------------------------------------------------------------*/
-	_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(HDR10MetaData), &HDR10MetaData);
-}
 
 void GraphicsDeviceDirectX12::IsEnabledHDR()
 {
-	if (CheckHDRDisplaySupport())
+	/*if (CheckHDRDisplaySupport())
 	{
 		OnResize();
 		EnsureSwapChainColorSpace();
 		SetHDRMetaData();
-	}
+	}*/
 
 }
-/****************************************************************************
-*                     CheckHDRDisplaySupport
-*************************************************************************//**
-*  @fn        bool DirectX12::CheckHDRDisplaySupport()
-*  @brief     CheckHDRDisplaySupport()
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-bool GraphicsDeviceDirectX12::CheckHDRDisplaySupport()
-{
-	bool isEnabledHDR =
-		_backBufferFormat == DXGI_FORMAT_R16G16B16A16_FLOAT ||
-		_backBufferFormat == DXGI_FORMAT_R10G10B10A2_UNORM;
-
-	if (isEnabledHDR)
-	{
-		bool isDisplayHDR10 = false;
-		UINT index = 0;
-
-		ComPtr<IDXGIOutput> currentOutput = nullptr;
-		ComPtr<IDXGIOutput> bestOutput    = nullptr;
-		while (_useAdapter->EnumOutputs(index, &currentOutput) != DXGI_ERROR_NOT_FOUND)
-		{
-			OutputComPtr output;
-			currentOutput.As(&output);
-
-			DXGI_OUTPUT_DESC1 desc;
-			output->GetDesc1(&desc);
-
-			isDisplayHDR10 = (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
-			++index;
-			if (isDisplayHDR10) { break; }
-		}
-
-		if (!isDisplayHDR10)
-		{
-			//_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-			isEnabledHDR = false;
-		}
-	}
-
-	return isEnabledHDR;
-
-}
-#pragma endregion    HDR Function
 
 #pragma endregion Private Function

@@ -9,6 +9,11 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanGraphicsDevice.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanSwapchain.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandQueue.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandAllocator.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFence.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <vector>
@@ -111,7 +116,29 @@ GraphicsDeviceVulkan::~GraphicsDeviceVulkan()
 void GraphicsDeviceVulkan::StartUp(HWND hwnd, HINSTANCE hInstance)
 {
 	_hwnd = hwnd; _hInstance = hInstance;
-	CreateInstance();
+	/*-------------------------------------------------------------------
+	-               Create Device
+	---------------------------------------------------------------------*/
+	_rhiDevice = std::make_shared<rhi::vulkan::RHIDevice>();
+	_rhiDevice->Create(_hwnd, _hInstance, _useHDR, _useRaytracing);
+	/*-------------------------------------------------------------------
+	-               Create Fence
+	---------------------------------------------------------------------*/
+	_rhiFences.resize(FRAME_BUFFER_COUNT);
+	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i)
+	{
+		_rhiFences[i] = std::make_shared<rhi::vulkan::RHIFence>(_rhiDevice);
+	}
+	/*-------------------------------------------------------------------
+	-               Create Command Object
+	---------------------------------------------------------------------*/
+	CreateCommandObjects();
+	/*-------------------------------------------------------------------
+	-               Create Swapchain
+	---------------------------------------------------------------------*/
+	CreateSwapchain();
+
+	/*CreateInstance();
 	SetUpDebugMessenger();
 	CreateSurface();
 	SelectPhysicalDevice();
@@ -120,10 +147,9 @@ void GraphicsDeviceVulkan::StartUp(HWND hwnd, HINSTANCE hInstance)
 	CreateImageViews();
 	CreateRenderPass();
 	CreateDepthBuffer();
-	CreateCommandPool();
 	CreateFrameBuffer();
 	CreateCommandBuffers();
-	CreateSyncObjects();
+	CreateSyncObjects();*/
 	
 }
 
@@ -727,72 +753,21 @@ void GraphicsDeviceVulkan::CreateDepthBuffer()
 void GraphicsDeviceVulkan::CreateSwapchain()
 {
 	/*-------------------------------------------------------------------
-	-               Acquire Surface infomation
+	-               SetUp window infomation
 	---------------------------------------------------------------------*/
-	SwapchainSupportDetails details       = SwapchainSupportDetails::Query(_physicalDevice, _surface);
-	VkSurfaceFormatKHR      surfaceFormat = SelectSwapchainFormat(details.Formats);
-	VkPresentModeKHR        presentMode   = SelectSwapchainPresentMode(details.PresentModes);
-	VkExtent2D              extent        = SelectSwapExtent(details.Capabilities);
+	core::WindowInfo windowInfo;
+	windowInfo.Width = Screen::GetScreenWidth();
+	windowInfo.Height = Screen::GetScreenHeight();
+	windowInfo.Handle = _hwnd;
+	windowInfo.HInstance = _hInstance;
+	/*-------------------------------------------------------------------
+	-               RHISwapchain
+	---------------------------------------------------------------------*/
+	_rhiSwapchain = std::make_shared<rhi::vulkan::RHISwapchain>(
+		_rhiDevice, _rhiCommandQueue, windowInfo, core::PixelFormat::R16G16B16A16_FLOAT,
+		_rhiDevice->GetSurface(), FRAME_BUFFER_COUNT, VSYNC);
+	_swapchain = std::static_pointer_cast<rhi::vulkan::RHISwapchain>(_rhiSwapchain)->GetSwapchain();
 
-	/*-------------------------------------------------------------------
-	-               Acquire Swapchain frame buffer count
-	---------------------------------------------------------------------*/
-	UINT32 imageCount = FRAME_BUFFER_COUNT;
-	if (details.Capabilities.minImageCount > 0 && imageCount < details.Capabilities.minImageCount)
-	{
-		imageCount = details.Capabilities.minImageCount;
-	}
-	if (details.Capabilities.maxImageCount > 0 && imageCount > details.Capabilities.maxImageCount)
-	{
-		imageCount = details.Capabilities.maxImageCount;
-	}
-	
-	/*-------------------------------------------------------------------
-	-               Acquire Swapchain create infomation
-	---------------------------------------------------------------------*/
-	VkSwapchainCreateInfoKHR createInfo = {};
-	createInfo.sType            = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;   // structure type
-	createInfo.surface          = _surface;                                      // display surface 
-	createInfo.minImageCount    = imageCount;                                    // frame buffer image count
-	createInfo.imageFormat      = surfaceFormat.format;                          // pixel format : SDR B8G8R8A8 HDR : Float
-	createInfo.imageColorSpace  = surfaceFormat.colorSpace;                      // color space 
-	createInfo.imageExtent      = extent;
-	createInfo.imageArrayLayers = 1;
-	createInfo.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-	GraphicsQueueFamilyIndices indices = FindGraphicsQueueFamilies(_physicalDevice);
-	UINT32 queueFamilyIndices[] = { indices.GraphicsFamily.value(), indices.PresentFamily.value() };
-	if (indices.GraphicsFamily != indices.PresentFamily)
-	{
-		createInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
-		createInfo.queueFamilyIndexCount = 2;
-		createInfo.pQueueFamilyIndices   = queueFamilyIndices;
-	}
-	else
-	{
-		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-	}
-	createInfo.preTransform   = details.Capabilities.currentTransform;
-	createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	createInfo.presentMode    = presentMode;
-	createInfo.clipped        = TRUE;
-	createInfo.oldSwapchain   = VK_NULL_HANDLE;
-
-	/*-------------------------------------------------------------------
-	-                 Create swap chain
-	---------------------------------------------------------------------*/
-	if (vkCreateSwapchainKHR(_logicalDevice, &createInfo, nullptr, &_swapchain) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create swap chain");
-	}
-	/*-------------------------------------------------------------------
-	-                 Determine swapchain infomation
-	---------------------------------------------------------------------*/
-	vkGetSwapchainImagesKHR(_logicalDevice, _swapchain, &imageCount, nullptr);
-	_swapchainImages.resize(imageCount);
-	vkGetSwapchainImagesKHR(_logicalDevice, _swapchain, &imageCount, _swapchainImages.data());
-	_swapchainImageFormat = surfaceFormat.format;
-	_swapchainExtent      = extent;
 }
 /****************************************************************************
 *                     CreateRenderPass
@@ -916,140 +891,15 @@ void GraphicsDeviceVulkan::CreateFrameBuffer()
 	_rect2D.offset = { 0,0 };
 	_rect2D.extent = _swapchainExtent;
 }
-/****************************************************************************
-*                     SelectSwapchainFormat
-*************************************************************************//**
-*  @fn        VkSurfaceFormatKHR GraphicsDeviceVulkan::SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& format)
-*  @brief     Select swapchain format
-*  @param[in] const std::vector<VkSurfaceFormatKHR>& format
-*  @return 　　VkSurfaceFormatKHR
-*****************************************************************************/
-VkSurfaceFormatKHR GraphicsDeviceVulkan::SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& formats)
-{
-	for (const auto& format : formats)
-	{
-		/*-------------------------------------------------------------------
-		-               Find HDR Format
-		---------------------------------------------------------------------*/
-		if (_useHDR)
-		{
-			if ((format.format == VK_FORMAT_R16G16B16A16_SFLOAT) ||
-				(format.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32)){}
-			else { continue; }
 
-			if ((format.colorSpace == VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT) ||
-				(format.colorSpace == VK_COLOR_SPACE_HDR10_ST2084_EXT) ||
-				(format.colorSpace == VK_COLOR_SPACE_HDR10_HLG_EXT) ||
-				(format.colorSpace == VK_COLOR_SPACE_DOLBYVISION_EXT)) {}
-			else { continue; }
 
-			return format;
-		}
-		/*-------------------------------------------------------------------
-		-               Find SDR Format
-		---------------------------------------------------------------------*/
-		else
-		{
-			if ((format.format == VK_FORMAT_B8G8R8A8_UNORM) ||
-				(format.format == VK_FORMAT_B8G8R8A8_SRGB)){}
-			else { continue; }
-
-			if ((format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)){}
-			else { continue; }
-
-			return format;
-		}
-	}
-	return formats[0];
-}
-/****************************************************************************
-*                     SelectSwapchainPresentMode
-*************************************************************************//**
-*  @fn        VkPresentModeKHR GraphicsDeviceVulkan::SelectSwapchainPresentMode(const std::vector<VkPresentModeKHR>& presentMode)
-*  @brief     Select vsync mode
-*  @param[in] const std::vector<VkPresentModeKHR>& presentMode
-*  @return 　　VkPresentModeKHR
-*****************************************************************************/
-VkPresentModeKHR GraphicsDeviceVulkan::SelectSwapchainPresentMode(const std::vector<VkPresentModeKHR>& presentModes)
+void GraphicsDeviceVulkan::CreateCommandObjects()
 {
-	for (const auto& presentMode : presentModes)
+	_rhiCommandQueue = std::make_shared<rhi::vulkan::RHICommandQueue>(_rhiDevice);
+	_rhiCommandAllocators.resize(FRAME_BUFFER_COUNT);
+	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i)
 	{
-		if constexpr (VSYNC == 0)
-		{
-			if (presentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) { return presentMode; }
-		}
-		else if constexpr(VSYNC > 0)
-		{
-			if (presentMode == VK_PRESENT_MODE_MAILBOX_KHR) { return presentMode; }
-		}
-	}
-	return VK_PRESENT_MODE_FIFO_KHR;
-}
-/****************************************************************************
-*                     SelectSwapExtent
-*************************************************************************//**
-*  @fn        VkExtent2D  GraphicsDeviceVulkan::SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
-*  @brief     Select swapchain screen size
-*  @param[in] const std::vector<VkPresentModeKHR>& presentMode
-*  @return 　　VkExtent2D 
-*****************************************************************************/
-VkExtent2D  GraphicsDeviceVulkan::SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
-{
-	// https://wasuregasa.3rin.net/%E3%82%A2%E3%83%9E%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0/c--%20%E3%81%AE%20std--numeric_limits
-	if (capabilities.currentExtent.width != (std::numeric_limits<unsigned int>::max)())
-	{
-		return capabilities.currentExtent;
-	}
-	else
-	{
-		int width  = static_cast<int>(Screen::GetScreenWidth());
-		int height = static_cast<int>(Screen::GetScreenHeight());
-		VkExtent2D actualExtent = { static_cast<UINT32>(width), static_cast<UINT32>(height)};
-		actualExtent.width  = std::clamp(actualExtent.width , capabilities.minImageExtent.width , capabilities.maxImageExtent.width);
-		actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-		return actualExtent;
-	}
-}
-/****************************************************************************
-*                     CreateCommandPool
-*************************************************************************//**
-*  @fn        void GraphicsDeviceVulkan::CreateCommandPool()
-*  @brief     Create command pool
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceVulkan::CreateCommandPool()
-{
-	GraphicsQueueFamilyIndices indices = FindGraphicsQueueFamilies(_physicalDevice);
-	VkCommandPoolCreateInfo createInfo = {};
-	createInfo.sType                   = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	createInfo.queueFamilyIndex        = indices.GraphicsFamily.value();
-	createInfo.flags                   = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-	if (vkCreateCommandPool(_logicalDevice, &createInfo, nullptr, &_commandPool) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to create command pool");
-	}
-}
-/****************************************************************************
-*                     CreateCommandBuffers
-*************************************************************************//**
-*  @fn        void GraphicsDeviceVulkan::CreateCommandBuffers()
-*  @brief     Create command buffers (frame buffer count)
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GraphicsDeviceVulkan::CreateCommandBuffers()
-{
-	VkCommandBufferAllocateInfo allocatorInfo{};
-	allocatorInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocatorInfo.commandPool        = _commandPool;
-	allocatorInfo.commandBufferCount = static_cast<UINT32>(_swapchainImageViews.size());
-	allocatorInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	
-	_commandBuffers.resize(allocatorInfo.commandBufferCount);
-	if (vkAllocateCommandBuffers(_logicalDevice, &allocatorInfo, _commandBuffers.data()) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to allocate command buffers");
+		_rhiCommandAllocators[i] = std::make_shared<rhi::vulkan::RHICommandAllocator>(_rhiDevice);
 	}
 }
 /****************************************************************************

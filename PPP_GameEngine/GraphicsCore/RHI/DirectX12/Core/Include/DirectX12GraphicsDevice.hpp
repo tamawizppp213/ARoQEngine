@@ -151,13 +151,6 @@ private:
 	void CreateViewport();
 	void BuildRenderTargetView();
 	void BuildDepthStencilView();
-
-	/*-------------------------------------------------------------------
-	-                        HDR
-	---------------------------------------------------------------------*/
-	void EnsureSwapChainColorSpace();
-	bool CheckHDRDisplaySupport();
-	void SetHDRMetaData();
 	
 	/****************************************************************************
 	**                Private Member Variables
@@ -218,10 +211,7 @@ private:
 	/*-------------------------------------------------------------------
 	-                     Syncronization object
 	---------------------------------------------------------------------*/
-	UINT64      _currentFenceValue[FRAME_BUFFER_COUNT] = { 0,0 };
-	FenceComPtr _fence      = nullptr;
-	std::shared_ptr<rhi::core::RHIFence> _fences[FRAME_BUFFER_COUNT] = {nullptr};
-	HANDLE      _fenceEvent = nullptr;
+	std::shared_ptr<rhi::core::RHIFence> _rhiFences[FRAME_BUFFER_COUNT] = {nullptr};
 	/*-------------------------------------------------------------------
 	-                     MSAA: One of the Anti-Alias
 	---------------------------------------------------------------------*/

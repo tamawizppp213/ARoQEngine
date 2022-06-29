@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Core/Include/Application.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanGraphicsDevice.hpp"
 #include "resource.h"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -19,7 +19,7 @@ static constexpr LPCWSTR CLASS_NAME = L"Game Window";
 static constexpr LPCWSTR GAME_TITLE = L"PPP Engine";
 static constexpr int GAME_WINDOW_WIDTH  = 1920;
 static constexpr int GAME_WINDOW_HEIGHT = 1080;
-rhi::vulkan::RHIDevice a;
+rhi::vulkan::GraphicsDeviceVulkan a;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ bool Application::StartUp()
 	if (!CreateMainWindow())                               { return false; }
 	if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
 	
-	a.Create(_mainWindow, _appInstance, true);
+	a.StartUp(_mainWindow, _appInstance);
 	return true;
 }
 

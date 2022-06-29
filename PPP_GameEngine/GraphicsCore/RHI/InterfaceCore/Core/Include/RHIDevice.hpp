@@ -41,7 +41,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual bool Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing = false) = 0;
+		virtual bool Create(HWND hwnd, HINSTANCE hInstance, bool useHDR = false,  bool useRaytracing = false) = 0;
 		virtual std::shared_ptr<RHIFence>            CreateFence() = 0;
 		virtual std::shared_ptr<RHICommandList>      CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator) = 0;
 		virtual std::shared_ptr<RHICommandQueue>     CreateCommandQueue() = 0;
@@ -51,7 +51,8 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		APIVersion GetAPIVersion() const noexcept { return _apiVersion; }
-
+		
+		bool       IsHDRSupport () const noexcept { return _isHDRSupport; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -66,10 +67,13 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		APIVersion _apiVersion = APIVersion::Unknown;
-		HWND _hwnd = nullptr;
-		HINSTANCE _hInstance = nullptr;
-		bool _isInitialize = false;
+		APIVersion _apiVersion  = APIVersion::Unknown;
+		HWND       _hwnd        = nullptr;
+		HINSTANCE _hInstance    = nullptr;
+		bool      _isInitialize = false;
+
+		/*setting*/
+		bool      _isHDRSupport = false;
 	};
 }
 #endif

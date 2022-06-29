@@ -16,6 +16,7 @@
 #include <vector>
 #include <optional>
 #include <vulkan/vulkan.h>
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,6 +26,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::vulkan
 {
+	class RHIDevice;
+	class RHISwapchain;
+	class RHICommandQueue;
+	class RHICommandAllocator;
+	class RHIFence;
 	/****************************************************************************
 	*				  			GraphicsDeviceVulkan
 	*************************************************************************//**
@@ -33,8 +39,6 @@ namespace rhi::vulkan
 	*****************************************************************************/
 	class GraphicsDeviceVulkan final : public core::RHIGraphicsDevice
 	{
-	private:
-		
 	public:
 		struct GraphicsQueueFamilyIndices
 		{
@@ -95,10 +99,7 @@ namespace rhi::vulkan
 		void CreateRenderPass();
 		/** @brief Create Swapchain frame buffer*/
 		void CreateFrameBuffer();
-		/** @brief Create Command Pool for setting commands */
-		void CreateCommandPool();
-		/** @brief Create Command buffer */
-		void CreateCommandBuffers();
+		void CreateCommandObjects();
 		/** @brief Create fence*/
 		void CreateSyncObjects();
 #pragma endregion SetUp
@@ -109,12 +110,6 @@ namespace rhi::vulkan
 		bool CheckValidationLayerSupport();
 		void LogQueueList(VkPhysicalDevice device);
 #pragma endregion Debug
-		/** @brief Select color format and color space format*/
-		VkSurfaceFormatKHR SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& format);
-		/** @brief Select vsync mode*/
-		VkPresentModeKHR   SelectSwapchainPresentMode(const std::vector<VkPresentModeKHR>& presentMode);
-		/** @brief Select swapchain screen size*/
-		VkExtent2D         SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 		/** @brief Acquire device queue index. */
 		GraphicsQueueFamilyIndices FindGraphicsQueueFamilies(VkPhysicalDevice device);
 		/** @brief Acquire memory type index*/
@@ -122,6 +117,11 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
+		std::shared_ptr<rhi::vulkan::RHIDevice>             _rhiDevice           = nullptr;
+		std::shared_ptr<rhi::vulkan::RHISwapchain>          _rhiSwapchain        = nullptr;
+		std::shared_ptr<rhi::vulkan::RHICommandQueue>       _rhiCommandQueue     = nullptr;
+		std::vector<std::shared_ptr<rhi::vulkan::RHICommandAllocator>> _rhiCommandAllocators;
+		std::vector<std::shared_ptr<rhi::vulkan::RHIFence>> _rhiFences;
 		/** @brief Vk Instance: all vulkan functions utility  */
 		VkInstance                       _instance = nullptr;
 		/** @brief  */

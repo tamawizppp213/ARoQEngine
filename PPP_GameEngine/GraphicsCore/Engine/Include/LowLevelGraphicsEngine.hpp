@@ -1,81 +1,72 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHISwapchain.hpp
-///             @brief  Swapchain
+///             @file   LowLevelGraphicsEngine.hpp
+///             @brief  Low level API grapchis engine
 ///             @author Toide Yutaro
-///             @date   2022_06_24
+///             @date   2022_03_11
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef RHI_SWAP_CHAIN_HPP
-#define RHI_SWAP_CHAIN_HPP
+#ifndef LOW_LEVEL_GRAPHICS_ENGINE_HPP
+#define LOW_LEVEL_GRAPHICS_ENGINE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+struct HWND__;
+struct HINSTANCE__;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
 	class RHIDevice;
-	class RHICommandQueue;
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			LowLevelGraphicsEngine
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     LowLevelGraphicsEngine
+	*  @brief     LowLevelGraphicsEngine
 	*****************************************************************************/
-	class RHISwapchain : public NonCopyable
+	class LowLevelGraphicsEngine final : public NonCopyable
 	{
+		using HWND = HWND__*;
+		using HINSTANCE = HINSTANCE__*;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Display front buffer*/
-		virtual void Present() = 0;
-		/* @brief : Resize screen size. (set resized swapchain buffers )*/
-		virtual void Resize(const size_t width, const size_t height) = 0;
-		/* @brief : Return current frame buffer*/
-		virtual size_t GetCurrentBufferIndex() const = 0;
+		void StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance);
+		void OnResize();
+		void ShutDown();
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		size_t      GetWidth      () const noexcept { return _windowInfo.Width; }
-		size_t      GetHeight     () const noexcept { return _windowInfo.Height; }
-		PixelFormat GetPixelFormat() const noexcept { return _pixelFormat; }
-		WindowInfo  GetWindowInfo () const noexcept { return _windowInfo; }
-		// buffer
-		// buffer count
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		
-	protected:
+		LowLevelGraphicsEngine() = default;
+		~LowLevelGraphicsEngine() = default;
+	private:
 		/****************************************************************************
-		**                Protected Function
+		**                Private Function
 		*****************************************************************************/
-		~RHISwapchain() = default;
-		explicit RHISwapchain(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, size_t frameBufferCount = 2, std::uint32_t vsync = 0)
-		{
-			_device = device; _commandQueue = commandQueue; _windowInfo = windowInfo; _pixelFormat = pixelFormat; _vsync = vsync;_frameBufferCount = frameBufferCount;
-		}
+		void SelectDevice(APIVersion apiVersion);
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Private Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice>       _device = nullptr;
-		std::shared_ptr<RHICommandQueue> _commandQueue = nullptr;
-		// texture
-		PixelFormat _pixelFormat;
-		WindowInfo  _windowInfo;
-		std::uint32_t _vsync = 0;
-		size_t        _frameBufferCount = 0;
+		/* @brief : Graphics API version. (DirectX12 or Vulkan)*/
+		APIVersion _apiVersion = APIVersion::Unknown;
+		/* @brief : Logical Device*/
+		std::shared_ptr<RHIDevice> _device = nullptr;
+
+		/* @brief : Windows API*/
+		HWND      _hwnd      = nullptr;
+		HINSTANCE _hInstance = nullptr;
 	};
 }
 #endif

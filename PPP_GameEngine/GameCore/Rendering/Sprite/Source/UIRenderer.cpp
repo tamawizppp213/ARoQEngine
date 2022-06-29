@@ -19,6 +19,7 @@
 using namespace rhi::directX12;
 using namespace ui;
 using namespace gm;
+using namespace directX12;
 namespace
 {
 	RootSignature         s_RootSignature;

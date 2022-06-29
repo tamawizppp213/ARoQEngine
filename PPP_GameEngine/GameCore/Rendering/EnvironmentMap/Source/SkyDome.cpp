@@ -21,6 +21,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
+using namespace directX12;
 namespace
 {
 	constexpr float SKY_SCALE = 5000.0f;

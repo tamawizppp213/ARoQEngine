@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandQueue.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandAllocator.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <iostream>
 #include <string>
@@ -115,11 +116,12 @@ RHIDevice::~RHIDevice()
 	_instanceLayers.clear(); _instanceLayers.shrink_to_fit();
 }
 
-bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useRaytracing)
+bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useHDR, bool useRaytracing)
 {
 	_apiVersion = rhi::core::APIVersion::Vulkan;
 	_hwnd = hwnd; _hInstance = hInstance;
 	_useRaytracing = useRaytracing;
+	_isHDRSupport  = useHDR;
 	CreateInstance();
 	SetUpDebugMessenger();
 	CreateSurface();
@@ -553,5 +555,9 @@ void RHIDevice::FindGraphicsQueueFamilies(VkPhysicalDevice device)
 std::shared_ptr<core::RHISwapchain>  RHIDevice::CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync)
 {
 	return nullptr;
+}
+std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator()
+{
+	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<vulkan::RHICommandAllocator>(shared_from_this()));
 }
 #pragma endregion Private Function

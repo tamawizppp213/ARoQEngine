@@ -19,13 +19,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-enum class BlendStateType
+namespace directX12
 {
-	NoColorWrite,
-	OverWrite,
-	AlphaBlend,
-	CountOfBlendStateType,
-};
+	enum class BlendStateType
+	{
+		NoColorWrite,
+		OverWrite,
+		AlphaBlend,
+		CountOfBlendStateType,
+	};
 
-D3D12_BLEND_DESC GetBlendState(BlendStateType type);
+	D3D12_BLEND_DESC GetBlendState(BlendStateType type);
+}
+
 #endif

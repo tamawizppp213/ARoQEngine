@@ -17,6 +17,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
+using namespace directX12;
 namespace
 {
 	RootSignature s_RootSignature;

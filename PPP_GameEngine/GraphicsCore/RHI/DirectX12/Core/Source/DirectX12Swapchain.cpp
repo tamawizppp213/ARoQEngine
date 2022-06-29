@@ -70,12 +70,19 @@ RHISwapchain::RHISwapchain( const std::shared_ptr<rhi::core::RHIDevice>& device,
 		nullptr, // main monitor display
 		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
 	));
+
+	_isHDRSupport = rhiDevice->IsHDRSupport();
+	if (_isHDRSupport)
+	{
+		EnsureSwapChainColorSpace();
+		SetHDRMetaData();
+	}
 }
 /****************************************************************************
 *							Resize
 *************************************************************************//**
 *  @fn        void RHISwapchain::Resize(const size_t width, const size_t height)
-*  @brief     Resize
+*  @brief     Resize screen size. (set resized swapchain buffers )
 *  @param[in] const size_t width
 *  @param[in] const size_t height
 *  @return 　　void
@@ -106,7 +113,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 *							Present
 *************************************************************************//**
 *  @fn        void RHISwapchain::Present()
-*  @brief     Present
+*  @brief     Display front buffer
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
@@ -125,4 +132,110 @@ void RHISwapchain::Present()
 size_t RHISwapchain::GetCurrentBufferIndex() const
 {
 	return static_cast<UINT>(_swapchain->GetCurrentBackBufferIndex());
+}
+
+/****************************************************************************
+*                     EnsureSwapChainColorSpace
+*************************************************************************//**
+*  @fn        void RHISwapchain::EnsureSwapChainColorSpace()
+*  @brief     Check SwapChain Color Space
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void RHISwapchain::EnsureSwapChainColorSpace()
+{
+
+	DXGI_SWAP_CHAIN_DESC1 desc;
+	ThrowIfFailed(_swapchain->GetDesc1(&desc));
+
+	DXGI_COLOR_SPACE_TYPE colorSpace;
+	switch (desc.Format)
+	{
+		case DXGI_FORMAT_R16G16B16A16_FLOAT:
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;    // scrgb
+			break;
+		case DXGI_FORMAT_R10G10B10A2_UNORM:
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+			break;
+		default:
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
+			break;
+	}
+
+	_swapchain->SetColorSpace1(colorSpace);
+	
+}
+
+/****************************************************************************
+*                     SetHDRMetaData
+*************************************************************************//**
+*  @fn        void RHISwapchain::SetHDRMetaData()
+*  @brief     Set HDR Meta Data
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void RHISwapchain::SetHDRMetaData()
+{
+
+	/*-------------------------------------------------------------------
+	-          In case False (isHDRSupport)
+	---------------------------------------------------------------------*/
+	if (!_isHDRSupport)
+	{
+		// not supported
+		ThrowIfFailed(_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_NONE, 0, nullptr));
+		return;
+	}
+
+	DXGI_SWAP_CHAIN_DESC1 desc;
+	ThrowIfFailed(_swapchain->GetDesc1(&desc));
+
+	/*-------------------------------------------------------------------
+	-          Define Display Chromacity
+	---------------------------------------------------------------------*/
+	struct DisplayChromacities
+	{
+		float RedX  ; float RedY;
+		float GreenX; float GreenY;
+		float BlueX ; float BlueY;
+		float WhiteX; float WhiteY;
+	};
+
+	static const DisplayChromacities DisplayChromacityList[] =
+	{
+		 { 0.64000f, 0.33000f, 0.30000f, 0.60000f, 0.15000f, 0.06000f, 0.31270f, 0.32900f }, // Display Gamut Rec709 
+		 { 0.70800f, 0.29200f, 0.17000f, 0.79700f, 0.13100f, 0.04600f, 0.31270f, 0.32900f }  // Display Gamut Rec2020
+	};
+
+	/*-------------------------------------------------------------------
+	-          Select Chroma Format
+	---------------------------------------------------------------------*/
+	int selectedChroma = 0;
+	if (desc.Format == DXGI_FORMAT_R16G16B16A16_FLOAT)
+	{
+		selectedChroma = 1;
+	}
+
+	/*-------------------------------------------------------------------
+	-          Set HDR10Meta Data
+	---------------------------------------------------------------------*/
+	const auto& chroma = DisplayChromacityList[selectedChroma];
+	DXGI_HDR_METADATA_HDR10 HDR10MetaData = {};
+	HDR10MetaData.RedPrimary[0]   = UINT16(chroma.RedX * 50000.0f);
+	HDR10MetaData.RedPrimary[1]   = UINT16(chroma.RedY * 50000.0f);
+	HDR10MetaData.GreenPrimary[0] = UINT16(chroma.GreenX * 50000.0f);
+	HDR10MetaData.GreenPrimary[1] = UINT16(chroma.GreenY * 50000.0f);
+	HDR10MetaData.BluePrimary[0]  = UINT16(chroma.BlueX * 50000.0f);
+	HDR10MetaData.BluePrimary[1]  = UINT16(chroma.BlueY * 50000.0f);
+	HDR10MetaData.WhitePoint[0]   = UINT16(chroma.WhiteX * 50000.0f);
+	HDR10MetaData.WhitePoint[1]   = UINT16(chroma.WhiteY * 50000.0f);
+	HDR10MetaData.MaxMasteringLuminance = UINT(1000.0f * 10000.0f);
+	HDR10MetaData.MinMasteringLuminance = UINT(0.001f  * 10000.0f);
+	HDR10MetaData.MaxContentLightLevel  = UINT16(2000.0f);
+	HDR10MetaData.MaxFrameAverageLightLevel = UINT16(500.0f);
+
+	/*-------------------------------------------------------------------
+	-          Set HDRMetaData
+	---------------------------------------------------------------------*/
+	_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(HDR10MetaData), &HDR10MetaData);
 }
