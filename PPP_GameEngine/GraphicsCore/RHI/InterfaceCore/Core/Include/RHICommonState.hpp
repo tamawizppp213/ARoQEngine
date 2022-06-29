@@ -102,6 +102,43 @@ namespace rhi::core
 		BlendProperty() = default;
 	};
 #pragma endregion Blend State
+#pragma region Rasterizer State
+	/****************************************************************************
+	*				  			CullingMode
+	*************************************************************************//**
+	*  @class     CullingMode
+	*  @brief     Culling mode (left hand coordinate)
+	*****************************************************************************/
+	enum class CullingMode : std::uint8_t
+	{
+		None,  // all face render
+		Front, // front culling
+		Back   // back culling
+	};
+	/****************************************************************************
+	*				  			FrontFace
+	*************************************************************************//**
+	*  @class     FrontFace
+	*  @brief     Polygon front face
+	*****************************************************************************/
+	enum class FrontFace : std::uint8_t
+	{
+		CounterClockwise, // for right hand coordinate
+		Clockwise,        // for left hand coordinate
+	};
+	/****************************************************************************
+	*				  			FillMode
+	*************************************************************************//**
+	*  @class     FillMode
+	*  @brief     Polygon fill mode
+	*****************************************************************************/
+	enum class FillMode
+	{
+		WireFrame, 
+		Solid,
+	};
+
+#pragma endregion Rasterizer State
 	enum class TextureAddressingMode : std::uint8_t
 	{
 		Wrap     = 1,
@@ -119,13 +156,6 @@ namespace rhi::core
 		TriangleList  = 4,
 		TriangleStrip = 5,
 		CountOfPrimitiveTopology
-	};
-
-	enum class CullingMode : std::uint8_t
-	{
-		None,
-		Front,
-		Back
 	};
 
 	enum class PixelFormat

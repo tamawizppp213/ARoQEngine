@@ -1,17 +1,17 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12BlendState.hpp
-///             @brief  DirectX12BlendState.hpp
+///             @file   DirectX12GPURasterizerState.hpp
+///             @brief  DirectX12GPURasterizerState.hpp
 ///             @author Toide Yutaro
 ///             @date   2022_06_29
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_GPU_BLEND_STATE_HPP
-#define DIRECTX12_GPU_BLEND_STATE_HPP
+#ifndef DIRECTX12_GPU_RASTERIZER_STATE_HPP
+#define DIRECTX12_GPU_RASTERIZER_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUBlendState.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPURasterizerState.hpp"
 #include <d3d12.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -29,7 +29,7 @@ namespace rhi::directX12
 	*  @class     GPUBlendState
 	*  @brief     BlendState
 	*****************************************************************************/
-	class GPUBlendState : public rhi::core::GPUBlendState
+	class GPURasterizerState : public rhi::core::GPURasterizerState
 	{
 	public:
 		/****************************************************************************
@@ -39,15 +39,18 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		D3D12_BLEND_DESC&       GetBlendState()       { return _blendState; }
-		const D3D12_BLEND_DESC& GetBlendState() const { return _blendState; }
+		const D3D12_RASTERIZER_DESC& GetRasterizerState() const noexcept { return _rasterizerState; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUBlendState() = default;
-		~GPUBlendState() = default;
-		explicit GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties);
-		explicit GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty);
+		GPURasterizerState() = default;
+		~GPURasterizerState() = default;
+		explicit GPURasterizerState(
+			const std::shared_ptr<rhi::core::RHIDevice>& device,
+			const core::FrontFace   frontFace   = core::FrontFace::Clockwise,
+			const core::CullingMode cullingMode = core::CullingMode::None,
+			const core::FillMode    fillMode    = core::FillMode::Solid,
+			const bool useDepthClamp = true);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -56,7 +59,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		D3D12_BLEND_DESC _blendState = {};
+		D3D12_RASTERIZER_DESC _rasterizerState = {};
 	};
 }
 #endif

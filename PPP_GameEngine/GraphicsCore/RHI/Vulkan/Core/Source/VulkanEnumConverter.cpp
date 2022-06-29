@@ -49,6 +49,7 @@ VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 			throw std::runtime_error("not supported Pixel Format type");
 	}
 }
+#pragma region BlendState
 VkBlendOp EnumConverter::Convert(const rhi::core::BlendOperator blendOperator)
 {
 	switch (blendOperator)
@@ -80,7 +81,41 @@ VkBlendFactor  EnumConverter::Convert(const rhi::core::BlendFactor blendFactor)
 			throw std::runtime_error("not supported Blend Factor type");
 	}
 }
-VkColorComponentFlags  EnumConverter::Convert(const rhi::core::ColorMask colorMask)
+VkColorComponentFlags EnumConverter::Convert(const rhi::core::ColorMask colorMask)
 {
 	return static_cast<VkColorComponentFlags>(colorMask); // all the same
 }
+#pragma endregion BlendState
+#pragma region RasterizerState
+VkPolygonMode EnumConverter::Convert(const rhi::core::FillMode fillMode)
+{
+	switch (fillMode)
+	{
+		case core::FillMode::Solid    : return VkPolygonMode::VK_POLYGON_MODE_FILL;
+		case core::FillMode::WireFrame: return VkPolygonMode::VK_POLYGON_MODE_LINE;
+		default: 
+			throw std::runtime_error("not support fillmode type");
+	}
+}
+VkCullModeFlags  EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
+{
+	switch (cullingMode)
+	{
+		case core::CullingMode::None : return VkCullModeFlagBits::VK_CULL_MODE_NONE;
+		case core::CullingMode::Front: return VkCullModeFlagBits::VK_CULL_MODE_FRONT_BIT;
+		case core::CullingMode::Back : return VkCullModeFlagBits::VK_CULL_MODE_BACK_BIT;
+		default:
+			throw std::runtime_error("not support culling mode");
+	}
+}
+VkFrontFace EnumConverter::Convert(const rhi::core::FrontFace frontFace)
+{
+	switch (frontFace)
+	{
+		case core::FrontFace::Clockwise       : return VkFrontFace::VK_FRONT_FACE_CLOCKWISE;
+		case core::FrontFace::CounterClockwise: return VkFrontFace::VK_FRONT_FACE_COUNTER_CLOCKWISE;
+		default:
+			throw std::runtime_error("not support front face type.");
+	}
+}
+#pragma endregion RasterizerState

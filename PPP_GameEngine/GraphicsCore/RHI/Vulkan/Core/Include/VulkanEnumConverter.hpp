@@ -34,12 +34,18 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+#pragma region BlendState
 		static VkSamplerAddressMode   Convert(const rhi::core::TextureAddressingMode addressingMode);
-		static VkFormat               Convert(const rhi::core::PixelFormat pixelFormat);
+		static VkFormat               Convert(const rhi::core::PixelFormat   pixelFormat);
 		static VkBlendOp              Convert(const rhi::core::BlendOperator blendOperator);
-		static VkBlendFactor          Convert(const rhi::core::BlendFactor blendFactor);
-		static VkColorComponentFlags  Convert(const rhi::core::ColorMask colorMask);
-
+		static VkBlendFactor          Convert(const rhi::core::BlendFactor   blendFactor);
+		static VkColorComponentFlags  Convert(const rhi::core::ColorMask     colorMask);
+#pragma endregion BlendState
+#pragma region RasterizerState
+		static VkPolygonMode          Convert(const rhi::core::FillMode    fillMode);
+		static VkCullModeFlags        Convert(const rhi::core::CullingMode cullingMode);
+		static VkFrontFace            Convert(const rhi::core::FrontFace   frontFace);
+#pragma endregion RasterizerState
 	};
 }
 #endif
