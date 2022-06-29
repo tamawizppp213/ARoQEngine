@@ -9,6 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Sprite/Include/Image.hpp"
+#include "GameUtility/Base/Include/Screen.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,6 +20,19 @@ using namespace gm;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 static const UINT16 g_indices[] = { 0,1,2,2,1,3 };
+Image::~Image()
+{
+
+}
+void ui::Image::CreateInScreenSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
+{
+	CreateRect(Float3(position.x / Screen::GetScreenWidth(), position.y / Screen::GetScreenHeight(), position.z), Float2(rectSize.x / Screen::GetScreenWidth(), rectSize.y / Screen::GetScreenHeight()),
+		color, u, v, radian);
+}
+void ui::Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
+{
+	CreateRect(position, rectSize,color, u, v, radian);
+}
 /****************************************************************************
 *                       CreateRect
 *************************************************************************//**
@@ -29,9 +43,8 @@ static const UINT16 g_indices[] = { 0,1,2,2,1,3 };
 *  @param[in] const Float4& color    ( R, G, B, Alpha)
 *  @return Å@Å@void
 *****************************************************************************/
-void Image::CreateRect(const Float3& position, const Float2& rectSize, const Float4& color, float radian)
+void Image::CreateRect(const Float3& position, const Float2& rectSize, const Float4& color, const Float2& u, const Float2& v, float radian)
 {
-	using namespace DirectX;
 	using Vertex = VertexPositionNormalColorTexture;
 
 	/*-------------------------------------------------------------------
@@ -67,7 +80,7 @@ void Image::CreateRect(const Float3& position, const Float2& rectSize, const Flo
 	/*-------------------------------------------------------------------
 	-              Create UV Vector
 	---------------------------------------------------------------------*/
-	Float2 uvs[] = { Float2(0.0f, 1.0f), Float2(0.0f, 0.0f), Float2(1.0f, 0.0f), Float2(1.0f,1.0f) };
+	Float2 uvs[] = { Float2(u.x, v.y), Float2(u.x, v.x), Float2(u.y, v.x), Float2(u.y,v.y) };
 
 	/*-------------------------------------------------------------------
 	-              Set Verteices

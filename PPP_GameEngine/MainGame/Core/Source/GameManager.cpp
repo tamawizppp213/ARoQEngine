@@ -18,9 +18,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-void GameManager::GameStart(GameTimer& gameTimer, HWND hwnd)
+void GameManager::GameStart(GameTimer& gameTimer, HWND hwnd, HINSTANCE hInstance)
 {
-	_engine.StartUp(hwnd);
+	_engine.StartUp(hwnd, hInstance);
 	_sceneManager.StartUp(&gameTimer);
 }
 

@@ -107,7 +107,7 @@ public:
 	GameObject& operator=(const GameObject&) = default;
 	GameObject(GameObject&&)                 = default;
 	GameObject& operator=(GameObject&&)      = default;
-	~GameObject();
+	virtual ~GameObject();
 protected:
 	/****************************************************************************
 	**                Protected Function

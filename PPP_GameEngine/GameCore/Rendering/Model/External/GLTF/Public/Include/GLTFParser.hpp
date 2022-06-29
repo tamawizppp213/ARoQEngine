@@ -15,7 +15,7 @@
 #include "GLTFDocument.hpp"
 #include "GLTFSerialize.hpp"
 #include <vector>
-
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,14 +26,9 @@
 namespace gltf
 {
 	using namespace gm;
-	struct GLTFVertex
-	{
-		Float3 Position;
-		Float3 Normal;
-		Float2 UV;
-
-	};
-
+	
+	class GLTFResourceReader;
+	class GLTFResourceWriter;
 	/****************************************************************************
 	*				  			JsonDocument
 	*************************************************************************//**
@@ -56,6 +51,8 @@ namespace gltf
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GLTFDocument Document;
+		std::shared_ptr<GLTFResourceReader> ResourceReader;
+		std::shared_ptr<GLTFResourceWriter> ResourceWriter;
 	protected:
 		/****************************************************************************
 		**                Protected Function

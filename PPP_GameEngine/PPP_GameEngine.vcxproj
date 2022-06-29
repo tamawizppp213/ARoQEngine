@@ -72,15 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VK_SDK_PATH)\Include;;$(VK_SDK_PATH)\Include</IncludePath>
+    <LibraryPath>$(VK_SDK_PATH)\Include;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(VK_SDK_PATH)\Lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VK_SDK_PATH)\Include;;$(VK_SDK_PATH)\Include</IncludePath>
+    <LibraryPath>$(VK_SDK_PATH)\Include;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(VK_SDK_PATH)\Lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VK_SDK_PATH)\Include;;$(VK_SDK_PATH)\Include</IncludePath>
+    <LibraryPath>$(VK_SDK_PATH)\Include;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64); $(VK_SDK_PATH)\Lib;$(VK_SDK_PATH)\Lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(VK_SDK_PATH)\Include</IncludePath>
+    <LibraryPath>$(VK_SDK_PATH)\Include;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64); $(VK_SDK_PATH)\Lib;$(VK_SDK_PATH)\Lib</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -118,7 +126,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Pluguins</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -129,7 +137,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\PPP_GameEngine/Pluguins</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Lib</AdditionalLibraryDirectories>
       <EntryPointSymbol>
       </EntryPointSymbol>
     </Link>
@@ -160,7 +168,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\PPP_GameEngine/Pluguins</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Lib</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
       <EntryPointName>VSMain</EntryPointName>
@@ -187,10 +195,11 @@
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassGBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassLightCulling.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassZPrepass.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\Engine\Include\RenderingEngine.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Blur.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\DepthOfField.hpp" />
-    <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\Skybox.hpp" />
+    <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\SkyDome.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProfiler.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\LightType.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\GLTF\Private\Include\GLTFAnimationUtils.hpp" />
@@ -229,9 +238,15 @@
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\VMDParser.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\OBJParser.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\OBJUtils.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\Material.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\MaterialType.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\Mesh.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\Model.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\ModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Image.hpp" />
-    <ClInclude Include="GameCore\Rendering\Sprite\Include\NullTextureMap.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Sprite.hpp" />
+    <ClInclude Include="GameCore\Rendering\Sprite\Include\UIRenderer.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\ClassUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Memory.hpp" />
@@ -294,28 +309,57 @@
     <ClInclude Include="GameUtility\Math\Include\GMTypeDef.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVector.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12BaseStruct.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12BlendState.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Buffer.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Core.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Debug.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12GPUResource.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Include.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12PipelineState.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12PrimitiveGeometry.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12CommandContext.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Shader.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12StaticSampler.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12Texture.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12VertexTypes.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\Core\Include\DirectX12RootSignature.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12BLASBuffer.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp" />
-    <ClInclude Include="GraphicsCore\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp" />
+    <ClInclude Include="GraphicsCore\Engine\Include\LowLevelGraphicsEngine.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12BaseStruct.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12BlendState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Buffer.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12CommandAllocator.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12CommandList.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12CommandQueue.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Core.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Debug.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Device.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12EnumConverter.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Fence.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12GPUResource.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Include.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12PipelineState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12PrimitiveGeometry.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12CommandContext.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Shader.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12StaticSampler.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Swapchain.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Texture.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12VertexTypes.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12RootSignature.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUBlendState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12BLASBuffer.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreEngine.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreResourceType.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHICommandAllocator.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHICommandList.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHICommandQueue.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHICommonState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIDevice.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIFence.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIGPUResource.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIGraphicsDevice.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHISwapchain.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Include\GPUBlendState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Include\GPUPipelineState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanCommandAllocator.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanCommandList.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanCommandQueue.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanDevice.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanEnumConverter.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanFence.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanGraphicsDevice.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanSwapchain.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUBlendState.hpp" />
     <ClInclude Include="MainGame\Core\Include\Application.hpp" />
     <ClInclude Include="MainGame\Core\Include\GameManager.hpp" />
     <ClInclude Include="MainGame\Core\Include\Scene.hpp" />
@@ -323,6 +367,7 @@
     <ClInclude Include="MainGame\Core\Include\TemplateText.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -343,10 +388,11 @@
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassGBuffer.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassLightCulling.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassZPrepass.cpp" />
+    <ClCompile Include="GameCore\Rendering\Core\Engine\Source\RenderingEngine.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Blur.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\ColorChange.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\DepthOfField.cpp" />
-    <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\Skybox.cpp" />
+    <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\SkyDome.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\External\Source\IESProfiler.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\GLTF\Private\Source\GLTFAnimationUtils.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\GLTF\Private\Source\GLTFColor.cpp" />
@@ -370,8 +416,13 @@
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\VMDParser.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJParser.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJUtils.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\Material.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\Mesh.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\Model.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\ModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Image.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Sprite.cpp" />
+    <ClCompile Include="GameCore\Rendering\Sprite\Source\UIRenderer.cpp" />
     <ClCompile Include="GameUtility\Base\Source\GameTimer.cpp" />
     <ClCompile Include="GameUtility\Base\Source\Screen.cpp" />
     <ClCompile Include="GameUtility\File\Source\Csv.cpp" />
@@ -379,21 +430,39 @@
     <ClCompile Include="GameUtility\File\Source\Json.cpp" />
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12BlendState.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Buffer.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Core.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12PipelineState.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12PrimitiveGeometry.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12CommandContext.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Shader.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12StaticSampler.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12Texture.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12VertexTypes.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\Core\Source\DirectX12RootSignature.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12BLASBuffer.cpp" />
-    <ClCompile Include="GraphicsCore\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp" />
+    <ClCompile Include="GraphicsCore\Engine\Source\LowLevelGraphicsEngine.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12BlendState.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Buffer.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12CommandAllocator.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12CommandList.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12CommandQueue.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Core.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Device.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12EnumConverter.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Fence.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12PipelineState.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12PrimitiveGeometry.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12CommandContext.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Shader.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12StaticSampler.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Swapchain.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Texture.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12VertexTypes.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12RootSignature.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUBlendState.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12BLASBuffer.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\GraphicsCoreEngine.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Source\GPUBlendState.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanCommandAllocator.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanCommandQueue.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanDevice.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanEnumConverter.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanFence.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanGraphicsDevice.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanSwapchain.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUBlendState.cpp" />
     <ClCompile Include="MainGame\Core\Source\Application.cpp" />
     <ClCompile Include="MainGame\Core\Source\GameManager.cpp" />
     <ClCompile Include="MainGame\Core\Source\Main.cpp" />
@@ -401,6 +470,7 @@
     <ClCompile Include="MainGame\Core\Source\SceneManager.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleEmpty.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleSky.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />

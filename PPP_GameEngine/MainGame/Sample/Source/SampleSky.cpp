@@ -9,7 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Sample/Include/SampleSky.hpp"
-#include "GameCore/Rendering/EnvironmentMap/Include/Skybox.hpp"
+#include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
 #include "GameCore/Core/Include/Camera.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ void SampleSky::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Skybox
 	---------------------------------------------------------------------*/
-	_skybox = std::make_unique<Skybox>();
+	_skybox = std::make_unique<SkyDome>();
 	_skybox->Initialze(L"Resources/grasscube1024.dds");
 }
 /****************************************************************************

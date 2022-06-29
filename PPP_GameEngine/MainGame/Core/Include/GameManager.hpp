@@ -33,7 +33,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void GameStart(GameTimer& gameTimer, HWND hwnd);
+	void GameStart(GameTimer& gameTimer, HWND hwnd, HINSTANCE hInstance);
 	void GameMain();
 	void GameEnd();
 

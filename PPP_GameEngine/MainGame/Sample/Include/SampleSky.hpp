@@ -16,7 +16,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class Skybox;
+class SkyDome;
 class Camera;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
@@ -32,7 +32,7 @@ namespace sample
 	*****************************************************************************/
 	class SampleSky : public Scene
 	{
-		using SkyboxPtr = std::unique_ptr<Skybox>;
+		using SkyDomePtr = std::unique_ptr<SkyDome>;
 		using CameraPtr = std::unique_ptr<Camera>;
 	public:
 		/****************************************************************************
@@ -63,7 +63,7 @@ namespace sample
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		SkyboxPtr _skybox = nullptr;
+		SkyDomePtr _skybox = nullptr;
 		CameraPtr _camera = nullptr;
 	};
 }

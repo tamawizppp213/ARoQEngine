@@ -1,0 +1,241 @@
+//////////////////////////////////////////////////////////////////////////////////
+//              @file   DirectX12CommandQueue.cpp
+///             @brief  Command queue 
+///             @author Toide Yutaro
+///             @date   2022_06_24
+//////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////
+//                             Include
+//////////////////////////////////////////////////////////////////////////////////
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Swapchain.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include <d3d12.h>
+#include <stdexcept>
+//////////////////////////////////////////////////////////////////////////////////
+//                              Define
+//////////////////////////////////////////////////////////////////////////////////
+using namespace rhi;
+using namespace rhi::directX12;
+using namespace Microsoft::WRL;
+
+//////////////////////////////////////////////////////////////////////////////////
+//                          Implement
+//////////////////////////////////////////////////////////////////////////////////
+RHISwapchain::RHISwapchain( const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
+	const rhi::core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, std::uint32_t vsync) : rhi::core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync)
+{
+	const auto rhiDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get());
+	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
+	const auto dxQueue  = static_cast<rhi::directX12::RHICommandQueue*>(_commandQueue.get())->GetCommandQueue();
+
+	/*-------------------------------------------------------------------
+	-        SwapChain Flag
+	---------------------------------------------------------------------*/
+	int flag = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	if (rhiDevice->IsTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
+	_swapchainFlag = static_cast<DXGI_SWAP_CHAIN_FLAG>(flag);
+
+	/*-------------------------------------------------------------------
+	-        BackBuffer format
+	---------------------------------------------------------------------*/
+	_backBufferFormat = rhiDevice->GetBackBufferFormat();
+	/*-------------------------------------------------------------------
+	-                   Create Swapchain Descriptor
+	---------------------------------------------------------------------*/
+	DXGI_SWAP_CHAIN_DESC1 sd={};
+	sd.BufferCount = static_cast<UINT>(frameBufferCount);  // Current: Triple Buffer
+	sd.Width       = static_cast<UINT>(windowInfo.Width);  // Window Size Width
+	sd.Height      = static_cast<UINT>(windowInfo.Height); // Window Size Height 
+	sd.Format      = rhiDevice->GetBackBufferFormat();     // Back Buffer Format 
+	sd.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED;          // Alpha Mode => transparency behavior is not specified
+	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;      // Use the surface or resource as an output render target
+	sd.Flags       = _swapchainFlag;                        // Allow Resize Window
+	sd.Scaling     = DXGI_SCALING_STRETCH;                 // scaling: stretch
+	sd.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD;        // bit-block transfer model
+	sd.Stereo      = false;
+	sd.SampleDesc.Count   = 1;                             // MSAA: Anti-Alias
+	sd.SampleDesc.Quality = 0;                             // MSAA: Anti-Alias
+	
+	/*-------------------------------------------------------------------
+	-                   Create Swapchain for hwnd
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(rhiDevice->GetFactory()->CreateSwapChainForHwnd(
+		dxQueue.Get(),
+		(HWND)windowInfo.Handle,
+		&sd,
+		nullptr,
+		nullptr, // main monitor display
+		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
+	));
+
+	_isHDRSupport = rhiDevice->IsHDRSupport();
+	if (_isHDRSupport)
+	{
+		EnsureSwapChainColorSpace();
+		SetHDRMetaData();
+	}
+}
+/****************************************************************************
+*							Resize
+*************************************************************************//**
+*  @fn        void RHISwapchain::Resize(const size_t width, const size_t height)
+*  @brief     Resize screen size. (set resized swapchain buffers )
+*  @param[in] const size_t width
+*  @param[in] const size_t height
+*  @return 　　void
+*****************************************************************************/
+void RHISwapchain::Resize(const size_t width, const size_t height)
+{
+	/*-------------------------------------------------------------------
+	-          If the size is not change, we do nothing
+	---------------------------------------------------------------------*/
+	if (_windowInfo.Width == width && _windowInfo.Height) { return; }
+	/*-------------------------------------------------------------------
+	-         window size check
+	---------------------------------------------------------------------*/
+	if (_windowInfo.Width == 0 || _windowInfo.Height == 0) { throw std::runtime_error("Width or height is zero."); }
+	/*-------------------------------------------------------------------
+	-         Reset Command List
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(_swapchain->ResizeBuffers(
+		_frameBufferCount,
+		_windowInfo.Width,
+		_windowInfo.Height,
+		_backBufferFormat,
+		_swapchainFlag));
+
+	// build
+}
+/****************************************************************************
+*							Present
+*************************************************************************//**
+*  @fn        void RHISwapchain::Present()
+*  @brief     Display front buffer
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void RHISwapchain::Present()
+{
+	ThrowIfFailed(_swapchain->Present(_vsync, 0));
+}
+/****************************************************************************
+*							GetCurrentBufferIndex
+*************************************************************************//**
+*  @fn        size_t RHISwapchain::GetCurrentBufferIndex() const
+*  @brief     Get current buffer 
+*  @param[in] void
+*  @return 　　size_t
+*****************************************************************************/
+size_t RHISwapchain::GetCurrentBufferIndex() const
+{
+	return static_cast<UINT>(_swapchain->GetCurrentBackBufferIndex());
+}
+
+/****************************************************************************
+*                     EnsureSwapChainColorSpace
+*************************************************************************//**
+*  @fn        void RHISwapchain::EnsureSwapChainColorSpace()
+*  @brief     Check SwapChain Color Space
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void RHISwapchain::EnsureSwapChainColorSpace()
+{
+
+	DXGI_SWAP_CHAIN_DESC1 desc;
+	ThrowIfFailed(_swapchain->GetDesc1(&desc));
+
+	DXGI_COLOR_SPACE_TYPE colorSpace;
+	switch (desc.Format)
+	{
+		case DXGI_FORMAT_R16G16B16A16_FLOAT:
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;    // scrgb
+			break;
+		case DXGI_FORMAT_R10G10B10A2_UNORM:
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+			break;
+		default:
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
+			break;
+	}
+
+	_swapchain->SetColorSpace1(colorSpace);
+	
+}
+
+/****************************************************************************
+*                     SetHDRMetaData
+*************************************************************************//**
+*  @fn        void RHISwapchain::SetHDRMetaData()
+*  @brief     Set HDR Meta Data
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void RHISwapchain::SetHDRMetaData()
+{
+
+	/*-------------------------------------------------------------------
+	-          In case False (isHDRSupport)
+	---------------------------------------------------------------------*/
+	if (!_isHDRSupport)
+	{
+		// not supported
+		ThrowIfFailed(_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_NONE, 0, nullptr));
+		return;
+	}
+
+	DXGI_SWAP_CHAIN_DESC1 desc;
+	ThrowIfFailed(_swapchain->GetDesc1(&desc));
+
+	/*-------------------------------------------------------------------
+	-          Define Display Chromacity
+	---------------------------------------------------------------------*/
+	struct DisplayChromacities
+	{
+		float RedX  ; float RedY;
+		float GreenX; float GreenY;
+		float BlueX ; float BlueY;
+		float WhiteX; float WhiteY;
+	};
+
+	static const DisplayChromacities DisplayChromacityList[] =
+	{
+		 { 0.64000f, 0.33000f, 0.30000f, 0.60000f, 0.15000f, 0.06000f, 0.31270f, 0.32900f }, // Display Gamut Rec709 
+		 { 0.70800f, 0.29200f, 0.17000f, 0.79700f, 0.13100f, 0.04600f, 0.31270f, 0.32900f }  // Display Gamut Rec2020
+	};
+
+	/*-------------------------------------------------------------------
+	-          Select Chroma Format
+	---------------------------------------------------------------------*/
+	int selectedChroma = 0;
+	if (desc.Format == DXGI_FORMAT_R16G16B16A16_FLOAT)
+	{
+		selectedChroma = 1;
+	}
+
+	/*-------------------------------------------------------------------
+	-          Set HDR10Meta Data
+	---------------------------------------------------------------------*/
+	const auto& chroma = DisplayChromacityList[selectedChroma];
+	DXGI_HDR_METADATA_HDR10 HDR10MetaData = {};
+	HDR10MetaData.RedPrimary[0]   = UINT16(chroma.RedX * 50000.0f);
+	HDR10MetaData.RedPrimary[1]   = UINT16(chroma.RedY * 50000.0f);
+	HDR10MetaData.GreenPrimary[0] = UINT16(chroma.GreenX * 50000.0f);
+	HDR10MetaData.GreenPrimary[1] = UINT16(chroma.GreenY * 50000.0f);
+	HDR10MetaData.BluePrimary[0]  = UINT16(chroma.BlueX * 50000.0f);
+	HDR10MetaData.BluePrimary[1]  = UINT16(chroma.BlueY * 50000.0f);
+	HDR10MetaData.WhitePoint[0]   = UINT16(chroma.WhiteX * 50000.0f);
+	HDR10MetaData.WhitePoint[1]   = UINT16(chroma.WhiteY * 50000.0f);
+	HDR10MetaData.MaxMasteringLuminance = UINT(1000.0f * 10000.0f);
+	HDR10MetaData.MinMasteringLuminance = UINT(0.001f  * 10000.0f);
+	HDR10MetaData.MaxContentLightLevel  = UINT16(2000.0f);
+	HDR10MetaData.MaxFrameAverageLightLevel = UINT16(500.0f);
+
+	/*-------------------------------------------------------------------
+	-          Set HDRMetaData
+	---------------------------------------------------------------------*/
+	_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(HDR10MetaData), &HDR10MetaData);
+}

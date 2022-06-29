@@ -9,14 +9,14 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12CommandContext.hpp"
-#include "GraphicsCore/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12GraphicsDevice.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandContext.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+using namespace rhi::directX12;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -30,7 +30,7 @@
 *  @param[in] HWND hwnd
 *  @return Å@Å@void
 *****************************************************************************/
-void GraphicsCoreEngine::StartUp(HWND hwnd)
+void GraphicsCoreEngine::StartUp(HWND hwnd, HINSTANCE hInstance)
 {
 	if (_hasInitialized) { return; }
 
@@ -38,7 +38,7 @@ void GraphicsCoreEngine::StartUp(HWND hwnd)
 	-            Initialize GraphicsDevice DirectX12
 	---------------------------------------------------------------------*/
 	_device = std::make_unique<GraphicsDeviceDirectX12>();
-	_device->Initialize(hwnd);
+	_device->StartUp(hwnd, hInstance);
 	/*-------------------------------------------------------------------
 	-            Initialize CommandContext
 	---------------------------------------------------------------------*/
@@ -72,7 +72,7 @@ void GraphicsCoreEngine::OnResize()
 *****************************************************************************/
 void GraphicsCoreEngine::ShutDown()
 {
-	_device->Finalize();
+	_device->ShutDown();
 	_commandContext.reset();
 	_device.reset();
 }
@@ -84,11 +84,11 @@ void GraphicsCoreEngine::OnInitializeRenderScene()
 }
 void GraphicsCoreEngine::BeginDrawFrame()
 {
-	_device->ClearScreen();
+	_device->BeginDrawFrame();
 }
 void GraphicsCoreEngine::EndDrawFrame()
 {
-	_device->CompleteRendering();
+	_device->EndDrawFrame();
 }
 void GraphicsCoreEngine::OnTerminateRenderScene()
 {
@@ -145,6 +145,6 @@ INT GraphicsCoreEngine::GetNextFrameBufferIndex()
 }
 int GraphicsCoreEngine::GetFrameBufferCount()
 {
-	return _device->FRAME_BUFFER_COUNT;
+	return GraphicsDeviceDirectX12::FRAME_BUFFER_COUNT;
 }
 #pragma endregion Graphics Engine Property
