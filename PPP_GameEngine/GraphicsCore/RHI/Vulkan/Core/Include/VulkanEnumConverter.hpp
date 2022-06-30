@@ -46,6 +46,10 @@ namespace rhi::vulkan
 		static VkCullModeFlags        Convert(const rhi::core::CullingMode cullingMode);
 		static VkFrontFace            Convert(const rhi::core::FrontFace   frontFace);
 #pragma endregion RasterizerState
+#pragma region DepthStencilState
+		static VkCompareOp            Convert(const rhi::core::CompareOperator compareOperator);
+		static VkStencilOp            Convert(const rhi::core::StencilOperator stencilOperator);
+#pragma endregion DepthStencilState
 	};
 }
 #endif

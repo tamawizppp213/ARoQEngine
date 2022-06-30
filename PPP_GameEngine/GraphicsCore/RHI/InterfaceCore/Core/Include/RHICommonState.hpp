@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include <cstdint>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +29,19 @@ namespace rhi::core
 		Vulkan     = 2
 	};
 
+	enum class PixelFormat
+	{
+		Unknown,
+		R8G8B8A8_UNORM,
+		B8G8R8A8_UNORM,
+		R10G10B10A2_UNORM,
+		R32G32B32A32_FLOAT,
+		R16G16B16A16_FLOAT,
+		D32_FLOAT,
+		D24_UNORM_S8_UINT,
+		R32G32B32_FLOAT,
+		CountOfPixelFormat
+	};
 #pragma region Blend State
 	/****************************************************************************
 	*				  			BlendFactor
@@ -139,14 +153,57 @@ namespace rhi::core
 	};
 
 #pragma endregion Rasterizer State
-	enum class TextureAddressingMode : std::uint8_t
+#pragma region DepthStencilState
+	/****************************************************************************
+	*				  			CompareOperator
+	*************************************************************************//**
+	*  @class     CompareOperator
+	*  @brief     Compare operator
+	*****************************************************************************/
+	enum class CompareOperator : std::uint8_t
 	{
-		Wrap     = 1,
-		Mirror   = 2,
-		Clamp    = 3,
-		Boarder  = 4,
+		Never,
+		Less,
+		Equal,
+		LessEqual,
+		Greater,
+		NotEqual,
+		GreaterEqual,
+		Always
 	};
-
+	/****************************************************************************
+	*				  			StencilOperator
+	*************************************************************************//**
+	*  @class     StencilOperator
+	*  @brief     Stencil operator
+	*****************************************************************************/
+	enum class StencilOperator : std::uint8_t
+	{
+		Keep,
+		Zero,
+		Replace,
+		IncrementAndClamp,
+		DecrementAndClamp,
+		Invert,
+		IncrementAndWrap,
+		DecrementAndWrap
+	};
+	/****************************************************************************
+	*				  			StencilOperatorInfo
+	*************************************************************************//**
+	*  @class     StencilOperatorInfo
+	*  @brief     StencilOperatorInfo
+	*****************************************************************************/
+	struct StencilOperatorInfo
+	{
+		CompareOperator CompareOperator   = CompareOperator::Always;
+		StencilOperator FailOperator      = StencilOperator::Keep;
+		StencilOperator PassOperator      = StencilOperator::Keep;
+		StencilOperator DepthFailOperator = StencilOperator::Keep;
+		StencilOperatorInfo() = default;
+	};
+#pragma endregion DepthStencilState
+#pragma region InputAssemblyState
 	enum class PrimitiveTopology : std::uint8_t
 	{
 		Undefined     = 0,
@@ -158,19 +215,23 @@ namespace rhi::core
 		CountOfPrimitiveTopology
 	};
 
-	enum class PixelFormat
+	struct InputLayoutElement
 	{
-		Unknown,
-		R8G8B8A8_UNORM,
-		B8G8R8A8_UNORM,
-		R10G10B10A2_UNORM,
-		R32G32B32A32_FLOAT,
-		R16G16B16A16_FLOAT,
-		D32_FLOAT,
-		D24_UNORM_S8_UINT,
-		R32G32B32_FLOAT,
-		CountOfPixelFormat
+		PixelFormat Format = PixelFormat::Unknown;
+		std::string Name = "";
+		size_t      Slot = 0;
+		InputLayoutElement() = default;
+		explicit InputLayoutElement(const std::string& name, const PixelFormat format, const size_t slot = 0) : Format(format), Name(name), Slot(slot) {};
 	};
+	#pragma endregion InputAssemblyState
+	enum class TextureAddressingMode : std::uint8_t
+	{
+		Wrap     = 1,
+		Mirror   = 2,
+		Clamp    = 3,
+		Boarder  = 4,
+	};
+
 
 	/****************************************************************************
 	*				  			ClearValue

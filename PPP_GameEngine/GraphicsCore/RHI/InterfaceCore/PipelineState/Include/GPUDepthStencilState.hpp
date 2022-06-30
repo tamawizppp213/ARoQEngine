@@ -5,8 +5,8 @@
 ///             @date   2022_06_28
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GPU_RASTERIZER_STATE_HPP
-#define GPU_RASTERIZER_STATE_HPP
+#ifndef GPU_BLEND_STATE_HPP
+#define GPU_BLEND_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -30,7 +30,7 @@ namespace rhi::core
 	*  @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
-	class GPURasterizerState : public NonCopyable
+	class GPUDepthStencilState : public NonCopyable
 	{
 	public:
 		/****************************************************************************
@@ -40,27 +40,31 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		FrontFace   GetFrontFace  () const noexcept { return _frontFace; }
-		CullingMode GetCullingMode() const noexcept { return _cullingMode; }
-		FillMode    GetFillMode   () const noexcept { return _fillMode; }
-		bool        UseDepthClamp () const noexcept { return _useDepthClamp; }
+		bool GetDepthWriteEnable() const noexcept { return _depthWriteEnable; }
+		bool GetStencilEnable   () const noexcept { return _stencilEnable; }
+		bool GetDepthEnable     () const noexcept { return _depthEnable; }
+		const CompareOperator& GetDepthOperator() const noexcept { return _depthOperator; }
+		const StencilOperatorInfo& GetFrontFace() const noexcept { return _frontFace; }
+		const StencilOperatorInfo& GetBackFace () const noexcept { return _backFace; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPURasterizerState() = default;
-		virtual ~GPURasterizerState() = default;
-		explicit GPURasterizerState(
-			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const FrontFace   frontFace   = FrontFace::Clockwise,
-			const CullingMode cullingMode = CullingMode::None,
-			const FillMode    fillMode    = FillMode::Solid,
-			const bool        depthClamp  = true) 
-			: _device(device), _frontFace(frontFace), _cullingMode(cullingMode), _fillMode(fillMode), _useDepthClamp(depthClamp){};
+		
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-
+		GPUDepthStencilState() = default;
+		virtual ~GPUDepthStencilState() = default;
+		explicit GPUDepthStencilState(
+			const std::shared_ptr<rhi::core::RHIDevice>& device,
+			const bool            depthEnable      = true,
+			const bool            depthWriteEnable = true,
+			const bool            stencilEnable    = false,
+			const CompareOperator depthOperator    = CompareOperator::LessEqual,
+			const StencilOperatorInfo& front       = StencilOperatorInfo(),
+			const StencilOperatorInfo& back        = StencilOperatorInfo()
+		) : _device(device), _depthWriteEnable(depthWriteEnable), _stencilEnable(stencilEnable), _depthEnable(depthEnable), _depthOperator(depthOperator), _frontFace(front), _backFace(back) { }
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -69,11 +73,16 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice> _device = nullptr;
-		FrontFace   _frontFace   = FrontFace::Clockwise;
-		CullingMode _cullingMode = CullingMode::None;
-		FillMode    _fillMode    = FillMode::Solid;
-		bool _useDepthClamp = true;
-	};
 
+		core::CompareOperator     _depthOperator = core::CompareOperator::LessEqual;
+		core::StencilOperatorInfo _frontFace     = core::StencilOperatorInfo();
+		core::StencilOperatorInfo _backFace      = core::StencilOperatorInfo();
+		/* @brief : depth buffer write*/
+		bool _depthWriteEnable = true;
+		/* @brief : use depth test*/
+		bool _depthEnable      = true;
+		/* @brief : use stencil*/
+		bool _stencilEnable    = false;
+	};
 }
 #endif
