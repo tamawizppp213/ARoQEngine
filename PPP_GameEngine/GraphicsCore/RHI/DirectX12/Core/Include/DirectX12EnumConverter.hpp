@@ -51,6 +51,10 @@ namespace rhi::directX12
 		static D3D12_COMPARISON_FUNC      Convert(const rhi::core::CompareOperator compareOperator);
 		static D3D12_STENCIL_OP           Convert(const rhi::core::StencilOperator stencilOperator);
 #pragma endregion DepthStencilState
+#pragma region Input Layout
+		static D3D_PRIMITIVE_TOPOLOGY     Convert(const rhi::core::PrimitiveTopology primitiveTopology);
+
+#pragma endregion Input Layout 
 	};
 }
 #endif
