@@ -5,8 +5,8 @@
 ///             @date   2022_06_28
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GPU_RASTERIZER_STATE_HPP
-#define GPU_RASTERIZER_STATE_HPP
+#ifndef GPU_INPUT_ASSEMBLY_STATE_HPP
+#define GPU_INPUT_ASSEMBLY_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -14,6 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +31,7 @@ namespace rhi::core
 	*  @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
-	class GPURasterizerState : public NonCopyable
+	class GPUInputAssemblyState : public NonCopyable
 	{
 	public:
 		/****************************************************************************
@@ -40,27 +41,36 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		FrontFace   GetFrontFace  () const noexcept { return _frontFace; }
-		CullingMode GetCullingMode() const noexcept { return _cullingMode; }
-		FillMode    GetFillMode   () const noexcept { return _fillMode; }
-		bool        UseDepthClamp () const noexcept { return _useDepthClamp; }
+		size_t GetSlot() const noexcept { return _slotCount; }
+		/* @brief return input layout element*/
+		const InputLayoutElement& GetElement(const size_t index) const { return _elements[index]; }
+		/* @brief return input layout elements*/
+		const std::vector<InputLayoutElement>& GetElements() const { return _elements; }
+		/* @brief return primitive topology*/
+		PrimitiveTopology GetPrimitiveTopology() const { return _primitiveTopology; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPURasterizerState() = default;
-		virtual ~GPURasterizerState() = default;
-		explicit GPURasterizerState(
-			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const FrontFace   frontFace   = FrontFace::Clockwise,
-			const CullingMode cullingMode = CullingMode::None,
-			const FillMode    fillMode    = FillMode::Solid,
-			const bool        depthClamp  = true) 
-			: _device(device), _frontFace(frontFace), _cullingMode(cullingMode), _fillMode(fillMode), _useDepthClamp(depthClamp){};
+		
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		GPUInputAssemblyState() = default;
+		virtual ~GPUInputAssemblyState() = default;
+		explicit GPUInputAssemblyState(
+			const std::shared_ptr<RHIDevice>& device,
+			const std::vector<InputLayoutElement>& elements,
+			const PrimitiveTopology primitiveTopology = PrimitiveTopology::TriangleList
+		) : _device(device), _elements(elements), _primitiveTopology(primitiveTopology)
+		{
+			for (const auto& element : _elements)
+			{
+				_slotCount = std::max(_slotCount, element.Slot + 1);
+			}
+		}
 
+		
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -68,11 +78,10 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
-		FrontFace   _frontFace   = FrontFace::Clockwise;
-		CullingMode _cullingMode = CullingMode::None;
-		FillMode    _fillMode    = FillMode::Solid;
-		bool _useDepthClamp = true;
+		std::shared_ptr<RHIDevice>      _device = nullptr;
+		std::vector<InputLayoutElement> _elements = {};
+		size_t                          _slotCount = 1;
+		core::PrimitiveTopology _primitiveTopology = PrimitiveTopology::TriangleList;
 	};
 
 }

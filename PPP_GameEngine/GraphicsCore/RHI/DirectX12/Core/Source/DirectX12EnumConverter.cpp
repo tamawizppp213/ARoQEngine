@@ -82,3 +82,38 @@ bool EnumConverter::Convert(const rhi::core::FrontFace   frontFace)
 	return frontFace == rhi::core::FrontFace::CounterClockwise;
 }
 #pragma endregion RasterizerState
+#pragma region DepthStencilState
+D3D12_COMPARISON_FUNC EnumConverter::Convert(const core::CompareOperator op)
+{
+	switch (op)
+	{
+		case core::CompareOperator::Never       : return D3D12_COMPARISON_FUNC_NEVER;
+		case core::CompareOperator::Less        : return D3D12_COMPARISON_FUNC_LESS;
+		case core::CompareOperator::Equal       : return D3D12_COMPARISON_FUNC_EQUAL;
+		case core::CompareOperator::LessEqual   : return D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		case core::CompareOperator::Greater     : return D3D12_COMPARISON_FUNC_GREATER;
+		case core::CompareOperator::NotEqual    : return D3D12_COMPARISON_FUNC_NOT_EQUAL;
+		case core::CompareOperator::GreaterEqual: return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+		case core::CompareOperator::Always      : return D3D12_COMPARISON_FUNC_ALWAYS;
+		default:
+			throw std::runtime_error("not supported compare operator type");
+	}
+}
+
+D3D12_STENCIL_OP EnumConverter::Convert(const core::StencilOperator op)
+{
+	switch (op)
+	{
+		case core::StencilOperator::Keep             : return D3D12_STENCIL_OP_KEEP;
+		case core::StencilOperator::Zero             : return D3D12_STENCIL_OP_ZERO;
+		case core::StencilOperator::Replace          : return D3D12_STENCIL_OP_REPLACE;
+		case core::StencilOperator::IncrementAndClamp: return D3D12_STENCIL_OP_INCR_SAT;
+		case core::StencilOperator::DecrementAndClamp: return D3D12_STENCIL_OP_DECR_SAT;
+		case core::StencilOperator::Invert           : return D3D12_STENCIL_OP_INVERT;
+		case core::StencilOperator::IncrementAndWrap : return D3D12_STENCIL_OP_INCR;
+		case core::StencilOperator::DecrementAndWrap : return D3D12_STENCIL_OP_DECR;
+		default:
+			throw std::runtime_error("not supported stencil operator type");
+	}
+}
+#pragma endregion DepthStencilState

@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   DirectX12BlendState.cpp
+//              @file   VulkanBlendState.cpp
 ///             @brief  Blend State
 ///             @author Toide Yutaro
 ///             @date   2022_06_29

@@ -119,3 +119,37 @@ VkFrontFace EnumConverter::Convert(const rhi::core::FrontFace frontFace)
 	}
 }
 #pragma endregion RasterizerState
+#pragma region DepthStencilState
+VkCompareOp  EnumConverter::Convert(const rhi::core::CompareOperator compareOperator)
+{
+	switch (compareOperator)
+	{
+		case core::CompareOperator::Never       : return VkCompareOp::VK_COMPARE_OP_NEVER;
+		case core::CompareOperator::Less        : return VkCompareOp::VK_COMPARE_OP_LESS;
+		case core::CompareOperator::Equal       : return VkCompareOp::VK_COMPARE_OP_EQUAL;
+		case core::CompareOperator::LessEqual   : return VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL;
+		case core::CompareOperator::Greater     : return VkCompareOp::VK_COMPARE_OP_GREATER;
+		case core::CompareOperator::NotEqual    : return VkCompareOp::VK_COMPARE_OP_NOT_EQUAL;
+		case core::CompareOperator::GreaterEqual: return VkCompareOp::VK_COMPARE_OP_GREATER_OR_EQUAL;
+		case core::CompareOperator::Always      : return VkCompareOp::VK_COMPARE_OP_ALWAYS;
+		default:
+			throw std::runtime_error("not supported compare operator type");
+	}
+}
+VkStencilOp  EnumConverter::Convert(const rhi::core::StencilOperator stencilOperator)
+{
+	switch (stencilOperator)
+	{
+		case core::StencilOperator::Keep             : return VkStencilOp::VK_STENCIL_OP_KEEP;
+		case core::StencilOperator::Zero             : return VkStencilOp::VK_STENCIL_OP_ZERO;
+		case core::StencilOperator::Replace          : return VkStencilOp::VK_STENCIL_OP_REPLACE;
+		case core::StencilOperator::IncrementAndClamp: return VkStencilOp::VK_STENCIL_OP_INCREMENT_AND_CLAMP;
+		case core::StencilOperator::DecrementAndClamp: return VkStencilOp::VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+		case core::StencilOperator::Invert           : return VkStencilOp::VK_STENCIL_OP_INVERT;
+		case core::StencilOperator::IncrementAndWrap : return VkStencilOp::VK_STENCIL_OP_INCREMENT_AND_WRAP;
+		case core::StencilOperator::DecrementAndWrap : return VkStencilOp::VK_STENCIL_OP_DECREMENT_AND_WRAP;
+		default:
+			throw std::runtime_error("not supported depth stencil operator type");
+	}
+}
+#pragma endregion DepthStencilState

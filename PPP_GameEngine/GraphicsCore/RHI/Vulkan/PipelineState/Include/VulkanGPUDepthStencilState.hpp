@@ -1,19 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUBlendState.hpp
-///             @brief  Blend State
+///             @file   DirectX12GPURasterizerState.hpp
+///             @brief  DirectX12GPURasterizerState.hpp
 ///             @author Toide Yutaro
-///             @date   2022_06_28
+///             @date   2022_06_29
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GPU_RASTERIZER_STATE_HPP
-#define GPU_RASTERIZER_STATE_HPP
+#ifndef DIRECTX12_GPU_RASTERIZER_STATE_HPP
+#define DIRECTX12_GPU_RASTERIZER_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUDepthStencilState.hpp"
+#include <vulkan/vulkan.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -21,16 +20,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
+namespace rhi::vulkan
 {
-	class RHIDevice;
+
 	/****************************************************************************
-	*				  			RHIPipelineState
+	*				  			GPUBlendState
 	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	*  @class     GPUBlendState
+	*  @brief     BlendState
 	*****************************************************************************/
-	class GPURasterizerState : public NonCopyable
+	class GPUDepthStencilState : public rhi::core::GPUDepthStencilState
 	{
 	public:
 		/****************************************************************************
@@ -40,27 +39,22 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		FrontFace   GetFrontFace  () const noexcept { return _frontFace; }
-		CullingMode GetCullingMode() const noexcept { return _cullingMode; }
-		FillMode    GetFillMode   () const noexcept { return _fillMode; }
-		bool        UseDepthClamp () const noexcept { return _useDepthClamp; }
+		const VkPipelineDepthStencilStateCreateInfo& GetDepthStencilState() const noexcept { return _depthStencilDesc; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPURasterizerState() = default;
-		virtual ~GPURasterizerState() = default;
-		explicit GPURasterizerState(
+		explicit GPUDepthStencilState(
 			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const FrontFace   frontFace   = FrontFace::Clockwise,
-			const CullingMode cullingMode = CullingMode::None,
-			const FillMode    fillMode    = FillMode::Solid,
-			const bool        depthClamp  = true) 
-			: _device(device), _frontFace(frontFace), _cullingMode(cullingMode), _fillMode(fillMode), _useDepthClamp(depthClamp){};
+			const bool            depthEnable      = true,
+			const bool            depthWriteEnable = true,
+			const bool            stencilEnable    = false,
+			const core::CompareOperator      depthOperator = core::CompareOperator::LessEqual,
+			const core::StencilOperatorInfo& front         = core::StencilOperatorInfo(),
+			const core::StencilOperatorInfo& back          = core::StencilOperatorInfo()
+		);
+		~GPUDepthStencilState() = default;
+		GPUDepthStencilState() = default;
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -68,12 +62,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
-		FrontFace   _frontFace   = FrontFace::Clockwise;
-		CullingMode _cullingMode = CullingMode::None;
-		FillMode    _fillMode    = FillMode::Solid;
-		bool _useDepthClamp = true;
+		VkPipelineDepthStencilStateCreateInfo _depthStencilDesc = {};
 	};
-
 }
 #endif

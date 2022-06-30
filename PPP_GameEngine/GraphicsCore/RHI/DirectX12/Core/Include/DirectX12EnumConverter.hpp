@@ -47,6 +47,10 @@ namespace rhi::directX12
 		static D3D12_CULL_MODE            Convert(const rhi::core::CullingMode cullingMode);
 		static bool                       Convert(const rhi::core::FrontFace   frontFace);
 #pragma endregion RasterizerState
+#pragma region DepthStencilState
+		static D3D12_COMPARISON_FUNC      Convert(const rhi::core::CompareOperator compareOperator);
+		static D3D12_STENCIL_OP           Convert(const rhi::core::StencilOperator stencilOperator);
+#pragma endregion DepthStencilState
 	};
 }
 #endif
