@@ -28,7 +28,7 @@ namespace rhi::core
 		DirectX12  = 1,
 		Vulkan     = 2
 	};
-
+#pragma region Pixel
 	enum class PixelFormat
 	{
 		Unknown,
@@ -42,6 +42,41 @@ namespace rhi::core
 		R32G32B32_FLOAT,
 		CountOfPixelFormat
 	};
+	class PixelFormatSizeOf
+	{
+	public:
+		PixelFormatSizeOf() = delete;
+		static size_t Get(const core::PixelFormat pixelFormat)
+		{
+			switch (pixelFormat)
+			{
+			case PixelFormat::R16G16B16A16_FLOAT:
+				return 8;
+			case PixelFormat::R8G8B8A8_UNORM:
+			case PixelFormat::B8G8R8A8_UNORM:
+			case PixelFormat::D32_FLOAT:
+				return 4;
+			case PixelFormat::R32G32B32A32_FLOAT:
+				return 16;
+			case PixelFormat::R32G32B32_FLOAT:
+				return 12;
+			case PixelFormat::D24_UNORM_S8_UINT:
+			case PixelFormat::R10G10B10A2_UNORM:
+				return 4;
+			default:
+				return 0;
+			}
+		}
+		static bool IsDepthOnly(const PixelFormat pixelFormat)
+		{
+			switch (pixelFormat)
+			{
+			case PixelFormat::D32_FLOAT: return true;
+			default: return false;
+			}
+		}
+	};
+#pragma endregion Pixel
 #pragma region Blend State
 	/****************************************************************************
 	*				  			BlendFactor

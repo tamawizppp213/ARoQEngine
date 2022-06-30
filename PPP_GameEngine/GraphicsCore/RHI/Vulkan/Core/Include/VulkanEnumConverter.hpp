@@ -50,6 +50,9 @@ namespace rhi::vulkan
 		static VkCompareOp            Convert(const rhi::core::CompareOperator compareOperator);
 		static VkStencilOp            Convert(const rhi::core::StencilOperator stencilOperator);
 #pragma endregion DepthStencilState
+#pragma region Input Layout
+		static VkPrimitiveTopology    Convert(const rhi::core::PrimitiveTopology primitiveTopology);
+#pragma endregion Input Layout
 	};
 }
 #endif

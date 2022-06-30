@@ -54,7 +54,7 @@ D3D12_COLOR_WRITE_ENABLE EnumConverter::Convert(const rhi::core::ColorMask color
 {
 	return static_cast<D3D12_COLOR_WRITE_ENABLE>(colorMask); // all the same
 }
-#pragma endregion BlendState
+#pragma endregion        BlendState
 #pragma region RasterizerState
 D3D12_FILL_MODE EnumConverter::Convert(const rhi::core::FillMode    fillMode)
 {
@@ -81,7 +81,7 @@ bool EnumConverter::Convert(const rhi::core::FrontFace   frontFace)
 {
 	return frontFace == rhi::core::FrontFace::CounterClockwise;
 }
-#pragma endregion RasterizerState
+#pragma endregion   RasterizerState
 #pragma region DepthStencilState
 D3D12_COMPARISON_FUNC EnumConverter::Convert(const core::CompareOperator op)
 {
@@ -117,3 +117,9 @@ D3D12_STENCIL_OP EnumConverter::Convert(const core::StencilOperator op)
 	}
 }
 #pragma endregion DepthStencilState
+#pragma region Input Layout
+D3D_PRIMITIVE_TOPOLOGY  EnumConverter::Convert(const rhi::core::PrimitiveTopology primitiveTopology)
+{
+	return static_cast<D3D_PRIMITIVE_TOPOLOGY>(primitiveTopology);
+}
+#pragma endregion      Input Layput

@@ -153,3 +153,17 @@ VkStencilOp  EnumConverter::Convert(const rhi::core::StencilOperator stencilOper
 	}
 }
 #pragma endregion DepthStencilState
+#pragma region Input Layout
+VkPrimitiveTopology EnumConverter::Convert(const rhi::core::PrimitiveTopology primitiveTopology)
+{
+	switch (primitiveTopology)
+	{
+		case core::PrimitiveTopology::LineList     : return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+		case core::PrimitiveTopology::LineStrip    : return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+		case core::PrimitiveTopology::TriangleList : return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		case core::PrimitiveTopology::TriangleStrip: return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+		default:
+			throw std::runtime_error("not supported primitive topology type");
+	}
+}
+#pragma endregion Input Layput
