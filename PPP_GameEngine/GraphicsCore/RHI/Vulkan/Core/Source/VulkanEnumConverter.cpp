@@ -20,6 +20,24 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Shader Stage
+VkShaderStageFlagBits  EnumConverter::Convert(const rhi::core::ShaderType type)
+{
+	switch (type)
+	{
+		case core::ShaderType::Vertex       : return VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
+		case core::ShaderType::Pixel        : return VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
+		case core::ShaderType::Compute      : return VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT;
+		case core::ShaderType::Geometry     : return VkShaderStageFlagBits::VK_SHADER_STAGE_GEOMETRY_BIT;
+		case core::ShaderType::Amplification: return VkShaderStageFlagBits::VK_SHADER_STAGE_TASK_BIT_NV;
+		case core::ShaderType::Mesh         : return VkShaderStageFlagBits::VK_SHADER_STAGE_MESH_BIT_NV;
+		case core::ShaderType::Hull         : return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+		case core::ShaderType::Domain       : return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+		default:
+			throw std::runtime_error("Not support shader stage");
+	}
+}
+#pragma endregion Shader Stage
 VkSamplerAddressMode   EnumConverter::Convert(const rhi::core::TextureAddressingMode addressingMode)
 {
 	switch (addressingMode)

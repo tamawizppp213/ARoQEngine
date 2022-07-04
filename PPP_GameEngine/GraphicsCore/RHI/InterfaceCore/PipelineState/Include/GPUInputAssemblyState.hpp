@@ -12,8 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GPUState.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -31,7 +30,7 @@ namespace rhi::core
 	*  @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
-	class GPUInputAssemblyState : public NonCopyable
+	class GPUInputAssemblyState : public GPUState
 	{
 	public:
 		/****************************************************************************
@@ -62,7 +61,7 @@ namespace rhi::core
 			const std::shared_ptr<RHIDevice>& device,
 			const std::vector<InputLayoutElement>& elements,
 			const PrimitiveTopology primitiveTopology = PrimitiveTopology::TriangleList
-		) : _device(device), _elements(elements), _primitiveTopology(primitiveTopology)
+		) : GPUState(device), _elements(elements), _primitiveTopology(primitiveTopology)
 		{
 			for (const auto& element : _elements)
 			{
@@ -78,7 +77,6 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice>      _device = nullptr;
 		std::vector<InputLayoutElement> _elements = {};
 		size_t                          _slotCount = 1;
 		core::PrimitiveTopology _primitiveTopology = PrimitiveTopology::TriangleList;

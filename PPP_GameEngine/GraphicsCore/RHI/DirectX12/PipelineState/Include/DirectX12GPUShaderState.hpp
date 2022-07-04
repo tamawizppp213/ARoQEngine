@@ -1,19 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUBlendState.hpp
-///             @brief  Blend State
+///             @file   DirectX12GPUShaderState.hpp
+///             @brief  DirectX12GPUShaderState.hpp
 ///             @author Toide Yutaro
-///             @date   2022_06_28
+///             @date   2022_07_02
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GPU_BLEND_STATE_HPP
-#define GPU_BLEND_STATE_HPP
+#ifndef DIRECTX12_GPU_SHADER_STATE_HPP
+#define DIRECTX12_GPU_SHADER_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GPUState.hpp"
-#include <vector>
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUShaderState.hpp"
+#include <d3d12.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -21,23 +20,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
+namespace rhi::directX12
 {
-	class RHIDevice;
-	enum class DefaultBlendStateType
-	{
-		NoColorWrite,
-		OverWrite,
-		AlphaBlend,
-		CountOfBlendStateType
-	};
+
 	/****************************************************************************
-	*				  			RHIPipelineState
+	*				  			GPUBlendState
 	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	*  @class     GPUBlendState
+	*  @brief     BlendState
 	*****************************************************************************/
-	class GPUBlendState : public GPUState
+	class GPUShaderState : public rhi::core::GPUShaderState
 	{
 	public:
 		/****************************************************************************
@@ -47,23 +39,20 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		static core::BlendProperty GetDefaultBlendState(DefaultBlendStateType type);
+		D3D12_SHADER_BYTECODE GetShader() const noexcept { return _shaderCode; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		const core::BlendProperty& GetProperty(const size_t index = 0) { return _blendProperties[index]; }
+		GPUShaderState() = default;
+		~GPUShaderState() = default;
+		explicit GPUShaderState(
+			const std::shared_ptr<core::RHIDevice>& device,
+			const core::ShaderType shaderType,
+			const std::string&     fileName,
+			const std::string&     entryPoint    = "main",
+			const std::string&     shaderVersion = "6.0"
+		);
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		GPUBlendState() = default;
-		virtual ~GPUBlendState();
-		explicit GPUBlendState(const std::shared_ptr<RHIDevice>& device, const std::vector<BlendProperty>& properties) : GPUState(device), _blendProperties(properties), _isIndependentBlendEnable(true) {};
-		explicit GPUBlendState(const std::shared_ptr<RHIDevice>& device, const BlendProperty& blendProperty) : GPUState(device)
-		{
-			_blendProperties.push_back(blendProperty);
-			_isIndependentBlendEnable = false;
-		}
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -71,11 +60,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		/* @brief : Blend State Properties : (Render target Ç≈ã§í ÇÃèÍçáÇÕàÍÇ¬ÇæÇØégópÇµ, isIndependentBlendEnableÇfalseÇ…ê›íË)*/
-		std::vector<core::BlendProperty> _blendProperties;
-		/* @brief : is all render target configuration the same?  */
-		bool _isIndependentBlendEnable = false;
+		D3D12_SHADER_BYTECODE _shaderCode = { nullptr, 0 };
 	};
-
 }
 #endif

@@ -12,8 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GPUState.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +29,7 @@ namespace rhi::core
 	*  @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
-	class GPURasterizerState : public NonCopyable
+	class GPURasterizerState : public GPUState
 	{
 	public:
 		/****************************************************************************
@@ -55,7 +54,7 @@ namespace rhi::core
 			const CullingMode cullingMode = CullingMode::None,
 			const FillMode    fillMode    = FillMode::Solid,
 			const bool        depthClamp  = true) 
-			: _device(device), _frontFace(frontFace), _cullingMode(cullingMode), _fillMode(fillMode), _useDepthClamp(depthClamp){};
+			: GPUState(device), _frontFace(frontFace), _cullingMode(cullingMode), _fillMode(fillMode), _useDepthClamp(depthClamp) { };
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -68,7 +67,6 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
 		FrontFace   _frontFace   = FrontFace::Clockwise;
 		CullingMode _cullingMode = CullingMode::None;
 		FillMode    _fillMode    = FillMode::Solid;

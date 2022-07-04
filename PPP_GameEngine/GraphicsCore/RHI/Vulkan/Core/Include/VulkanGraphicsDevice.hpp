@@ -167,7 +167,7 @@ namespace rhi::vulkan
 		VkPhysicalDeviceMemoryProperties _physicalMemoryProperties;
 		/** @brief window surface use Windows */
 		VkSurfaceKHR                     _surface;
-		UINT32     _apiVersion = VK_API_VERSION_1_3;
+		UINT32     _apiVersion = VK_API_VERSION_1_3; // ïœçXÇ∑ÇÈç€Ç…ÇÕVulkanShaderÇ‡ïœçXÇ∑ÇÈÇ±Ç∆.VulkanShader must also be changed when making changes.  
 	};
 }
 #endif

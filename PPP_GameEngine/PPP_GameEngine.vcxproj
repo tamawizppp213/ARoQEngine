@@ -338,6 +338,7 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUDepthStencilState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUInputAssemblyState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPURasterizerState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUShaderState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12BLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp" />
@@ -357,6 +358,8 @@
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Include\GPUInputAssemblyState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Include\GPUPipelineState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Include\GPURasterizerState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Include\GPUShaderState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Include\GPUState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanCommandAllocator.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanCommandList.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanCommandQueue.hpp" />
@@ -369,6 +372,7 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUDepthStencilState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUInputAssemblyState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPURasterizerState.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUShaderState.hpp" />
     <ClInclude Include="MainGame\Core\Include\Application.hpp" />
     <ClInclude Include="MainGame\Core\Include\GameManager.hpp" />
     <ClInclude Include="MainGame\Core\Include\Scene.hpp" />
@@ -462,11 +466,13 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUBlendState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUDepthStencilState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPURasterizerState.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUShaderState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12InputAssemblyState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12BLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\GraphicsCoreEngine.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Source\GPUBlendState.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Source\GPUShaderState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanCommandAllocator.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanCommandQueue.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanDevice.cpp" />
@@ -478,6 +484,7 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUDepthStencilState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUInputAssemblyState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPURasterizerState.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUShaderState.cpp" />
     <ClCompile Include="MainGame\Core\Source\Application.cpp" />
     <ClCompile Include="MainGame\Core\Source\GameManager.cpp" />
     <ClCompile Include="MainGame\Core\Source\Main.cpp" />
