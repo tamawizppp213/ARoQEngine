@@ -5,8 +5,8 @@
 ///             @date   2022_06_28
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GPU_BLEND_STATE_HPP
-#define GPU_BLEND_STATE_HPP
+#ifndef GPU_SHADER_STATE_HPP
+#define GPU_SHADER_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -14,6 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GPUState.hpp"
 #include <vector>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,57 +25,58 @@
 namespace rhi::core
 {
 	class RHIDevice;
-	enum class DefaultBlendStateType
-	{
-		NoColorWrite,
-		OverWrite,
-		AlphaBlend,
-		CountOfBlendStateType
-	};
 	/****************************************************************************
 	*				  			RHIPipelineState
 	*************************************************************************//**
 	*  @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
-	class GPUBlendState : public GPUState
+	class GPUShaderState : public GPUState
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		static core::BlendProperty GetDefaultBlendState(DefaultBlendStateType type);
+		BlobData           GetBlobData     () const noexcept { return _blobData; }
+		std::string        GetFileName     () const noexcept { return _fileName; }
+		std::string        GetEntryPoint   () const noexcept { return _entryPoint; }
+		std::string        GetShaderVersion() const noexcept { return _shaderVersion; }
+		ShaderType         GetShaderType   () const noexcept { return _shaderType; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		const core::BlendProperty& GetProperty(const size_t index = 0) { return _blendProperties[index]; }
+		
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUBlendState() = default;
-		virtual ~GPUBlendState();
-		explicit GPUBlendState(const std::shared_ptr<RHIDevice>& device, const std::vector<BlendProperty>& properties) : GPUState(device), _blendProperties(properties), _isIndependentBlendEnable(true) {};
-		explicit GPUBlendState(const std::shared_ptr<RHIDevice>& device, const BlendProperty& blendProperty) : GPUState(device)
+		GPUShaderState() = default;
+		~GPUShaderState() = default;
+		explicit GPUShaderState(
+			const std::shared_ptr<core::RHIDevice>& device,
+			const ShaderType shaderType,
+			const std::string& fileName,
+			const std::string& entryPoint    = "main",
+			const std::string& shaderVersion = "6.6"
+		) : GPUState(device),  _fileName(fileName), _entryPoint(entryPoint), _shaderType(shaderType), _shaderVersion(shaderVersion)
 		{
-			_blendProperties.push_back(blendProperty);
-			_isIndependentBlendEnable = false;
-		}
+		};
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-
+		std::string GetShaderTypeName(ShaderType shaderType);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		/* @brief : Blend State Properties : (Render target Ç≈ã§í ÇÃèÍçáÇÕàÍÇ¬ÇæÇØégópÇµ, isIndependentBlendEnableÇfalseÇ…ê›íË)*/
-		std::vector<core::BlendProperty> _blendProperties;
-		/* @brief : is all render target configuration the same?  */
-		bool _isIndependentBlendEnable = false;
+		BlobData    _blobData;
+		std::string _fileName      = "";
+		std::string _entryPoint    = "main";
+		std::string _shaderVersion = "6.0";
+		ShaderType  _shaderType = ShaderType::Vertex;
 	};
 
 }

@@ -5,15 +5,14 @@
 ///             @date   2022_06_28
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GPU_BLEND_STATE_HPP
-#define GPU_BLEND_STATE_HPP
+#ifndef GPU_STATE_HPP
+#define GPU_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GPUState.hpp"
-#include <vector>
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,46 +23,34 @@
 namespace rhi::core
 {
 	class RHIDevice;
-	enum class DefaultBlendStateType
-	{
-		NoColorWrite,
-		OverWrite,
-		AlphaBlend,
-		CountOfBlendStateType
-	};
 	/****************************************************************************
-	*				  			RHIPipelineState
+	*				  			GPUState
 	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	*  @class     GPUState
+	*  @brief     GPUState
 	*****************************************************************************/
-	class GPUBlendState : public GPUState
+	class GPUState : public NonCopyable
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		static core::BlendProperty GetDefaultBlendState(DefaultBlendStateType type);
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		const core::BlendProperty& GetProperty(const size_t index = 0) { return _blendProperties[index]; }
+
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUBlendState() = default;
-		virtual ~GPUBlendState();
-		explicit GPUBlendState(const std::shared_ptr<RHIDevice>& device, const std::vector<BlendProperty>& properties) : GPUState(device), _blendProperties(properties), _isIndependentBlendEnable(true) {};
-		explicit GPUBlendState(const std::shared_ptr<RHIDevice>& device, const BlendProperty& blendProperty) : GPUState(device)
-		{
-			_blendProperties.push_back(blendProperty);
-			_isIndependentBlendEnable = false;
-		}
+		GPUState() = default;
+		virtual ~GPUState() = default;
+		explicit GPUState(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -71,10 +58,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		/* @brief : Blend State Properties : (Render target Ç≈ã§í ÇÃèÍçáÇÕàÍÇ¬ÇæÇØégópÇµ, isIndependentBlendEnableÇfalseÇ…ê›íË)*/
-		std::vector<core::BlendProperty> _blendProperties;
-		/* @brief : is all render target configuration the same?  */
-		bool _isIndependentBlendEnable = false;
+		std::shared_ptr<RHIDevice>  _device = nullptr;
 	};
 
 }

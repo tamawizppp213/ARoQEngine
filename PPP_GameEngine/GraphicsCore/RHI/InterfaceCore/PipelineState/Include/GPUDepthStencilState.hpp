@@ -12,8 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GPUState.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +29,7 @@ namespace rhi::core
 	*  @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
-	class GPUDepthStencilState : public NonCopyable
+	class GPUDepthStencilState : public GPUState
 	{
 	public:
 		/****************************************************************************
@@ -64,7 +63,7 @@ namespace rhi::core
 			const CompareOperator depthOperator    = CompareOperator::LessEqual,
 			const StencilOperatorInfo& front       = StencilOperatorInfo(),
 			const StencilOperatorInfo& back        = StencilOperatorInfo()
-		) : _device(device), _depthWriteEnable(depthWriteEnable), _stencilEnable(stencilEnable), _depthEnable(depthEnable), _depthOperator(depthOperator), _frontFace(front), _backFace(back) { }
+		) : GPUState(), _depthWriteEnable(depthWriteEnable), _stencilEnable(stencilEnable), _depthEnable(depthEnable), _depthOperator(depthOperator), _frontFace(front), _backFace(back) { }
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -72,8 +71,6 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
-
 		core::CompareOperator     _depthOperator = core::CompareOperator::LessEqual;
 		core::StencilOperatorInfo _frontFace     = core::StencilOperatorInfo();
 		core::StencilOperatorInfo _backFace      = core::StencilOperatorInfo();

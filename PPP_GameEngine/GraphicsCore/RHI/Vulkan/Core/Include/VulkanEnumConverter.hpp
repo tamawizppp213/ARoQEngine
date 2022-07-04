@@ -34,6 +34,9 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+#pragma region ShaderState
+		static VkShaderStageFlagBits  Convert(const rhi::core::ShaderType type);
+#pragma endregion ShaderState
 #pragma region BlendState
 		static VkSamplerAddressMode   Convert(const rhi::core::TextureAddressingMode addressingMode);
 		static VkFormat               Convert(const rhi::core::PixelFormat   pixelFormat);

@@ -77,6 +77,28 @@ namespace rhi::core
 		}
 	};
 #pragma endregion Pixel
+#pragma region Shader Type
+	enum class ShaderType : std::uint8_t
+	{
+		Vertex,
+		Pixel,
+		Compute,
+		Hull,
+		Domain,
+		Geometry,
+		Amplification,
+		Mesh,
+	};
+	
+	struct BlobData
+	{
+		void*  BufferPointer = nullptr;
+		size_t BufferSize = 0;
+		BlobData() = default;
+		~BlobData() = default;
+		BlobData(void* bufferPointer, size_t bufferSize) : BufferPointer(bufferPointer), BufferSize(bufferSize) {};
+	};
+#pragma endregion  Shader Type
 #pragma region Blend State
 	/****************************************************************************
 	*				  			BlendFactor
@@ -150,7 +172,7 @@ namespace rhi::core
 		bool Enable = false;
 		BlendProperty() = default;
 	};
-#pragma endregion Blend State
+#pragma endregion        Blend State
 #pragma region Rasterizer State
 	/****************************************************************************
 	*				  			CullingMode
@@ -187,7 +209,7 @@ namespace rhi::core
 		Solid,
 	};
 
-#pragma endregion Rasterizer State
+#pragma endregion   Rasterizer State
 #pragma region DepthStencilState
 	/****************************************************************************
 	*				  			CompareOperator
@@ -237,7 +259,7 @@ namespace rhi::core
 		StencilOperator DepthFailOperator = StencilOperator::Keep;
 		StencilOperatorInfo() = default;
 	};
-#pragma endregion DepthStencilState
+#pragma endregion  DepthStencilState
 #pragma region InputAssemblyState
 	enum class PrimitiveTopology : std::uint8_t
 	{
