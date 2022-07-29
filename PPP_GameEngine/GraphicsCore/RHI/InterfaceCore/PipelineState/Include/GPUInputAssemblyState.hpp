@@ -14,10 +14,13 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GPUState.hpp"
 #include <vector>
+#include <algorithm>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+#ifdef max
+#undef max
+#endif
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +59,7 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUInputAssemblyState() = default;
-		virtual ~GPUInputAssemblyState() = default;
+		~GPUInputAssemblyState() = default;
 		explicit GPUInputAssemblyState(
 			const std::shared_ptr<RHIDevice>& device,
 			const std::vector<InputLayoutElement>& elements,

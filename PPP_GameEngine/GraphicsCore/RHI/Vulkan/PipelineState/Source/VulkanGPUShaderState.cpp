@@ -34,7 +34,6 @@ GPUShaderState::GPUShaderState(
 	const std::string& shaderVersion
 ) : core::GPUShaderState(device, shaderType, fileName, entryPoint, shaderVersion)
 {
-	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device)->GetDevice();
 	CompileShader(unicode::ToWString(fileName), unicode::ToWString(entryPoint), unicode::ToWString(GetShaderTypeName(shaderType) + "_" + shaderVersion));
 	/*-------------------------------------------------------------------
 	-                  Create shader module
@@ -119,7 +118,7 @@ void GPUShaderState::CompileShader(const std::wstring& fileName, const std::wstr
 		fileName.c_str(),
 		entryPoint.c_str(),
 		target.c_str(),
-		arguments.data(), arguments.size(),
+		arguments.data(), static_cast<UINT32>(arguments.size()),
 		nullptr, 0,
 		dxcIncludeHandler.Get(),
 		&result

@@ -14,6 +14,8 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Swapchain.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12DescriptorHeap.hpp"
+#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineFactory.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -39,18 +41,22 @@ namespace
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 RHIDevice::RHIDevice()
 {
 	_apiVersion = rhi::core::APIVersion::DirectX12;
 }
 RHIDevice::~RHIDevice()
 {
+	if (_useAdapter) { _useAdapter.Reset(); }
+	if (_dxgiFactory) { _dxgiFactory.Reset(); }
 #ifdef _DEBUG
 	ReportLiveObjects();
 #endif
-	if (_device) { _device = nullptr; }
-
+	if (_device) { _device.Reset(); }
 }
+#pragma endregion Constructor and Destructor
+#pragma region Start Up Function
 /****************************************************************************
 *                     Create
 *************************************************************************//**
@@ -61,7 +67,7 @@ RHIDevice::~RHIDevice()
 *****************************************************************************/
 bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useHDR, bool useRaytracing)
 {
-	_apiVersion = rhi::core::APIVersion::DirectX12;
+	_apiVersion              = rhi::core::APIVersion::DirectX12;
 	_hwnd = hwnd; _hInstance = hInstance;
 	_enableRayTracing        = useRaytracing;
 	_isHDRSupport            = useHDR;
@@ -70,7 +76,7 @@ bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useHDR, bool useRayt
 	---------------------------------------------------------------------*/
 #ifdef _DEBUG
 	EnabledDebugLayer();
-	//EnabledGPUBasedValidation();
+	if (_enableGPUBasedValidation) { EnabledGPUBasedValidation(); } // フレームレートに影響を与えます. 
 	ThrowIfFailed(CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&_dxgiFactory)));
 #else
 	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&_dxgiFactory)));
@@ -111,16 +117,17 @@ bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useHDR, bool useRayt
 	LogAdapters();
 #endif
 
-	if (useRaytracing) { CheckDXRSupport();}
 	/*-------------------------------------------------------------------
-	-                  Tearing support check
+	-                   Device Support 
 	---------------------------------------------------------------------*/
+	if (useRaytracing) { CheckDXRSupport();}
 	CheckTearingSupport();
 	if (useHDR) { CheckHDRDisplaySupport(); }
 	_isInitialize = true;
 	return true;
 }
-
+#pragma endregion        Start Up Function
+#pragma region CreateResource
 std::shared_ptr<core::RHIFence> RHIDevice::CreateFence()
 {
 	// https://suzulang.com/stdshared_ptr%E3%81%A7this%E3%82%92%E4%BD%BF%E3%81%84%E3%81%9F%E3%81%84%E6%99%82%E3%81%AB%E6%B3%A8%E6%84%8F%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8/
@@ -142,8 +149,20 @@ std::shared_ptr<core::RHISwapchain> RHIDevice::CreateSwapchain(const std::shared
 {
 	return std::static_pointer_cast<core::RHISwapchain>(std::make_shared<directX12::RHISwapchain>(shared_from_this(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync));
 }
-
-#pragma region Private Function
+std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
+{
+	return std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this(), heapType, maxDescriptorCount));
+}
+std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts)
+{
+	return std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this(), heapTypes, maxDescriptorCounts));
+}
+std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
+{
+	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<directX12::GPUPipelineFactory>());
+}
+#pragma endregion           Create Resource Function
+#pragma region Debug Function
 /****************************************************************************
 *                     EnabledDebugLayer
 *************************************************************************//**
@@ -155,10 +174,12 @@ std::shared_ptr<core::RHISwapchain> RHIDevice::CreateSwapchain(const std::shared
 *****************************************************************************/
 void RHIDevice::EnabledDebugLayer()
 {
+#ifdef _DEBUG
 	DebugComPtr debugController;
 	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
-	debugController->EnableDebugLayer();
+	debugController->EnableDebugLayer(); // debug layer on
 	debugController.Reset();
+#endif
 }
 /****************************************************************************
 *                   EnabledGPUBasedValiation
@@ -177,6 +198,7 @@ void RHIDevice::EnabledDebugLayer()
 *****************************************************************************/
 void RHIDevice::EnabledGPUBasedValidation()
 {
+#ifdef _DEBUG
 	DebugComPtr debugController;
 	ComPtr<ID3D12Debug3> debug3;
 	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
@@ -184,80 +206,26 @@ void RHIDevice::EnabledGPUBasedValidation()
 	debug3->SetEnableGPUBasedValidation(true);
 	debugController.Reset();
 	debug3.Reset();
-
-
+#endif
 }
-
 /****************************************************************************
-*                     SearchHardwareAdapter
+*                     ReportLiveObjects
 *************************************************************************//**
-*  @fn        void RHIDevice::SearchHardwareAdapter()
-*  @brief     Search hardware adapter (Supported GPU: NVidia, AMD, Intel)
+*  @fn        void GraphicsDeviceDirectX12::ReportLiveObjects()
+*  @brief     ReportLiveObjects
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void RHIDevice::SearchHardwareAdapter()
+void RHIDevice::ReportLiveObjects()
 {
-	/*-------------------------------------------------------------------
-	-                   Search Hardware Adapter
-	---------------------------------------------------------------------*/
-	AdapterComPtr adapter;
-	AdapterComPtr adapterVender[(int)GPUVender::CountOfGPUVender];
-	size_t maxVideoMemory[(int)GPUVender::CountOfGPUVender] = { 0 };
-	for (int i = 0; _dxgiFactory->EnumAdapters1(i, (IDXGIAdapter1**)adapter.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
+#ifdef _DEBUG
+	ID3D12DebugDevice2* debugInterface = nullptr;
+	if (SUCCEEDED(_device.Get()->QueryInterface(&debugInterface)))
 	{
-		DXGI_ADAPTER_DESC1 adapterDesc;
-		adapter->GetDesc1(&adapterDesc);
-		if (adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) { continue; }
-		if (FAILED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr))) { continue; }
-		if (wcsstr(adapterDesc.Description, L"NVIDIA") != nullptr)
-		{
-			if (adapterDesc.DedicatedVideoMemory > maxVideoMemory[(int)GPUVender::NVidia])
-			{
-				if (adapterVender[(int)GPUVender::NVidia]) { adapterVender[(int)GPUVender::NVidia]->Release(); }
-				adapterVender[(int)GPUVender::NVidia] = adapter;
-				adapterVender[(int)GPUVender::NVidia]->AddRef();
-			}
-		}
-		else if (wcsstr(adapterDesc.Description, L"AMD") != nullptr)
-		{
-			if (adapterDesc.DedicatedVideoMemory > maxVideoMemory[(int)GPUVender::AMD])
-			{
-				if (adapterVender[(int)GPUVender::AMD]) { adapterVender[(int)GPUVender::AMD]->Release(); }
-				adapterVender[(int)GPUVender::AMD] = adapter;
-				adapterVender[(int)GPUVender::AMD]->AddRef();
-			}
-		}
-		else if (wcsstr(adapterDesc.Description, L"Intel") != nullptr)
-		{
-			if (adapterDesc.DedicatedVideoMemory > maxVideoMemory[(int)GPUVender::Intel])
-			{
-				if (adapterVender[(int)GPUVender::Intel]) { adapterVender[(int)GPUVender::Intel]->Release(); }
-				adapterVender[(int)GPUVender::Intel] = adapter;
-				adapterVender[(int)GPUVender::Intel]->AddRef();
-			}
-		}
-		//adapter->Release();
+		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL); // Only Objects with external reference counts
+		debugInterface->Release();
 	}
-	for (int i = 0; i < (int)GPUVender::CountOfGPUVender; ++i)
-	{
-		if (adapterVender[i] != nullptr)
-		{
-			_useAdapter = adapterVender[i].Detach();
-			break;
-		}
-	}
-
-	
-
-	for (int i = 0; i < (int)GPUVender::CountOfGPUVender; ++i)
-	{
-		if (adapterVender[i] != nullptr)
-		{
-			adapterVender[i]->Release();
-		}
-	}
-	
+#endif
 }
 /****************************************************************************
 *                     LogAdapters
@@ -377,23 +345,81 @@ void RHIDevice::LogOutputDisplayModes(IOutput* output, DXGI_FORMAT format)
 		::OutputDebugString(text.c_str());
 	}
 }
+#pragma endregion           Debug Function
+#pragma region Physical Device Function
 /****************************************************************************
-*                     ReportLiveObjects
+*                     SearchHardwareAdapter
 *************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::ReportLiveObjects()
-*  @brief     ReportLiveObjects
+*  @fn        void RHIDevice::SearchHardwareAdapter()
+*  @brief     Search hardware adapter (Supported GPU: NVidia, AMD, Intel)
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void RHIDevice::ReportLiveObjects()
+void RHIDevice::SearchHardwareAdapter()
 {
-	ID3D12DebugDevice2* debugInterface = nullptr;
-	if (SUCCEEDED(_device.Get()->QueryInterface(&debugInterface)))
+	/*-------------------------------------------------------------------
+	-                   Search Hardware Adapter
+	---------------------------------------------------------------------*/
+	AdapterComPtr adapter;
+	AdapterComPtr adapterVender[(int)GPUVender::CountOfGPUVender];
+	size_t maxVideoMemory[(int)GPUVender::CountOfGPUVender] = { 0 };
+	for (int i = 0; _dxgiFactory->EnumAdapters1(i, (IDXGIAdapter1**)adapter.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
-		debugInterface->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL); // Only Objects with external reference counts
-		debugInterface->Release();
+		DXGI_ADAPTER_DESC1 adapterDesc;
+		adapter->GetDesc1(&adapterDesc);
+		if (adapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) { continue; }
+		if (FAILED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr))) { continue; }
+		if (wcsstr(adapterDesc.Description, L"NVIDIA") != nullptr)
+		{
+			if (adapterDesc.DedicatedVideoMemory > maxVideoMemory[(int)GPUVender::NVidia])
+			{
+				if (adapterVender[(int)GPUVender::NVidia]) { adapterVender[(int)GPUVender::NVidia]->Release(); }
+				adapterVender[(int)GPUVender::NVidia] = adapter;
+				adapterVender[(int)GPUVender::NVidia]->AddRef();
+			}
+		}
+		else if (wcsstr(adapterDesc.Description, L"AMD") != nullptr)
+		{
+			if (adapterDesc.DedicatedVideoMemory > maxVideoMemory[(int)GPUVender::AMD])
+			{
+				if (adapterVender[(int)GPUVender::AMD]) { adapterVender[(int)GPUVender::AMD]->Release(); }
+				adapterVender[(int)GPUVender::AMD] = adapter;
+				adapterVender[(int)GPUVender::AMD]->AddRef();
+			}
+		}
+		else if (wcsstr(adapterDesc.Description, L"Intel") != nullptr)
+		{
+			if (adapterDesc.DedicatedVideoMemory > maxVideoMemory[(int)GPUVender::Intel])
+			{
+				if (adapterVender[(int)GPUVender::Intel]) { adapterVender[(int)GPUVender::Intel]->Release(); }
+				adapterVender[(int)GPUVender::Intel] = adapter;
+				adapterVender[(int)GPUVender::Intel]->AddRef();
+			}
+		}
+		//adapter->Release();
 	}
+	for (int i = 0; i < (int)GPUVender::CountOfGPUVender; ++i)
+	{
+		if (adapterVender[i] != nullptr)
+		{
+			_useAdapter = adapterVender[i].Detach();
+			break;
+		}
+	}
+
+	
+
+	for (int i = 0; i < (int)GPUVender::CountOfGPUVender; ++i)
+	{
+		if (adapterVender[i] != nullptr)
+		{
+			adapterVender[i]->Release();
+		}
+	}
+	
 }
+#pragma endregion Physical Device Function
+#pragma region Device Support Function
 /****************************************************************************
 *						CheckDXRSupport
 *************************************************************************//**
@@ -522,7 +548,7 @@ void RHIDevice::CheckHDRDisplaySupport()
 		UINT index = 0;
 
 		ComPtr<IDXGIOutput> currentOutput = nullptr;
-		ComPtr<IDXGIOutput> bestOutput = nullptr;
+		ComPtr<IDXGIOutput> bestOutput    = nullptr;
 		while (_useAdapter->EnumOutputs(index, &currentOutput) != DXGI_ERROR_NOT_FOUND)
 		{
 			OutputComPtr output;
@@ -538,7 +564,7 @@ void RHIDevice::CheckHDRDisplaySupport()
 
 		if (!isDisplayHDR10)
 		{
-			//_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+			//_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM; (shader側で選択出来るようになったら)
 			isEnabledHDR = false;
 		}
 	}
@@ -546,4 +572,4 @@ void RHIDevice::CheckHDRDisplaySupport()
 	_isHDRSupport = isEnabledHDR;
 
 }
-#pragma endregion Private Function
+#pragma endregion  Device Support Function

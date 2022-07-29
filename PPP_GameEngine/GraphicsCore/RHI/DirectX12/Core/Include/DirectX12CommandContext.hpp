@@ -20,7 +20,11 @@
 struct D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC;
 struct D3D12_DISPATCH_RAYS_DESC;
 class  GraphicsDeviceDirectX12;
-class  GPUResource;
+namespace rhi::directX12
+{
+	class GPUResource;
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +37,7 @@ namespace rhi::directX12
 	*  @class     CommandContext
 	*  @brief     CommandContext
 	*****************************************************************************/
-	class CommandContext : public rhi::core::RHICommandList
+	class CommandContext
 	{
 	public:
 		/****************************************************************************
@@ -52,10 +56,10 @@ namespace rhi::directX12
 		void SetIndexBuffer(const D3D12_INDEX_BUFFER_VIEW* view);
 		void SetVertexBuffer(const D3D12_VERTEX_BUFFER_VIEW& view);
 		void SetIndexBuffer(const D3D12_INDEX_BUFFER_VIEW& view);
-		void SetPrimitiveTopology(rhi::core::PrimitiveTopology topology) override;
-		void SetViewport(const rhi::core::Viewport*viewport, UINT numViewport) override;
-		void SetScissor(const rhi::core::ScissorRect* rect, UINT numRect) override;
-		void SetViewportAndScissor(const rhi::core::Viewport& viewPort, const rhi::core::ScissorRect& rect) override;
+		void SetPrimitiveTopology(rhi::core::PrimitiveTopology topology);
+		void SetViewport(const rhi::core::Viewport*viewport, UINT numViewport);
+		void SetScissor(const rhi::core::ScissorRect* rect, UINT numRect);
+		void SetViewportAndScissor(const rhi::core::Viewport& viewPort, const rhi::core::ScissorRect& rect);
 		void SetDescriptorHeap(IDescriptorHeap* heap);
 		void SetDescriptorHeaps(int heapsArraySize, IDescriptorHeap* heaps);
 		void SetRootSignature(IRootSignature* rootSignature);
@@ -76,13 +80,13 @@ namespace rhi::directX12
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
-		void DrawIndexed(UINT indexCount, UINT startIndexLocation = 0, UINT baseVertexLocation = 0) override;
-		void DrawIndexedInstanced(UINT indexCountPerInstance, UINT numInstance, UINT startIndexLocation = 0, UINT baseVertexLocation = 0, UINT startInstanceLocation = 0) override;
+		void DrawIndexed(UINT indexCount, UINT startIndexLocation = 0, UINT baseVertexLocation = 0);
+		void DrawIndexedInstanced(UINT indexCountPerInstance, UINT numInstance, UINT startIndexLocation = 0, UINT baseVertexLocation = 0, UINT startInstanceLocation = 0);
 
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/
-		void Dispatch(UINT threadGroupCountX = 1, UINT threadGroupCountY = 1, UINT threadGroupCountZ = 1) override;
+		void Dispatch(UINT threadGroupCountX = 1, UINT threadGroupCountY = 1, UINT threadGroupCountZ = 1);
 		/*-------------------------------------------------------------------
 		-                Mesh shader Command
 		---------------------------------------------------------------------*/
@@ -95,9 +99,9 @@ namespace rhi::directX12
 		/*-------------------------------------------------------------------
 		-                Copy resource
 		---------------------------------------------------------------------*/
-		void CopyBuffer(GPUResource* dest, GPUResource* source);
-		void CopyBufferRegion(GPUResource* dest, size_t destOffset, GPUResource* source, size_t sourceOffset, size_t numBytes);
-		void CopyTextureRegion(GPUResource* dest, GPUResource* source, D3D12_BOX& rect, UINT x = 0, UINT y = 0, UINT z = 0);
+		void CopyBuffer(rhi::directX12::GPUResource* dest, rhi::directX12::GPUResource* source);
+		void CopyBufferRegion(rhi::directX12::GPUResource* dest, size_t destOffset, rhi::directX12::GPUResource* source, size_t sourceOffset, size_t numBytes);
+		void CopyTextureRegion(rhi::directX12::GPUResource* dest, rhi::directX12::GPUResource* source, D3D12_BOX& rect, UINT x = 0, UINT y = 0, UINT z = 0);
 		/*-------------------------------------------------------------------
 		-                Clear command
 		---------------------------------------------------------------------*/
@@ -120,7 +124,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		CommandContext() = default;
+		CommandContext () = default;
 		~CommandContext() = default;
 		CommandContext(const CommandContext&) = delete;
 		CommandContext& operator=(const CommandContext&) = delete;

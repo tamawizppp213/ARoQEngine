@@ -38,14 +38,14 @@ rhi::vulkan::GPUInputAssemblyState::GPUInputAssemblyState(
 			)
 		);
 
-		_vertexBinding[slot].stride += core::PixelFormatSizeOf::Get(_elements[index].Format);
+		_vertexBinding[slot].stride += static_cast<std::uint32_t>(core::PixelFormatSizeOf::Get(_elements[index].Format));
 	}
 
 	for (size_t index = 0; index < _vertexBinding.size(); ++index)
 	{
 		_vertexBinding[index].binding = static_cast<std::uint32_t>(index);
 	}
-
+	
 	_vertexInput.pNext = nullptr;
 	_vertexInput.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	_vertexInput.flags = 0;

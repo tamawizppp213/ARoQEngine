@@ -59,16 +59,16 @@ GPUBlendState::GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device
 	_attachments.resize(_blendProperties.size());
 	for (size_t index = 0; index < _blendProperties.size(); index++)
 	{
-		const auto& blendProperty = _blendProperties[index];
+		const auto& prop = _blendProperties[index];
 
-		_attachments[index].colorWriteMask      = EnumConverter::Convert(blendProperty.ColorMask);
-		_attachments[index].blendEnable         = blendProperty.Enable;
-		_attachments[index].alphaBlendOp        = EnumConverter::Convert(blendProperty.AlphaOperator);
-		_attachments[index].colorBlendOp        = EnumConverter::Convert(blendProperty.ColorOperator);
-		_attachments[index].srcColorBlendFactor = EnumConverter::Convert(blendProperty.Source);
-		_attachments[index].dstColorBlendFactor = EnumConverter::Convert(blendProperty.Destination);
-		_attachments[index].srcAlphaBlendFactor = EnumConverter::Convert(blendProperty.SourceAlpha);
-		_attachments[index].dstAlphaBlendFactor = EnumConverter::Convert(blendProperty.DestinationAlpha);
+		_attachments[index].colorWriteMask      = EnumConverter::Convert(prop.ColorMask);
+		_attachments[index].blendEnable         = prop.Enable;
+		_attachments[index].alphaBlendOp        = EnumConverter::Convert(prop.AlphaOperator);
+		_attachments[index].colorBlendOp        = EnumConverter::Convert(prop.ColorOperator);
+		_attachments[index].srcColorBlendFactor = EnumConverter::Convert(prop.Source);
+		_attachments[index].dstColorBlendFactor = EnumConverter::Convert(prop.Destination);
+		_attachments[index].srcAlphaBlendFactor = EnumConverter::Convert(prop.SourceAlpha);
+		_attachments[index].dstAlphaBlendFactor = EnumConverter::Convert(prop.DestinationAlpha);
 	}
 
 	float blendConstants[4] = { 1.0f, 1.0f, 1.0f, 1.0f };

@@ -63,9 +63,9 @@ public:
 	/*-------------------------------------------------------------------
 	-                Create Resource
 	---------------------------------------------------------------------*/
-	UINT CreateShaderResourceView(GPUResource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc);
-	void CreateShaderResourceView(GPUResource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc, D3D12_CPU_DESCRIPTOR_HANDLE destDescriptor);
-	UINT CreateUnorderedAccessView(GPUResource* resource, const D3D12_UNORDERED_ACCESS_VIEW_DESC* desc);
+	UINT CreateShaderResourceView(rhi::directX12::GPUResource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc);
+	void CreateShaderResourceView(rhi::directX12::GPUResource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc, D3D12_CPU_DESCRIPTOR_HANDLE destDescriptor);
+	UINT CreateUnorderedAccessView(rhi::directX12::GPUResource* resource, const D3D12_UNORDERED_ACCESS_VIEW_DESC* desc);
 
 	void CreateCommittedResource(const D3D12_HEAP_PROPERTIES* heapProperties, D3D12_HEAP_FLAGS HeapFlags, const D3D12_RESOURCE_DESC* descriptor, D3D12_RESOURCE_STATES initialResourceState, const D3D12_CLEAR_VALUE* optimizedClearValue, const IID& riidResource, void** resource);
     

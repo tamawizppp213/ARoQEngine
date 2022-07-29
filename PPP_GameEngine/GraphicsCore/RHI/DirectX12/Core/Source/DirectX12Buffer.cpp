@@ -16,6 +16,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::directX12;
+
 MeshBuffer::~MeshBuffer()
 {
 	Dispose();
@@ -187,7 +188,7 @@ void ColorBuffer::OnResize(UINT newWidth, UINT newHeight, UINT arraySize)
 *  @param[in] GPUResource* source
 *  @return @@void
 *****************************************************************************/
-void ColorBuffer::CopyFrom(CommandContext* commandContext, GPUResource* source)
+void ColorBuffer::CopyFrom(CommandContext* commandContext, rhi::directX12::GPUResource* source)
 {
 	commandContext->CopyBuffer(&_texture.get()->Resource, source);
 }

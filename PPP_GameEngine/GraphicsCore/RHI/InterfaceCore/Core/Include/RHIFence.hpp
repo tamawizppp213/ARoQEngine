@@ -44,14 +44,13 @@ namespace rhi::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		RHIFence() = default;
-		explicit RHIFence(const std::shared_ptr<RHIDevice>& device) { _device = device; }
-		~RHIFence() = default;
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-
+		RHIFence() = default;
+		explicit RHIFence(const std::shared_ptr<RHIDevice>& device) { _device = device; }
+		~RHIFence() = default;
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

@@ -95,7 +95,7 @@ void GaussianBlur::OnResize(int newWidth, int newHeight)
 *  @param[in,out] GPUResource* renderTarget
 *  @return Å@Å@void
 *****************************************************************************/
-void GaussianBlur::Draw(GPUResource* renderTarget)
+void GaussianBlur::Draw(rhi::directX12::GPUResource* renderTarget)
 {
 	auto& engine       = GraphicsCoreEngine::Instance();
 	auto  context      = engine.GetCommandContext();

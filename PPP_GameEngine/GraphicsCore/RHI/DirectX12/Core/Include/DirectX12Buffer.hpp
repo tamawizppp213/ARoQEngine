@@ -44,7 +44,7 @@ static inline UINT AlignmentValue(UINT size, UINT alignment)
 *  @brief     Upload buffer elements need to be multiples of 256 bytes (In case updatable constant buffer)
 *             The difference from Default Buffer is whether map and unmap are available or not.
 *****************************************************************************/
-class UploadBuffer : public GPUResource
+class UploadBuffer : public rhi::directX12::GPUResource
 {
 public:
 	/****************************************************************************
@@ -156,7 +156,7 @@ private:
 *  @class     GPUBuffer
 *  @brief     GPUBuffer (use for colorBuffer and RWStruturedBuffer)
 *****************************************************************************/
-class GPUBuffer : public GPUResource
+class GPUBuffer : public rhi::directX12::GPUResource
 {
 public:
 	/****************************************************************************
@@ -222,7 +222,7 @@ public:
 	*****************************************************************************/
 	void Create(GraphicsDeviceDirectX12& graphicsDevice, UINT width, UINT height, UINT arraySize = 0, const std::wstring& addName = L"", DXGI_FORMAT colorFormat = DXGI_FORMAT_R8G8B8A8_UNORM, float clearColor[4] = nullptr, UINT mipmaps = 1);
 	void OnResize(UINT newWidth, UINT newHeight, UINT arraySize);
-	void CopyFrom(rhi::directX12::CommandContext* commandContext, GPUResource* source);
+	void CopyFrom(rhi::directX12::CommandContext* commandContext, rhi::directX12::GPUResource* source);
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/

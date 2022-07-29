@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
 #include <stdexcept>
-
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,10 +20,42 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-D3D12_TEXTURE_ADDRESS_MODE  EnumConverter::Convert(const rhi::core::TextureAddressingMode addressingMode)
+#pragma region Sampler State
+D3D12_TEXTURE_ADDRESS_MODE  EnumConverter::Convert(const rhi::core::SamplerAddressMode addressingMode)
 {
 	return static_cast<D3D12_TEXTURE_ADDRESS_MODE>(addressingMode); // all the same
 }
+
+D3D12_STATIC_BORDER_COLOR EnumConverter::Convert(const rhi::core::BorderColor borderColor)
+{
+	switch (borderColor)
+	{
+		case core::BorderColor::TransparentBlack: return D3D12_STATIC_BORDER_COLOR::D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+		case core::BorderColor::OpaqueWhite     : return D3D12_STATIC_BORDER_COLOR::D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
+		case core::BorderColor::OpaqueBlack     : return D3D12_STATIC_BORDER_COLOR::D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
+		default:
+			throw std::runtime_error("failed to convert static border color");
+	}
+}
+
+D3D12_FILTER EnumConverter::Convert(const rhi::core::FilterOption filter)
+{
+	switch (filter)
+	{
+		case core::FilterOption::MinPointMagPointMipPoint   : return D3D12_FILTER_MIN_MAG_MIP_POINT;
+		case core::FilterOption::MinPointMagPointMipLinear  : return D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+		case core::FilterOption::MinPointMagLinearMipPoint  : return D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+		case core::FilterOption::MinPointMagLinearMipLinear : return D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+		case core::FilterOption::MinLinearMagPointMipPoint  : return D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT;
+		case core::FilterOption::MinLinearMagPointMipLinear : return D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+		case core::FilterOption::MinLinearMagLinearMipPoint : return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		case core::FilterOption::MinLinearMagLinearMipLinear: return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		case core::FilterOption::Anisotropy                 : return D3D12_FILTER_ANISOTROPIC;
+		default:
+			throw std::runtime_error("not supported filter option");
+	}
+}
+#pragma endregion Sampler State
 DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 {
 	switch (pixelFormat)
@@ -56,7 +88,7 @@ D3D12_COLOR_WRITE_ENABLE EnumConverter::Convert(const rhi::core::ColorMask color
 }
 #pragma endregion        BlendState
 #pragma region RasterizerState
-D3D12_FILL_MODE EnumConverter::Convert(const rhi::core::FillMode    fillMode)
+D3D12_FILL_MODE EnumConverter::Convert(const rhi::core::FillMode fillMode)
 {
 	switch (fillMode)
 	{
@@ -123,3 +155,99 @@ D3D_PRIMITIVE_TOPOLOGY  EnumConverter::Convert(const rhi::core::PrimitiveTopolog
 	return static_cast<D3D_PRIMITIVE_TOPOLOGY>(primitiveTopology);
 }
 #pragma endregion      Input Layput
+#pragma region GPUResource
+D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage)
+{
+	static std::vector<core::ResourceUsage> sourcePool = {
+		core::ResourceUsage::None,
+		core::ResourceUsage::VertexBuffer,
+		core::ResourceUsage::IndexBuffer,
+		core::ResourceUsage::ConstantBuffer,
+		core::ResourceUsage::RenderTarget,
+		core::ResourceUsage::DepthStencil
+	};
+	static std::vector<D3D12_RESOURCE_FLAGS> targetPool =
+	{
+		D3D12_RESOURCE_FLAG_NONE,
+		D3D12_RESOURCE_FLAG_NONE,
+		D3D12_RESOURCE_FLAG_NONE,
+		D3D12_RESOURCE_FLAG_NONE,
+		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
+		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
+	};
+
+	auto res = D3D12_RESOURCE_FLAG_NONE;
+
+	for (size_t index = 0; index < sourcePool.size(); index++)
+	{
+		if (core::EnumHas(usage, sourcePool[index]))
+			res = res | targetPool[index];
+	}
+
+	return res;
+}
+D3D12_RESOURCE_DIMENSION   EnumConverter::Convert(const rhi::core::ResourceDimension dimension)
+{
+	switch (dimension)
+	{
+		case core::ResourceDimension::Dimension1D: return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+		case core::ResourceDimension::Dimension2D: return D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		case core::ResourceDimension::Dimension3D: return D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+		case core::ResourceDimension::Buffer: return D3D12_RESOURCE_DIMENSION_BUFFER;
+		default:
+			throw std::runtime_error("not supported resource dimension (directX12 api)");
+	}
+}
+D3D12_SRV_DIMENSION        EnumConverter::Convert(const rhi::core::ResourceType type)
+{
+	return static_cast<D3D12_SRV_DIMENSION>(type);
+}
+D3D12_DESCRIPTOR_HEAP_TYPE EnumConverter::Convert(const rhi::core::DescriptorHeapType heapType)
+{
+	switch (heapType)
+	{
+		case core::DescriptorHeapType::CBV:
+		case core::DescriptorHeapType::SRV:
+		case core::DescriptorHeapType::UAV:
+		case core::DescriptorHeapType::CBV_SRV_UAV: return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		case core::DescriptorHeapType::SAMPLER    : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+		case core::DescriptorHeapType::RTV        : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		case core::DescriptorHeapType::DSV        : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+		default:
+			throw std::runtime_error("not supported descriptor heap type");
+	}
+}
+#pragma region GPUBuffer
+D3D12_HEAP_TYPE  EnumConverter::Convert(const rhi::core::MemoryHeap memoryHeap)
+{
+	switch (memoryHeap)
+	{
+		case core::MemoryHeap::Default: return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_DEFAULT;
+		case core::MemoryHeap::Upload : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_UPLOAD;
+		case core::MemoryHeap::Custom : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_CUSTOM;
+		default:
+			throw std::runtime_error("not supported heap type");
+	}
+}
+D3D12_RESOURCE_STATES EnumConverter::Convert(const rhi::core::ResourceLayout resourceLayout)
+{
+	static D3D12_RESOURCE_STATES states[] = {
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_GENERIC_READ,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_INDEX_BUFFER,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
+		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE
+	};
+
+	return states[(int)resourceLayout];
+}
+#pragma endregion GPUBuffer
+#pragma endregion       GPUResource

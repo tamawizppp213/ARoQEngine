@@ -2,7 +2,7 @@
 ///             @file   TemplateText.hpp
 ///             @brief  TemplateText
 ///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @date   2022_07_19
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef TEMPLATE_TEXT_HPP
