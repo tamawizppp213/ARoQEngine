@@ -703,6 +703,7 @@ void GraphicsDeviceDirectX12::CreateDescriptorHeap(HeapFlag heapFlag)
 			samplerHeapDesc.NodeMask       = SINGLE_GPU;
 			ThrowIfFailed(_device->CreateDescriptorHeap(&samplerHeapDesc, IID_PPV_ARGS(&_samplerHeap)));
 			_cbvSrvUavHeap->SetName(L"DirectX12::SamplerHeap");
+			
 		}
 	}
 }

@@ -50,7 +50,7 @@ namespace rhi::directX12
 			const core::ShaderType shaderType,
 			const std::string&     fileName,
 			const std::string&     entryPoint    = "main",
-			const std::string&     shaderVersion = "6.0"
+			const std::string&     shaderVersion = "6.6"
 		);
 	protected:
 		/****************************************************************************

@@ -37,6 +37,12 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		/*-------------------------------------------------------------------
+		-               Draw Frame Function
+		---------------------------------------------------------------------*/
+		virtual void BeginRecording() = 0;
+		virtual void EndRecording  () = 0;
+
+		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/
 		virtual void SetPrimitiveTopology(PrimitiveTopology topology) = 0;
@@ -55,8 +61,7 @@ namespace rhi::core
 		/*-------------------------------------------------------------------
 		-                Copy Resource
 		---------------------------------------------------------------------*/
-		virtual void CopyBuffer(){ };
-		virtual void CopyBufferRegion(){ };
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -66,7 +71,11 @@ namespace rhi::core
 		*****************************************************************************/
 		RHICommandList()          = default;
 		virtual ~RHICommandList() = default;
-		explicit RHICommandList(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandAllocator>& commandAllocator) { _device = device; _commandAllocator = commandAllocator; }
+		explicit RHICommandList(
+			const std::shared_ptr<RHIDevice>& device,
+			const std::shared_ptr<RHICommandAllocator>& commandAllocator) 
+			: _device(device), _commandAllocator(commandAllocator) {};
+
 	protected:
 		/****************************************************************************
 		**                Private Function

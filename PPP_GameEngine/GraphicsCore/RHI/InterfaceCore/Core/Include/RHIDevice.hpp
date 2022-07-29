@@ -14,6 +14,7 @@
 #include "RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
+#include <vector>
 #include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -29,6 +30,8 @@ namespace rhi::core
 	class RHICommandQueue;
 	class RHICommandAllocator;
 	class RHISwapchain;
+	class RHIDescriptorHeap;
+	class GPUPipelineFactory;
 	/****************************************************************************
 	*				  			RHIDevice
 	*************************************************************************//**
@@ -47,6 +50,9 @@ namespace rhi::core
 		virtual std::shared_ptr<RHICommandQueue>     CreateCommandQueue() = 0;
 		virtual std::shared_ptr<RHICommandAllocator> CreateCommandAllocator() = 0;
 		virtual std::shared_ptr<RHISwapchain>        CreateSwapchain(const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0) = 0;
+		virtual std::shared_ptr<RHIDescriptorHeap>   CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
+		virtual std::shared_ptr<RHIDescriptorHeap>   CreateDescriptorHeap(const std::vector<DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts) = 0;
+		virtual std::shared_ptr<GPUPipelineFactory>  CreatePipelineFactory() = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -56,10 +62,9 @@ namespace rhi::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+	protected:
 		~RHIDevice() = default;
 		RHIDevice(APIVersion version = APIVersion::Unknown) { _apiVersion = version; }
-	protected:
-		
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/

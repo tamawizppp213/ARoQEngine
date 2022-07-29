@@ -26,7 +26,7 @@ namespace DirectX
 }
 struct Texture
 {
-	GPUResource Resource;
+	rhi::directX12::GPUResource Resource;
 	int         TextureID;
 	DXGI_FORMAT Format;
 	gm::Float3  PixelSize;
@@ -71,7 +71,7 @@ private:
 	**                Private Function
 	*****************************************************************************/
 	static int  RegistSRV(TextureType type, Texture& texture);
-	static void CreateTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, GPUResource* textureBuffer, bool isDiscreteGPU = true);
+	static void CreateTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, rhi::directX12::GPUResource* textureBuffer, bool isDiscreteGPU = true);
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/

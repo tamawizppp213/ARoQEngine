@@ -35,7 +35,11 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		static D3D12_TEXTURE_ADDRESS_MODE Convert(const rhi::core::TextureAddressingMode addressingMode);
+#pragma region Sampler State
+		static D3D12_FILTER               Convert(const rhi::core::FilterOption filter);
+		static D3D12_TEXTURE_ADDRESS_MODE Convert(const rhi::core::SamplerAddressMode addressingMode);
+		static D3D12_STATIC_BORDER_COLOR  Convert(const rhi::core::BorderColor borderColor);
+#pragma endregion Sampler State
 		static DXGI_FORMAT                Convert(const rhi::core::PixelFormat pixelFormat);
 #pragma region BlendState
 		static D3D12_BLEND_OP             Convert(const rhi::core::BlendOperator blendOperator);
@@ -53,8 +57,19 @@ namespace rhi::directX12
 #pragma endregion DepthStencilState
 #pragma region Input Layout
 		static D3D_PRIMITIVE_TOPOLOGY     Convert(const rhi::core::PrimitiveTopology primitiveTopology);
-
 #pragma endregion Input Layout 
+#pragma region GPUResource
+		static D3D12_DESCRIPTOR_HEAP_TYPE Convert(const rhi::core::DescriptorHeapType heapType);
+		static D3D12_RESOURCE_FLAGS       Convert(const rhi::core::ResourceUsage usage);
+#pragma region GPUBuffer 
+		static D3D12_HEAP_TYPE            Convert(const rhi::core::MemoryHeap memoryHeap);
+		static D3D12_RESOURCE_STATES      Convert(const rhi::core::ResourceLayout resourceLayout);
+#pragma endregion GPUBuffer
+#pragma region GPUTexture
+		static D3D12_RESOURCE_DIMENSION   Convert(const rhi::core::ResourceDimension dimension);
+		static D3D12_SRV_DIMENSION        Convert(const rhi::core::ResourceType type);
+#pragma endregion GPUTexture
+#pragma endregion GPUResource
 	};
 }
 #endif

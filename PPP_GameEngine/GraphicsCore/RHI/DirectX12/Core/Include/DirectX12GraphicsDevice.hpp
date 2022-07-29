@@ -91,8 +91,8 @@ public:
 	inline const ICommandQueue* GetCommandQueue       ()                     const { return _commandQueue.Get(); }
 	inline       Resource*    GetDepthStencil        ()                            { return _depthStencilBuffer.Get(); }
 	inline const Resource*    GetDepthStencil        ()                      const { return _depthStencilBuffer.Get(); }
-	inline       GPUResource* GetCurrentRenderTarget ()                            { return &_renderTargetList[_currentFrameIndex]; }
-	inline const GPUResource*    GetCurrentRenderTarget ()                      const { return &_renderTargetList[_currentFrameIndex]; }
+	inline       rhi::directX12::GPUResource* GetCurrentRenderTarget ()                            { return &_renderTargetList[_currentFrameIndex]; }
+	inline const rhi::directX12::GPUResource*    GetCurrentRenderTarget ()                      const { return &_renderTargetList[_currentFrameIndex]; }
 	inline       Resource*    GetRenderTargetResource(RenderTargetType type)       { return _renderTargetList[(int)type].GetResource(); }
 	inline const Resource*    GetRenderTargetResource(RenderTargetType type) const { return _renderTargetList[(int)type].GetResource(); }
 	inline      IDescriptorHeap* GetCbvSrvUavHeap()       { return _cbvSrvUavHeap.Get(); }
@@ -176,7 +176,7 @@ private:
 	DescriptorHeapComPtr         _samplerHeap        = nullptr;
 	PipelineStateComPtr          _pipelineState      = nullptr;      /// Graphic Pipeline State
 	ResourceComPtr               _depthStencilBuffer = nullptr; /// DepthStencl Buffer   
-	GPUResource                  _renderTargetList[FRAME_BUFFER_COUNT];
+	rhi::directX12::GPUResource                  _renderTargetList[FRAME_BUFFER_COUNT];
 	ResourceAllocator*           _rtvAllocator     = nullptr;
 	ResourceAllocator*           _dsvAllocator     = nullptr;
 	ResourceAllocator*           _cbvAllocator     = nullptr;

@@ -10,7 +10,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandQueue.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandList.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandAllocator.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDescriptorHeap.hpp"
+#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUPipelineFactory.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <iostream>
 #include <string>
@@ -103,19 +106,21 @@ namespace
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Destructor
 RHIDevice::~RHIDevice()
 {
 	vkDestroyDevice(_logicalDevice, nullptr); // destroy logical device
+	vkDestroySurfaceKHR(_instance, _surface, nullptr);
 #ifdef _DEBUG
 	DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
 #endif
-	vkDestroySurfaceKHR(_instance, _surface, nullptr);
 	vkDestroyInstance(_instance, nullptr);
 
 	_deviceExtensions.clear(); _deviceExtensions.shrink_to_fit();
-	_instanceLayers.clear(); _instanceLayers.shrink_to_fit();
+	_instanceLayers  .clear(); _instanceLayers  .shrink_to_fit();
 }
-
+#pragma endregion Destructor
+#pragma region Start Up Function
 bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useHDR, bool useRaytracing)
 {
 	_apiVersion = rhi::core::APIVersion::Vulkan;
@@ -129,8 +134,55 @@ bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useHDR, bool useRayt
 	CreateLogicalDevice(useRaytracing);
 	return true;
 }
+#pragma endregion        Start Up Function
+#pragma region Create Resource Function
+std::shared_ptr<core::RHISwapchain>  RHIDevice::CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync)
+{
+	return nullptr;
+}
+std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
+{
+	return std::static_pointer_cast<core::RHICommandList>(std::make_shared<vulkan::RHICommandList>(shared_from_this(), commandAllocator));
+}
+std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue()
+{
+	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<vulkan::RHICommandQueue>(shared_from_this()));
+}
+std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator()
+{
+	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<vulkan::RHICommandAllocator>(shared_from_this()));
+}
+std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
+{
+	return std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this(), heapType, maxDescriptorCount));
+}
+std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts)
+{
+	return std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this(), heapTypes, maxDescriptorCounts));
+}
+std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
+{
+	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<vulkan::GPUPipelineFactory>());
+}
+size_t RHIDevice::AllocateQueue()
+{
+	if (_freeQueues.empty()) { throw std::runtime_error("too many queues were allocated"); }
 
-#pragma region Private Function
+	size_t index = _freeQueues.back();
+	_freeQueues.pop_back();
+	return index;
+}
+void RHIDevice::FreeQueue(const size_t index)
+{
+	const auto it = std::find(_freeQueues.begin(), _freeQueues.end(), index);
+
+	if (it == _freeQueues.end())
+	{
+		_freeQueues.push_back(index);
+	}
+}
+#pragma endregion Create Resource Function
+#pragma region Debug Function
 /****************************************************************************
 *                     CheckValidationLayerSupport
 *************************************************************************//**
@@ -154,13 +206,14 @@ bool RHIDevice::CheckValidationLayerSupport()
 	---------------------------------------------------------------------*/
 	if constexpr (VK_HEADER_VERSION_COMPLETE >= VK_MAKE_VERSION(1, 1, 106))
 	{
-		_instanceLayers.push_back("VK_LAYER_KHRONOS_validation");
+		_instanceLayers.push_back("VK_LAYER_KHRONOS_validation"); // normally use
 	}
 	else
 	{
 		_instanceLayers.push_back("VK_LAYER_LUNARG_standard_validation");
 	}
 #endif
+	/* This implementation is used because it is not used in release build.*/
 	for (const char* layerName : _instanceLayers)
 	{
 		bool layerFound = false;
@@ -177,7 +230,84 @@ bool RHIDevice::CheckValidationLayerSupport()
 	}
 	return true;
 }
+/****************************************************************************
+*                     PopulateDebugMessengerCreateInfo
+*************************************************************************//**
+*  @fn        void GraphicsDeviceVulkan::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+*  @brief     Create Debug Messenger infomation.
+*  @param[out] VkDebugUtilsMessengerCreateInfoEXT& createInfo
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+{
+	createInfo = {};
+	createInfo.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+	createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	createInfo.messageType     = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+	createInfo.pfnUserCallback = DebugCallback;
 
+}
+/****************************************************************************
+*                     SetUpDebugMessenger
+*************************************************************************//**
+*  @fn        void GraphicsDeviceVulkan::SetUpDebugMessenger()
+*  @brief     Set up debug messenger
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::SetUpDebugMessenger()
+{
+#ifdef _DEBUG
+	if (!_enableValidationLayer) { return; }
+	VkDebugUtilsMessengerCreateInfoEXT createInfo;
+	PopulateDebugMessengerCreateInfo(createInfo);
+	if (::CreateDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to set up debug messenger!");
+	}
+#endif
+}
+/****************************************************************************
+*                     LogQueueList
+*************************************************************************//**
+*  @fn        void GraphicsDeviceVulkan::LogQueueList(VkPhysicalDevice device)
+*  @brief     Log queue list
+*  @param[in] VkPhysicalDevice device
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::LogQueueList(VkPhysicalDevice device)
+{
+#ifdef _DEBUG
+	/*-------------------------------------------------------------------
+	-               Acquire Queue family
+	---------------------------------------------------------------------*/
+	uint32_t queueFamilyCount = 0;
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+	/*-------------------------------------------------------------------
+	-               Acquire Physical device properties
+	---------------------------------------------------------------------*/
+	VkPhysicalDeviceProperties prop;
+	vkGetPhysicalDeviceProperties(device, &prop);
+	OutputDebugStringA("Device Name: "); OutputDebugStringA(prop.deviceName); OutputDebugStringA("\n");
+	/*-------------------------------------------------------------------
+	-               Find Queue famiky
+	---------------------------------------------------------------------*/
+	for (const auto& queueFamily : queueFamilies)
+	{
+		OutputDebugStringW(L"////////////////////////////////////////////////\n");
+		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) { OutputDebugStringW(L"Graphics supported\n"); }
+		if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)  { OutputDebugStringW(L"Compute supported\n"); }
+		if (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) { OutputDebugStringW(L"Transfer supported\n"); }
+		if (queueFamily.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) { OutputDebugStringW(L"Sparce binding supported\n"); }
+		if (queueFamily.queueFlags & VK_QUEUE_PROTECTED_BIT) { OutputDebugStringW(L"Protected supported\n"); }
+		OutputDebugStringW(L"////////////////////////////////////////////////\n");
+	}
+#endif
+}
+#pragma endregion           Debug  Function
+#pragma region Set Up Function
 /****************************************************************************
 *                     CreateInstance
 *************************************************************************//**
@@ -198,7 +328,7 @@ bool RHIDevice::CreateInstance()
 #endif
 
 	/*-------------------------------------------------------------------
-	-               Acquire Extension Infomation (for debugging layer)
+	-          Acquire Extension Infomation (for debugging layer)
 	---------------------------------------------------------------------*/
 	std::vector<VkExtensionProperties> properties;
 	{
@@ -260,43 +390,6 @@ bool RHIDevice::CreateInstance()
 }
 
 /****************************************************************************
-*                     PopulateDebugMessengerCreateInfo
-*************************************************************************//**
-*  @fn        void GraphicsDeviceVulkan::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
-*  @brief     Create Debug Messenger infomation.
-*  @param[out] VkDebugUtilsMessengerCreateInfoEXT& createInfo
-*  @return 　　void
-*****************************************************************************/
-void RHIDevice::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
-{
-	createInfo = {};
-	createInfo.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-	createInfo.messageType     = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	createInfo.pfnUserCallback = DebugCallback;
-
-}
-/****************************************************************************
-*                     SetUpDebugMessenger
-*************************************************************************//**
-*  @fn        void GraphicsDeviceVulkan::SetUpDebugMessenger()
-*  @brief     Set up debug messenger
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void RHIDevice::SetUpDebugMessenger()
-{
-#ifdef _DEBUG
-	if (!_enableValidationLayer) { return; }
-	VkDebugUtilsMessengerCreateInfoEXT createInfo;
-	PopulateDebugMessengerCreateInfo(createInfo);
-	if (::CreateDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to set up debug messenger!");
-	}
-#endif
-}
-/****************************************************************************
 *                     SelectPhysicalDevice
 *************************************************************************//**
 *  @fn        bool GraphicsDeviceVulkan::SelectPhysicalDevice()
@@ -334,6 +427,7 @@ void RHIDevice::SelectPhysicalDevice()
 	/*-------------------------------------------------------------------
 	-               Acquire memory properties
 	---------------------------------------------------------------------*/
+	vkGetPhysicalDeviceFeatures(_physicalDevice, &_physicalDeviceFeatures);    // all features enabled (指定機能だけ有効にしても良いかもしれません.)
 	vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &_memoryProperties);
 }
 /****************************************************************************
@@ -358,44 +452,6 @@ bool RHIDevice::IsDeviceSuitable(VkPhysicalDevice device)
 	return _freeQueues.size()!=0 && extensionsSupported && swapchainAdequated;
 }
 
-/****************************************************************************
-*                     LogQueueList
-*************************************************************************//**
-*  @fn        void GraphicsDeviceVulkan::LogQueueList(VkPhysicalDevice device)
-*  @brief     Log queue list
-*  @param[in] VkPhysicalDevice device
-*  @return 　　void
-*****************************************************************************/
-void RHIDevice::LogQueueList(VkPhysicalDevice device)
-{
-	/*-------------------------------------------------------------------
-	-               Acquire Queue family
-	---------------------------------------------------------------------*/
-	uint32_t queueFamilyCount = 0;
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
-	/*-------------------------------------------------------------------
-	-               Acquire Physical device properties
-	---------------------------------------------------------------------*/
-	VkPhysicalDeviceProperties prop;
-	vkGetPhysicalDeviceProperties(device, &prop);
-	OutputDebugStringA("Device Name: "); OutputDebugStringA(prop.deviceName); OutputDebugStringA("\n");
-	/*-------------------------------------------------------------------
-	-               Find Queue famiky
-	---------------------------------------------------------------------*/
-	for (const auto& queueFamily : queueFamilies)
-	{
-		OutputDebugStringW(L"////////////////////////////////////////////////\n");
-		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) { OutputDebugStringW(L"Graphics supported\n"); }
-		if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT)  { OutputDebugStringW(L"Compute supported\n"); }
-		if (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT) { OutputDebugStringW(L"Transfer supported\n"); }
-		if (queueFamily.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) { OutputDebugStringW(L"Sparce binding supported\n"); }
-		if (queueFamily.queueFlags & VK_QUEUE_PROTECTED_BIT) { OutputDebugStringW(L"Protected supported\n"); }
-		OutputDebugStringW(L"////////////////////////////////////////////////\n");
-	}
-
-}
 /****************************************************************************
 *                     CreateSurface
 *************************************************************************//**
@@ -428,17 +484,20 @@ void RHIDevice::CreateSurface()
 void RHIDevice::CreateLogicalDevice(bool useRaytracing)
 {
 	assert(_physicalDevice);
-	std::vector<float> queuePriorities(1, 1.0f);
-
+	std::vector<float> queuePriorities(_freeQueues.size(), 1.0f);
+	for (size_t index = 0; index < _freeQueues.size(); ++index)
+	{
+		_freeQueues[index] = _freeQueues.size() - index - 1;
+	}
+	/*-------------------------------------------------------------------
+	-               Set device queue create info
+	---------------------------------------------------------------------*/
 	VkDeviceQueueCreateInfo deviceQueueCreateInfo = {};
 	deviceQueueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO; // structure type
 	deviceQueueCreateInfo.queueFamilyIndex = _queueFamilyIndex.GraphicsFamily.value();   // queue index
-	deviceQueueCreateInfo.queueCount       = 1;                                          // queue count : 1
+	deviceQueueCreateInfo.queueCount       = static_cast<std::uint32_t>(_freeQueues.size());                                          // queue count : 1
 	deviceQueueCreateInfo.pQueuePriorities = queuePriorities.data();                      // queue property : 1.0
-	/*-------------------------------------------------------------------
-	-               Set DeviceFeatures
-	---------------------------------------------------------------------*/
-	vkGetPhysicalDeviceFeatures(_physicalDevice, &_physicalDeviceFeatures);
+
 	/*-------------------------------------------------------------------
 	-               Acquire extension infomation
 	---------------------------------------------------------------------*/
@@ -449,7 +508,9 @@ void RHIDevice::CreateLogicalDevice(bool useRaytracing)
 		extensionProperties.resize(count);
 		vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &count, extensionProperties.data());
 	}
-
+	/*-------------------------------------------------------------------
+	-               All Device Extensions : Enabled
+	---------------------------------------------------------------------*/
 	std::vector<const char*> extensions;
 	for (const auto& prop : extensionProperties)
 	{
@@ -459,12 +520,11 @@ void RHIDevice::CreateLogicalDevice(bool useRaytracing)
 	/*-------------------------------------------------------------------
 	-               Set Device Create Info
 	---------------------------------------------------------------------*/
-	VkPhysicalDeviceFeatures deviceFeatures{};
 	VkDeviceCreateInfo deviceCreateInfo = {};
 	deviceCreateInfo.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;   // structure type
 	deviceCreateInfo.pQueueCreateInfos       = &deviceQueueCreateInfo;                 // vk device queue create info
 	deviceCreateInfo.queueCreateInfoCount    = static_cast<UINT32>(1);
-	deviceCreateInfo.pEnabledFeatures        = &deviceFeatures;
+	deviceCreateInfo.pEnabledFeatures        = &_physicalDeviceFeatures;
 	deviceCreateInfo.ppEnabledExtensionNames = extensions.data();
 	deviceCreateInfo.enabledExtensionCount   = static_cast<UINT32>(extensions.size());
 	deviceCreateInfo.pNext                   = nullptr;
@@ -505,7 +565,7 @@ void RHIDevice::CreateLogicalDevice(bool useRaytracing)
 			VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, nullptr,
 		};
 		physicalDeviceFeatures2.pNext    = &enabledDescriptorIndexingFeatures;
-		physicalDeviceFeatures2.features = deviceFeatures;
+		physicalDeviceFeatures2.features = _physicalDeviceFeatures;
 		
 
 		deviceCreateInfo.pNext            = &physicalDeviceFeatures2;
@@ -537,27 +597,34 @@ void RHIDevice::FindGraphicsQueueFamilies(VkPhysicalDevice device)
 	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 	/*-------------------------------------------------------------------
-	-               Find Queue famiky
+	-               Find Queue family
 	---------------------------------------------------------------------*/
-	for (std::uint32_t i = 0; i < queueFamilyCount; ++i)
+	// [0] : Most ideal condition,  [1] : graphics support 
+	VkQueueFlags flags[] = { VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT | VK_QUEUE_TRANSFER_BIT , VK_QUEUE_GRAPHICS_BIT };
+	for (std::uint32_t flag = 0; flag < _countof(flags); ++flag)
 	{
-//#ifdef _WIN32
-//		if (!vkGetPhysicalDeviceWin32PresentationSupportKHR(_physicalDevice, static_cast<std::uint32_t>(i))) { continue; }
-//#endif
-		if (!(queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)) { continue; }
-		_queueFamilyIndex.GraphicsFamily = i;
-		_freeQueues.resize(queueFamilies[i].queueCount);
-		if (_queueFamilyIndex.IsComplete()) { break; }
-	}
+		for (std::uint32_t i = 0; i < queueFamilyCount; ++i)
+		{
+			/*-------------------------------------------------------------------
+			-               Was queue family found ? 
+			---------------------------------------------------------------------*/
+			if (_queueFamilyIndex.IsComplete()) { break; }
+			/*-------------------------------------------------------------------
+			-               Graphics support check
+			---------------------------------------------------------------------*/
+			if (!(queueFamilies[i].queueFlags & flags[flag])) { continue; }
 
+#ifdef _WIN32
+			if (!vkGetPhysicalDeviceWin32PresentationSupportKHR(device, static_cast<std::uint32_t>(i))) { continue; }
+#endif
+			/*-------------------------------------------------------------------
+			-             Acquire Graphics queue family index and queue count
+			---------------------------------------------------------------------*/
+			_queueFamilyIndex.GraphicsFamily = i;
+			_freeQueues.resize(queueFamilies[i].queueCount);
+		}
+	}
+	
 	if (_freeQueues.size() == 0) { throw std::runtime_error("Free queue's size is 0."); }
 }
-std::shared_ptr<core::RHISwapchain>  RHIDevice::CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync)
-{
-	return nullptr;
-}
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator()
-{
-	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<vulkan::RHICommandAllocator>(shared_from_this()));
-}
-#pragma endregion Private Function
+#pragma endregion          Set Up Function

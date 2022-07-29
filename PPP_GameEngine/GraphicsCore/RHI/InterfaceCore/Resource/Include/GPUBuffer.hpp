@@ -1,17 +1,17 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIDevice.hpp
-///             @brief  Device
+///             @file   GPUBuffer.hpp
+///             @brief  GPU Buffer 
 ///             @author Toide Yutaro
-///             @date   2022_06_09
+///             @date   2022_07_08
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef RHI_GPU_RESOURCE_HPP
-#define RHI_GPU_RESOURCE_HPP
+#ifndef GPU_BUFFER_HPP
+#define GPU_BUFFER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-
+#include "GPUResource.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,31 +19,43 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+
 namespace rhi::core
 {
+
 	/****************************************************************************
-	*				  			RHIDevice
+	*				  			GPUBuffer
 	*************************************************************************//**
-	*  @class     RHIDevice
-	*  @brief     Device interface
+	*  @class     GPUBuffer
+	*  @brief     Buffer
 	*****************************************************************************/
-	class RHIGPUResource
+	class GPUBuffer : public GPUResource
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		
+		virtual void CopyStart() = 0;
+		virtual void CopyData(int elementIndex, const void* data) = 0;
+		virtual void CopyTotalData(const void* data, int dataLength) = 0;
+		virtual void CopyEnd() = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		inline std::uint32_t GetElementCount   () { return _count; }
+		inline std::uint32_t GetElementByteSize() { return _stride; }
+		inline std::uint64_t GetTotalByteSize  () { return _stride * _count; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		RHIGPUResource() = default;
-		virtual ~RHIGPUResource() = default;
+
 	protected:
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		GPUBuffer() = default;
+		~GPUBuffer() = default;
+		explicit GPUBuffer(const std::shared_ptr<RHIDevice>& device, std::uint32_t stride, std::uint32_t count, BufferType bufferType);
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -51,6 +63,12 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		std::uint8_t* _mappedData = nullptr;
+		std::uint32_t _stride = 0;
+		std::uint32_t _count  = 0;
+
 	};
 }
+
+
 #endif

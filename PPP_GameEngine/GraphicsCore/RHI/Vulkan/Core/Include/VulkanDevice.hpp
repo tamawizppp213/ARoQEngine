@@ -47,11 +47,16 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		bool Create(HWND hwnd, HINSTANCE hInstance, bool useHDR = false, bool useRaytracing = false) override;
 		std::shared_ptr<core::RHIFence>            CreateFence()          override  { return nullptr; };
-		std::shared_ptr<core::RHICommandList>      CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& allocator) override { return nullptr; };
-		std::shared_ptr<core::RHICommandQueue>     CreateCommandQueue() override { return nullptr; };
+		std::shared_ptr<core::RHICommandList>      CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& allocator) override;
+		std::shared_ptr<core::RHICommandQueue>     CreateCommandQueue() override;
 		std::shared_ptr<core::RHICommandAllocator> CreateCommandAllocator() override;
 		std::shared_ptr<core::RHISwapchain>        CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0) override;
-
+		std::shared_ptr<core::RHIDescriptorHeap>   CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
+		std::shared_ptr<core::RHIDescriptorHeap>   CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts) override;
+		std::shared_ptr<core::GPUPipelineFactory>  CreatePipelineFactory() override;
+		
+		size_t AllocateQueue();
+		void FreeQueue(const size_t index);
 		size_t GetGraphicsQueueFamilyIndex() { return _queueFamilyIndex.GraphicsFamily.value(); }
 		/****************************************************************************
 		**                Public Member Variables
@@ -65,12 +70,12 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		RHIDevice() = default;
 		~RHIDevice();
+		
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		size_t AllocateQueue() { return 0; };
-		void FreeQueue(const size_t index){};
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

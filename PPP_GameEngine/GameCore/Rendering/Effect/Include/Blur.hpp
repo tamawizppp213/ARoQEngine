@@ -49,7 +49,7 @@ public:
 	*****************************************************************************/
 	void StartOn(int width, int height, const std::wstring& addName = L"");
 	void OnResize(int newWidth, int newHeight);
-	void Draw(GPUResource* renderTarget);
+	void Draw(rhi::directX12::GPUResource* renderTarget);
 	void ShutDown();
 	/****************************************************************************
 	**                Public Member Variables

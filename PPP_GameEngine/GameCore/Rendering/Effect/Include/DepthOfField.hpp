@@ -49,7 +49,7 @@ public:
 	*****************************************************************************/
 	void StartOn(float width, float height, float radius = 4.0f, float nearClip = 0.2f, float farClip = 0.8f, const std::wstring& addname = L"");
 	void OnResize(float newWidth, float newHeight);
-	void Draw(GPUResource* renderTarget, GPUResource* zPrepass);
+	void Draw(rhi::directX12::GPUResource* renderTarget, rhi::directX12::GPUResource* zPrepass);
 	void ShutDown();
 	/****************************************************************************
 	**                Public Member Variables

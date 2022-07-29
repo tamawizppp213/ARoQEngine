@@ -119,7 +119,7 @@ void CommandContext::TransitionResourceState(Resource* resource, D3D12_RESOURCE_
 *  @param[in,out] GPUResource* source
 *  @return 　　void
 *****************************************************************************/
-void CommandContext::CopyBuffer(GPUResource* dest, GPUResource* source)
+void CommandContext::CopyBuffer(rhi::directX12::GPUResource* dest, rhi::directX12::GPUResource* source)
 {
 	auto initSourceState = source->GetUsageState();
 	auto initDestState   = dest->GetUsageState();
@@ -139,7 +139,7 @@ void CommandContext::CopyBuffer(GPUResource* dest, GPUResource* source)
 *  @param[in    ] size_t numBytes
 *  @return 　　void
 *****************************************************************************/
-void CommandContext::CopyBufferRegion(GPUResource* dest, size_t destOffset, GPUResource* source, size_t sourceOffset, size_t numBytes)
+void CommandContext::CopyBufferRegion(rhi::directX12::GPUResource* dest, size_t destOffset, rhi::directX12::GPUResource* source, size_t sourceOffset, size_t numBytes)
 {
 	auto initSourceState = source->GetUsageState();
 	auto initDestState   = dest->GetUsageState();
@@ -160,7 +160,7 @@ void CommandContext::CopyBufferRegion(GPUResource* dest, size_t destOffset, GPUR
 *  @param[in]     UINT z = 1,
 *  @return 　　    void
 *****************************************************************************/
-void CommandContext::CopyTextureRegion(GPUResource* dest, GPUResource* source, D3D12_BOX& rect, UINT x, UINT y, UINT z)
+void CommandContext::CopyTextureRegion(rhi::directX12::GPUResource* dest, rhi::directX12::GPUResource* source, D3D12_BOX& rect, UINT x, UINT y, UINT z)
 {
 	auto initSourceState = source->GetUsageState();
 	auto initDestState   = dest->GetUsageState();
@@ -171,7 +171,7 @@ void CommandContext::CopyTextureRegion(GPUResource* dest, GPUResource* source, D
 	CompleteCopyBuffer(dest, source, initDestState, initSourceState);
 }
 #pragma region Protected Function
-void CommandContext::PrepareCopyBuffer(GPUResource* dest, GPUResource* source)
+void CommandContext::PrepareCopyBuffer(rhi::directX12::GPUResource* dest, rhi::directX12::GPUResource* source)
 {
 	BARRIER barrier[] =
 	{
@@ -183,7 +183,7 @@ void CommandContext::PrepareCopyBuffer(GPUResource* dest, GPUResource* source)
 	ResourceBarriers(_countof(barrier), barrier);
 }
 
-void CommandContext::CompleteCopyBuffer(GPUResource* dest, GPUResource* source, const D3D12_RESOURCE_STATES& toDestState, const D3D12_RESOURCE_STATES& toSourceState)
+void CommandContext::CompleteCopyBuffer(rhi::directX12::GPUResource* dest, rhi::directX12::GPUResource* source, const D3D12_RESOURCE_STATES& toDestState, const D3D12_RESOURCE_STATES& toSourceState)
 {
 	BARRIER barrier[] =
 	{

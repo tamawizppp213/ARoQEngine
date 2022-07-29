@@ -23,10 +23,10 @@
 namespace rhi::vulkan
 {
 	/****************************************************************************
-	*				  			TemplateClass
+	*				  			RHICommandQueue
 	*************************************************************************//**
-	*  @class     TemplateClass
-	*  @brief     temp
+	*  @class     RHICommandQueue
+	*  @brief     CommandQueue (for executing GPU command)
 	*****************************************************************************/
 	class RHICommandQueue : public rhi::core::RHICommandQueue
 	{

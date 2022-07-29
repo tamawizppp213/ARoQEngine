@@ -41,6 +41,9 @@ namespace rhi::directX12
 		std::shared_ptr<core::RHICommandQueue>     CreateCommandQueue() override;
 		std::shared_ptr<core::RHICommandAllocator> CreateCommandAllocator() override;
 		std::shared_ptr<core::RHISwapchain>        CreateSwapchain(const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0) override;
+		std::shared_ptr<core::RHIDescriptorHeap>   CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
+		std::shared_ptr<core::RHIDescriptorHeap>   CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts) override;
+		std::shared_ptr<core::GPUPipelineFactory>  CreatePipelineFactory() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -74,6 +77,8 @@ namespace rhi::directX12
 		bool          _isVariableRateShadingTier2Supported = true;
 		std::uint32_t _variableRateShadingImageTileSize = 0;
 		std::uint32_t _4xMsaaQuality = 0;
+		/* @brief : Use debug mode. GPU validation. フレームレートに大きな影響を与えます)*/
+		bool          _enableGPUBasedValidation = false;
 	private:
 		/****************************************************************************
 		**                Private Function

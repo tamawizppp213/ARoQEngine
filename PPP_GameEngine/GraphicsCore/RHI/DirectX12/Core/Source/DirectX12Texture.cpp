@@ -320,7 +320,7 @@ int TextureManager::RegistSRV(TextureType type, Texture& texture)
 	return GraphicsCoreEngine::Instance().CreateShaderResourceView(&texture.Resource, &srvDesc);
 
 }
-void TextureManager::CreateTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, GPUResource* textureBuffer, bool isDiscreteGPU)
+void TextureManager::CreateTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, rhi::directX12::GPUResource* textureBuffer, bool isDiscreteGPU)
 {
 	/*-------------------------------------------------------------------
 	-             Setting heap property

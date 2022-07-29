@@ -51,7 +51,7 @@ namespace rhi::core
 		*****************************************************************************/
 		RHICommandAllocator() = default;
 		~RHICommandAllocator() = default;
-		explicit RHICommandAllocator(const std::shared_ptr<RHIDevice>& device) { _device = device; };
+		explicit RHICommandAllocator(const std::shared_ptr<RHIDevice>& device) : _device(device){};
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

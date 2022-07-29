@@ -101,17 +101,17 @@ void GraphicsCoreEngine::WaitNextFrame()
 #pragma endregion Each Render Scene Command Interface
 #pragma region Create Function
 
-UINT GraphicsCoreEngine::CreateShaderResourceView(GPUResource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc)
+UINT GraphicsCoreEngine::CreateShaderResourceView(rhi::directX12::GPUResource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc)
 {
 	UINT id = _device->IssueViewID(HeapFlag::SRV);
 	_device->GetDevice()->CreateShaderResourceView(resource->GetResource(), desc, _device->GetCPUResourceView(HeapFlag::SRV, id));
 	return id;
 }
-void GraphicsCoreEngine::CreateShaderResourceView(GPUResource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc, D3D12_CPU_DESCRIPTOR_HANDLE destDescriptor)
+void GraphicsCoreEngine::CreateShaderResourceView(rhi::directX12::GPUResource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc, D3D12_CPU_DESCRIPTOR_HANDLE destDescriptor)
 {
 	_device->GetDevice()->CreateShaderResourceView(resource->GetResource(), desc, destDescriptor);
 }
-UINT GraphicsCoreEngine::CreateUnorderedAccessView(GPUResource* resource, const D3D12_UNORDERED_ACCESS_VIEW_DESC* desc)
+UINT GraphicsCoreEngine::CreateUnorderedAccessView(rhi::directX12::GPUResource* resource, const D3D12_UNORDERED_ACCESS_VIEW_DESC* desc)
 {
 	UINT id = _device->IssueViewID(HeapFlag::UAV);
 	_device->GetDevice()->CreateUnorderedAccessView(resource->GetResource(), nullptr, desc, _device->GetCPUResourceView(HeapFlag::UAV, id));

@@ -5,8 +5,8 @@
 ///             @date   2022_06_29
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_GPU_RASTERIZER_STATE_HPP
-#define DIRECTX12_GPU_RASTERIZER_STATE_HPP
+#ifndef DIRECTX12_GPU_DEPTH_STENCIL_STATE_HPP
+#define DIRECTX12_GPU_DEPTH_STENCIL_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include

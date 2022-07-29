@@ -25,6 +25,7 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 RHICommandList::~RHICommandList()
 {
 	if (_commandList) { _commandList.Reset(); }
@@ -46,8 +47,20 @@ RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& devi
 	_commandList->Close();
 }
 
+#pragma endregion Constructor and Destructor
+#pragma region Call Draw Frame
+void RHICommandList::BeginRecording()
+{
+	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
+	_commandList->ClearState(nullptr);
 
-#pragma region Command
+}
+void RHICommandList::EndRecording()
+{
+	ThrowIfFailed(_commandList->Close());
+}
+#pragma endregion Call Draw Frame
+#pragma region GPU Command
 
 void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
 {
@@ -123,3 +136,4 @@ void RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t thr
 {
 	_commandList->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
+#pragma endregion GPU Command

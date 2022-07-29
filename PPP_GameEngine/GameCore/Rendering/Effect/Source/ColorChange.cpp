@@ -18,6 +18,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
 using namespace directX12;
+
 namespace
 {
 	RootSignature s_RootSignature;
@@ -85,7 +86,7 @@ void ColorChange::OnResize(int newWidth, int newHeight)
 *  @param[in] const std::wstring& addName
 *  @return Å@Å@void
 *****************************************************************************/
-void ColorChange::Draw(GPUResource* renderTarget)
+void ColorChange::Draw(rhi::directX12::GPUResource* renderTarget)
 {
 	auto& engine       = GraphicsCoreEngine::Instance();
 	auto  context      = engine.GetCommandContext();

@@ -26,11 +26,11 @@ RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>&
 	VkCommandPoolCreateInfo createInfo = {};
 	createInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	createInfo.queueFamilyIndex = static_cast<std::uint32_t>(vkDevice->GetGraphicsQueueFamilyIndex());
-	createInfo.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	createInfo.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // enable each command buffer reset and buffer's lifetime is long.
 	createInfo.pNext            = nullptr;
 	if (vkCreateCommandPool(vkDevice->GetDevice(), &createInfo, nullptr, &_commandPool) != VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to create command pool");
+		throw std::runtime_error("failed to create command pool (vulkan api)");
 	}
 }
 

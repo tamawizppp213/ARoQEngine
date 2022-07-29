@@ -92,7 +92,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-          If the size is not change, we do nothing
 	---------------------------------------------------------------------*/
-	if (_windowInfo.Width == width && _windowInfo.Height) { return; }
+	if (_windowInfo.Width == width && _windowInfo.Height == height) { return; }
 	/*-------------------------------------------------------------------
 	-         window size check
 	---------------------------------------------------------------------*/
@@ -101,9 +101,9 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	-         Reset Command List
 	---------------------------------------------------------------------*/
 	ThrowIfFailed(_swapchain->ResizeBuffers(
-		_frameBufferCount,
-		_windowInfo.Width,
-		_windowInfo.Height,
+		static_cast<UINT>(_frameBufferCount),
+		static_cast<UINT>(_windowInfo.Width),
+		static_cast<UINT>(_windowInfo.Height),
 		_backBufferFormat,
 		_swapchainFlag));
 

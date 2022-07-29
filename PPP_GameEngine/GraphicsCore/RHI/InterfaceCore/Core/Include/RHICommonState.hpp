@@ -76,7 +76,29 @@ namespace rhi::core
 			}
 		}
 	};
-#pragma endregion Pixel
+	/****************************************************************************
+	*				  			ClearValue
+	*************************************************************************//**
+	*  @class     ClearValue
+	*  @brief     Clear value
+	*****************************************************************************/
+	struct ClearValue
+	{
+		float        Red     = 1.0f;
+		float        Green   = 1.0f;
+		float        Blue    = 1.0f;
+		float        Alpha   = 1.0f;
+		float        Depth   = 1.0f;
+		std::uint8_t Stencil = 0;
+
+		ClearValue() = default;
+		ClearValue(float red, float green, float blue, float alpha) :Red(red), Green(green), Blue(blue), Alpha(alpha) {};
+		ClearValue(float depth, std::uint8_t stencil)
+		{
+			Depth = depth; Stencil = stencil;
+		}
+	};
+#pragma endregion              Pixel
 #pragma region Shader Type
 	enum class ShaderType : std::uint8_t
 	{
@@ -98,7 +120,112 @@ namespace rhi::core
 		~BlobData() = default;
 		BlobData(void* bufferPointer, size_t bufferSize) : BufferPointer(bufferPointer), BufferSize(bufferSize) {};
 	};
-#pragma endregion  Shader Type
+#pragma endregion        Shader Type
+#pragma region Sampler State
+	enum class SamplerAddressMode : std::uint8_t
+	{
+		Wrap    = 1,
+		Mirror  = 2,
+		Clamp   = 3,
+		Boarder = 4,
+	};
+	enum class BorderColor : std::uint8_t
+	{
+		TransparentBlack,
+		OpaqueBlack,
+		OpaqueWhite
+	};
+	enum class FilterMask : std::uint8_t
+	{
+		Mip = 0x1,
+		Mag = 0x2,
+		Min = 0x4
+	};
+	enum class FilterOption : std::uint8_t
+	{
+		MinPointMagPointMipPoint    = 0,
+		MinPointMagPointMipLinear   = 1,
+		MinPointMagLinearMipPoint   = 2,
+		MinPointMagLinearMipLinear  = 3,
+		MinLinearMagPointMipPoint   = 4,
+		MinLinearMagPointMipLinear  = 5,
+		MinLinearMagLinearMipPoint  = 6,
+		MinLinearMagLinearMipLinear = 7,
+		Anisotropy = 8
+	};
+	/****************************************************************************
+	*				  			SamplerInfo
+	*************************************************************************//**
+	*  @class     SamplerInfo
+	*  @brief     Sampler
+	*****************************************************************************/
+	struct SamplerInfo
+	{
+	public:
+		enum DefaultSamplerType
+		{
+			SamplerPointWrap,
+			SamplerPointClamp,
+			SamplerLinearWrap,
+			SamplerLinearClamp,
+			SamplerAnisotropicWrap,
+			SamplerAnisotropicClamp
+		};
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		FilterOption        Filter        = FilterOption::MinPointMagPointMipPoint;
+		SamplerAddressMode  AddressModeU  = SamplerAddressMode::Wrap;
+		SamplerAddressMode  AddressModeV  = SamplerAddressMode::Wrap;
+		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;
+		BorderColor         Border        = BorderColor::TransparentBlack;
+		size_t              MaxAnisotropy = 1;
+		float               MipLODBias    = 0.0f;
+		float               MinLOD        = 0.0f;
+		float               MaxLOD        = FLT_MAX;
+
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		SamplerInfo() = default;
+		explicit SamplerInfo(
+			const FilterOption filter,
+			const SamplerAddressMode addressU = SamplerAddressMode::Wrap,
+			const SamplerAddressMode addressV = SamplerAddressMode::Wrap,
+			const SamplerAddressMode addressW = SamplerAddressMode::Wrap,
+			const BorderColor border = BorderColor::TransparentBlack,
+			float minLOD = 0.0f,
+			float maxLOD = FLT_MAX,
+			float mipLODBias = 0.0f) :
+			Filter(filter),
+			AddressModeU(addressU),
+			AddressModeV(addressV),
+			AddressModeW(addressW),
+			Border(border),
+			MinLOD(minLOD),
+			MaxLOD(maxLOD),
+			MipLODBias(mipLODBias)
+		{
+		}
+
+		explicit SamplerInfo(
+			const std::uint32_t maxAnisotropy,
+			const SamplerAddressMode addressU = SamplerAddressMode::Wrap,
+			const SamplerAddressMode addressV = SamplerAddressMode::Wrap,
+			const SamplerAddressMode addressW = SamplerAddressMode::Wrap,
+			const BorderColor border = BorderColor::TransparentBlack) :
+			Filter(FilterOption::Anisotropy),
+			AddressModeU(addressU),
+			AddressModeV(addressV),
+			AddressModeW(addressW),
+			MaxAnisotropy(maxAnisotropy),
+			Border(border)
+		{
+		}
+
+		static SamplerInfo GetDefaultSampler(DefaultSamplerType type);
+	};
+#pragma endregion      Sampler State
 #pragma region Blend State
 	/****************************************************************************
 	*				  			BlendFactor
@@ -175,6 +302,27 @@ namespace rhi::core
 #pragma endregion        Blend State
 #pragma region Rasterizer State
 	/****************************************************************************
+	*				  			MultiSample
+	*************************************************************************//**
+	*  @class     MultiSample
+	*  @brief     Basically use count1 , in use MSAA, we use count4 
+	*****************************************************************************/
+	enum class MultiSample : std::uint8_t
+	{
+		Count1 = 1,
+		Count2 = 2,
+		Count4 = 4,
+		Count8 = 8,
+		Count16 = 16,
+		Count32 = 32
+	};
+	class MultiSampleSizeOf
+	{
+	public: 
+		MultiSampleSizeOf() = default;
+		static size_t Get(const MultiSample sample) { return static_cast<size_t>(sample); }
+	};
+	/****************************************************************************
 	*				  			CullingMode
 	*************************************************************************//**
 	*  @class     CullingMode
@@ -205,8 +353,9 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class FillMode
 	{
-		WireFrame, 
-		Solid,
+		WireFrame, // wire frame polygon 
+		Solid,     // fill polygon face
+		Point,     // point cloud. (only vulkan API)
 	};
 
 #pragma endregion   Rasterizer State
@@ -278,44 +427,317 @@ namespace rhi::core
 		std::string Name = "";
 		size_t      Slot = 0;
 		InputLayoutElement() = default;
+		~InputLayoutElement() = default;
 		explicit InputLayoutElement(const std::string& name, const PixelFormat format, const size_t slot = 0) : Format(format), Name(name), Slot(slot) {};
 	};
 	#pragma endregion InputAssemblyState
-	enum class TextureAddressingMode : std::uint8_t
+#pragma region GPUResource
+	enum class ResourceDimension : std::uint8_t
 	{
-		Wrap     = 1,
-		Mirror   = 2,
-		Clamp    = 3,
-		Boarder  = 4,
+		Buffer,
+		Dimension1D,
+		Dimension2D,
+		Dimension3D
 	};
 
+	enum class ResourceType : std::uint8_t
+	{
+		Unknown                           = 0,
+		Buffer                            = 1,
+		Texture1D                         = 2,
+		Texture1DArray                    = 3,
+		Texture2D                         = 4,
+		Texture2DArray                    = 5,
+		Texture2DMultiSample              = 6,
+		Texture2DArrayMultiSample         = 7,
+		Texture3D                         = 8,
+		TextureCube                       = 9,
+		TextureCubeArray                  = 10,
+		RaytracingAccelerationStructure   = 11
+	};
 
 	/****************************************************************************
-	*				  			ClearValue
+	*				  			ResourceLayout
 	*************************************************************************//**
-	*  @class     ClearValue
-	*  @brief     Clear value
+	*  @class     ResourceLayout
+	*  @brief     How to use resource
 	*****************************************************************************/
-	struct ClearValue
+	enum class ResourceLayout : std::uint32_t
 	{
-		struct DepthClearValue
-		{
-			float Depth = 1.0f;
-			std::uint8_t Stencil = 0;
-		};
-		union
-		{
-			float Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-			DepthClearValue DepthValue;
-		};
-
-		ClearValue() = default;
-		ClearValue(const float* color) { for (int i = 0; i < 4; ++i) { Color[i] = color[i]; } }
-		ClearValue(float depth, std::uint8_t stencil)
-		{
-			DepthValue.Depth = depth; DepthValue.Stencil = stencil;
-		}
+		Common,
+		GeneralRead,
+		VertexAndConstantBuffer,
+		IndexBuffer,
+		UnorderedAccess,
+		RenderTarget,
+		DepthStencil,
+		CopyDestination,
+		CopySource,
+		Present,
+		Indirected,
+		RayTracingAccelerationStructure,
+		ShadingRateSource,
+		CountOfResourceLayout
 	};
+	/****************************************************************************
+	*				  			MemoryHeap
+	*************************************************************************//**
+	*  @class     MemoryHeap
+	*  @brief     memory type
+	*****************************************************************************/
+	enum class MemoryHeap : std::uint8_t
+	{
+		Default, // Memory area visible only from GPU  
+		Upload,  // Memory area visible to CPU and GPU (Read from GPU is used for one time.)
+		Custom   // for directX12
+	};
+
+	enum class DescriptorHeapType
+	{
+		CBV,
+		SRV,
+		UAV,         // constant buffer, shader resource, unordered access
+		CBV_SRV_UAV,
+		SAMPLER,     // dynamic sampler state
+		RTV,         // render target (only directX12)
+		DSV,         // depth stencil (only directX12)
+	};
+
+	enum class DescriptorType : std::uint8_t
+	{
+		Buffer,
+		Texture,
+		
+	};
+	/****************************************************************************
+	*				  			ResourceLayout
+	*************************************************************************//**
+	*  @class     ResourceLayout
+	*  @brief     How to use resource
+	*****************************************************************************/
+	enum class ResourceUsage : std::uint32_t
+	{
+		None = 0,
+		VertexBuffer   = 0x1,
+		IndexBuffer    = 0x2,
+		ConstantBuffer = 0x4,
+		RenderTarget   = 0x8, // allow render target
+		DepthStencil   = 0x10 // allow depth stencil
+	};
+	inline ResourceUsage operator | (const ResourceUsage& left, const ResourceUsage& right)
+	{
+		return static_cast<ResourceUsage>(static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
+	}
+	inline ResourceUsage operator & (const ResourceUsage& left, const ResourceUsage& right)
+	{
+		return static_cast<ResourceUsage>( static_cast<std::uint32_t>(left) & static_cast<std::uint32_t>(right));
+	}
+
+	inline bool EnumHas(const ResourceUsage& left, const ResourceUsage& right)
+	{
+		if ((left & right) == right) return true;
+		return false;
+	}
+
+	enum class BufferType
+	{
+		Vertex,   // Use static mesh
+		Index,
+		Constant,
+		Upload,   // Use dynamic mesh
+	};
+
+	/****************************************************************************
+	*				  			GPUBufferInfo
+	*************************************************************************//**
+	*  @class     GPUBufferInfo
+	*  @brief     GPUBufferInfo
+	*****************************************************************************/
+	struct GPUBufferInfo
+	{
+	public:
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		std::uint32_t  Stride       = 0;
+		std::uint32_t  Count        = 0;
+		ResourceLayout Layout       = ResourceLayout::GeneralRead;
+		MemoryHeap     HeapType     = MemoryHeap::Default;
+		DescriptorType DescType     = DescriptorType::Buffer;
+
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Static Function
+		*****************************************************************************/
+	};
+
+#pragma region GPUTexture
+	
+	
+	/****************************************************************************
+	*				  			GPUBufferInfo
+	*************************************************************************//**
+	*  @class     GPUBufferInfo
+	*  @brief     GPUBufferInfo
+	*****************************************************************************/
+	struct GPUTextureMetaData
+	{
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		size_t            Width           = 1;
+		size_t            Height          = 1;
+		size_t            Depth           = 1;
+		size_t            ByteSize        = 0;
+		size_t            MipLevels       = 1;
+		PixelFormat       PixelFormat     = PixelFormat::Unknown;
+		MultiSample       Sample          = MultiSample::Count1;
+		ResourceDimension Dimension       = ResourceDimension::Dimension1D;
+		ResourceType      ResourceType    = ResourceType::Unknown;
+		ResourceUsage     ResourceUsage   = ResourceUsage::None;
+		ClearValue        ClearColor      = ClearValue();
+		ResourceLayout    Layout          = ResourceLayout::GeneralRead;
+		MemoryHeap        HeapType        = MemoryHeap::Default;
+		DescriptorType    DescType        = DescriptorType::Texture;
+
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		GPUTextureMetaData() = default;
+		
+		/****************************************************************************
+		**                Static Function
+		*****************************************************************************/
+		static GPUTextureMetaData Texture1D                (const size_t width, const core::PixelFormat format, const size_t mipLevels = 1);
+		static GPUTextureMetaData Texture1DArray           (const size_t width, const size_t length, const core::PixelFormat format, const size_t mipLevels = 1);
+		static GPUTextureMetaData Texture2D                (const size_t width, const size_t height, const core::PixelFormat format, const size_t mipLevels = 1);
+		static GPUTextureMetaData Texture2DArray           (const size_t width, const size_t height, const size_t length, const core::PixelFormat format, const size_t mipLevels = 1);
+		static GPUTextureMetaData Texture3D                (const size_t width, const size_t height, const size_t depth, const core::PixelFormat format, const size_t mipLevels = 1);
+		static GPUTextureMetaData Texture2DMultiSample     (const size_t width, const size_t height, const core::PixelFormat format, const core::MultiSample sample, const size_t mipLevels = 1);
+		static GPUTextureMetaData Texture2DArrayMultiSample(const size_t width, const size_t height, const size_t length, const core::PixelFormat format, const core::MultiSample sample, const size_t mipLevels = 1);
+		static GPUTextureMetaData CubeMap                  (const size_t width, const size_t height, const core::PixelFormat format, const size_t mipLevels = 1);
+		static GPUTextureMetaData CubeMapArray             (const size_t width, const size_t height, const size_t length, const core::PixelFormat format, const size_t mipLevels = 1);
+		static GPUTextureMetaData RenderTarget             (const size_t width, const size_t height, const core::PixelFormat format, const core::ClearValue& clearValue = core::ClearValue());
+		static GPUTextureMetaData RenderTargetMultiSample  (const size_t width, const size_t height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue = ClearValue());
+		static GPUTextureMetaData DepthStencil             (const size_t width, const size_t height, const core::PixelFormat format, const core::ClearValue& clearValue = core::ClearValue());
+		static GPUTextureMetaData DepthStencilMultiSample  (const size_t width, const size_t height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue = ClearValue());
+
+	private:
+		inline void CalculateByteSize() { ByteSize =  Width * Height * (Dimension == ResourceDimension::Dimension3D ? Depth : 1) * PixelFormatSizeOf::Get(PixelFormat) * MultiSampleSizeOf::Get(Sample); }
+	};
+
+#pragma endregion GPUTexture
+#pragma endregion GPUResource
+#pragma region Render Pass (for Vulkan) 
+	enum class AttachmentLoad : std::uint8_t
+	{
+		Clear,
+		Load,
+		DontCare
+	};
+	enum class AttachmentStore
+	{
+		Store,
+		DontCare
+	};
+	/****************************************************************************
+	*				  			Attachment
+	*************************************************************************//**
+	*  @struct     TemplateStruct
+	*  @brief     temp
+	*****************************************************************************/
+	struct Attachment
+	{
+	public:
+		/****************************************************************************
+		**                Static Function
+		*****************************************************************************/
+		static Attachment RenderTarget( const PixelFormat format,
+			const ResourceLayout initialLayout = ResourceLayout::RenderTarget,
+			const ResourceLayout finalLayout   = ResourceLayout::Present,
+			const AttachmentLoad load          = AttachmentLoad::Clear,
+			const AttachmentStore store        = AttachmentStore::Store )
+		{
+			return Attachment(format, initialLayout, finalLayout, load, store, AttachmentLoad::DontCare, AttachmentStore::DontCare, MultiSample::Count1);
+		}
+
+		static Attachment RenderTargetMultiSample( const PixelFormat format, const MultiSample sample,
+			const ResourceLayout  initialLayout = ResourceLayout::RenderTarget,
+			const ResourceLayout  finalLayout   = ResourceLayout::Present,
+			const AttachmentLoad  load  = AttachmentLoad::Clear,
+			const AttachmentStore store = AttachmentStore::Store
+		)
+		{
+			return Attachment(format, initialLayout, finalLayout, load, store, AttachmentLoad::DontCare, AttachmentStore::DontCare, sample);
+		}
+
+		static Attachment DepthStencil(const PixelFormat format,
+			const ResourceLayout  initialLayout = ResourceLayout::DepthStencil,
+			const ResourceLayout  finalLayout   = ResourceLayout::GeneralRead,
+			const AttachmentLoad  load          = AttachmentLoad::Clear,
+			const AttachmentStore store         = AttachmentStore::Store,
+			const AttachmentLoad  stencilLoad   = AttachmentLoad::DontCare,
+			const AttachmentStore stencilStore  = AttachmentStore::DontCare
+		)
+		{
+			return Attachment(format, initialLayout, finalLayout, load, store, stencilLoad, stencilStore, MultiSample::Count1);
+		}
+
+		static Attachment DepthStencilMultiSample(const PixelFormat format, const MultiSample sample,
+			const ResourceLayout  initialLayout = ResourceLayout::DepthStencil,
+			const ResourceLayout  finalLayout = ResourceLayout::GeneralRead,
+			const AttachmentLoad  load = AttachmentLoad::Clear,
+			const AttachmentStore store = AttachmentStore::Store,
+			const AttachmentLoad  stencilLoad = AttachmentLoad::DontCare,
+			const AttachmentStore stencilStore = AttachmentStore::DontCare
+		)
+		{
+			return Attachment(format, initialLayout, finalLayout, load, store, stencilLoad, stencilStore, sample);
+		}
+
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		PixelFormat     Format        = PixelFormat::Unknown;
+		MultiSample     SampleCount   = MultiSample::Count1;
+		ResourceLayout  InitialLayout = ResourceLayout::RenderTarget;
+		ResourceLayout  FinalLayout   = ResourceLayout::Present;
+		AttachmentLoad  LoadOp        = AttachmentLoad::Clear;  // at the beginning of a render path, erase already existing data with a specific value
+		AttachmentStore StoreOp       = AttachmentStore::Store; // at the end of a render pass, save data on memory
+		AttachmentLoad  StencilLoad   = AttachmentLoad::DontCare;
+		AttachmentStore StencilStore  = AttachmentStore::DontCare;
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		Attachment() = default;
+		Attachment(
+			const PixelFormat     format,
+			const ResourceLayout  initialLayout,
+			const ResourceLayout  finalLayout,
+			const AttachmentLoad  load,
+			const AttachmentStore store,
+			const AttachmentLoad  stencilLoad,
+			const AttachmentStore stencilStore,
+			const MultiSample     sample = MultiSample::Count1
+		) : Format(format), SampleCount(sample), InitialLayout(initialLayout), FinalLayout(finalLayout), LoadOp(load), StoreOp(store), StencilLoad(stencilLoad), StencilStore(stencilStore){ };
+
+		
+	};
+#pragma endregion Render Pass
+
+
 	/****************************************************************************
 	*				  			Viewport 
 	*************************************************************************//**

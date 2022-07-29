@@ -82,7 +82,7 @@ void Dof::OnResize(float newWidth, float newHeight)
 *  @param[in] GPUResource* zPrepass
 *  @return Å@Å@void
 *****************************************************************************/
-void Dof::Draw(GPUResource* renderTarget, GPUResource* zPrepass)
+void Dof::Draw(rhi::directX12::GPUResource* renderTarget, rhi::directX12::GPUResource* zPrepass)
 {
 	auto& engine       = GraphicsCoreEngine::Instance();
 	auto  context      = engine.GetCommandContext();

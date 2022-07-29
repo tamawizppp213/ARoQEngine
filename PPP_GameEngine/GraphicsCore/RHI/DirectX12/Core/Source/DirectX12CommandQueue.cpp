@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <d3d12.h>
@@ -25,6 +26,7 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device) : rhi::core::RHICommandQueue(device)
 {
 	const auto dxDevice = static_cast<RHIDevice*>(_device.get())->GetDevice();
@@ -44,8 +46,10 @@ RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& de
 
 RHICommandQueue::~RHICommandQueue()
 {
-	if (_commandQueue) { _commandQueue = nullptr; }
+	if (_commandQueue) { _commandQueue.Reset(); }
 }
+#pragma endregion Constructor and Destructor
+#pragma region Execute Function
 /****************************************************************************
 *							Execute
 *************************************************************************//**
@@ -65,3 +69,4 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 	}
 	_commandQueue->ExecuteCommandLists(static_cast<UINT>(dxCommandLists.size()), dxCommandLists.data());
 }
+#pragma endregion Execute

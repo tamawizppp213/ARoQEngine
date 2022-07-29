@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUBlendState.hpp
-///             @brief  Blend State
+///             @file   GPUStencilState.hpp
+///             @brief  Stencil State
 ///             @author Toide Yutaro
 ///             @date   2022_06_28
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GPU_BLEND_STATE_HPP
-#define GPU_BLEND_STATE_HPP
+#ifndef GPU_DEPTH_STENCIL_STATE_HPP
+#define GPU_DEPTH_STENCIL_STATE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -63,7 +63,7 @@ namespace rhi::core
 			const CompareOperator depthOperator    = CompareOperator::LessEqual,
 			const StencilOperatorInfo& front       = StencilOperatorInfo(),
 			const StencilOperatorInfo& back        = StencilOperatorInfo()
-		) : GPUState(), _depthWriteEnable(depthWriteEnable), _stencilEnable(stencilEnable), _depthEnable(depthEnable), _depthOperator(depthOperator), _frontFace(front), _backFace(back) { }
+		) : GPUState(device), _depthWriteEnable(depthWriteEnable), _stencilEnable(stencilEnable), _depthEnable(depthEnable), _depthOperator(depthOperator), _frontFace(front), _backFace(back) { }
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/

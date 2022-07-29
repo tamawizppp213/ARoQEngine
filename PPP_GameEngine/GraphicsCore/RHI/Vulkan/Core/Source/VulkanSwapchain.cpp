@@ -222,7 +222,7 @@ void RHISwapchain::InitializeSwapchain()
 	/*-------------------------------------------------------------------
 	-               Acquire Swapchain frame buffer count
 	---------------------------------------------------------------------*/
-	UINT32 imageCount = _frameBufferCount;
+	UINT32 imageCount = static_cast<UINT32>(_frameBufferCount);
 	if (details.Capabilities.minImageCount > 0 && imageCount < details.Capabilities.minImageCount)
 	{
 		imageCount = details.Capabilities.minImageCount;
@@ -252,6 +252,7 @@ void RHISwapchain::InitializeSwapchain()
 	createInfo.preTransform          = details.Capabilities.currentTransform;
 	createInfo.pNext                 = nullptr;
 	createInfo.compositeAlpha        = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;             // alpha : 1.0 (‚Ð‚Æ‚Ü‚¸)
+	createInfo.presentMode           = presentMode;
 	/*-------------------------------------------------------------------
 	-               Composite Alpha Flags
 	---------------------------------------------------------------------*/

@@ -38,18 +38,44 @@ VkShaderStageFlagBits  EnumConverter::Convert(const rhi::core::ShaderType type)
 	}
 }
 #pragma endregion Shader Stage
-VkSamplerAddressMode   EnumConverter::Convert(const rhi::core::TextureAddressingMode addressingMode)
+#pragma region Sampler State
+VkFilter               EnumConverter::Convert(const rhi::core::FilterOption filter, const rhi::core::FilterMask mask)
+{
+	if (filter == core::FilterOption::Anisotropy) { return VkFilter::VK_FILTER_LINEAR; }
+	return (static_cast<std::uint8_t>(filter) & static_cast<std::uint8_t>(mask)) != 0 ? VkFilter::VK_FILTER_LINEAR : VkFilter::VK_FILTER_NEAREST;
+
+}
+VkSamplerMipmapMode    EnumConverter::Convert(const rhi::core::FilterOption filter)
+{
+	if (filter == core::FilterOption::Anisotropy) return VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR;
+	return (static_cast<std::uint8_t>(filter) & 1) != 0 ?
+		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR:
+		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_NEAREST;
+}
+VkSamplerAddressMode   EnumConverter::Convert(const rhi::core::SamplerAddressMode addressingMode)
 {
 	switch (addressingMode)
 	{
-		case core::TextureAddressingMode::Wrap   : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		case core::TextureAddressingMode::Mirror : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
-		case core::TextureAddressingMode::Clamp  : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-		case core::TextureAddressingMode::Boarder: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		case core::SamplerAddressMode::Wrap   : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		case core::SamplerAddressMode::Mirror : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+		case core::SamplerAddressMode::Clamp  : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+		case core::SamplerAddressMode::Boarder: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 		default:
 			throw std::runtime_error("Not support texture addressing mode");
 	}
 }
+VkBorderColor         EnumConverter::Convert(const rhi::core::BorderColor borderColor)
+{
+	switch (borderColor)
+	{
+		case core::BorderColor::TransparentBlack: return VkBorderColor::VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
+		case core::BorderColor::OpaqueBlack: return VkBorderColor::VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
+		case core::BorderColor::OpaqueWhite: return VkBorderColor::VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+		default:
+			throw std::runtime_error("Not support border color");
+	}
+}
+#pragma endregion Sampler State
 VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 {
 	switch (pixelFormat)
@@ -105,17 +131,18 @@ VkColorComponentFlags EnumConverter::Convert(const rhi::core::ColorMask colorMas
 }
 #pragma endregion BlendState
 #pragma region RasterizerState
-VkPolygonMode EnumConverter::Convert(const rhi::core::FillMode fillMode)
+VkPolygonMode   EnumConverter::Convert(const rhi::core::FillMode fillMode)
 {
 	switch (fillMode)
 	{
 		case core::FillMode::Solid    : return VkPolygonMode::VK_POLYGON_MODE_FILL;
 		case core::FillMode::WireFrame: return VkPolygonMode::VK_POLYGON_MODE_LINE;
+		case core::FillMode::Point    : return VkPolygonMode::VK_POLYGON_MODE_POINT;
 		default: 
 			throw std::runtime_error("not support fillmode type");
 	}
 }
-VkCullModeFlags  EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
+VkCullModeFlags EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
 {
 	switch (cullingMode)
 	{
@@ -126,7 +153,7 @@ VkCullModeFlags  EnumConverter::Convert(const rhi::core::CullingMode cullingMode
 			throw std::runtime_error("not support culling mode");
 	}
 }
-VkFrontFace EnumConverter::Convert(const rhi::core::FrontFace frontFace)
+VkFrontFace     EnumConverter::Convert(const rhi::core::FrontFace frontFace)
 {
 	switch (frontFace)
 	{
@@ -136,7 +163,7 @@ VkFrontFace EnumConverter::Convert(const rhi::core::FrontFace frontFace)
 			throw std::runtime_error("not support front face type.");
 	}
 }
-#pragma endregion RasterizerState
+#pragma endregion   RasterizerState (Done)
 #pragma region DepthStencilState
 VkCompareOp  EnumConverter::Convert(const rhi::core::CompareOperator compareOperator)
 {
@@ -181,7 +208,70 @@ VkPrimitiveTopology EnumConverter::Convert(const rhi::core::PrimitiveTopology pr
 		case core::PrimitiveTopology::TriangleList : return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		case core::PrimitiveTopology::TriangleStrip: return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 		default:
-			throw std::runtime_error("not supported primitive topology type");
+			throw std::runtime_error("not supported primitive topology type (vulkan api) ");
 	}
 }
 #pragma endregion Input Layput
+#pragma region GPUResource
+VkImageType      EnumConverter::Convert(const rhi::core::ResourceDimension dimension)
+{
+	switch (dimension)
+	{
+		case core::ResourceDimension::Dimension1D: return VkImageType::VK_IMAGE_TYPE_1D;
+		case core::ResourceDimension::Dimension2D: return VkImageType::VK_IMAGE_TYPE_2D;
+		case core::ResourceDimension::Dimension3D: return VkImageType::VK_IMAGE_TYPE_3D;
+		default:
+			throw std::runtime_error("not supported resource dimension (vulkan api) ");
+	}
+}
+VkImageViewType  EnumConverter::Convert(const rhi::core::ResourceType type)
+{
+	switch (type)
+	{
+		case core::ResourceType::Texture1D       : return VkImageViewType::VK_IMAGE_VIEW_TYPE_1D;
+		case core::ResourceType::Texture1DArray  : return VkImageViewType::VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+		case core::ResourceType::Texture2D       : return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D;
+		case core::ResourceType::Texture2DArray  : return VkImageViewType::VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+		case core::ResourceType::Texture3D       : return VkImageViewType::VK_IMAGE_VIEW_TYPE_3D;
+		case core::ResourceType::TextureCube     : return VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE;
+		case core::ResourceType::TextureCubeArray: return VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
+		default:
+			throw std::runtime_error("not supported resource type (vulkan api)");
+	}
+}
+VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorHeapType heapType)
+{
+	switch (heapType)
+	{
+		case core::DescriptorHeapType::CBV    : return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		case core::DescriptorHeapType::SRV    : return VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		case core::DescriptorHeapType::UAV    : return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		case core::DescriptorHeapType::SAMPLER: return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
+		default:
+			throw std::runtime_error("not supported heap type (vulkan api)" );
+	}
+}
+#pragma region GPUBuffer
+VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorType resourceType)
+{
+	switch (resourceType)
+	{
+		case core::DescriptorType::Buffer : return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		case core::DescriptorType::Texture: return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+		default:
+			throw std::runtime_error("not supported descriptor type (vulkan api)");
+	}
+}
+VkMemoryPropertyFlags  EnumConverter::Convert(const rhi::core::MemoryHeap memoryHeap)
+{
+	switch (memoryHeap)
+	{
+		case core::MemoryHeap::Default: return VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // not write in CPU
+		case core::MemoryHeap::Upload : return VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+			                                 | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+		default:
+			throw std::runtime_error("not support Memory Heap type");
+	}
+}
+#pragma endregion GPUBuffer
+#pragma endregion GPUResource

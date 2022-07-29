@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Core/Include/Application.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanGraphicsDevice.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "resource.h"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -19,10 +19,11 @@ static constexpr LPCWSTR CLASS_NAME = L"Game Window";
 static constexpr LPCWSTR GAME_TITLE = L"PPP Engine";
 static constexpr int GAME_WINDOW_WIDTH  = 1920;
 static constexpr int GAME_WINDOW_HEIGHT = 1080;
-rhi::vulkan::GraphicsDeviceVulkan a;
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
+rhi::core::LowLevelGraphicsEngine test;
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	return Application::Instance().WindowMessageProcedure(hwnd, message, wParam, lParam);
@@ -33,7 +34,7 @@ bool Application::StartUp()
 	if (!CreateMainWindow())                               { return false; }
 	if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
 	
-	a.StartUp(_mainWindow, _appInstance);
+	test.StartUp(rhi::core::APIVersion::Vulkan, _mainWindow, _appInstance);
 	return true;
 }
 
@@ -42,7 +43,7 @@ void Application::Run()
 	MSG message = { NULL };
 
 	_gameTimer.Reset();
-	_gameManager.GameStart(_gameTimer, _mainWindow, _appInstance);
+	//_gameManager.GameStart(_gameTimer, _mainWindow, _appInstance);
 	/*---------------------------------------------------------------
 						Main Loop
 	-----------------------------------------------------------------*/
@@ -60,7 +61,7 @@ void Application::Run()
 			{
 				_gameTimer.AverageFrame(_mainWindow);
 				_gameInput.Update();
-				_gameManager.GameMain();
+				//_gameManager.GameMain();
 				//a.BeginDrawFrame();
 				//a.EndDrawFrame();
 			}
@@ -71,7 +72,7 @@ void Application::Run()
 void Application::ShutDown()
 {
 	_gameInput.Finalize();
-	_gameManager.GameEnd();
+	//_gameManager.GameEnd();
 }
 
 #pragma region Private Function

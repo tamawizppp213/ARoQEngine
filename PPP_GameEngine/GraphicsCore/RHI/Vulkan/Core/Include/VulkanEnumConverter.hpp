@@ -37,8 +37,13 @@ namespace rhi::vulkan
 #pragma region ShaderState
 		static VkShaderStageFlagBits  Convert(const rhi::core::ShaderType type);
 #pragma endregion ShaderState
+#pragma region SamplerState
+		static VkFilter               Convert(const rhi::core::FilterOption filter, const rhi::core::FilterMask mask);
+		static VkSamplerMipmapMode    Convert(const rhi::core::FilterOption filter);
+		static VkSamplerAddressMode   Convert(const rhi::core::SamplerAddressMode addressMode);
+		static VkBorderColor          Convert(const rhi::core::BorderColor borderColor);
+#pragma endregion SamplerState
 #pragma region BlendState
-		static VkSamplerAddressMode   Convert(const rhi::core::TextureAddressingMode addressingMode);
 		static VkFormat               Convert(const rhi::core::PixelFormat   pixelFormat);
 		static VkBlendOp              Convert(const rhi::core::BlendOperator blendOperator);
 		static VkBlendFactor          Convert(const rhi::core::BlendFactor   blendFactor);
@@ -54,8 +59,17 @@ namespace rhi::vulkan
 		static VkStencilOp            Convert(const rhi::core::StencilOperator stencilOperator);
 #pragma endregion DepthStencilState
 #pragma region Input Layout
+		static VkImageType            Convert(const rhi::core::ResourceDimension dimension);
+		static VkImageViewType        Convert(const rhi::core::ResourceType type);
 		static VkPrimitiveTopology    Convert(const rhi::core::PrimitiveTopology primitiveTopology);
 #pragma endregion Input Layout
+#pragma region GPUResource
+		static VkDescriptorType       Convert(const rhi::core::DescriptorHeapType heapType);
+#pragma region GPUBuffer
+		static VkDescriptorType       Convert(const rhi::core::DescriptorType resourceType);
+		static VkMemoryPropertyFlags  Convert(const rhi::core::MemoryHeap memoryHeap);
+#pragma endregion GPUBuffer
+#pragma endregion GPUResource
 	};
 }
 #endif
