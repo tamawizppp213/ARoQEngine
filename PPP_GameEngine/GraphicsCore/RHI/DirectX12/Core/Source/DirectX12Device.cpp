@@ -15,6 +15,9 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Swapchain.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12DescriptorHeap.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12FrameBuffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineFactory.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <d3d12.h>
@@ -128,6 +131,14 @@ bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useHDR, bool useRayt
 }
 #pragma endregion        Start Up Function
 #pragma region CreateResource
+std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
+{
+	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<directX12::RHIFrameBuffer>(shared_from_this(), renderTargets, depthStencil));
+}
+std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil)
+{
+	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<directX12::RHIFrameBuffer>(shared_from_this(), renderTarget, depthStencil));
+}
 std::shared_ptr<core::RHIFence> RHIDevice::CreateFence()
 {
 	// https://suzulang.com/stdshared_ptr%E3%81%A7this%E3%82%92%E4%BD%BF%E3%81%84%E3%81%9F%E3%81%84%E6%99%82%E3%81%AB%E6%B3%A8%E6%84%8F%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8/
@@ -156,6 +167,14 @@ std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const c
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts)
 {
 	return std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this(), heapTypes, maxDescriptorCounts));
+}
+std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+{
+	return std::static_pointer_cast<core::RHIRenderPass>(std::make_shared<directX12::RHIRenderPass>(shared_from_this(), colors, depth));
+}
+std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth)
+{
+	return std::static_pointer_cast<core::RHIRenderPass>(std::make_shared<directX12::RHIRenderPass>(shared_from_this(), color, depth));
 }
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {

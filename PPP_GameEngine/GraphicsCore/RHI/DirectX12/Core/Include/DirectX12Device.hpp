@@ -36,6 +36,8 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		bool Create(HWND hwnd, HINSTANCE hInstance, bool useHDR = false, bool useRaytracing = false) override;
+		std::shared_ptr<core::RHIFrameBuffer>      CreateFrameBuffer(const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
+		std::shared_ptr<core::RHIFrameBuffer>      CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
 		std::shared_ptr<core::RHIFence>            CreateFence() override;
 		std::shared_ptr<core::RHICommandList>      CreateCommandList(const std::shared_ptr<core::RHICommandAllocator>& commandAllocator) override;
 		std::shared_ptr<core::RHICommandQueue>     CreateCommandQueue() override;
@@ -43,6 +45,8 @@ namespace rhi::directX12
 		std::shared_ptr<core::RHISwapchain>        CreateSwapchain(const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0) override;
 		std::shared_ptr<core::RHIDescriptorHeap>   CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		std::shared_ptr<core::RHIDescriptorHeap>   CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts) override;
+		std::shared_ptr<core::RHIRenderPass>       CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
+		std::shared_ptr<core::RHIRenderPass>       CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
 		std::shared_ptr<core::GPUPipelineFactory>  CreatePipelineFactory() override;
 		/****************************************************************************
 		**                Public Member Variables

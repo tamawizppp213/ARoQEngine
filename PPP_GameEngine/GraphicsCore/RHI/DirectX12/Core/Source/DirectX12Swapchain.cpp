@@ -12,6 +12,7 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include <d3d12.h>
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,6 +25,7 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 RHISwapchain::RHISwapchain( const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
 	const rhi::core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, std::uint32_t vsync) : rhi::core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync)
 {
@@ -66,7 +68,7 @@ RHISwapchain::RHISwapchain( const std::shared_ptr<rhi::core::RHIDevice>& device,
 		dxQueue.Get(),
 		(HWND)windowInfo.Handle,
 		&sd,
-		nullptr,
+		nullptr, // full screen desc
 		nullptr, // main monitor display
 		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
 	));
@@ -78,6 +80,8 @@ RHISwapchain::RHISwapchain( const std::shared_ptr<rhi::core::RHIDevice>& device,
 		SetHDRMetaData();
 	}
 }
+#pragma endregion Constructor and Destructor
+#pragma region Main Function
 /****************************************************************************
 *							Resize
 *************************************************************************//**
@@ -100,14 +104,27 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
+	for (auto& buffer : _buffers) { buffer.reset(); }
 	ThrowIfFailed(_swapchain->ResizeBuffers(
 		static_cast<UINT>(_frameBufferCount),
 		static_cast<UINT>(_windowInfo.Width),
 		static_cast<UINT>(_windowInfo.Height),
 		_backBufferFormat,
 		_swapchainFlag));
+	/*-------------------------------------------------------------------
+	-         Reset Command List
+	---------------------------------------------------------------------*/
+	for (size_t index = 0; index < _buffers.size(); ++index)
+	{
+		ResourceComPtr backBuffer = nullptr;
+		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(index), IID_PPV_ARGS(backBuffer.GetAddressOf())));
 
-	// build
+		auto info = core::GPUTextureMetaData::Texture2D(
+			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
+		info.Layout = core::ResourceLayout::Present;
+
+		_buffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
+	}
 }
 /****************************************************************************
 *							Present
@@ -133,7 +150,8 @@ size_t RHISwapchain::GetCurrentBufferIndex() const
 {
 	return static_cast<UINT>(_swapchain->GetCurrentBackBufferIndex());
 }
-
+#pragma endregion Main Function
+# pragma region Color Space
 /****************************************************************************
 *                     EnsureSwapChainColorSpace
 *************************************************************************//**
@@ -239,3 +257,4 @@ void RHISwapchain::SetHDRMetaData()
 	---------------------------------------------------------------------*/
 	_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(HDR10MetaData), &HDR10MetaData);
 }
+#pragma endregion   Color Space

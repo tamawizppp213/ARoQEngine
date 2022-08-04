@@ -42,6 +42,7 @@ namespace rhi::vulkan
 		static VkSamplerMipmapMode    Convert(const rhi::core::FilterOption filter);
 		static VkSamplerAddressMode   Convert(const rhi::core::SamplerAddressMode addressMode);
 		static VkBorderColor          Convert(const rhi::core::BorderColor borderColor);
+		static VkSampleCountFlagBits  Convert(const rhi::core::MultiSample sample);
 #pragma endregion SamplerState
 #pragma region BlendState
 		static VkFormat               Convert(const rhi::core::PixelFormat   pixelFormat);
@@ -70,6 +71,11 @@ namespace rhi::vulkan
 		static VkMemoryPropertyFlags  Convert(const rhi::core::MemoryHeap memoryHeap);
 #pragma endregion GPUBuffer
 #pragma endregion GPUResource
+#pragma region RenderPass
+		static VkAttachmentLoadOp  Convert(const rhi::core::AttachmentLoad load);
+		static VkAttachmentStoreOp Convert(const rhi::core::AttachmentStore store);
+		static VkImageLayout       Convert(const rhi::core::ResourceLayout layout);
+#pragma endregion RenderPass
 	};
 }
 #endif

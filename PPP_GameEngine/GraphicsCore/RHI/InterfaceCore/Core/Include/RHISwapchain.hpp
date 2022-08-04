@@ -14,6 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include <memory>
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,6 +26,7 @@ namespace rhi::core
 {
 	class RHIDevice;
 	class RHICommandQueue;
+	class GPUTexture;
 	/****************************************************************************
 	*				  			RHIFence
 	*************************************************************************//**
@@ -50,8 +52,8 @@ namespace rhi::core
 		size_t      GetHeight     () const noexcept { return _windowInfo.Height; }
 		PixelFormat GetPixelFormat() const noexcept { return _pixelFormat; }
 		WindowInfo  GetWindowInfo () const noexcept { return _windowInfo; }
-		// buffer
-		// buffer count
+		std::shared_ptr<GPUTexture> GetBuffer(const size_t index) const { return _buffers[index]; }
+		size_t      GetBufferCount() const noexcept { return _buffers.size(); }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -61,6 +63,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		RHISwapchain() = default;
 		~RHISwapchain() = default;
 		explicit RHISwapchain(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, size_t frameBufferCount = 2, std::uint32_t vsync = 0)
 		{
@@ -71,10 +74,15 @@ namespace rhi::core
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice>       _device = nullptr;
 		std::shared_ptr<RHICommandQueue> _commandQueue = nullptr;
-		// texture
+		
+		std::vector<std::shared_ptr<GPUTexture>> _buffers; //[0] : render target 
+		/* pixel color format*/
 		PixelFormat _pixelFormat;
+		/* screen size and hwnd, hInstance (Windows API) */
 		WindowInfo  _windowInfo;
+		/* vertical syncronization: 0 : not wait, 1: 60 fps fixed frame rate*/
 		std::uint32_t _vsync = 0;
+		/* frame buffer count (default : 2)*/
 		size_t        _frameBufferCount = 0;
 	};
 }

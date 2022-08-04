@@ -1,19 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUResource.hpp
-///             @brief  GPU Resource 
+///             @file   DirectX12RenderPass.hpp
+///             @brief  Render pass
 ///             @author Toide Yutaro
-///             @date   2022_07_08
+///             @date   2022_08_02
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GPU_RESOURCE_HPP
-#define GPU_RESOURCE_HPP
+#ifndef VULKAN_RENDER_PASS_HPP
+#define VULKAN_RENDER_PASS_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include <memory>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIRenderPass.hpp"
+#include <vulkan/vulkan.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -21,37 +20,33 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-
-namespace rhi::core
+namespace rhi::vulkan
 {
-	class RHIDevice;
 	/****************************************************************************
-	*				  			GPUResource
+	*				  			RHIRenderPass
 	*************************************************************************//**
-	*  @class     GPUResource 
-	*  @brief     Resource (å„Ç≈NoncopyableÇ…ïœçXÇ∑ÇÈ)
+	*  @class     RHIRenderPass
+	*  @brief     RenderPass 
 	*****************************************************************************/
-	class GPUResource : public std::enable_shared_from_this<GPUResource>
+	class RHIRenderPass : public  rhi::core::RHIRenderPass
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		VkRenderPass GetRenderPass() const noexcept { return _renderPass; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		
+		RHIRenderPass() = default;
+		~RHIRenderPass();
+		explicit RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth = std::nullopt);
+		explicit RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth = std::nullopt);
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		GPUResource() = default;
-		~GPUResource() = default;
-		explicit GPUResource(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -59,9 +54,9 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
-	}; 
+		VkRenderPass _renderPass = nullptr;
+	private:
+		void Prepare();
+	};
 }
-
-
 #endif

@@ -329,6 +329,7 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12PipelineState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12PrimitiveGeometry.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12CommandContext.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12RenderPass.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Shader.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12StaticSampler.hpp" />
@@ -382,7 +383,9 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanDevice.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanEnumConverter.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanFence.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanFrameBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanGraphicsDevice.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanRenderPass.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanSwapchain.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUBlendState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUDepthStencilState.hpp" />
@@ -498,9 +501,12 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Resource\Source\DirectX12GPUTexture.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHICommonState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIDescriptorHeap.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIFrameBuffer.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIRenderPass.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Source\GPUBlendState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Source\GPUShaderState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Resource\Source\GPUBuffer.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Resource\Source\GPUTexture.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanCommandAllocator.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanCommandList.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanCommandQueue.cpp" />
@@ -508,7 +514,9 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanDevice.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanEnumConverter.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanFence.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanFrameBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanGraphicsDevice.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanRenderPass.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanSwapchain.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUBlendState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUDepthStencilState.cpp" />

@@ -13,6 +13,10 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandList.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandAllocator.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDescriptorHeap.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanRenderPass.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanSwapchain.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFrameBuffer.hpp"
+#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
 #include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUPipelineFactory.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <iostream>
@@ -136,9 +140,17 @@ bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useHDR, bool useRayt
 }
 #pragma endregion        Start Up Function
 #pragma region Create Resource Function
+std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
+{
+	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<vulkan::RHIFrameBuffer>(shared_from_this(), renderTargets, depthStencil));
+}
+std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil)
+{
+	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared <vulkan::RHIFrameBuffer>(shared_from_this(), renderTarget, depthStencil));
+}
 std::shared_ptr<core::RHISwapchain>  RHIDevice::CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync)
 {
-	return nullptr;
+	return std::static_pointer_cast<core::RHISwapchain>(std::make_shared<vulkan::RHISwapchain>(shared_from_this(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, _surface));
 }
 std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
 {
@@ -159,6 +171,14 @@ std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const c
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts)
 {
 	return std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this(), heapTypes, maxDescriptorCounts));
+}
+std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+{
+	return std::static_pointer_cast<core::RHIRenderPass>(std::make_shared<vulkan::RHIRenderPass>(shared_from_this(), colors, depth));
+}
+std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth)
+{
+	return std::static_pointer_cast<core::RHIRenderPass>(std::make_shared<vulkan::RHIRenderPass>(shared_from_this(), color, depth));
 }
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {

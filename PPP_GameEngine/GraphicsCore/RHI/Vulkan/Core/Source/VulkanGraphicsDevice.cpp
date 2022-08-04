@@ -765,7 +765,7 @@ void GraphicsDeviceVulkan::CreateSwapchain()
 	---------------------------------------------------------------------*/
 	_rhiSwapchain = std::make_shared<rhi::vulkan::RHISwapchain>(
 		_rhiDevice, _rhiCommandQueue, windowInfo, core::PixelFormat::R16G16B16A16_FLOAT,
-		_rhiDevice->GetSurface(), FRAME_BUFFER_COUNT, VSYNC);
+		FRAME_BUFFER_COUNT, VSYNC, _rhiDevice->GetSurface());
 	_swapchain = std::static_pointer_cast<rhi::vulkan::RHISwapchain>(_rhiSwapchain)->GetSwapchain();
 
 }

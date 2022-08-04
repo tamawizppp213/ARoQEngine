@@ -13,7 +13,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GPUResource.hpp"
 
-
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +30,7 @@ namespace rhi::core
 	*  @class     TemplateClass
 	*  @brief     temp
 	*****************************************************************************/
-	class GPUTexture : public GPUResource, public std::enable_shared_from_this<GPUTexture>
+	class GPUTexture : public GPUResource
 	{
 	public:
 		/****************************************************************************
@@ -55,6 +54,8 @@ namespace rhi::core
 		inline MultiSample       GetMultiSample() const noexcept { return _metaData.Sample; }
 		/* @brief : Get texture dimension (1D Å` 3D)*/
 		inline ResourceDimension GetDimension  () const noexcept { return _metaData.Dimension; }
+		/* @brief : Get resource usage*/
+		inline ResourceUsage GetUsage() const noexcept { return _metaData.ResourceUsage; }
 		/* @brief : Get Clear Value (normally color : white)*/
 		inline ClearValue        GetClearValue () const noexcept { return _metaData.ClearColor; }
 		/* @brief : Get miplevels count*/
@@ -81,12 +82,12 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUTexture() = default;
-		virtual ~GPUTexture() = default;
+		~GPUTexture() = default;
 		explicit GPUTexture(const std::shared_ptr<RHIDevice>& device, const GPUTextureMetaData& metaData): core::GPUResource(device), _metaData(metaData) {};
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		virtual void CreateTextureBuffer() = 0;
+		virtual void CreateTextureBuffer(){};
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
