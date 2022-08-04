@@ -55,8 +55,7 @@ namespace rhi::vulkan
 			const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue,
 			const core::WindowInfo& windowInfo,
 			const core::PixelFormat& pixelFormat,
-			VkSurfaceKHR surface = nullptr,
-			const size_t frameBufferCount = 2,std::uint32_t vsync = 0);
+			const size_t frameBufferCount = 2,std::uint32_t vsync = 0, VkSurfaceKHR surface = nullptr);
 		~RHISwapchain();
 	protected:
 		/****************************************************************************

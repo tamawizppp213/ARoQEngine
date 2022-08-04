@@ -98,10 +98,26 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 		core::EnumHas(metaData.ResourceUsage, core::ResourceUsage::DepthStencil) ? &clearValue : nullptr,
 		IID_PPV_ARGS(_resource.GetAddressOf())));
 
+	const auto allocateInfo = dxDevice->GetResourceAllocationInfo(0, 1, &resourceDesc);
+	_physicalSize = static_cast<size_t>(allocateInfo.SizeInBytes);
+	_alignment    = static_cast<size_t>(allocateInfo.Alignment);
 	/*-------------------------------------------------------------------
 	-             create shader resource view
 	---------------------------------------------------------------------*/
 	PrepareSRV(metaData);
+}
+
+GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData)
+	: core::GPUTexture(device, metaData), _resource(texture)
+{
+	const auto dxDevice     = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();
+	const auto dxDesc       = texture->GetDesc();
+	const auto allocateInfo = dxDevice->GetResourceAllocationInfo(0, 1, &dxDesc);
+
+	// because the size of texture is not always same in different adapters
+	// so we need record the real size and the alignment
+	_physicalSize = static_cast<size_t>(allocateInfo.SizeInBytes);
+	_alignment    = static_cast<size_t>(allocateInfo.Alignment);
 }
 
 void GPUTexture::PrepareSRV(const core::GPUTextureMetaData& metaData)

@@ -53,15 +53,7 @@ namespace rhi::core
 			_colorClearValues = colors;
 			_depthClearValue  = depth;
 		}
-		bool Compatible(const std::shared_ptr<RHIFrameBuffer>& frameBuffer) const
-		{
-			// the number of color attachments should greater than the number of render targets
-	        // the depth attachment can not be null when the depth stencil is existed.
-			//if (_colorAttachments.size() < frameBuffer->size()) return false;
-			//if (!_depthAttachment.has_value() && frameBuffer->depthStencil() != nullptr) return false;
-
-			return true;
-		}
+		bool Compatible(const std::shared_ptr<RHIFrameBuffer>& frameBuffer) const;
 		
 		/* @brief : Return multi sample count*/
 		MultiSample GetMaxSample() const noexcept { return _maxSample; }
@@ -92,8 +84,8 @@ namespace rhi::core
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice> _device = nullptr;
 
-		std::vector<Attachment>    _colorAttachments;
-		std::vector<ClearValue>    _colorClearValues;
+		std::vector<Attachment>    _colorAttachments = {};
+		std::vector<ClearValue>    _colorClearValues = {};
 
 		std::optional<Attachment> _depthAttachment;
 		std::optional<ClearValue> _depthClearValue;

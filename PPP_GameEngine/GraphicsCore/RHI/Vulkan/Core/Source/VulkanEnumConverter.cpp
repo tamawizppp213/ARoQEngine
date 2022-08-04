@@ -20,6 +20,26 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+/*-------------------------------------------------------------------
+-                        Pixel format mode
+---------------------------------------------------------------------*/
+VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
+{
+	switch (pixelFormat)
+	{
+		case core::PixelFormat::R8G8B8A8_UNORM    : return VkFormat::VK_FORMAT_R8G8B8A8_UNORM;
+		case core::PixelFormat::B8G8R8A8_UNORM    : return VkFormat::VK_FORMAT_B8G8R8A8_UNORM;
+		case core::PixelFormat::R16G16B16A16_FLOAT: return VkFormat::VK_FORMAT_R16G16B16A16_SFLOAT;
+		case core::PixelFormat::R32G32B32A32_FLOAT: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+		case core::PixelFormat::R32G32B32_FLOAT   : return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
+		case core::PixelFormat::D24_UNORM_S8_UINT : return VkFormat::VK_FORMAT_D24_UNORM_S8_UINT;
+		case core::PixelFormat::R10G10B10A2_UNORM : return VkFormat::VK_FORMAT_A2R10G10B10_UNORM_PACK32;
+		case core::PixelFormat::D32_FLOAT         : return VkFormat::VK_FORMAT_D32_SFLOAT;
+		case core::PixelFormat::Unknown           : return VkFormat::VK_FORMAT_UNDEFINED;
+		default:
+			throw std::runtime_error("not supported Pixel Format type (vulkan api)");
+	}
+}
 #pragma region Shader Stage
 VkShaderStageFlagBits  EnumConverter::Convert(const rhi::core::ShaderType type)
 {
@@ -37,22 +57,30 @@ VkShaderStageFlagBits  EnumConverter::Convert(const rhi::core::ShaderType type)
 			throw std::runtime_error("Not support shader stage");
 	}
 }
-#pragma endregion Shader Stage
+#pragma endregion      Shader  Stage
 #pragma region Sampler State
-VkFilter               EnumConverter::Convert(const rhi::core::FilterOption filter, const rhi::core::FilterMask mask)
+/*-------------------------------------------------------------------
+-                        Filter Mode
+---------------------------------------------------------------------*/
+VkFilter EnumConverter::Convert(const rhi::core::FilterOption filter, const rhi::core::FilterMask mask)
 {
 	if (filter == core::FilterOption::Anisotropy) { return VkFilter::VK_FILTER_LINEAR; }
 	return (static_cast<std::uint8_t>(filter) & static_cast<std::uint8_t>(mask)) != 0 ? VkFilter::VK_FILTER_LINEAR : VkFilter::VK_FILTER_NEAREST;
-
 }
-VkSamplerMipmapMode    EnumConverter::Convert(const rhi::core::FilterOption filter)
+/*-------------------------------------------------------------------
+-                        Mipmap mode
+---------------------------------------------------------------------*/
+VkSamplerMipmapMode EnumConverter::Convert(const rhi::core::FilterOption filter)
 {
 	if (filter == core::FilterOption::Anisotropy) return VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR;
 	return (static_cast<std::uint8_t>(filter) & 1) != 0 ?
 		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR:
 		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_NEAREST;
 }
-VkSamplerAddressMode   EnumConverter::Convert(const rhi::core::SamplerAddressMode addressingMode)
+/*-------------------------------------------------------------------
+-                        Texture Addressing mode
+---------------------------------------------------------------------*/
+VkSamplerAddressMode EnumConverter::Convert(const rhi::core::SamplerAddressMode addressingMode)
 {
 	switch (addressingMode)
 	{
@@ -61,10 +89,13 @@ VkSamplerAddressMode   EnumConverter::Convert(const rhi::core::SamplerAddressMod
 		case core::SamplerAddressMode::Clamp  : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 		case core::SamplerAddressMode::Boarder: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 		default:
-			throw std::runtime_error("Not support texture addressing mode");
+			throw std::runtime_error("Not support texture addressing mode (vulkan api)");
 	}
 }
-VkBorderColor         EnumConverter::Convert(const rhi::core::BorderColor borderColor)
+/*-------------------------------------------------------------------
+-                        Border color mode
+---------------------------------------------------------------------*/
+VkBorderColor  EnumConverter::Convert(const rhi::core::BorderColor borderColor)
 {
 	switch (borderColor)
 	{
@@ -72,28 +103,32 @@ VkBorderColor         EnumConverter::Convert(const rhi::core::BorderColor border
 		case core::BorderColor::OpaqueBlack: return VkBorderColor::VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
 		case core::BorderColor::OpaqueWhite: return VkBorderColor::VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
 		default:
-			throw std::runtime_error("Not support border color");
+			throw std::runtime_error("Not support border color (vulkan api)");
 	}
 }
-#pragma endregion Sampler State
-VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
+/*-------------------------------------------------------------------
+-                        Multi sample mode
+---------------------------------------------------------------------*/
+VkSampleCountFlagBits EnumConverter::Convert(const rhi::core::MultiSample sample)
 {
-	switch (pixelFormat)
+	switch (sample)
 	{
-		case core::PixelFormat::R8G8B8A8_UNORM    : return VkFormat::VK_FORMAT_R8G8B8A8_UNORM;
-		case core::PixelFormat::B8G8R8A8_UNORM    : return VkFormat::VK_FORMAT_B8G8R8A8_UNORM;
-		case core::PixelFormat::R16G16B16A16_FLOAT: return VkFormat::VK_FORMAT_R16G16B16A16_SFLOAT;
-		case core::PixelFormat::R32G32B32A32_FLOAT: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
-		case core::PixelFormat::R32G32B32_FLOAT   : return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
-		case core::PixelFormat::D24_UNORM_S8_UINT : return VkFormat::VK_FORMAT_D24_UNORM_S8_UINT;
-		case core::PixelFormat::R10G10B10A2_UNORM : return VkFormat::VK_FORMAT_A2R10G10B10_UNORM_PACK32;
-		case core::PixelFormat::D32_FLOAT         : return VkFormat::VK_FORMAT_D32_SFLOAT;
-		case core::PixelFormat::Unknown           : return VkFormat::VK_FORMAT_UNDEFINED;
+		case core::MultiSample::Count1 : return VkSampleCountFlagBits::VK_SAMPLE_COUNT_1_BIT;
+		case core::MultiSample::Count2 : return VkSampleCountFlagBits::VK_SAMPLE_COUNT_2_BIT;
+		case core::MultiSample::Count4 : return VkSampleCountFlagBits::VK_SAMPLE_COUNT_4_BIT;
+		case core::MultiSample::Count8 : return VkSampleCountFlagBits::VK_SAMPLE_COUNT_8_BIT;
+		case core::MultiSample::Count16: return VkSampleCountFlagBits::VK_SAMPLE_COUNT_16_BIT;
+		case core::MultiSample::Count32: return VkSampleCountFlagBits::VK_SAMPLE_COUNT_32_BIT;
+		case core::MultiSample::Count64: return VkSampleCountFlagBits::VK_SAMPLE_COUNT_64_BIT;
 		default:
-			throw std::runtime_error("not supported Pixel Format type");
+			throw std::runtime_error("Not support multi sample count (vulkan api)");
 	}
 }
+#pragma endregion     Sampler State
 #pragma region BlendState
+/*-------------------------------------------------------------------
+-                        Blend ioperate mode
+---------------------------------------------------------------------*/
 VkBlendOp EnumConverter::Convert(const rhi::core::BlendOperator blendOperator)
 {
 	switch (blendOperator)
@@ -107,30 +142,39 @@ VkBlendOp EnumConverter::Convert(const rhi::core::BlendOperator blendOperator)
 			throw std::runtime_error("not supported Blend operator type");
 	}
 }
+/*-------------------------------------------------------------------
+-                        Blend factor mode
+---------------------------------------------------------------------*/
 VkBlendFactor  EnumConverter::Convert(const rhi::core::BlendFactor blendFactor)
 {
 	switch (blendFactor)
 	{
-		case core::BlendFactor::Zero: return VkBlendFactor::VK_BLEND_FACTOR_ZERO;
-		case core::BlendFactor::One: return VkBlendFactor::VK_BLEND_FACTOR_ONE;
-		case core::BlendFactor::Source_Color: return VkBlendFactor::VK_BLEND_FACTOR_SRC_COLOR;
+		case core::BlendFactor::Zero                : return VkBlendFactor::VK_BLEND_FACTOR_ZERO;
+		case core::BlendFactor::One                 : return VkBlendFactor::VK_BLEND_FACTOR_ONE;
+		case core::BlendFactor::Source_Color        : return VkBlendFactor::VK_BLEND_FACTOR_SRC_COLOR;
 		case core::BlendFactor::Inverse_Source_Color: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
-		case core::BlendFactor::Source_Alpha: return VkBlendFactor::VK_BLEND_FACTOR_SRC_ALPHA;
+		case core::BlendFactor::Source_Alpha        : return VkBlendFactor::VK_BLEND_FACTOR_SRC_ALPHA;
 		case core::BlendFactor::Inverse_Source_Alpha: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-		case core::BlendFactor::Dest_Alpha: return VkBlendFactor::VK_BLEND_FACTOR_DST_ALPHA;
-		case core::BlendFactor::Inverse_Dest_Alpha: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
-		case core::BlendFactor::Dest_Color: return VkBlendFactor::VK_BLEND_FACTOR_DST_COLOR;
-		case core::BlendFactor::Inverse_Dest_Color: return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+		case core::BlendFactor::Dest_Alpha          : return VkBlendFactor::VK_BLEND_FACTOR_DST_ALPHA;
+		case core::BlendFactor::Inverse_Dest_Alpha  : return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+		case core::BlendFactor::Dest_Color          : return VkBlendFactor::VK_BLEND_FACTOR_DST_COLOR;
+		case core::BlendFactor::Inverse_Dest_Color  : return VkBlendFactor::VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
 		default:
 			throw std::runtime_error("not supported Blend Factor type");
 	}
 }
+/*-------------------------------------------------------------------
+-                        Color mask mode
+---------------------------------------------------------------------*/
 VkColorComponentFlags EnumConverter::Convert(const rhi::core::ColorMask colorMask)
 {
 	return static_cast<VkColorComponentFlags>(colorMask); // all the same
 }
-#pragma endregion BlendState
+#pragma endregion        Blend   State
 #pragma region RasterizerState
+/*-------------------------------------------------------------------
+-                        Polygon filling mode
+---------------------------------------------------------------------*/
 VkPolygonMode   EnumConverter::Convert(const rhi::core::FillMode fillMode)
 {
 	switch (fillMode)
@@ -142,6 +186,9 @@ VkPolygonMode   EnumConverter::Convert(const rhi::core::FillMode fillMode)
 			throw std::runtime_error("not support fillmode type");
 	}
 }
+/*-------------------------------------------------------------------
+-                        Culling mode
+---------------------------------------------------------------------*/
 VkCullModeFlags EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
 {
 	switch (cullingMode)
@@ -153,7 +200,10 @@ VkCullModeFlags EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
 			throw std::runtime_error("not support culling mode");
 	}
 }
-VkFrontFace     EnumConverter::Convert(const rhi::core::FrontFace frontFace)
+/*-------------------------------------------------------------------
+-                        Front face mode
+---------------------------------------------------------------------*/
+VkFrontFace EnumConverter::Convert(const rhi::core::FrontFace frontFace)
 {
 	switch (frontFace)
 	{
@@ -163,8 +213,11 @@ VkFrontFace     EnumConverter::Convert(const rhi::core::FrontFace frontFace)
 			throw std::runtime_error("not support front face type.");
 	}
 }
-#pragma endregion   RasterizerState (Done)
+#pragma endregion   Rasterizer State
 #pragma region DepthStencilState
+/*-------------------------------------------------------------------
+-                        Compare operator mode
+---------------------------------------------------------------------*/
 VkCompareOp  EnumConverter::Convert(const rhi::core::CompareOperator compareOperator)
 {
 	switch (compareOperator)
@@ -181,6 +234,9 @@ VkCompareOp  EnumConverter::Convert(const rhi::core::CompareOperator compareOper
 			throw std::runtime_error("not supported compare operator type");
 	}
 }
+/*-------------------------------------------------------------------
+-                        Stencil operator mode
+---------------------------------------------------------------------*/
 VkStencilOp  EnumConverter::Convert(const rhi::core::StencilOperator stencilOperator)
 {
 	switch (stencilOperator)
@@ -197,8 +253,11 @@ VkStencilOp  EnumConverter::Convert(const rhi::core::StencilOperator stencilOper
 			throw std::runtime_error("not supported depth stencil operator type");
 	}
 }
-#pragma endregion DepthStencilState
+#pragma endregion DepthStencil State
 #pragma region Input Layout
+/*-------------------------------------------------------------------
+-                        Primitive topology mode
+---------------------------------------------------------------------*/
 VkPrimitiveTopology EnumConverter::Convert(const rhi::core::PrimitiveTopology primitiveTopology)
 {
 	switch (primitiveTopology)
@@ -211,8 +270,11 @@ VkPrimitiveTopology EnumConverter::Convert(const rhi::core::PrimitiveTopology pr
 			throw std::runtime_error("not supported primitive topology type (vulkan api) ");
 	}
 }
-#pragma endregion Input Layput
+#pragma endregion      Input Layout
 #pragma region GPUResource
+/*-------------------------------------------------------------------
+-                        Image resource dimension mode
+---------------------------------------------------------------------*/
 VkImageType      EnumConverter::Convert(const rhi::core::ResourceDimension dimension)
 {
 	switch (dimension)
@@ -224,6 +286,9 @@ VkImageType      EnumConverter::Convert(const rhi::core::ResourceDimension dimen
 			throw std::runtime_error("not supported resource dimension (vulkan api) ");
 	}
 }
+/*-------------------------------------------------------------------
+-                        Image resource mode
+---------------------------------------------------------------------*/
 VkImageViewType  EnumConverter::Convert(const rhi::core::ResourceType type)
 {
 	switch (type)
@@ -239,6 +304,9 @@ VkImageViewType  EnumConverter::Convert(const rhi::core::ResourceType type)
 			throw std::runtime_error("not supported resource type (vulkan api)");
 	}
 }
+/*-------------------------------------------------------------------
+-                        Descriptor heap type (resource view type) mode
+---------------------------------------------------------------------*/
 VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorHeapType heapType)
 {
 	switch (heapType)
@@ -252,6 +320,9 @@ VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorHeapType heap
 	}
 }
 #pragma region GPUBuffer
+/*-------------------------------------------------------------------
+-                        Descriptor mode
+---------------------------------------------------------------------*/
 VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorType resourceType)
 {
 	switch (resourceType)
@@ -262,6 +333,9 @@ VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorType resource
 			throw std::runtime_error("not supported descriptor type (vulkan api)");
 	}
 }
+/*-------------------------------------------------------------------
+-                        Memory Heap mode
+---------------------------------------------------------------------*/
 VkMemoryPropertyFlags  EnumConverter::Convert(const rhi::core::MemoryHeap memoryHeap)
 {
 	switch (memoryHeap)
@@ -270,8 +344,56 @@ VkMemoryPropertyFlags  EnumConverter::Convert(const rhi::core::MemoryHeap memory
 		case core::MemoryHeap::Upload : return VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 			                                 | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
 		default:
-			throw std::runtime_error("not support Memory Heap type");
+			throw std::runtime_error("not support Memory Heap type (vulkan api)");
 	}
 }
 #pragma endregion GPUBuffer
 #pragma endregion GPUResource
+#pragma region Render Pass
+/*-------------------------------------------------------------------
+-                        Attachment load mode
+---------------------------------------------------------------------*/
+VkAttachmentLoadOp  EnumConverter::Convert(const rhi::core::AttachmentLoad load)
+{
+	switch (load)
+	{
+		case core::AttachmentLoad::Clear   : return VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_CLEAR;
+		case core::AttachmentLoad::Load    : return VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_LOAD;
+		case core::AttachmentLoad::DontCare: return VkAttachmentLoadOp::VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		default:
+			throw std::runtime_error("not support AttachmentLoad (vulkan api)");
+	}
+}
+/*-------------------------------------------------------------------
+-                        Attachment store mode
+---------------------------------------------------------------------*/
+VkAttachmentStoreOp EnumConverter::Convert(const rhi::core::AttachmentStore store)
+{
+	switch (store)
+	{
+		case core::AttachmentStore::Store: return VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_STORE;
+		case core::AttachmentStore::DontCare: return VkAttachmentStoreOp::VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		default:
+			throw std::runtime_error("not support Attachment Store (vulkan api)");
+	}
+}
+/*-------------------------------------------------------------------
+-                        Image layout mode
+---------------------------------------------------------------------*/
+VkImageLayout EnumConverter::Convert(const rhi::core::ResourceLayout layout)
+{
+	switch (layout)
+	{
+		case core::ResourceLayout::Common         : return VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+		case core::ResourceLayout::GeneralRead    : return VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
+		case core::ResourceLayout::RenderTarget   : return VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		case core::ResourceLayout::DepthStencil   : return VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		case core::ResourceLayout::CopyDestination: return VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+		case core::ResourceLayout::CopySource     : return VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+		case core::ResourceLayout::Present        : return VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		default:
+			throw std::runtime_error("not support imageresource layout");
+			
+	}
+}
+#pragma endregion Render Pass

@@ -11,6 +11,7 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanSwapchain.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandQueue.hpp"
+#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include <algorithm>
 #include <stdexcept>
@@ -71,9 +72,9 @@ namespace
 	};
 }
 #pragma endregion Swapchain Support
-
-RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, VkSurfaceKHR surface,
-	const size_t frameBufferCount, std::uint32_t vsync) : rhi::core::RHISwapchain(device, commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync)
+#pragma region Constructor and Destructor
+RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat,
+	const size_t frameBufferCount, std::uint32_t vsync, VkSurfaceKHR surface) : rhi::core::RHISwapchain(device, commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync)
 {
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	
@@ -115,6 +116,8 @@ RHISwapchain::~RHISwapchain()
 	vkDestroySemaphore(vkDevice->GetDevice(), _semaphore, nullptr);
 	vkDestroySurfaceKHR(vulkan::RHIDevice::GetInstance(), _surface, nullptr);
 }
+#pragma endregion Constructor and Destructor
+#pragma region Render Function
 /****************************************************************************
 *                     Present
 *************************************************************************//**
@@ -180,7 +183,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	-         Destroy swapchain and present semaphore
 	---------------------------------------------------------------------*/
 	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device).get()->GetDevice();
-	// buffer reset ‚ª“ü‚é—\’è
+	for (auto& buffer : _buffers) { buffer.reset(); }
 	vkDestroySwapchainKHR(vkDevice, _swapchain, nullptr);
 	vkDestroySemaphore(vkDevice, _semaphore, nullptr);
 	/*-------------------------------------------------------------------
@@ -200,6 +203,8 @@ size_t RHISwapchain::GetCurrentBufferIndex() const
 {
 	return static_cast<std::uint32_t>(_currentBufferIndex);
 }
+#pragma endregion   Render Function
+#pragma region Set Up Function
 /****************************************************************************
 *                     InitializeSwapchain
 *************************************************************************//**
@@ -275,7 +280,13 @@ void RHISwapchain::InitializeSwapchain()
 	vkCreateSwapchainKHR(vkDevice->GetDevice(), &createInfo, nullptr, &_swapchain);
 	_images.resize(imageCount);
 	vkGetSwapchainImagesKHR(vkDevice->GetDevice(), _swapchain, &imageCount, _images.data());
-
+	for (size_t index = 0; index < _buffers.size(); ++index)
+	{
+		auto info = core::GPUTextureMetaData::Texture2D(
+			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
+		info.Layout = core::ResourceLayout::Present;
+		_buffers[index] = std::make_shared<vulkan::GPUTexture>(_device, info, _images[index]);
+	}
 	/*-------------------------------------------------------------------
 	-               Create Semaphore
 	---------------------------------------------------------------------*/
@@ -317,7 +328,8 @@ void RHISwapchain::UpdateCurrentFrameIndex()
 	_currentBufferIndex = nextFrameIndex;
 
 }
-
+#pragma endregion   Set Up Function
+#pragma region Swap Chain Config
 /****************************************************************************
 *                     SelectSwapchainFormat
 *************************************************************************//**
@@ -414,3 +426,4 @@ VkExtent2D RHISwapchain::SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabi
 		return actualExtent;
 	}
 }
+#pragma endregion Swap Chain Config

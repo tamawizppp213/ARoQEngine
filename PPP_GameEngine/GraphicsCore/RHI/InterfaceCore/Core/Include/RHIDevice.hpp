@@ -15,6 +15,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
 #include <vector>
+#include <optional>
 #include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -25,12 +26,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
+	class RHIFrameBuffer;
 	class RHIFence;
 	class RHICommandList;
 	class RHICommandQueue;
 	class RHICommandAllocator;
 	class RHISwapchain;
 	class RHIDescriptorHeap;
+	class RHIRenderPass;
+	class GPUTexture;
 	class GPUPipelineFactory;
 	/****************************************************************************
 	*				  			RHIDevice
@@ -45,6 +49,8 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		virtual bool Create(HWND hwnd, HINSTANCE hInstance, bool useHDR = false,  bool useRaytracing = false) = 0;
+		virtual std::shared_ptr<RHIFrameBuffer>      CreateFrameBuffer(const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil = nullptr) = 0;
+		virtual std::shared_ptr<RHIFrameBuffer>      CreateFrameBuffer(const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil = nullptr) = 0;
 		virtual std::shared_ptr<RHIFence>            CreateFence() = 0;
 		virtual std::shared_ptr<RHICommandList>      CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator) = 0;
 		virtual std::shared_ptr<RHICommandQueue>     CreateCommandQueue() = 0;
@@ -53,6 +59,9 @@ namespace rhi::core
 		virtual std::shared_ptr<RHIDescriptorHeap>   CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
 		virtual std::shared_ptr<RHIDescriptorHeap>   CreateDescriptorHeap(const std::vector<DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts) = 0;
 		virtual std::shared_ptr<GPUPipelineFactory>  CreatePipelineFactory() = 0;
+		virtual std::shared_ptr<RHIRenderPass>       CreateRenderPass(const std::vector<Attachment>& colors, const std::optional<Attachment>& depth) = 0;
+		virtual std::shared_ptr<RHIRenderPass>       CreateRenderPass(const Attachment& color, const std::optional<Attachment>& depth) = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
