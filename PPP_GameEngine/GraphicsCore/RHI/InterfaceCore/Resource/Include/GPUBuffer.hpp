@@ -42,9 +42,10 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		inline std::uint32_t GetElementCount   () { return _count; }
-		inline std::uint32_t GetElementByteSize() { return _stride; }
-		inline std::uint64_t GetTotalByteSize  () { return _stride * _count; }
+		inline size_t GetElementCount   () { return _metaData.Count; }
+		inline size_t GetElementByteSize() { return _metaData.Stride; }
+		inline size_t GetTotalByteSize  () { return _metaData.ByteSize; }
+		inline const GPUBufferMetaData GetMetaData() { return _metaData; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -55,7 +56,7 @@ namespace rhi::core
 		*****************************************************************************/
 		GPUBuffer() = default;
 		~GPUBuffer() = default;
-		explicit GPUBuffer(const std::shared_ptr<RHIDevice>& device, std::uint32_t stride, std::uint32_t count, BufferType bufferType);
+		explicit GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBufferMetaData& metaData);;
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -63,10 +64,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::uint8_t* _mappedData = nullptr;
-		std::uint32_t _stride = 0;
-		std::uint32_t _count  = 0;
-
+		std::uint8_t*   _mappedData = nullptr;
+		GPUBufferMetaData _metaData = {};
 	};
 }
 

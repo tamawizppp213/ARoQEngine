@@ -61,7 +61,7 @@ namespace rhi::core
 		/* @brief : Get miplevels count*/
 		inline size_t GetMipMapLevels() const noexcept { return _metaData.MipLevels; }
 		/* @brief : Get Arrays*/
-		inline size_t GetArrayLength() const noexcept { return _metaData.Dimension == ResourceDimension::Dimension3D ? _metaData.Depth : 1; }
+		inline size_t GetArrayLength() const noexcept { return _metaData.Dimension == ResourceDimension::Dimension3D ? _metaData.DepthOrArraySize : 1; }
 		/* @brief : Is Array*/
 		inline bool IsArray() const noexcept { return GetArrayLength() != 1; }
 		/* @brief : texture pixel index*/

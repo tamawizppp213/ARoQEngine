@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12RenderPass.hpp
+///             @file   VulkanRenderPass.hpp
 ///             @brief  Render pass
 ///             @author Toide Yutaro
 ///             @date   2022_08_02

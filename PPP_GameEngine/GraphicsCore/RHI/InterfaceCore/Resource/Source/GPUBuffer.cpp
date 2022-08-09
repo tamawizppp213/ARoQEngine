@@ -23,31 +23,16 @@ namespace
 	static inline std::uint32_t AlignmentValue(std::uint32_t size, std::uint32_t alignment) { return (size + alignment - (size % alignment)); }
 }
 
-GPUBuffer::GPUBuffer(const std::shared_ptr<RHIDevice>& device, std::uint32_t stride, std::uint32_t count, BufferType bufferType)
+GPUBuffer::GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBufferMetaData& metaData)
+	: GPUResource(device), _metaData(metaData)
 {
 	/*-------------------------------------------------------------------
 	-           Constant Buffer Check (for 256 byte alignment )
 	---------------------------------------------------------------------*/
-	bool isConstantBuffer = bufferType == BufferType::Constant;
+	bool isConstantBuffer = _metaData.BufferType == BufferType::Constant;
 	/*-------------------------------------------------------------------
 	-          Set Stride and Element Count
 	---------------------------------------------------------------------*/
-	_stride = isConstantBuffer ? CalcConstantBufferByteSize(stride) : stride;
-	_count = count;
-	/*_resourceLayout = ResourceLayout::GeneralRead;
-	switch (bufferType)
-	{
-		case BufferType::Vertex:
-		case BufferType::Index:
-		{
-			_memoryHeap     = MemoryHeap::Default;
-			break;
-		}
-		case BufferType::Constant:
-		case BufferType::Upload:
-		{
-			_memoryHeap     = MemoryHeap::Upload;
-			break;
-		}
-	}*/
+	_metaData.Stride   = isConstantBuffer ? CalcConstantBufferByteSize(_metaData.Stride) : _metaData.Stride;
+	_metaData.ByteSize = _metaData.Stride * _metaData.Count;
 }

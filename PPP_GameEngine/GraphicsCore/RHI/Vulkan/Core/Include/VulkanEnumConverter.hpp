@@ -31,11 +31,13 @@ namespace rhi::vulkan
 	class EnumConverter
 	{
 	public:
+		using VulkanResourceUsage = std::pair<VkBufferUsageFlags, VkImageUsageFlags>;
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 #pragma region ShaderState
 		static VkShaderStageFlagBits  Convert(const rhi::core::ShaderType type);
+		static VkShaderStageFlagBits  Convert(const rhi::core::ShaderVisibility visibility);
 #pragma endregion ShaderState
 #pragma region SamplerState
 		static VkFilter               Convert(const rhi::core::FilterOption filter, const rhi::core::FilterMask mask);
@@ -60,12 +62,18 @@ namespace rhi::vulkan
 		static VkStencilOp            Convert(const rhi::core::StencilOperator stencilOperator);
 #pragma endregion DepthStencilState
 #pragma region Input Layout
-		static VkImageType            Convert(const rhi::core::ResourceDimension dimension);
-		static VkImageViewType        Convert(const rhi::core::ResourceType type);
 		static VkPrimitiveTopology    Convert(const rhi::core::PrimitiveTopology primitiveTopology);
 #pragma endregion Input Layout
 #pragma region GPUResource
 		static VkDescriptorType       Convert(const rhi::core::DescriptorHeapType heapType);
+		static VulkanResourceUsage    Convert(const rhi::core::ResourceUsage usage);
+#pragma region GPUTexture
+		static VkImageType            Convert(const rhi::core::ResourceDimension dimension);
+		static VkImageAspectFlags     Convert(const rhi::core::PixelFormat format, const rhi::core::ResourceUsage usage);
+		static VkImageViewType        Convert(const rhi::core::ResourceType type);
+		static VkImageViewType        Convert(const rhi::core::ResourceDimension dimension, const rhi::core::ResourceType usage, const size_t length);
+		static VkImageCreateFlags     Convert(const size_t arrayLength = 0);
+#pragma endregion GPUTexture
 #pragma region GPUBuffer
 		static VkDescriptorType       Convert(const rhi::core::DescriptorType resourceType);
 		static VkMemoryPropertyFlags  Convert(const rhi::core::MemoryHeap memoryHeap);

@@ -59,7 +59,9 @@ namespace rhi::vulkan
 		std::shared_ptr<core::RHIRenderPass>       CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
 		std::shared_ptr<core::RHIRenderPass>       CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
 		std::shared_ptr<core::GPUPipelineFactory>  CreatePipelineFactory() override;
-		
+		std::shared_ptr<core::GPUSampler>          CreateSampler(const core::SamplerInfo& samplerInfo); // both
+		std::shared_ptr<core::GPUBuffer>           CreateBuffer(const core::GPUBufferMetaData& metaData) override;
+		std::shared_ptr<core::GPUTexture>          CreateTexture(const core::GPUTextureMetaData& metaData) override;
 		size_t AllocateQueue();
 		void FreeQueue(const size_t index);
 		size_t GetGraphicsQueueFamilyIndex() { return _queueFamilyIndex.GraphicsFamily.value(); }
@@ -70,6 +72,7 @@ namespace rhi::vulkan
 		inline VkDevice          GetDevice()         { return _logicalDevice; }
 		inline VkPhysicalDevice  GetPhysicalDevice() { return _physicalDevice; }
 		inline VkSurfaceKHR      GetSurface()        { return _surface; }
+		std::uint32_t            GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags);
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

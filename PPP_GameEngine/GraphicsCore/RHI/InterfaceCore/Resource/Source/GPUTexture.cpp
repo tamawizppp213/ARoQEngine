@@ -39,7 +39,7 @@ size_t GPUTexture::GetHeight(const size_t mipLevel) const noexcept
 
 size_t GPUTexture::GetDepth(const size_t mipLevel) const noexcept
 {
-	auto result = _metaData.Depth;
+	auto result = _metaData.DepthOrArraySize;
 	if (IsArray()) { return 1; }
 	for (size_t index = 0; index < mipLevel; ++index)
 	{
