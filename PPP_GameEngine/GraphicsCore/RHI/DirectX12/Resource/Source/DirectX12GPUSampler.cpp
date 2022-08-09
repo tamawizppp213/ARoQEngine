@@ -20,13 +20,8 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUDynamicSampler::GPUDynamicSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo)
-	: core::GPUSampler(device, samplerInfo)
-{
 
-}
-
-GPUStaticSampler::GPUStaticSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo)
+GPUSampler::GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo)
 	: core::GPUSampler(device, samplerInfo)
 {
 	_samplerDesc.Filter         = EnumConverter::Convert(samplerInfo.Filter);

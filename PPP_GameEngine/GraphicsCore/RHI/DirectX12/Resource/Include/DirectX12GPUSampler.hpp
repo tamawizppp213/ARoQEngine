@@ -29,7 +29,7 @@ namespace rhi::directX12
 	*  @class     GPUBuffer
 	*  @brief     Buffer
 	*****************************************************************************/
-	class GPUDynamicSampler : public core::GPUSampler
+	class GPUSampler : public core::GPUSampler
 	{
 	public:
 		/****************************************************************************
@@ -39,52 +39,15 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const D3D12_SAMPLER_DESC& GetSamplerDesc() const noexcept { return _samplerDesc; }
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		GPUDynamicSampler() = default;
-		~GPUDynamicSampler() = default;
-		explicit GPUDynamicSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
-	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
-
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
-		D3D12_SAMPLER_DESC _samplerDesc = {};
-	};
-
-	/****************************************************************************
-	*				  			GPUBuffer
-	*************************************************************************//**
-	*  @class     GPUBuffer
-	*  @brief     Buffer
-	*****************************************************************************/
-	class GPUStaticSampler : public core::GPUSampler
-	{
-	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc(){ return _samplerDesc; }
 		const D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc() const noexcept { return _samplerDesc; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUStaticSampler() = default;
-		~GPUStaticSampler() = default;
-		explicit GPUStaticSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
+		GPUSampler() = default;
+		~GPUSampler() = default;
+		explicit GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

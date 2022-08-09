@@ -34,6 +34,8 @@ namespace rhi::core
 	class RHISwapchain;
 	class RHIDescriptorHeap;
 	class RHIRenderPass;
+	class GPUSampler;
+	class GPUBuffer;
 	class GPUTexture;
 	class GPUPipelineFactory;
 	/****************************************************************************
@@ -61,7 +63,9 @@ namespace rhi::core
 		virtual std::shared_ptr<GPUPipelineFactory>  CreatePipelineFactory() = 0;
 		virtual std::shared_ptr<RHIRenderPass>       CreateRenderPass(const std::vector<Attachment>& colors, const std::optional<Attachment>& depth) = 0;
 		virtual std::shared_ptr<RHIRenderPass>       CreateRenderPass(const Attachment& color, const std::optional<Attachment>& depth) = 0;
-
+		virtual std::shared_ptr<GPUSampler>          CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
+		virtual std::shared_ptr<GPUBuffer>           CreateBuffer(const core::GPUBufferMetaData& metaData) = 0;
+		virtual std::shared_ptr<GPUTexture>          CreateTexture(const core::GPUTextureMetaData& metaData) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

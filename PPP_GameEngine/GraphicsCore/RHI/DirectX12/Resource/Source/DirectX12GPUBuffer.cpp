@@ -20,14 +20,14 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, std::uint32_t stride, std::uint32_t count, core::BufferType bufferType)
-	:core::GPUBuffer(device, stride, count, bufferType)
+GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData)
+	:core::GPUBuffer(device, metaData)
 {
 	/*-------------------------------------------------------------------
 	-           Set heap property
 	---------------------------------------------------------------------*/
 	D3D12_HEAP_PROPERTIES heapProp = {};
-	//heapProp.Type = EnumConverter::Convert(_memoryHeap);
+	heapProp.Type = EnumConverter::Convert(_metaData.HeapType);
 	heapProp.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
 	heapProp.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
 	heapProp.CreationNodeMask     = 1;
@@ -65,11 +65,11 @@ void GPUBuffer::CopyStart()
 }
 void GPUBuffer::CopyData(int elementIndex, const void* data)
 {
-	std::memcpy(&_mappedData[elementIndex * _stride], data, _stride);
+	std::memcpy(&_mappedData[elementIndex * _metaData.Stride], data, _metaData.Stride);
 }
 void GPUBuffer::CopyTotalData(const void* data, int dataLength)
 {
-	std::memcpy(&_mappedData[0], data, _stride * (size_t)dataLength);
+	std::memcpy(&_mappedData[0], data, _metaData.Stride * (size_t)dataLength);
 }
 void GPUBuffer::CopyEnd()
 {

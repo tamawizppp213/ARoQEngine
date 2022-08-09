@@ -64,6 +64,8 @@ namespace rhi::vulkan
 		VkDeviceMemory _memory    = nullptr;
 		VkImage        _image     = nullptr;
 		VkImageViewCreateInfo  _imageViewDesc = {};
+	private: 
+		void Prepare();
 	};
 
 

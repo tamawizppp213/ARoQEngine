@@ -35,6 +35,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+#pragma region Shader 
+		static D3D12_SHADER_VISIBILITY    Convert(const rhi::core::ShaderVisibility visibility);
+#pragma endregion Shader
 #pragma region Sampler State
 		static D3D12_FILTER               Convert(const rhi::core::FilterOption filter);
 		static D3D12_TEXTURE_ADDRESS_MODE Convert(const rhi::core::SamplerAddressMode addressingMode);
@@ -60,6 +63,7 @@ namespace rhi::directX12
 #pragma endregion Input Layout 
 #pragma region GPUResource
 		static D3D12_DESCRIPTOR_HEAP_TYPE Convert(const rhi::core::DescriptorHeapType heapType);
+		static D3D12_DESCRIPTOR_RANGE_TYPE Convert(const rhi::core::DescriptorType descriptorType);
 		static D3D12_RESOURCE_FLAGS       Convert(const rhi::core::ResourceUsage usage);
 #pragma region GPUBuffer 
 		static D3D12_HEAP_TYPE            Convert(const rhi::core::MemoryHeap memoryHeap);

@@ -20,6 +20,24 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Shader
+D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibility visibility)
+{
+	switch (visibility)
+	{
+		case core::ShaderVisibility::All          : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_ALL;
+		case core::ShaderVisibility::Vertex       : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_VERTEX;
+		case core::ShaderVisibility::Pixel        : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_PIXEL;
+		case core::ShaderVisibility::Geometry     : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_GEOMETRY;
+		case core::ShaderVisibility::Mesh         : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_MESH;
+		case core::ShaderVisibility::Amplification: return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_AMPLIFICATION;
+		case core::ShaderVisibility::Hull         : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_HULL;
+		case core::ShaderVisibility::Domain       : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_DOMAIN;
+		default:
+			throw std::runtime_error("Not supported shader visibility (directX12 api)");
+	}
+}
+#pragma endregion Shader
 #pragma region Sampler State
 D3D12_TEXTURE_ADDRESS_MODE  EnumConverter::Convert(const rhi::core::SamplerAddressMode addressingMode)
 {
@@ -214,7 +232,18 @@ D3D12_DESCRIPTOR_HEAP_TYPE EnumConverter::Convert(const rhi::core::DescriptorHea
 		case core::DescriptorHeapType::RTV        : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		case core::DescriptorHeapType::DSV        : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 		default:
-			throw std::runtime_error("not supported descriptor heap type");
+			throw std::runtime_error("not supported descriptor heap type (directX12 api)");
+	}
+}
+D3D12_DESCRIPTOR_RANGE_TYPE EnumConverter::Convert(const rhi::core::DescriptorType descriptorType)
+{
+	switch (descriptorType)
+	{
+		case core::DescriptorType::Buffer: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+		case core::DescriptorType::Texture: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		case core::DescriptorType::StructuredBuffer: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+		default:
+			throw std::runtime_error("not supported descriptor type (directX12 api)");
 	}
 }
 #pragma region GPUBuffer
@@ -226,7 +255,7 @@ D3D12_HEAP_TYPE  EnumConverter::Convert(const rhi::core::MemoryHeap memoryHeap)
 		case core::MemoryHeap::Upload : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_UPLOAD;
 		case core::MemoryHeap::Custom : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_CUSTOM;
 		default:
-			throw std::runtime_error("not supported heap type");
+			throw std::runtime_error("not supported heap type (directX12 api)");
 	}
 }
 D3D12_RESOURCE_STATES EnumConverter::Convert(const rhi::core::ResourceLayout resourceLayout)

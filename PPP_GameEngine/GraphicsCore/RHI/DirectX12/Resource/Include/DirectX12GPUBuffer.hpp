@@ -50,7 +50,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		GPUBuffer() = default;
 		~GPUBuffer() = default;
-		explicit GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, std::uint32_t stride, std::uint32_t count, core::BufferType bufferType);
+		explicit GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData);
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

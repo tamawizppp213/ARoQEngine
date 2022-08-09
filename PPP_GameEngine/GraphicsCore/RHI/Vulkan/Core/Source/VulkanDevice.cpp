@@ -17,6 +17,8 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanSwapchain.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFrameBuffer.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
+#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUBuffer.hpp"
+#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUSampler.hpp"
 #include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUPipelineFactory.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <iostream>
@@ -183,6 +185,18 @@ std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::At
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {
 	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<vulkan::GPUPipelineFactory>());
+}
+std::shared_ptr<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerInfo& samplerInfo)
+{
+	return std::static_pointer_cast<core::GPUSampler>(std::make_shared<vulkan::GPUSampler>(shared_from_this(), samplerInfo));
+}
+std::shared_ptr<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData)
+{
+	return std::static_pointer_cast<core::GPUBuffer>(std::make_shared<vulkan::GPUBuffer>(shared_from_this(), metaData));
+}
+std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData)
+{
+	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<vulkan::GPUTexture>(shared_from_this(), metaData));
 }
 size_t RHIDevice::AllocateQueue()
 {
@@ -646,5 +660,20 @@ void RHIDevice::FindGraphicsQueueFamilies(VkPhysicalDevice device)
 	}
 	
 	if (_freeQueues.size() == 0) { throw std::runtime_error("Free queue's size is 0."); }
+}
+std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags)
+{
+	for (size_t index = 0; index < _memoryProperties.memoryTypeCount; ++index)
+	{
+		if ((typeBits & 1) == 1)
+		{
+			if ((_memoryProperties.memoryTypes[index].propertyFlags & flags) == flags)
+				return static_cast<uint32_t>(index);
+		}
+
+		typeBits >>= 1;
+	}
+
+	throw std::runtime_error("failed to get memory type index");
 }
 #pragma endregion          Set Up Function

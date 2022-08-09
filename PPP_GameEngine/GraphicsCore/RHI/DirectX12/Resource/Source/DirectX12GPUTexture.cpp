@@ -44,7 +44,7 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 	resourceDesc.Alignment          = 0;
 	resourceDesc.Width              = metaData.Width;
 	resourceDesc.Height             = static_cast<UINT>(metaData.Height);
-	resourceDesc.DepthOrArraySize   = static_cast<UINT16>(metaData.Depth);
+	resourceDesc.DepthOrArraySize   = static_cast<UINT16>(metaData.DepthOrArraySize);
 	resourceDesc.MipLevels          = static_cast<UINT16>(metaData.MipLevels);
 	resourceDesc.Format             = EnumConverter::Convert(metaData.PixelFormat);
 	resourceDesc.SampleDesc.Count   = static_cast<UINT>(metaData.Sample);
@@ -169,7 +169,7 @@ void GPUTexture::PrepareSRV(const core::GPUTextureMetaData& metaData)
 			_resourceViewDesc.Texture1DArray.FirstArraySlice     = 0;
 			_resourceViewDesc.Texture1DArray.MipLevels           = static_cast<UINT>(metaData.MipLevels);
 			_resourceViewDesc.Texture1DArray.MostDetailedMip     = 0;
-			_resourceViewDesc.Texture1DArray.ArraySize           = static_cast<UINT>(metaData.Depth);
+			_resourceViewDesc.Texture1DArray.ArraySize           = static_cast<UINT>(metaData.DepthOrArraySize);
 			_resourceViewDesc.Texture1DArray.ResourceMinLODClamp = 0;
 			break;
 		}
@@ -179,7 +179,7 @@ void GPUTexture::PrepareSRV(const core::GPUTextureMetaData& metaData)
 			_resourceViewDesc.Texture2DArray.FirstArraySlice     = 0;
 			_resourceViewDesc.Texture2DArray.MipLevels           = static_cast<UINT>(metaData.MipLevels);
 			_resourceViewDesc.Texture2DArray.MostDetailedMip     = 0;
-			_resourceViewDesc.Texture2DArray.ArraySize           = static_cast<UINT>(metaData.Depth);
+			_resourceViewDesc.Texture2DArray.ArraySize           = static_cast<UINT>(metaData.DepthOrArraySize);
 			_resourceViewDesc.Texture2DArray.PlaneSlice          = 0;
 			_resourceViewDesc.Texture2DArray.ResourceMinLODClamp = 0;
 			break;
@@ -188,7 +188,7 @@ void GPUTexture::PrepareSRV(const core::GPUTextureMetaData& metaData)
 		{
 			_resourceViewDesc.ViewDimension                    = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2DMSARRAY;
 			_resourceViewDesc.Texture2DMSArray.FirstArraySlice = 0;
-			_resourceViewDesc.Texture2DMSArray.ArraySize       = static_cast<UINT>(metaData.Depth);
+			_resourceViewDesc.Texture2DMSArray.ArraySize       = static_cast<UINT>(metaData.DepthOrArraySize);
 			break;
 		}
 		case core::ResourceType::Texture2DMultiSample:
@@ -204,7 +204,7 @@ void GPUTexture::PrepareSRV(const core::GPUTextureMetaData& metaData)
 			_resourceViewDesc.TextureCubeArray.MipLevels           = static_cast<UINT>(metaData.MipLevels);
 			_resourceViewDesc.TextureCubeArray.MostDetailedMip     = 0;
 			_resourceViewDesc.TextureCubeArray.ResourceMinLODClamp = 0;
-			_resourceViewDesc.TextureCubeArray.NumCubes            = static_cast<UINT>(metaData.Depth / 6);
+			_resourceViewDesc.TextureCubeArray.NumCubes            = static_cast<UINT>(metaData.DepthOrArraySize / 6);
 			break;
 		}
 		default:

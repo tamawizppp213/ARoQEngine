@@ -99,7 +99,18 @@ namespace rhi::core
 		}
 	};
 #pragma endregion              Pixel
-#pragma region Shader Type
+#pragma region Shader
+	enum class ShaderVisibility : std::uint8_t
+	{
+		All,
+		Vertex,
+		Pixel,
+		Hull,
+		Domain,
+		Geometry,
+		Amplification,
+		Mesh
+	};
 	enum class ShaderType : std::uint8_t
 	{
 		Vertex,
@@ -129,6 +140,7 @@ namespace rhi::core
 		Clamp   = 3,
 		Boarder = 4,
 	};
+
 	enum class BorderColor : std::uint8_t
 	{
 		TransparentBlack,
@@ -225,6 +237,8 @@ namespace rhi::core
 
 		static SamplerInfo GetDefaultSampler(DefaultSamplerType type);
 	};
+
+	
 #pragma endregion      Sampler State
 #pragma region Blend State
 	/****************************************************************************
@@ -288,9 +302,9 @@ namespace rhi::core
 	*****************************************************************************/
 	struct BlendProperty
 	{
-		BlendOperator ColorOperator    = BlendOperator::Add;
-		BlendOperator AlphaOperator    = BlendOperator::Add;
-		BlendFactor   DestinationAlpha = BlendFactor::Zero;
+		BlendOperator ColorOperator    = BlendOperator::Add;   // Color Blend Type
+		BlendOperator AlphaOperator    = BlendOperator::Add;   // Alpha Blend Type
+		BlendFactor   DestinationAlpha = BlendFactor::Zero;    // 
 		BlendFactor   Destination      = BlendFactor::Zero;
 		BlendFactor   SourceAlpha      = BlendFactor::One;
 		BlendFactor   Source           = BlendFactor::One;
@@ -309,13 +323,13 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class MultiSample : std::uint8_t
 	{
-		Count1 = 1,
-		Count2 = 2,
-		Count4 = 4,
-		Count8 = 8,
-		Count16 = 16,
-		Count32 = 32,
-		Count64 = 64
+		Count1 = 1,       // 1
+		Count2 = 2,       // 2
+		Count4 = 4,       // 4
+		Count8 = 8,       // 8
+		Count16 = 16,     // 16
+		Count32 = 32,     // 32
+		Count64 = 64      // 64
 	};
 	class MultiSampleSizeOf
 	{
@@ -422,15 +436,6 @@ namespace rhi::core
 		CountOfPrimitiveTopology
 	};
 
-	struct InputLayoutElement
-	{
-		PixelFormat Format = PixelFormat::Unknown;
-		std::string Name = "";
-		size_t      Slot = 0;
-		InputLayoutElement() = default;
-		~InputLayoutElement() = default;
-		explicit InputLayoutElement(const std::string& name, const PixelFormat format, const size_t slot = 0) : Format(format), Name(name), Slot(slot) {};
-	};
 	#pragma endregion InputAssemblyState
 #pragma region GPUResource
 	enum class ResourceDimension : std::uint8_t
@@ -507,8 +512,8 @@ namespace rhi::core
 	enum class DescriptorType : std::uint8_t
 	{
 		Buffer,
+		StructuredBuffer,
 		Texture,
-		
 	};
 	/****************************************************************************
 	*				  			ResourceLayout
@@ -540,6 +545,8 @@ namespace rhi::core
 		return false;
 	}
 
+
+#pragma region GPUBuffer
 	enum class BufferType
 	{
 		Vertex,   // Use static mesh
@@ -554,27 +561,37 @@ namespace rhi::core
 	*  @class     GPUBufferInfo
 	*  @brief     GPUBufferInfo
 	*****************************************************************************/
-	struct GPUBufferInfo
+	struct GPUBufferMetaData
 	{
 	public:
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		std::uint32_t  Stride       = 0;
-		std::uint32_t  Count        = 0;
-		ResourceLayout Layout       = ResourceLayout::GeneralRead;
-		MemoryHeap     HeapType     = MemoryHeap::Default;
-		DescriptorType DescType     = DescriptorType::Buffer;
+		size_t         Stride        = 0;                           // element byte size
+		size_t         Count         = 0;                           // element array count 
+		size_t         ByteSize      = 0;
+		ResourceType   ResourceType  = ResourceType::Unknown;       // GPU resource type
+		ResourceUsage  ResourceUsage = ResourceUsage::None;         // how to use resource 
+		ResourceLayout Layout        = ResourceLayout::GeneralRead; // resource layout
+		MemoryHeap     HeapType      = MemoryHeap::Default;         // memory heap type
+		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-
+		GPUBufferMetaData() = default;
+		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceLayout layout, MemoryHeap heapType, core::BufferType bufferType);
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
+		static GPUBufferMetaData UploadBuffer (const size_t stride, const size_t count);
+		static GPUBufferMetaData DefaultBuffer(const size_t stride, const size_t count);
+		static GPUBufferMetaData VertexBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceLayout layout = ResourceLayout::GeneralRead);
+		static GPUBufferMetaData IndexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceLayout layout = ResourceLayout::GeneralRead);
+	private:
+		size_t CalcConstantBufferByteSize(const size_t byteSize) { return (byteSize + 255) & ~255; }
 	};
-
+#pragma endregion GPUBuffer
 #pragma region GPUTexture
 	
 	
@@ -594,20 +611,19 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		size_t            Width           = 1;
-		size_t            Height          = 1;
-		size_t            Depth           = 1;
-		size_t            ByteSize        = 0;
-		size_t            MipLevels       = 1;
-		PixelFormat       PixelFormat     = PixelFormat::Unknown;
-		MultiSample       Sample          = MultiSample::Count1;
-		ResourceDimension Dimension       = ResourceDimension::Dimension1D;
-		ResourceType      ResourceType    = ResourceType::Unknown;
-		ResourceUsage     ResourceUsage   = ResourceUsage::None;
-		ClearValue        ClearColor      = ClearValue();
-		ResourceLayout    Layout          = ResourceLayout::GeneralRead;
-		MemoryHeap        HeapType        = MemoryHeap::Default;
-		DescriptorType    DescType        = DescriptorType::Texture;
+		size_t            Width            = 1;                              // texture width
+		size_t            Height           = 1;                              // texture height
+		size_t            DepthOrArraySize = 1;                              // texture depth or array size
+		size_t            ByteSize         = 0;                              // total byte size
+		size_t            MipLevels        = 1;                              // mipmap levels
+		PixelFormat       PixelFormat      = PixelFormat::Unknown;           // pixel color format 
+		MultiSample       Sample           = MultiSample::Count1;            // multi sample count
+		ResourceDimension Dimension        = ResourceDimension::Dimension1D; // texture resource dimension
+		ResourceType      ResourceType     = ResourceType::Unknown;          // GPU resource type
+		ResourceUsage     ResourceUsage    = ResourceUsage::None;            // how to use resource 
+		ClearValue        ClearColor       = ClearValue();                   // clear color 
+		ResourceLayout    Layout           = ResourceLayout::GeneralRead;    // resource layout
+		MemoryHeap        HeapType         = MemoryHeap::Default;            // gpu heap type
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -632,7 +648,7 @@ namespace rhi::core
 		static GPUTextureMetaData DepthStencilMultiSample  (const size_t width, const size_t height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue = ClearValue());
 
 	private:
-		inline void CalculateByteSize() { ByteSize =  Width * Height * (Dimension == ResourceDimension::Dimension3D ? Depth : 1) * PixelFormatSizeOf::Get(PixelFormat) * MultiSampleSizeOf::Get(Sample); }
+		inline void CalculateByteSize() { ByteSize =  Width * Height * (Dimension == ResourceDimension::Dimension3D ? DepthOrArraySize : 1) * PixelFormatSizeOf::Get(PixelFormat) * MultiSampleSizeOf::Get(Sample); }
 	};
 
 #pragma endregion GPUTexture
@@ -738,7 +754,7 @@ namespace rhi::core
 	};
 #pragma endregion Render Pass
 
-
+#pragma region Window Surface
 	/****************************************************************************
 	*				  			Viewport 
 	*************************************************************************//**
@@ -795,5 +811,6 @@ namespace rhi::core
 			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
 		}
 	};
+#pragma endregion Window Surface
 }
 #endif

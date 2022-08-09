@@ -18,6 +18,8 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12FrameBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUSampler.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineFactory.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <d3d12.h>
@@ -180,6 +182,19 @@ std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {
 	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<directX12::GPUPipelineFactory>());
 }
+std::shared_ptr<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerInfo& samplerInfo)
+{
+	return std::static_pointer_cast<core::GPUSampler>(std::make_shared<directX12::GPUSampler>(shared_from_this(), samplerInfo));
+}
+std::shared_ptr<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData)
+{
+	return std::static_pointer_cast<core::GPUBuffer>(std::make_shared<directX12::GPUBuffer>(shared_from_this(), metaData));
+}
+std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData)
+{
+	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this(), metaData));
+}
+/****************************************************************************
 #pragma endregion           Create Resource Function
 #pragma region Debug Function
 /****************************************************************************

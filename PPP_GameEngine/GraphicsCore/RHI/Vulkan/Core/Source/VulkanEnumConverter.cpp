@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
 #include <stdexcept>
-
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -55,6 +55,22 @@ VkShaderStageFlagBits  EnumConverter::Convert(const rhi::core::ShaderType type)
 		case core::ShaderType::Domain       : return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 		default:
 			throw std::runtime_error("Not support shader stage");
+	}
+}
+VkShaderStageFlagBits EnumConverter::Convert(const rhi::core::ShaderVisibility visibility)
+{
+	switch (visibility)
+	{
+		case core::ShaderVisibility::All          : return VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
+		case core::ShaderVisibility::Vertex       : return VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
+		case core::ShaderVisibility::Pixel        : return VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
+		case core::ShaderVisibility::Geometry     : return VkShaderStageFlagBits::VK_SHADER_STAGE_GEOMETRY_BIT;
+		case core::ShaderVisibility::Amplification: return VkShaderStageFlagBits::VK_SHADER_STAGE_TASK_BIT_NV;
+		case core::ShaderVisibility::Mesh         : return VkShaderStageFlagBits::VK_SHADER_STAGE_MESH_BIT_NV;
+		case core::ShaderVisibility::Hull         : return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+		case core::ShaderVisibility::Domain       : return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+		default:
+			throw std::runtime_error("Not support shader visibility");
 	}
 }
 #pragma endregion      Shader  Stage
@@ -273,9 +289,48 @@ VkPrimitiveTopology EnumConverter::Convert(const rhi::core::PrimitiveTopology pr
 #pragma endregion      Input Layout
 #pragma region GPUResource
 /*-------------------------------------------------------------------
+-                      Resource Usage type
+---------------------------------------------------------------------*/
+EnumConverter::VulkanResourceUsage EnumConverter::Convert(const core::ResourceUsage usage)
+{
+	static std::vector<core::ResourceUsage> sourcePool =
+	{
+		core::ResourceUsage::None,
+		core::ResourceUsage::VertexBuffer,
+		core::ResourceUsage::IndexBuffer,
+		core::ResourceUsage::ConstantBuffer,
+		core::ResourceUsage::RenderTarget,
+		core::ResourceUsage::DepthStencil
+	};
+
+	static std::vector<VulkanResourceUsage> targetPool = {
+		VulkanResourceUsage(0, 0) ,
+		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 0),
+		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 0),
+		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 0),
+		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT),
+		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
+	};
+
+	auto result = VulkanResourceUsage(0, 0);
+	for (size_t i = 0; i < sourcePool.size(); ++i)
+	{
+		if (core::EnumHas(usage, sourcePool[i]))
+		{
+			result.first |= targetPool[i].first;
+			result.second |= targetPool[i].second;
+		}
+	}
+
+	result.first |= VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+	result.second |= VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+	result.second |= VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
+	return result;
+}
+/*-------------------------------------------------------------------
 -                        Image resource dimension mode
 ---------------------------------------------------------------------*/
-VkImageType      EnumConverter::Convert(const rhi::core::ResourceDimension dimension)
+VkImageType EnumConverter::Convert(const rhi::core::ResourceDimension dimension)
 {
 	switch (dimension)
 	{
@@ -319,6 +374,51 @@ VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorHeapType heap
 			throw std::runtime_error("not supported heap type (vulkan api)" );
 	}
 }
+#pragma region GPUTexture
+/*-------------------------------------------------------------------
+-                        Resource Usage type
+---------------------------------------------------------------------*/
+VkImageAspectFlags  EnumConverter::Convert(const rhi::core::PixelFormat format, const rhi::core::ResourceUsage usage)
+{
+	if (core::EnumHas(usage, core::ResourceUsage::DepthStencil))
+	{
+		if (core::PixelFormatSizeOf::IsDepthOnly(format)) { return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT; }
+		return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT | VkImageAspectFlagBits::VK_IMAGE_ASPECT_STENCIL_BIT;
+	}
+	return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
+}
+/*-------------------------------------------------------------------
+-                       ImageViewType
+---------------------------------------------------------------------*/
+VkImageViewType EnumConverter::Convert(const rhi::core::ResourceDimension dimension, const rhi::core::ResourceType usage, const size_t length)
+{
+	switch (dimension)
+	{
+		case core::ResourceDimension::Dimension1D: return length == 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_1D : VkImageViewType::VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+		case core::ResourceDimension::Dimension2D:
+		{
+			return  usage == core::ResourceType::TextureCube ? (length > 6 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE_ARRAY : VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE) :
+				(length == 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_2D : VkImageViewType::VK_IMAGE_VIEW_TYPE_2D_ARRAY);
+		}
+		case core::ResourceDimension::Dimension3D: return VkImageViewType::VK_IMAGE_VIEW_TYPE_3D;
+		default:
+			throw std::runtime_error("not support image view type");
+	}
+}
+/*-------------------------------------------------------------------
+-                        Image Create Flags
+---------------------------------------------------------------------*/
+VkImageCreateFlags EnumConverter::Convert(const size_t arrayLength)
+{
+	auto result = VkImageCreateFlags(VkImageCreateFlagBits::VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT);
+	if (arrayLength > 1) { result |= VkImageCreateFlagBits::VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT; }
+	if (arrayLength > 5)
+	{
+		result |= VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+	}
+	return result;
+}
+#pragma endregion GPUTexture
 #pragma region GPUBuffer
 /*-------------------------------------------------------------------
 -                        Descriptor mode
@@ -327,8 +427,9 @@ VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorType resource
 {
 	switch (resourceType)
 	{
-		case core::DescriptorType::Buffer : return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		case core::DescriptorType::Texture: return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+		case core::DescriptorType::Buffer     : return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		case core::DescriptorType::Texture    : return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+		case core::DescriptorType::StructuredBuffer: return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 		default:
 			throw std::runtime_error("not supported descriptor type (vulkan api)");
 	}
