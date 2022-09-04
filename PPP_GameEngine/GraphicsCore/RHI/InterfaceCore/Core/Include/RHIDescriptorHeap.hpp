@@ -53,6 +53,7 @@ namespace rhi::core
 		std::shared_ptr<RHIResourceLayout> GetResourceLayout() const noexcept { return _resourceLayout; }
 		// @brief: Return descriptor heap type (cbv, rtv, dsv)
 		DescriptorHeapType GetHeapType(int index = 0) const noexcept { return _heapTypeLists[index]; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

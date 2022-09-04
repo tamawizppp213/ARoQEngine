@@ -59,7 +59,8 @@ namespace rhi::directX12
 		static D3D12_STENCIL_OP           Convert(const rhi::core::StencilOperator stencilOperator);
 #pragma endregion DepthStencilState
 #pragma region Input Layout
-		static D3D_PRIMITIVE_TOPOLOGY     Convert(const rhi::core::PrimitiveTopology primitiveTopology);
+		static D3D_PRIMITIVE_TOPOLOGY        Convert(const rhi::core::PrimitiveTopology primitiveTopology);
+		static D3D12_PRIMITIVE_TOPOLOGY_TYPE Convert1(const rhi::core::PrimitiveTopology primitiveTopology);
 #pragma endregion Input Layout 
 #pragma region GPUResource
 		static D3D12_DESCRIPTOR_HEAP_TYPE Convert(const rhi::core::DescriptorHeapType heapType);

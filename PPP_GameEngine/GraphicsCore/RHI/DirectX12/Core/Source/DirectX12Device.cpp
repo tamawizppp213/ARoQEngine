@@ -16,7 +16,9 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12DescriptorHeap.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12ResourceLayout.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12FrameBuffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUSampler.hpp"
@@ -128,6 +130,8 @@ bool RHIDevice::Create(HWND hwnd, HINSTANCE hInstance, bool useHDR, bool useRayt
 	if (useRaytracing) { CheckDXRSupport();}
 	CheckTearingSupport();
 	if (useHDR) { CheckHDRDisplaySupport(); }
+
+	// complete initialize
 	_isInitialize = true;
 	return true;
 }
@@ -177,6 +181,18 @@ std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vec
 std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth)
 {
 	return std::static_pointer_cast<core::RHIRenderPass>(std::make_shared<directX12::RHIRenderPass>(shared_from_this(), color, depth));
+}
+std::shared_ptr<core::GPUGraphicsPipelineState> RHIDevice::CreateGraphicPipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+{
+	return std::static_pointer_cast<core::GPUGraphicsPipelineState>(std::make_shared<directX12::GPUGraphicsPipelineState>(shared_from_this(), renderPass, resourceLayout));
+}
+std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+{
+	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<directX12::GPUComputePipelineState>(shared_from_this(), renderPass, resourceLayout));
+}
+std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+{
+	return std::static_pointer_cast<core::RHIResourceLayout>(std::make_shared<directX12::RHIResourceLayout>(shared_from_this(), elements, samplers, constant32Bits));
 }
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {

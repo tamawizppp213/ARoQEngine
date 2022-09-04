@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   DirectX12CommandQueue.hpp
-///             @brief  CommandQueue
+///             @brief  CommandQueue. This class is used to execute commandLists.
 ///             @author Toide Yutaro
 ///             @date   2022_06_23
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +34,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		// @ brief : Execute command lists.
 		void Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists) override;
 		/****************************************************************************
 		**                Public Member Variables

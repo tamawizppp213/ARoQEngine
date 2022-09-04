@@ -43,13 +43,18 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 {
 	if (commandLists.empty()) { return; }
 
+	/*-------------------------------------------------------------------
+	-               Push back vulkan command lists
+	-                to use VkCommandBuffer
+	---------------------------------------------------------------------*/
 	std::vector<VkCommandBuffer> vkLists;
 	for (auto& commandList : commandLists)
 	{
 		vkLists.push_back(std::static_pointer_cast<rhi::vulkan::RHICommandList>(commandList)->GetCommandList());
 	}
 	/*-------------------------------------------------------------------
-	-               Submit command to command queue
+	-                Set Up
+	-          ! command queueŠÔ‚Ì“¯Šú‚É‚Í‘Î‰ž‚µ‚Ä‚¢‚Ü‚¹‚ñ. 
 	---------------------------------------------------------------------*/
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -61,6 +66,9 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 	submitInfo.signalSemaphoreCount    = 0;
 	submitInfo.pSignalSemaphores       = nullptr;
 
+	/*-------------------------------------------------------------------
+	-               Submit command to command queue
+	---------------------------------------------------------------------*/
 	auto result = vkQueueSubmit(_queue, 1, &submitInfo, nullptr);
 	if (result != VK_SUCCESS)
 	{

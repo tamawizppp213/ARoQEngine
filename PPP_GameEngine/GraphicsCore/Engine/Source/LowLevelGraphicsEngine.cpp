@@ -35,7 +35,7 @@ using namespace rhi::core;
 void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
 {
 	_hwnd = hwnd; _hInstance = hInstance;
-	SelectDevice(apiVersion);
+	SelectDevice(apiVersion);             // directX12 or vulkan api
 	CreateCommandObject();
 	CreateSwapchain();
 	CreateSyncObject();
@@ -87,7 +87,7 @@ void LowLevelGraphicsEngine::SelectDevice(APIVersion version)
 	switch (version)
 	{
 		case APIVersion::DirectX12: { _device = std::make_shared<rhi::directX12::RHIDevice>(); std::cout << "DirectX12" << std::endl; break; }
-		case APIVersion::Vulkan:    { _device = std::make_shared<rhi::vulkan::RHIDevice>();    std::cout << "Vulkan" << std::endl; break; }
+		case APIVersion::Vulkan:    { _device = std::make_shared<rhi::vulkan::RHIDevice>();    std::cout << "Vulkan"    << std::endl; break; }
 		default: { throw std::runtime_error("Unknown API."); break; }
 	}
 	_device->Create(_hwnd, _hInstance, _useHDR, _useRayTracing);

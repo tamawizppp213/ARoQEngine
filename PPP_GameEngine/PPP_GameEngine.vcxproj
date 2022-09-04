@@ -342,6 +342,7 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUDepthStencilState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUInputAssemblyState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUPipelineFactory.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUPipelineState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPURasterizerState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUShaderState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12BLASBuffer.hpp" />
@@ -394,6 +395,7 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUDepthStencilState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUInputAssemblyState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUPipelineFactory.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUPipelineState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPURasterizerState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUShaderState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Resource\Include\VulkanGPUBuffer.hpp" />
@@ -495,6 +497,7 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUBlendState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUDepthStencilState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUPipelineFactory.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUPipelineState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPURasterizerState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUShaderState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12InputAssemblyState.cpp" />
@@ -528,6 +531,7 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUDepthStencilState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUPipelineFactory.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUInputAssemblyState.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUPipelineState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPURasterizerState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUShaderState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Resource\Source\VulkanGPUBuffer.cpp" />

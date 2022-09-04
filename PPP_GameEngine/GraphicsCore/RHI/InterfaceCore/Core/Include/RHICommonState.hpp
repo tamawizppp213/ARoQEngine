@@ -28,6 +28,12 @@ namespace rhi::core
 		DirectX12  = 1,
 		Vulkan     = 2
 	};
+#pragma region Index
+	enum class IndexType
+	{
+		UInt32
+	};
+#pragma endregion Index
 #pragma region Pixel
 	enum class PixelFormat
 	{

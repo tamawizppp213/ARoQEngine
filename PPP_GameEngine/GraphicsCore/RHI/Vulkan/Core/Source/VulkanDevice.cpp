@@ -16,6 +16,8 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanRenderPass.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanSwapchain.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFrameBuffer.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanResourceLayout.hpp"
+#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUPipelineState.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUBuffer.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUSampler.hpp"
@@ -182,9 +184,21 @@ std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::At
 {
 	return std::static_pointer_cast<core::RHIRenderPass>(std::make_shared<vulkan::RHIRenderPass>(shared_from_this(), color, depth));
 }
+std::shared_ptr<core::GPUGraphicsPipelineState> RHIDevice::CreateGraphicPipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+{
+	return std::static_pointer_cast<core::GPUGraphicsPipelineState>(std::make_shared<vulkan::GPUGraphicsPipelineState>(shared_from_this(), renderPass, resourceLayout));
+}
+std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+{
+	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<vulkan::GPUComputePipelineState>(shared_from_this(), renderPass, resourceLayout));
+}
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {
 	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<vulkan::GPUPipelineFactory>());
+}
+std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+{
+	return std::static_pointer_cast<core::RHIResourceLayout>(std::make_shared<vulkan::RHIResourceLayout>(shared_from_this(), elements, samplers, constant32Bits));
 }
 std::shared_ptr<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerInfo& samplerInfo)
 {
@@ -198,6 +212,7 @@ std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextur
 {
 	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<vulkan::GPUTexture>(shared_from_this(), metaData));
 }
+
 size_t RHIDevice::AllocateQueue()
 {
 	if (_freeQueues.empty()) { throw std::runtime_error("too many queues were allocated"); }

@@ -36,21 +36,24 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		bool Create(HWND hwnd, HINSTANCE hInstance, bool useHDR = false, bool useRaytracing = false) override;
-		std::shared_ptr<core::RHIFrameBuffer>      CreateFrameBuffer(const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
-		std::shared_ptr<core::RHIFrameBuffer>      CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
-		std::shared_ptr<core::RHIFence>            CreateFence() override;
-		std::shared_ptr<core::RHICommandList>      CreateCommandList(const std::shared_ptr<core::RHICommandAllocator>& commandAllocator) override;
-		std::shared_ptr<core::RHICommandQueue>     CreateCommandQueue() override;
-		std::shared_ptr<core::RHICommandAllocator> CreateCommandAllocator() override;
-		std::shared_ptr<core::RHISwapchain>        CreateSwapchain(const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0) override;
-		std::shared_ptr<core::RHIDescriptorHeap>   CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
-		std::shared_ptr<core::RHIDescriptorHeap>   CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts) override;
-		std::shared_ptr<core::RHIRenderPass>       CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
-		std::shared_ptr<core::RHIRenderPass>       CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
-		std::shared_ptr<core::GPUPipelineFactory>  CreatePipelineFactory() override;
-		std::shared_ptr<core::GPUSampler>          CreateSampler(const core::SamplerInfo& samplerInfo); // both
-		std::shared_ptr<core::GPUBuffer>           CreateBuffer(const core::GPUBufferMetaData& metaData) override;
-		std::shared_ptr<core::GPUTexture>          CreateTexture(const core::GPUTextureMetaData& metaData) override;
+		std::shared_ptr<core::RHIFrameBuffer>           CreateFrameBuffer(const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
+		std::shared_ptr<core::RHIFrameBuffer>           CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
+		std::shared_ptr<core::RHIFence>                 CreateFence() override;
+		std::shared_ptr<core::RHICommandList>           CreateCommandList(const std::shared_ptr<core::RHICommandAllocator>& commandAllocator) override;
+		std::shared_ptr<core::RHICommandQueue>          CreateCommandQueue() override;
+		std::shared_ptr<core::RHICommandAllocator>      CreateCommandAllocator() override;
+		std::shared_ptr<core::RHISwapchain>             CreateSwapchain(const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0) override;
+		std::shared_ptr<core::RHIDescriptorHeap>        CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
+		std::shared_ptr<core::RHIDescriptorHeap>        CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts) override;
+		std::shared_ptr<core::RHIRenderPass>            CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
+		std::shared_ptr<core::RHIRenderPass>            CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
+		std::shared_ptr<core::GPUGraphicsPipelineState> CreateGraphicPipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override ;  // after action: setting pipeline
+		std::shared_ptr<core::GPUComputePipelineState>  CreateComputePipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
+		std::shared_ptr<core::RHIResourceLayout>        CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt) override;
+		std::shared_ptr<core::GPUPipelineFactory>       CreatePipelineFactory() override;
+		std::shared_ptr<core::GPUSampler>               CreateSampler(const core::SamplerInfo& samplerInfo); // both
+		std::shared_ptr<core::GPUBuffer>                CreateBuffer(const core::GPUBufferMetaData& metaData) override;
+		std::shared_ptr<core::GPUTexture>               CreateTexture(const core::GPUTextureMetaData& metaData) override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

@@ -172,6 +172,19 @@ D3D_PRIMITIVE_TOPOLOGY  EnumConverter::Convert(const rhi::core::PrimitiveTopolog
 {
 	return static_cast<D3D_PRIMITIVE_TOPOLOGY>(primitiveTopology);
 }
+D3D12_PRIMITIVE_TOPOLOGY_TYPE EnumConverter::Convert1(const rhi::core::PrimitiveTopology primitiveTopology)
+{
+	switch (primitiveTopology)
+	{
+		case core::PrimitiveTopology::PointList    : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+		case core::PrimitiveTopology::LineList     : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+		case core::PrimitiveTopology::LineStrip    : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+		case core::PrimitiveTopology::TriangleList : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		case core::PrimitiveTopology::TriangleStrip: return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		default:
+			throw std::runtime_error("not supported primitive topology type");
+	}
+}
 #pragma endregion      Input Layput
 #pragma region GPUResource
 D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage)
