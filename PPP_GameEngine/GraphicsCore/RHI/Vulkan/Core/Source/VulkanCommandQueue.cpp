@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandQueue.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandList.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFence.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,17 +21,100 @@ using namespace rhi;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 RHICommandQueue::~RHICommandQueue()
 {
-	std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device)->FreeQueue(_queueFamilyIndex);
+	//std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device)->FreeQueue(_queueFamilyIndex);
 }
 
-RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device) : rhi::core::RHICommandQueue(device)
+RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex) : rhi::core::RHICommandQueue(type)
 {
-	const auto vkDevice = std::static_pointer_cast<RHIDevice>(_device);
-	_queueFamilyIndex = static_cast<std::uint32_t>(vkDevice->AllocateQueue());
-	vkGetDeviceQueue(vkDevice->GetDevice(), (std::uint32_t)vkDevice->GetGraphicsQueueFamilyIndex(), _queueFamilyIndex, &_queue);
+	const auto vkDevice = std::static_pointer_cast<RHIDevice>(device);
+	_queueFamilyIndex = queueFamilyIndex;
+	vkGetDeviceQueue(vkDevice->GetDevice(), _queueFamilyIndex, 0, &_queue);
 }
+#pragma endregion Constructor and Destructor
+#pragma region Public Function
+/****************************************************************************
+*							Wait
+*************************************************************************//**
+*  @fn        void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
+*  @brief     Wait until the specified Fence value is reached.
+*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] std::uint64_t value
+*  @return 　　void
+*****************************************************************************/
+void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value)
+{
+	const auto& vkFence = std::static_pointer_cast<RHIFence>(fence);
+
+	/*-------------------------------------------------------------------
+	-               Set up timeline submit info
+	---------------------------------------------------------------------*/
+	VkTimelineSemaphoreSubmitInfo timelineInfo = {};
+	timelineInfo.sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
+	timelineInfo.pNext                     = nullptr;
+	timelineInfo.pWaitSemaphoreValues      = &value;
+	timelineInfo.waitSemaphoreValueCount   = 1;
+	timelineInfo.signalSemaphoreValueCount = 0;
+	timelineInfo.pSignalSemaphoreValues    = nullptr;
+
+	/*-------------------------------------------------------------------
+	-               Set up submit info
+	---------------------------------------------------------------------*/
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType                       = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.pNext                       = &timelineInfo;
+	submitInfo.waitSemaphoreCount          = 1;
+	submitInfo.pWaitSemaphores             = &vkFence->GetFence();
+	VkPipelineStageFlags waitDestStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+	submitInfo.pWaitDstStageMask           = &waitDestStageMask;
+
+	if (vkQueueSubmit(_queue, 1, &submitInfo,VK_NULL_HANDLE) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to submit queue");
+	}
+
+}
+/****************************************************************************
+*							Signal
+*************************************************************************//**
+*  @fn        void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
+*  @brief     Update the fence value (value) when the Command Queue execution completes.
+*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] std::uint64_t value
+*  @return 　　void
+*****************************************************************************/
+void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value)
+{
+	const auto& vkFence = std::static_pointer_cast<RHIFence>(fence);
+
+	/*-------------------------------------------------------------------
+	-               Set up timeline submit info
+	---------------------------------------------------------------------*/
+	VkTimelineSemaphoreSubmitInfo timelineInfo = {};
+	timelineInfo.sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
+	timelineInfo.pNext                     = nullptr;
+	timelineInfo.pWaitSemaphoreValues      = nullptr;
+	timelineInfo.waitSemaphoreValueCount   = 0;
+	timelineInfo.signalSemaphoreValueCount = 1;
+	timelineInfo.pSignalSemaphoreValues    = &value;
+
+	/*-------------------------------------------------------------------
+	-               Set up submit info
+	---------------------------------------------------------------------*/
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.pNext                = &timelineInfo;
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores    = &vkFence->GetFence();
+
+	if (vkQueueSubmit(_queue, 1, &submitInfo,VK_NULL_HANDLE) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to submit queue");
+	}
+}
+
 /****************************************************************************
 *                       Execute
 *************************************************************************//**
@@ -54,13 +138,13 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 	}
 	/*-------------------------------------------------------------------
 	-                Set Up
-	-          ! command queue間の同期には対応していません. 
 	---------------------------------------------------------------------*/
+	VkPipelineStageFlags waitDestStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	submitInfo.commandBufferCount      = static_cast<std::uint32_t>(vkLists.size());
 	submitInfo.pCommandBuffers         = vkLists.data();
-	submitInfo.pWaitDstStageMask       = nullptr;
+	submitInfo.pWaitDstStageMask       = &waitDestStageMask;
 	submitInfo.waitSemaphoreCount      = 0;
 	submitInfo.pWaitSemaphores         = nullptr;
 	submitInfo.signalSemaphoreCount    = 0;
@@ -75,3 +159,4 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 		throw std::runtime_error("failed to submit queue");
 	}
 }
+#pragma endregion Public Function

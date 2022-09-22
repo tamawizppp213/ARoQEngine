@@ -68,6 +68,7 @@ void GPUTexture::Prepare()
 	imageInfo.sharingMode           = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
 	imageInfo.pNext                 = nullptr;
 	imageInfo.tiling                = VkImageTiling::VK_IMAGE_TILING_OPTIMAL;
+	imageInfo.format                = EnumConverter::Convert(_metaData.PixelFormat);
 	if (vkCreateImage(vkDevice, &imageInfo, nullptr, &_image) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create image (vulkan api)");

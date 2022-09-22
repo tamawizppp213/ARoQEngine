@@ -20,6 +20,19 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region CommandList
+D3D12_COMMAND_LIST_TYPE EnumConverter::Convert(const rhi::core::CommandListType type)
+{
+	switch (type)
+	{
+		case core::CommandListType::Graphics: return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_DIRECT;
+		case core::CommandListType::Compute: return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_COMPUTE;
+		case core::CommandListType::Copy: return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_COPY;
+		default:
+			throw std::runtime_error("Not supported command list type (directX12 api)");
+	}
+}
+#pragma endregion CommandList
 #pragma region Shader
 D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibility visibility)
 {

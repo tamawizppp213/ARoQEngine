@@ -35,25 +35,25 @@ namespace rhi::vulkan
 	*****************************************************************************/
 	class RHIDevice : public core::RHIDevice
 	{
-		friend class rhi::vulkan::RHICommandQueue;
-	public:
-		struct GraphicsQueueFamilyIndices
+		struct QueueInfo
 		{
-			std::optional<uint32_t> GraphicsFamily;
-			bool IsComplete() { return GraphicsFamily.has_value(); }
+			std::uint32_t QueueFamilyIndex = 0;
+			std::uint32_t QueueCount = 0;
 		};
+	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Create(HWND hwnd, HINSTANCE hInstance, bool useHDR = false, bool useRaytracing = false) override;
-		
+		void SetUp() override;
+		void Destroy() override;
+#pragma region Create Resource
 		std::shared_ptr<core::RHIFrameBuffer>          CreateFrameBuffer(const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
-		std::shared_ptr<core::RHIFrameBuffer>          CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override ;
-		std::shared_ptr<core::RHIFence>                CreateFence()          override  { return nullptr; };
+		std::shared_ptr<core::RHIFrameBuffer>          CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
+		std::shared_ptr<core::RHIFence>                CreateFence(const std::uint64_t fenceValue = 0)          override;
 		std::shared_ptr<core::RHICommandList>          CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& allocator) override;
-		std::shared_ptr<core::RHICommandQueue>         CreateCommandQueue() override;
+		std::shared_ptr<core::RHICommandQueue>         CreateCommandQueue(const core::CommandListType type) override;
 		std::shared_ptr<core::RHICommandAllocator>     CreateCommandAllocator() override;
-		std::shared_ptr<core::RHISwapchain>            CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0) override;
+		std::shared_ptr<core::RHISwapchain>            CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 3, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
 		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts) override;
 		std::shared_ptr<core::RHIRenderPass>           CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
@@ -65,23 +65,32 @@ namespace rhi::vulkan
 		std::shared_ptr<core::GPUSampler>              CreateSampler(const core::SamplerInfo& samplerInfo); // both
 		std::shared_ptr<core::GPUBuffer>               CreateBuffer(const core::GPUBufferMetaData& metaData) override;
 		std::shared_ptr<core::GPUTexture>              CreateTexture(const core::GPUTextureMetaData& metaData) override;
-		size_t AllocateQueue();
-		void FreeQueue(const size_t index);
-		size_t GetGraphicsQueueFamilyIndex() { return _queueFamilyIndex.GraphicsFamily.value(); }
+#pragma endregion Create Resource
+		size_t GetQueueFamilyIndex(const core::CommandListType type) { return _commandQueueInfo[type].QueueFamilyIndex; }
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		static VkInstance        GetInstance()       { return _instance; }
-		inline VkDevice          GetDevice()         { return _logicalDevice; }
-		inline VkPhysicalDevice  GetPhysicalDevice() { return _physicalDevice; }
-		inline VkSurfaceKHR      GetSurface()        { return _surface; }
+		inline VkDevice          GetDevice() { return _logicalDevice; }
+		//inline VkSurfaceKHR      GetSurface() { return _surface; }
 		std::uint32_t            GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags);
+		std::uint32_t GetShadingRateImageTileSize() const { return 0; };
+		std::shared_ptr<core::RHICommandQueue> GetCommandQueue(const core::CommandListType commandListType) override;
+		std::shared_ptr<core::RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount = 0) override;
+		/*-------------------------------------------------------------------
+		-               Device Support Check
+		---------------------------------------------------------------------*/
+		bool IsSupportedDxr                () const override { return _isSupportedRayTracing; };
+		bool IsSupportedHDR                () const override { return _isSupportedHDR; };
+		bool IsSupportedVariableRateShading() const override { return _isSupportedVariableRateShading; };
+		bool IsSupportedMeshShading        () const override { return _isSupportedMeshShading; };
+		bool IsSupportedDrawIndirected     () const override { return _isSupportedDrawIndirected; };
+		bool IsSupportedGeometryShader     () const override { return _isSupportedGeometryShader; };
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIDevice() = default;
 		~RHIDevice();
-		
+		RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, const std::uint32_t frameCount);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -90,41 +99,34 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		static inline VkInstance _instance = nullptr;
-		std::vector<const char*> _deviceExtensions;
-		static inline std::vector<const char*> _instanceLayers;
-		static inline bool _enableValidationLayer = true;
-
-		VkDebugUtilsMessengerEXT         _debugMessenger = nullptr;
-
-		VkPhysicalDevice                 _physicalDevice = nullptr;
-		VkPhysicalDeviceFeatures         _physicalDeviceFeatures = {};
-		VkPhysicalDeviceMemoryProperties _memoryProperties       = {};
-
-		GraphicsQueueFamilyIndices _queueFamilyIndex;
-		std::vector<size_t> _freeQueues;
-
-		VkSurfaceKHR                     _surface;
 		/** @ brief: Logical device representation (application's view of the device)  */
 		VkDevice      _logicalDevice    = nullptr;
-		/** @ brief: Vulkan API Version.*/
-		std::uint32_t _vulkanAPIVersion = VK_API_VERSION_1_3;
-		
-		bool _useRaytracing = false;
+
+		/* @brief : Command queue set up data*/
+		// base class : std::unordered_map<CommandListType, std::shared_ptr<core::RHICommandQueue>> _commandQueues;
+		std::unordered_map<core::CommandListType, QueueInfo>     _commandQueueInfo;
+
+		/* @brief : variable shading rate : 1, 2, 4, 8, 16, 32, 64*/
+		std::uint32_t _shadingRateImageTileSize = 0;
+#pragma region Support check flags
+		bool _isSupportedRayTracing          = false;
+		bool _isSupportedTearing             = false;
+		bool _isSupportedHDR                 = true;
+		bool _isSupportedVariableRateShading = false;
+		bool _isSupportedMeshShading         = false;
+		bool _isSupportedRayQuery            = false;
+		bool _isSupportedGeometryShader      = false;
+		bool _isSupportedTessellation        = false;
+		bool _isSupportedDrawIndirected      = false;
+#pragma endregion Support check flags
 	private:
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-		bool CheckValidationLayerSupport();
-		bool CreateInstance();
-		void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-		void SetUpDebugMessenger();
-		void SelectPhysicalDevice();
-		bool IsDeviceSuitable(VkPhysicalDevice device);
-		void LogQueueList(VkPhysicalDevice device);
-		void CreateSurface();
-		void CreateLogicalDevice(bool useRaytracing);
-		void FindGraphicsQueueFamilies(VkPhysicalDevice device);
+		void SetUpCommandQueue();
+		void SetUpCommandPool();
+		void CheckSupports(); // Deviceのすべてのサポート内容を調べ, メンバ変数のboolに代入する.
+		void CreateLogicalDevice();
 	};
 }
 #endif

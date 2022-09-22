@@ -34,16 +34,18 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Signal(const std::shared_ptr<rhi::core::RHICommandQueue>& queue) override ;
+		void Signal(const std::uint64_t value) override;
+		void Wait  (const std::uint64_t value) override;
+		std::uint64_t GetCompletedValue() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkFence GetFence() const noexcept { return _fence; }
+		const VkSemaphore& GetFence() const noexcept { return _timelineSemaphore; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIFence() = default;
-		explicit RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device);
+		explicit RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint64_t initialValue = 0);
 		~RHIFence();
 	protected:
 		/****************************************************************************
@@ -53,7 +55,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VkFence _fence = nullptr;
+		VkSemaphore _timelineSemaphore = nullptr; // vulkan api 1.2‚©‚çŽg—p‰Â”\. Fence + Binary Semaphore
 	};
 }
 #endif

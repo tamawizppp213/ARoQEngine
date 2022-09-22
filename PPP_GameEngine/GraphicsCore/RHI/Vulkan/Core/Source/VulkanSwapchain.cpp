@@ -10,12 +10,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanSwapchain.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanAdapter.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanInstance.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFence.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandQueue.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
+#undef max
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +31,6 @@ using namespace rhi;
 #pragma region Swapchain Support 
 namespace
 {
-
 	/****************************************************************************
 	*				  			SwapchainSupportDetails
 	*************************************************************************//**
@@ -74,26 +77,22 @@ namespace
 #pragma endregion Swapchain Support
 #pragma region Constructor and Destructor
 RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat,
-	const size_t frameBufferCount, std::uint32_t vsync, VkSurfaceKHR surface) : rhi::core::RHISwapchain(device, commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync)
+	const size_t frameBufferCount, std::uint32_t vsync, bool isValidHDR) : rhi::core::RHISwapchain(device, commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
 {
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkDevice   = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkAdapter  = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
+	const auto vkInstance = static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance());
 	
 	/*-------------------------------------------------------------------
-	-          Acquire surface
+	-          Acquire surface (åªèÛÇ≈ÇÕWindowsÇÃÇ›ëŒâû)
 	---------------------------------------------------------------------*/
-	if (surface)
-	{
-		_surface = surface;
-	}
 #ifdef _WIN32
-	else
 	{
-		VkWin32SurfaceCreateInfoKHR createInfo = {};                            // Window32 Surface. (! not cross platform)
-		createInfo.hinstance = (HINSTANCE)windowInfo.HInstance;                 // hInstance
-		createInfo.hwnd      = (HWND)windowInfo.Handle;                         // hwnd 
-		createInfo.hinstance = GetModuleHandle(nullptr);                        // hInstance
-		createInfo.sType     = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR; // Structure type
-		VkResult result      = vkCreateWin32SurfaceKHR(vulkan::RHIDevice::GetInstance(), &createInfo, nullptr, &_surface);
+		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};                            // Window32 Surface. (! not cross platform)
+		surfaceInfo.hinstance = (HINSTANCE)windowInfo.HInstance;                 // hInstance
+		surfaceInfo.hwnd      = (HWND)windowInfo.Handle;                         // hwnd 
+		surfaceInfo.sType     = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR; // Structure type
+		VkResult result      = vkCreateWin32SurfaceKHR(vkInstance->GetVkInstance(), &surfaceInfo, nullptr, &_surface);
 		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to prepare surface.");
@@ -112,12 +111,56 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 RHISwapchain::~RHISwapchain()
 {
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkAdapter = std::static_pointer_cast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
+	_images.clear(); _images.shrink_to_fit();
 	vkDestroySwapchainKHR(vkDevice->GetDevice(), _swapchain, nullptr);
-	vkDestroySemaphore(vkDevice->GetDevice(), _semaphore, nullptr);
-	vkDestroySurfaceKHR(vulkan::RHIDevice::GetInstance(), _surface, nullptr);
+	vkDestroySemaphore(vkDevice->GetDevice(), _renderingFinishedSemaphore, nullptr);
+	vkDestroySemaphore(vkDevice->GetDevice(), _imageAvailableSemaphore, nullptr);
+	vkDestroySurfaceKHR(static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance())->GetVkInstance(), _surface, nullptr);
 }
 #pragma endregion Constructor and Destructor
 #pragma region Render Function
+std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
+{
+	const auto vkFence  = std::static_pointer_cast<vulkan::RHIFence>(fence);
+	const auto vkQueue  = std::static_pointer_cast<vulkan::RHICommandQueue>(_commandQueue);
+	UpdateCurrentFrameIndex();
+
+	/*-------------------------------------------------------------------
+	-          Set up timeline semaphore submit info
+	---------------------------------------------------------------------*/
+	constexpr std::uint64_t temp = std::numeric_limits<std::uint64_t>::max();
+	VkTimelineSemaphoreSubmitInfo timelineInfo = {};
+	timelineInfo.sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
+	timelineInfo.waitSemaphoreValueCount   = 1;
+	timelineInfo.pWaitSemaphoreValues      = &temp;
+	timelineInfo.signalSemaphoreValueCount = 1;
+	timelineInfo.pSignalSemaphoreValues    = &signalValue;
+
+	/*-------------------------------------------------------------------
+	-          Set up submit info
+	---------------------------------------------------------------------*/
+	VkSubmitInfo signalSubmitInfo = {};
+	signalSubmitInfo.sType                 = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	signalSubmitInfo.pNext                 = &timelineInfo;
+	signalSubmitInfo.waitSemaphoreCount    = 1;
+	signalSubmitInfo.pWaitSemaphores       = &_imageAvailableSemaphore;
+	VkPipelineStageFlags waitDestStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT;
+	signalSubmitInfo.pWaitDstStageMask     = &waitDestStageMask;
+	signalSubmitInfo.signalSemaphoreCount  = 1;
+	signalSubmitInfo.pSignalSemaphores     = &vkFence->GetFence();
+
+	/*-------------------------------------------------------------------
+	-          Submit queue
+	---------------------------------------------------------------------*/
+	auto result = vkQueueSubmit(vkQueue->GetQueue(), 1, &signalSubmitInfo, {});
+	if (result != (VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
+	{
+		throw std::runtime_error("failed to present front buffer.");
+	}
+
+	return _currentBufferIndex;
+}
 /****************************************************************************
 *                     Present
 *************************************************************************//**
@@ -126,34 +169,56 @@ RHISwapchain::~RHISwapchain()
 *  @param[in] void
 *  @return Å@Å@void
 *****************************************************************************/
-void RHISwapchain::Present()
+void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t waitValue)
 {
+	const auto vkFence = std::static_pointer_cast<vulkan::RHIFence>(fence);
+	const auto vkQueue = std::static_pointer_cast<vulkan::RHICommandQueue>(_commandQueue);
+
 	/*-------------------------------------------------------------------
-	-               Set Present Infomation
+	-          Set up timeline semaphore submit info
 	---------------------------------------------------------------------*/
-	VkPresentInfoKHR presentInfo = {};
+	constexpr std::uint64_t temp = std::numeric_limits<std::uint64_t>::max();
+	VkTimelineSemaphoreSubmitInfo timelineInfo = {};
+	timelineInfo.sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
+	timelineInfo.waitSemaphoreValueCount   = 1;
+	timelineInfo.pWaitSemaphoreValues      = &waitValue;
+	timelineInfo.signalSemaphoreValueCount = 1;
+	timelineInfo.pSignalSemaphoreValues    = &temp;
+
+	/*-------------------------------------------------------------------
+	-          Set up submit info
+	---------------------------------------------------------------------*/
+	VkSubmitInfo signalSubmitInfo = {};
+	signalSubmitInfo.sType                 = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	signalSubmitInfo.pNext                 = &timelineInfo;
+	signalSubmitInfo.waitSemaphoreCount    = 1;
+	signalSubmitInfo.pWaitSemaphores       = &vkFence->GetFence();
+	VkPipelineStageFlags waitDestStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT;
+	signalSubmitInfo.pWaitDstStageMask     = &waitDestStageMask;
+	signalSubmitInfo.signalSemaphoreCount  = 1;
+	signalSubmitInfo.pSignalSemaphores     = &_renderingFinishedSemaphore;
+
+	/*-------------------------------------------------------------------
+	-          Submit queue
+	---------------------------------------------------------------------*/
+	vkQueueSubmit(vkQueue->GetQueue(), 1, &signalSubmitInfo, {});
+
+	VkPresentInfoKHR presentInfo   = {};
 	presentInfo.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 	presentInfo.swapchainCount     = 1;
 	presentInfo.pSwapchains        = &_swapchain;
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores    = &_semaphore;
 	presentInfo.pImageIndices      = &_currentBufferIndex;
-	/*-------------------------------------------------------------------
-	-               Get vk present queue
-	---------------------------------------------------------------------*/
-	const auto vkQueue = std::static_pointer_cast<rhi::vulkan::RHICommandQueue>(_commandQueue)->GetQueue();
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores    = &_renderingFinishedSemaphore;
 	/*-------------------------------------------------------------------
 	-               Present front buffer
 	---------------------------------------------------------------------*/
-	auto result = vkQueuePresentKHR(vkQueue, &presentInfo);
-	if (result != VK_SUCCESS)
+	auto result = vkQueuePresentKHR(vkQueue->GetQueue(), &presentInfo);
+	if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
 	{
 		throw std::runtime_error("failed to present front buffer.");
 	}
-	/*-------------------------------------------------------------------
-	-               Go to next frame 
-	---------------------------------------------------------------------*/
-	UpdateCurrentFrameIndex();
+
 }
 /****************************************************************************
 *                     Resize
@@ -183,9 +248,9 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	-         Destroy swapchain and present semaphore
 	---------------------------------------------------------------------*/
 	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device).get()->GetDevice();
-	for (auto& buffer : _buffers) { buffer.reset(); }
+	for (auto& buffer : _backBuffers) { buffer.reset(); }
 	vkDestroySwapchainKHR(vkDevice, _swapchain, nullptr);
-	vkDestroySemaphore(vkDevice, _semaphore, nullptr);
+	//vkDestroySemaphore(vkDevice, _semaphore, nullptr);
 	/*-------------------------------------------------------------------
 	-         Reset swapchain
 	---------------------------------------------------------------------*/
@@ -216,10 +281,11 @@ size_t RHISwapchain::GetCurrentBufferIndex() const
 void RHISwapchain::InitializeSwapchain()
 {
 	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device);
+	const auto vkAdapter = std::static_pointer_cast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
 	/*-------------------------------------------------------------------
 	-               Acquire Surface infomation
 	---------------------------------------------------------------------*/
-	SwapchainSupportDetails details       = SwapchainSupportDetails::Query(vkDevice->GetPhysicalDevice(), _surface);
+	SwapchainSupportDetails details       = SwapchainSupportDetails::Query(vkAdapter->GetPhysicalDevice(), _surface);
 	VkSurfaceFormatKHR      surfaceFormat = SelectSwapchainFormat(details.Formats);
 	VkPresentModeKHR        presentMode   = SelectSwapchainPresentMode(details.PresentModes);
 	VkExtent2D              extent        = SelectSwapExtent(details.Capabilities);
@@ -248,9 +314,9 @@ void RHISwapchain::InitializeSwapchain()
 	createInfo.imageColorSpace       = surfaceFormat.colorSpace;                      // color space 
 	createInfo.imageExtent           = extent;
 	createInfo.imageArrayLayers      = 1;
-	createInfo.imageUsage            = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;        
+	createInfo.imageUsage            = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;        
 	createInfo.imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE;                     // access to any range or image subresource of the object will be exclusive to a single queue family at a time.
-	createInfo.clipped               = VK_FALSE;                                      // not clipped 
+	createInfo.clipped               = VK_TRUE;                                       // clipped 
 	createInfo.queueFamilyIndexCount = 0;
 	createInfo.pQueueFamilyIndices   = nullptr;
 	createInfo.oldSwapchain          = VK_NULL_HANDLE; 
@@ -277,16 +343,30 @@ void RHISwapchain::InitializeSwapchain()
 	/*-------------------------------------------------------------------
 	-               Create Swapchain KHR
 	---------------------------------------------------------------------*/
-	vkCreateSwapchainKHR(vkDevice->GetDevice(), &createInfo, nullptr, &_swapchain);
+	if (vkCreateSwapchainKHR(vkDevice->GetDevice(), &createInfo, nullptr, &_swapchain) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to create swapchain (vulkan api)");
+	}
+	/*-------------------------------------------------------------------
+	-               Get swapchain images
+	---------------------------------------------------------------------*/
 	_images.resize(imageCount);
-	vkGetSwapchainImagesKHR(vkDevice->GetDevice(), _swapchain, &imageCount, _images.data());
-	for (size_t index = 0; index < _buffers.size(); ++index)
+	_backBuffers.resize(imageCount);
+	if (vkGetSwapchainImagesKHR(vkDevice->GetDevice(), _swapchain, &imageCount, _images.data()) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to get swapchain images");
+	}
+
+	for (size_t index = 0; index < _images.size(); ++index)
 	{
 		auto info = core::GPUTextureMetaData::Texture2D(
 			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
 		info.Layout = core::ResourceLayout::Present;
-		_buffers[index] = std::make_shared<vulkan::GPUTexture>(_device, info, _images[index]);
+		_backBuffers[index] = std::make_shared<vulkan::GPUTexture>(_device, info, _images[index]);
 	}
+
+	// Ç‡ÇµÇ©ÇµÇΩÇÁÇ±Ç±Ç…CommandListÇÃCloseèàóùÇ™ì¸ÇÈÇ©Ç‡.
+
 	/*-------------------------------------------------------------------
 	-               Create Semaphore
 	---------------------------------------------------------------------*/
@@ -294,12 +374,8 @@ void RHISwapchain::InitializeSwapchain()
 	semaphoreCreateInfo.pNext = nullptr;
 	semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 	semaphoreCreateInfo.flags = 0;
-	vkCreateSemaphore(vkDevice->GetDevice(), &semaphoreCreateInfo, nullptr, &_semaphore);
-
-	/*-------------------------------------------------------------------
-	-               Update current frame index
-	---------------------------------------------------------------------*/
-	UpdateCurrentFrameIndex();
+	if (vkCreateSemaphore(vkDevice->GetDevice(), &semaphoreCreateInfo, nullptr, &_imageAvailableSemaphore) != VK_SUCCESS) { throw std::runtime_error("failed to create image available semaphore"); }
+	if (vkCreateSemaphore(vkDevice->GetDevice(), &semaphoreCreateInfo, nullptr, &_renderingFinishedSemaphore) != VK_SUCCESS) { throw std::runtime_error("failed to create rendering finished semaphore"); }
 }
 /****************************************************************************
 *                     UpdateCurrentFrameIndex
@@ -317,7 +393,7 @@ void RHISwapchain::UpdateCurrentFrameIndex()
 	-               Get next frame buffer index
 	---------------------------------------------------------------------*/
 	UINT32     nextFrameIndex = 0;
-	auto result = vkAcquireNextImageKHR(vkDevice.get()->GetDevice(), _swapchain, UINT64_MAX, _semaphore, VK_NULL_HANDLE, &nextFrameIndex);
+	auto result = vkAcquireNextImageKHR(vkDevice.get()->GetDevice(), _swapchain, UINT64_MAX, _imageAvailableSemaphore, VK_NULL_HANDLE, &nextFrameIndex);
 	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
 		throw std::runtime_error("failed to go to next frame");
@@ -347,7 +423,7 @@ VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfa
 		/*-------------------------------------------------------------------
 		-               Find HDR Format
 		---------------------------------------------------------------------*/
-		if (vkDevice->IsHDRSupport())
+		if (vkDevice->IsSupportedHDR() && _isValidHDR)
 		{
 			if ((format.format == VK_FORMAT_R16G16B16A16_SFLOAT) ||
 				(format.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32))

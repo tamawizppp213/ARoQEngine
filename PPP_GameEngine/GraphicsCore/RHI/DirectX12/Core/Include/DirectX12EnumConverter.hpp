@@ -35,6 +35,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+#pragma region CommandList
+		static D3D12_COMMAND_LIST_TYPE    Convert(const rhi::core::CommandListType type);
+#pragma endregion CommandList
 #pragma region Shader 
 		static D3D12_SHADER_VISIBILITY    Convert(const rhi::core::ShaderVisibility visibility);
 #pragma endregion Shader

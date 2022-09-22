@@ -241,7 +241,7 @@ void GraphicsDeviceDirectX12::EndDrawFrame()
 	/*-------------------------------------------------------------------
 	-						Flip screen
 	---------------------------------------------------------------------*/
-	_rhiSwapchain->Present();
+	_rhiSwapchain->Present(nullptr, 0);
 	_currentFrameIndex = (_currentFrameIndex + 1) % FRAME_BUFFER_COUNT;
 
 	FlushCommandQueue(); // Flush command queue
@@ -295,7 +295,7 @@ void GraphicsDeviceDirectX12::CopyTextureToBackBuffer(ResourceComPtr& resource, 
 void GraphicsDeviceDirectX12::FlushCommandQueue()
 {
 
-	_rhiFences[_currentFrameIndex]->Signal(_rhiCommandQueue);
+	//_rhiFences[_currentFrameIndex]->Signal(_rhiCommandQueue);
 	_currentFrameIndex = _swapchain->GetCurrentBackBufferIndex();
 
 }
@@ -325,7 +325,7 @@ void GraphicsDeviceDirectX12::CompleteInitialize()
 	/*-------------------------------------------------------------------
 	-						Flip screen
 	---------------------------------------------------------------------*/
-	_rhiSwapchain->Present();
+	_rhiSwapchain->Present(nullptr, 0);
 	_currentFrameIndex = (_currentFrameIndex + 1) % FRAME_BUFFER_COUNT;
 
 }
@@ -536,10 +536,10 @@ GraphicsDeviceDirectX12::StaticSamplerArray GraphicsDeviceDirectX12::GetStaticSa
 void GraphicsDeviceDirectX12::LoadPipeline()
 {
 	_rhiDevice = std::make_shared<rhi::directX12::RHIDevice>();
-	_rhiDevice.get()->Create(_hwnd, _hInstance, _useHDR, _enableRayTracing);
+	//_rhiDevice.get()->Create(_hwnd, _hInstance, _useHDR, _enableRayTracing);
 	_device      = _rhiDevice.get()->GetDevice();
-	_dxgiFactory = _rhiDevice.get()->GetFactory();
-	_useAdapter  = _rhiDevice.get()->GetAdapter();
+	//_dxgiFactory = _rhiDevice.get()->GetFactory();
+	//_useAdapter  = _rhiDevice.get()->GetAdapter();
 	
 	/*-------------------------------------------------------------------
 	-                     Create Fence
@@ -592,7 +592,7 @@ void GraphicsDeviceDirectX12::LoadAssets()
 *****************************************************************************/
 void GraphicsDeviceDirectX12::CreateCommandObject()
 {
-	_rhiCommandQueue = _rhiDevice->CreateCommandQueue();
+	_rhiCommandQueue = _rhiDevice->CreateCommandQueue(rhi::core::CommandListType::Graphics);
 	_commandQueue    = static_pointer_cast<rhi::directX12::RHICommandQueue>(_rhiCommandQueue)->GetCommandQueue();
 	/*-------------------------------------------------------------------
 	-                   Create Command Allocator

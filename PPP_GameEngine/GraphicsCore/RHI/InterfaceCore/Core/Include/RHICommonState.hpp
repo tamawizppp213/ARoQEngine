@@ -22,12 +22,28 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
+	/****************************************************************************
+	*				  			APIVersion
+	*************************************************************************//**
+	*  @class     APIVersion
+	*  @brief     Graphics api version (Add as needed.)
+	*****************************************************************************/
 	enum class APIVersion : std::uint8_t
 	{
 		Unknown    = 0,
 		DirectX12  = 1,
 		Vulkan     = 2
 	};
+#pragma region CommandList
+	enum class CommandListType
+	{
+		Unknown,
+		Graphics, 
+		Compute, 
+		Copy,
+		CountOfType
+	};
+#pragma endregion CommandList
 #pragma region Index
 	enum class IndexType
 	{
@@ -35,6 +51,16 @@ namespace rhi::core
 	};
 #pragma endregion Index
 #pragma region Pixel
+	enum class ShadingRate
+	{
+		K_1x1,
+		K_1x2,
+		K_2x1,
+		K_2x2,
+		K_2x4,
+		K_4x2,
+		K_4x4
+	};
 	enum class PixelFormat
 	{
 		Unknown,
@@ -137,7 +163,7 @@ namespace rhi::core
 		~BlobData() = default;
 		BlobData(void* bufferPointer, size_t bufferSize) : BufferPointer(bufferPointer), BufferSize(bufferSize) {};
 	};
-#pragma endregion        Shader Type
+#pragma endregion             Shader Type
 #pragma region Sampler State
 	enum class SamplerAddressMode : std::uint8_t
 	{
@@ -501,6 +527,7 @@ namespace rhi::core
 	{
 		Default, // Memory area visible only from GPU  
 		Upload,  // Memory area visible to CPU and GPU (Read from GPU is used for one time.)
+		Readback,// for directX12
 		Custom   // for directX12
 	};
 

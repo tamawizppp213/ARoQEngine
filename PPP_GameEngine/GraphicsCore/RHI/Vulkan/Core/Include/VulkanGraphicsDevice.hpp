@@ -119,7 +119,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		std::shared_ptr<rhi::vulkan::RHIDevice>             _rhiDevice           = nullptr;
 		std::shared_ptr<rhi::vulkan::RHISwapchain>          _rhiSwapchain        = nullptr;
-		std::shared_ptr<rhi::vulkan::RHICommandQueue>       _rhiCommandQueue     = nullptr;
+		//std::shared_ptr<rhi::vulkan::RHICommandQueue>       _rhiCommandQueue     = nullptr;
 		std::vector<std::shared_ptr<rhi::vulkan::RHICommandAllocator>> _rhiCommandAllocators;
 		std::vector<std::shared_ptr<rhi::vulkan::RHIFence>> _rhiFences;
 		/** @brief Vk Instance: all vulkan functions utility  */

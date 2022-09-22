@@ -11,6 +11,7 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanRenderPass.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
+#include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -40,9 +41,13 @@ RHIRenderPass::RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, con
 }
 
 #pragma endregion Constructor and Destructor
+
 #pragma region Prepare Function
-void RHIRenderPass::Prepare()
+void rhi::vulkan::RHIRenderPass::Prepare()
 {
+	VkDevice vkDevice = nullptr;
+	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+
 	/*-------------------------------------------------------------------
 	-                  Get attachment size (color + depth)
 	---------------------------------------------------------------------*/
@@ -52,7 +57,7 @@ void RHIRenderPass::Prepare()
 	---------------------------------------------------------------------*/
 	std::vector<VkAttachmentDescription> attachments(attachmentCount);
 	std::vector<VkAttachmentReference>   colorsReference(_colorAttachments.size());
-	VkAttachmentReference                depthReference;
+	VkAttachmentReference                depthReference={};
 	/*-------------------------------------------------------------------
 	-                  Color Attachments
 	---------------------------------------------------------------------*/
@@ -79,7 +84,6 @@ void RHIRenderPass::Prepare()
 	{
 		size_t index = attachments.size() - 1;
 		attachments[index].flags          = 0;
-		attachments[index].flags          = 0;
 		attachments[index].format         = EnumConverter::Convert(_depthAttachment->Format);
 		attachments[index].samples        = EnumConverter::Convert(_depthAttachment->SampleCount);
 		attachments[index].loadOp         = EnumConverter::Convert(_depthAttachment->LoadOp);
@@ -88,6 +92,46 @@ void RHIRenderPass::Prepare()
 		attachments[index].stencilStoreOp = EnumConverter::Convert(_depthAttachment->StencilStore);
 		attachments[index].initialLayout  = EnumConverter::Convert(_depthAttachment->InitialLayout);
 		attachments[index].finalLayout    = EnumConverter::Convert(_depthAttachment->FinalLayout);
+		
+		depthReference.attachment = static_cast<std::uint32_t>(colorsReference.size()); // sizeのタイミングでdepthになる.
+		depthReference.layout     = VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	}
+
+	/*-------------------------------------------------------------------
+	-                  Set sub pass descriptor
+	---------------------------------------------------------------------*/
+	VkSubpassDescription subpassDescription = {};
+	subpassDescription.flags                   = 0;
+	subpassDescription.pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpassDescription.inputAttachmentCount    = 0;
+	subpassDescription.pInputAttachments       = nullptr;
+	subpassDescription.colorAttachmentCount    = static_cast<std::uint32_t>(colorsReference.size());
+	subpassDescription.pColorAttachments       = colorsReference.data();
+	subpassDescription.pDepthStencilAttachment = _depthAttachment.has_value() ? & depthReference : nullptr;
+	subpassDescription.pPreserveAttachments    = nullptr;
+	subpassDescription.preserveAttachmentCount = 0;
+	subpassDescription.pResolveAttachments     = nullptr;
+	/*-------------------------------------------------------------------
+	-                  Set render pass create info
+	---------------------------------------------------------------------*/
+	VkRenderPassCreateInfo renderPassCreateInfo = {};
+	renderPassCreateInfo.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassCreateInfo.flags           = 0;
+	renderPassCreateInfo.attachmentCount = static_cast<std::uint32_t>(attachments.size());
+	renderPassCreateInfo.pAttachments    = attachments.data();
+	renderPassCreateInfo.subpassCount    = 1;
+	renderPassCreateInfo.pSubpasses      = &subpassDescription;
+	renderPassCreateInfo.dependencyCount = 0;
+	renderPassCreateInfo.pDependencies   = nullptr;
+	renderPassCreateInfo.pNext           = nullptr; // 可変レートシェーディングを行う場合は拡張する
+	/*-------------------------------------------------------------------
+	-                  Create render pass
+	---------------------------------------------------------------------*/
+	if (vkCreateRenderPass(vkDevice, &renderPassCreateInfo, nullptr, &_renderPass) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to create render pass (vulkan api)");
 	}
 }
+
 #pragma endregion Prepare Function
+

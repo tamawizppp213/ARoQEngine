@@ -24,7 +24,9 @@ struct HINSTANCE__;
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
+	class RHIInstance;
 	class RHIDevice;
+	class RHIDisplayAdapter;
 	class RHICommandList;
 	class RHICommandAllocator;
 	class RHICommandQueue;
@@ -45,8 +47,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Static Configuration
 		*****************************************************************************/
-		static const std::uint32_t FRAME_BUFFER_COUNT = 3;
-		static const std::uint32_t VSYNC = 0; // 0: don't wait, 1:wait(60fps)
+		static constexpr std::uint32_t FRAME_BUFFER_COUNT = 3;
+		static constexpr std::uint32_t VSYNC = 0; // 0: don't wait, 1:wait(60fps)
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
@@ -60,43 +62,39 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice>      GetDevice     () const noexcept { return _device; }
-		std::shared_ptr<RHICommandList> GetCommandList() const noexcept { return _commandList; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		LowLevelGraphicsEngine() = default;
-		~LowLevelGraphicsEngine() = default;
+		~LowLevelGraphicsEngine();
 	protected:
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
 #pragma region SetUp
-		void SelectDevice(APIVersion apiVersion);
-		void CreateCommandObject();
-		void CreateSwapchain();
-		void CreateSyncObject();
-		void CreateDescriptorHeaps();
+
 #pragma endregion SetUp
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
 		/* @brief : Graphics API version. (DirectX12 or Vulkan)*/
 		APIVersion _apiVersion = APIVersion::Unknown;
+		/* @brief : graphics API instance (select graphics api)*/
+		std::shared_ptr<RHIInstance> _instance = nullptr;
+		/* @brief : gpu display adapter (basically discrete gpu adapter)*/
+		std::shared_ptr<RHIDisplayAdapter> _adapter = nullptr;
 		/* @brief : Logical Device*/
 		std::shared_ptr<RHIDevice>  _device = nullptr;
-		/* @brief : Command List*/
-		std::shared_ptr<RHICommandQueue>     _commandQueue = nullptr;
-		std::shared_ptr<RHICommandAllocator> _commandAllocator[FRAME_BUFFER_COUNT] = { nullptr };
-		std::shared_ptr<RHICommandList>      _commandList = nullptr;
-		/* @brief : Swap chain */
+		/* @ brief : Command queue (graphics, compute, transfer)*/
+		std::shared_ptr<RHICommandQueue> _graphicsCommandQueue = nullptr;
+		std::shared_ptr<RHICommandQueue> _computeCommandQueue  = nullptr;
+		std::shared_ptr<RHICommandAllocator> _graphicsCommandAllocator = nullptr;
+		std::shared_ptr<RHICommandAllocator> _computeCommandAllocator = nullptr;
+		/* @ brief : CPU-GPU synchronization*/
+		std::shared_ptr<RHIFence> _fence = nullptr;
+		/* @brief : Rendering swapchain*/
 		std::shared_ptr<RHISwapchain> _swapchain = nullptr;
-		/* @brief : Syncronization between CPU and GPU*/
-		std::shared_ptr<RHIFence> _fences[FRAME_BUFFER_COUNT];
-		/* @brief : DescriptorHeap*/
-		std::shared_ptr<RHIDescriptorHeap> _rtvHeap       = nullptr; // for directX12
-		std::shared_ptr<RHIDescriptorHeap> _dsvHeap       = nullptr; // for directX12
-		std::shared_ptr<RHIDescriptorHeap> _cbvSrvUavHeap = nullptr; // common
-		std::shared_ptr<RHIDescriptorHeap> _samplerHeap   = nullptr;
 		/* @brief : current frame index*/
 		int _currentFrameIndex = 0;
 		/* @brief : Windows API*/
