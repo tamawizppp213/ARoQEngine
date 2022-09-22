@@ -49,7 +49,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	/*-------------------------------------------------------------------
 	-      Select proper physical device 
 	---------------------------------------------------------------------*/
-	_instance = rhi::core::RHIInstance::CreateInstance(APIVersion::DirectX12, true, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(APIVersion::Vulkan, true, false);
 	_instance->LogAdapters();
 	_adapter = _instance->SearchHighPerformanceAdapter();
 	/*-------------------------------------------------------------------

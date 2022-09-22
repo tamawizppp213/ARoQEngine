@@ -38,6 +38,14 @@ RHIDisplayAdapter::~RHIDisplayAdapter()
 #pragma endregion Constructor and Destructor
 
 #pragma region Factory
+/****************************************************************************
+*                     CreateDevice
+*************************************************************************//**
+*  @fn        std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint32_t frameCount)
+*  @brief     Return directX12 logical device.
+*  @param[in] std::uint32_t frameCount
+*  @return Å@ std::shared_ptr<core::RHIDevice> (directX12)
+*****************************************************************************/
 std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint32_t frameCount)
 {
 	std::shared_ptr<core::RHIDevice> device = std::make_shared<RHIDevice>(shared_from_this(), frameCount);
@@ -63,9 +71,21 @@ void RHIDisplayAdapter::PrintInfo()
 	/*-------------------------------------------------------------------
 	-                  Print Adapter Name
 	---------------------------------------------------------------------*/
-	std::wstring adapterName = L"\n\n***Adapter: ";
+	std::wstring adapterName  
+		         = L"\n//////////////////////////\n Adapter : ";
 	adapterName += desc.Description;
+	adapterName += L"\n//////////////////////////\n";
 	OutputDebugString(adapterName.c_str());
+
+	/*-------------------------------------------------------------------
+	-                  memory description
+	---------------------------------------------------------------------*/
+	const std::wstring systemMemoryStr       = L"System memory: "         + std::to_wstring(desc.DedicatedSystemMemory) + L"\n";
+	const std::wstring videoMemoryStr        = L"Video memory : "         + std::to_wstring(desc.DedicatedVideoMemory) + L"\n";
+	const std::wstring sharedSystemMemoryStr = L"Shared system memory : " + std::to_wstring(desc.SharedSystemMemory) + L"\n";
+	OutputDebugString(systemMemoryStr.c_str());
+	OutputDebugString(videoMemoryStr.c_str());
+	OutputDebugString(sharedSystemMemoryStr.c_str());
 
 	/*-------------------------------------------------------------------
 	-                  Print Display Name

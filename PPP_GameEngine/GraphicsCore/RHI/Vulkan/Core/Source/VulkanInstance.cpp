@@ -255,7 +255,7 @@ std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapt
 *                     SearchHighPerformanceAdapter
 *************************************************************************//**
 *  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
-*  @brief     Return discrete GPU adapter 
+*  @brief     Return discrete GPU adapter. not found : first adapter
 *  @param[in] void
 *  @return Å@Å@std::shared_ptr<core::RHIAdapter>
 *****************************************************************************/

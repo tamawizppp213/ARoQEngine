@@ -49,7 +49,7 @@ std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint
 *                     PrintInfo
 *************************************************************************//**
 *  @fn        void RHIAdapter::PrintInfo()
-*  @brief     Print physical device information
+*  @brief     Print physical device information and spec
 *  @param[in] void
 *  @return Å@  void
 *****************************************************************************/
@@ -57,12 +57,23 @@ void RHIDisplayAdapter::PrintInfo()
 {
 	VkPhysicalDeviceProperties prop;
 	vkGetPhysicalDeviceProperties(_physicalDevice, &prop);
+	VkPhysicalDeviceMemoryProperties memoryProperties;
+	vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memoryProperties);
+	/*-------------------------------------------------------------------
+	-                  Print Adapter Name
+	---------------------------------------------------------------------*/
+	std::string adapterName
+		= "\n//////////////////////////\n Adapter : ";
+	adapterName += _name;
+	adapterName += "\n//////////////////////////\n";
+	OutputDebugStringA(adapterName.c_str());
 
-	std::wstring adapterName = L"\n\n***Adapter: ";
-	adapterName += unicode::ToWString(_name);
-	adapterName += L"\n";
-
-	OutputDebugStringW(adapterName.c_str());
+	for (int i = 0; i < memoryProperties.memoryHeapCount; ++i)
+	{
+		// Ç«ÇÃmemoryÇ©ÇÕDirectX12Ç©ÇÁêÑíËÇ∑ÇÈÇ±Ç∆Ç…Ç»ÇËÇªÇ§.(åªèÛ)
+		const std::string str = "Memory : " + std::to_string(memoryProperties.memoryHeaps[i].size) + "\n";
+		OutputDebugStringA(str.c_str());
+	}
 }
 
 /****************************************************************************
