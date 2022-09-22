@@ -28,9 +28,9 @@ namespace rhi::core
 	class RHIDevice;
 	class RHIInstance;
 	/****************************************************************************
-	*				  			RHIInstance
+	*				  			RHIDisplayAdapter
 	*************************************************************************//**
-	*  @class     RHIInstance
+	*  @class     RHIDisplayAdapter
 	*  @brief     Physical Device (adapter), Describe gpu information
 	*****************************************************************************/
 	class RHIDisplayAdapter : public NonCopyable, public std::enable_shared_from_this<RHIDisplayAdapter>
@@ -40,8 +40,10 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* return logical device shared pointer. frame count is used for the command allocators*/
 		virtual std::shared_ptr<core::RHIDevice> CreateDevice(const std::uint32_t frameCount) = 0;
-		virtual void PrintInfo() = 0; // ç°å„ÇÕê´î\Ç»Ç«Ç‡ì¸ÇÍÇƒÇ®Ç´ÇΩÇ¢. 2022/09/07
+		/* Describe physical device name and spec(future work) */
+		virtual void PrintInfo() = 0; // Todo : ç°å„ÇÕê´î\Ç»Ç«Ç‡ì¸ÇÍÇƒÇ®Ç´ÇΩÇ¢. 2022/09/07
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

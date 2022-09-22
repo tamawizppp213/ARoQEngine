@@ -24,10 +24,10 @@
 namespace rhi::directX12
 {
 	/****************************************************************************
-	*				  			RHIInstance
+	*				  			RHIDisplayAdapter
 	*************************************************************************//**
-	*  @class     RHIInstance
-	*  @brief     Select device api
+	*  @class     RHIDisplayAdapter
+	*  @brief     Physical Device (adapter), Describe gpu information
 	*****************************************************************************/
 	class RHIDisplayAdapter : public core::RHIDisplayAdapter
 	{
@@ -36,8 +36,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* return logical device shared pointer. frame count is used for the command allocators*/
 		std::shared_ptr<core::RHIDevice> CreateDevice(const std::uint32_t frameCount) override;
-
+		/* Describe physical device name and spec */
 		void PrintInfo() override;
 		/****************************************************************************
 		**                Public Member Variables

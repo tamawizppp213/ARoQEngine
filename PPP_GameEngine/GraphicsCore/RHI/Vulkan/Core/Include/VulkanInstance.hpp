@@ -27,7 +27,7 @@ namespace rhi::vulkan
 	*				  			RHIInstance
 	*************************************************************************//**
 	*  @class     RHIInstance
-	*  @brief     Select device api
+	*  @brief     Select device api and display adapter
 	*****************************************************************************/
 	class RHIInstance : public core::RHIInstance
 	{
@@ -36,8 +36,11 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* return all available display adapter*/
 		std::vector<std::shared_ptr<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		/*vulkan : dGPU (not : first select gpu) */
 		std::shared_ptr<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		/* OutputDebugString : adapter list*/
 		void LogAdapters() override;
 		/****************************************************************************
 		**                Public Member Variables
@@ -61,7 +64,7 @@ namespace rhi::vulkan
 		VkInstance               _instance         = nullptr;
 		VkDebugUtilsMessengerEXT _debugMessenger   = nullptr;
 		std::vector<const char*> _instanceLayers   = {};
-		std::uint32_t            _vulkanAPIVersion = VK_API_VERSION_1_3;
+		std::uint32_t            _vulkanAPIVersion = VK_API_VERSION_1_3; // newest version
 	
 	private:
 		/****************************************************************************
