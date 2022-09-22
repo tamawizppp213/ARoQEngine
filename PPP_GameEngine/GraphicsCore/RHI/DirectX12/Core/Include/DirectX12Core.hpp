@@ -37,7 +37,7 @@ struct ID3D12DescriptorHeap;
 struct ID3D12Fence;
 struct  ID3D10Blob;
 struct ID3D12Debug5;
-
+struct ID3D12Heap;
 
 using IDevice           = ID3D12Device9;
 using IFactory          = IDXGIFactory7;
@@ -47,14 +47,15 @@ using ICommandList      = ID3D12GraphicsCommandList6;
 using ICommandQueue     = ID3D12CommandQueue;
 using ICommandAllocator = ID3D12CommandAllocator;
 using ISwapChain        = IDXGISwapChain4;
-using Resource         = ID3D12Resource2;
+using Resource          = ID3D12Resource2;
 using PSODesc           = D3D12_GRAPHICS_PIPELINE_STATE_DESC;
 using IRootSignature    = ID3D12RootSignature;
 using IPipelineState    = ID3D12PipelineState;
 using IDescriptorHeap   = ID3D12DescriptorHeap;
 using IFence            = ID3D12Fence;
 using IBlob             = ID3D10Blob;
-using IDebug           = ID3D12Debug5;
+using IDebug            = ID3D12Debug5;
+using IHeap             = ID3D12Heap;
 
 using DeviceComPtr           = ComPtr<IDevice>;
 using AdapterComPtr          = ComPtr<IAdapter>;
@@ -71,6 +72,7 @@ using PipelineStateComPtr    = ComPtr<IPipelineState>;
 using RootSignatureComPtr    = ComPtr<IRootSignature>;
 using BlobComPtr             = ComPtr<IBlob>;
 using DebugComPtr            = ComPtr<IDebug>;
+using HeapComPtr             = ComPtr<IHeap>;
 
 #endif DirectX12_CORE_HPP
 

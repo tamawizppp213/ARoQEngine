@@ -1,16 +1,17 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIFence.hpp
-///             @brief  Fence
+///             @file   RHIMemory.hpp
+///             @brief  memory
 ///             @author Toide Yutaro
-///             @date   2022_06_23
+///             @date   2022_09_21
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef RHI_FENCE_HPP
-#define RHI_FENCE_HPP
+#ifndef RHI_MEMORY_HPP
+#define RHI_MEMORY_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
@@ -18,31 +19,28 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                              Class
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
 	class RHIDevice;
-	class RHICommandQueue;
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHIMemory
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHIMemory
+	*  @brief     Memory buffer
 	*****************************************************************************/
-	class RHIFence : public NonCopyable
+	class RHIMemory : public NonCopyable
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Signal(const std::uint64_t value)  = 0;
-		virtual void Wait  (const std::uint64_t value)  = 0;
-		virtual std::uint64_t GetCompletedValue() = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		MemoryHeap GetMemoryType() const noexcept { return _memoryType; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -50,13 +48,14 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		RHIFence() = default;
-		explicit RHIFence(const std::shared_ptr<RHIDevice>& device) { _device = device; }
-		~RHIFence() = default;
+		RHIMemory() = default;
+		virtual ~RHIMemory() = default;
+		explicit RHIMemory(const MemoryHeap memoryHeapType) : _memoryType(memoryHeapType) {};
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		MemoryHeap _memoryType = MemoryHeap::Default; 
 	};
 }
+
 #endif

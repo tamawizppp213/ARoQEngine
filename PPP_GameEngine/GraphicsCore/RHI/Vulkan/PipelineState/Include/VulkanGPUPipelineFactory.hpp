@@ -39,18 +39,18 @@ namespace rhi::vulkan
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList) override;
 
 		std::shared_ptr<core::GPURasterizerState> CreateRasterizerState(
-			const core::FrontFace   frontFace = core::FrontFace::Clockwise,
+			const core::FrontFace   frontFace   = core::FrontFace::Clockwise,
 			const core::CullingMode cullingMode = core::CullingMode::None,
-			const core::FillMode    fillMode = core::FillMode::Solid,
+			const core::FillMode    fillMode    = core::FillMode::Solid,
 			const bool depthClamp = true) override;
 
 		std::shared_ptr<core::GPUDepthStencilState> CreateDepthStencilState(
-			const bool                 depthEnable = true,
+			const bool                 depthEnable      = true,
 			const bool                 depthWriteEnable = true,
-			const bool                 stencilEnable = false,
+			const bool                 stencilEnable    = false,
 			const core::CompareOperator      depthOperator = core::CompareOperator::LessEqual,
 			const core::StencilOperatorInfo& front = core::StencilOperatorInfo(),
-			const core::StencilOperatorInfo& back = core::StencilOperatorInfo()) override;
+			const core::StencilOperatorInfo& back  = core::StencilOperatorInfo()) override;
 
 		std::shared_ptr<core::GPUShaderState> CreateShaderState(
 			const core::ShaderType type,

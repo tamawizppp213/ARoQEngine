@@ -34,7 +34,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Signal(const std::shared_ptr<rhi::core::RHICommandQueue>& queue) override ;
+		void Signal(const std::uint64_t value) override ;
+		void Wait  (const std::uint64_t value) override;
+		std::uint64_t GetCompletedValue() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -43,7 +45,7 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIFence() = default;
-		explicit RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device);
+		explicit RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint64_t initialValue = 0);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -53,7 +55,6 @@ namespace rhi::directX12
 		**                Protected Member Variables
 		*****************************************************************************/
 		FenceComPtr   _fence      = nullptr;
-		std::uint64_t _fenceValue = 0;
 	};
 }
 #endif

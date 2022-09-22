@@ -20,6 +20,19 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region CommandList
+D3D12_COMMAND_LIST_TYPE EnumConverter::Convert(const rhi::core::CommandListType type)
+{
+	switch (type)
+	{
+		case core::CommandListType::Graphics: return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_DIRECT;
+		case core::CommandListType::Compute: return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_COMPUTE;
+		case core::CommandListType::Copy: return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_COPY;
+		default:
+			throw std::runtime_error("Not supported command list type (directX12 api)");
+	}
+}
+#pragma endregion CommandList
 #pragma region Shader
 D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibility visibility)
 {
@@ -171,6 +184,19 @@ D3D12_STENCIL_OP EnumConverter::Convert(const core::StencilOperator op)
 D3D_PRIMITIVE_TOPOLOGY  EnumConverter::Convert(const rhi::core::PrimitiveTopology primitiveTopology)
 {
 	return static_cast<D3D_PRIMITIVE_TOPOLOGY>(primitiveTopology);
+}
+D3D12_PRIMITIVE_TOPOLOGY_TYPE EnumConverter::Convert1(const rhi::core::PrimitiveTopology primitiveTopology)
+{
+	switch (primitiveTopology)
+	{
+		case core::PrimitiveTopology::PointList    : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+		case core::PrimitiveTopology::LineList     : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+		case core::PrimitiveTopology::LineStrip    : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+		case core::PrimitiveTopology::TriangleList : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		case core::PrimitiveTopology::TriangleStrip: return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		default:
+			throw std::runtime_error("not supported primitive topology type");
+	}
 }
 #pragma endregion      Input Layput
 #pragma region GPUResource

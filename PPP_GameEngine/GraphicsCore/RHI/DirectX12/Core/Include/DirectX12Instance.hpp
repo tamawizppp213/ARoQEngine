@@ -1,62 +1,70 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIFence.hpp
-///             @brief  Fence
+///             @file   RHIInstance.hpp
+///             @brief  Select device api (このエンジンを使用時最初に呼び出す.) 
 ///             @author Toide Yutaro
-///             @date   2022_06_23
+///             @date   2022_09_05
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef RHI_FENCE_HPP
-#define RHI_FENCE_HPP
+#ifndef DIRECTX12_RHI_INSTANCE_HPP
+#define DIRECTX12_RHI_INSTANCE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIInstance.hpp"
+#include "DirectX12Core.hpp"
+#include <dxgi1_6.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                              Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
+namespace rhi::directX12
 {
-	class RHIDevice;
-	class RHICommandQueue;
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHIInstance
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHIInstance
+	*  @brief     Select device api and select display adapter
 	*****************************************************************************/
-	class RHIFence : public NonCopyable
+	class RHIInstance : public core::RHIInstance
 	{
 	public:
+
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Signal(const std::uint64_t value)  = 0;
-		virtual void Wait  (const std::uint64_t value)  = 0;
-		virtual std::uint64_t GetCompletedValue() = 0;
+		/* directX12 : (High) xGPU, dGPU iGPU (Low) selected*/
+		std::shared_ptr<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		/* return all available display adapter*/
+		std::vector<std::shared_ptr<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		/* OutputDebugString : adapter list*/
+		void LogAdapters() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		FactoryComPtr GetFactory() { return _factory; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		RHIInstance() = default;
+		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger); 
+		~RHIInstance();
+
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		RHIFence() = default;
-		explicit RHIFence(const std::shared_ptr<RHIDevice>& device) { _device = device; }
-		~RHIFence() = default;
+		void EnabledDebugLayer();           // debug mode only use
+		void EnabledShaderBasedValidation(); // It has a significant impact on the frame rate.
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		FactoryComPtr _factory = nullptr;
 	};
 }
+
 #endif

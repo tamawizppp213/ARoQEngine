@@ -1,62 +1,79 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIFence.hpp
-///             @brief  Fence
+///             @file   RHIInstance.hpp
+///             @brief  Select device api (このエンジンを使用時最初に呼び出す.) 
 ///             @author Toide Yutaro
-///             @date   2022_06_23
+///             @date   2022_09_05
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef RHI_FENCE_HPP
-#define RHI_FENCE_HPP
+#ifndef VULKAN_RHI_INSTANCE_HPP
+#define VULKAN_RHI_INSTANCE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIInstance.hpp"
+#include <vulkan/vulkan.h>
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                              Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
+namespace rhi::vulkan
 {
-	class RHIDevice;
-	class RHICommandQueue;
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHIInstance
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHIInstance
+	*  @brief     Select device api
 	*****************************************************************************/
-	class RHIFence : public NonCopyable
+	class RHIInstance : public core::RHIInstance
 	{
 	public:
+		
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Signal(const std::uint64_t value)  = 0;
-		virtual void Wait  (const std::uint64_t value)  = 0;
-		virtual std::uint64_t GetCompletedValue() = 0;
+		std::vector<std::shared_ptr<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		std::shared_ptr<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		void LogAdapters() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		VkInstance       GetVkInstance()       { return _instance; }
+		const VkInstance GetVkInstance() const { return _instance; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		RHIInstance() = default;
+		~RHIInstance();
+		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		RHIFence() = default;
-		explicit RHIFence(const std::shared_ptr<RHIDevice>& device) { _device = device; }
-		~RHIFence() = default;
+		bool CheckValidationLayerSupport(); // check enable cpu and gpu debugger
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		VkInstance               _instance         = nullptr;
+		VkDebugUtilsMessengerEXT _debugMessenger   = nullptr;
+		std::vector<const char*> _instanceLayers   = {};
+		std::uint32_t            _vulkanAPIVersion = VK_API_VERSION_1_3;
+	
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		// Set up
+		std::vector<std::string>      AcquireExtensionList();
+		std::vector<VkPhysicalDevice> EnumratePhysicalDevices();
+		
+		// debugging
+		void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 	};
 }
+
 #endif

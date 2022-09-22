@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   DirectX12CommandQueue.hpp
-///             @brief  CommandQueue
+///             @brief  CommandQueue. This class is used to execute commandLists.
 ///             @author Toide Yutaro
 ///             @date   2022_06_23
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +34,11 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @ brief : Wait until the specified Fence value is reached.*/
+		void Wait  (const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
+		/* @ brief : Update the fence value (value) when the Command Queue execution completes.*/
+		void Signal(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
+		// @ brief : Execute command lists.
 		void Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists) override;
 		/****************************************************************************
 		**                Public Member Variables
@@ -44,7 +49,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		RHICommandQueue() = default;
 		~RHICommandQueue();
-		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device);
+		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type);
 	protected:
 		/****************************************************************************
 		**                Protected Function

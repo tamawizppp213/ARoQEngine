@@ -36,12 +36,13 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		std::uint32_t PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue) override;
 		/* @brief : Display front buffer */
-		virtual void Present() override ;
+		void Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue) override ;
 		/* @brief : Resize screen size. (set resized swapchain buffers )*/
-		virtual void Resize(const size_t width, const size_t height) override ;
+		void Resize(const size_t width, const size_t height) override ;
 		/* @brief : Return current frame buffer*/
-		virtual size_t GetCurrentBufferIndex() const override;
+		size_t GetCurrentBufferIndex() const override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -55,7 +56,8 @@ namespace rhi::directX12
 			const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
 			const rhi::core::WindowInfo& windowInfo,
 			const rhi::core::PixelFormat& piexlFormat,
-			const size_t frameBufferCount = 2, std::uint32_t vsync = 0);
+			const size_t frameBufferCount = 3, const std::uint32_t vsync = 0,
+			const bool isValidHDR = true);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -67,7 +69,6 @@ namespace rhi::directX12
 		SwapchainComPtr      _swapchain = nullptr;
 		DXGI_SWAP_CHAIN_FLAG _swapchainFlag;
 		DXGI_FORMAT          _backBufferFormat;
-		bool                 _isHDRSupport;
 	private:
 		/****************************************************************************
 		**                Private Function

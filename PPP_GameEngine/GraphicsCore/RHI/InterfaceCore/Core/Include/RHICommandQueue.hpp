@@ -11,6 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
 #include <vector>
@@ -25,6 +26,7 @@ namespace rhi::core
 {
 	class RHIDevice;
 	class RHICommandList;
+	class RHIFence;
 	/****************************************************************************
 	*				  			RHIFence
 	*************************************************************************//**
@@ -37,6 +39,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		virtual void Wait   (const std::shared_ptr<RHIFence>& fence, const std::uint64_t value) = 0;
+		virtual void Signal (const std::shared_ptr<RHIFence>& fence, const std::uint64_t value) = 0;
 		virtual void Execute(const std::vector<std::shared_ptr<RHICommandList>>& commandLists) = 0;
 		/****************************************************************************
 		**                Public Member Variables
@@ -50,12 +54,12 @@ namespace rhi::core
 		**                Protected Function
 		*****************************************************************************/
 		RHICommandQueue() = default;
-		~RHICommandQueue() = default;
-		explicit RHICommandQueue(const std::shared_ptr<RHIDevice>& device) { _device = device; };
+		virtual ~RHICommandQueue() = default;
+		explicit RHICommandQueue(const CommandListType type) :  _commandListType(type) {};
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		CommandListType  _commandListType = CommandListType::Unknown;
 	};
 }
 #endif

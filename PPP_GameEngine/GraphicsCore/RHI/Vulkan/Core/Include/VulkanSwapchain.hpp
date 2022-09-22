@@ -37,8 +37,10 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Return back buffer frame index*/
+		std::uint32_t PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue) override;
 		/* @brief : Display front buffer*/
-		void Present() override ;
+		void Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue) override ;
 		/* @brief : Resize screen size. (set resized swapchain buffers )*/
 		void Resize(const size_t width, const size_t height) override ;
 		/* @brief : Return current frame buffer*/
@@ -55,7 +57,7 @@ namespace rhi::vulkan
 			const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue,
 			const core::WindowInfo& windowInfo,
 			const core::PixelFormat& pixelFormat,
-			const size_t frameBufferCount = 2,std::uint32_t vsync = 0, VkSurfaceKHR surface = nullptr);
+			const size_t frameBufferCount = 3,std::uint32_t vsync = 0, bool isValidHDR = true);
 		~RHISwapchain();
 	protected:
 		/****************************************************************************
@@ -67,7 +69,8 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkSwapchainKHR _swapchain = nullptr;
 		VkSurfaceKHR   _surface   = nullptr;
-		VkSemaphore    _semaphore = nullptr;
+		VkSemaphore    _imageAvailableSemaphore    = nullptr;
+		VkSemaphore    _renderingFinishedSemaphore = nullptr;
 		std::uint32_t _currentBufferIndex = 0;
 		std::vector<VkImage> _images;
 	private:

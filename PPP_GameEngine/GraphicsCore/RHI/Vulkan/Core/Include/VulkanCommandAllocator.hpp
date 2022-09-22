@@ -44,7 +44,7 @@ namespace rhi::vulkan
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHICommandAllocator() = default;
-		explicit RHICommandAllocator(const std::shared_ptr<rhi::core::RHIDevice>& device);
+		explicit RHICommandAllocator(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint32_t queueFamilyIndex);
 		~RHICommandAllocator();
 	protected:
 		/****************************************************************************

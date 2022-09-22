@@ -53,6 +53,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <vector>
 #ifndef CSV_IO_NO_THREAD
 #include <mutex>
 #include <thread>
@@ -329,7 +330,7 @@ namespace csv
 		template <class QuotePolicy> void ChopNextColumn(char*& line, char*& columnBegin, char*& columnEnd);
 		template <class TrimPolicy, class QuotePolicy> void ParseLine(char* line, char** sortedColumn, const std::vector<int>& columnOrder);
 		
-		template <unsigned int ColumnCount,class TrimPolicy, class QuotePolicy >
+		template <unsigned int ColumnCount,class TrimPolicy, class QuotePolicy>
 		void ParseHeaderLine(char* line, std::vector<int>& columnOrder, const std::string* columnName, IgnoreColumn ignorePolicy);
 		template<class OverflowPolicy> void Parse(char* column, char& x);
 		template<class OverflowPolicy> void Parse(char* column, std::string& x) { x = column; }

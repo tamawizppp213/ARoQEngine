@@ -24,33 +24,51 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-RHIFence::RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device)
+RHIFence::RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint64_t initialValue)
 {
 	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(device.get())->GetDevice();
-	ThrowIfFailed(dxDevice->CreateFence(_fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
+	ThrowIfFailed(dxDevice->CreateFence(initialValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
 	_fence->SetName(L"directX12::Fence");
 
 	_device = device;
 }
+
+
+std::uint64_t RHIFence::GetCompletedValue()
+{
+	return _fence->GetCompletedValue();
+}
+
 /****************************************************************************
 *                     Signal
 *************************************************************************//**
 *  @fn        void RHIFence::Signal(const std::shared_ptr<rhi::core::RHICommandQueue>& queue)
-*  @brief     Signal issued, and waiting for GPU processing
-*  @param[in] const std::shared_ptr<rhi::core::RHICommandQueue>& queue
+*  @brief     Signal issued
+*  @param[in] std::uint64_t value
 *  @return 　　void
 *****************************************************************************/
-void RHIFence::Signal(const std::shared_ptr<rhi::core::RHICommandQueue>& queue)
+void RHIFence::Signal(const std::uint64_t value)
 {
-	auto commandQueue = static_cast<rhi::directX12::RHICommandQueue*>(queue.get())->GetCommandQueue();
-	commandQueue->Signal(_fence.Get(), ++_fenceValue);
+	_fence->Signal(value);
+}
+
+/****************************************************************************
+*                     Wait
+*************************************************************************//**
+*  @fn        void RHIFence::Wait(std::uint64_t value)
+*  @brief     ---
+*  @param[in] std::uint64_t value
+*  @return 　　void
+*****************************************************************************/
+void RHIFence::Wait(const std::uint64_t value)
+{
 	/*-------------------------------------------------------------------
 	-   Wait until the GPU has completed commands up to this fence point
 	---------------------------------------------------------------------*/
-	if (_fence->GetCompletedValue() < _fenceValue)
+	if (_fence->GetCompletedValue() < value)
 	{
 		const auto fenceEvent = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
-		ThrowIfFailed(_fence->SetEventOnCompletion(_fenceValue, fenceEvent));
+		ThrowIfFailed(_fence->SetEventOnCompletion(value, fenceEvent));
 
 		if (fenceEvent != 0)
 		{

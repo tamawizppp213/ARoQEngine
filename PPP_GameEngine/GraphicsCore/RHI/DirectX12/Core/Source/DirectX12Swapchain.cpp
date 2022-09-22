@@ -10,6 +10,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Swapchain.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Adapter.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Instance.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
@@ -26,8 +29,8 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHISwapchain::RHISwapchain( const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
-	const rhi::core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, std::uint32_t vsync) : rhi::core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync)
+RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
+	const rhi::core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR) : rhi::core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
 {
 	const auto rhiDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get());
 	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
@@ -37,7 +40,7 @@ RHISwapchain::RHISwapchain( const std::shared_ptr<rhi::core::RHIDevice>& device,
 	-        SwapChain Flag
 	---------------------------------------------------------------------*/
 	int flag = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	if (rhiDevice->IsTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
+	if (rhiDevice->IsSupportedTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
 	_swapchainFlag = static_cast<DXGI_SWAP_CHAIN_FLAG>(flag);
 
 	/*-------------------------------------------------------------------
@@ -63,8 +66,8 @@ RHISwapchain::RHISwapchain( const std::shared_ptr<rhi::core::RHIDevice>& device,
 	
 	/*-------------------------------------------------------------------
 	-                   Create Swapchain for hwnd
-	---------------------------------------------------------------------*/
-	ThrowIfFailed(rhiDevice->GetFactory()->CreateSwapChainForHwnd(
+	//---------------------------------------------------------------------*/
+	ThrowIfFailed(static_cast<directX12::RHIInstance*>(device->GetDisplayAdapter()->GetInstance())->GetFactory()->CreateSwapChainForHwnd(
 		dxQueue.Get(),
 		(HWND)windowInfo.Handle,
 		&sd,
@@ -73,8 +76,7 @@ RHISwapchain::RHISwapchain( const std::shared_ptr<rhi::core::RHIDevice>& device,
 		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
 	));
 
-	_isHDRSupport = rhiDevice->IsHDRSupport();
-	if (_isHDRSupport)
+	if (rhiDevice->IsSupportedHDR() && _isValidHDR)
 	{
 		EnsureSwapChainColorSpace();
 		SetHDRMetaData();
@@ -104,7 +106,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
-	for (auto& buffer : _buffers) { buffer.reset(); }
+	for (auto& buffer : _backBuffers) { buffer.reset(); }
 	ThrowIfFailed(_swapchain->ResizeBuffers(
 		static_cast<UINT>(_frameBufferCount),
 		static_cast<UINT>(_windowInfo.Width),
@@ -114,7 +116,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
-	for (size_t index = 0; index < _buffers.size(); ++index)
+	for (size_t index = 0; index < _backBuffers.size(); ++index)
 	{
 		ResourceComPtr backBuffer = nullptr;
 		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(index), IID_PPV_ARGS(backBuffer.GetAddressOf())));
@@ -123,8 +125,23 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
 		info.Layout = core::ResourceLayout::Present;
 
-		_buffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
+		_backBuffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
 	}
+}
+/****************************************************************************
+*							PrepareNextImage
+*************************************************************************//**
+*  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
+*  @brief     NextImageの準備が完了したときSignalを発行し, 次のframe Indexを返す. 
+*  @param[in] const std::shared_ptr<core::RHIFence>
+*  @param[in] std::uint64_t signalValue (Normally : ++fenceValueを代入)
+*  @return 　　std::uint32_t Backbuffer index
+*****************************************************************************/
+std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
+{
+	std::uint32_t frameIndex = _swapchain->GetCurrentBackBufferIndex();
+	_commandQueue->Signal(fence, signalValue);
+	return frameIndex;
 }
 /****************************************************************************
 *							Present
@@ -134,9 +151,10 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void RHISwapchain::Present()
+void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue)
 {
-	ThrowIfFailed(_swapchain->Present(_vsync, 0));
+	_commandQueue->Wait(fence, waitValue);
+	ThrowIfFailed(_swapchain->Present(_vsync, _swapchainFlag));
 }
 /****************************************************************************
 *							GetCurrentBufferIndex
@@ -198,7 +216,7 @@ void RHISwapchain::SetHDRMetaData()
 	/*-------------------------------------------------------------------
 	-          In case False (isHDRSupport)
 	---------------------------------------------------------------------*/
-	if (!_isHDRSupport)
+	if (!_isValidHDR)
 	{
 		// not supported
 		ThrowIfFailed(_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_NONE, 0, nullptr));

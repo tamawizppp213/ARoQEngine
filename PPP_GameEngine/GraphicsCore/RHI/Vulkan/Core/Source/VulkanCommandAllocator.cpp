@@ -19,13 +19,13 @@ using namespace rhi;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>& device) : core::RHICommandAllocator(device)
+RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>& device, const std::uint32_t queueFamilyIndex) : core::RHICommandAllocator(device)
 {
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	
 	VkCommandPoolCreateInfo createInfo = {};
 	createInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	createInfo.queueFamilyIndex = static_cast<std::uint32_t>(vkDevice->GetGraphicsQueueFamilyIndex());
+	createInfo.queueFamilyIndex = queueFamilyIndex;
 	createInfo.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // enable each command buffer reset and buffer's lifetime is long.
 	createInfo.pNext            = nullptr;
 	if (vkCreateCommandPool(vkDevice->GetDevice(), &createInfo, nullptr, &_commandPool) != VK_SUCCESS)
@@ -37,7 +37,7 @@ RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>&
 RHICommandAllocator::~RHICommandAllocator()
 {
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
-	vkDestroyCommandPool(vkDevice->GetDevice(), _commandPool, nullptr);
+	if (_commandPool) { vkDestroyCommandPool(vkDevice->GetDevice(), _commandPool, nullptr); }
 }
 /****************************************************************************
 *                     Reset

@@ -120,7 +120,7 @@ void GraphicsDeviceVulkan::StartUp(HWND hwnd, HINSTANCE hInstance)
 	-               Create Device
 	---------------------------------------------------------------------*/
 	_rhiDevice = std::make_shared<rhi::vulkan::RHIDevice>();
-	_rhiDevice->Create(_hwnd, _hInstance, _useHDR, _useRaytracing);
+	//_rhiDevice->Create(_hwnd, _hInstance, _useHDR, _useRaytracing);
 	/*-------------------------------------------------------------------
 	-               Create Fence
 	---------------------------------------------------------------------*/
@@ -763,9 +763,9 @@ void GraphicsDeviceVulkan::CreateSwapchain()
 	/*-------------------------------------------------------------------
 	-               RHISwapchain
 	---------------------------------------------------------------------*/
-	_rhiSwapchain = std::make_shared<rhi::vulkan::RHISwapchain>(
-		_rhiDevice, _rhiCommandQueue, windowInfo, core::PixelFormat::R16G16B16A16_FLOAT,
-		FRAME_BUFFER_COUNT, VSYNC, _rhiDevice->GetSurface());
+	//_rhiSwapchain = std::make_shared<rhi::vulkan::RHISwapchain>(
+	//	_rhiDevice, _rhiCommandQueue, windowInfo, core::PixelFormat::R16G16B16A16_FLOAT,
+	//	FRAME_BUFFER_COUNT, VSYNC, _rhiDevice->GetSurface());
 	_swapchain = std::static_pointer_cast<rhi::vulkan::RHISwapchain>(_rhiSwapchain)->GetSwapchain();
 
 }
@@ -895,11 +895,11 @@ void GraphicsDeviceVulkan::CreateFrameBuffer()
 
 void GraphicsDeviceVulkan::CreateCommandObjects()
 {
-	_rhiCommandQueue = std::make_shared<rhi::vulkan::RHICommandQueue>(_rhiDevice);
+	//_rhiCommandQueue = std::make_shared<rhi::vulkan::RHICommandQueue>(_rhiDevice);
 	_rhiCommandAllocators.resize(FRAME_BUFFER_COUNT);
 	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i)
 	{
-		_rhiCommandAllocators[i] = std::make_shared<rhi::vulkan::RHICommandAllocator>(_rhiDevice);
+		_rhiCommandAllocators[i] = std::make_shared<rhi::vulkan::RHICommandAllocator>(_rhiDevice,0);
 	}
 }
 /****************************************************************************

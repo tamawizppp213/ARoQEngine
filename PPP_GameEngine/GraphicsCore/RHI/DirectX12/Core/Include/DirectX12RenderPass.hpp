@@ -24,10 +24,10 @@ namespace rhi::directX12
 {
 
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHIRenderPass
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHIRenderPass
+	*  @brief     Render pass (not use in directX12)
 	*****************************************************************************/
 	class RHIRenderPass : public  rhi::core::RHIRenderPass
 	{

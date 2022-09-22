@@ -34,16 +34,22 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @ brief : Wait until the specified Fence value is reached.*/
+		void Wait(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
+		/* @ brief : Update the fence value (value) when the Command Queue execution completes.*/
+		void Signal(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
+		// Execute command lists
 		void Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists) override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkQueue GetQueue() const noexcept { return _queue; }
+		std::uint32_t GetQueueFamilyIndex() const noexcept { return _queueFamilyIndex; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHICommandQueue() = default;
-		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device);
+		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex);
 		~RHICommandQueue();
 	protected:
 		/****************************************************************************

@@ -1,62 +1,67 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIFence.hpp
-///             @brief  Fence
+///             @file   RHIAdapter.hpp
+///             @brief  Physical Device (adapter), Describe gpu information 
 ///             @author Toide Yutaro
-///             @date   2022_06_23
+///             @date   2022_09_05
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef RHI_FENCE_HPP
-#define RHI_FENCE_HPP
+#ifndef VULKAN_ADAPTER_HPP
+#define VULKAN_ADAPTER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIAdapter.hpp"
+#include <vulkan/vulkan.h>
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                             Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
+namespace rhi::vulkan
 {
-	class RHIDevice;
-	class RHICommandQueue;
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHIAdapter
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHIAdapter
+	*  @brief     Physical Device (Adapter)  
 	*****************************************************************************/
-	class RHIFence : public NonCopyable
+	class RHIDisplayAdapter : public rhi::core::RHIDisplayAdapter
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Signal(const std::uint64_t value)  = 0;
-		virtual void Wait  (const std::uint64_t value)  = 0;
-		virtual std::uint64_t GetCompletedValue() = 0;
+		std::shared_ptr<core::RHIDevice> CreateDevice(const std::uint32_t frameCount) override;
+
+		void PrintInfo() override; 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		const VkPhysicalDevice               GetPhysicalDevice       () const noexcept { return _physicalDevice; }
+		VkPhysicalDeviceProperties           GetProperties           () const noexcept;
+		VkPhysicalDeviceFeatures             GetSupports             () const noexcept;
+		std::vector<VkExtensionProperties>   GetExtensionProperties  () const noexcept;
+		std::vector<std::string>             GetExtensionNameList    () const noexcept;
+		std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties() const noexcept;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		RHIDisplayAdapter() = default;
+		~RHIDisplayAdapter();
+		RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const VkPhysicalDevice physicalDevice);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		RHIFence() = default;
-		explicit RHIFence(const std::shared_ptr<RHIDevice>& device) { _device = device; }
-		~RHIFence() = default;
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		VkPhysicalDevice _physicalDevice = nullptr;
 	};
 }
 #endif
