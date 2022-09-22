@@ -1,8 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   RHICommandQueue.hpp
-///             @brief  CommandQueue
+///             @brief  Send drawing commands to the GPU, 
+///                     provide methods for synchronous processing of drawing command execution
 ///             @author Toide Yutaro
-///             @date   2022_06_23
+///             @date   2022_09_23
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef RHI_COMMAND_QUEUE_HPP
@@ -20,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                              Class
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
@@ -28,10 +29,11 @@ namespace rhi::core
 	class RHICommandList;
 	class RHIFence;
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHICommandQueue
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHICommandQueue
+	*  @brief     Send drawing commands to the GPU, 
+	              provide methods for synchronous processing of drawing command execution
 	*****************************************************************************/
 	class RHICommandQueue : public NonCopyable
 	{
@@ -39,8 +41,11 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @ brief : Used to wait for another Command queue to complete execution. (in GPU)*/
 		virtual void Wait   (const std::shared_ptr<RHIFence>& fence, const std::uint64_t value) = 0;
+		/* @ brief : Update the fence value (value) when the Command Queue execution completes.*/
 		virtual void Signal (const std::shared_ptr<RHIFence>& fence, const std::uint64_t value) = 0;
+		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
 		virtual void Execute(const std::vector<std::shared_ptr<RHICommandList>>& commandLists) = 0;
 		/****************************************************************************
 		**                Public Member Variables

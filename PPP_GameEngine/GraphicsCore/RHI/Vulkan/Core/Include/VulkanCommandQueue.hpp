@@ -1,8 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   VulkanCommandQueue.hpp
-///             @brief  Command Queue
+///             @brief  Send drawing commands to the GPU,
+///                     provide methods for synchronous processing of drawing command execution
+///                     There are three types : Graphics, Compute, Copy command queue.
 ///             @author Toide Yutaro
-///             @date   2022_06_23
+///             @date   2022_09_23
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef VULKAN_COMMAND_QUEUE_HPP
@@ -26,7 +28,9 @@ namespace rhi::vulkan
 	*				  			RHICommandQueue
 	*************************************************************************//**
 	*  @class     RHICommandQueue
-	*  @brief     CommandQueue (for executing GPU command)
+	*  @brief     Send drawing commands to the GPU,
+				  provide methods for synchronous processing of drawing command execution
+				  There are three types : Graphics, Compute, Copy command queue.
 	*****************************************************************************/
 	class RHICommandQueue : public rhi::core::RHICommandQueue
 	{
@@ -34,11 +38,11 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @ brief : Wait until the specified Fence value is reached.*/
+		/* @ brief : Used to wait for another Command queue to complete execution. (in GPU)*/
 		void Wait(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
 		/* @ brief : Update the fence value (value) when the Command Queue execution completes.*/
 		void Signal(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
-		// Execute command lists
+		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
 		void Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists) override;
 		/****************************************************************************
 		**                Public Member Variables

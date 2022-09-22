@@ -24,7 +24,7 @@ using namespace rhi;
 #pragma region Constructor and Destructor
 RHICommandQueue::~RHICommandQueue()
 {
-	//std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device)->FreeQueue(_queueFamilyIndex);
+	
 }
 
 RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex) : rhi::core::RHICommandQueue(type)
@@ -39,7 +39,7 @@ RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& de
 *							Wait
 *************************************************************************//**
 *  @fn        void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
-*  @brief     Wait until the specified Fence value is reached.
+*  @brief     Used to wait for another Command queue to complete execution. (in GPU)
 *  @param[in] const std::shared_ptr<core::RHIFence>& fence
 *  @param[in] std::uint64_t value
 *  @return Å@Å@void
