@@ -1,8 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   DirectX12CommandQueue.cpp
-///             @brief  Command queue 
+///             @file   DirectX12CommandQueue.hpp
+///             @brief  Send drawing commands to the GPU,
+///                     provide methods for synchronous processing of drawing command execution
+///                     There are three types : Graphics, Compute, Copy command queue.
 ///             @author Toide Yutaro
-///             @date   2022_06_24
+///             @date   2022_09_23
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +41,7 @@ RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& de
 	---------------------------------------------------------------------*/
 	D3D12_COMMAND_QUEUE_DESC cmdQDesc = {};
 	cmdQDesc.NodeMask = 0;                                   // Single GPU
-	cmdQDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL; // Command queue priority
+	cmdQDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL; // Command queue priority (今後変えるかも)
 	cmdQDesc.Type     = dxCommandListType;                   // Enable to execute all command 
 	cmdQDesc.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE;       // Default 
 
@@ -60,7 +62,7 @@ RHICommandQueue::~RHICommandQueue()
 *							Wait
 *************************************************************************//**
 *  @fn        void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
-*  @brief     Wait until the specified Fence value is reached.
+*  @brief     Used to wait for another Command queue to complete execution. (in GPU)
 *  @param[in] const std::shared_ptr<core::RHIFence>& fence
 *  @param[in] std::uint64_t value
 *  @return 　　void
@@ -88,7 +90,7 @@ void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, std::
 *							Execute
 *************************************************************************//**
 *  @fn        void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists)
-*  @brief     Execute command queue 
+*  @brief     Execute command list contents. normally set graphics, compute, transfer commandlist
 *  @param[in] const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists
 *  @return 　　void
 *****************************************************************************/

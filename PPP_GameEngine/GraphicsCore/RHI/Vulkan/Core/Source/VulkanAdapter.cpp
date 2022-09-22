@@ -55,6 +55,9 @@ std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint
 *****************************************************************************/
 void RHIDisplayAdapter::PrintInfo()
 {
+	/*-------------------------------------------------------------------
+	-                  Get property and memory infomation
+	---------------------------------------------------------------------*/
 	VkPhysicalDeviceProperties prop;
 	vkGetPhysicalDeviceProperties(_physicalDevice, &prop);
 	VkPhysicalDeviceMemoryProperties memoryProperties;

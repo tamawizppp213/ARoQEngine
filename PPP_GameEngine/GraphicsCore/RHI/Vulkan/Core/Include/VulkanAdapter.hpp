@@ -27,7 +27,7 @@ namespace rhi::vulkan
 	*				  			RHIAdapter
 	*************************************************************************//**
 	*  @class     RHIAdapter
-	*  @brief     Physical Device (Adapter)  
+	*  @brief     Physical Device (Adapter)  Describe gpu information
 	*****************************************************************************/
 	class RHIDisplayAdapter : public rhi::core::RHIDisplayAdapter
 	{
