@@ -13,6 +13,7 @@
 #include "MainGame/Core/Include/Scene.hpp"
 #include "MainGame/Sample/Include/SampleSky.hpp"
 #include "MainGame/Sample/Include/SampleTexture.hpp"
+#include "MainGame/Sample/Include/SampleEmpty.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +24,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 void SceneManager::StartUp(GameTimer* gameTimer)
 {
-	PushScene(new sample::SampleTexture());
+	PushScene(new sample::SampleEmpty());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************
@@ -45,6 +46,7 @@ void SceneManager::TransitScene(ScenePtr scene, GameTimer* gameTimer)
 
 void SceneManager::CallSceneInitialize(GameTimer* gameTimer)
 {
+	if (_currentScene.empty()) { return; }
 	_currentScene.top()->Initialize(gameTimer);
 	//GraphicsCoreEngine::Instance().OnInitializeRenderScene();
 }
@@ -58,6 +60,7 @@ void SceneManager::CallSceneDraw()
 }
 void SceneManager::CallSceneTerminate()
 {
+	if (_currentScene.empty()) { return; }
 	_currentScene.top()->Terminate();
 	GraphicsCoreEngine::Instance().OnTerminateRenderScene();
 }

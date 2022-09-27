@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 void GameManager::GameStart(GameTimer& gameTimer, HWND hwnd, HINSTANCE hInstance)
 {
-	_engine.StartUp(hwnd, hInstance);
+	//_engine.StartUp(hwnd, hInstance);
 	_sceneManager.StartUp(&gameTimer);
 }
 
@@ -36,7 +36,7 @@ void GameManager::GameEnd()
 	_sceneManager.ShutDown();
 	ResourceManager::Instance().ClearAllResources();
 	GameObject::ClearAllGameObjects();
-	_engine.ShutDown();
+	//_engine.ShutDown();
 }
 
 void GameManager::SetHWND(HWND hwnd)

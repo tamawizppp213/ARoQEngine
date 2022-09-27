@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   RHISwapchain.hpp
-///             @brief  Swapchain
+///             @brief  Update frame buffer image
 ///             @author Toide Yutaro
 ///             @date   2022_06_24
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                              Class
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
@@ -29,10 +29,10 @@ namespace rhi::core
 	class RHIFence;
 	class GPUTexture;
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHISwapchain
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHISwapchain
+	*  @brief     Update frame buffer image
 	*****************************************************************************/
 	class RHISwapchain : public NonCopyable
 	{
@@ -40,11 +40,11 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Return back buffer frame index*/
+		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
 		virtual std::uint32_t PrepareNextImage(const std::shared_ptr<RHIFence>& fence, std::uint64_t signalValue) = 0;
 		/* @brief : Display front buffer*/
 		virtual void Present(const std::shared_ptr<RHIFence>& fence, std::uint64_t waitValue) = 0;
-		/* @brief : Resize screen size. (set resized swapchain buffers )*/
+		/* @brief : Resize screen size. Rebuild everything once and update again.*/
 		virtual void Resize(const size_t width, const size_t height) = 0;
 		/* @brief : Return current frame buffer*/
 		virtual size_t GetCurrentBufferIndex() const = 0;

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   VulkanSwapchain.hpp
-///             @brief  Swapchain
+///             @brief  Update frame buffer image
 ///             @author Toide Yutaro
 ///             @date   2022_06_24
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,10 +25,10 @@
 namespace rhi::vulkan
 {
 	/****************************************************************************
-	*				  			TemplateClass
+	*				  			RHISwapchain
 	*************************************************************************//**
-	*  @class     TemplateClass
-	*  @brief     temp
+	*  @class     RHISwapchain
+	*  @brief     Update frame buffer image
 	*****************************************************************************/
 	class RHISwapchain : public rhi::core::RHISwapchain
 	{
@@ -37,11 +37,11 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Return back buffer frame index*/
+		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
 		std::uint32_t PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue) override;
 		/* @brief : Display front buffer*/
 		void Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue) override ;
-		/* @brief : Resize screen size. (set resized swapchain buffers )*/
+		/* @brief : Resize screen size. Rebuild everything once and update again.*/
 		void Resize(const size_t width, const size_t height) override ;
 		/* @brief : Return current frame buffer*/
 		size_t GetCurrentBufferIndex() const override ;
@@ -67,7 +67,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VkSwapchainKHR _swapchain = nullptr;
+		VkSwapchainKHR _swapchain = VK_NULL_HANDLE;
 		VkSurfaceKHR   _surface   = nullptr;
 		VkSemaphore    _imageAvailableSemaphore    = nullptr;
 		VkSemaphore    _renderingFinishedSemaphore = nullptr;

@@ -1,10 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   DirectX12CommandQueue.cpp
-///             @brief  Command queue 
+///             @file   RHISwapchain.cpp
+///             @brief  Update frame buffer image
 ///             @author Toide Yutaro
 ///             @date   2022_06_24
 //////////////////////////////////////////////////////////////////////////////////
-
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,8 +32,8 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	const rhi::core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR) : rhi::core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
 {
 	const auto rhiDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get());
-	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
-	const auto dxQueue  = static_cast<rhi::directX12::RHICommandQueue*>(_commandQueue.get())->GetCommandQueue();
+	const auto dxDevice  = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
+	const auto dxQueue   = static_cast<rhi::directX12::RHICommandQueue*>(_commandQueue.get())->GetCommandQueue();
 
 	/*-------------------------------------------------------------------
 	-        SwapChain Flag
@@ -148,12 +147,15 @@ std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFenc
 *************************************************************************//**
 *  @fn        void RHISwapchain::Present()
 *  @brief     Display front buffer
-*  @param[in] void
+*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] std::uint64_t waitValue
 *  @return Å@Å@void
 *****************************************************************************/
 void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue)
 {
+	/*synchronization between command queue */
 	_commandQueue->Wait(fence, waitValue);
+	/* present front buffer*/
 	ThrowIfFailed(_swapchain->Present(_vsync, _swapchainFlag));
 }
 /****************************************************************************
@@ -166,7 +168,7 @@ void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, std::ui
 *****************************************************************************/
 size_t RHISwapchain::GetCurrentBufferIndex() const
 {
-	return static_cast<UINT>(_swapchain->GetCurrentBackBufferIndex());
+	return static_cast<size_t>(_swapchain->GetCurrentBackBufferIndex());
 }
 #pragma endregion Main Function
 # pragma region Color Space
@@ -257,17 +259,17 @@ void RHISwapchain::SetHDRMetaData()
 	---------------------------------------------------------------------*/
 	const auto& chroma = DisplayChromacityList[selectedChroma];
 	DXGI_HDR_METADATA_HDR10 HDR10MetaData = {};
-	HDR10MetaData.RedPrimary[0]   = UINT16(chroma.RedX * 50000.0f);
-	HDR10MetaData.RedPrimary[1]   = UINT16(chroma.RedY * 50000.0f);
-	HDR10MetaData.GreenPrimary[0] = UINT16(chroma.GreenX * 50000.0f);
-	HDR10MetaData.GreenPrimary[1] = UINT16(chroma.GreenY * 50000.0f);
-	HDR10MetaData.BluePrimary[0]  = UINT16(chroma.BlueX * 50000.0f);
-	HDR10MetaData.BluePrimary[1]  = UINT16(chroma.BlueY * 50000.0f);
-	HDR10MetaData.WhitePoint[0]   = UINT16(chroma.WhiteX * 50000.0f);
-	HDR10MetaData.WhitePoint[1]   = UINT16(chroma.WhiteY * 50000.0f);
-	HDR10MetaData.MaxMasteringLuminance = UINT(1000.0f * 10000.0f);
-	HDR10MetaData.MinMasteringLuminance = UINT(0.001f  * 10000.0f);
-	HDR10MetaData.MaxContentLightLevel  = UINT16(2000.0f);
+	HDR10MetaData.RedPrimary[0]             = UINT16(chroma.RedX * 50000.0f);
+	HDR10MetaData.RedPrimary[1]             = UINT16(chroma.RedY * 50000.0f);
+	HDR10MetaData.GreenPrimary[0]           = UINT16(chroma.GreenX * 50000.0f);
+	HDR10MetaData.GreenPrimary[1]           = UINT16(chroma.GreenY * 50000.0f);
+	HDR10MetaData.BluePrimary[0]            = UINT16(chroma.BlueX * 50000.0f);
+	HDR10MetaData.BluePrimary[1]            = UINT16(chroma.BlueY * 50000.0f);
+	HDR10MetaData.WhitePoint[0]             = UINT16(chroma.WhiteX * 50000.0f);
+	HDR10MetaData.WhitePoint[1]             = UINT16(chroma.WhiteY * 50000.0f);
+	HDR10MetaData.MaxMasteringLuminance     = UINT(1000.0f * 10000.0f);
+	HDR10MetaData.MinMasteringLuminance     = UINT(0.001f  * 10000.0f);
+	HDR10MetaData.MaxContentLightLevel      = UINT16(2000.0f);
 	HDR10MetaData.MaxFrameAverageLightLevel = UINT16(500.0f);
 
 	/*-------------------------------------------------------------------
