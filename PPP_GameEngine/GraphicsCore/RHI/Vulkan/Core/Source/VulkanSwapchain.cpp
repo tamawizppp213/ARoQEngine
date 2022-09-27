@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   VulkanFence.cpp
-///             @brief  Fence
+///             @file   VulkanSwapchain.cpp
+///             @brief  Update frame buffer image
 ///             @author Toide Yutaro
-///             @date   2022_06_23
+///             @date   2022_06_24
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,14 +34,14 @@ namespace
 	/****************************************************************************
 	*				  			SwapchainSupportDetails
 	*************************************************************************//**
-	*  @class     SwapchainSupportDetails
-	*  @brief     Swapchain support
+	*  @struct    SwapchainSupportDetails
+	*  @brief     Swapchain support (use query function)
 	*****************************************************************************/
 	struct SwapchainSupportDetails
 	{
-		VkSurfaceCapabilitiesKHR         Capabilities;
-		std::vector<VkSurfaceFormatKHR>  Formats;
-		std::vector<VkPresentModeKHR>    PresentModes;
+		VkSurfaceCapabilitiesKHR         Capabilities = {}; // surface image presentation capability (image count, extent, composit alpha..)
+		std::vector<VkSurfaceFormatKHR>  Formats      = {}; // available surface color format list
+		std::vector<VkPresentModeKHR>    PresentModes = {}; // available surface present mode list 
 
 		static SwapchainSupportDetails Query(VkPhysicalDevice device, VkSurfaceKHR surface)
 		{
@@ -61,7 +61,7 @@ namespace
 				vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.Formats.data());
 			}
 			/*-------------------------------------------------------------------
-			-               Acquire Surface Formats
+			-               Acquire Surface Presnent Mode
 			---------------------------------------------------------------------*/
 			UINT32 presentModeCount = 0;
 			vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
@@ -84,7 +84,7 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	const auto vkInstance = static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance());
 	
 	/*-------------------------------------------------------------------
-	-          Acquire surface (現状ではWindowsのみ対応)
+	-          Acquire surface (現状ではWindowsのみ対応) // 必要になり次第macroで管理する.
 	---------------------------------------------------------------------*/
 #ifdef _WIN32
 	{
@@ -92,7 +92,7 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 		surfaceInfo.hinstance = (HINSTANCE)windowInfo.HInstance;                 // hInstance
 		surfaceInfo.hwnd      = (HWND)windowInfo.Handle;                         // hwnd 
 		surfaceInfo.sType     = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR; // Structure type
-		VkResult result      = vkCreateWin32SurfaceKHR(vkInstance->GetVkInstance(), &surfaceInfo, nullptr, &_surface);
+		VkResult result       = vkCreateWin32SurfaceKHR(vkInstance->GetVkInstance(), &surfaceInfo, nullptr, &_surface);
 		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to prepare surface.");
@@ -110,16 +110,25 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 }
 RHISwapchain::~RHISwapchain()
 {
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkDevice  = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	const auto vkAdapter = std::static_pointer_cast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
 	_images.clear(); _images.shrink_to_fit();
-	vkDestroySwapchainKHR(vkDevice->GetDevice(), _swapchain, nullptr);
-	vkDestroySemaphore(vkDevice->GetDevice(), _renderingFinishedSemaphore, nullptr);
-	vkDestroySemaphore(vkDevice->GetDevice(), _imageAvailableSemaphore, nullptr);
-	vkDestroySurfaceKHR(static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance())->GetVkInstance(), _surface, nullptr);
+	if (_renderingFinishedSemaphore) { vkDestroySemaphore(vkDevice->GetDevice(), _renderingFinishedSemaphore, nullptr); }
+	if (_imageAvailableSemaphore)    { vkDestroySemaphore(vkDevice->GetDevice(), _imageAvailableSemaphore, nullptr); }
+	if (_swapchain)                  { vkDestroySwapchainKHR(vkDevice->GetDevice(), _swapchain, nullptr); }
+	if (_surface)                    { vkDestroySurfaceKHR(static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance())->GetVkInstance(), _surface, nullptr); }
 }
 #pragma endregion Constructor and Destructor
 #pragma region Render Function
+/****************************************************************************
+*							PrepareNextImage
+*************************************************************************//**
+*  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
+*  @brief     When NextImage is ready, Signal is issued and the next frame Index is returned.
+*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] std::uint64_t signalValue (Normally : ++fenceValueを代入)
+*  @return 　　std::uint32_t back buffer index
+*****************************************************************************/
 std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
 {
 	const auto vkFence  = std::static_pointer_cast<vulkan::RHIFence>(fence);
@@ -133,9 +142,9 @@ std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFenc
 	VkTimelineSemaphoreSubmitInfo timelineInfo = {};
 	timelineInfo.sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
 	timelineInfo.waitSemaphoreValueCount   = 1;
-	timelineInfo.pWaitSemaphoreValues      = &temp;
+	timelineInfo.pWaitSemaphoreValues      = &temp; // not use
 	timelineInfo.signalSemaphoreValueCount = 1;
-	timelineInfo.pSignalSemaphoreValues    = &signalValue;
+	timelineInfo.pSignalSemaphoreValues    = &signalValue; // for issue signal
 
 	/*-------------------------------------------------------------------
 	-          Set up submit info
@@ -144,7 +153,7 @@ std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFenc
 	signalSubmitInfo.sType                 = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	signalSubmitInfo.pNext                 = &timelineInfo;
 	signalSubmitInfo.waitSemaphoreCount    = 1;
-	signalSubmitInfo.pWaitSemaphores       = &_imageAvailableSemaphore;
+	signalSubmitInfo.pWaitSemaphores       = &_imageAvailableSemaphore; 
 	VkPipelineStageFlags waitDestStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_TRANSFER_BIT;
 	signalSubmitInfo.pWaitDstStageMask     = &waitDestStageMask;
 	signalSubmitInfo.signalSemaphoreCount  = 1;
@@ -162,11 +171,12 @@ std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFenc
 	return _currentBufferIndex;
 }
 /****************************************************************************
-*                     Present
+*							Present
 *************************************************************************//**
 *  @fn        void RHISwapchain::Present()
 *  @brief     Display front buffer
-*  @param[in] void
+*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] std::uint64_t waitValue
 *  @return 　　void
 *****************************************************************************/
 void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t waitValue)
@@ -250,7 +260,8 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device).get()->GetDevice();
 	for (auto& buffer : _backBuffers) { buffer.reset(); }
 	vkDestroySwapchainKHR(vkDevice, _swapchain, nullptr);
-	//vkDestroySemaphore(vkDevice, _semaphore, nullptr);
+	vkDestroySemaphore(vkDevice, _imageAvailableSemaphore, nullptr);
+	vkDestroySemaphore(vkDevice, _renderingFinishedSemaphore, nullptr);
 	/*-------------------------------------------------------------------
 	-         Reset swapchain
 	---------------------------------------------------------------------*/
@@ -319,7 +330,7 @@ void RHISwapchain::InitializeSwapchain()
 	createInfo.clipped               = VK_TRUE;                                       // clipped 
 	createInfo.queueFamilyIndexCount = 0;
 	createInfo.pQueueFamilyIndices   = nullptr;
-	createInfo.oldSwapchain          = VK_NULL_HANDLE; 
+	createInfo.oldSwapchain          = _swapchain; // basically nullptr
 	createInfo.preTransform          = details.Capabilities.currentTransform;
 	createInfo.pNext                 = nullptr;
 	createInfo.compositeAlpha        = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;             // alpha : 1.0 (ひとまず)
@@ -340,6 +351,7 @@ void RHISwapchain::InitializeSwapchain()
 			createInfo.compositeAlpha = compositeAlphaFlags[index]; break;
 		}
 	}
+
 	/*-------------------------------------------------------------------
 	-               Create Swapchain KHR
 	---------------------------------------------------------------------*/
@@ -347,6 +359,29 @@ void RHISwapchain::InitializeSwapchain()
 	{
 		throw std::runtime_error("failed to create swapchain (vulkan api)");
 	}
+
+	/*-------------------------------------------------------------------
+	-               Set HDR metadata
+	---------------------------------------------------------------------*/
+	if (vkDevice->IsSupportedHDR() && _isValidHDR)
+	{
+		VkHdrMetadataEXT hdrMetadata = {};
+		hdrMetadata.sType = VK_STRUCTURE_TYPE_HDR_METADATA_EXT;
+		hdrMetadata.pNext = nullptr;
+		hdrMetadata.displayPrimaryRed         = { 0.70800f, 0.29200f };
+		hdrMetadata.displayPrimaryGreen       = { 0.17000f, 0.79700f };
+		hdrMetadata.displayPrimaryBlue        = { 0.13100f, 0.04600f };
+		hdrMetadata.whitePoint                = { 0.31270f, 0.32900f };
+		hdrMetadata.maxLuminance              = 1000.0f;
+		hdrMetadata.minLuminance              = 0.001f;
+		hdrMetadata.maxContentLightLevel      = 2000.0f;
+		hdrMetadata.maxFrameAverageLightLevel = 500.0f;
+
+		PFN_vkSetHdrMetadataEXT pfnVkSetMetadataEXT 
+			= reinterpret_cast<PFN_vkSetHdrMetadataEXT>(vkGetDeviceProcAddr(vkDevice->GetDevice(),"vkSetHdrMetadataEXT"));
+		pfnVkSetMetadataEXT(vkDevice->GetDevice(), 1, &_swapchain, &hdrMetadata);
+	}
+
 	/*-------------------------------------------------------------------
 	-               Get swapchain images
 	---------------------------------------------------------------------*/
@@ -378,12 +413,12 @@ void RHISwapchain::InitializeSwapchain()
 	if (vkCreateSemaphore(vkDevice->GetDevice(), &semaphoreCreateInfo, nullptr, &_renderingFinishedSemaphore) != VK_SUCCESS) { throw std::runtime_error("failed to create rendering finished semaphore"); }
 }
 /****************************************************************************
-*                     UpdateCurrentFrameIndex
+*							GetCurrentBufferIndex
 *************************************************************************//**
-*  @fn        void RHISwapchain::EndDrawFrame()
-*  @brief     Display front buffer
+*  @fn        size_t RHISwapchain::GetCurrentBufferIndex() const
+*  @brief     Get current buffer
 *  @param[in] void
-*  @return 　　void
+*  @return 　　size_t
 *****************************************************************************/
 void RHISwapchain::UpdateCurrentFrameIndex()
 {
@@ -399,7 +434,7 @@ void RHISwapchain::UpdateCurrentFrameIndex()
 		throw std::runtime_error("failed to go to next frame");
 	}
 	/*-------------------------------------------------------------------
-	-               Set up
+	-               Proceed frame
 	---------------------------------------------------------------------*/
 	_currentBufferIndex = nextFrameIndex;
 
@@ -472,10 +507,10 @@ VkPresentModeKHR RHISwapchain::SelectSwapchainPresentMode(const std::vector<VkPr
 {
 	for (const auto& presentMode : presentModes)
 	{
-		if (_vsync == 0 && presentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) { return presentMode; }
-		if (_vsync > 0  && presentMode == VK_PRESENT_MODE_MAILBOX_KHR)   { return presentMode; }
+		if (_vsync == 0 && presentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) { return presentMode; } // immediate flip screen
+		if (_vsync > 0  && presentMode == VK_PRESENT_MODE_MAILBOX_KHR)   { return presentMode; } // wait vsync time
 	}
-	return VK_PRESENT_MODE_FIFO_KHR;
+	return VK_PRESENT_MODE_FIFO_KHR; // wait vsync time
 }
 /****************************************************************************
 *                     SelectSwapExtent
@@ -494,11 +529,11 @@ VkExtent2D RHISwapchain::SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabi
 	}
 	else
 	{
-		int width               = static_cast<int>(Screen::GetScreenWidth());
-		int height              = static_cast<int>(Screen::GetScreenHeight());
+		const int width               = static_cast<int>(Screen::GetScreenWidth());
+		const int height              = static_cast<int>(Screen::GetScreenHeight());
 		VkExtent2D actualExtent = { static_cast<UINT32>(width), static_cast<UINT32>(height) };
-		actualExtent.width      = std::clamp(actualExtent.width , capabilities.minImageExtent.width , capabilities.maxImageExtent.width);
-		actualExtent.height     = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+		actualExtent.width            = std::clamp(actualExtent.width , capabilities.minImageExtent.width , capabilities.maxImageExtent.width);
+		actualExtent.height           = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 		return actualExtent;
 	}
 }

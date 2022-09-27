@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   DirectX12Swapchain.hpp
-///             @brief  Swapchain
+///             @brief  Update frame buffer image
 ///             @author Toide Yutaro
 ///             @date   2022_06_24
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,10 +25,10 @@ namespace rhi::directX12
 {
 
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHISwapchain
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHISwapchain
+	*  @brief     Update frame buffer image
 	*****************************************************************************/
 	class RHISwapchain : public  rhi::core::RHISwapchain
 	{
@@ -36,10 +36,11 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
 		std::uint32_t PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue) override;
 		/* @brief : Display front buffer */
 		void Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue) override ;
-		/* @brief : Resize screen size. (set resized swapchain buffers )*/
+		/* @brief : Resize screen size. Rebuild everything once and update again.*/
 		void Resize(const size_t width, const size_t height) override ;
 		/* @brief : Return current frame buffer*/
 		size_t GetCurrentBufferIndex() const override;
@@ -68,7 +69,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		SwapchainComPtr      _swapchain = nullptr;
 		DXGI_SWAP_CHAIN_FLAG _swapchainFlag;
-		DXGI_FORMAT          _backBufferFormat;
+		DXGI_FORMAT          _backBufferFormat; // color format
 	private:
 		/****************************************************************************
 		**                Private Function

@@ -47,7 +47,6 @@ using namespace rhi::vulkan;
 RHIDevice::~RHIDevice()
 {
 	Destroy();
-
 }
 RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, const std::uint32_t frameCount) : 
 	core::RHIDevice(adapter, frameCount)
@@ -64,8 +63,6 @@ void RHIDevice::SetUp()
 
 void RHIDevice::Destroy()
 {
-	_commandQueueInfo.clear();
-	_commandQueues.clear();
 	if (!_commandAllocators.empty())
 	{
 		for (std::uint32_t i = 0; i < _frameCount; ++i)
@@ -74,8 +71,15 @@ void RHIDevice::Destroy()
 		}
 		_commandAllocators.clear(); _commandAllocators.shrink_to_fit();
 	}
+
+	_commandQueueInfo.clear();
+	_commandQueues.clear();
+	if (_logicalDevice) 
+	{ 
+		vkDestroyDevice(_logicalDevice, nullptr); 
+		_logicalDevice = nullptr;
+	} // destroy logical device
 	if (_adapter) { _adapter.reset(); }
-	if (_logicalDevice) { vkDestroyDevice(_logicalDevice, nullptr); } // destroy logical device
 }
 #pragma endregion Constructor and Destructor
 
@@ -276,8 +280,10 @@ void RHIDevice::CreateLogicalDevice()
 	std::vector<const char*> reviseExtensionNameList = {}; // convert const char* 
 	for (const auto& name : extensionNameList)
 	{
+		if (name == "VK_EXT_buffer_device_address"){ continue;}
 		reviseExtensionNameList.push_back(name.c_str());
 	}
+
 
 	/*-------------------------------------------------------------------
 	-             Add Variable Rate Shading Extension
@@ -319,29 +325,29 @@ void RHIDevice::CreateLogicalDevice()
 //
 //		assert(shadingRatePalette.empty());
 
-		/*-------------------------------------------------------------------
-		-             Acquire fragment shading rates properties
-		---------------------------------------------------------------------*/
-		VkPhysicalDeviceFragmentShadingRatePropertiesKHR shadingRateImageProperties = {};
-		shadingRateImageProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_KHR;
+		///*-------------------------------------------------------------------
+		//-             Acquire fragment shading rates properties
+		//---------------------------------------------------------------------*/
+		//VkPhysicalDeviceFragmentShadingRatePropertiesKHR shadingRateImageProperties = {};
+		//shadingRateImageProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_KHR;
 
-		VkPhysicalDeviceProperties2 deviceProperties = {};
-		deviceProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-		deviceProperties.pNext = &shadingRateImageProperties;
-		vkGetPhysicalDeviceProperties2(vkAdapter->GetPhysicalDevice(), &deviceProperties);
-		assert(shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.width == shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.width);
-		assert(shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.height == shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.height);
-		assert(shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.width == shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.height);
-		assert(shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.width == shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.height);
-		_shadingRateImageTileSize = shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.width;
-		
-		/*-------------------------------------------------------------------
-		-             Add fragment shading rate features extension
-		---------------------------------------------------------------------*/
-		VkPhysicalDeviceFragmentShadingRateFeaturesKHR fragmentShadingRateFeatures = {};
-		fragmentShadingRateFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_FEATURES_KHR;
-		fragmentShadingRateFeatures.attachmentFragmentShadingRate = VK_TRUE;
-		AddExtension(fragmentShadingRateFeatures);
+		//VkPhysicalDeviceProperties2 deviceProperties = {};
+		//deviceProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		//deviceProperties.pNext = &shadingRateImageProperties;
+		//vkGetPhysicalDeviceProperties2(vkAdapter->GetPhysicalDevice(), &deviceProperties);
+		//assert(shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.width == shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.width);
+		//assert(shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.height == shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.height);
+		//assert(shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.width == shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.height);
+		//assert(shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.width == shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.height);
+		//_shadingRateImageTileSize = shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.width;
+		//
+		///*-------------------------------------------------------------------
+		//-             Add fragment shading rate features extension
+		//---------------------------------------------------------------------*/
+		//VkPhysicalDeviceFragmentShadingRateFeaturesKHR fragmentShadingRateFeatures = {};
+		//fragmentShadingRateFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_FEATURES_KHR;
+		//fragmentShadingRateFeatures.attachmentFragmentShadingRate = VK_TRUE;
+		//AddExtension(fragmentShadingRateFeatures);
 	}
 
 	/*-------------------------------------------------------------------
@@ -403,6 +409,7 @@ void RHIDevice::CreateLogicalDevice()
 	vulkan12Features.bufferDeviceAddress      = VK_TRUE;
 #endif
 	vulkan12Features.timelineSemaphore        = VK_TRUE;
+	vulkan12Features.shaderOutputLayer        = VK_TRUE;
 	vulkan12Features.runtimeDescriptorArray   = VK_TRUE;
 	vulkan12Features.samplerMirrorClampToEdge = VK_TRUE;
 	vulkan12Features.descriptorIndexing       = VK_TRUE;

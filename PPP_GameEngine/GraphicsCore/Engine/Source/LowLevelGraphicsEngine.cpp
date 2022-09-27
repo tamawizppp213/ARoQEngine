@@ -37,10 +37,14 @@ using namespace rhi::core;
 #pragma region Destructor
 LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 {
+	if (_swapchain) { _swapchain.reset(); }
+	if (_fence)     { _fence.reset(); }
+	if (_graphicsCommandQueue) { _graphicsCommandQueue.reset(); }
+	if (_computeCommandQueue) { _computeCommandQueue.reset(); }
 	_device->Destroy();
-	if (_device)   { _device.reset(); }
-	if (_adapter)  {  _adapter.reset(); }
-	if (_instance) { _instance.reset(); }
+	if (_device)    { _device.reset(); }
+	if (_adapter)   {  _adapter.reset(); }
+	if (_instance)  { _instance.reset(); }
 }
 #pragma endregion Destructor
 void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
@@ -60,7 +64,11 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	_computeCommandQueue      = _device->GetCommandQueue    (CommandListType::Compute);
 	_fence                    = _device->CreateFence();
 	core::WindowInfo windowInfo = core::WindowInfo(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _hwnd, _hInstance);
-	_swapchain = _device->CreateSwapchain(_graphicsCommandQueue, windowInfo, core::PixelFormat::R16G16B16A16_FLOAT, FRAME_BUFFER_COUNT, VSYNC, false);
+	_swapchain = _device->CreateSwapchain(
+		_graphicsCommandQueue, windowInfo, 
+		core::PixelFormat::R16G16B16A16_FLOAT, 
+		FRAME_BUFFER_COUNT, VSYNC, false);
+
 
 }
 void LowLevelGraphicsEngine::BeginDrawFrame()
