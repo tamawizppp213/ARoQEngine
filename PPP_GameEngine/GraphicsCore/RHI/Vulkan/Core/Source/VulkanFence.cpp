@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 //              @file   VulkanFence.cpp
-///             @brief  Fence
+///             @brief  CPU-GPU synchronization
 ///             @author Toide Yutaro
 ///             @date   2022_06_23
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +20,7 @@ using namespace rhi;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 RHIFence::RHIFence(const std::shared_ptr<core::RHIDevice>& device, const std::uint64_t initialValue)
 	: core::RHIFence(device)
 {
@@ -55,6 +56,16 @@ RHIFence::~RHIFence()
 	if (_timelineSemaphore) { vkDestroySemaphore(vkDevice, _timelineSemaphore, nullptr); }
 }
 
+#pragma endregion Constructor and Destructor
+#pragma region Public Function
+/****************************************************************************
+*                     GetCompletedValue
+*************************************************************************//**
+*  @fn        std::uint64_t RHIFence::GetCompletedValue()
+*  @brief     Return current fence value
+*  @param[in] void
+*  @return 　　std::uint64_t fenceValue
+*****************************************************************************/
 std::uint64_t RHIFence::GetCompletedValue()
 {
 	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
@@ -68,7 +79,7 @@ std::uint64_t RHIFence::GetCompletedValue()
 *                     Wait
 *************************************************************************//**
 *  @fn        void RHIFence::Wait(std::uint64_t value)
-*  @brief     Wait until value
+*  @brief     Detect the completion of GPU processing on the CPU side. If not, it waits.
 *  @param[in] std::uint64_t value
 *  @return 　　void
 *****************************************************************************/
@@ -93,7 +104,7 @@ void RHIFence::Wait(const std::uint64_t value)
 *                     Signal
 *************************************************************************//**
 *  @fn        void RHIFence::Signal(const std::shared_ptr<rhi::core::RHICommandQueue>& queue)
-*  @brief     Signal issued
+*  @brief     @brief: Set fence value from CPU side. (in case RHICommandQueue::Signal -> Set fence value from GPU side)
 *  @param[in] std::uint64_t value
 *  @return 　　void
 *****************************************************************************/
@@ -111,3 +122,4 @@ void RHIFence::Signal(const std::uint64_t value)
 		throw std::runtime_error("couldn't signal semaphore");
 	}
 }
+#pragma endregion Public Function
