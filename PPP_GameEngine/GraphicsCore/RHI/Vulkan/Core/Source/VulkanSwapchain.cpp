@@ -113,10 +113,26 @@ RHISwapchain::~RHISwapchain()
 	const auto vkDevice  = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	const auto vkAdapter = std::static_pointer_cast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
 	_images.clear(); _images.shrink_to_fit();
-	if (_renderingFinishedSemaphore) { vkDestroySemaphore(vkDevice->GetDevice(), _renderingFinishedSemaphore, nullptr); }
-	if (_imageAvailableSemaphore)    { vkDestroySemaphore(vkDevice->GetDevice(), _imageAvailableSemaphore, nullptr); }
-	if (_swapchain)                  { vkDestroySwapchainKHR(vkDevice->GetDevice(), _swapchain, nullptr); }
-	if (_surface)                    { vkDestroySurfaceKHR(static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance())->GetVkInstance(), _surface, nullptr); }
+	if (_renderingFinishedSemaphore) 
+	{ 
+		vkDestroySemaphore(vkDevice->GetDevice(), _renderingFinishedSemaphore, nullptr); 
+		_renderingFinishedSemaphore = nullptr; 
+	}
+	if (_imageAvailableSemaphore) 
+	{ 
+		vkDestroySemaphore(vkDevice->GetDevice(), _imageAvailableSemaphore, nullptr); 
+		_imageAvailableSemaphore = nullptr; 
+	}
+	if (_swapchain) 
+	{ 
+		vkDestroySwapchainKHR(vkDevice->GetDevice(), _swapchain, nullptr);
+		_swapchain = nullptr; 
+	}
+	if (_surface) 
+	{ 
+		vkDestroySurfaceKHR(static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance())->GetVkInstance(), _surface, nullptr);
+		_surface = nullptr; 
+	}
 }
 #pragma endregion Constructor and Destructor
 #pragma region Render Function

@@ -37,6 +37,7 @@ using namespace rhi::core;
 #pragma region Destructor
 LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 {
+	if (_renderPass) { _renderPass.reset(); }
 	if (_swapchain) { _swapchain.reset(); }
 	if (_fence)     { _fence.reset(); }
 	if (_graphicsCommandQueue) { _graphicsCommandQueue.reset(); }
@@ -53,7 +54,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	/*-------------------------------------------------------------------
 	-      Select proper physical device 
 	---------------------------------------------------------------------*/
-	_instance = rhi::core::RHIInstance::CreateInstance(APIVersion::Vulkan, true, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(APIVersion::DirectX12, true, false);
 	_instance->LogAdapters();
 	_adapter = _instance->SearchHighPerformanceAdapter();
 	/*-------------------------------------------------------------------
@@ -68,7 +69,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 		_graphicsCommandQueue, windowInfo, 
 		core::PixelFormat::R16G16B16A16_FLOAT, 
 		FRAME_BUFFER_COUNT, VSYNC, false);
-
+	SetUpRenderPass();
 
 }
 void LowLevelGraphicsEngine::BeginDrawFrame()
@@ -104,6 +105,11 @@ void LowLevelGraphicsEngine::ShutDown()
 
 #pragma region Private Function
 #pragma region SetUp
-
+void LowLevelGraphicsEngine::SetUpRenderPass()
+{
+	core::Attachment colorAttachment = {};
+	colorAttachment.RenderTarget(_pixelFormat);
+	_renderPass = _device->CreateRenderPass(colorAttachment, std::nullopt);
+}
 #pragma endregion Set Up
 #pragma endregion Private Function

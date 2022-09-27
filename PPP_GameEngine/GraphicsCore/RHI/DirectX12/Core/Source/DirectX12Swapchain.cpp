@@ -81,6 +81,10 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 		SetHDRMetaData();
 	}
 }
+RHISwapchain::~RHISwapchain()
+{
+	if (_swapchain) { _swapchain.Reset(); }
+}
 #pragma endregion Constructor and Destructor
 #pragma region Main Function
 /****************************************************************************

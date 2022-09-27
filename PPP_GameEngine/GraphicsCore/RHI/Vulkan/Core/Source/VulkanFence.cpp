@@ -53,7 +53,11 @@ RHIFence::RHIFence(const std::shared_ptr<core::RHIDevice>& device, const std::ui
 RHIFence::~RHIFence()
 {
 	const auto vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
-	if (_timelineSemaphore) { vkDestroySemaphore(vkDevice, _timelineSemaphore, nullptr); }
+	if (_timelineSemaphore) 
+	{
+		vkDestroySemaphore(vkDevice, _timelineSemaphore, nullptr); 
+		_timelineSemaphore = nullptr;
+	}
 }
 
 #pragma endregion Constructor and Destructor
