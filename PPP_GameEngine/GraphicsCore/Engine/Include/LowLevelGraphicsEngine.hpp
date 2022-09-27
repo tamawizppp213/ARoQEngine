@@ -33,6 +33,7 @@ namespace rhi::core
 	class RHISwapchain;
 	class RHIFence;
 	class RHIDescriptorHeap;
+	class RHIRenderPass;
 	/****************************************************************************
 	*				  			LowLevelGraphicsEngine
 	*************************************************************************//**
@@ -95,6 +96,8 @@ namespace rhi::core
 		std::shared_ptr<RHIFence> _fence = nullptr;
 		/* @brief : Rendering swapchain*/
 		std::shared_ptr<RHISwapchain> _swapchain = nullptr;
+		/* @brief : Default rendering pass*/
+		std::shared_ptr<RHIRenderPass> _renderPass = nullptr;
 		/* @brief : current frame index*/
 		int _currentFrameIndex = 0;
 		/* @brief : Windows API*/
@@ -115,6 +118,9 @@ namespace rhi::core
 		static constexpr int UAV_DESC_COUNT = 1024 * 10;
 		static constexpr int SRV_DESC_COUNT = 1024 * 10;
 		static constexpr int MAX_SAMPLER_STATE = 16;
+
+	private:
+		void SetUpRenderPass();
 	};
 }
 #endif

@@ -51,7 +51,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		~RHISwapchain() = default;
+		~RHISwapchain();
 		explicit RHISwapchain(
 			const std::shared_ptr<rhi::core::RHIDevice>& device,
 			const std::shared_ptr<rhi::core::RHICommandQueue>& queue,

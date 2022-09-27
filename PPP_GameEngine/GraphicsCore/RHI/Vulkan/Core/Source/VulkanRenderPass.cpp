@@ -26,7 +26,11 @@ RHIRenderPass::~RHIRenderPass()
 	VkDevice vkDevice = nullptr;
 	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
 
-	vkDestroyRenderPass(vkDevice, _renderPass, nullptr);
+	if (_renderPass) 
+	{ 
+		vkDestroyRenderPass(vkDevice, _renderPass, nullptr); 
+		_renderPass = nullptr;
+	}
 }
 
 RHIRenderPass::RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)

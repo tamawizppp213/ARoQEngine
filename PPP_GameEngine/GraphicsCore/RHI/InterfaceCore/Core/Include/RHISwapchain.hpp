@@ -67,7 +67,12 @@ namespace rhi::core
 		**                Protected Function
 		*****************************************************************************/
 		RHISwapchain() = default;
-		~RHISwapchain() = default;
+		virtual ~RHISwapchain()
+		{
+			_backBuffers.clear(); _backBuffers.shrink_to_fit();
+			if (_commandQueue) { _commandQueue.reset(); }
+			if (_device)       { _device.reset(); }
+		};
 		explicit RHISwapchain(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, size_t frameBufferCount = 3, std::uint32_t vsync = 0, bool isValidHDR = true)
 		{
 			_device = device; _commandQueue = commandQueue; _windowInfo = windowInfo; _pixelFormat = pixelFormat; _vsync = vsync; _frameBufferCount = frameBufferCount; _isValidHDR = isValidHDR;
