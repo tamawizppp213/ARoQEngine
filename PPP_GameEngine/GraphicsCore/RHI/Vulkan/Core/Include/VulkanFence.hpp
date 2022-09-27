@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   VulkanFence.hpp
-///             @brief  Fence
+///             @brief  CPU-GPU synchronization
 ///             @author Toide Yutaro
 ///             @date   2022_06_23
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@ namespace rhi::vulkan
 	*				  			RHIFence
 	*************************************************************************//**
 	*  @class     RHIFence
-	*  @brief     Fence
+	*  @brief     CPU-GPU synchronization
 	*****************************************************************************/
 	class RHIFence : public rhi::core::RHIFence
 	{
@@ -34,8 +34,11 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief: Set fence value from CPU side. (in case RHICommandQueue::Signal -> Set fence value from GPU side)*/
 		void Signal(const std::uint64_t value) override;
+		/* @brief:  Detect the completion of GPU processing on the CPU side. If not, it waits.*/
 		void Wait  (const std::uint64_t value) override;
+		/* @brief:  Return current fence value*/
 		std::uint64_t GetCompletedValue() override;
 		/****************************************************************************
 		**                Public Member Variables

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   RHIFence.hpp
-///             @brief  Fence
+///             @brief  CPU-GPU synchronization
 ///             @author Toide Yutaro
 ///             @date   2022_06_23
 //////////////////////////////////////////////////////////////////////////////////
@@ -18,7 +18,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                            Class
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
@@ -36,19 +36,19 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief: Set fence value from CPU side. (in case RHICommandQueue::Signal -> Set fence value from GPU side)*/
 		virtual void Signal(const std::uint64_t value)  = 0;
+		/* @brief:  Detect the completion of GPU processing on the CPU side. If not, it waits.*/
 		virtual void Wait  (const std::uint64_t value)  = 0;
+		/* @brief:  Return current fence value*/
 		virtual std::uint64_t GetCompletedValue() = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
 	protected:
 		/****************************************************************************
-		**                Protected Function
+		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIFence() = default;
 		explicit RHIFence(const std::shared_ptr<RHIDevice>& device) { _device = device; }
