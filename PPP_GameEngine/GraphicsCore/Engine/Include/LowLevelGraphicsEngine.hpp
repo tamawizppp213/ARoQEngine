@@ -97,7 +97,11 @@ namespace rhi::core
 		/* @brief : Rendering swapchain*/
 		std::shared_ptr<RHISwapchain> _swapchain = nullptr;
 		/* @brief : Default rendering pass*/
-		std::shared_ptr<RHIRenderPass> _renderPass = nullptr;
+		std::shared_ptr<RHIRenderPass> _renderPass = nullptr; // color only
+		/* @brief : Heap*/
+		std::shared_ptr<RHIDescriptorHeap> _csvSrvUavHeap = nullptr;
+		std::shared_ptr<RHIDescriptorHeap> _rtvHeap = nullptr;
+		std::shared_ptr<RHIDescriptorHeap> _dsvHeap = nullptr;
 		/* @brief : current frame index*/
 		int _currentFrameIndex = 0;
 		/* @brief : Windows API*/
@@ -121,6 +125,7 @@ namespace rhi::core
 
 	private:
 		void SetUpRenderPass();
+		void SetUpHeap();
 	};
 }
 #endif

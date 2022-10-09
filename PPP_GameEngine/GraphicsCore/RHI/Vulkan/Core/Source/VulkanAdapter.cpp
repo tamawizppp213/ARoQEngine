@@ -71,7 +71,7 @@ void RHIDisplayAdapter::PrintInfo()
 	adapterName += "\n//////////////////////////\n";
 	OutputDebugStringA(adapterName.c_str());
 
-	for (int i = 0; i < memoryProperties.memoryHeapCount; ++i)
+	for (std::uint32_t i = 0; i < memoryProperties.memoryHeapCount; ++i)
 	{
 		// ‚Ç‚Ìmemory‚©‚ÍDirectX12‚©‚ç„’è‚·‚é‚±‚Æ‚É‚È‚è‚»‚¤.(Œ»ó)
 		const std::string str = "Memory : " + std::to_string(memoryProperties.memoryHeaps[i].size) + "\n";

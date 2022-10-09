@@ -533,13 +533,32 @@ namespace rhi::core
 
 	enum class DescriptorHeapType
 	{
-		CBV,
-		SRV,
-		UAV,         // constant buffer, shader resource, unordered access
-		CBV_SRV_UAV,
+		CBV,         // const buffer view
+		SRV,         // shader resource view
+		UAV,         // unordered access view
 		SAMPLER,     // dynamic sampler state
+
+		// directX12 api only heap type
 		RTV,         // render target (only directX12)
 		DSV,         // depth stencil (only directX12)
+	};
+	
+
+	enum class ResourceViewType : std::uint32_t
+	{
+		Unknown,
+		ConstantBuffer       , // 256 alighment buffer
+		Sampler              , // dynamic sampler state
+		Texture              , // readonly texture resource 
+		RWTexture            , // read-write texture resource
+		Buffer               , // readonly buffer resource
+		RWBuffer             , // read-write buffer resource
+		StructuredBuffer     , // readonly 
+		RWStructuredBuffer   , // read-write buffer resoure
+		AccelerationStructure, // raytracing acceleration structure
+		ShadingRateSource    ,
+		RenderTarget         , // render target
+		DepthStencil         , // depth and stencil 
 	};
 
 	enum class DescriptorType : std::uint8_t
@@ -629,10 +648,10 @@ namespace rhi::core
 	
 	
 	/****************************************************************************
-	*				  			GPUBufferInfo
+	*				  			GPUTextureMetaData
 	*************************************************************************//**
-	*  @class     GPUBufferInfo
-	*  @brief     GPUBufferInfo
+	*  @class     GPUTextureMetaData
+	*  @brief     GPU total infomation
 	*****************************************************************************/
 	struct GPUTextureMetaData
 	{

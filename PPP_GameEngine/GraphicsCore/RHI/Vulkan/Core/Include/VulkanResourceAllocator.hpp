@@ -1,75 +1,80 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   VulkanDescriptorHeap.hpp
-///             @brief  DescriptorHeap
+///             @file   VulkanResourceAllocator.hpp
+///             @brief  GPU resource view index management
 ///             @author Toide Yutaro
-///             @date   2022_10_09
+///             @date   2022_10_07
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef VULKAN_DESCRIPTOR_HEAP_HPP
-#define VULKAN_DESCRIPTOR_HEAP_HPP
+#ifndef VULKAN_RESOURCE_ALLOCATOR_HPP
+#define VULKAN_RESOURCE_ALLOCATOR_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDescriptorHeap.hpp"
-#include "VulkanResourceAllocator.hpp"
 #include <vulkan/vulkan.h>
-
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <vector>
+#include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
 namespace rhi::vulkan
 {
-	
+
 	/****************************************************************************
-	*				  			GPUResource
+	*				  			 ResourceAllocator
 	*************************************************************************//**
-	*  @class     GPUResource
-	*  @brief     Resource (å„Ç≈NoncopyableÇ…ïœçXÇ∑ÇÈ)
+	*  @class     ResourceAllocator
+	*  @brief     Resource view index management
 	*****************************************************************************/
-	class RHIDescriptorHeap : public rhi::core::RHIDescriptorHeap
+	class ResourceAllocator : public NonCopyable
 	{
+		using DescriptorID = std::uint64_t;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Allocate view. Return descriptor index*/
-		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout);
-		/* @brief : Allocate max view count size heap*/
-		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
-		/* @brief : Allocate max view count size heap*/
-		void Resize(const core::DescriptorHeapType type, const size_t viewCount) override;
-		/* @brief : Reset view offset*/
-		void Reset(const ResetFlag flag = ResetFlag::OnlyOffset) override;
+		/* @brief: increment and return currentID*/
+		inline DescriptorID IssueID(VkDescriptorSet descriptorSet)
+		{
+			_descriptorSets.emplace_back(std::move(descriptorSet));
+			return _descriptorSets.size() - 1;
+		}
+		/* @brief: Back offset ID (The contents of the heap are not reset.)*/
+		inline void ResetID()
+		{
+			_descriptorSets.clear(); _descriptorSets.shrink_to_fit();
+		}
+
+		inline VkDescriptorSet GetDescriptorSet(DescriptorID index = 0) { return _descriptorSets[index]; }
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) { return _resourceAllocator.GetDescriptorSet(); }
+		inline void SetDescriptorPool(const VkDescriptorPool pool) { _descriptorPool = pool; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		RHIDescriptorHeap() = default;
-		~RHIDescriptorHeap();
-		explicit RHIDescriptorHeap(const std::shared_ptr<core::RHIDevice>& device);
+		ResourceAllocator() = default;
+		ResourceAllocator(VkDescriptorPool descriptorPool) { }
+		~ResourceAllocator()
+		{
+			ResetID();
+		}
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VkDescriptorPool   _descriptorPool = nullptr;
-		ResourceAllocator _resourceAllocator;
+		VkDescriptorPool             _descriptorPool = VK_NULL_HANDLE;
+		std::vector<VkDescriptorSet> _descriptorSets = {};
 	};
 }
 #endif

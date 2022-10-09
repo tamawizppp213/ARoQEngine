@@ -45,7 +45,9 @@ namespace rhi::core
 		inline size_t GetElementCount   () { return _metaData.Count; }
 		inline size_t GetElementByteSize() { return _metaData.Stride; }
 		inline size_t GetTotalByteSize  () { return _metaData.ByteSize; }
-		inline const GPUBufferMetaData GetMetaData() { return _metaData; }
+		inline       GPUBufferMetaData& GetMetaData()                { return _metaData; }
+		inline const GPUBufferMetaData& GetMetaData() const noexcept { return _metaData; }
+		inline ResourceType GetResourceType() const noexcept { return _metaData.ResourceType; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

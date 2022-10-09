@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
 #include <optional>
-#include <unordered_map>
+#include <map> // vulkan‚¾‚ß‚¾‚Á‚½‚çunordered_map‚à’Ç‰Á.
 #include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -68,7 +68,7 @@ namespace rhi::core
 		virtual std::shared_ptr<RHICommandAllocator>      CreateCommandAllocator() = 0;
 		virtual std::shared_ptr<RHISwapchain>             CreateSwapchain(const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) = 0;
 		virtual std::shared_ptr<RHIDescriptorHeap>        CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
-		virtual std::shared_ptr<RHIDescriptorHeap>        CreateDescriptorHeap(const std::vector<DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts) = 0;
+		virtual std::shared_ptr<RHIDescriptorHeap>        CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;
 		virtual std::shared_ptr<RHIResourceLayout>        CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt) = 0;
 		virtual std::shared_ptr<GPUPipelineFactory>       CreatePipelineFactory() = 0;
 		virtual std::shared_ptr<GPUGraphicsPipelineState> CreateGraphicPipelineState(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
@@ -114,8 +114,8 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::shared_ptr<RHIDisplayAdapter> _adapter = nullptr; //
-		std::unordered_map<CommandListType, std::shared_ptr<RHICommandQueue>> _commandQueues;
-		std::vector<std::unordered_map<CommandListType, std::shared_ptr<RHICommandAllocator>>> _commandAllocators;
+		std::map<CommandListType, std::shared_ptr<RHICommandQueue>> _commandQueues;
+		std::vector<std::map<CommandListType, std::shared_ptr<RHICommandAllocator>>> _commandAllocators;
 		std::uint32_t _frameCount = 0;
 	};
 }

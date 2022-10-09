@@ -40,6 +40,7 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		VkPipelineLayout GetLayout() const noexcept { return _pipelineLayout; }
+		std::vector<VkDescriptorSetLayout>& GetDescriptorSetLayouts() { return _descriptorSetLayouts; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

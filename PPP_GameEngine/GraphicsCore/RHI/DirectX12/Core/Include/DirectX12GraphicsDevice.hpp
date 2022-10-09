@@ -39,7 +39,7 @@ enum class RenderTargetType
 	Shadowing,
 	CountOfRenderTarget
 };
-class ResourceAllocator;
+
 namespace rhi::core
 {
 	class RHICommandQueue;
@@ -51,6 +51,7 @@ namespace rhi::core
 namespace rhi::directX12
 {
 	class RHIDevice;
+	class ResourceAllocator;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
@@ -177,12 +178,12 @@ private:
 	PipelineStateComPtr          _pipelineState      = nullptr;      /// Graphic Pipeline State
 	ResourceComPtr               _depthStencilBuffer = nullptr; /// DepthStencl Buffer   
 	rhi::directX12::GPUResource                  _renderTargetList[FRAME_BUFFER_COUNT];
-	ResourceAllocator*           _rtvAllocator     = nullptr;
-	ResourceAllocator*           _dsvAllocator     = nullptr;
-	ResourceAllocator*           _cbvAllocator     = nullptr;
-	ResourceAllocator*           _srvAllocator     = nullptr;
-	ResourceAllocator*           _uavAllocator     = nullptr;
-	ResourceAllocator*           _samplerAllocator = nullptr;
+	rhi::directX12::ResourceAllocator*           _rtvAllocator     = nullptr;
+	rhi::directX12::ResourceAllocator*           _dsvAllocator     = nullptr;
+	rhi::directX12::ResourceAllocator*           _cbvAllocator     = nullptr;
+	rhi::directX12::ResourceAllocator*           _srvAllocator     = nullptr;
+	rhi::directX12::ResourceAllocator*           _uavAllocator     = nullptr;
+	rhi::directX12::ResourceAllocator* _samplerAllocator = nullptr;
 	D3D12_VIEWPORT              _screenViewport;
 	D3D12_RECT                 _scissorRect;
 	UINT _rtvDescriptorSize       = 0; // Dependency: GPU type
