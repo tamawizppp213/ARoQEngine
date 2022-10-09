@@ -48,6 +48,7 @@ namespace rhi::core
 		size_t GetDepth   (const size_t mipLevel = 0) const noexcept;
 		/* @brief : Get texture byte size*/
 		size_t GetByteSize(const size_t mipLevel = 0) const noexcept;
+		inline ResourceType GetResourceType() const noexcept { return _metaData.ResourceType; }
 		/* @brief : Get texture pixel format */
 		inline PixelFormat       GetPixelFormat() const noexcept { return _metaData.PixelFormat; }
 		/* @brief : Get multi sample count (normally Sample 1)*/
@@ -84,6 +85,7 @@ namespace rhi::core
 		GPUTexture() = default;
 		~GPUTexture() = default;
 		explicit GPUTexture(const std::shared_ptr<RHIDevice>& device, const GPUTextureMetaData& metaData): core::GPUResource(device), _metaData(metaData) {};
+		
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/

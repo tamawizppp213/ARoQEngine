@@ -251,6 +251,7 @@
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Memory.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Screen.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\ValueRange.hpp" />
     <ClInclude Include="GameUtility\File\External\rapidjson\allocators.h" />
     <ClInclude Include="GameUtility\File\External\rapidjson\cursorstreamwrapper.h" />
     <ClInclude Include="GameUtility\File\External\rapidjson\document.h" />
@@ -351,6 +352,7 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12BLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12TLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUBuffer.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUResourceView.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUSampler.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUTexture.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp" />
@@ -384,6 +386,7 @@
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUResource.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUResourceManager.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUResourceView.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUSampler.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUTexture.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanAdapter.hpp" />
@@ -398,6 +401,7 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanGraphicsDevice.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanInstance.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanRenderPass.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanResourceAllocator.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanResourceLayout.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanSwapchain.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUBlendState.hpp" />
@@ -408,6 +412,7 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPURasterizerState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\PipelineState\Include\VulkanGPUShaderState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Resource\Include\VulkanGPUBuffer.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Resource\Include\VulkanGPUResourceView.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Resource\Include\VulkanGPUSampler.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Resource\Include\VulkanGPUTexture.hpp" />
     <ClInclude Include="MainGame\Core\Include\Application.hpp" />
@@ -516,6 +521,7 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12TLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\GraphicsCoreEngine.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Resource\Source\DirectX12GPUBuffer.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Resource\Source\DirectX12GPUResourceView.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Resource\Source\DirectX12GPUSampler.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Resource\Source\DirectX12GPUTexture.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHICommonState.cpp" />
@@ -549,6 +555,7 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPURasterizerState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUShaderState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Resource\Source\VulkanGPUBuffer.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Resource\Source\VulkanGPUResourceView.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Resource\Source\VulkanGPUSampler.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Resource\Source\VulkanGPUTexture.cpp" />
     <ClCompile Include="MainGame\Core\Source\Application.cpp" />

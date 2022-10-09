@@ -252,8 +252,7 @@ D3D12_DESCRIPTOR_HEAP_TYPE EnumConverter::Convert(const rhi::core::DescriptorHea
 	{
 		case core::DescriptorHeapType::CBV:
 		case core::DescriptorHeapType::SRV:
-		case core::DescriptorHeapType::UAV:
-		case core::DescriptorHeapType::CBV_SRV_UAV: return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		case core::DescriptorHeapType::UAV        : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		case core::DescriptorHeapType::SAMPLER    : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
 		case core::DescriptorHeapType::RTV        : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		case core::DescriptorHeapType::DSV        : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV;

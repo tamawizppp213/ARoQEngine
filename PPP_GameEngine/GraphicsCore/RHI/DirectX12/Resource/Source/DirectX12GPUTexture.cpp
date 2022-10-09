@@ -60,8 +60,8 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 	if (isDiscreteGPU)
 	{
 		heapProperty.Type                 = D3D12_HEAP_TYPE_CUSTOM;
-		heapProperty.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;
-		heapProperty.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;
+		heapProperty.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK; // write back
+		heapProperty.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;               // system memory (–{“–‚É‚¢‚¢‚Ì‚©‚Í‹^–â)
 		heapProperty.CreationNodeMask     = 1;
 		heapProperty.VisibleNodeMask      = 1;
 	}
@@ -104,7 +104,7 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 	/*-------------------------------------------------------------------
 	-             create shader resource view
 	---------------------------------------------------------------------*/
-	PrepareSRV(metaData);
+	//PrepareSRV(metaData);
 }
 
 GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData)

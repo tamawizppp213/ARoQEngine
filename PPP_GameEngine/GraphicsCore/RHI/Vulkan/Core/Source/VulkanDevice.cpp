@@ -35,7 +35,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-#pragma warning(disable: 26812 4100, 4389)
+#pragma warning(disable: 26812 4100 4389)
 using namespace rhi;
 using namespace rhi::vulkan;
 #pragma comment(lib, "vulkan-1.lib")
@@ -110,11 +110,15 @@ std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator()
 }
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
 {
-	return std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this(), heapType, maxDescriptorCount));
+	auto heapPtr = std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this()));
+	heapPtr->Resize(heapType, maxDescriptorCount);
+	return heapPtr;
 }
-std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts)
+std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo)
 {
-	return std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this(), heapTypes, maxDescriptorCounts));
+	auto heapPtr = std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this()));
+	heapPtr->Resize(heapInfo);
+	return heapPtr;
 }
 std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
 {

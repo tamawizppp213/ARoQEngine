@@ -55,7 +55,7 @@ namespace rhi::vulkan
 		std::shared_ptr<core::RHICommandAllocator>     CreateCommandAllocator() override;
 		std::shared_ptr<core::RHISwapchain>            CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 3, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
 		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
-		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts) override;
+		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
 		std::shared_ptr<core::RHIRenderPass>           CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
 		std::shared_ptr<core::RHIRenderPass>           CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
 		std::shared_ptr<core::GPUGraphicsPipelineState> CreateGraphicPipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;  // after action: setting pipeline
@@ -104,7 +104,7 @@ namespace rhi::vulkan
 
 		/* @brief : Command queue set up data*/
 		// base class : std::unordered_map<CommandListType, std::shared_ptr<core::RHICommandQueue>> _commandQueues;
-		std::unordered_map<core::CommandListType, QueueInfo>     _commandQueueInfo;
+		std::map<core::CommandListType, QueueInfo>     _commandQueueInfo;
 
 		/* @brief : variable shading rate : 1, 2, 4, 8, 16, 32, 64*/
 		std::uint32_t _shadingRateImageTileSize = 0;

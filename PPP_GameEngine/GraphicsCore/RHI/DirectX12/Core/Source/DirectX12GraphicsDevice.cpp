@@ -28,6 +28,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace Microsoft::WRL;
+using namespace rhi::directX12;
 enum class GPUVender
 {
 	NVidia,
@@ -731,7 +732,7 @@ void GraphicsDeviceDirectX12::BuildResourceAllocator(int heapFlag)
 		auto rtvCpuHandler = _rtvHeap->GetCPUDescriptorHandleForHeapStart();
 		D3D12_GPU_DESCRIPTOR_HANDLE rtvGpuHandler = {};
 		rtvGpuHandler.ptr  = 0;// = _rtvHeap->GetGPUDescriptorHandleForHeapStart();
-		_rtvAllocator      = new ResourceAllocator();
+		_rtvAllocator      = new rhi::directX12::ResourceAllocator();
 		_rtvAllocator->SetResourceAllocator(RTV_DESC_COUNT, _rtvDescriptorSize, rtvCpuHandler, rtvGpuHandler);
 	}
 	/*-------------------------------------------------------------------
@@ -744,7 +745,7 @@ void GraphicsDeviceDirectX12::BuildResourceAllocator(int heapFlag)
 		auto dsvCpuHandler = _dsvHeap->GetCPUDescriptorHandleForHeapStart();
 		D3D12_GPU_DESCRIPTOR_HANDLE dsvGpuHandler = {};
 		dsvGpuHandler.ptr  = 0;// = _dsvHeap->GetGPUDescriptorHandleForHeapStart();
-		_dsvAllocator      = new ResourceAllocator();
+		_dsvAllocator      = new rhi::directX12::ResourceAllocator();
 		_dsvAllocator->SetResourceAllocator(DSV_DESC_COUNT, _dsvDescriptorSize, dsvCpuHandler, dsvGpuHandler);
 	}
 	/*-------------------------------------------------------------------
@@ -756,7 +757,7 @@ void GraphicsDeviceDirectX12::BuildResourceAllocator(int heapFlag)
 
 		auto cbvCpuHandler = _cbvSrvUavHeap->GetCPUDescriptorHandleForHeapStart();
 		auto cbvGpuHandler = _cbvSrvUavHeap->GetGPUDescriptorHandleForHeapStart();
-		_cbvAllocator = new ResourceAllocator();
+		_cbvAllocator = new rhi::directX12::ResourceAllocator();
 		_cbvAllocator->SetResourceAllocator(CBV_DESC_COUNT, _cbvSrvUavDescriptorSize, cbvCpuHandler, cbvGpuHandler);
 	}
 	/*-------------------------------------------------------------------
@@ -770,7 +771,7 @@ void GraphicsDeviceDirectX12::BuildResourceAllocator(int heapFlag)
 		srvCpuHandler.ptr += (UINT64)CBV_DESC_COUNT * _cbvSrvUavDescriptorSize;
 		auto srvGpuHandler = _cbvSrvUavHeap->GetGPUDescriptorHandleForHeapStart();
 		srvGpuHandler.ptr += (UINT64)CBV_DESC_COUNT * _cbvSrvUavDescriptorSize;
-		_srvAllocator = new ResourceAllocator();
+		_srvAllocator = new rhi::directX12::ResourceAllocator();
 		_srvAllocator->SetResourceAllocator(SRV_DESC_COUNT, _cbvSrvUavDescriptorSize, srvCpuHandler, srvGpuHandler);
 	}
 	/*-------------------------------------------------------------------
@@ -784,7 +785,7 @@ void GraphicsDeviceDirectX12::BuildResourceAllocator(int heapFlag)
 		uavCpuHandler.ptr += (UINT64)(CBV_DESC_COUNT + SRV_DESC_COUNT) * _cbvSrvUavDescriptorSize;
 		auto uavGpuHandler = _cbvSrvUavHeap->GetGPUDescriptorHandleForHeapStart();
 		uavGpuHandler.ptr += (UINT64)(CBV_DESC_COUNT + SRV_DESC_COUNT) * _cbvSrvUavDescriptorSize;
-		_uavAllocator = new ResourceAllocator();
+		_uavAllocator = new rhi::directX12::ResourceAllocator();
 		_uavAllocator->SetResourceAllocator(UAV_DESC_COUNT, _cbvSrvUavDescriptorSize, uavCpuHandler, uavGpuHandler);
 	}
 	/*-------------------------------------------------------------------
@@ -798,7 +799,7 @@ void GraphicsDeviceDirectX12::BuildResourceAllocator(int heapFlag)
 		samplerCpuHandler.ptr += (UINT64)(MAX_SAMPLER_STATE) * _samplerDescriptorSize;
 		auto samplerGpuHandler = _samplerHeap->GetGPUDescriptorHandleForHeapStart();
 		samplerGpuHandler.ptr += (UINT64)(MAX_SAMPLER_STATE) * _samplerDescriptorSize;
-		_samplerAllocator = new ResourceAllocator();
+		_samplerAllocator = new rhi::directX12::ResourceAllocator();
 		_samplerAllocator->SetResourceAllocator(MAX_SAMPLER_STATE, _samplerDescriptorSize, samplerCpuHandler, samplerGpuHandler);
 	}
 }

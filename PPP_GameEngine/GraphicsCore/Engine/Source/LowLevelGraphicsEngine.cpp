@@ -25,6 +25,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHISwapchain.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFence.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDescriptorHeap.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,24 +38,27 @@ using namespace rhi::core;
 #pragma region Destructor
 LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 {
-	if (_renderPass) { _renderPass.reset(); }
-	if (_swapchain) { _swapchain.reset(); }
-	if (_fence)     { _fence.reset(); }
+	if (_dsvHeap)              { _dsvHeap             .reset(); }
+	if (_rtvHeap)              { _rtvHeap             .reset(); }
+	if (_csvSrvUavHeap)        { _csvSrvUavHeap       .reset(); }
+	if (_renderPass)           { _renderPass          .reset(); }
+	if (_swapchain)            { _swapchain           .reset(); }
+	if (_fence)                { _fence               .reset(); }
 	if (_graphicsCommandQueue) { _graphicsCommandQueue.reset(); }
-	if (_computeCommandQueue) { _computeCommandQueue.reset(); }
+	if (_computeCommandQueue)  { _computeCommandQueue .reset(); }
 	_device->Destroy();
 	if (_device)    { _device.reset(); }
-	if (_adapter)   {  _adapter.reset(); }
+	if (_adapter)   { _adapter.reset(); }
 	if (_instance)  { _instance.reset(); }
 }
 #pragma endregion Destructor
 void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
 {
-	_hwnd = hwnd; _hInstance = hInstance;
+	_hwnd = hwnd; _hInstance = hInstance; _apiVersion = apiVersion;
 	/*-------------------------------------------------------------------
 	-      Select proper physical device 
 	---------------------------------------------------------------------*/
-	_instance = rhi::core::RHIInstance::CreateInstance(APIVersion::DirectX12, true, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(APIVersion::Vulkan, true, false);
 	_instance->LogAdapters();
 	_adapter = _instance->SearchHighPerformanceAdapter();
 	/*-------------------------------------------------------------------
@@ -64,12 +68,14 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	_graphicsCommandQueue     = _device->GetCommandQueue    (CommandListType::Graphics);
 	_computeCommandQueue      = _device->GetCommandQueue    (CommandListType::Compute);
 	_fence                    = _device->CreateFence();
+	
 	core::WindowInfo windowInfo = core::WindowInfo(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _hwnd, _hInstance);
 	_swapchain = _device->CreateSwapchain(
 		_graphicsCommandQueue, windowInfo, 
 		core::PixelFormat::R16G16B16A16_FLOAT, 
 		FRAME_BUFFER_COUNT, VSYNC, false);
 	SetUpRenderPass();
+	SetUpHeap();
 
 }
 void LowLevelGraphicsEngine::BeginDrawFrame()
@@ -110,6 +116,20 @@ void LowLevelGraphicsEngine::SetUpRenderPass()
 	core::Attachment colorAttachment = {};
 	colorAttachment.RenderTarget(_pixelFormat);
 	_renderPass = _device->CreateRenderPass(colorAttachment, std::nullopt);
+}
+
+void LowLevelGraphicsEngine::SetUpHeap()
+{
+	std::map<core::DescriptorHeapType, size_t> heapInfoList;
+	heapInfoList[core::DescriptorHeapType::CBV] = CBV_DESC_COUNT;
+	heapInfoList[core::DescriptorHeapType::SRV] = SRV_DESC_COUNT;
+	heapInfoList[core::DescriptorHeapType::UAV] = UAV_DESC_COUNT;
+	_csvSrvUavHeap = _device->CreateDescriptorHeap(heapInfoList);
+	if (_apiVersion == APIVersion::DirectX12)
+	{
+		_rtvHeap = _device->CreateDescriptorHeap(core::DescriptorHeapType::RTV, RTV_DESC_COUNT);
+		_dsvHeap = _device->CreateDescriptorHeap(core::DescriptorHeapType::DSV, DSV_DESC_COUNT);
+	}
 }
 #pragma endregion Set Up
 #pragma endregion Private Function

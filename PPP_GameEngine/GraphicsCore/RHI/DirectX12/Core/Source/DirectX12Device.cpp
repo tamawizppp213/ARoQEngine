@@ -84,7 +84,7 @@ void RHIDevice::SetUp()
 	-                   Create command allocators
 	---------------------------------------------------------------------*/
 	_commandAllocators.resize(_frameCount);
-	for (int i = 0; i < _frameCount; ++i)
+	for (std::uint32_t i = 0; i < _frameCount; ++i)
 	{
 		_commandAllocators[i][core::CommandListType::Graphics] = CreateCommandAllocator();
 		_commandAllocators[i][core::CommandListType::Compute]  = CreateCommandAllocator();
@@ -98,7 +98,7 @@ void RHIDevice::Destroy()
 	_commandQueues.clear();
 	if (!_commandAllocators.empty())
 	{
-		for (int i = 0; i < _frameCount; ++i)
+		for (std::uint32_t i = 0; i < _frameCount; ++i)
 		{
 			_commandAllocators[i].clear();
 		}
@@ -139,11 +139,15 @@ std::shared_ptr<core::RHISwapchain> RHIDevice::CreateSwapchain(const std::shared
 }
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
 {
-	return std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this(), heapType, maxDescriptorCount));
+	auto heapPtr = std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this()));
+	heapPtr->Resize(heapType, maxDescriptorCount);
+	return heapPtr;
 }
-std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::vector<core::DescriptorHeapType>& heapTypes, const std::vector<size_t>& maxDescriptorCounts)
+std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo)
 {
-	return std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this(), heapTypes, maxDescriptorCounts));
+	auto heapPtr = std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this()));
+	heapPtr->Resize(heapInfo);
+	return heapPtr;
 }
 std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
 {

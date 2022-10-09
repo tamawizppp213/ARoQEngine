@@ -1,20 +1,19 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   VulkanDescriptorHeap.hpp
-///             @brief  DescriptorHeap
+///             @file   DirectX12GPUBuffer.hpp
+///             @brief  GPU Buffer 
 ///             @author Toide Yutaro
-///             @date   2022_10_09
+///             @date   2022_07_08
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef VULKAN_DESCRIPTOR_HEAP_HPP
-#define VULKAN_DESCRIPTOR_HEAP_HPP
+#ifndef DIRECTX12_GPU_RESOURCE_VIEW_HPP
+#define DIRECTX12_GPU_RESOURCE_VIEW_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDescriptorHeap.hpp"
-#include "VulkanResourceAllocator.hpp"
-#include <vulkan/vulkan.h>
-
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Core.hpp"
+#include <d3d12.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,54 +21,47 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-
-namespace rhi::vulkan
+namespace rhi::directX12
 {
-	
 	/****************************************************************************
-	*				  			GPUResource
+	*				  			GPUBuffer
 	*************************************************************************//**
-	*  @class     GPUResource
-	*  @brief     Resource (å„Ç≈NoncopyableÇ…ïœçXÇ∑ÇÈ)
+	*  @class     GPUBuffer
+	*  @brief     Buffer
 	*****************************************************************************/
-	class RHIDescriptorHeap : public rhi::core::RHIDescriptorHeap
+	class GPUResourceView : public core::GPUResourceView
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Allocate view. Return descriptor index*/
-		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout);
-		/* @brief : Allocate max view count size heap*/
-		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
-		/* @brief : Allocate max view count size heap*/
-		void Resize(const core::DescriptorHeapType type, const size_t viewCount) override;
-		/* @brief : Reset view offset*/
-		void Reset(const ResetFlag flag = ResetFlag::OnlyOffset) override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) { return _resourceAllocator.GetDescriptorSet(); }
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		RHIDescriptorHeap() = default;
-		~RHIDescriptorHeap();
-		explicit RHIDescriptorHeap(const std::shared_ptr<core::RHIDevice>& device);
-	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Function
+		**                Constructor and Destructor
+		*****************************************************************************/
+		GPUResourceView() = default;
+		~GPUResourceView() = default;
+		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer);
+		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture);
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		void CreateView(); // According to view type flag, create each view. 
+		void CreateSRV(); // shader resource view
+		void CreateRAS(); // raytracing acceleration structure
+		void CreateUAV(); // unordered access view
+		void CreateRTV(); // render target view
+		void CreateDSV(); // depth stencil view
+		void CreateCBV(); // constant buffer view
+		/****************************************************************************
+		**                Private Member Variables
 		*****************************************************************************/
 		
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
-		VkDescriptorPool   _descriptorPool = nullptr;
-		ResourceAllocator _resourceAllocator;
 	};
 }
 #endif
