@@ -260,15 +260,16 @@ D3D12_DESCRIPTOR_HEAP_TYPE EnumConverter::Convert(const rhi::core::DescriptorHea
 			throw std::runtime_error("not supported descriptor heap type (directX12 api)");
 	}
 }
-D3D12_DESCRIPTOR_RANGE_TYPE EnumConverter::Convert(const rhi::core::DescriptorType descriptorType)
+D3D12_DESCRIPTOR_RANGE_TYPE EnumConverter::Convert1(const rhi::core::DescriptorHeapType descriptorType)
 {
 	switch (descriptorType)
 	{
-		case core::DescriptorType::Buffer: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-		case core::DescriptorType::Texture: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-		case core::DescriptorType::StructuredBuffer: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+		case core::DescriptorHeapType::CBV: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+		case core::DescriptorHeapType::SRV: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		case core::DescriptorHeapType::UAV: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+		case core::DescriptorHeapType::SAMPLER: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
 		default:
-			throw std::runtime_error("not supported descriptor type (directX12 api)");
+			throw std::runtime_error("not supported descriptor range type (directX12 api)");
 	}
 }
 #pragma region GPUBuffer

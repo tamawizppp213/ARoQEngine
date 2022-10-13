@@ -29,28 +29,55 @@ RHIResourceLayout::~RHIResourceLayout()
 {
 	if (_rootSignature) { _rootSignature.Reset(); }
 }
-RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& optional)
-	: core::RHIResourceLayout(device, elements, samplers, _constant32Bits)
+RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+	: core::RHIResourceLayout(device, elements, samplers, constant32Bits)
+{
+	SetUp(_elements, _samplers, _constant32Bits);
+}
+RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant32Bits)
+	: core::RHIResourceLayout(device, element, sampler, constant32Bits)
+{
+	SetUp(_elements, _samplers, _constant32Bits);
+}
+
+#pragma region SetUp Function
+/****************************************************************************
+*                     SetUp
+*************************************************************************//**
+*  @fn        void RHIResourceLayout::SetUp(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+*  @brief     Set up rootsignature
+*  @param[in] const std::vector<core::ResourceLayoutElement>& elements
+*  @param[in] const std::vector<core::SamplerLayoutElement>& samplers
+*  @param[in] std::optional<core::Constant32Bits>& constant32Bits
+*  @return Å@Å@void
+*****************************************************************************/
+void RHIResourceLayout::SetUp(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
 {
 	DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
 
 	std::vector<D3D12_DESCRIPTOR_RANGE>    ranges(elements.size());
 	std::vector<D3D12_STATIC_SAMPLER_DESC> staticSamplerArrays = {};
 	
+	/*-------------------------------------------------------------------
+	-                   Set resource layout state
+	---------------------------------------------------------------------*/
 	for (int i = 0; i < _elements.size(); ++i)
 	{
-		ranges[i].RangeType                         = EnumConverter::Convert(_elements[i].DescriptorType);
+		ranges[i].RangeType                         = EnumConverter::Convert1(_elements[i].DescriptorType);
 		ranges[i].NumDescriptors                    = 1;
-		ranges[i].BaseShaderRegister                = static_cast<UINT>(_elements[i].ShaderRegister);
+		ranges[i].BaseShaderRegister                = static_cast<UINT>(_elements[i].Binding);
 		ranges[i].RegisterSpace                     = static_cast<UINT>(_elements[i].RegisterSpace);
-		ranges[i].OffsetInDescriptorsFromTableStart = static_cast<UINT>(i);
+		ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 	}
 
+	/*-------------------------------------------------------------------
+	-                   Set static sampler states
+	---------------------------------------------------------------------*/
 	for (auto& sampler : _samplers)
 	{
 		auto& samplerInfo = static_cast<rhi::directX12::GPUSampler*>(sampler.Sampler.get())->GetSamplerDesc();
 		samplerInfo.ShaderVisibility = EnumConverter::Convert(sampler.Visibility);
-		samplerInfo.ShaderRegister   = static_cast<UINT>(sampler.ShaderRegister);
+		samplerInfo.ShaderRegister   = static_cast<UINT>(sampler.Binding);
 		samplerInfo.RegisterSpace    = static_cast<UINT>(sampler.RegisterSpace);
 		staticSamplerArrays.push_back(samplerInfo);
 	}
@@ -61,7 +88,7 @@ RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& dev
 	std::vector<D3D12_ROOT_PARAMETER> parameters = {};
 	if (!_elements.empty())
 	{
-		_elementsIndex = parameters.size();
+		_elementsCount = parameters.size();
 		D3D12_ROOT_PARAMETER parameter = {};
 		parameter.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 		parameter.ShaderVisibility                    = D3D12_SHADER_VISIBILITY_ALL;
@@ -76,13 +103,13 @@ RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& dev
 	---------------------------------------------------------------------*/
 	if (_constant32Bits.has_value())
 	{
-		_constant32BitsIndex = parameters.size();
+		_constant32BitsCount = parameters.size();
 
 		D3D12_ROOT_PARAMETER parameter = {};
 		parameter.ParameterType            = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 		parameter.ShaderVisibility         = EnumConverter::Convert(_constant32Bits->Visibility);
 		parameter.Constants.Num32BitValues = static_cast<UINT>(_constant32Bits->Count);
-		parameter.Constants.ShaderRegister = static_cast<UINT>(_constant32Bits->ShaderRegister);
+		parameter.Constants.ShaderRegister = static_cast<UINT>(_constant32Bits->Binding);
 		parameter.Constants.RegisterSpace  = static_cast<UINT>(_constant32Bits->RegisterSpace);
 		parameters.push_back(parameter);
 	}
@@ -120,3 +147,4 @@ RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& dev
 
 	_rootSignature->SetName(L"RootSignature");
 }
+#pragma endregion SetUp Function

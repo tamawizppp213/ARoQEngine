@@ -420,20 +420,7 @@ VkImageCreateFlags EnumConverter::Convert(const size_t arrayLength)
 }
 #pragma endregion GPUTexture
 #pragma region GPUBuffer
-/*-------------------------------------------------------------------
--                        Descriptor mode
----------------------------------------------------------------------*/
-VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorType resourceType)
-{
-	switch (resourceType)
-	{
-		case core::DescriptorType::Buffer     : return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		case core::DescriptorType::Texture    : return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-		case core::DescriptorType::StructuredBuffer: return VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		default:
-			throw std::runtime_error("not supported descriptor type (vulkan api)");
-	}
-}
+
 /*-------------------------------------------------------------------
 -                        Memory Heap mode
 ---------------------------------------------------------------------*/

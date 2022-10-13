@@ -40,17 +40,17 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		ShaderVisibility Visibility     = ShaderVisibility::All;
-		DescriptorType   DescriptorType = DescriptorType::Buffer;
-		size_t           ShaderRegister = 0;
-		size_t           RegisterSpace  = 0;
+		//ShaderVisibility   Visibility     = ShaderVisibility::All;
+		DescriptorHeapType DescriptorType = DescriptorHeapType::CBV;
+		size_t             Binding        = 0; // or shader resister
+		size_t             RegisterSpace  = 0;
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		ResourceLayoutElement() = default;
-		explicit ResourceLayoutElement(const core::DescriptorType type, const size_t shaderRegister = 0, const size_t registerSpace = 0, const ShaderVisibility visibility = ShaderVisibility::All)
-			: Visibility(visibility), ShaderRegister(shaderRegister), RegisterSpace(registerSpace), DescriptorType(type)
+		explicit ResourceLayoutElement(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = 0)
+			: Binding(binding), RegisterSpace(registerSpace), DescriptorType(type)
 		{
 		};
 	};
@@ -72,7 +72,7 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		ShaderVisibility Visibility     = ShaderVisibility::All;
-		size_t           ShaderRegister = 0;
+		size_t           Binding        = 0;
 		size_t           RegisterSpace  = 0;
 		std::shared_ptr<GPUSampler> Sampler;
 
@@ -80,8 +80,8 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		SamplerLayoutElement() = default;
-		explicit SamplerLayoutElement(const std::shared_ptr<GPUSampler>& sampler, const size_t shaderRegister = 0, const size_t space = 0, const ShaderVisibility visibility = ShaderVisibility::All)
-			: Visibility(visibility), ShaderRegister(shaderRegister), RegisterSpace(space), Sampler(sampler)
+		explicit SamplerLayoutElement(const std::shared_ptr<GPUSampler>& sampler, const size_t binding = 0, const size_t space = 0, const ShaderVisibility visibility = ShaderVisibility::All)
+			: Visibility(visibility), Binding(binding), RegisterSpace(space), Sampler(sampler)
 		{
 		};
 	};
@@ -132,7 +132,7 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		ShaderVisibility Visibility = ShaderVisibility::All;
-		size_t           ShaderRegister = 0;
+		size_t           Binding        = 0;
 		size_t           RegisterSpace  = 0;
 		size_t           Count          = 1;
 
@@ -140,8 +140,8 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		Constant32Bits() = default;
-		explicit Constant32Bits(const size_t count, const size_t shaderRegister = 0, const size_t space = 0, const ShaderVisibility visibility = ShaderVisibility::All)
-			: Visibility(visibility), ShaderRegister(shaderRegister), RegisterSpace(space), Count(count)
+		explicit Constant32Bits(const size_t count, const size_t binding = 0, const size_t space = 0, const ShaderVisibility visibility = ShaderVisibility::All)
+			: Visibility(visibility), Binding(binding), RegisterSpace(space), Count(count)
 		{
 		};
 	};

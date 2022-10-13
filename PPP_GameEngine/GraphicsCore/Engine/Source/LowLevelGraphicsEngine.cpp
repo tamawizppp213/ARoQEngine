@@ -64,18 +64,20 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	/*-------------------------------------------------------------------
 	-      Create device resources
 	---------------------------------------------------------------------*/
-	_device = _adapter->CreateDevice(FRAME_BUFFER_COUNT);
-	_graphicsCommandQueue     = _device->GetCommandQueue    (CommandListType::Graphics);
-	_computeCommandQueue      = _device->GetCommandQueue    (CommandListType::Compute);
-	_fence                    = _device->CreateFence();
-	
+	_device                = _adapter->CreateDevice(FRAME_BUFFER_COUNT);
+	_graphicsCommandQueue  = _device->GetCommandQueue    (CommandListType::Graphics);
+	_computeCommandQueue   = _device->GetCommandQueue    (CommandListType::Compute);
+	_fence                 = _device->CreateFence();
+	SetUpRenderPass();
+	SetUpHeap();
+	/*-------------------------------------------------------------------
+	-      Set up swapchain
+	---------------------------------------------------------------------*/
 	core::WindowInfo windowInfo = core::WindowInfo(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _hwnd, _hInstance);
 	_swapchain = _device->CreateSwapchain(
 		_graphicsCommandQueue, windowInfo, 
 		core::PixelFormat::R16G16B16A16_FLOAT, 
 		FRAME_BUFFER_COUNT, VSYNC, false);
-	SetUpRenderPass();
-	SetUpHeap();
 
 }
 void LowLevelGraphicsEngine::BeginDrawFrame()

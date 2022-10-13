@@ -75,7 +75,6 @@ namespace rhi::vulkan
 		static VkImageCreateFlags     Convert(const size_t arrayLength = 0);
 #pragma endregion GPUTexture
 #pragma region GPUBuffer
-		static VkDescriptorType       Convert(const rhi::core::DescriptorType resourceType);
 		static VkMemoryPropertyFlags  Convert(const rhi::core::MemoryHeap memoryHeap);
 #pragma endregion GPUBuffer
 #pragma endregion GPUResource
