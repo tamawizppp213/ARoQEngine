@@ -36,6 +36,28 @@ RHIResourceLayout::~RHIResourceLayout()
 }
 
 RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constants)
+	:core::RHIResourceLayout(device, elements, samplers, constants)
+{
+	SetUp();
+}
+
+RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant)
+	: core::RHIResourceLayout(device, element, sampler, constant)
+{
+	SetUp();
+}
+#pragma region SetUp Function
+/****************************************************************************
+*                     SetUp
+*************************************************************************//**
+*  @fn        void RHIResourceLayout::SetUp(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+*  @brief     Set up pipeline layout
+*  @param[in] const std::vector<core::ResourceLayoutElement>& elements
+*  @param[in] const std::vector<core::SamplerLayoutElement>& samplers
+*  @param[in] std::optional<core::Constant32Bits>& constant32Bits
+*  @return Å@Å@void
+*****************************************************************************/
+void RHIResourceLayout::SetUp()
 {
 	VkDevice vkDevice = nullptr;
 	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
@@ -54,7 +76,7 @@ RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& dev
 	for (const auto& element : _elements)
 	{
 		VkDescriptorSetLayoutBinding binding = {};
-		binding.binding            = static_cast<std::uint32_t>(element.ShaderRegister);
+		binding.binding            = static_cast<std::uint32_t>(element.Binding);
 		binding.descriptorType     = EnumConverter::Convert(element.DescriptorType);
 		binding.descriptorCount    = 1;
 		binding.stageFlags         = VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
@@ -69,7 +91,7 @@ RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& dev
 	for (const auto& sampler : _samplers)
 	{
 		VkDescriptorSetLayoutBinding binding = {};
-		binding.binding            = static_cast<std::uint32_t>(sampler.ShaderRegister);
+		binding.binding            = static_cast<std::uint32_t>(sampler.Binding);
 		binding.descriptorType     = VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
 		binding.descriptorCount    = 1;
 		binding.stageFlags         = EnumConverter::Convert(EnumConverter::Convert(sampler.Visibility));
@@ -124,3 +146,4 @@ RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& dev
 		throw std::runtime_error("failed to create pipeline layout (vulkan api)");
 	}
 }
+#pragma endregion SetUp Function

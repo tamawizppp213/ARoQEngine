@@ -132,16 +132,22 @@ namespace rhi::core
 	};
 #pragma endregion              Pixel
 #pragma region Shader
+	/****************************************************************************
+	*				  			ShaderVisibility
+	*************************************************************************//**
+	*  @class     ShaderVisibility
+	*  @brief     Visible shader 
+	*****************************************************************************/
 	enum class ShaderVisibility : std::uint8_t
 	{
-		All,
-		Vertex,
-		Pixel,
-		Hull,
-		Domain,
-		Geometry,
-		Amplification,
-		Mesh
+		All,     // all      shader visible
+		Vertex,  // vertex   shader only
+		Pixel,   // pixel    shader only
+		Hull,    // hull     shader only
+		Domain,  // domain   shader only
+		Geometry,// geometry shader only
+		Amplification, // amplification shader only,
+		Mesh           // mesh shader only
 	};
 	enum class ShaderType : std::uint8_t
 	{
@@ -544,6 +550,7 @@ namespace rhi::core
 	};
 	
 
+
 	enum class ResourceViewType : std::uint32_t
 	{
 		Unknown,
@@ -561,12 +568,6 @@ namespace rhi::core
 		DepthStencil         , // depth and stencil 
 	};
 
-	enum class DescriptorType : std::uint8_t
-	{
-		Buffer,
-		StructuredBuffer,
-		Texture,
-	};
 	/****************************************************************************
 	*				  			ResourceLayout
 	*************************************************************************//**

@@ -61,7 +61,7 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 	VkDescriptorSetAllocateInfo allocateInfo = {};
 	allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	allocateInfo.descriptorPool     = _descriptorPool;
-	allocateInfo.descriptorSetCount = vkLayout->GetDescriptorSetLayouts().size();
+	allocateInfo.descriptorSetCount = static_cast<std::uint32_t>(vkLayout->GetDescriptorSetLayouts().size());
 	allocateInfo.pNext              = nullptr;
 	allocateInfo.pSetLayouts        = vkLayout->GetDescriptorSetLayouts().data();
 	
@@ -116,7 +116,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	{
 		VkDescriptorPoolSize poolSize = {};
 		poolSize.type            = EnumConverter::Convert(heapInfo.first);
-		poolSize.descriptorCount = heapInfo.second;
+		poolSize.descriptorCount = static_cast<std::uint32_t>(heapInfo.second);
 		poolSizes.emplace_back(poolSize);
 		totalHeapCount += poolSize.descriptorCount;
 	}
@@ -130,7 +130,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	createInfo.flags         = 0;
 	createInfo.poolSizeCount = static_cast<std::uint32_t>(poolSizes.size());
 	createInfo.pPoolSizes    = poolSizes.data();
-	createInfo.maxSets       = totalHeapCount;
+	createInfo.maxSets       = static_cast<std::uint32_t>(totalHeapCount);
 
 	if (vkCreateDescriptorPool(vkDevice, &createInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
 	{

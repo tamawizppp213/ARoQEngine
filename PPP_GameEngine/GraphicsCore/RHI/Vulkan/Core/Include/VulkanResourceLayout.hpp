@@ -47,7 +47,7 @@ namespace rhi::vulkan
 		RHIResourceLayout() = default;
 		~RHIResourceLayout();
 		explicit RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constants = std::nullopt);
-	
+		explicit RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceLayoutElement& layout, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant = std::nullopt);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -58,6 +58,8 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkPipelineLayout _pipelineLayout = nullptr;
 		std::vector<VkDescriptorSetLayout> _descriptorSetLayouts = {};
+	private:
+		void SetUp();
 	};
 }
 #endif

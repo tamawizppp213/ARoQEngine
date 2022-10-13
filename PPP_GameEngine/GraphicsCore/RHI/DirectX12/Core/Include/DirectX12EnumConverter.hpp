@@ -66,9 +66,9 @@ namespace rhi::directX12
 		static D3D12_PRIMITIVE_TOPOLOGY_TYPE Convert1(const rhi::core::PrimitiveTopology primitiveTopology);
 #pragma endregion Input Layout 
 #pragma region GPUResource
-		static D3D12_DESCRIPTOR_HEAP_TYPE Convert(const rhi::core::DescriptorHeapType heapType);
-		static D3D12_DESCRIPTOR_RANGE_TYPE Convert(const rhi::core::DescriptorType descriptorType);
-		static D3D12_RESOURCE_FLAGS       Convert(const rhi::core::ResourceUsage usage);
+		static D3D12_DESCRIPTOR_HEAP_TYPE  Convert(const rhi::core::DescriptorHeapType heapType);
+		static D3D12_DESCRIPTOR_RANGE_TYPE Convert1(const rhi::core::DescriptorHeapType descriptorType);
+		static D3D12_RESOURCE_FLAGS        Convert(const rhi::core::ResourceUsage usage);
 #pragma region GPUBuffer 
 		static D3D12_HEAP_TYPE            Convert(const rhi::core::MemoryHeap memoryHeap);
 		static D3D12_RESOURCE_STATES      Convert(const rhi::core::ResourceLayout resourceLayout);
