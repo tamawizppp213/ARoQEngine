@@ -148,8 +148,11 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 				heapInfo.second,            // max descriptor count
 				_descriptorByteSize,        // one descriptor byte size
 				D3D12_CPU_DESCRIPTOR_HANDLE(_descriptorHeap->GetCPUDescriptorHandleForHeapStart().ptr + pointer), // cpu start pointer
-				D3D12_GPU_DESCRIPTOR_HANDLE(_descriptorHeap->GetGPUDescriptorHandleForHeapStart().ptr + pointer)  // gpu start pointer
+				heapInfo.first == core::DescriptorHeapType::RTV || heapInfo.first == core::DescriptorHeapType::DSV ?
+				D3D12_GPU_DESCRIPTOR_HANDLE() : 
+				D3D12_GPU_DESCRIPTOR_HANDLE(_descriptorHeap->GetGPUDescriptorHandleForHeapStart().ptr + pointer) // gpu start pointer
 			);
+			_heapInfo[heapInfo.first] = heapInfo.second;
 			pointer += _descriptorByteSize * heapInfo.second;
 		}
 	}

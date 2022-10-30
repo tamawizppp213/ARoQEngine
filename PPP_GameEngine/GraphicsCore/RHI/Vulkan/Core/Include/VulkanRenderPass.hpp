@@ -39,6 +39,7 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		VkRenderPass GetRenderPass() const noexcept { return _renderPass; }
+		std::vector<VkClearValue> GetVkClearValues() const;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

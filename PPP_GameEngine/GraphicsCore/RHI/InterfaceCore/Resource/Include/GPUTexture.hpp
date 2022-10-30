@@ -36,7 +36,10 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
+		void TransitionResourceState(const core::ResourceState after)
+		{
+			if (_metaData.State != after) { _metaData.State = after; }
+		}
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -71,7 +74,7 @@ namespace rhi::core
 		inline size_t GetPhysicalSize() const noexcept { return _physicalSize; }
 		/* @brief : Get alignment*/
 		inline size_t GetAlignment() const noexcept { return _alignment; }
-
+		inline core::ResourceState GetResourceState() const noexcept { return _metaData.State; }
 		GPUTextureMetaData&      GetMetaData()                { return _metaData; }
 		const GPUTextureMetaData GetMetaData() const noexcept { return _metaData; }
 		/****************************************************************************

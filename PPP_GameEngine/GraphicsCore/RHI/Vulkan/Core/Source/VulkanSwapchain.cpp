@@ -227,7 +227,13 @@ void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, const s
 	/*-------------------------------------------------------------------
 	-          Submit queue
 	---------------------------------------------------------------------*/
-	vkQueueSubmit(vkQueue->GetQueue(), 1, &signalSubmitInfo, {});
+	{
+		auto result = vkQueueSubmit(vkQueue->GetQueue(), 1, &signalSubmitInfo, {});
+		if (result != (VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
+		{
+			throw std::runtime_error("failed to present front buffer.");
+		}
+	}
 
 	VkPresentInfoKHR presentInfo   = {};
 	presentInfo.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -239,11 +245,14 @@ void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, const s
 	/*-------------------------------------------------------------------
 	-               Present front buffer
 	---------------------------------------------------------------------*/
-	auto result = vkQueuePresentKHR(vkQueue->GetQueue(), &presentInfo);
-	if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
 	{
-		throw std::runtime_error("failed to present front buffer.");
+		auto result = vkQueuePresentKHR(vkQueue->GetQueue(), &presentInfo);
+		if ((result != VK_SUCCESS) && (result != VK_SUBOPTIMAL_KHR))
+		{
+			throw std::runtime_error("failed to present front buffer.");
+		}
 	}
+	
 
 }
 /****************************************************************************
@@ -412,7 +421,7 @@ void RHISwapchain::InitializeSwapchain()
 	{
 		auto info = core::GPUTextureMetaData::Texture2D(
 			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
-		info.Layout = core::ResourceLayout::Present;
+		info.State = core::ResourceState::Common;
 		_backBuffers[index] = std::make_shared<vulkan::GPUTexture>(_device, info, _images[index]);
 	}
 
@@ -443,17 +452,11 @@ void RHISwapchain::UpdateCurrentFrameIndex()
 	/*-------------------------------------------------------------------
 	-               Get next frame buffer index
 	---------------------------------------------------------------------*/
-	UINT32     nextFrameIndex = 0;
-	auto result = vkAcquireNextImageKHR(vkDevice.get()->GetDevice(), _swapchain, UINT64_MAX, _imageAvailableSemaphore, VK_NULL_HANDLE, &nextFrameIndex);
+	auto result = vkAcquireNextImageKHR(vkDevice.get()->GetDevice(), _swapchain, UINT64_MAX, _imageAvailableSemaphore, VK_NULL_HANDLE, &_currentBufferIndex);
 	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
 		throw std::runtime_error("failed to go to next frame");
 	}
-	/*-------------------------------------------------------------------
-	-               Proceed frame
-	---------------------------------------------------------------------*/
-	_currentBufferIndex = nextFrameIndex;
-
 }
 #pragma endregion   Set Up Function
 #pragma region Swap Chain Config
@@ -500,6 +503,8 @@ VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfa
 			if ((format.format == VK_FORMAT_B8G8R8A8_UNORM) ||
 				(format.format == VK_FORMAT_B8G8R8A8_SRGB))
 			{
+				OutputDebugStringA("change sdr format : B8G8R8A8_UNORM\n");
+				_pixelFormat = core::PixelFormat::B8G8R8A8_UNORM;
 			}
 			else { continue; }
 
@@ -525,6 +530,7 @@ VkPresentModeKHR RHISwapchain::SelectSwapchainPresentMode(const std::vector<VkPr
 	{
 		if (_vsync == 0 && presentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) { return presentMode; } // immediate flip screen
 		if (_vsync > 0  && presentMode == VK_PRESENT_MODE_MAILBOX_KHR)   { return presentMode; } // wait vsync time
+		if (_vsync > 0  && presentMode == VK_PRESENT_MODE_FIFO_KHR)      { return presentMode; }
 	}
 	return VK_PRESENT_MODE_FIFO_KHR; // wait vsync time
 }

@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -26,9 +26,10 @@ Scene::~Scene()
 
 }
 #pragma region Public Function
-void Scene::Initialize(GameTimer* gameTimer)
+void Scene::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
 {
 	_gameTimer = gameTimer;
+	_engine    = engine;
 	LoadMaterials();
 }
 void Scene::Update()

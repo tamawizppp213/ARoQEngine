@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "SceneManager.hpp"
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void GameStart(GameTimer& gameTimer, HWND hwnd, HINSTANCE hInstance);
+	void GameStart(rhi::core::APIVersion apiVersion, GameTimer& gameTimer, HWND hwnd, HINSTANCE hInstance);
 	void GameMain();
 	void GameEnd();
 
@@ -41,7 +41,7 @@ public:
 	**                Public Member Variables
 	*****************************************************************************/
 	void SetHWND(HWND hwnd);
-	GraphicsCoreEngine& GetGraphicsEngine() { return _engine; }
+	std::shared_ptr<LowLevelGraphicsEngine> GetGraphicsEngine() { return _engine; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -71,7 +71,7 @@ private:
 	**                Private Member Variables
 	*****************************************************************************/
 	SceneManager& _sceneManager = SceneManager::Instance();
-	GraphicsCoreEngine& _engine = GraphicsCoreEngine::Instance();
+	std::shared_ptr<LowLevelGraphicsEngine> _engine;
 	HWND _mainWindow = nullptr;
 };
 #endif

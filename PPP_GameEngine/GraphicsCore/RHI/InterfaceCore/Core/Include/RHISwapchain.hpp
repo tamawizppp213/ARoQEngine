@@ -55,7 +55,7 @@ namespace rhi::core
 		size_t      GetHeight     () const noexcept { return _windowInfo.Height; }
 		PixelFormat GetPixelFormat() const noexcept { return _pixelFormat; }
 		WindowInfo  GetWindowInfo () const noexcept { return _windowInfo; }
-		std::shared_ptr<GPUTexture> GetBuffer(const size_t index) const { return _backBuffers[index]; }
+		std::shared_ptr<GPUTexture> GetBuffer(const size_t index) { return _backBuffers[index]; }
 		size_t      GetBufferCount() const noexcept { return _backBuffers.size(); }
 
 		/****************************************************************************

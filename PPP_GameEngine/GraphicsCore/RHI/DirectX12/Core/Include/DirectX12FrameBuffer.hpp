@@ -23,6 +23,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::directX12
 {
+	class RHIDescriptorHeap;
 	/****************************************************************************
 	*				  			RHIFence
 	*************************************************************************//**
@@ -39,17 +40,17 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		DescriptorHeapComPtr GetRTVHeap() const noexcept { return _renderTargetHeap; }
-		DescriptorHeapComPtr GetDSVHeap() const noexcept { return _depthStencilHeap; }
-		size_t               GetRTVSize() const noexcept { return _rtvSize; }
-		size_t               GetDSVSize() const noexcept { return _dsvSize; }
+		DescriptorHeapComPtr GetRTVHeap() const noexcept;
+		DescriptorHeapComPtr GetDSVHeap() const noexcept;
+		size_t               GetRTVByteSize() const noexcept { return _rtvSize; }
+		size_t               GetDSVByteSize() const noexcept { return _dsvSize; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIFrameBuffer() = default;
-		~RHIFrameBuffer() = default;
-		explicit RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil);
-		explicit RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil);
+		~RHIFrameBuffer();
+		explicit RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass,  const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil);
+		explicit RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>&renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -58,8 +59,8 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		DescriptorHeapComPtr _renderTargetHeap = nullptr;
-		DescriptorHeapComPtr _depthStencilHeap = nullptr;
+		std::shared_ptr<directX12::RHIDescriptorHeap> _renderTargetHeap = nullptr;
+		std::shared_ptr<directX12::RHIDescriptorHeap> _depthStencilHeap = nullptr;
 		size_t _rtvSize = 0;
 		size_t _dsvSize = 0;
 	private: 

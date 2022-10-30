@@ -23,7 +23,6 @@ static constexpr int GAME_WINDOW_HEIGHT = 1080;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-rhi::core::LowLevelGraphicsEngine test;
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	return Application::Instance().WindowMessageProcedure(hwnd, message, wParam, lParam);
@@ -33,8 +32,6 @@ bool Application::StartUp()
 {
 	if (!CreateMainWindow())                               { return false; }
 	if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
-	
-	test.StartUp(rhi::core::APIVersion::Vulkan, _mainWindow, _appInstance);
 	return true;
 }
 
@@ -43,7 +40,7 @@ void Application::Run()
 	MSG message = { NULL };
 
 	_gameTimer.Reset();
-	//_gameManager.GameStart(_gameTimer, _mainWindow, _appInstance);
+	_gameManager.GameStart(_apiVersion, _gameTimer, _mainWindow, _appInstance);
 	/*---------------------------------------------------------------
 						Main Loop
 	-----------------------------------------------------------------*/
@@ -61,9 +58,7 @@ void Application::Run()
 			{
 				_gameTimer.AverageFrame(_mainWindow);
 				_gameInput.Update();
-				//_gameManager.GameMain();
-				//a.BeginDrawFrame();
-				//a.EndDrawFrame();
+				_gameManager.GameMain();
 			}
 		}
 	}
@@ -72,7 +67,7 @@ void Application::Run()
 void Application::ShutDown()
 {
 	_gameInput.Finalize();
-	//_gameManager.GameEnd();
+	_gameManager.GameEnd();
 }
 
 #pragma region Private Function
@@ -208,7 +203,7 @@ LRESULT Application::WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wPar
 		case WM_DISPLAYCHANGE:
 		{
 			_gameManager.GameEnd();
-			_gameManager.GameStart(_gameTimer, _mainWindow, _appInstance);
+			_gameManager.GameStart(_apiVersion, _gameTimer, _mainWindow, _appInstance);
 			return 0;
 		}
 	}

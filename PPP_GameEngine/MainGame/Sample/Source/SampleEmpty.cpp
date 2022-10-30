@@ -34,9 +34,9 @@ SampleEmpty::~SampleEmpty()
 *  @param[in] GameTimer* gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleEmpty::Initialize(GameTimer* gameTimer)
+void SampleEmpty::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
 {
-	Scene::Initialize(gameTimer);
+	Scene::Initialize(engine, gameTimer);
 }
 /****************************************************************************
 *                       Update
@@ -60,9 +60,9 @@ void SampleEmpty::Update()
 *****************************************************************************/
 void SampleEmpty::Draw()
 {
-	_engine.BeginDrawFrame();
+	_engine->BeginDrawFrame();
 
-	_engine.EndDrawFrame();
+	_engine->EndDrawFrame();
 }
 /****************************************************************************
 *                       Terminate

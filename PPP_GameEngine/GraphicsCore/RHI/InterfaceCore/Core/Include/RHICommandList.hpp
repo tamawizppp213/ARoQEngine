@@ -26,8 +26,10 @@ namespace rhi::core
 	class RHIDevice;
 	class RHICommandAllocator;
 	class RHIRenderPass;
+	class RHIFrameBuffer;
 	class GPUGraphicsPipelineState;
 	class GPUComputePipelineState;
+	class GPUTexture;
 
 	/****************************************************************************
 	*				  			RHIDevice
@@ -46,8 +48,8 @@ namespace rhi::core
 		---------------------------------------------------------------------*/
 		virtual void BeginRecording() = 0;
 		virtual void EndRecording  () = 0;
-		/*virtual void BeginRenderPass(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIFrameBuffer>& frameBuffer) = 0;
-		virtual void EndRenderPass() = 0;*/
+		virtual void BeginRenderPass(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIFrameBuffer>& frameBuffer) = 0;
+		virtual void EndRenderPass() = 0;
 
 		/*-------------------------------------------------------------------
 		-               Common command
@@ -80,7 +82,11 @@ namespace rhi::core
 		/*-------------------------------------------------------------------
 		-                Copy Resource
 		---------------------------------------------------------------------*/
-
+		/*-------------------------------------------------------------------
+		-                Transition layout
+		---------------------------------------------------------------------*/
+		virtual void TransitionResourceState (const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after) = 0;
+		virtual void TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -93,7 +99,7 @@ namespace rhi::core
 		explicit RHICommandList(
 			const std::shared_ptr<RHIDevice>& device,
 			const std::shared_ptr<RHICommandAllocator>& commandAllocator) 
-			: _device(device), _commandAllocator(commandAllocator) {};
+			: _device(device), _commandAllocator(commandAllocator) { };
 
 	protected:
 		/****************************************************************************
@@ -105,6 +111,8 @@ namespace rhi::core
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice>           _device           = nullptr;
 		std::shared_ptr<RHICommandAllocator> _commandAllocator = nullptr;
+		std::shared_ptr<core::RHIRenderPass> _renderPass       = nullptr;
+		std::shared_ptr<core::RHIFrameBuffer>_frameBuffer      = nullptr;
 	};
 }
 #endif

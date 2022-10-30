@@ -44,7 +44,10 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		
+		/* @brief: Return descriptor heap pointer. */
+		std::shared_ptr<core::RHIDescriptorHeap> GetHeap() const noexcept { return _heap; };
+		/* @brief: Return resource view type*/
+		core::ResourceViewType GetResourceViewType() const noexcept { return _resourceViewType; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -55,7 +58,7 @@ namespace rhi::core
 		*****************************************************************************/
 		GPUResourceView() = default;
 		virtual ~GPUResourceView() = default;
-		explicit GPUResourceView(const std::shared_ptr<RHIDevice>& device, const core::ResourceViewType type) : _device(device), _resourceViewType(type) {};
+		explicit GPUResourceView(const std::shared_ptr<RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) : _device(device), _resourceViewType(type), _heap(customHeap) {};
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -66,6 +69,7 @@ namespace rhi::core
 		std::shared_ptr<RHIDevice>  _device = nullptr;
 		std::shared_ptr<GPUBuffer>  _buffer = nullptr;
 		std::shared_ptr<GPUTexture> _texture = nullptr;
+		std::shared_ptr<RHIDescriptorHeap> _heap = nullptr;
 		core::ResourceViewType      _resourceViewType = core::ResourceViewType::Unknown;
 	};
 }

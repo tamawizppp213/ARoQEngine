@@ -468,17 +468,18 @@ VkAttachmentStoreOp EnumConverter::Convert(const rhi::core::AttachmentStore stor
 /*-------------------------------------------------------------------
 -                        Image layout mode
 ---------------------------------------------------------------------*/
-VkImageLayout EnumConverter::Convert(const rhi::core::ResourceLayout layout)
+VkImageLayout EnumConverter::Convert(const rhi::core::ResourceState layout)
 {
 	switch (layout)
 	{
-		case core::ResourceLayout::Common         : return VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
-		case core::ResourceLayout::GeneralRead    : return VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
-		case core::ResourceLayout::RenderTarget   : return VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		case core::ResourceLayout::DepthStencil   : return VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
-		case core::ResourceLayout::CopyDestination: return VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-		case core::ResourceLayout::CopySource     : return VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-		case core::ResourceLayout::Present        : return VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		case core::ResourceState::Common         : return VkImageLayout::VK_IMAGE_LAYOUT_UNDEFINED;
+		case core::ResourceState::GeneralRead    : return VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
+		case core::ResourceState::UnorderedAccess: return VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
+		case core::ResourceState::RenderTarget   : return VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		case core::ResourceState::DepthStencil   : return VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		case core::ResourceState::CopyDestination: return VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+		case core::ResourceState::CopySource     : return VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+		case core::ResourceState::Present        : return VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 		default:
 			throw std::runtime_error("not support imageresource layout");
 			

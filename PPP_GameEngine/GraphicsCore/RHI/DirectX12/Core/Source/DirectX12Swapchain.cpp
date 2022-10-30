@@ -14,6 +14,7 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include <d3d12.h>
 #include <stdexcept>
@@ -29,7 +30,9 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
 RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
-	const rhi::core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR) : rhi::core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
+	const rhi::core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR) 
+	: rhi::core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
+
 {
 	const auto rhiDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get());
 	const auto dxDevice  = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
@@ -39,13 +42,13 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	-        SwapChain Flag
 	---------------------------------------------------------------------*/
 	int flag = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	if (rhiDevice->IsSupportedTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
+	//if (rhiDevice->IsSupportedTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
 	_swapchainFlag = static_cast<DXGI_SWAP_CHAIN_FLAG>(flag);
 
 	/*-------------------------------------------------------------------
 	-        BackBuffer format
 	---------------------------------------------------------------------*/
-	_backBufferFormat = rhiDevice->GetBackBufferFormat();
+	_backBufferFormat = EnumConverter::Convert(_pixelFormat);
 	/*-------------------------------------------------------------------
 	-                   Create Swapchain Descriptor
 	---------------------------------------------------------------------*/
@@ -53,7 +56,7 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	sd.BufferCount = static_cast<UINT>(frameBufferCount);  // Current: Triple Buffer
 	sd.Width       = static_cast<UINT>(windowInfo.Width);  // Window Size Width
 	sd.Height      = static_cast<UINT>(windowInfo.Height); // Window Size Height 
-	sd.Format      = rhiDevice->GetBackBufferFormat();     // Back Buffer Format 
+	sd.Format      = _backBufferFormat;                    // Back Buffer Format 
 	sd.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED;          // Alpha Mode => transparency behavior is not specified
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;      // Use the surface or resource as an output render target
 	sd.Flags       = _swapchainFlag;                        // Allow Resize Window
@@ -63,9 +66,15 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	sd.SampleDesc.Count   = 1;                             // MSAA: Anti-Alias
 	sd.SampleDesc.Quality = 0;                             // MSAA: Anti-Alias
 	
+	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
+	fullScreenDesc.RefreshRate.Denominator = 60;
+	fullScreenDesc.RefreshRate.Numerator   = 1;
+	fullScreenDesc.Scaling                 = DXGI_MODE_SCALING_STRETCHED;
+	fullScreenDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	fullScreenDesc.Windowed                = FALSE;
 	/*-------------------------------------------------------------------
 	-                   Create Swapchain for hwnd
-	//---------------------------------------------------------------------*/
+	---------------------------------------------------------------------*/
 	ThrowIfFailed(static_cast<directX12::RHIInstance*>(device->GetDisplayAdapter()->GetInstance())->GetFactory()->CreateSwapChainForHwnd(
 		dxQueue.Get(),
 		(HWND)windowInfo.Handle,
@@ -79,6 +88,22 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	{
 		EnsureSwapChainColorSpace();
 		SetHDRMetaData();
+	}
+
+	/*-------------------------------------------------------------------
+	-                   Set Back Buffer
+	---------------------------------------------------------------------*/
+	_backBuffers.resize(frameBufferCount);
+	for (size_t i = 0; i < frameBufferCount; ++i)
+	{
+		ResourceComPtr backBuffer = nullptr;
+		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(i), IID_PPV_ARGS(backBuffer.GetAddressOf())));
+
+		auto info = core::GPUTextureMetaData::Texture2D(
+			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
+		info.State = core::ResourceState::Common;
+
+		_backBuffers[i] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
 	}
 }
 RHISwapchain::~RHISwapchain()
@@ -126,7 +151,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 
 		auto info = core::GPUTextureMetaData::Texture2D(
 			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
-		info.Layout = core::ResourceLayout::Present;
+		info.State = core::ResourceState::Present;
 
 		_backBuffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
 	}
@@ -160,7 +185,7 @@ void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, std::ui
 	/*synchronization between command queue */
 	_commandQueue->Wait(fence, waitValue);
 	/* present front buffer*/
-	ThrowIfFailed(_swapchain->Present(_vsync, _swapchainFlag));
+	ThrowIfFailed(_swapchain->Present(_vsync, 0));
 }
 /****************************************************************************
 *							GetCurrentBufferIndex

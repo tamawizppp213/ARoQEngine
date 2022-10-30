@@ -71,12 +71,16 @@ namespace rhi::directX12
 		static D3D12_RESOURCE_FLAGS        Convert(const rhi::core::ResourceUsage usage);
 #pragma region GPUBuffer 
 		static D3D12_HEAP_TYPE            Convert(const rhi::core::MemoryHeap memoryHeap);
-		static D3D12_RESOURCE_STATES      Convert(const rhi::core::ResourceLayout resourceLayout);
+		static D3D12_RESOURCE_STATES      Convert(const rhi::core::ResourceState resourceLayout);
 #pragma endregion GPUBuffer
 #pragma region GPUTexture
 		static D3D12_RESOURCE_DIMENSION   Convert(const rhi::core::ResourceDimension dimension);
 		static D3D12_SRV_DIMENSION        Convert(const rhi::core::ResourceType type);
 #pragma endregion GPUTexture
+#pragma region Render Pass
+		static D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE Convert(const rhi::core::AttachmentLoad op);
+		static D3D12_RENDER_PASS_ENDING_ACCESS_TYPE    Convert(const rhi::core::AttachmentStore op);
+#pragma endregion Render Pass
 #pragma endregion GPUResource
 	};
 }

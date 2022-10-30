@@ -25,7 +25,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			APIVersion
 	*************************************************************************//**
-	*  @class     APIVersion
+	*  @enum      APIVersion
 	*  @brief     Graphics api version (Add as needed.)
 	*****************************************************************************/
 	enum class APIVersion : std::uint8_t
@@ -35,12 +35,18 @@ namespace rhi::core
 		Vulkan     = 2
 	};
 #pragma region CommandList
+	/****************************************************************************
+	*				  			CommandListType
+	*************************************************************************//**
+	*  @enum      CommandListType
+	*  @brief     Command list (graphics, compute, or copy)
+	*****************************************************************************/
 	enum class CommandListType
 	{
-		Unknown,
-		Graphics, 
-		Compute, 
-		Copy,
+		Unknown,    // For Initialize
+		Graphics,   // Graphics command list (directX12 api includes all command list type (use this) )
+		Compute,    // Compute command list
+		Copy,       // Copy command list
 		CountOfType
 	};
 #pragma endregion CommandList
@@ -116,15 +122,16 @@ namespace rhi::core
 	*****************************************************************************/
 	struct ClearValue
 	{
-		float        Red     = 1.0f;
-		float        Green   = 1.0f;
-		float        Blue    = 1.0f;
-		float        Alpha   = 1.0f;
-		float        Depth   = 1.0f;
-		std::uint8_t Stencil = 0;
+		enum ColorType { Red, Green, Blue, Alpha };
+		float        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float        Depth    = 1.0f;
+		std::uint8_t Stencil  = 0;
 
 		ClearValue() = default;
-		ClearValue(float red, float green, float blue, float alpha) :Red(red), Green(green), Blue(blue), Alpha(alpha) {};
+		ClearValue(float red, float green, float blue, float alpha)
+		{
+			Color[0] = red; Color[1] = green; Color[2] = blue; Color[3] = alpha;
+		};
 		ClearValue(float depth, std::uint8_t stencil)
 		{
 			Depth = depth; Stencil = stencil;
@@ -135,30 +142,36 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			ShaderVisibility
 	*************************************************************************//**
-	*  @class     ShaderVisibility
+	*  @enum      ShaderVisibility
 	*  @brief     Visible shader 
 	*****************************************************************************/
 	enum class ShaderVisibility : std::uint8_t
 	{
-		All,     // all      shader visible
-		Vertex,  // vertex   shader only
-		Pixel,   // pixel    shader only
-		Hull,    // hull     shader only
-		Domain,  // domain   shader only
-		Geometry,// geometry shader only
+		All,           // all      shader visible
+		Vertex,        // vertex   shader only
+		Pixel,         // pixel    shader only
+		Hull,          // hull     shader only
+		Domain,        // domain   shader only
+		Geometry,      // geometry shader only
 		Amplification, // amplification shader only,
 		Mesh           // mesh shader only
 	};
+	/****************************************************************************
+	*				  			ShaderType
+	*************************************************************************//**
+	*  @enum      ShaderType
+	*  @brief     Shader type
+	*****************************************************************************/
 	enum class ShaderType : std::uint8_t
 	{
-		Vertex,
-		Pixel,
-		Compute,
-		Hull,
-		Domain,
-		Geometry,
-		Amplification,
-		Mesh,
+		Vertex,           // vertex shader 
+		Pixel,            // pixel  shader
+		Compute,          // compute shader
+		Hull,             // hull shader
+		Domain,           // domain shader
+		Geometry,         // geometry shader
+		Amplification,    // amplication shader
+		Mesh,             // mesh shader
 	};
 	
 	struct BlobData
@@ -385,7 +398,7 @@ namespace rhi::core
 	{
 		None,  // all face render
 		Front, // front culling
-		Back   // back culling
+		Back   // back  culling
 	};
 	/****************************************************************************
 	*				  			FrontFace
@@ -396,7 +409,7 @@ namespace rhi::core
 	enum class FrontFace : std::uint8_t
 	{
 		CounterClockwise, // for right hand coordinate
-		Clockwise,        // for left hand coordinate
+		Clockwise,        // for left  hand coordinate
 	};
 	/****************************************************************************
 	*				  			FillMode
@@ -416,7 +429,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			CompareOperator
 	*************************************************************************//**
-	*  @class     CompareOperator
+	*  @enum      CompareOperator
 	*  @brief     Compare operator
 	*****************************************************************************/
 	enum class CompareOperator : std::uint8_t
@@ -503,10 +516,10 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			ResourceLayout
 	*************************************************************************//**
-	*  @class     ResourceLayout
+	*  @class     ResourceState
 	*  @brief     How to use resource
 	*****************************************************************************/
-	enum class ResourceLayout : std::uint32_t
+	enum class ResourceState : std::uint32_t
 	{
 		Common,
 		GeneralRead,
@@ -548,9 +561,22 @@ namespace rhi::core
 		RTV,         // render target (only directX12)
 		DSV,         // depth stencil (only directX12)
 	};
-	
 
-
+	struct DefaultHeapCount
+	{
+		std::uint32_t CBVDescCount = 0;
+		std::uint32_t SRVDescCount = 0;
+		std::uint32_t UAVDescCount = 0;
+		std::uint32_t SamplerDescCount = 0;
+		std::uint32_t RTVDescCount = 0;
+		std::uint32_t DSVDescCount = 0;
+	};
+	/****************************************************************************
+	*				  			ResourceViewType
+	*************************************************************************//**
+	*  @enum      ResourceViewType
+	*  @brief     How to read gpu resource buffer
+	*****************************************************************************/
 	enum class ResourceViewType : std::uint32_t
 	{
 		Unknown,
@@ -569,10 +595,10 @@ namespace rhi::core
 	};
 
 	/****************************************************************************
-	*				  			ResourceLayout
+	*				  			ResourceUsage
 	*************************************************************************//**
-	*  @class     ResourceLayout
-	*  @brief     How to use resource
+	*  @enum      ResourceUsage
+	*  @brief     resource 
 	*****************************************************************************/
 	enum class ResourceUsage : std::uint32_t
 	{
@@ -625,7 +651,7 @@ namespace rhi::core
 		size_t         ByteSize      = 0;
 		ResourceType   ResourceType  = ResourceType::Unknown;       // GPU resource type
 		ResourceUsage  ResourceUsage = ResourceUsage::None;         // how to use resource 
-		ResourceLayout Layout        = ResourceLayout::GeneralRead; // resource layout
+		ResourceState  State         = ResourceState::GeneralRead; // resource layout
 		MemoryHeap     HeapType      = MemoryHeap::Default;         // memory heap type
 		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
 
@@ -633,18 +659,18 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBufferMetaData() = default;
-		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceLayout layout, MemoryHeap heapType, core::BufferType bufferType);
+		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState layout, MemoryHeap heapType, core::BufferType bufferType);
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
 		static GPUBufferMetaData UploadBuffer (const size_t stride, const size_t count);
 		static GPUBufferMetaData DefaultBuffer(const size_t stride, const size_t count);
-		static GPUBufferMetaData VertexBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceLayout layout = ResourceLayout::GeneralRead);
-		static GPUBufferMetaData IndexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceLayout layout = ResourceLayout::GeneralRead);
+		static GPUBufferMetaData VertexBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead);
+		static GPUBufferMetaData IndexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead);
 	private:
 		size_t CalcConstantBufferByteSize(const size_t byteSize) { return (byteSize + 255) & ~255; }
 	};
-#pragma endregion GPUBuffer
+#pragma endregion  GPUBuffer
 #pragma region GPUTexture
 	
 	
@@ -675,7 +701,7 @@ namespace rhi::core
 		ResourceType      ResourceType     = ResourceType::Unknown;          // GPU resource type
 		ResourceUsage     ResourceUsage    = ResourceUsage::None;            // how to use resource 
 		ClearValue        ClearColor       = ClearValue();                   // clear color 
-		ResourceLayout    Layout           = ResourceLayout::GeneralRead;    // resource layout
+		ResourceState     State            = ResourceState::GeneralRead;    // resource layout
 		MemoryHeap        HeapType         = MemoryHeap::Default;            // gpu heap type
 
 		/****************************************************************************
@@ -706,11 +732,11 @@ namespace rhi::core
 
 #pragma endregion GPUTexture
 #pragma endregion GPUResource
-#pragma region Render Pass (for Vulkan) 
+#pragma region Render Pass
 	enum class AttachmentLoad : std::uint8_t
 	{
-		Clear,
-		Load,
+		Clear,    // at the beginning of a render path, erase already existing data with a specific value
+		Load,     
 		DontCare
 	};
 	enum class AttachmentStore
@@ -721,8 +747,8 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			Attachment
 	*************************************************************************//**
-	*  @struct     TemplateStruct
-	*  @brief     temp
+	*  @struct    Attachment
+	*  @brief     attachment
 	*****************************************************************************/
 	struct Attachment
 	{
@@ -731,46 +757,46 @@ namespace rhi::core
 		**                Static Function
 		*****************************************************************************/
 		static Attachment RenderTarget( const PixelFormat format,
-			const ResourceLayout initialLayout = ResourceLayout::RenderTarget,
-			const ResourceLayout finalLayout   = ResourceLayout::Present,
+			const ResourceState  initialState  = ResourceState::RenderTarget,
+			const ResourceState  finalState    = ResourceState::Present,
 			const AttachmentLoad load          = AttachmentLoad::Clear,
 			const AttachmentStore store        = AttachmentStore::Store )
 		{
-			return Attachment(format, initialLayout, finalLayout, load, store, AttachmentLoad::DontCare, AttachmentStore::DontCare, MultiSample::Count1);
+			return Attachment(format, initialState, finalState, load, store, AttachmentLoad::DontCare, AttachmentStore::DontCare, MultiSample::Count1);
 		}
 
 		static Attachment RenderTargetMultiSample( const PixelFormat format, const MultiSample sample,
-			const ResourceLayout  initialLayout = ResourceLayout::RenderTarget,
-			const ResourceLayout  finalLayout   = ResourceLayout::Present,
-			const AttachmentLoad  load  = AttachmentLoad::Clear,
-			const AttachmentStore store = AttachmentStore::Store
+			const ResourceState   initialState  = ResourceState::RenderTarget,
+			const ResourceState   finalState    = ResourceState::Present,
+			const AttachmentLoad  load          = AttachmentLoad::Clear,
+			const AttachmentStore store         = AttachmentStore::Store
 		)
 		{
-			return Attachment(format, initialLayout, finalLayout, load, store, AttachmentLoad::DontCare, AttachmentStore::DontCare, sample);
+			return Attachment(format, initialState, finalState, load, store, AttachmentLoad::DontCare, AttachmentStore::DontCare, sample);
 		}
 
 		static Attachment DepthStencil(const PixelFormat format,
-			const ResourceLayout  initialLayout = ResourceLayout::DepthStencil,
-			const ResourceLayout  finalLayout   = ResourceLayout::GeneralRead,
+			const ResourceState   initialState  = ResourceState::DepthStencil,
+			const ResourceState   finalState    = ResourceState::GeneralRead,
 			const AttachmentLoad  load          = AttachmentLoad::Clear,
 			const AttachmentStore store         = AttachmentStore::Store,
 			const AttachmentLoad  stencilLoad   = AttachmentLoad::DontCare,
 			const AttachmentStore stencilStore  = AttachmentStore::DontCare
 		)
 		{
-			return Attachment(format, initialLayout, finalLayout, load, store, stencilLoad, stencilStore, MultiSample::Count1);
+			return Attachment(format, initialState, finalState, load, store, stencilLoad, stencilStore, MultiSample::Count1);
 		}
 
 		static Attachment DepthStencilMultiSample(const PixelFormat format, const MultiSample sample,
-			const ResourceLayout  initialLayout = ResourceLayout::DepthStencil,
-			const ResourceLayout  finalLayout = ResourceLayout::GeneralRead,
-			const AttachmentLoad  load = AttachmentLoad::Clear,
-			const AttachmentStore store = AttachmentStore::Store,
-			const AttachmentLoad  stencilLoad = AttachmentLoad::DontCare,
+			const ResourceState   initialState = ResourceState::DepthStencil,
+			const ResourceState   finalState   = ResourceState::GeneralRead,
+			const AttachmentLoad  load         = AttachmentLoad::Clear,
+			const AttachmentStore store        = AttachmentStore::Store,
+			const AttachmentLoad  stencilLoad  = AttachmentLoad::DontCare,
 			const AttachmentStore stencilStore = AttachmentStore::DontCare
 		)
 		{
-			return Attachment(format, initialLayout, finalLayout, load, store, stencilLoad, stencilStore, sample);
+			return Attachment(format, initialState, finalState, load, store, stencilLoad, stencilStore, sample);
 		}
 
 		/****************************************************************************
@@ -780,13 +806,13 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		PixelFormat     Format        = PixelFormat::Unknown;
-		MultiSample     SampleCount   = MultiSample::Count1;
-		ResourceLayout  InitialLayout = ResourceLayout::RenderTarget;
-		ResourceLayout  FinalLayout   = ResourceLayout::Present;
-		AttachmentLoad  LoadOp        = AttachmentLoad::Clear;  // at the beginning of a render path, erase already existing data with a specific value
-		AttachmentStore StoreOp       = AttachmentStore::Store; // at the end of a render pass, save data on memory
-		AttachmentLoad  StencilLoad   = AttachmentLoad::DontCare;
+		PixelFormat     Format        = PixelFormat::Unknown;         // pixel format
+		MultiSample     SampleCount   = MultiSample::Count1;          // multi sample count (default: single sample count)
+		ResourceState   InitialLayout = ResourceState::Common;       // initial resource layout  
+		ResourceState  FinalLayout    = ResourceState::Present;      // final desired resource layout
+		AttachmentLoad  LoadOp        = AttachmentLoad::Clear;        // at the beginning of a render path, erase already existing data with a specific value
+		AttachmentStore StoreOp       = AttachmentStore::Store;       // at the end of a render pass, save data on memory
+		AttachmentLoad  StencilLoad   = AttachmentLoad::DontCare;     // stencil; 
 		AttachmentStore StencilStore  = AttachmentStore::DontCare;
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -794,14 +820,14 @@ namespace rhi::core
 		Attachment() = default;
 		Attachment(
 			const PixelFormat     format,
-			const ResourceLayout  initialLayout,
-			const ResourceLayout  finalLayout,
+			const ResourceState   initialState,
+			const ResourceState   finalState,
 			const AttachmentLoad  load,
 			const AttachmentStore store,
 			const AttachmentLoad  stencilLoad,
 			const AttachmentStore stencilStore,
 			const MultiSample     sample = MultiSample::Count1
-		) : Format(format), SampleCount(sample), InitialLayout(initialLayout), FinalLayout(finalLayout), LoadOp(load), StoreOp(store), StencilLoad(stencilLoad), StencilStore(stencilStore){ };
+		) : Format(format), SampleCount(sample), InitialLayout(initialState), FinalLayout(finalState), LoadOp(load), StoreOp(store), StencilLoad(stencilLoad), StencilStore(stencilStore){ };
 
 		
 	};
@@ -812,11 +838,11 @@ namespace rhi::core
 	*				  			Viewport 
 	*************************************************************************//**
 	*  @class     Viewport 
-	*  @brief     Vireport
+	*  @brief     Rect Viewport 
 	*****************************************************************************/
 	struct Viewport
 	{
-		float TopLeftX  = 0.0f;
+		float TopLeftX  = 0.0f; 
 		float TopLeftY  = 0.0f;
 		float Width     = 0.0f;
 		float Height    = 0.0f;
@@ -836,10 +862,10 @@ namespace rhi::core
 	*****************************************************************************/
 	struct ScissorRect
 	{
-		long Left   = 0;
-		long Top    = 0;
-		long Right  = 0;
-		long Bottom = 0;
+		long Left   = 0; // Left window position
+		long Top    = 0; // top window position
+		long Right  = 0; // right window position
+		long Bottom = 0; // bottom window position
 		ScissorRect() = default;
 		ScissorRect(long left, long top, long right, long bottom)
 		{
@@ -849,15 +875,15 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			WindowInfo
 	*************************************************************************//**
-	*  @class     WindowInfo
-	*  @brief     Window
+	*  @struct    WindowInfo
+	*  @brief     Window size and window handle pointer
 	*****************************************************************************/
 	struct WindowInfo
 	{
-		size_t Width  = 0;
-		size_t Height = 0;
-		void*  Handle    = nullptr;
-		void*  HInstance = nullptr; // windows—p
+		size_t Width     = 0;       // window width
+		size_t Height    = 0;       // window height
+		void*  Handle    = nullptr; // window handle pointer 
+		void*  HInstance = nullptr; // window instance for Windows API
 		WindowInfo()  = default;
 		WindowInfo(size_t width, size_t height, void* handle, void* hInstance = nullptr)
 		{

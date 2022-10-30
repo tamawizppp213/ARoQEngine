@@ -899,7 +899,7 @@ void GraphicsDeviceVulkan::CreateCommandObjects()
 	_rhiCommandAllocators.resize(FRAME_BUFFER_COUNT);
 	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i)
 	{
-		_rhiCommandAllocators[i] = std::make_shared<rhi::vulkan::RHICommandAllocator>(_rhiDevice,0);
+		_rhiCommandAllocators[i] = std::make_shared<rhi::vulkan::RHICommandAllocator>(_rhiDevice,core::CommandListType::Graphics,0);
 	}
 }
 /****************************************************************************

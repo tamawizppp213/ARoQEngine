@@ -36,9 +36,9 @@ SampleTexture::~SampleTexture()
 *  @param[in] GameTimer* gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleTexture::Initialize(GameTimer* gameTimer)
+void SampleTexture::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
 {
-	Scene::Initialize(gameTimer);
+	Scene::Initialize(engine, gameTimer);
 }
 /****************************************************************************
 *                       Update
@@ -62,7 +62,7 @@ void SampleTexture::Update()
 *****************************************************************************/
 void SampleTexture::Draw()
 {
-	_engine.BeginDrawFrame();
+	_engine->BeginDrawFrame();
 
 	std::vector<ui::Image> images;
 	images.push_back(*_image.get());
@@ -71,7 +71,7 @@ void SampleTexture::Draw()
 	_renderer->AddFrameObject(images, *_texture.get());
 	_renderer->Draw();
 
-	_engine.EndDrawFrame();
+	_engine->EndDrawFrame();
 }
 /****************************************************************************
 *                       Terminate

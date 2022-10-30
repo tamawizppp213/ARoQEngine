@@ -36,6 +36,8 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		void BeginRecording() override; // first call at draw frame 
 		void EndRecording () override;  // end call   at draw frame
+		void BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer) override;
+		void EndRenderPass() override;
 
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
@@ -53,7 +55,11 @@ namespace rhi::vulkan
 		-                Compute Command
 		---------------------------------------------------------------------*/
 		virtual void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1)override;
-
+		/*-------------------------------------------------------------------
+		-                Transition Resource State
+		---------------------------------------------------------------------*/
+		void TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after) override;
+		void TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters) override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -76,6 +82,12 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkCommandBuffer _commandBuffer = nullptr;
+		bool _isFirstFrame = true;
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		VkAccessFlags SelectVkAccessFlag(const VkImageLayout imageLayout);
 	};
 	inline void rhi::vulkan::RHICommandList::DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation, std::uint32_t baseVertexLocation)
 	{

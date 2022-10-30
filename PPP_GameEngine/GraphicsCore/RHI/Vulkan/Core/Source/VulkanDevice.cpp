@@ -20,6 +20,7 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFrameBuffer.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanResourceLayout.hpp"
 #include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUPipelineState.hpp"
+#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUResourceView.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUBuffer.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUSampler.hpp"
@@ -63,6 +64,7 @@ void RHIDevice::SetUp()
 
 void RHIDevice::Destroy()
 {
+	_defaultHeap.reset();
 	if (!_commandAllocators.empty())
 	{
 		for (std::uint32_t i = 0; i < _frameCount; ++i)
@@ -84,13 +86,22 @@ void RHIDevice::Destroy()
 #pragma endregion Constructor and Destructor
 
 #pragma region Create Resource Function
-std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
+void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 {
-	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<vulkan::RHIFrameBuffer>(shared_from_this(), renderTargets, depthStencil));
+	std::map<core::DescriptorHeapType, size_t> heapInfoList;
+	heapInfoList[core::DescriptorHeapType::CBV] = heapCount.CBVDescCount;
+	heapInfoList[core::DescriptorHeapType::SRV] = heapCount.SRVDescCount;
+	heapInfoList[core::DescriptorHeapType::UAV] = heapCount.UAVDescCount;
+	_defaultHeap = std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this());
+	_defaultHeap->Resize(heapInfoList);
 }
-std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil)
+std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
 {
-	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared <vulkan::RHIFrameBuffer>(shared_from_this(), renderTarget, depthStencil));
+	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<vulkan::RHIFrameBuffer>(shared_from_this(), renderPass, renderTargets, depthStencil));
+}
+std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil)
+{
+	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared <vulkan::RHIFrameBuffer>(shared_from_this(), renderPass, renderTarget, depthStencil));
 }
 std::shared_ptr<core::RHISwapchain>  RHIDevice::CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR)
 {
@@ -104,9 +115,9 @@ std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core:
 {
 	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<vulkan::RHICommandQueue>(shared_from_this(),type,0));
 }
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator()
+std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type)
 {
-	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<vulkan::RHICommandAllocator>(shared_from_this(),0));
+	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<vulkan::RHICommandAllocator>(shared_from_this(), type, 0));
 }
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
 {
@@ -147,6 +158,14 @@ std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const s
 std::shared_ptr<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerInfo& samplerInfo)
 {
 	return std::static_pointer_cast<core::GPUSampler>(std::make_shared<vulkan::GPUSampler>(shared_from_this(), samplerInfo));
+}
+std::shared_ptr<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
+{
+	return std::static_pointer_cast<core::GPUResourceView>(std::make_shared<vulkan::GPUResourceView>(shared_from_this(), viewType, texture, customHeap));
+}
+std::shared_ptr<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
+{
+	return std::static_pointer_cast<core::GPUResourceView>(std::make_shared<vulkan::GPUResourceView>(shared_from_this(), viewType, buffer, customHeap));
 }
 std::shared_ptr<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData)
 {
@@ -250,7 +269,7 @@ void RHIDevice::SetUpCommandPool()
 	{
 		for (std::uint32_t i = 0; i < _frameCount; ++i)
 		{
-			_commandAllocators[i][queueInfo.first] = std::make_shared<RHICommandAllocator>(shared_from_this(), queueInfo.second.QueueFamilyIndex);
+			_commandAllocators[i][queueInfo.first] = std::make_shared<RHICommandAllocator>(shared_from_this(), queueInfo.first,queueInfo.second.QueueFamilyIndex);
 		}
 		_commandQueues[queueInfo.first]     = std::make_shared<RHICommandQueue>(shared_from_this(), queueInfo.first, queueInfo.second.QueueFamilyIndex);
 	}
@@ -486,5 +505,15 @@ std::shared_ptr<core::RHICommandAllocator> RHIDevice::GetCommandAllocator(const 
 {
 	assert(frameCount < _frameCount);
 	return _commandAllocators[frameCount].at(commandListType);
+}
+std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
+{
+	switch (heapType)
+	{
+		case core::DescriptorHeapType::CBV:
+		case core::DescriptorHeapType::SRV:
+		case core::DescriptorHeapType::UAV: { return _defaultHeap;}
+		default: { return nullptr;}
+	}
 }
 #pragma endregion Property

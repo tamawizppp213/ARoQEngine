@@ -35,7 +35,10 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
+		void TransitionState(D3D12_RESOURCE_STATES after)
+		{
+			_usageState = _usageState == after ? _usageState : after;
+		}
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -62,13 +65,11 @@ namespace rhi::directX12
 		*****************************************************************************/
 		ResourceComPtr        _resource = nullptr;
 		D3D12_RESOURCE_STATES _usageState = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
-		D3D12_SHADER_RESOURCE_VIEW_DESC _resourceViewDesc = {};
 
 	private:
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-		void PrepareSRV(const core::GPUTextureMetaData& metaData);
 	};
 }
 #endif

@@ -39,6 +39,7 @@ namespace rhi::directX12
 		void CopyData(int elementIndex, const void* data) override ;
 		void CopyTotalData(const void* data, int dataLength) override;
 		void CopyEnd() override ;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

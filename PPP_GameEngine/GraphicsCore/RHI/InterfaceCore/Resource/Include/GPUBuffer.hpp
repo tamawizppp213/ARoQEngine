@@ -39,6 +39,7 @@ namespace rhi::core
 		virtual void CopyData(int elementIndex, const void* data) = 0;
 		virtual void CopyTotalData(const void* data, int dataLength) = 0;
 		virtual void CopyEnd() = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

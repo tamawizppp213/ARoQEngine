@@ -23,11 +23,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::directX12
 {
+	class RHIDescriptorHeap;
 	/****************************************************************************
-	*				  			GPUBuffer
+	*				  			GPUResourceView
 	*************************************************************************//**
-	*  @class     GPUBuffer
-	*  @brief     Buffer
+	*  @class     GPUResourceView
+	*  @brief     Resource view 
 	*****************************************************************************/
 	class GPUResourceView : public core::GPUResourceView
 	{
@@ -39,29 +40,32 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandler();
+		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandler();
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUResourceView() = default;
 		~GPUResourceView() = default;
-		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer);
-		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture);
+		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
+		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
 	private:
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-		void CreateView(); // According to view type flag, create each view. 
-		void CreateSRV(); // shader resource view
-		void CreateRAS(); // raytracing acceleration structure
-		void CreateUAV(); // unordered access view
-		void CreateRTV(); // render target view
-		void CreateDSV(); // depth stencil view
-		void CreateCBV(); // constant buffer view
+		void CreateView(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // According to view type flag, create each view. 
+		void CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // shader resource view
+		void CreateRAS(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // raytracing acceleration structure
+		void CreateUAV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // unordered access view
+		void CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // render target view
+		void CreateDSV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // depth stencil view
+		void CreateCBV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // constant buffer view
+
+		const std::shared_ptr<directX12::RHIDescriptorHeap> SelectDescriptorHeap(const core::ResourceViewType type);
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		
+		std::pair<core::DescriptorHeapType, std::uint32_t> _heapOffset = {};
 	};
 }
 #endif
