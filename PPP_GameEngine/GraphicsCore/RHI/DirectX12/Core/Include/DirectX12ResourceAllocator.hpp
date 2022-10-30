@@ -103,7 +103,7 @@ namespace rhi::directX12
 		**                Private Member Variables
 		*****************************************************************************/
 		D3D12_CPU_DESCRIPTOR_HANDLE _cpuHeapPtr = D3D12_CPU_DESCRIPTOR_HANDLE();
-		D3D12_GPU_DESCRIPTOR_HANDLE _gpuHeapPtr = D3D12_GPU_DESCRIPTOR_HANDLE();
+		D3D12_GPU_DESCRIPTOR_HANDLE _gpuHeapPtr = D3D12_GPU_DESCRIPTOR_HANDLE(); // rtv and dsv are not used. 
 		UINT                        _descriptorSize = 0;
 		UINT                        _maxDescriptorCount = 0;
 		int                         _currentID = INVALID_ID;

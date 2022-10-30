@@ -23,6 +23,7 @@
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUSampler.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineFactory.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <d3d12.h>
@@ -38,6 +39,7 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+
 #pragma region Constructor and Destructor
 RHIDevice::RHIDevice()
 {
@@ -86,15 +88,16 @@ void RHIDevice::SetUp()
 	_commandAllocators.resize(_frameCount);
 	for (std::uint32_t i = 0; i < _frameCount; ++i)
 	{
-		_commandAllocators[i][core::CommandListType::Graphics] = CreateCommandAllocator();
-		_commandAllocators[i][core::CommandListType::Compute]  = CreateCommandAllocator();
-		_commandAllocators[i][core::CommandListType::Copy]     = CreateCommandAllocator();
+		_commandAllocators[i][core::CommandListType::Graphics] = CreateCommandAllocator(core::CommandListType::Graphics);
+		_commandAllocators[i][core::CommandListType::Compute]  = CreateCommandAllocator(core::CommandListType::Compute);
+		_commandAllocators[i][core::CommandListType::Copy]     = CreateCommandAllocator(core::CommandListType::Copy);
 	}
 
 }
 
 void RHIDevice::Destroy()
 {
+	_defaultHeap.clear();
 	_commandQueues.clear();
 	if (!_commandAllocators.empty())
 	{
@@ -108,13 +111,27 @@ void RHIDevice::Destroy()
 }
 #pragma endregion Constructor and Destructor
 #pragma region CreateResource
-std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
+void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 {
-	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<directX12::RHIFrameBuffer>(shared_from_this(), renderTargets, depthStencil));
+	_defaultHeap[DefaultHeapType::CBV_SRV_UAV] = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
+	_defaultHeap[DefaultHeapType::RTV]         = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
+	_defaultHeap[DefaultHeapType::DSV]         = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
+
+	std::map<core::DescriptorHeapType, size_t> heapInfoList;
+	heapInfoList[core::DescriptorHeapType::CBV] = heapCount.CBVDescCount;
+	heapInfoList[core::DescriptorHeapType::SRV] = heapCount.SRVDescCount;
+	heapInfoList[core::DescriptorHeapType::UAV] = heapCount.UAVDescCount;
+	_defaultHeap[DefaultHeapType::CBV_SRV_UAV]->Resize(heapInfoList);
+	_defaultHeap[DefaultHeapType::RTV]->Resize(core::DescriptorHeapType::RTV, heapCount.RTVDescCount);
+	_defaultHeap[DefaultHeapType::DSV]->Resize(core::DescriptorHeapType::DSV, heapCount.DSVDescCount);
 }
-std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil)
+std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
 {
-	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<directX12::RHIFrameBuffer>(shared_from_this(), renderTarget, depthStencil));
+	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<directX12::RHIFrameBuffer>(shared_from_this(), renderPass, renderTargets, depthStencil));
+}
+std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil)
+{
+	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<directX12::RHIFrameBuffer>(shared_from_this(), renderPass, renderTarget, depthStencil));
 }
 std::shared_ptr<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fenceValue)
 {
@@ -129,9 +146,9 @@ std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core:
 {
 	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<directX12::RHICommandQueue>(shared_from_this(), type));
 }
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator()
+std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type)
 {
-	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<directX12::RHICommandAllocator>(shared_from_this()));
+	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<directX12::RHICommandAllocator>(shared_from_this(), type));
 }
 std::shared_ptr<core::RHISwapchain> RHIDevice::CreateSwapchain(const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR )
 {
@@ -172,6 +189,14 @@ std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const s
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {
 	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<directX12::GPUPipelineFactory>());
+}
+std::shared_ptr<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
+{
+	return std::static_pointer_cast<core::GPUResourceView>(std::make_shared<directX12::GPUResourceView>(shared_from_this(), viewType, texture, customHeap));
+}
+std::shared_ptr<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
+{
+	return std::static_pointer_cast<core::GPUResourceView>(std::make_shared<directX12::GPUResourceView>(shared_from_this(), viewType, buffer, customHeap));
 }
 std::shared_ptr<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerInfo& samplerInfo)
 {
@@ -245,14 +270,14 @@ void RHIDevice::CheckVRSSupport()
 	{
 		if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_1)
 		{
-			OutputDebugStringA("Gpu api: Variable Rate Shading Tier1 supported");
+			OutputDebugStringA("Gpu api: Variable Rate Shading Tier1 supported\n");
 			_isSupportedVariableRateShadingTier1 = true;
 			_isSupportedVariableRateShadingTier2 = false;
 			_variableRateShadingImageTileSize    = options.ShadingRateImageTileSize;
 		}
 		else if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2)
 		{
-			OutputDebugStringA("Gpu api: Valiable Rate Shading Tier2 supported");
+			OutputDebugStringA("Gpu api: Valiable Rate Shading Tier2 supported\n");
 			_isSupportedVariableRateShadingTier1 = true;
 			_isSupportedVariableRateShadingTier2 = true;
 			_variableRateShadingImageTileSize = options.ShadingRateImageTileSize;
@@ -260,7 +285,7 @@ void RHIDevice::CheckVRSSupport()
 	}
 	else
 	{
-		OutputDebugStringA("GpuApi : Variable Rate Shading note supported on current gpu hardware.");
+		OutputDebugStringA("GpuApi : Variable Rate Shading note supported on current gpu hardware.\n");
 		_isSupportedVariableRateShadingTier1 = false;
 		_isSupportedVariableRateShadingTier2 = false;
 	}
@@ -276,7 +301,7 @@ void RHIDevice::CheckVRSSupport()
 void RHIDevice::CheckMultiSampleQualityLevels()
 {
 	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
-	msQualityLevels.Format           = _backBufferFormat;
+	msQualityLevels.Format           = DXGI_FORMAT_R16G16B16A16_FLOAT; // back buffer ‚É‚µ‚½•û‚ª‚¢‚¢‚©‚Æ
 	msQualityLevels.SampleCount      = 4;
 	msQualityLevels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
 	msQualityLevels.NumQualityLevels = 0;
@@ -363,5 +388,18 @@ std::shared_ptr<core::RHICommandAllocator> RHIDevice::GetCommandAllocator(const 
 {
 	assert(frameCount < _frameCount);
 	return _commandAllocators[frameCount].at(commandListType);
+}
+
+std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
+{
+	switch (heapType)
+	{
+		case core::DescriptorHeapType::CBV:
+		case core::DescriptorHeapType::SRV:
+		case core::DescriptorHeapType::UAV: { return _defaultHeap[DefaultHeapType::CBV_SRV_UAV];}
+		case core::DescriptorHeapType::RTV: { return _defaultHeap[DefaultHeapType::RTV]; }
+		case core::DescriptorHeapType::DSV: { return _defaultHeap[DefaultHeapType::DSV]; }
+		default: { return nullptr;}
+	}
 }
 #pragma endregion Property

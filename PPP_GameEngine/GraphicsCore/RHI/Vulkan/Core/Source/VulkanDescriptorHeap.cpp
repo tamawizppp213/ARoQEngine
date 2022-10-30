@@ -31,8 +31,6 @@ RHIDescriptorHeap::~RHIDescriptorHeap()
 	{
 		vkDestroyDescriptorPool(vkDevice, _descriptorPool, nullptr);
 	}
-
-	
 }
 
 #pragma region Public Function
@@ -122,6 +120,10 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	}
 
 	/*-------------------------------------------------------------------
+	-               Max descriptor size check
+	---------------------------------------------------------------------*/
+	if (_totalHeapCount > totalHeapCount) { return; }
+	/*-------------------------------------------------------------------
 	-               Get descriptor heap create info
 	---------------------------------------------------------------------*/
 	VkDescriptorPoolCreateInfo createInfo = {};
@@ -137,6 +139,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 		throw std::runtime_error("failed to create descriptor pool");
 	}
 	
+
 	_totalHeapCount = totalHeapCount;
 	_resourceAllocator.SetDescriptorPool(_descriptorPool);
 }

@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -20,15 +21,22 @@ using namespace rhi::core;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil)
-	: _device(device), _renderTargets(renderTargets), _depthStencil(depthStencil)
+RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil)
+	: _device(device), _renderPass(renderPass), _renderTargets(renderTargets), _depthStencil(depthStencil)
 {
 	Prepare();
 }
-RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil)
-	: _device(device), _renderTargets(std::vector<std::shared_ptr<GPUTexture>>{renderTarget}), _depthStencil(depthStencil)
+RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil)
+	: _device(device), _renderPass(renderPass), _renderTargets(std::vector<std::shared_ptr<GPUTexture>>{renderTarget}), _depthStencil(depthStencil)
 {
 	Prepare();
+}
+RHIFrameBuffer::~RHIFrameBuffer()
+{
+	if (_depthStencilView) { _depthStencilView.reset(); }
+	_renderTargetViews.clear(); _renderTargetViews.shrink_to_fit();
+	if (_depthStencil) { _depthStencil.reset(); }
+	_renderTargets.clear(); _renderTargets.shrink_to_fit();
 }
 #pragma endregion Constructor and Destructor
 #pragma region Prepare

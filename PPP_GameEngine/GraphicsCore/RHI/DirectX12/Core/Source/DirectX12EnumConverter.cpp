@@ -26,8 +26,8 @@ D3D12_COMMAND_LIST_TYPE EnumConverter::Convert(const rhi::core::CommandListType 
 	switch (type)
 	{
 		case core::CommandListType::Graphics: return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_DIRECT;
-		case core::CommandListType::Compute: return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_COMPUTE;
-		case core::CommandListType::Copy: return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_COPY;
+		case core::CommandListType::Compute : return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_COMPUTE;
+		case core::CommandListType::Copy    : return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_COPY;
 		default:
 			throw std::runtime_error("Not supported command list type (directX12 api)");
 	}
@@ -284,7 +284,7 @@ D3D12_HEAP_TYPE  EnumConverter::Convert(const rhi::core::MemoryHeap memoryHeap)
 			throw std::runtime_error("not supported heap type (directX12 api)");
 	}
 }
-D3D12_RESOURCE_STATES EnumConverter::Convert(const rhi::core::ResourceLayout resourceLayout)
+D3D12_RESOURCE_STATES EnumConverter::Convert(const rhi::core::ResourceState resourceState)
 {
 	static D3D12_RESOURCE_STATES states[] = {
 		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON,
@@ -302,7 +302,30 @@ D3D12_RESOURCE_STATES EnumConverter::Convert(const rhi::core::ResourceLayout res
 		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE
 	};
 
-	return states[(int)resourceLayout];
+	return states[(int)resourceState];
 }
 #pragma endregion GPUBuffer
 #pragma endregion       GPUResource
+#pragma region Render Pass
+D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE EnumConverter::Convert(const rhi::core::AttachmentLoad op)
+{
+	switch (op)
+	{
+		case core::AttachmentLoad::Load    : return D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_PRESERVE;
+		case core::AttachmentLoad::Clear   : return D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+		case core::AttachmentLoad::DontCare: return D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_DISCARD;
+		default: 
+			throw std::runtime_error("not support render pass beginning type (directX12 api)");
+	}
+}
+D3D12_RENDER_PASS_ENDING_ACCESS_TYPE    EnumConverter::Convert(const rhi::core::AttachmentStore op)
+{
+	switch (op)
+	{
+		case core::AttachmentStore::Store   : return D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
+		case core::AttachmentStore::DontCare: return D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_DISCARD;
+		default:
+			throw std::runtime_error("not support render pass ending type (directX12 api)");
+	}
+}
+#pragma endregion Render Pass

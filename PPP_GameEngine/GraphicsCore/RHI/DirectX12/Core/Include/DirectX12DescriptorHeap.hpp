@@ -37,7 +37,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;
+		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout = nullptr) override;
 		/* @brief : Resize max view count size heap*/
 		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
 		/* @brief : Resize max view count size heap*/

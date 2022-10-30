@@ -186,6 +186,7 @@ void GraphicsDeviceDirectX12::BeginDrawFrame()
 	---------------------------------------------------------------------*/
 	_commandList->RSSetViewports(1, &_screenViewport);
 	_commandList->RSSetScissorRects(1, &_scissorRect);
+	_commandList->RSSetScissorRects(1, &_scissorRect);
 	/*-------------------------------------------------------------------
 	-               Clear the back buffer and depth buffer.
 	---------------------------------------------------------------------*/
@@ -600,7 +601,7 @@ void GraphicsDeviceDirectX12::CreateCommandObject()
 	---------------------------------------------------------------------*/
 	for (int i = 0; i < FRAME_BUFFER_COUNT; ++i)
 	{
-		_rhiCommandAllocator[i] = _rhiDevice->CreateCommandAllocator();
+		_rhiCommandAllocator[i] = _rhiDevice->CreateCommandAllocator(rhi::core::CommandListType::Graphics);
 		_commandAllocator[i]    = static_pointer_cast<rhi::directX12::RHICommandAllocator>(_rhiCommandAllocator[i])->GetAllocator();
 	}
 	_rhiCommandList = _rhiDevice->CreateCommandList(_rhiCommandAllocator[_currentFrameIndex]);

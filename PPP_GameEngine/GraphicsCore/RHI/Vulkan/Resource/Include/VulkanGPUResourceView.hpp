@@ -44,9 +44,9 @@ namespace rhi::vulkan
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUResourceView() = default;
-		~GPUResourceView() = default;
-		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer);
-		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture);
+		~GPUResourceView();
+		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
+		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
 	private:
 		/****************************************************************************
 		**                Private Function
@@ -54,6 +54,8 @@ namespace rhi::vulkan
 		void CreateView();
 		void CreateImageView();
 		void CreateBufferView();
+
+		VkImageAspectFlags GetImageAspectFlags(VkFormat format);
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/

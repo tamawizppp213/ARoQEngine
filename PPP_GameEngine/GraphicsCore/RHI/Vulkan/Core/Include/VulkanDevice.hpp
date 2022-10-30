@@ -47,12 +47,13 @@ namespace rhi::vulkan
 		void SetUp() override;
 		void Destroy() override;
 #pragma region Create Resource
-		std::shared_ptr<core::RHIFrameBuffer>          CreateFrameBuffer(const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
-		std::shared_ptr<core::RHIFrameBuffer>          CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
+		void                                           SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) override;
+		std::shared_ptr<core::RHIFrameBuffer>          CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
+		std::shared_ptr<core::RHIFrameBuffer>          CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
 		std::shared_ptr<core::RHIFence>                CreateFence(const std::uint64_t fenceValue = 0)          override;
 		std::shared_ptr<core::RHICommandList>          CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& allocator) override;
 		std::shared_ptr<core::RHICommandQueue>         CreateCommandQueue(const core::CommandListType type) override;
-		std::shared_ptr<core::RHICommandAllocator>     CreateCommandAllocator() override;
+		std::shared_ptr<core::RHICommandAllocator>     CreateCommandAllocator(const core::CommandListType type) override;
 		std::shared_ptr<core::RHISwapchain>            CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 3, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
 		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
@@ -62,6 +63,8 @@ namespace rhi::vulkan
 		std::shared_ptr<core::GPUComputePipelineState> CreateComputePipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 		std::shared_ptr<core::RHIResourceLayout>       CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt) override;
 		std::shared_ptr<core::GPUPipelineFactory>      CreatePipelineFactory() override;
+		std::shared_ptr<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) override;
+		std::shared_ptr<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		std::shared_ptr<core::GPUSampler>              CreateSampler(const core::SamplerInfo& samplerInfo); // both
 		std::shared_ptr<core::GPUBuffer>               CreateBuffer(const core::GPUBufferMetaData& metaData) override;
 		std::shared_ptr<core::GPUTexture>              CreateTexture(const core::GPUTextureMetaData& metaData) override;
@@ -76,6 +79,7 @@ namespace rhi::vulkan
 		std::uint32_t GetShadingRateImageTileSize() const { return 0; };
 		std::shared_ptr<core::RHICommandQueue> GetCommandQueue(const core::CommandListType commandListType) override;
 		std::shared_ptr<core::RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount = 0) override;
+		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 		/*-------------------------------------------------------------------
 		-               Device Support Check
 		---------------------------------------------------------------------*/
@@ -85,6 +89,7 @@ namespace rhi::vulkan
 		bool IsSupportedMeshShading        () const override { return _isSupportedMeshShading; };
 		bool IsSupportedDrawIndirected     () const override { return _isSupportedDrawIndirected; };
 		bool IsSupportedGeometryShader     () const override { return _isSupportedGeometryShader; };
+		bool IsSupportedRenderPass         () const override { return true; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -127,6 +132,11 @@ namespace rhi::vulkan
 		void SetUpCommandPool();
 		void CheckSupports(); // Deviceのすべてのサポート内容を調べ, メンバ変数のboolに代入する.
 		void CreateLogicalDevice();
+
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		std::shared_ptr<core::RHIDescriptorHeap> _defaultHeap = nullptr;
 	};
 }
 #endif

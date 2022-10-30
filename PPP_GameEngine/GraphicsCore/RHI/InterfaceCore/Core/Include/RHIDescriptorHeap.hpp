@@ -49,7 +49,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Allocate view. Return descriptor index*/
+		/* @brief : Allocate view. Return descriptor index (only use resourceLayout in vulkan api : )*/
 		virtual DescriptorID Allocate(const DescriptorHeapType heapType, const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0;
 		/* @brief : Resize max view count size heap*/
 		virtual void Resize(const DescriptorHeapType type, const size_t viewCount) = 0;

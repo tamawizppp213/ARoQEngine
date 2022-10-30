@@ -11,7 +11,13 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandAllocator.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12FrameBuffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUResourceView.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <vector>
@@ -28,52 +34,72 @@ using namespace Microsoft::WRL;
 #pragma region Constructor and Destructor
 RHICommandList::~RHICommandList()
 {
-	if (_commandList) { _commandList.Reset(); }
+	//if (_commandList) { _commandList.Reset(); _commandList = nullptr; }
 }
 
 RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator) : 
 	rhi::core::RHICommandList(device, commandAllocator)
 {
-	const auto dxDevice    = static_cast<RHIDevice*>(_device.get())->GetDevice();
-	const auto dxAllocator = static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator();
-
+	const auto dxDevice     = static_cast<RHIDevice*>(_device.get())->GetDevice();
+	const auto rhiAllocator = std::static_pointer_cast<directX12::RHICommandAllocator>(_commandAllocator);
+	const auto dxAllocator  = rhiAllocator->GetAllocator();
+	/*-------------------------------------------------------------------
+	-               Prepare Closed Command List
+	---------------------------------------------------------------------*/
 	ThrowIfFailed(dxDevice->CreateCommandList(
 		0,
-		D3D12_COMMAND_LIST_TYPE_DIRECT,
+		EnumConverter::Convert(rhiAllocator->GetCommandListType()),
 		dxAllocator.Get(), // Associated command allocator
-		nullptr,                                     // Initial PipeLine State Object
+		nullptr,           // Initial PipeLine State Object
 		IID_PPV_ARGS(_commandList.GetAddressOf())));
-	_commandList->SetName(L"DirectX12::CommandList");
-	_commandList->Close();
+	ThrowIfFailed(_commandList->SetName(L"DirectX12::CommandList"));
+	ThrowIfFailed(_commandList->Close());
+
 }
 
 #pragma endregion Constructor and Destructor
 #pragma region Call Draw Frame
 void RHICommandList::BeginRecording()
 {
+	_commandAllocator->Reset();
 	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
-	_commandList->ClearState(nullptr);
+	_commandList->ClearState(nullptr); // 元の状態に戻る
 
 }
 void RHICommandList::EndRecording()
 {
 	ThrowIfFailed(_commandList->Close());
 }
+void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer)
+{
+	/*-------------------------------------------------------------------
+	-          Layout Transition (Present -> RenderTarget)
+	---------------------------------------------------------------------*/
+	std::vector<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
+	TransitionResourceStates(frameBuffer->GetRenderTargetSize(), frameBuffer->GetRenderTargets().data(), states.data());
+	/*-------------------------------------------------------------------
+	-          Select renderpass and frame buffer action
+	---------------------------------------------------------------------*/
+	if (_device->IsSupportedRenderPass()) { BeginRenderPassImpl(std::static_pointer_cast<directX12::RHIRenderPass>(renderPass), std::static_pointer_cast<directX12::RHIFrameBuffer>(frameBuffer)); }
+	else                                  { OMSetFrameBuffer   (std::static_pointer_cast<directX12::RHIRenderPass>(renderPass), std::static_pointer_cast<directX12::RHIFrameBuffer>(frameBuffer)); }
+
+	_renderPass  = renderPass;
+	_frameBuffer = frameBuffer;
+}
+void RHICommandList::EndRenderPass()
+{
+	if (_device->IsSupportedRenderPass()) { _commandList->EndRenderPass(); }
+	/*-------------------------------------------------------------------
+	-          Layout Transition (RenderTarget -> Present)
+	---------------------------------------------------------------------*/
+	std::vector<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
+	TransitionResourceStates(_frameBuffer->GetRenderTargetSize(), _frameBuffer->GetRenderTargets().data(), states.data());
+}
 #pragma endregion Call Draw Frame
 #pragma region GPU Command
-
 void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
 {
-	static D3D12_PRIMITIVE_TOPOLOGY topologies[] =
-	{
-		D3D_PRIMITIVE_TOPOLOGY_UNDEFINED,
-		D3D_PRIMITIVE_TOPOLOGY_POINTLIST,
-		D3D_PRIMITIVE_TOPOLOGY_LINELIST,
-		D3D_PRIMITIVE_TOPOLOGY_LINESTRIP,
-		D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
-		D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP
-	};
-	_commandList->IASetPrimitiveTopology(topologies[(int)topology]);
+	_commandList->IASetPrimitiveTopology(EnumConverter::Convert(topology));
 }
 void rhi::directX12::RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
 {
@@ -136,4 +162,171 @@ void RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t thr
 {
 	_commandList->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
+
+#pragma region Transition Resource State
+void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after)
+{
+	BARRIER barrier = BARRIER::Transition(std::static_pointer_cast<directX12::GPUTexture>(texture)->GetResource().Get(),
+		EnumConverter::Convert(texture->GetResourceState()), EnumConverter::Convert(after));
+	texture->TransitionResourceState(after);
+	_commandList->ResourceBarrier(1, &barrier);
+}
+void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
+{
+	std::vector<BARRIER> barriers = {};
+	for (std::uint32_t i = 0; i < numStates; ++i)
+	{
+		BARRIER barrier = BARRIER::Transition(std::static_pointer_cast<directX12::GPUTexture>(textures[i])->GetResource().Get(),
+			EnumConverter::Convert(textures[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
+		textures[i]->TransitionResourceState(afters[i]);
+		barriers.emplace_back(barrier);
+	}
+	_commandList->ResourceBarrier(numStates, barriers.data());
+}
+#pragma endregion Transition Resource State
 #pragma endregion GPU Command
+#pragma region Private Function
+/****************************************************************************
+*                     BeginRenderPassImpl
+*************************************************************************//**
+*  @fn        void RHICommandList::BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer)<directX12::RHIFrameBuffer>& frameBuffer)
+*  @brief     If you used render pass, this function is called. Set frame buffer (render target and depth stencil) to command buffer.
+*             When you use core::AttachmentLoad::Clear, color or depthStencil frame buffer is cleared.
+*  @param[in] const std::shared_ptr<directX12::RHIRenderPass>& renderPass
+*  @param[in] const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer)
+{
+	/*-------------------------------------------------------------------
+	-          Get frame buffer resources
+	---------------------------------------------------------------------*/
+	auto renderTargets = frameBuffer->GetRenderTargets();
+	auto depthStencil  = frameBuffer->GetDepthStencil();
+	const bool hasRTV  = frameBuffer->GetRenderTargetSize() != 0;
+	const bool hasDSV  = frameBuffer->GetDepthStencil() != nullptr;
+	/*-------------------------------------------------------------------
+	-          Set CPU rtv and dsv descriptor handle
+	---------------------------------------------------------------------*/
+	// render target 
+	std::vector<D3D12_RENDER_PASS_RENDER_TARGET_DESC> rtvDescs(renderTargets.size());
+	for (size_t i = 0; i < rtvDescs.size(); ++i)
+	{
+		// get rtv handle
+		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
+		assert(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
+
+		const auto rtvHandle = view->GetCPUHandler();
+		if (!rtvHandle.ptr) { continue; }
+
+		// set render pass load op
+		D3D12_RENDER_PASS_BEGINNING_ACCESS begin = {};
+		begin.Type = EnumConverter::Convert(renderPass->GetColorAttachment(i)->LoadOp);
+		begin.Clear.ClearValue.Color[0] = renderPass->GetClearColor()[i].Color[core::ClearValue::Red];
+		begin.Clear.ClearValue.Color[1] = renderPass->GetClearColor()[i].Color[core::ClearValue::Green];
+		begin.Clear.ClearValue.Color[2] = renderPass->GetClearColor()[i].Color[core::ClearValue::Blue];
+		begin.Clear.ClearValue.Color[3] = renderPass->GetClearColor()[i].Color[core::ClearValue::Alpha];
+		// set render pass store op
+		D3D12_RENDER_PASS_ENDING_ACCESS end = {};
+		end.Type = EnumConverter::Convert(renderPass->GetColorAttachment(i)->StoreOp);
+		
+		// set render pass descriptor
+		rtvDescs[i].BeginningAccess = begin;
+		rtvDescs[i].cpuDescriptor   = rtvHandle;
+		rtvDescs[i].EndingAccess    = end;
+	}
+	// depth stencil
+	D3D12_RENDER_PASS_DEPTH_STENCIL_DESC dsvDesc = {};
+	if (hasDSV)
+	{
+		// get dsv handle
+		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
+		assert(view->GetResourceViewType() == core::ResourceViewType::DepthStencil);
+		const auto dsvHandle = view->GetCPUHandler();
+
+		// set depth render pass load op
+		D3D12_RENDER_PASS_BEGINNING_ACCESS depthBegin   = { EnumConverter::Convert(renderPass->GetDepthAttachment()->LoadOp), {} };
+		D3D12_RENDER_PASS_ENDING_ACCESS    depthEnd     = { EnumConverter::Convert(renderPass->GetDepthAttachment()->StoreOp), {} };
+		D3D12_RENDER_PASS_BEGINNING_ACCESS stencilBegin = { EnumConverter::Convert(renderPass->GetDepthAttachment()->StencilLoad), {} };
+		D3D12_RENDER_PASS_ENDING_ACCESS    stencilEnd   = { EnumConverter::Convert(renderPass->GetDepthAttachment()->StencilStore), {} };
+		depthBegin.Clear.ClearValue.DepthStencil.Depth     = renderPass->GetDepthClear()->Depth;
+		stencilBegin.Clear.ClearValue.DepthStencil.Stencil = renderPass->GetDepthClear()->Stencil;
+		
+		// set depth stencil descriptor
+		dsvDesc.DepthBeginningAccess   = depthBegin;
+		dsvDesc.DepthEndingAccess      = depthEnd;
+		dsvDesc.StencilBeginningAccess = stencilBegin;
+		dsvDesc.StencilEndingAccess    = stencilEnd;
+	}
+
+	_commandList->BeginRenderPass(static_cast<std::uint32_t>(rtvDescs.size()), rtvDescs.data(), hasDSV ? &dsvDesc : nullptr, D3D12_RENDER_PASS_FLAG_NONE);
+}
+
+/****************************************************************************
+*                     OMSetFrameBuffer
+*************************************************************************//**
+*  @fn        void RHICommandList::OMSetFrameBuffer(const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer)
+*  @brief     If not used render pass, this function is called. Set frame buffer (render target and depth stencil) to command buffer.
+*             When you use core::AttachmentLoad::Clear, color or depthStencil frame buffer is cleared.
+*  @param[in] const std::shared_ptr<directX12::RHIRenderPass>& renderPass
+*  @param[in] const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::OMSetFrameBuffer(const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer)
+{
+	/*-------------------------------------------------------------------
+	-          Get frame buffer resources
+	---------------------------------------------------------------------*/
+	auto renderTargets = frameBuffer->GetRenderTargets();
+	auto depthStencil  = frameBuffer->GetDepthStencil();
+	const bool hasRTV  = frameBuffer->GetRenderTargetSize() != 0;
+	const bool hasDSV  = frameBuffer->GetDepthStencil() != nullptr;
+	/*-------------------------------------------------------------------
+	-          Set CPU rtv and dsv descriptor handle
+	---------------------------------------------------------------------*/
+	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvHandle(renderTargets.size());
+	for (size_t i = 0; i < rtvHandle.size(); ++i)
+	{
+		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
+		assert(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
+		rtvHandle[i] = view->GetCPUHandler();
+	}
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+	if (hasDSV)
+	{
+		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
+		assert(view->GetResourceViewType() == core::ResourceViewType::DepthStencil);
+		dsvHandle = view->GetCPUHandler();
+	}
+	/*-------------------------------------------------------------------
+	-          Clear frame buffer resources
+	---------------------------------------------------------------------*/
+	// render target
+	for (int i = 0; i < rtvHandle.size(); ++i)
+	{
+		const auto colorAttachment = renderPass->GetColorAttachment(i);
+		if (colorAttachment->LoadOp != core::AttachmentLoad::Clear) { continue; }
+		_commandList->ClearRenderTargetView(rtvHandle[i], renderPass->GetClearColor()[i].Color, 0, nullptr);
+	}
+	// depth stencil 
+	if (hasDSV)
+	{
+		const auto depthAttachment = renderPass->GetDepthAttachment();
+
+		// set clear flag 
+		D3D12_CLEAR_FLAGS clearFlags = {};
+		if (depthAttachment->LoadOp      == core::AttachmentLoad::Clear) { clearFlags |= D3D12_CLEAR_FLAG_DEPTH; }
+		if (depthAttachment->StencilLoad == core::AttachmentLoad::Clear) { clearFlags |= D3D12_CLEAR_FLAG_STENCIL; }
+		// clear depth stencil
+		if (clearFlags)
+		{
+			_commandList->ClearDepthStencilView(dsvHandle, clearFlags, renderPass->GetDepthClear()->Depth, renderPass->GetDepthClear()->Stencil, 0, nullptr);
+		}
+	}
+	/*-------------------------------------------------------------------
+	-          Set render target and depth stencil
+	---------------------------------------------------------------------*/
+	_commandList->OMSetRenderTargets(rtvHandle.size(), rtvHandle.data(), FALSE, hasDSV ? &dsvHandle : nullptr);
+}
+
+#pragma endregion Private Function

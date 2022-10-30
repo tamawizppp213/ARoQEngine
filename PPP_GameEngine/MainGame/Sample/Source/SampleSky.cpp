@@ -39,9 +39,9 @@ SampleSky::~SampleSky()
 *  @param[in] GameTimer* gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleSky::Initialize(GameTimer* gameTimer)
+void SampleSky::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
 {
-	Scene::Initialize(gameTimer);
+	Scene::Initialize(engine, gameTimer);
 	PrepareCamera();
 }
 /****************************************************************************
@@ -67,9 +67,9 @@ void SampleSky::Update()
 *****************************************************************************/
 void SampleSky::Draw()
 {
-	_engine.BeginDrawFrame();
+	_engine->BeginDrawFrame();
 	_skybox->Draw(_camera->GetSceneGPUAddress());
-	_engine.EndDrawFrame();
+	_engine->EndDrawFrame();
 }
 /****************************************************************************
 *                       Terminate
@@ -99,9 +99,9 @@ void SampleSky::PrepareCamera()
 	/*-------------------------------------------------------------------
 	-           Camera
 	---------------------------------------------------------------------*/
-	_camera = std::make_unique<Camera>();
-	_camera->StartUp(_engine.GetDevice());
-	_camera->SetPosition(0.0f, 10.0f, -20.0f);
+	/*_camera = std::make_unique<Camera>();
+	_camera->StartUp(_engine->GetDevice());
+	_camera->SetPosition(0.0f, 10.0f, -20.0f);*/
 
 }
 /****************************************************************************

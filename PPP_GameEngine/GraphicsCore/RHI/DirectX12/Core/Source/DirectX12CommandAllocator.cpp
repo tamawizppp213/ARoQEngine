@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandAllocator.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -26,12 +27,12 @@ RHICommandAllocator::~RHICommandAllocator()
 	if (_commandAllocator) { _commandAllocator.Reset(); }
 }
 
-RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<rhi::core::RHIDevice>& device) : rhi::core::RHICommandAllocator(device)
+RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type) : rhi::core::RHICommandAllocator(device, type)
 {
 	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
 
 	ThrowIfFailed(dxDevice->CreateCommandAllocator(
-		D3D12_COMMAND_LIST_TYPE_DIRECT,              // Enable to execute all command 
+		EnumConverter::Convert(type),              // Enable to execute all command 
 		IID_PPV_ARGS(&_commandAllocator)));
 	_commandAllocator->SetName(L"DirectX12::CommandAllocator");
 }

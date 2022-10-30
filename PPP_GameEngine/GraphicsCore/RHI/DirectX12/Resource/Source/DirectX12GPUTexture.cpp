@@ -81,10 +81,10 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 	clearValue.Format = resourceDesc.Format;
 	if (core::EnumHas(metaData.ResourceUsage, core::ResourceUsage::RenderTarget))
 	{
-		clearValue.Color[0] = metaData.ClearColor.Red;
-		clearValue.Color[1] = metaData.ClearColor.Green;
-		clearValue.Color[2] = metaData.ClearColor.Blue;
-		clearValue.Color[3] = metaData.ClearColor.Alpha;
+		clearValue.Color[0] = metaData.ClearColor.Color[0];
+		clearValue.Color[1] = metaData.ClearColor.Color[1];
+		clearValue.Color[2] = metaData.ClearColor.Color[2];
+		clearValue.Color[3] = metaData.ClearColor.Color[3];
 	}
 	else
 	{
@@ -93,18 +93,18 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 	}
 
 	ThrowIfFailed(dxDevice->CreateCommittedResource(
-		&heapProperty, D3D12_HEAP_FLAG_NONE, &resourceDesc, EnumConverter::Convert(metaData.Layout),
+		&heapProperty, D3D12_HEAP_FLAG_NONE, &resourceDesc, EnumConverter::Convert(metaData.State),
 		core::EnumHas(metaData.ResourceUsage, core::ResourceUsage::RenderTarget) || 
 		core::EnumHas(metaData.ResourceUsage, core::ResourceUsage::DepthStencil) ? &clearValue : nullptr,
 		IID_PPV_ARGS(_resource.GetAddressOf())));
 
+	/*-------------------------------------------------------------------
+	-             Get total byte size and alighment size
+	---------------------------------------------------------------------*/
 	const auto allocateInfo = dxDevice->GetResourceAllocationInfo(0, 1, &resourceDesc);
 	_physicalSize = static_cast<size_t>(allocateInfo.SizeInBytes);
 	_alignment    = static_cast<size_t>(allocateInfo.Alignment);
-	/*-------------------------------------------------------------------
-	-             create shader resource view
-	---------------------------------------------------------------------*/
-	//PrepareSRV(metaData);
+
 }
 
 GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData)
@@ -120,98 +120,4 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const Res
 	_alignment    = static_cast<size_t>(allocateInfo.Alignment);
 }
 
-void GPUTexture::PrepareSRV(const core::GPUTextureMetaData& metaData)
-{
-	/*-------------------------------------------------------------------
-	-             Setting SRV
-	---------------------------------------------------------------------*/
-	_resourceViewDesc.Format                  = EnumConverter::Convert(metaData.PixelFormat);
-	_resourceViewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-
-	switch (metaData.ResourceType)
-	{
-		case core::ResourceType::Texture1D:
-		{
-			_resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE1D;
-			_resourceViewDesc.Texture1D.MipLevels           = static_cast<UINT>(metaData.MipLevels);
-			_resourceViewDesc.Texture1D.MostDetailedMip     = 0;
-			_resourceViewDesc.Texture1D.ResourceMinLODClamp = 0.0f;
-			break;
-		}
-		case core::ResourceType::Texture2D:
-		{
-			_resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2D;
-			_resourceViewDesc.Texture2D.MipLevels           = static_cast<UINT>(metaData.MipLevels);
-			_resourceViewDesc.Texture2D.MostDetailedMip     = 0;
-			_resourceViewDesc.Texture2D.PlaneSlice          = 0;
-			_resourceViewDesc.Texture2D.ResourceMinLODClamp = 0;
-			break;
-		}
-		case core::ResourceType::Texture3D:
-		{
-			_resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE3D;
-			_resourceViewDesc.Texture3D.MipLevels           = static_cast<UINT>(metaData.MipLevels);
-			_resourceViewDesc.Texture3D.MostDetailedMip     = 0;
-			_resourceViewDesc.Texture3D.ResourceMinLODClamp = 0.0f;
-			break;
-		}
-		case core::ResourceType::TextureCube:
-		{
-			_resourceViewDesc.ViewDimension                   = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURECUBE;
-			_resourceViewDesc.TextureCube.MipLevels           = static_cast<UINT>(metaData.MipLevels);
-			_resourceViewDesc.TextureCube.MostDetailedMip     = 0;
-			_resourceViewDesc.TextureCube.ResourceMinLODClamp = 0.0f;
-			break;
-		}
-		case core::ResourceType::Texture1DArray:
-		{
-			_resourceViewDesc.ViewDimension                      = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE1DARRAY;
-			_resourceViewDesc.Texture1DArray.FirstArraySlice     = 0;
-			_resourceViewDesc.Texture1DArray.MipLevels           = static_cast<UINT>(metaData.MipLevels);
-			_resourceViewDesc.Texture1DArray.MostDetailedMip     = 0;
-			_resourceViewDesc.Texture1DArray.ArraySize           = static_cast<UINT>(metaData.DepthOrArraySize);
-			_resourceViewDesc.Texture1DArray.ResourceMinLODClamp = 0;
-			break;
-		}
-		case core::ResourceType::Texture2DArray:
-		{
-			_resourceViewDesc.ViewDimension                      = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
-			_resourceViewDesc.Texture2DArray.FirstArraySlice     = 0;
-			_resourceViewDesc.Texture2DArray.MipLevels           = static_cast<UINT>(metaData.MipLevels);
-			_resourceViewDesc.Texture2DArray.MostDetailedMip     = 0;
-			_resourceViewDesc.Texture2DArray.ArraySize           = static_cast<UINT>(metaData.DepthOrArraySize);
-			_resourceViewDesc.Texture2DArray.PlaneSlice          = 0;
-			_resourceViewDesc.Texture2DArray.ResourceMinLODClamp = 0;
-			break;
-		}
-		case core::ResourceType::Texture2DArrayMultiSample:
-		{
-			_resourceViewDesc.ViewDimension                    = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2DMSARRAY;
-			_resourceViewDesc.Texture2DMSArray.FirstArraySlice = 0;
-			_resourceViewDesc.Texture2DMSArray.ArraySize       = static_cast<UINT>(metaData.DepthOrArraySize);
-			break;
-		}
-		case core::ResourceType::Texture2DMultiSample:
-		{
-			_resourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2DMS;
-			break;
-		}
-
-		case core::ResourceType::TextureCubeArray:
-		{
-			_resourceViewDesc.ViewDimension                        = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURECUBEARRAY;
-			_resourceViewDesc.TextureCubeArray.First2DArrayFace    = 0;
-			_resourceViewDesc.TextureCubeArray.MipLevels           = static_cast<UINT>(metaData.MipLevels);
-			_resourceViewDesc.TextureCubeArray.MostDetailedMip     = 0;
-			_resourceViewDesc.TextureCubeArray.ResourceMinLODClamp = 0;
-			_resourceViewDesc.TextureCubeArray.NumCubes            = static_cast<UINT>(metaData.DepthOrArraySize / 6);
-			break;
-		}
-		default:
-		{
-			throw std::runtime_error("not supported resource type");
-			break;
-		}
-	}
-}
 

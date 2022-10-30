@@ -30,7 +30,7 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image)
 	: core::GPUTexture(device, metaData), _image(image)
 {
-	Prepare();
+	_memory = nullptr;
 }
 GPUTexture::~GPUTexture()
 {
@@ -49,6 +49,7 @@ void GPUTexture::Prepare()
 {
 	VkDevice vkDevice = nullptr;
 	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+
 	/*-------------------------------------------------------------------
 	-               Set Texture View Desc
 	---------------------------------------------------------------------*/
@@ -61,7 +62,7 @@ void GPUTexture::Prepare()
 	imageInfo.mipLevels             = static_cast<std::uint32_t>(_metaData.MipLevels);
 	imageInfo.arrayLayers           = static_cast<uint32_t>(_metaData.Dimension == core::ResourceDimension::Dimension3D ? 1 : _metaData.DepthOrArraySize);
 	imageInfo.samples               = EnumConverter::Convert(_metaData.Sample);
-	imageInfo.initialLayout         = EnumConverter::Convert(_metaData.Layout);
+	imageInfo.initialLayout         = EnumConverter::Convert(_metaData.State);
 	imageInfo.usage                 = EnumConverter::Convert(_metaData.ResourceUsage).second;
 	imageInfo.queueFamilyIndexCount = 0;
 	imageInfo.pQueueFamilyIndices   = nullptr;
@@ -98,23 +99,5 @@ void GPUTexture::Prepare()
 	{
 		throw std::runtime_error("failed to bind image memory");
 	}
-
-	/*-------------------------------------------------------------------
-	-               Set Texture View Desc
-	---------------------------------------------------------------------*/
-	_imageViewDesc.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	_imageViewDesc.flags = 0;
-	_imageViewDesc.image = _image;
-	_imageViewDesc.format = EnumConverter::Convert(_metaData.PixelFormat);
-	_imageViewDesc.components       = VkComponentMapping(VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_A);
-	_imageViewDesc.subresourceRange = VkImageSubresourceRange(
-		EnumConverter::Convert(_metaData.PixelFormat, _metaData.ResourceUsage),
-		static_cast<std::uint32_t>(0),
-		static_cast<std::uint32_t>(_metaData.MipLevels),
-		static_cast<std::uint32_t>(0),
-		static_cast<std::uint32_t>(_metaData.DepthOrArraySize));
-	_imageViewDesc.viewType = EnumConverter::Convert(_metaData.Dimension, _metaData.ResourceType, _metaData.DepthOrArraySize);
-	_imageViewDesc.pNext = nullptr;
-
 }
 #pragma endregion Prepare

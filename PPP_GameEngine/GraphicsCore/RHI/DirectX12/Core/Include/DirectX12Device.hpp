@@ -39,14 +39,15 @@ namespace rhi::directX12
 		void SetUp() override;
 		void Destroy() override;
 #pragma region Create Function
-		std::shared_ptr<core::RHIFrameBuffer>           CreateFrameBuffer(const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
-		std::shared_ptr<core::RHIFrameBuffer>           CreateFrameBuffer(const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
+		void                                            SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) override;
+		std::shared_ptr<core::RHIFrameBuffer>           CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
+		std::shared_ptr<core::RHIFrameBuffer>           CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
 		std::shared_ptr<core::RHIFence>                 CreateFence(const std::uint64_t fenceValue = 0) override;
 		std::shared_ptr<core::RHICommandList>           CreateCommandList(const std::shared_ptr<core::RHICommandAllocator>& commandAllocator) override;
-		std::shared_ptr<core::RHICommandQueue>          CreateCommandQueue(const core::CommandListType type) override;
-		std::shared_ptr<core::RHICommandAllocator>      CreateCommandAllocator() override;
-		std::shared_ptr<core::RHISwapchain>             CreateSwapchain(const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
-		std::shared_ptr<core::RHIDescriptorHeap>        CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
+		std::shared_ptr<core::RHICommandQueue>          CreateCommandQueue    (const core::CommandListType type) override;
+		std::shared_ptr<core::RHICommandAllocator>      CreateCommandAllocator(const core::CommandListType type) override;
+		std::shared_ptr<core::RHISwapchain>             CreateSwapchain       (const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
+		std::shared_ptr<core::RHIDescriptorHeap>        CreateDescriptorHeap  (const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		std::shared_ptr<core::RHIDescriptorHeap>        CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
 		std::shared_ptr<core::RHIRenderPass>            CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
 		std::shared_ptr<core::RHIRenderPass>            CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
@@ -54,6 +55,8 @@ namespace rhi::directX12
 		std::shared_ptr<core::GPUComputePipelineState>  CreateComputePipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 		std::shared_ptr<core::RHIResourceLayout>        CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt) override;
 		std::shared_ptr<core::GPUPipelineFactory>       CreatePipelineFactory() override;
+		std::shared_ptr<core::GPUResourceView>          CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) override;
+		std::shared_ptr<core::GPUResourceView>          CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		std::shared_ptr<core::GPUSampler>               CreateSampler(const core::SamplerInfo& samplerInfo); // both
 		std::shared_ptr<core::GPUBuffer>                CreateBuffer(const core::GPUBufferMetaData& metaData) override;
 		std::shared_ptr<core::GPUTexture>               CreateTexture(const core::GPUTextureMetaData& metaData) override;
@@ -62,10 +65,10 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		DeviceComPtr  GetDevice () const noexcept { return _device; }
-		DXGI_FORMAT   GetBackBufferFormat() const noexcept { return _backBufferFormat; }
 		std::uint32_t GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
-		std::shared_ptr<core::RHICommandQueue> GetCommandQueue(const core::CommandListType commandListType) override ;
+		std::shared_ptr<core::RHICommandQueue>     GetCommandQueue    (const core::CommandListType commandListType) override ;
 		std::shared_ptr<core::RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount = 0) override;
+		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 		/*-------------------------------------------------------------------
 		-               Device Support Check
 		---------------------------------------------------------------------*/
@@ -76,6 +79,7 @@ namespace rhi::directX12
 		bool IsSupportedMeshShading        () const override { return _isSupportedMeshShading; }
 		bool IsSupportedDrawIndirected     () const override { return true; }
 		bool IsSupportedGeometryShader     () const override { return true; }
+		bool IsSupportedRenderPass         () const override { return _isSupportedRenderPass; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -91,7 +95,6 @@ namespace rhi::directX12
 		**                Protected Member Variables
 		*****************************************************************************/
 		DeviceComPtr  _device        = nullptr;
-		DXGI_FORMAT   _backBufferFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		bool          _isSupportedRayTracing = true;
 		bool          _isSupportedTearing    = true;
 		bool          _isSupportedHDR        = true;
@@ -105,6 +108,15 @@ namespace rhi::directX12
 
 	private:
 		/****************************************************************************
+		**                Private Enum Class
+		*****************************************************************************/
+		enum DefaultHeapType
+		{
+			CBV_SRV_UAV,
+			RTV,
+			DSV,
+		};
+		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
 		void ReportLiveObjects();
@@ -117,6 +129,11 @@ namespace rhi::directX12
 		void CheckHDRDisplaySupport();
 		void CheckMultiSampleQualityLevels();
 		void CheckMeshShadingSupport();
+
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		std::map<DefaultHeapType, std::shared_ptr<core::RHIDescriptorHeap>> _defaultHeap;
 	};
 }
 #endif

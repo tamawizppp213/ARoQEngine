@@ -38,7 +38,7 @@ namespace sample
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(GameTimer* gameTimer) override;
+		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
 		void Update   () override;
 		void Draw     () override;
 		void Terminate() override;

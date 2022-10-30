@@ -45,7 +45,7 @@ public:
 	**                Public Member Variables
 	*****************************************************************************/
 	
-	/****************************************************************************
+	/******************************************** ********************************
 	**                Constructor and Destructor
 	*****************************************************************************/
 	static Application& Instance()
@@ -75,6 +75,7 @@ private:
 	GameTimer  _gameTimer;
 	GameInput& _gameInput = GameInput::Instance();
 	GameManager& _gameManager = GameManager::Instance();
+	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::Vulkan;
 	bool _isApplicationPaused = false;
 };
 #endif

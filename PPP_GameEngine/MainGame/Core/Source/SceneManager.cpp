@@ -22,8 +22,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-void SceneManager::StartUp(GameTimer* gameTimer)
+void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, GameTimer* gameTimer)
 {
+	_engine = engine;
 	PushScene(new sample::SampleEmpty());
 	CallSceneInitialize(gameTimer);
 }
@@ -44,10 +45,10 @@ void SceneManager::TransitScene(ScenePtr scene, GameTimer* gameTimer)
 	CallSceneInitialize(gameTimer);
 }
 
-void SceneManager::CallSceneInitialize(GameTimer* gameTimer)
+void SceneManager::CallSceneInitialize( GameTimer* gameTimer)
 {
 	if (_currentScene.empty()) { return; }
-	_currentScene.top()->Initialize(gameTimer);
+	_currentScene.top()->Initialize(_engine, gameTimer);
 	//GraphicsCoreEngine::Instance().OnInitializeRenderScene();
 }
 void SceneManager::CallSceneUpdate()
@@ -62,7 +63,6 @@ void SceneManager::CallSceneTerminate()
 {
 	if (_currentScene.empty()) { return; }
 	_currentScene.top()->Terminate();
-	GraphicsCoreEngine::Instance().OnTerminateRenderScene();
 }
 void SceneManager::PushScene(ScenePtr scene)
 {

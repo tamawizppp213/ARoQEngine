@@ -14,6 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
 #include "DirectX12Core.hpp"
 #include <memory>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,6 +26,8 @@ namespace rhi::directX12
 {
 	class RHIDevice;
 	class RHICommandAllocator;
+	class RHIRenderPass;
+	class RHIFrameBuffer;
 	/****************************************************************************
 	*				  			RHIDevice
 	*************************************************************************//**
@@ -37,8 +40,10 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void BeginRecording() override ;
+		void BeginRecording() override;
 		void EndRecording  () override;
+		void BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer) override;
+		void EndRenderPass() override;
 
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
@@ -56,7 +61,11 @@ namespace rhi::directX12
 		-                Compute Command
 		---------------------------------------------------------------------*/
 		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override;
-
+		/*-------------------------------------------------------------------
+		-                Transition layout
+		---------------------------------------------------------------------*/
+		void TransitionResourceState (const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after) override ;
+		void TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters) override ;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -76,6 +85,10 @@ namespace rhi::directX12
 		**                Protected Member Variables
 		*****************************************************************************/
 		CommandListComPtr _commandList = nullptr;
+
+	private:
+		void BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer);
+		void OMSetFrameBuffer   (const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer);
 	};
 }
 #endif

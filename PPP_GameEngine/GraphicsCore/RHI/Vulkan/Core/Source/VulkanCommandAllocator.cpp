@@ -19,7 +19,7 @@ using namespace rhi;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>& device, const std::uint32_t queueFamilyIndex) : core::RHICommandAllocator(device)
+RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex) : core::RHICommandAllocator(device, type)
 {
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	

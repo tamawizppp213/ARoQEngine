@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameCore/Input/Include/GameInput.hpp"
 #include "GameUtility/Base/Include/GameTimer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	virtual void Initialize(GameTimer* gameTimer);
+	virtual void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer);
 	virtual void Update   ();
 	virtual void Draw     () = 0;
 	virtual void Terminate() = 0;
@@ -58,7 +58,7 @@ protected:
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
-	GraphicsCoreEngine& _engine      = GraphicsCoreEngine::Instance();
+	std::shared_ptr<LowLevelGraphicsEngine> _engine;
 	GameInput& _gameInput            = GameInput::Instance();
 	GameTimer* _gameTimer            = nullptr;
 	bool _hasExecutedSceneTransition = false;

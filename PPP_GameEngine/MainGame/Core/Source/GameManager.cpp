@@ -14,14 +14,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-void GameManager::GameStart(GameTimer& gameTimer, HWND hwnd, HINSTANCE hInstance)
+void GameManager::GameStart(APIVersion apiVersion, GameTimer& gameTimer, HWND hwnd, HINSTANCE hInstance)
 {
-	//_engine.StartUp(hwnd, hInstance);
-	_sceneManager.StartUp(&gameTimer);
+	_engine = std::make_shared<LowLevelGraphicsEngine>();
+	_engine->StartUp(apiVersion, hwnd, hInstance);
+	_sceneManager.StartUp(_engine, &gameTimer);
 }
 
 void GameManager::GameMain()
@@ -36,7 +38,7 @@ void GameManager::GameEnd()
 	_sceneManager.ShutDown();
 	ResourceManager::Instance().ClearAllResources();
 	GameObject::ClearAllGameObjects();
-	//_engine.ShutDown();
+	_engine->ShutDown();
 }
 
 void GameManager::SetHWND(HWND hwnd)

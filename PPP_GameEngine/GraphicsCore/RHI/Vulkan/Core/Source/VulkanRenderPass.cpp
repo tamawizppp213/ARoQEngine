@@ -45,7 +45,35 @@ RHIRenderPass::RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, con
 }
 
 #pragma endregion Constructor and Destructor
+#pragma region Property
+std::vector<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
+{
+	/*-------------------------------------------------------------------
+	-               Set clear values
+	---------------------------------------------------------------------*/
+	std::vector<VkClearValue> clearValues(_colorClearValues.size());
+	// render target
+	{
+		for (size_t i = 0; i < clearValues.size(); ++i)
+		{
+			clearValues[i].color.float32[0] = _colorClearValues[i].Color[core::ClearValue::Red];
+			clearValues[i].color.float32[1] = _colorClearValues[i].Color[core::ClearValue::Green];
+			clearValues[i].color.float32[2] = _colorClearValues[i].Color[core::ClearValue::Blue];
+			clearValues[i].color.float32[3] = _colorClearValues[i].Color[core::ClearValue::Alpha];
+		}
+	}
+	// depth stencil
+	if (_depthClearValue.has_value())
+	{
+		VkClearValue clearValue = {};
+		clearValue.depthStencil.depth   = _depthClearValue->Depth;
+		clearValue.depthStencil.stencil = _depthClearValue->Stencil;
+		clearValues.emplace_back(clearValue);
+	}
 
+	return clearValues;
+}
+#pragma endregion Property
 #pragma region Prepare Function
 void rhi::vulkan::RHIRenderPass::Prepare()
 {
@@ -68,7 +96,7 @@ void rhi::vulkan::RHIRenderPass::Prepare()
 	for (size_t index = 0; index < _colorAttachments.size(); ++index)
 	{
 		const auto& colorAttachment       = _colorAttachments[index];
-		colorsReference[index].attachment = static_cast<std::uint32_t>(attachmentCount);
+		colorsReference[index].attachment = static_cast<std::uint32_t>(index);
 		colorsReference[index].layout     = VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		attachments[index].flags          = 0;
