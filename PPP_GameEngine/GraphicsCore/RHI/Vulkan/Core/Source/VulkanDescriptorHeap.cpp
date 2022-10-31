@@ -48,7 +48,7 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (_heapInfo.find(heapType) == _heapInfo.end()) { return INVALID_ID; }
+	if (_heapInfo.find(heapType) == _heapInfo.end()) { return static_cast<core::RHIDescriptorHeap::DescriptorID>(INVALID_ID); }
 	
 	/*-------------------------------------------------------------------
 	-			     Set up descriptor set layout
@@ -76,7 +76,7 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 		default: { throw std::runtime_error("unrecoverable error (allocate descriptor set function)"); }
 	}
 
-	return _resourceAllocator.IssueID(descriptorSet);
+	return static_cast<core::RHIDescriptorHeap::DescriptorID>(_resourceAllocator.IssueID(descriptorSet));
 }
 /****************************************************************************
 *                     Resize

@@ -76,7 +76,7 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
 	std::vector<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
-	TransitionResourceStates(frameBuffer->GetRenderTargetSize(), frameBuffer->GetRenderTargets().data(), states.data());
+	TransitionResourceStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().data(), states.data());
 	/*-------------------------------------------------------------------
 	-          Select renderpass and frame buffer action
 	---------------------------------------------------------------------*/
@@ -93,7 +93,7 @@ void RHICommandList::EndRenderPass()
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
 	std::vector<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
-	TransitionResourceStates(_frameBuffer->GetRenderTargetSize(), _frameBuffer->GetRenderTargets().data(), states.data());
+	TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
 }
 #pragma endregion Call Draw Frame
 #pragma region GPU Command
@@ -257,9 +257,10 @@ void RHICommandList::BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRen
 		dsvDesc.DepthEndingAccess      = depthEnd;
 		dsvDesc.StencilBeginningAccess = stencilBegin;
 		dsvDesc.StencilEndingAccess    = stencilEnd;
+		dsvDesc.cpuDescriptor          = dsvHandle;
 	}
 
-	_commandList->BeginRenderPass(static_cast<std::uint32_t>(rtvDescs.size()), rtvDescs.data(), hasDSV ? &dsvDesc : nullptr, D3D12_RENDER_PASS_FLAG_NONE);
+	_commandList->BeginRenderPass(static_cast<std::uint32_t>(rtvDescs.size()), hasRTV ? rtvDescs.data() : nullptr, hasDSV ? &dsvDesc : nullptr, D3D12_RENDER_PASS_FLAG_NONE);
 }
 
 /****************************************************************************
@@ -291,7 +292,7 @@ void RHICommandList::OMSetFrameBuffer(const std::shared_ptr<directX12::RHIRender
 		assert(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
 		rtvHandle[i] = view->GetCPUHandler();
 	}
-	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = {};
 	if (hasDSV)
 	{
 		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
@@ -326,7 +327,7 @@ void RHICommandList::OMSetFrameBuffer(const std::shared_ptr<directX12::RHIRender
 	/*-------------------------------------------------------------------
 	-          Set render target and depth stencil
 	---------------------------------------------------------------------*/
-	_commandList->OMSetRenderTargets(rtvHandle.size(), rtvHandle.data(), FALSE, hasDSV ? &dsvHandle : nullptr);
+	_commandList->OMSetRenderTargets(static_cast<std::uint32_t>(rtvHandle.size()), hasRTV ? rtvHandle.data() : nullptr, FALSE, hasDSV ? &dsvHandle : nullptr);
 }
 
 #pragma endregion Private Function

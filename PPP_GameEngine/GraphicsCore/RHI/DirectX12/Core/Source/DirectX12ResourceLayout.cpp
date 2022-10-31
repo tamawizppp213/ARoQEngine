@@ -32,12 +32,12 @@ RHIResourceLayout::~RHIResourceLayout()
 RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
 	: core::RHIResourceLayout(device, elements, samplers, constant32Bits)
 {
-	SetUp(_elements, _samplers, _constant32Bits);
+	SetUp();
 }
 RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant32Bits)
 	: core::RHIResourceLayout(device, element, sampler, constant32Bits)
 {
-	SetUp(_elements, _samplers, _constant32Bits);
+	SetUp();
 }
 
 #pragma region SetUp Function
@@ -46,16 +46,14 @@ RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& dev
 *************************************************************************//**
 *  @fn        void RHIResourceLayout::SetUp(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
 *  @brief     Set up rootsignature
-*  @param[in] const std::vector<core::ResourceLayoutElement>& elements
-*  @param[in] const std::vector<core::SamplerLayoutElement>& samplers
-*  @param[in] std::optional<core::Constant32Bits>& constant32Bits
+*  @param[in] void
 *  @return Å@Å@void
 *****************************************************************************/
-void RHIResourceLayout::SetUp(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+void RHIResourceLayout::SetUp()
 {
 	DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
 
-	std::vector<D3D12_DESCRIPTOR_RANGE>    ranges(elements.size());
+	std::vector<D3D12_DESCRIPTOR_RANGE>    ranges(_elements.size());
 	std::vector<D3D12_STATIC_SAMPLER_DESC> staticSamplerArrays = {};
 	
 	/*-------------------------------------------------------------------

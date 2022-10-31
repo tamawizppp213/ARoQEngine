@@ -44,7 +44,7 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (_heapInfo.find(heapType) == _heapInfo.end()) { return INVALID_ID; }
+	if (_heapInfo.find(heapType) == _heapInfo.end()) { return static_cast<DescriptorID>(INVALID_ID); }
 	/*-------------------------------------------------------------------
 	-			     Issue ID
 	---------------------------------------------------------------------*/
@@ -146,7 +146,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 		{
 			_resourceAllocators[heapInfo.first].SetResourceAllocator(
 				heapInfo.second,            // max descriptor count
-				_descriptorByteSize,        // one descriptor byte size
+				static_cast<std::uint32_t>(_descriptorByteSize),        // one descriptor byte size
 				D3D12_CPU_DESCRIPTOR_HANDLE(_descriptorHeap->GetCPUDescriptorHandleForHeapStart().ptr + pointer), // cpu start pointer
 				heapInfo.first == core::DescriptorHeapType::RTV || heapInfo.first == core::DescriptorHeapType::DSV ?
 				D3D12_GPU_DESCRIPTOR_HANDLE() : 

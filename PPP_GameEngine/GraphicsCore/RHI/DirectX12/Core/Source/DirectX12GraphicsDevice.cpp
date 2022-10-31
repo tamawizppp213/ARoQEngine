@@ -186,7 +186,6 @@ void GraphicsDeviceDirectX12::BeginDrawFrame()
 	---------------------------------------------------------------------*/
 	_commandList->RSSetViewports(1, &_screenViewport);
 	_commandList->RSSetScissorRects(1, &_scissorRect);
-	_commandList->RSSetScissorRects(1, &_scissorRect);
 	/*-------------------------------------------------------------------
 	-               Clear the back buffer and depth buffer.
 	---------------------------------------------------------------------*/

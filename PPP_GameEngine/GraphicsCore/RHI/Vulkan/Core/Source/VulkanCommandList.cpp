@@ -83,7 +83,7 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
 	std::vector<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
-	TransitionResourceStates(frameBuffer->GetRenderTargetSize(), frameBuffer->GetRenderTargets().data(), states.data());
+	TransitionResourceStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().data(), states.data());
 
 	/*-------------------------------------------------------------------
 	-               Set clear values
@@ -115,7 +115,7 @@ void RHICommandList::EndRenderPass()
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
 	std::vector<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
-	TransitionResourceStates(_frameBuffer->GetRenderTargetSize(), _frameBuffer->GetRenderTargets().data(), states.data());
+	TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
 }
 #pragma endregion SetUp Draw Frame
 #pragma region GPU Command 
@@ -146,8 +146,8 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 		imageMemoryBarrier.subresourceRange.aspectMask     = EnumConverter::Convert(vkTexture->GetPixelFormat(), vkTexture->GetUsage());
 		imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
 		imageMemoryBarrier.subresourceRange.baseMipLevel   = 0;
-		imageMemoryBarrier.subresourceRange.layerCount     = vkTexture->GetArrayLength();
-		imageMemoryBarrier.subresourceRange.levelCount     = vkTexture->GetMipMapLevels();
+		imageMemoryBarrier.subresourceRange.layerCount     = static_cast<std::uint32_t>(vkTexture->GetArrayLength());
+		imageMemoryBarrier.subresourceRange.levelCount     = static_cast<std::uint32_t>(vkTexture->GetMipMapLevels());
 		imageMemoryBarrier.pNext = nullptr;
 
 		vkTexture->TransitionResourceState(afters[i]);
@@ -173,6 +173,8 @@ VkAccessFlags RHICommandList::SelectVkAccessFlag(const VkImageLayout imageLayout
 		case VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL: { return VkAccessFlagBits::VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VkAccessFlagBits::VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT; }
 		case VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL    : { return VkAccessFlagBits::VK_ACCESS_TRANSFER_READ_BIT;  }
 		case VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL    : { return VkAccessFlagBits::VK_ACCESS_TRANSFER_WRITE_BIT; }
+		default:
+			return 0;
 	}
 }
 #pragma endregion TransitionResourceLayout

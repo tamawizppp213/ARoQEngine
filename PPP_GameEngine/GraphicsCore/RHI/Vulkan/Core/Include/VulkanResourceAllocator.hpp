@@ -60,7 +60,7 @@ namespace rhi::vulkan
 		**                Constructor and Destructor
 		*****************************************************************************/
 		ResourceAllocator() = default;
-		ResourceAllocator(VkDescriptorPool descriptorPool) { }
+		ResourceAllocator(VkDescriptorPool descriptorPool) : _descriptorPool(descriptorPool) {}
 		~ResourceAllocator()
 		{
 			ResetID();
