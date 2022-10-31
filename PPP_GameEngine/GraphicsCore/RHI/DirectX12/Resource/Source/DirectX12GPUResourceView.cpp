@@ -41,7 +41,7 @@ GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device,
 
 }
 GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
-	: core::GPUResourceView(device, type)
+	: core::GPUResourceView(device, type, customHeap)
 {
 	_texture = texture;
 	_buffer  = nullptr;
@@ -295,7 +295,7 @@ void GPUResourceView::CreateUAV(const std::shared_ptr<directX12::RHIDescriptorHe
 				resourceViewDesc.ViewDimension = D3D12_UAV_DIMENSION::D3D12_UAV_DIMENSION_TEXTURE3D;
 				resourceViewDesc.Texture3D.FirstWSlice = 0;
 				resourceViewDesc.Texture3D.MipSlice    = 0;
-				resourceViewDesc.Texture3D.WSize       = 0.0f;
+				resourceViewDesc.Texture3D.WSize       = 0;
 				break;
 			}
 			case core::ResourceType::Texture1DArray:
@@ -597,7 +597,7 @@ const std::shared_ptr<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescr
 
 	// Select default heap based on core::ResourceViewType
 	std::shared_ptr<directX12::RHIDescriptorHeap> defaultHeap = nullptr;
-	switch (_resourceViewType)
+	switch (type)
 	{
 		case core::ResourceViewType::ConstantBuffer: { defaultHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::CBV)); break; }
 		case core::ResourceViewType::Texture:

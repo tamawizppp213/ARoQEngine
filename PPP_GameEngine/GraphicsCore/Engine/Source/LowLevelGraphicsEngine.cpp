@@ -209,11 +209,14 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 	{
 		// set render pass
 		core::Attachment colorAttachment = core::Attachment::RenderTarget(_pixelFormat);
-		_renderPasses[i] = _device->CreateRenderPass(colorAttachment, std::nullopt);
-		_renderPasses[i]->SetClearValue(core::ClearValue(0.0, 0.3, 0.3, 1.0));
-
+		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat);
+		_renderPasses[i] = _device->CreateRenderPass(colorAttachment, depthAttachment);
+		_renderPasses[i]->SetClearValue(core::ClearValue(0.0f, 0.3f, 0.3f, 1.0f), core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f));
+	
+		const auto depthInfo    = core::GPUTextureMetaData::DepthStencil(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _depthStencilFormat, core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f));
+		const auto depthTexture = _device->CreateTexture(depthInfo);
 		// set frameBuffer
-		_frameBuffers[i] = _device->CreateFrameBuffer(_renderPasses[i], _swapchain->GetBuffer(i), nullptr);
+		_frameBuffers[i] = _device->CreateFrameBuffer(_renderPasses[i], _swapchain->GetBuffer(i), depthTexture);
 	}
 }
 

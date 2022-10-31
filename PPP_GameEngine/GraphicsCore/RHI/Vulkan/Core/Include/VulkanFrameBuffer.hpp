@@ -39,7 +39,7 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		VkFramebuffer GetFrameBuffer() const noexcept { return _frameBuffer; }
-		VkExtent2D    GetExtent2D   () const noexcept { return VkExtent2D(_width, _height); }
+		VkExtent2D    GetExtent2D() const noexcept { return VkExtent2D(static_cast<std::uint32_t>(_width), static_cast<std::uint32_t>(_height)); }
 		size_t GetWidth () const noexcept { return _width; }
 		size_t GetHeight() const noexcept { return _height; }
 		/****************************************************************************

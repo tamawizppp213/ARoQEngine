@@ -63,7 +63,7 @@ namespace rhi::directX12
 		size_t _constant32BitsCount = 0;
 
 	private:
-		void SetUp(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt);
+		void SetUp();
 	};
 }
 #endif

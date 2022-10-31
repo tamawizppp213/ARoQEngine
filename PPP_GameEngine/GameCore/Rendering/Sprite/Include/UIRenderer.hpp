@@ -76,7 +76,7 @@ namespace ui
 		**                Protected Member Variables
 		*****************************************************************************/
 		MeshBufferPtr        _meshBuffer = nullptr;
-		CommandContextPtr    _context    = nullptr;
+		CommandContextPtr    _context    = nullptr; 
 		std::vector<Texture> _textures;
 		int  _currentFrame     = 0;
 		int  _imageStackCount  = 0;

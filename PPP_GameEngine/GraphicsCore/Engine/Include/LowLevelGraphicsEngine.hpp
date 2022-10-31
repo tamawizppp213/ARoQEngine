@@ -114,7 +114,8 @@ protected:
 	/* @brief : Rendering Configuration*/ // å„Ç≈configÉtÉ@ÉCÉãÇçÏê¨Ç∑ÇÈ.
 	bool _useHDR             = false;
 	bool _useRayTracing      = true;
-	rhi::core::PixelFormat _pixelFormat = rhi::core::PixelFormat::R8G8B8A8_UNORM;
+	rhi::core::PixelFormat _pixelFormat        = rhi::core::PixelFormat::R8G8B8A8_UNORM;
+	rhi::core::PixelFormat _depthStencilFormat = rhi::core::PixelFormat::D24_UNORM_S8_UINT;
 		
 	// shutdown check
 	bool _hasCalledShutDown = false;

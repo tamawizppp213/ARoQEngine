@@ -49,7 +49,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) { return _resourceAllocator.GetDescriptorSet(); }
+		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) { return _resourceAllocator.GetDescriptorSet(id); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
