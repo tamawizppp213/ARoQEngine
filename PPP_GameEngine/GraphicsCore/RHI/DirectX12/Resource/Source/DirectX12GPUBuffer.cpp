@@ -39,9 +39,9 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core:
 	resourceDesc.Dimension          = D3D12_RESOURCE_DIMENSION_BUFFER;
 	resourceDesc.Alignment          = 0;
 	resourceDesc.Width              = static_cast<UINT64>(GetTotalByteSize());
-	resourceDesc.Height             = 1;
-	resourceDesc.DepthOrArraySize   = 1;
-	resourceDesc.MipLevels          = 1;
+	resourceDesc.Height             = 1; // For 1D buffer
+	resourceDesc.DepthOrArraySize   = 1; // For 1D buffer
+	resourceDesc.MipLevels          = 1; 
 	resourceDesc.Format             = DXGI_FORMAT_UNKNOWN;
 	resourceDesc.SampleDesc.Count   = 1;
 	resourceDesc.SampleDesc.Quality = 0;
@@ -53,7 +53,7 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core:
 	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
 	ThrowIfFailed(dxDevice->CreateCommittedResource(
 		&heapProp, D3D12_HEAP_FLAG_NONE, &resourceDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,                                          // Generic Read
+		EnumConverter::Convert(metaData.State),                                          // Generic Read
 		nullptr,
 		IID_PPV_ARGS(&_resource)));
 }

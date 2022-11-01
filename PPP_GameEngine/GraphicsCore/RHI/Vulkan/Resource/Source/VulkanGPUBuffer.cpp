@@ -39,7 +39,10 @@ GPUBuffer::~GPUBuffer()
 void GPUBuffer::CopyStart()
 {
 	VkDevice vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
-	vkMapMemory(vkDevice, _memory, 0, VK_WHOLE_SIZE, 0, reinterpret_cast<void**>(_mappedData));
+	if (vkMapMemory(vkDevice, _memory, 0, VK_WHOLE_SIZE, 0, reinterpret_cast<void**>(_mappedData)) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to vk map memory.");
+	};
 }
 void GPUBuffer::CopyData(int elementIndex, const void* data)
 {
@@ -69,7 +72,7 @@ void GPUBuffer::Prepare()
 	bufferInfo.usage = EnumConverter::Convert(_metaData.ResourceUsage).first;
 	bufferInfo.size  = _metaData.ByteSize;
 	bufferInfo.queueFamilyIndexCount = 0;
-	bufferInfo.pQueueFamilyIndices = nullptr;
+	bufferInfo.pQueueFamilyIndices   = nullptr;
 	bufferInfo.sharingMode = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE;
 	if (vkCreateBuffer(vkDevice, &bufferInfo, nullptr, &_buffer) != VK_SUCCESS)
 	{

@@ -1,74 +1,72 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12GPUBuffer.hpp
-///             @brief  GPU Buffer 
+///             @file   GMVertex.hpp
+///             @brief  Vertex
 ///             @author Toide Yutaro
-///             @date   2022_07_08
+///             @date   2022_11_02
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_GPU_BUFFER_HPP
-#define DIRECTX12_GPU_BUFFER_HPP
+#ifndef GM_VERTEX_HPP
+#define GM_VERTEX_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Core.hpp"
-#include <d3d12.h>
+#include "GMVector.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                              Struct
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::directX12
+namespace gm
 {
 	/****************************************************************************
-	*				  			GPUBuffer
+	*							 Vertex
 	*************************************************************************//**
-	*  @class     GPUBuffer
-	*  @brief     Buffer
+	*  @struct    Vertex
+	*  @brief     Vertex struct holding position, normal, uv, and color, 
 	*****************************************************************************/
-	class GPUBuffer : public core::GPUBuffer
+	struct Vertex
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		// @brief : Begin Map Function
-		void CopyStart() override;
-		// @brief : GPU copy to one element 
-		void CopyData(int elementIndex, const void* data) override ;
-		/* @brief : GPU copy the specified range*/
-		void CopyTotalData(const void* data, int dataLength) override;
-		// @brief : Unmap Function
-		void CopyEnd() override ;
-
+		gm::Float3 Position; /// Position
+		gm::Float3 Normal;   /// Normal
+		gm::Float4 Color;    /// Color
+		gm::Float2 UV;       /// UV
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		ResourceComPtr GetResource   () const noexcept { return _resource; }
-		Resource*      GetResourcePtr() const noexcept { return _resource.Get(); }
-		Resource**     GetAddressOf  () { return _resource.GetAddressOf(); }
+		Vertex()                         = default;
+		Vertex(const Vertex&)            = default;
+		Vertex& operator=(const Vertex&) = default;
+		Vertex(Vertex&&)                 = default;
+		Vertex& operator=(Vertex&&)      = default;
+		Vertex(DirectX::XMFLOAT3 const& position, DirectX::XMFLOAT3 const& normal, DirectX::XMFLOAT4 const& color, DirectX::XMFLOAT2 const& uv)
+			: Position(position), Normal(normal), Color(color), UV(uv)
+		{
+		};
+		Vertex(DirectX::FXMVECTOR position, DirectX::FXMVECTOR normal, DirectX::FXMVECTOR color, DirectX::FXMVECTOR uv)
+		{
+			DirectX::XMStoreFloat3(&this->Position, position);
+			DirectX::XMStoreFloat3(&this->Normal, normal);
+			DirectX::XMStoreFloat4(&this->Color, color);
+			DirectX::XMStoreFloat2(&this->UV, uv);
+		}
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUBuffer() = default;
-		~GPUBuffer() = default;
-		explicit GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData);
-	protected:
+	private:
 		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		
-		/****************************************************************************
-		**                Protected Function
+		**                Private Function
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Private Member Variables
 		*****************************************************************************/
-		ResourceComPtr _resource = nullptr;
 	};
 }
+
 #endif

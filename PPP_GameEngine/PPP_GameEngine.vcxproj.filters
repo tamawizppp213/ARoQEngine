@@ -762,6 +762,9 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanShader.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Include\GMVertex.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
