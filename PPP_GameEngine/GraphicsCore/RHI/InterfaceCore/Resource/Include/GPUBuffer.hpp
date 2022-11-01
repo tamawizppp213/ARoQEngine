@@ -35,20 +35,35 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		// @brief : Begin Map Function
 		virtual void CopyStart() = 0;
+		// @brief : GPU copy to one element 
 		virtual void CopyData(int elementIndex, const void* data) = 0;
+		/* @brief : GPU copy the specified range*/
 		virtual void CopyTotalData(const void* data, int dataLength) = 0;
+		// @brief : Unmap Function
 		virtual void CopyEnd() = 0;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		inline size_t GetElementCount   () { return _metaData.Count; }
-		inline size_t GetElementByteSize() { return _metaData.Stride; }
-		inline size_t GetTotalByteSize  () { return _metaData.ByteSize; }
-		inline       GPUBufferMetaData& GetMetaData()                { return _metaData; }
-		inline const GPUBufferMetaData& GetMetaData() const noexcept { return _metaData; }
-		inline ResourceType GetResourceType() const noexcept { return _metaData.ResourceType; }
+		// @brief : Return Buffer Array Length
+		size_t GetElementCount   () const { return _metaData.Count; }
+		// @brief : Return Buffer Element Byte Size
+		size_t GetElementByteSize() const { return _metaData.Stride; }
+		// @brief : Return Count * Stride
+		size_t GetTotalByteSize  () const { return _metaData.ByteSize; }
+		// @brief : Return GPU Resource Type. (Basically Buffer or RaytracingAccelerationStructure) 
+		ResourceType  GetResourceType() const { return _metaData.ResourceType; }
+		// @brief : Return GPU Resource State
+		ResourceState GetResourceState() const { return _metaData.State; }
+		// @brief : Return Buffer Usage Flag. (Vertex, Index, or Constant Buffer)
+		ResourceUsage GetUsage() const { return _metaData.ResourceUsage; }
+		// @brief : Return Buffer Type
+		BufferType GetBufferType() const { return _metaData.BufferType; }
+		      GPUBufferMetaData& GetMetaData()                { return _metaData; }
+		const GPUBufferMetaData& GetMetaData() const noexcept { return _metaData; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

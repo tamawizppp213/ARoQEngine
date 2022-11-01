@@ -34,9 +34,13 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		// @brief : Begin Map Function
 		void CopyStart() override;
+		// @brief : GPU copy to one element 
 		void CopyData(int elementIndex, const void* data) override ;
+		// @brief : GPU copy the specified range
 		void CopyTotalData(const void* data, int dataLength) override;
+		// @brief : Unmap Function
 		void CopyEnd() override;
 		/****************************************************************************
 		**                Public Member Variables

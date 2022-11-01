@@ -310,6 +310,7 @@
     <ClInclude Include="GameUtility\Math\Include\GMTypeDef.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVector.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMVertex.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\LowLevelGraphicsEngine.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Adapter.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12BaseStruct.hpp" />
