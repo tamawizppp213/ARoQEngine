@@ -14,7 +14,9 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDescriptorHeap.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandList.hpp"
 #include <stdexcept>
+#include <cassert>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,8 +39,12 @@ GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device,
 GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
 	:core::GPUResourceView(device, type, customHeap)
 {
+	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+
 	_buffer  = nullptr;
 	_texture = texture;
+
+	//if(!customHeap){_heap = vkDevice->GetDefaultHeap(_desc) }
 	CreateView();
 }
 
@@ -55,7 +61,65 @@ GPUResourceView::~GPUResourceView()
 	}
 }
 #pragma endregion Constructor and Destructor
+#pragma region Bind Function
+// ñ¢äÆê¨
+void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
+{
+	assert(commandList->GetType() == core::CommandListType::Graphics);
 
+	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkHeap   = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_heap);
+	const auto vkDescriptorSet = vkHeap->GetDescriptorSet(_heapOffset);
+	
+	/*-------------------------------------------------------------------
+	-               Set up write descriptor
+	---------------------------------------------------------------------*/
+	VkWriteDescriptorSet writeDesc = {};
+	writeDesc.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+	writeDesc.descriptorCount = 1;
+	writeDesc.pNext           = nullptr;
+	writeDesc.dstArrayElement = 0;
+	//writeDesc.dstBinding = _resource
+	
+	if (_imageView)
+	{
+		const auto vkTexture = std::static_pointer_cast<vulkan::GPUTexture>(_texture);
+
+		/*-------------------------------------------------------------------
+		-               Set up Image info
+		---------------------------------------------------------------------*/
+		VkDescriptorImageInfo imageInfo = {};
+		imageInfo.imageView   = _imageView;
+		imageInfo.sampler     = nullptr; //ïKóvÇ…Ç»ÇËÇªÇ§
+		imageInfo.imageLayout = EnumConverter::Convert(vkTexture->GetResourceState());
+		
+		writeDesc.pImageInfo     = &imageInfo;
+		writeDesc.descriptorType = EnumConverter::Convert(rhi::core::DescriptorHeapType::SRV);
+	}
+	else if (_bufferView)
+	{
+		const auto vkBuffer = std::static_pointer_cast<vulkan::GPUBuffer>(_buffer);
+		/*-------------------------------------------------------------------
+		-               Set up Buffer info
+		---------------------------------------------------------------------*/
+		VkDescriptorBufferInfo bufferInfo = {};
+		bufferInfo.buffer = vkBuffer->GetBuffer();
+		bufferInfo.range  = vkBuffer->GetTotalByteSize();
+		bufferInfo.offset = 0;
+		
+		writeDesc.pBufferInfo = &bufferInfo;
+		writeDesc.descriptorType = EnumConverter::Convert(rhi::core::DescriptorHeapType::CBV); // UAVÇ‡Ç≠ÇÈÇ©ÇÁï™Ç©ÇÁÇÒ
+	}
+	else
+	{
+		throw std::runtime_error("failed to bind resource");
+	}
+	/*-------------------------------------------------------------------
+	-                   Update
+	---------------------------------------------------------------------*/
+	vkUpdateDescriptorSets(vkDevice->GetDevice(), 1, &writeDesc, 0, nullptr);
+}
+#pragma endregion Bind Function
 #pragma region Prepare View Function 
 void GPUResourceView::CreateView()
 {
@@ -94,10 +158,10 @@ void GPUResourceView::CreateImageView()
 	const auto vkImage  = static_pointer_cast<vulkan::GPUTexture>(_texture);
 
 	VkImageViewCreateInfo imageViewCreateInfo = {};
-	imageViewCreateInfo.sType    = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	imageViewCreateInfo.format   = EnumConverter::Convert(vkImage->GetPixelFormat());
-	imageViewCreateInfo.viewType = EnumConverter::Convert(vkImage->GetResourceType());
-	imageViewCreateInfo.image    = vkImage->GetImage();
+	imageViewCreateInfo.sType      = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+	imageViewCreateInfo.format     = EnumConverter::Convert(vkImage->GetPixelFormat());
+	imageViewCreateInfo.viewType   = EnumConverter::Convert(vkImage->GetResourceType());
+	imageViewCreateInfo.image      = vkImage->GetImage();
 	imageViewCreateInfo.components = VkComponentMapping(VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_A);
 	imageViewCreateInfo.subresourceRange.baseMipLevel   = 0;
 	imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;

@@ -188,7 +188,7 @@ std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const s
 }
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {
-	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<directX12::GPUPipelineFactory>());
+	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<directX12::GPUPipelineFactory>(shared_from_this()));
 }
 std::shared_ptr<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
 {
@@ -210,7 +210,10 @@ std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextur
 {
 	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this(), metaData));
 }
-
+std::shared_ptr<core::GPUTexture> RHIDevice::CreateTextureEmpty()
+{
+	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this()));
+}
 #pragma endregion           Create Resource Function
 #pragma region Debug Function
 

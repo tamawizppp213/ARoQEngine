@@ -30,7 +30,7 @@ rhi::directX12::GPUInputAssemblyState::GPUInputAssemblyState(
 	{
 		_inputLayoutElements.push_back(
 			{
-				element.Name.c_str(),
+				element.SemanticName.c_str(),
 				0,
 				EnumConverter::Convert(element.Format),
 				static_cast<std::uint32_t>(element.Slot),
@@ -40,7 +40,7 @@ rhi::directX12::GPUInputAssemblyState::GPUInputAssemblyState(
 			}
 		);
 
-		offsetInBytes[element.Slot] += static_cast<std::uint32_t>(core::PixelFormatSizeOf::Get(element.Format));
+		offsetInBytes[element.Slot] += static_cast<std::uint32_t>(core::InputFormatSizeOf::Get(element.Format));
 	}
 
 	_inputLayout.NumElements        = static_cast<std::uint32_t>(_inputLayoutElements.size());

@@ -21,7 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-struct Texture;
+namespace rhi::core
+{
+	class GPUResourceCache;
+	class GPUResourceView;
+}
 namespace ui
 {
 	class Image;
@@ -38,9 +42,10 @@ namespace sample
 	*****************************************************************************/
 	class SampleTexture : public Scene
 	{
-		using UIRendererPtr = std::unique_ptr<ui::UIRenderer>;
-		using ImagePtr      = std::unique_ptr<ui::Image>;
-		using TexturePtr    = std::unique_ptr<Texture>;
+		using UIRendererPtr = std::shared_ptr<ui::UIRenderer>;
+		using ImagePtr      = std::shared_ptr<ui::Image>;
+		using GPUResourceCachePtr = std::shared_ptr<rhi::core::GPUResourceCache>;
+		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -70,10 +75,10 @@ namespace sample
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		UIRendererPtr _renderer;
-		ImagePtr      _image;
-		TexturePtr    _texture;
-		ResourceManager& _resourceManager = ResourceManager::Instance();
+		UIRendererPtr _renderer = nullptr;
+		ImagePtr      _image    = nullptr;
+		GPUResourceCachePtr _resourceCache = nullptr;
+		GPUResourceViewPtr _resourceView = nullptr;
 	};
 }
 #endif

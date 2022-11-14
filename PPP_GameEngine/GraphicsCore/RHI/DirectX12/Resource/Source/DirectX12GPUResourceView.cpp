@@ -14,6 +14,7 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -55,6 +56,20 @@ GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device,
 	if (_texture) { CreateView(heap); }
 }
 #pragma endregion Constructor and Destructor
+#pragma region Bind Function
+void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
+{
+	/*-------------------------------------------------------------------
+	-             Graphics command list check
+	---------------------------------------------------------------------*/
+	assert(commandList->GetType() == core::CommandListType::Graphics);
+	/*-------------------------------------------------------------------
+	-             Set Graphics Descirptor Table
+	---------------------------------------------------------------------*/
+	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList)->GetCommandList();
+	dxCommandList->SetGraphicsRootDescriptorTable(index, GetGPUHandler());
+}
+#pragma endregion Bind Function
 #pragma region Setup view
 void GPUResourceView::CreateView(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
 {

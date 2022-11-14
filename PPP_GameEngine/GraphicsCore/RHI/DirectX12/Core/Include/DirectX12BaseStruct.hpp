@@ -751,7 +751,7 @@ inline UINT64 UpdateSubresources(
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT layouts[maxSubresources] = {};
 
 	D3D12_RESOURCE_DESC resourceDesc = destinationResource->GetDesc();
-	Device* device = nullptr;
+	IDevice* device = nullptr;
 	destinationResource->GetDevice(__uuidof(*device), reinterpret_cast<void**>(&device));
 	device->GetCopyableFootprints(&resourceDesc, firstSubresource, numSubresources, intermediateOffset, layouts, rows, rowSizesInBytes, &requiredSize);
 	device->Release();

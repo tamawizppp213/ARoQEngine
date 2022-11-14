@@ -11,6 +11,10 @@
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanAdapter.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanInstance.hpp"
+#include "GameUtility/File/Include/UnicodeUtility.hpp"
+
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -26,6 +30,11 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 	: core::GPUTexture(device, metaData)
 {
 	Prepare();
+}
+GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device)
+	: core::GPUTexture(device)
+{
+	_memory = nullptr;
 }
 GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image)
 	: core::GPUTexture(device, metaData), _image(image)
@@ -101,3 +110,41 @@ void GPUTexture::Prepare()
 	}
 }
 #pragma endregion Prepare
+#pragma region Debug
+/****************************************************************************
+*                     SetName
+*************************************************************************//**
+*  @fn        void GPUBuffer::SetName(const std::wstring& name)
+*  @brief     Set Buffer Name
+*  @param[in] const std::wstring& name
+*  @return Å@Å@void
+*****************************************************************************/
+void GPUTexture::SetName(const std::wstring& name)
+{
+	std::string utf8Name = unicode::ToUtf8String(name);
+
+	VkDebugUtilsObjectNameInfoEXT info = {};
+	info.sType        = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;  // structure type
+	info.pNext        = nullptr;                                             // no extension
+	info.objectType   = VK_OBJECT_TYPE_IMAGE;                                // object type : image
+	info.objectHandle = reinterpret_cast<std::uint64_t>(_image);             // vkBuffer to std::uint64_t
+	info.pObjectName  = utf8Name.c_str();                                     
+	
+	/*-------------------------------------------------------------------
+	-          GetInstance
+	---------------------------------------------------------------------*/
+	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkAdapter = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
+	const auto vkInstance = static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance())->GetVkInstance();
+
+	/*-------------------------------------------------------------------
+	-          SetName
+	---------------------------------------------------------------------*/
+	auto func = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetInstanceProcAddr(vkInstance, "vkSetDebugUtilsObjectNameEXT");
+	if (func(vkDevice->GetDevice(), &info) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to set buffer name");
+	}
+	_name = name;
+}
+#pragma endregion Debug

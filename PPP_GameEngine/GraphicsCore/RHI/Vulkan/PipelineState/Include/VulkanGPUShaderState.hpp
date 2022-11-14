@@ -36,7 +36,10 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
+		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
+		void Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}) override;
+		// @brief : Offline Compile, already compiled fileName(filePath)
+		void LoadBinary(const core::ShaderType type, const std::wstring& fileName) override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -46,14 +49,9 @@ namespace rhi::vulkan
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUShaderState() = default;
-		~GPUShaderState() = default;
+		~GPUShaderState();
 		explicit GPUShaderState(
-			const std::shared_ptr<core::RHIDevice>& device,
-			const core::ShaderType shaderType,
-			const std::string& fileName,
-			const std::string& entryPoint    = "main",
-			const std::string& shaderVersion = "6.6"
-		);
+			const std::shared_ptr<core::RHIDevice>& device) : core::GPUShaderState(device){};
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -65,9 +63,10 @@ namespace rhi::vulkan
 		VkPipelineShaderStageCreateInfo _stage = {};
 		VkShaderModule _module     = nullptr;
 		std::wstring   _apiVersion = L"vulkan1.3";
+		std::string   _name = "";
 
 	private:
-		void CompileShader(const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target);
+		void VkCompile(const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target, const std::vector<std::wstring>& includeDirectories);
 	};
 }
 #endif

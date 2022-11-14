@@ -60,6 +60,7 @@ namespace rhi::directX12
 		std::shared_ptr<core::GPUSampler>               CreateSampler(const core::SamplerInfo& samplerInfo); // both
 		std::shared_ptr<core::GPUBuffer>                CreateBuffer(const core::GPUBufferMetaData& metaData) override;
 		std::shared_ptr<core::GPUTexture>               CreateTexture(const core::GPUTextureMetaData& metaData) override;
+		std::shared_ptr<core::GPUTexture>               CreateTextureEmpty() override;
 #pragma endregion Create Function
 		/****************************************************************************
 		**                Public Member Variables

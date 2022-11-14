@@ -34,7 +34,8 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
+		// ñ¢äÆê¨
+		void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -61,6 +62,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkImageView _imageView   = VK_NULL_HANDLE;
 		VkBufferView _bufferView = VK_NULL_HANDLE;
+		std::uint32_t _heapOffset = 0;
 		
 	};
 }

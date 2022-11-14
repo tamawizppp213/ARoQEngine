@@ -58,14 +58,9 @@ std::shared_ptr<core::GPUDepthStencilState> GPUPipelineFactory::CreateDepthStenc
 		std::make_shared<GPUDepthStencilState>(_device, depthEnable, depthWriteEnable, stencilEnable, depthOperator, front, back));
 }
 
-std::shared_ptr<core::GPUShaderState> GPUPipelineFactory::CreateShaderState(
-	const core::ShaderType type,
-	const std::string& fileName,
-	const std::string& entryPoint,
-	const std::string& shaderVersion
-)
+std::shared_ptr<core::GPUShaderState> GPUPipelineFactory::CreateShaderState()
 {
-	return std::static_pointer_cast<core::GPUShaderState>(std::make_shared<GPUShaderState>(_device, type, fileName, entryPoint, shaderVersion));
+	return std::static_pointer_cast<core::GPUShaderState>(std::make_shared<GPUShaderState>(_device));
 }
 
 std::shared_ptr<core::GPUBlendState> GPUPipelineFactory::CreateBlendState(

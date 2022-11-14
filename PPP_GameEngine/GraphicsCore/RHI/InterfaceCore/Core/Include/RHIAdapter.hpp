@@ -47,6 +47,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		bool              IsDiscreteGPU() const { return _isDiscreteGPU; }
 		const std::string&  GetName    () const { return _name; };
 		const std::uint32_t GetVenderID() const { return _venderID; } // Return 0 if no assignment
 		const std::uint32_t GetDeviceID() const { return _deviceID; } // Return 0 if no assignment
@@ -68,7 +69,8 @@ namespace rhi::core
 		*****************************************************************************/
 		std::string   _name     = "";
 		std::uint32_t _venderID = 0;
-		std::uint32_t _deviceID = 0; 
+		std::uint32_t _deviceID = 0;
+		bool _isDiscreteGPU = false;
 		std::shared_ptr<RHIInstance> _instance = nullptr;
 	};
 }

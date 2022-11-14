@@ -47,6 +47,8 @@ namespace rhi::directX12
 		static D3D12_STATIC_BORDER_COLOR  Convert(const rhi::core::BorderColor borderColor);
 #pragma endregion Sampler State
 		static DXGI_FORMAT                Convert(const rhi::core::PixelFormat pixelFormat);
+		static DXGI_FORMAT                Convert(const rhi::core::IndexType   indexFormat);
+		static DXGI_FORMAT                Convert(const rhi::core::InputFormat inputFormat);
 #pragma region BlendState
 		static D3D12_BLEND_OP             Convert(const rhi::core::BlendOperator blendOperator);
 		static D3D12_BLEND                Convert(const rhi::core::BlendFactor blendFactor);
@@ -81,6 +83,7 @@ namespace rhi::directX12
 		static D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE Convert(const rhi::core::AttachmentLoad op);
 		static D3D12_RENDER_PASS_ENDING_ACCESS_TYPE    Convert(const rhi::core::AttachmentStore op);
 #pragma endregion Render Pass
+
 #pragma endregion GPUResource
 	};
 }

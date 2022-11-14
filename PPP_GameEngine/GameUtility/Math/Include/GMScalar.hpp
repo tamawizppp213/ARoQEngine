@@ -111,5 +111,11 @@ namespace gm
 		}
 	}
 	INLINE bool FuzzyZero(const Scalar& v) { return Abs(v) < FLT_EPSILON; }
+	INLINE void ScalarSinCos(Scalar& sin, Scalar& cos, float radian)
+	{
+		float fSin = sin; float fCos = cos;
+		DirectX::XMScalarSinCos(&fSin, &fCos, radian);
+		sin = Scalar(fSin); cos = Scalar(fCos);
+	}
 }
 #endif

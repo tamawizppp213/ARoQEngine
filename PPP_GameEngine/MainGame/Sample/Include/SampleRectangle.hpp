@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Core/Include/Scene.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,14 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace ui
+namespace rhi::core
 {
-	class Image;
-	class UIRenderer;
+	class GPUBuffer;
+	class GPUGraphicsPipelineState;
+	class RHIResourceLayout;
 }
 namespace sample
 {
-
 	/****************************************************************************
 	*				  			SampleRectangle
 	*************************************************************************//**
@@ -35,6 +36,10 @@ namespace sample
 	*****************************************************************************/
 	class SampleRectangle : public Scene
 	{
+		using VertexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
+		using IndexBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
+		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
+		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -64,6 +69,16 @@ namespace sample
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		VertexBufferPtr   _vertexBuffer   = nullptr;
+		IndexBufferPtr    _indexBuffer    = nullptr;
+		PipelineStatePtr  _pipelineState  = nullptr;
+		ResourceLayoutPtr _resourceLayout = nullptr;
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		void BuildBuffer();
+		void BuildPipelineState();
 	};
 }
 #endif

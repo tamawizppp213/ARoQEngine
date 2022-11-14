@@ -14,7 +14,11 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12FrameBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12DescriptorHeap.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12ResourceLayout.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
@@ -54,7 +58,7 @@ RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& devi
 		IID_PPV_ARGS(_commandList.GetAddressOf())));
 	ThrowIfFailed(_commandList->SetName(L"DirectX12::CommandList"));
 	ThrowIfFailed(_commandList->Close());
-
+	_commandListType = rhiAllocator->GetCommandListType();
 }
 
 #pragma endregion Constructor and Destructor
@@ -63,7 +67,10 @@ void RHICommandList::BeginRecording()
 {
 	_commandAllocator->Reset();
 	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
-	_commandList->ClearState(nullptr); // 元の状態に戻る
+	if (_commandAllocator->GetCommandListType() == core::CommandListType::Graphics)
+	{
+		_commandList->ClearState(nullptr); // 元の状態に戻る
+	}
 
 }
 void RHICommandList::EndRecording()
@@ -97,10 +104,32 @@ void RHICommandList::EndRenderPass()
 }
 #pragma endregion Call Draw Frame
 #pragma region GPU Command
+void RHICommandList::SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptorHeap>& heap)
+{
+	const auto dxHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(heap);
+	_commandList->SetDescriptorHeaps(1, dxHeap->GetHeap().GetAddressOf());
+}
+/****************************************************************************
+*                       SetPrimitiveTopology
+*************************************************************************//**
+*  @fn        void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
+*  @brief     Regist Primitive topology to command list
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
 {
 	_commandList->IASetPrimitiveTopology(EnumConverter::Convert(topology));
 }
+/****************************************************************************
+*                       SetViewport
+*************************************************************************//**
+*  @fn        void rhi::directX12::RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
+*  @brief     Regist multi viewport to command list
+*  @param[in] const core::Viewport view port
+*  @param[in] std::uint32_t viewport count
+*  @return 　　void
+*****************************************************************************/
 void rhi::directX12::RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
 {
 	std::vector<D3D12_VIEWPORT> v(numViewport);
@@ -115,7 +144,15 @@ void rhi::directX12::RHICommandList::SetViewport(const core::Viewport* viewport,
 	}
 	_commandList->RSSetViewports(numViewport, v.data());
 }
-
+/****************************************************************************
+*                       SetScissorRect
+*************************************************************************//**
+*  @fn        void rhi::directX12::RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
+*  @brief     Regist multi scissorRect to command list
+*  @param[in] const core::ScissorRect*
+*  @param[in] std::uint32_t numRect
+*  @return 　　void
+*****************************************************************************/
 void rhi::directX12::RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
 {
 	std::vector<D3D12_RECT> r(numRect);
@@ -128,7 +165,15 @@ void rhi::directX12::RHICommandList::SetScissor(const core::ScissorRect* rect, s
 	}
 	_commandList->RSSetScissorRects(numRect, r.data());
 }
-
+/****************************************************************************
+*                       SetViewportAndScissor
+*************************************************************************//**
+*  @fn        void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect)
+*  @brief     Regist viewport and scissorRect to command list
+*  @param[in] const core::Viewport& viewport
+*  @param[in] const core::ScissorRect& rect
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect)
 {
 	D3D12_VIEWPORT v = {};
@@ -147,6 +192,57 @@ void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const
 
 	_commandList->RSSetViewports(1, &v);
 	_commandList->RSSetScissorRects(1, &r);
+}
+
+void RHICommandList::SetVertexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer)
+{
+	// Is vertex buffer
+	assert(buffer->GetUsage() == core::ResourceUsage::VertexBuffer);
+
+	// Set up vertex buffer view
+	D3D12_VERTEX_BUFFER_VIEW view = {
+		std::static_pointer_cast<directX12::GPUBuffer>(buffer)->GetResourcePtr()->GetGPUVirtualAddress(),
+		static_cast<UINT>(buffer->GetTotalByteSize()),
+		static_cast<UINT>(buffer->GetElementByteSize())
+	};
+	// Regist command list
+	_commandList->IASetVertexBuffers(0, 1, &view);
+}
+
+void RHICommandList::SetResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+{
+	_commandList->SetGraphicsRootSignature(std::static_pointer_cast<directX12::RHIResourceLayout>(resourceLayout)->GetRootSignature().Get());
+}
+void RHICommandList::SetGraphicsPipeline(const std::shared_ptr<core::GPUGraphicsPipelineState>& pipelineState)
+{
+	SetPrimitiveTopology(pipelineState->GetInputAssemblyState()->GetPrimitiveTopology());
+	_commandList->SetPipelineState(std::static_pointer_cast<directX12::GPUGraphicsPipelineState>(pipelineState)->GetPipeline().Get());
+}
+
+void RHICommandList::SetVertexBuffers(const std::vector<std::shared_ptr<core::GPUBuffer>>& buffers, const size_t startSlot)
+{
+	auto views = std::vector<D3D12_VERTEX_BUFFER_VIEW>(buffers.size());
+	for (size_t i = 0; i < views.size(); ++i)
+	{
+		assert(buffers[i]->GetUsage() == core::ResourceUsage::VertexBuffer);
+		views[i].BufferLocation = std::static_pointer_cast<directX12::GPUBuffer>(buffers[i])->GetResourcePtr()->GetGPUVirtualAddress();
+		views[i].SizeInBytes    = static_cast<UINT>(buffers[i]->GetTotalByteSize());
+		views[i].StrideInBytes  = static_cast<UINT>(buffers[i]->GetElementByteSize());
+	}
+
+	_commandList->IASetVertexBuffers(static_cast<UINT>(startSlot), static_cast<UINT>(views.size()), views.data());
+}
+
+void RHICommandList::SetIndexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType)
+{
+	assert(buffer->GetUsage() == core::ResourceUsage::IndexBuffer);
+
+	D3D12_INDEX_BUFFER_VIEW view = {};
+	view.BufferLocation = std::static_pointer_cast<directX12::GPUBuffer>(buffer)->GetResourcePtr()->GetGPUVirtualAddress();
+	view.SizeInBytes    = static_cast<UINT>(buffer->GetTotalByteSize());
+	view.Format         = EnumConverter::Convert(indexType);
+
+	_commandList->IASetIndexBuffer(&view);
 }
 
 void RHICommandList::DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation, std::uint32_t baseVertexLocation)
@@ -168,8 +264,8 @@ void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUText
 {
 	BARRIER barrier = BARRIER::Transition(std::static_pointer_cast<directX12::GPUTexture>(texture)->GetResource().Get(),
 		EnumConverter::Convert(texture->GetResourceState()), EnumConverter::Convert(after));
-	texture->TransitionResourceState(after);
 	_commandList->ResourceBarrier(1, &barrier);
+	texture->TransitionResourceState(after);
 }
 void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
 {

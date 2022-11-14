@@ -25,6 +25,7 @@
 namespace rhi::core
 {
 	class RHIDevice;
+	class RHICommandList;
 	class GPUBuffer;
 	class GPUTexture;
 	class RHIDescriptorHeap;
@@ -40,7 +41,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
+		virtual void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -48,6 +49,8 @@ namespace rhi::core
 		std::shared_ptr<core::RHIDescriptorHeap> GetHeap() const noexcept { return _heap; };
 		/* @brief: Return resource view type*/
 		core::ResourceViewType GetResourceViewType() const noexcept { return _resourceViewType; }
+
+		std::uint32_t GetDescriptorID() const { return _descriptorID; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -71,6 +74,7 @@ namespace rhi::core
 		std::shared_ptr<GPUTexture> _texture = nullptr;
 		std::shared_ptr<RHIDescriptorHeap> _heap = nullptr;
 		core::ResourceViewType      _resourceViewType = core::ResourceViewType::Unknown;
+		std::uint32_t _descriptorID = 0;
 	};
 }
 

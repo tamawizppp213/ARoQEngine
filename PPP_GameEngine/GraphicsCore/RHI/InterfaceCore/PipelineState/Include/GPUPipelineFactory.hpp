@@ -61,12 +61,7 @@ namespace rhi::core
 			const StencilOperatorInfo& front            = StencilOperatorInfo(),
 			const StencilOperatorInfo& back             = StencilOperatorInfo()) = 0;
 
-		virtual std::shared_ptr<GPUShaderState> CreateShaderState(
-			const ShaderType type,
-			const std::string& fileName,
-			const std::string& entryPoint    = "main",
-			const std::string& shaderVersion = "6.6"
-		) = 0;
+		virtual std::shared_ptr<GPUShaderState> CreateShaderState() = 0;
 
 		virtual std::shared_ptr<GPUBlendState> CreateBlendState(
 			const std::vector<BlendProperty>& properties = { BlendProperty() }) = 0;

@@ -65,7 +65,7 @@ D3D12_STATIC_BORDER_COLOR EnumConverter::Convert(const rhi::core::BorderColor bo
 		case core::BorderColor::OpaqueWhite     : return D3D12_STATIC_BORDER_COLOR::D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
 		case core::BorderColor::OpaqueBlack     : return D3D12_STATIC_BORDER_COLOR::D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
 		default:
-			throw std::runtime_error("failed to convert static border color");
+			throw std::runtime_error("failed to convert static border color (directX12 api)");
 	}
 }
 
@@ -83,7 +83,7 @@ D3D12_FILTER EnumConverter::Convert(const rhi::core::FilterOption filter)
 		case core::FilterOption::MinLinearMagLinearMipLinear: return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 		case core::FilterOption::Anisotropy                 : return D3D12_FILTER_ANISOTROPIC;
 		default:
-			throw std::runtime_error("not supported filter option");
+			throw std::runtime_error("not supported filter option (directX12 api)");
 	}
 }
 #pragma endregion Sampler State
@@ -91,17 +91,28 @@ DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 {
 	switch (pixelFormat)
 	{
-		case core::PixelFormat::R8G8B8A8_UNORM    : return DXGI_FORMAT_R8G8B8A8_UNORM;
-		case core::PixelFormat::B8G8R8A8_UNORM    : return DXGI_FORMAT_B8G8R8A8_UNORM;
-		case core::PixelFormat::R16G16B16A16_FLOAT: return DXGI_FORMAT_R16G16B16A16_FLOAT;
-		case core::PixelFormat::R32G32B32A32_FLOAT: return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case core::PixelFormat::R32G32B32_FLOAT   : return DXGI_FORMAT_R32G32B32_FLOAT;
-		case core::PixelFormat::D24_UNORM_S8_UINT : return DXGI_FORMAT_D24_UNORM_S8_UINT;
-		case core::PixelFormat::R10G10B10A2_UNORM : return DXGI_FORMAT_R10G10B10A2_UNORM;
-		case core::PixelFormat::D32_FLOAT         : return DXGI_FORMAT_D32_FLOAT;
+		case core::PixelFormat::R8G8B8A8_UNORM     : return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case core::PixelFormat::B8G8R8A8_UNORM     : return DXGI_FORMAT_B8G8R8A8_UNORM;
+		case core::PixelFormat::R16G16B16A16_FLOAT : return DXGI_FORMAT_R16G16B16A16_FLOAT;
+		case core::PixelFormat::R32G32B32A32_FLOAT : return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		case core::PixelFormat::R32G32B32_FLOAT    : return DXGI_FORMAT_R32G32B32_FLOAT;
+		case core::PixelFormat::D24_UNORM_S8_UINT  : return DXGI_FORMAT_D24_UNORM_S8_UINT;
+		case core::PixelFormat::R10G10B10A2_UNORM  : return DXGI_FORMAT_R10G10B10A2_UNORM;
+		case core::PixelFormat::D32_FLOAT          : return DXGI_FORMAT_D32_FLOAT;
+		case core::PixelFormat::B8G8R8A8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 		case core::PixelFormat::Unknown: return DXGI_FORMAT_UNKNOWN;
 		default:
-			throw std::runtime_error("not supported Pixel Format type");
+			throw std::runtime_error("not supported Pixel Format type (directX12 api)");
+	}
+}
+DXGI_FORMAT EnumConverter::Convert(const rhi::core::IndexType indexFormat)
+{
+	switch (indexFormat)
+	{
+		case core::IndexType::UInt32: return DXGI_FORMAT_R32_UINT;
+		case core::IndexType::UInt16: return DXGI_FORMAT_R16_UINT;
+		default:
+			throw std::runtime_error("not supported Index Format type (directX12 api)");
 	}
 }
 #pragma region BlendState
@@ -126,7 +137,7 @@ D3D12_FILL_MODE EnumConverter::Convert(const rhi::core::FillMode fillMode)
 		case core::FillMode::Solid    : return D3D12_FILL_MODE::D3D12_FILL_MODE_SOLID;
 		case core::FillMode::WireFrame: return D3D12_FILL_MODE::D3D12_FILL_MODE_WIREFRAME;
 		default:
-			throw std::runtime_error("not supported fill mode type");
+			throw std::runtime_error("not supported fill mode type (directX12 api)");
 	}
 }
 D3D12_CULL_MODE EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
@@ -137,7 +148,7 @@ D3D12_CULL_MODE EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
 		case core::CullingMode::Front: return D3D12_CULL_MODE::D3D12_CULL_MODE_FRONT;
 		case core::CullingMode::Back : return D3D12_CULL_MODE::D3D12_CULL_MODE_BACK;
 		default:
-			throw std::runtime_error("not supported culling mode type");
+			throw std::runtime_error("not supported culling mode type (directX12 api)");
 	}
 }
 bool EnumConverter::Convert(const rhi::core::FrontFace   frontFace)
@@ -159,7 +170,7 @@ D3D12_COMPARISON_FUNC EnumConverter::Convert(const core::CompareOperator op)
 		case core::CompareOperator::GreaterEqual: return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
 		case core::CompareOperator::Always      : return D3D12_COMPARISON_FUNC_ALWAYS;
 		default:
-			throw std::runtime_error("not supported compare operator type");
+			throw std::runtime_error("not supported compare operator type (directX12 api)");
 	}
 }
 
@@ -176,7 +187,7 @@ D3D12_STENCIL_OP EnumConverter::Convert(const core::StencilOperator op)
 		case core::StencilOperator::IncrementAndWrap : return D3D12_STENCIL_OP_INCR;
 		case core::StencilOperator::DecrementAndWrap : return D3D12_STENCIL_OP_DECR;
 		default:
-			throw std::runtime_error("not supported stencil operator type");
+			throw std::runtime_error("not supported stencil operator type (directX12 api)");
 	}
 }
 #pragma endregion DepthStencilState
@@ -195,7 +206,19 @@ D3D12_PRIMITIVE_TOPOLOGY_TYPE EnumConverter::Convert1(const rhi::core::Primitive
 		case core::PrimitiveTopology::TriangleList : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		case core::PrimitiveTopology::TriangleStrip: return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		default:
-			throw std::runtime_error("not supported primitive topology type");
+			throw std::runtime_error("not supported primitive topology type (directX12 api)");
+	}
+}
+DXGI_FORMAT EnumConverter::Convert(const core::InputFormat inputFormat)
+{
+	switch (inputFormat)
+	{
+		case core::InputFormat::R32G32_FLOAT      : return DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT;
+		case core::InputFormat::R32G32B32_FLOAT   : return DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT;
+		case core::InputFormat::R32G32B32A32_FLOAT: return DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
+		case core::InputFormat::R32_FLOAT         : return DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT;
+		default:
+			throw std::runtime_error("not supported input format");
 	}
 }
 #pragma endregion      Input Layput

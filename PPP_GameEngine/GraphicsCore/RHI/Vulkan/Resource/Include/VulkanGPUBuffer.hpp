@@ -34,18 +34,23 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		// @brief : Basically for Default Buffer Initialize. Total Buffer Copy
+		//          Create temp upload buffer and copy this to default buffer
+		void Pack(const void* data, const std::shared_ptr<core::RHICommandList>& copyCommandList) override;
 		// @brief : Begin Map Function
 		void CopyStart() override;
 		// @brief : GPU copy to one element 
-		void CopyData(int elementIndex, const void* data) override ;
+		void CopyData(const void* data, const size_t elementIndex) override ;
 		// @brief : GPU copy the specified range
-		void CopyTotalData(const void* data, int dataLength) override;
+		void CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset = 0) override;
 		// @brief : Unmap Function
 		void CopyEnd() override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkBuffer GetBuffer() const noexcept { return _buffer; }
+		void SetName(const std::wstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

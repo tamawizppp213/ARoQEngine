@@ -22,7 +22,7 @@
 
 namespace rhi::core
 {
-
+	class RHICommandList;
 	/****************************************************************************
 	*				  			GPUBuffer
 	*************************************************************************//**
@@ -35,15 +35,20 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		// @brief : Basically for Default Buffer Initialize. Total Buffer Copy
+		//          Create temp upload buffer and copy this to default buffer (default buffer uses commandList)
+		//           https://zenn.dev/lriki/scraps/5bb7f5a23bba16 (ç°å„ämîFÇµÇΩÇ¢)
+		virtual void Pack(const void* data, const std::shared_ptr<RHICommandList>& commandList = nullptr) = 0;
+		// @brief : Call at once in each frame (If you need). CopyStart + CopyTotalData + CopyEnd. 
+		void         Update(const void* data, const size_t dataLength);
 		// @brief : Begin Map Function
 		virtual void CopyStart() = 0;
 		// @brief : GPU copy to one element 
-		virtual void CopyData(int elementIndex, const void* data) = 0;
+		virtual void CopyData(const void* data, const size_t elementIndex) = 0;
 		/* @brief : GPU copy the specified range*/
-		virtual void CopyTotalData(const void* data, int dataLength) = 0;
+		virtual void CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset = 0) = 0;
 		// @brief : Unmap Function
 		virtual void CopyEnd() = 0;
-
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -74,7 +79,7 @@ namespace rhi::core
 		*****************************************************************************/
 		GPUBuffer() = default;
 		~GPUBuffer() = default;
-		explicit GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBufferMetaData& metaData);;
+		explicit GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBufferMetaData& metaData);
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/

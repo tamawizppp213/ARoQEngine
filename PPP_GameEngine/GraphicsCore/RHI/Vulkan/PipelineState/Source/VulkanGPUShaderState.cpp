@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //              @file   VulkanShaderState.cpp
 ///             @brief  Rasterizer State
-///             @author Toide Yutaro
+///             @author Toide Yutaro https://github.com/KhronosGroup/Vulkan-Guide/blob/master/chapters/hlsl.adoc
 ///             @date   2022_07_04
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -12,8 +12,10 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
-#include <wrl/client.h>
-#include <dxcapi.h>
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Core.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include <d3dcompiler.h>
+#include <dxc/dxcapi.h>
 #include <sstream>
 #include <fstream>
 #include <stdexcept>
@@ -22,28 +24,48 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::vulkan;
-using Microsoft::WRL::ComPtr;
+
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUShaderState::GPUShaderState(
-	const std::shared_ptr<core::RHIDevice>& device,
-	const core::ShaderType shaderType,
-	const std::string& fileName,
-	const std::string& entryPoint,
-	const std::string& shaderVersion
-) : core::GPUShaderState(device, shaderType, fileName, entryPoint, shaderVersion)
+GPUShaderState::~GPUShaderState()
 {
-	CompileShader(unicode::ToWString(fileName), unicode::ToWString(entryPoint), unicode::ToWString(GetShaderTypeName(shaderType) + "_" + shaderVersion));
-	/*-------------------------------------------------------------------
-	-                  Create shader module
-	---------------------------------------------------------------------*/
-	_stage.pNext               = nullptr;
-	_stage.flags               = 0;
-	_stage.module              = _module;
-	_stage.pName               = _fileName.c_str();
-	_stage.pSpecializationInfo = nullptr;
-	_stage.stage               = EnumConverter::Convert(_shaderType);
+	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	if (_module)
+	{
+		vkDestroyShaderModule(vkDevice, _module, nullptr);
+	}
+}
+//GPUShaderState::GPUShaderState(
+//	const std::shared_ptr<core::RHIDevice>& device,
+//	const core::ShaderType shaderType,
+//	const std::string& fileName,
+//	const std::string& entryPoint,
+//	const std::string& shaderVersion
+//) : core::GPUShaderState(device, shaderType, fileName, entryPoint, shaderVersion)
+//{
+//	CompileShader(unicode::ToWString(fileName), unicode::ToWString(entryPoint), unicode::ToWString(GetShaderTypeName(shaderType) + "_" + shaderVersion));
+//	/*-------------------------------------------------------------------
+//	-                  Create shader module
+//	---------------------------------------------------------------------*/
+//	_stage.pNext               = nullptr;
+//	_stage.flags               = 0;
+//	_stage.module              = _module;
+//	_stage.pName               = _fileName.c_str();
+//	_stage.pSpecializationInfo = nullptr;
+//	_stage.stage               = EnumConverter::Convert(_shaderType);
+//}
+
+void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint, const float version, const std::vector<std::wstring>& includeDirectories)
+{
+	assert(0.0f < version && version <= NEWEST_VERSION);
+	_shaderType = type; _version = version;
+
+	// Set target Name ex) vs_6.0, ps_6.1...
+	std::wstring target = GetShaderTypeName(type) + L"_" + Format(_version);
+
+	VkCompile(fileName, entryPoint, target, includeDirectories);
+
 }
 /****************************************************************************
 *                       Compile Shader
@@ -53,81 +75,83 @@ GPUShaderState::GPUShaderState(
 *  @param[in] test
 *  @return 　　void
 *****************************************************************************/
-void GPUShaderState::CompileShader(const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target)
+void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target, const std::vector<std::wstring>& includeDirectories)
 {
 	/*-------------------------------------------------------------------
-	-                  Open shader file
-	---------------------------------------------------------------------*/
-	std::ifstream shaderFile(fileName, std::ios::binary);
-	if (shaderFile.good() == false)
-	{
-		std::wstring errorMessage = L"Failed to open your shader file. " + fileName;
-		MessageBoxW(nullptr, errorMessage.c_str(), L"Error", MB_OK);
-		std::abort();
-	}
-
-	std::stringstream stringStream(std::ios::binary);
-	stringStream << shaderFile.rdbuf();
-	std::string shader = stringStream.str();
-
-	/*-------------------------------------------------------------------
-	-                  Create blob data from shader text file.
+	-            Create blob data from shader text file.
+	-            Initialize DXC library
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcLibrary> dxcLibrary = nullptr;
-	if (FAILED(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&dxcLibrary)))) { throw std::runtime_error("Could not init DXC library"); };
-
-	ComPtr<IDxcIncludeHandler> dxcIncludeHandler = nullptr;
-	if (FAILED(dxcLibrary->CreateIncludeHandler(&dxcIncludeHandler))) { throw std::runtime_error("Could not init Include handler"); };
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&dxcLibrary)));
 	/*-------------------------------------------------------------------
 	-                  Create dxc compliler
 	---------------------------------------------------------------------*/
-	ComPtr<IDxcCompiler> dxcCompiler = nullptr;
-	if (FAILED(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler)))) { throw std::runtime_error("Could not init DXC Compiler"); };
+	ComPtr<IDxcCompiler3> dxcCompiler = nullptr;
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler)));
+	/*-------------------------------------------------------------------
+	-                  Create dxc utility
+	---------------------------------------------------------------------*/
+	ComPtr<IDxcUtils> utils = nullptr;
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils)));
 	/*-------------------------------------------------------------------
 	-                  Create Blob data of the source code
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcBlobEncoding> sourceBlob = nullptr;
-	UINT32 codePage = CP_UTF8;
-	if (FAILED(dxcLibrary->CreateBlobFromFile(fileName.c_str(), &codePage, sourceBlob.GetAddressOf()))) { throw std::runtime_error("Could not load shader file."); };
+	UINT32 codePage = DXC_CP_ACP;
+	ThrowIfFailed(utils->LoadFile(fileName.c_str(), &codePage, &sourceBlob));
+
+	ComPtr<IDxcIncludeHandler> dxcIncludeHandler = nullptr;
+	dxcLibrary->CreateIncludeHandler(&dxcIncludeHandler);
 	/*-------------------------------------------------------------------
-	-       Tell the compiler to be passed to the shader compiler
+	-                    Set Source Code Buffer
 	---------------------------------------------------------------------*/
-	std::vector<LPCWSTR> arguments;
-	arguments.push_back(L"-spirv");
-	// nVidia: This allows for the compiler to do a better job at optimizing texture accesses. We have seen frame rate improvements of > 1% when toggling this flag on.
-	arguments.push_back(L"-all-resources-bound");
-	// VK_KHR_shader_float16_int8
-	arguments.push_back(L"-enable-16bit-types");
-	// memory layout for resources
-	arguments.push_back(L"-fvk-use-dx-layout");
-	// Vulkan version
-	std::wstring name = L"-fspv-target-env=" + _apiVersion;
-	LPCWSTR   apiName = name.c_str();
-	arguments.push_back(apiName);
-	// useful extensions
-	arguments.push_back(L"-fspv-extension=SPV_GOOGLE_hlsl_functionality1");
-	arguments.push_back(L"-fspv-extension=SPV_GOOGLE_user_type");
-	arguments.push_back(L"-fspv-reflect");
+	DxcBuffer buffer = {};
+	buffer.Encoding = DXC_CP_ACP;
+	buffer.Ptr      = sourceBlob->GetBufferPointer();
+	buffer.Size     = sourceBlob->GetBufferSize();
 
 	/*-------------------------------------------------------------------
-	-                  Create Blob data of the source code
+	-      Configure the compiler arguments for compiling the HLSL shader to SPIR-V
 	---------------------------------------------------------------------*/
-	ComPtr<IDxcOperationResult> result = nullptr;
-	HRESULT hresult = dxcCompiler->Compile(
-		sourceBlob.Get(),
-		fileName.c_str(),
-		entryPoint.c_str(),
-		target.c_str(),
-		arguments.data(), static_cast<UINT32>(arguments.size()),
-		nullptr, 0,
-		dxcIncludeHandler.Get(),
-		&result
+	std::vector<LPCWSTR> arguments = {
+		fileName.c_str(),          // (optional) name of the shader file to be displayed e.g. in an error message
+		L"-E", entryPoint.c_str(), // shader main entry point
+		L"-T", target.c_str(),     // shader target profile,
+		std::wstring(L"-fspv-target-env=" + _apiVersion).c_str(),// Vulkan version
+		L"-spirv",                  // compile to SPIRV,
+		L"-all-resources-bound",   // nVidia: This allows for the compiler to do a better job at optimizing texture accesses. We have seen frame rate improvements of > 1% when toggling this flag on.
+		L"-enable-16bit-types",    // VK_KHR_shader_float16_int8
+		L"-fvk-use-dx-layout",     // memory layout for resources
+		// useful extensions
+		//L"-fspv-extension=SPV_GOOGLE_hlsl_functionality1",
+		//L"-fspv-extension=SPV_GOOGLE_user_type",
+		//L"-fspv-reflect"
+	};
+
+	for (const auto& directory : includeDirectories)
+	{
+		arguments.push_back(L"-I");
+		arguments.push_back(directory.c_str());
+	}
+
+	/*-------------------------------------------------------------------
+	-                Compile Shader
+	---------------------------------------------------------------------*/
+	ComPtr<IDxcResult> result = nullptr;
+	HRESULT hresult = TRUE;
+	dxcCompiler->Compile(
+		&buffer,
+		arguments.data(),
+		static_cast<std::uint32_t>(arguments.size()),
+		dxcIncludeHandler.Get(), IID_PPV_ARGS(result.GetAddressOf())
 	);
 
+	/*-------------------------------------------------------------------
+	-              Output error if compilation failed
+	---------------------------------------------------------------------*/
 	if (SUCCEEDED(hresult)) { result->GetStatus(&hresult); }
-	core::BlobData blob;
-	ComPtr<IDxcBlob> code = nullptr;
 
+	ComPtr<IDxcBlob> byteCode = nullptr;
 	if (FAILED(hresult))
 	{
 		if (result)
@@ -144,23 +168,75 @@ void GPUShaderState::CompileShader(const std::wstring& fileName, const std::wstr
 	}
 	else
 	{
-		result->GetResult(reinterpret_cast<IDxcBlob**>(code.GetAddressOf()));
+		result->GetResult(byteCode.GetAddressOf());
 	}
 
+	/*-------------------------------------------------------------------
+	-      Create a Vulkan shader module from the compilation result 
+	---------------------------------------------------------------------*/
+	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	VkShaderModuleCreateInfo shaderModuleInfo = {};
+	shaderModuleInfo.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	shaderModuleInfo.codeSize = byteCode->GetBufferSize();
+	shaderModuleInfo.pCode    = (std::uint32_t*)byteCode->GetBufferPointer();
+	shaderModuleInfo.pNext    = nullptr;
+	if (vkCreateShaderModule(vkDevice, &shaderModuleInfo, nullptr, &_module) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to create vk shader module");
+	}
+	
+	/*-------------------------------------------------------------------
+	-      Create a Vulkan shader module from the compilation result
+	---------------------------------------------------------------------*/
+	_name = unicode::ToUtf8String(entryPoint);
+	_stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	_stage.flags = 0;
+	_stage.module = _module;
+	_stage.pNext = nullptr;
+	_stage.pSpecializationInfo = nullptr;
+	_stage.stage = EnumConverter::Convert(_shaderType);
+	_stage.pName = _name.c_str();
+	
 
-	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device);
+	_blobData.BufferPointer= byteCode->GetBufferPointer();
+	_blobData.BufferSize   = byteCode->GetBufferSize();
+	
+}
+
+/****************************************************************************
+*							LoadBinary
+*************************************************************************//**
+*  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const std::wstring& fileName)
+*  @brief     Load Binary Data (Offline Compile)
+*  @param[in] core::ShaderType type
+*  @param[in] std::wstring& fileName : filePath
+*  @return 　　void
+*****************************************************************************/
+void GPUShaderState::LoadBinary(const core::ShaderType type, const std::wstring& fileName)
+{
+	_shaderType = type;
 
 	/*-------------------------------------------------------------------
-	-                  Create shader module
+	-          Open file
 	---------------------------------------------------------------------*/
-	VkShaderModuleCreateInfo shaderModuleCI{};
-	shaderModuleCI.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	shaderModuleCI.codeSize = code->GetBufferSize();
-	shaderModuleCI.pCode    = (uint32_t*)code->GetBufferPointer();
-	shaderModuleCI.pNext    = nullptr;
-	vkCreateShaderModule(vkDevice->GetDevice(), &shaderModuleCI, nullptr, &_module);
+	std::ifstream fin(fileName, std::ios::binary);
+	/*-------------------------------------------------------------------
+	-          Calculate buffer byte size
+	---------------------------------------------------------------------*/
+	fin.seekg(0, std::ios_base::end);
+	std::ifstream::pos_type size = (int)fin.tellg();
+	fin.seekg(0, std::ios_base::beg);
+	/*-------------------------------------------------------------------
+	-          Create blob (bytecode) data
+	---------------------------------------------------------------------*/
+	ComPtr<ID3DBlob> blob;
+	ThrowIfFailed(D3DCreateBlob(size, blob.GetAddressOf()));
+	/*-------------------------------------------------------------------
+	-          Read and Close
+	---------------------------------------------------------------------*/
+	fin.read((char*)blob->GetBufferPointer(), size);
+	fin.close();
 
-	_blobData.BufferPointer = code->GetBufferPointer();
-	_blobData.BufferSize    = code->GetBufferSize();
-	
+	_blobData.BufferPointer = blob->GetBufferPointer();
+	_blobData.BufferSize = size;
 }

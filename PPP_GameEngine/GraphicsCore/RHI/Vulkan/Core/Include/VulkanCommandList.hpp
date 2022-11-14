@@ -22,6 +22,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::vulkan
 {
+	class RHIResourceLayout;
+	class GPUGraphicsPipelineState;
 	/****************************************************************************
 	*				  			TemplateClass
 	*************************************************************************//**
@@ -42,13 +44,19 @@ namespace rhi::vulkan
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/
-		void SetPrimitiveTopology(core::PrimitiveTopology topology) override{};
-		void SetViewport          (const core::Viewport* viewport, std::uint32_t numViewport = 1)override {};
-		void SetScissor           (const core::ScissorRect* rect , std::uint32_t numRect = 1) override{};
-		void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override{};
+		void SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptorHeap>& heap) override {};
+		void SetResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& layout) override;
+		void SetGraphicsPipeline(const std::shared_ptr<core::GPUGraphicsPipelineState>& pipeline);
+		void SetPrimitiveTopology(core::PrimitiveTopology topology) override;
+		void SetViewport          (const core::Viewport* viewport, std::uint32_t numViewport = 1)override;
+		void SetScissor           (const core::ScissorRect* rect , std::uint32_t numRect = 1) override;
+		void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
+		void SetVertexBuffer (const std::shared_ptr<core::GPUBuffer>& buffer) override;
+		void SetVertexBuffers(const std::vector<std::shared_ptr<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
+		void SetIndexBuffer  (const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
 		void DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0)override;
 		void DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0, std::uint32_t startInstanceLocation = 0)override;
 		/*-------------------------------------------------------------------
@@ -82,6 +90,8 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkCommandBuffer _commandBuffer = nullptr;
+		std::shared_ptr<RHIResourceLayout> _resourceLayout = nullptr;
+	
 		bool _isFirstFrame = true;
 	private:
 		/****************************************************************************

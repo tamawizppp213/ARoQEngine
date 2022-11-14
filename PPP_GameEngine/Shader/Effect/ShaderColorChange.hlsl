@@ -10,8 +10,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Core/ShaderVertexType.hlsli"
-#define VertexIn VSInputPositionNormalTexture
-#define VertexOut VSOutputPositionNormalTexture
+#define VertexIn VSInputPositionNormalColorTexture
+#define VertexOut VSOutputPositionNormalColorTexture
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 /////////////////////////////////////////////////////////////////////////////////
@@ -26,6 +26,7 @@ VertexOut VSMain(VertexIn vertexIn)
     result.Position = vertexIn.Position;
     result.UV       = vertexIn.UV;
     result.Normal   = vertexIn.Normal;
+    result.Color    = vertexIn.Color;
     
     return result;
 }

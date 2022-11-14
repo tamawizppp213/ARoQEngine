@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   a.cpp
-///             @brief  a
+///             @file   Image.hpp
+///             @brief  Image
 ///             @author Toide Yutaro
-///             @date   -
+///             @date   2022_11_14
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +19,10 @@ using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-static const UINT16 g_indices[] = { 0,1,2,2,1,3 };
+namespace
+{
+	const short g_indices[] = { 0,1,2,2,1,3 };
+}
 Image::~Image()
 {
 
@@ -45,7 +48,6 @@ void ui::Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize,
 *****************************************************************************/
 void Image::CreateRect(const Float3& position, const Float2& rectSize, const Float4& color, const Float2& u, const Float2& v, float radian)
 {
-	using Vertex = VertexPositionNormalColorTexture;
 
 	/*-------------------------------------------------------------------
 	-              Get rect info
@@ -57,8 +59,8 @@ void Image::CreateRect(const Float3& position, const Float2& rectSize, const Flo
 	/*-------------------------------------------------------------------
 	-              Get rotation info
 	-------------------------t-------------------------------------------*/
-	float fSin, fCos;
-	DirectX::XMScalarSinCos(&fSin, &fCos, radian);
+	Scalar fSin, fCos;
+	gm::ScalarSinCos(fSin, fCos, radian);
 
 	/*-------------------------------------------------------------------
 	-              Create RectPosition

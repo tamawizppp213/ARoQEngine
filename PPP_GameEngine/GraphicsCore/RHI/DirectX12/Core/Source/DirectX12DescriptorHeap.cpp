@@ -145,7 +145,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 		for (const auto& heapInfo : heapInfos)
 		{
 			_resourceAllocators[heapInfo.first].SetResourceAllocator(
-				heapInfo.second,            // max descriptor count
+				static_cast<std::uint32_t>(heapInfo.second),            // max descriptor count
 				static_cast<std::uint32_t>(_descriptorByteSize),        // one descriptor byte size
 				D3D12_CPU_DESCRIPTOR_HANDLE(_descriptorHeap->GetCPUDescriptorHandleForHeapStart().ptr + pointer), // cpu start pointer
 				heapInfo.first == core::DescriptorHeapType::RTV || heapInfo.first == core::DescriptorHeapType::DSV ?

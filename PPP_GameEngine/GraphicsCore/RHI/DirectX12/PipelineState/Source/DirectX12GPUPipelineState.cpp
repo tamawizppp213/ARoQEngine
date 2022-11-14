@@ -65,7 +65,7 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	-                      Create Graphic pipelineState
 	---------------------------------------------------------------------*/
 	ThrowIfFailed(dxDevice->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(_graphicsPipeline.GetAddressOf())));
-	_graphicsPipeline->SetName(L"Unnamed Graphics Pipeline State");
+	
 }
 #pragma endregion Graphic PSO
 

@@ -53,7 +53,32 @@ namespace rhi::core
 #pragma region Index
 	enum class IndexType
 	{
-		UInt32
+		UInt32,
+		UInt16
+	};
+	enum class InputFormat
+	{
+		Unknown,
+		R32_FLOAT,
+		R32G32_FLOAT,
+		R32G32B32_FLOAT,
+		R32G32B32A32_FLOAT,
+	};
+	class InputFormatSizeOf
+	{
+	public :
+		InputFormatSizeOf() = delete;
+		static size_t Get(const core::InputFormat inputFormat)
+		{
+			switch (inputFormat)
+			{
+				case InputFormat::R32G32_FLOAT      : return 8;
+				case InputFormat::R32G32B32_FLOAT   : return 12;
+				case InputFormat::R32G32B32A32_FLOAT: return 16;
+				case InputFormat::R32_FLOAT         : return 4;
+				default: return 0;
+			}
+		}
 	};
 #pragma endregion Index
 #pragma region Pixel
@@ -78,6 +103,7 @@ namespace rhi::core
 		D32_FLOAT,
 		D24_UNORM_S8_UINT,
 		R32G32B32_FLOAT,
+		B8G8R8A8_UNORM_SRGB,
 		CountOfPixelFormat
 	};
 	class PixelFormatSizeOf
@@ -162,7 +188,7 @@ namespace rhi::core
 	*  @enum      ShaderType
 	*  @brief     Shader type
 	*****************************************************************************/
-	enum class ShaderType : std::uint8_t
+	enum class ShaderType
 	{
 		Vertex,           // vertex shader 
 		Pixel,            // pixel  shader
@@ -216,6 +242,16 @@ namespace rhi::core
 		MinLinearMagLinearMipLinear = 7,
 		Anisotropy = 8
 	};
+
+	enum DefaultSamplerType
+	{
+		SamplerPointWrap,
+		SamplerPointClamp,
+		SamplerLinearWrap,
+		SamplerLinearClamp,
+		SamplerAnisotropicWrap,
+		SamplerAnisotropicClamp
+	};
 	/****************************************************************************
 	*				  			SamplerInfo
 	*************************************************************************//**
@@ -225,15 +261,6 @@ namespace rhi::core
 	struct SamplerInfo
 	{
 	public:
-		enum DefaultSamplerType
-		{
-			SamplerPointWrap,
-			SamplerPointClamp,
-			SamplerLinearWrap,
-			SamplerLinearClamp,
-			SamplerAnisotropicWrap,
-			SamplerAnisotropicClamp
-		};
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -363,6 +390,16 @@ namespace rhi::core
 
 		bool Enable = false;
 		BlendProperty() = default;
+
+		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, BlendFactor destAlpha, BlendFactor dest,
+			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool enable = false) :
+			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), Destination(dest), SourceAlpha(srcAlpha),
+			Source(src), ColorMask(colorMask), Enable(enable) { };
+		
+		static BlendProperty NoColorWrite();
+		static BlendProperty OverWrite();
+		static BlendProperty AlphaBlend();
+		
 	};
 #pragma endregion        Blend State
 #pragma region Rasterizer State
@@ -656,6 +693,15 @@ namespace rhi::core
 		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
 
 		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		bool IsCPUAccessible() const
+		{
+			return HeapType == MemoryHeap::Upload || HeapType == MemoryHeap::Readback
+			|| (HeapType == MemoryHeap::Custom);
+		}
+
+		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBufferMetaData() = default;
@@ -683,10 +729,7 @@ namespace rhi::core
 	struct GPUTextureMetaData
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		
+	
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -703,7 +746,14 @@ namespace rhi::core
 		ClearValue        ClearColor       = ClearValue();                   // clear color 
 		ResourceState     State            = ResourceState::GeneralRead;    // resource layout
 		MemoryHeap        HeapType         = MemoryHeap::Default;            // gpu heap type
-
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		bool IsCPUAccessible() const
+		{
+			return HeapType == MemoryHeap::Upload || HeapType == MemoryHeap::Readback
+				|| (HeapType == MemoryHeap::Custom);
+		}
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -776,8 +826,8 @@ namespace rhi::core
 		}
 
 		static Attachment DepthStencil(const PixelFormat format,
-			const ResourceState   initialState  = ResourceState::DepthStencil,
-			const ResourceState   finalState    = ResourceState::GeneralRead,
+			const ResourceState   initialState  = ResourceState::Common,
+			const ResourceState   finalState    = ResourceState::DepthStencil,
 			const AttachmentLoad  load          = AttachmentLoad::Clear,
 			const AttachmentStore store         = AttachmentStore::Store,
 			const AttachmentLoad  stencilLoad   = AttachmentLoad::DontCare,

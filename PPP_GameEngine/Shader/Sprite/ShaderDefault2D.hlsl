@@ -36,4 +36,8 @@ float4 PSMain(VertexOut input) : SV_Target
     return float4(DestDiffuseMap.Sample(SamplerLinearWrap, input.UV)) * input.Color;
 }
 
+float4 PSTest(VertexOut input) : SV_Target
+{
+    return float4(1, 1, 1, 1);
+}
 #endif

@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIFrameBuffer.hpp
-///             @brief  Frame Buffer (Render Target and )
+///             @file   GPUTexture.hpp
+///             @brief  Texture 
 ///             @author Toide Yutaro
-///             @date   2022_07_19
+///             @date   2022_11_13
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GPU_TEXTURE_HPP
@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GPUResource.hpp"
-
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,11 +24,12 @@
 namespace rhi::core
 {
 	class RHIDevice;
+	class RHICommandList;
 	/****************************************************************************
-	*				  			TemplateClass
+	*				  			GPUTexture
 	*************************************************************************//**
-	*  @class     TemplateClass
-	*  @brief     temp
+	*  @class     GPUTexture
+	*  @brief     Texture 
 	*****************************************************************************/
 	class GPUTexture : public GPUResource
 	{
@@ -36,6 +37,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		virtual void Load(const std::wstring& filePath, const std::shared_ptr<RHICommandList>& commandList) = 0;
 		void TransitionResourceState(const core::ResourceState after)
 		{
 			if (_metaData.State != after) { _metaData.State = after; }
@@ -87,12 +89,14 @@ namespace rhi::core
 		*****************************************************************************/
 		GPUTexture() = default;
 		~GPUTexture() = default;
+
+		explicit GPUTexture(const std::shared_ptr<RHIDevice>& device) : core::GPUResource(device) {};
 		explicit GPUTexture(const std::shared_ptr<RHIDevice>& device, const GPUTextureMetaData& metaData): core::GPUResource(device), _metaData(metaData) {};
 		
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		virtual void CreateTextureBuffer(){};
+		virtual void Pack(const std::shared_ptr<core::RHICommandList>& commandList) = 0;
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

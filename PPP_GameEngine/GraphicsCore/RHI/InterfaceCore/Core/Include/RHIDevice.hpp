@@ -60,6 +60,8 @@ namespace rhi::core
 		/*-------------------------------------------------------------------
 		-               Create Objects for Logical Device
 		---------------------------------------------------------------------*/
+		bool IsDiscreteGPU() const;
+		
 #pragma region Create Resource
 		virtual void                                      SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) = 0;
 		virtual std::shared_ptr<RHIFrameBuffer>           CreateFrameBuffer(const std::shared_ptr<RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil = nullptr) = 0;
@@ -82,6 +84,7 @@ namespace rhi::core
 		virtual std::shared_ptr<GPUSampler>               CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
 		virtual std::shared_ptr<GPUBuffer>                CreateBuffer (const core::GPUBufferMetaData& metaData) = 0;
 		virtual std::shared_ptr<GPUTexture>               CreateTexture(const core::GPUTextureMetaData& metaData) = 0;
+		virtual std::shared_ptr<GPUTexture>               CreateTextureEmpty() = 0;
 #pragma endregion Create Resource
 		/****************************************************************************
 		**                Public Member Variables
@@ -91,6 +94,7 @@ namespace rhi::core
 		virtual std::shared_ptr<RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount = 0) = 0;
 		virtual std::uint32_t GetShadingRateImageTileSize() const = 0;
 		std::shared_ptr<RHIDisplayAdapter> GetDisplayAdapter() { return _adapter; }
+		std::uint32_t GetFrameCount() const { return _frameCount; }
 		/*-------------------------------------------------------------------
 		-               Device Support Check
 		---------------------------------------------------------------------*/

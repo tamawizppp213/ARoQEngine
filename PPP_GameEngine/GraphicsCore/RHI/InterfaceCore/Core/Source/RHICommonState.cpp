@@ -299,7 +299,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencil(const size_t width, const si
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
 	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil;
-	metaData.State            = ResourceState::GeneralRead;
+	metaData.State            = ResourceState::DepthStencil;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
 	metaData.HeapType         = core::MemoryHeap::Default;
@@ -317,7 +317,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
 	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil;
-	metaData.State            = ResourceState::GeneralRead;
+	metaData.State            = ResourceState::DepthStencil;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
 	metaData.HeapType         = core::MemoryHeap::Default;
@@ -327,3 +327,28 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 	return metaData;
 }
 #pragma endregion GPUTexture
+#pragma region BlendProperty
+BlendProperty BlendProperty::NoColorWrite()
+{
+	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
+		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
+		BlendFactor::One, BlendFactor::Source_Alpha,
+		ColorMask::None, false);
+}
+
+BlendProperty BlendProperty::OverWrite()
+{
+	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
+		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
+		BlendFactor::One, BlendFactor::Source_Alpha,
+		ColorMask::All, false);
+}
+
+BlendProperty BlendProperty::AlphaBlend()
+{
+	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
+		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
+		BlendFactor::One, BlendFactor::Source_Alpha,
+		ColorMask::All, true);
+}
+#pragma endregion BlendProperty

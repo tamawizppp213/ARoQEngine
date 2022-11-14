@@ -40,6 +40,16 @@ VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 			throw std::runtime_error("not supported Pixel Format type (vulkan api)");
 	}
 }
+VkIndexType EnumConverter::Convert(const rhi::core::IndexType indexFormat)
+{
+	switch (indexFormat)
+	{
+		case core::IndexType::UInt32: return VkIndexType::VK_INDEX_TYPE_UINT32;
+		case core::IndexType::UInt16: return VkIndexType::VK_INDEX_TYPE_UINT16;
+		default:
+			throw std::runtime_error("not supported Index Format type (vulkan api)");
+	}
+}
 #pragma region Shader Stage
 VkShaderStageFlagBits  EnumConverter::Convert(const rhi::core::ShaderType type)
 {
@@ -286,6 +296,18 @@ VkPrimitiveTopology EnumConverter::Convert(const rhi::core::PrimitiveTopology pr
 			throw std::runtime_error("not supported primitive topology type (vulkan api) ");
 	}
 }
+VkFormat EnumConverter::Convert(const rhi::core::InputFormat inputFormat)
+{
+	switch (inputFormat)
+	{
+		case core::InputFormat::R32G32_FLOAT      : return VkFormat::VK_FORMAT_R32G32_SFLOAT;
+		case core::InputFormat::R32G32B32_FLOAT   : return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
+		case core::InputFormat::R32G32B32A32_FLOAT: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+		case core::InputFormat::R32_FLOAT         : return VkFormat::VK_FORMAT_R32_SFLOAT;
+		default:
+			throw std::runtime_error("not supported input layout format type (vulkan api)");
+	}
+}
 #pragma endregion      Input Layout
 #pragma region GPUResource
 /*-------------------------------------------------------------------
@@ -476,7 +498,7 @@ VkImageLayout EnumConverter::Convert(const rhi::core::ResourceState layout)
 		case core::ResourceState::GeneralRead    : return VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
 		case core::ResourceState::UnorderedAccess: return VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
 		case core::ResourceState::RenderTarget   : return VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		case core::ResourceState::DepthStencil   : return VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		case core::ResourceState::DepthStencil   : return VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		case core::ResourceState::CopyDestination: return VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 		case core::ResourceState::CopySource     : return VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 		case core::ResourceState::Present        : return VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
