@@ -18,6 +18,7 @@
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <DirectXTex/DirectXTex.h>
 #include <stdexcept>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +49,6 @@ namespace
 			case  DXGI_FORMAT_D24_UNORM_S8_UINT: return core::PixelFormat::D24_UNORM_S8_UINT;
 			case DXGI_FORMAT_R10G10B10A2_UNORM: return core::PixelFormat::R10G10B10A2_UNORM;
 			case DXGI_FORMAT_D32_FLOAT: return core::PixelFormat::D32_FLOAT;
-
 			default:
 				throw std::runtime_error("not supported Format type");
 		}
@@ -182,15 +182,14 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 		-                 Copy Texture Data
 		---------------------------------------------------------------------*/
 		const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList)->GetCommandList();
-		
+	
 		const auto beforeState = EnumConverter::Convert(_metaData.State);
-		const auto before = BARRIER::Transition(_resource.Get(), beforeState, D3D12_RESOURCE_STATE_COPY_DEST);
+		const auto before      = BARRIER::Transition(_resource.Get(), beforeState, D3D12_RESOURCE_STATE_COPY_DEST);
 
 		dxCommandList->ResourceBarrier(1, &before);
-		UpdateSubresources(dxCommandList.Get(),
-			_resource.Get(), _intermediateBuffer.Get(),
-			0, 0, static_cast<unsigned int>(subResources.size()),
-			subResources.data());
+		UpdateSubresources(dxCommandList.Get(), _resource.Get(), _intermediateBuffer.Get(),
+			0, 0, 
+			static_cast<unsigned int>(subResources.size()), subResources.data());
 
 		auto after = BARRIER::Transition(_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, beforeState);
 		dxCommandList->ResourceBarrier(1, &after);

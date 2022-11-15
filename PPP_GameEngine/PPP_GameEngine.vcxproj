@@ -243,7 +243,7 @@
     <ClInclude Include="GameCore\Rendering\Model\Include\Mesh.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\Model.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\ModelConverter.hpp" />
-    <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveGeometry.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveMesh.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Image.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\Sprite.hpp" />
     <ClInclude Include="GameCore\Rendering\Sprite\Include\UIRenderer.hpp" />
@@ -478,7 +478,7 @@
     <ClCompile Include="GameCore\Rendering\Model\Source\Mesh.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\Model.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\ModelConverter.cpp" />
-    <ClCompile Include="GameCore\Rendering\Model\Source\PrimitiveGeometry.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\PrimitiveMesh.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Image.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\Sprite.cpp" />
     <ClCompile Include="GameCore\Rendering\Sprite\Source\UIRenderer.cpp" />

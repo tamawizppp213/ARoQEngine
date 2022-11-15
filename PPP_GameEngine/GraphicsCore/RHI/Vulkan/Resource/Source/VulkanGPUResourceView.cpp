@@ -26,13 +26,33 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-
+namespace
+{
+	core::DescriptorHeapType Convert(core::ResourceViewType type)
+	{
+		switch (type)
+		{
+			case core::ResourceViewType::Buffer: 
+			case core::ResourceViewType::ConstantBuffer: return core::DescriptorHeapType::CBV;
+			case core::ResourceViewType::Texture: return core::DescriptorHeapType::SRV;
+			case core::ResourceViewType::RWBuffer:
+			case core::ResourceViewType::RWStructuredBuffer:
+			case core::ResourceViewType::RWTexture: return core::DescriptorHeapType::UAV;
+			case core::ResourceViewType::Sampler  : return core::DescriptorHeapType::SAMPLER;
+			default:
+			{
+				throw std::runtime_error("failed to convert descriptor heap type");
+			}
+		}
+	}
+}
 #pragma region Constructor and Destructor
 GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
 	: core::GPUResourceView(device, type, customHeap)
 {
 	_buffer  = buffer;
 	_texture = nullptr;
+	SelectDescriptorHeap(type);
 	CreateView();
 	
 }
@@ -44,7 +64,7 @@ GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device,
 	_buffer  = nullptr;
 	_texture = texture;
 
-	//if(!customHeap){_heap = vkDevice->GetDefaultHeap(_desc) }
+	SelectDescriptorHeap(type);
 	CreateView();
 }
 
@@ -62,7 +82,6 @@ GPUResourceView::~GPUResourceView()
 }
 #pragma endregion Constructor and Destructor
 #pragma region Bind Function
-// ñ¢äÆê¨
 void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
 {
 	assert(commandList->GetType() == core::CommandListType::Graphics);
@@ -79,8 +98,9 @@ void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandL
 	writeDesc.descriptorCount = 1;
 	writeDesc.pNext           = nullptr;
 	writeDesc.dstArrayElement = 0;
-	//writeDesc.dstBinding = _resource
-	
+	writeDesc.dstBinding      = index;
+	writeDesc.dstSet          = vkDescriptorSet;
+
 	if (_imageView)
 	{
 		const auto vkTexture = std::static_pointer_cast<vulkan::GPUTexture>(_texture);
@@ -94,7 +114,7 @@ void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandL
 		imageInfo.imageLayout = EnumConverter::Convert(vkTexture->GetResourceState());
 		
 		writeDesc.pImageInfo     = &imageInfo;
-		writeDesc.descriptorType = EnumConverter::Convert(rhi::core::DescriptorHeapType::SRV);
+		writeDesc.descriptorType = EnumConverter::Convert(Convert(_resourceViewType));
 	}
 	else if (_bufferView)
 	{
@@ -108,7 +128,7 @@ void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandL
 		bufferInfo.offset = 0;
 		
 		writeDesc.pBufferInfo = &bufferInfo;
-		writeDesc.descriptorType = EnumConverter::Convert(rhi::core::DescriptorHeapType::CBV); // UAVÇ‡Ç≠ÇÈÇ©ÇÁï™Ç©ÇÁÇÒ
+		writeDesc.descriptorType = EnumConverter::Convert(Convert(_resourceViewType)); // UAVÇ‡Ç≠ÇÈÇ©ÇÁï™Ç©ÇÁÇÒ
 	}
 	else
 	{
@@ -212,5 +232,42 @@ VkImageAspectFlags GPUResourceView::GetImageAspectFlags(VkFormat format)
 			return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;
 		
 	}
+}
+
+/****************************************************************************
+*                     SelectDescriptorHeap
+*************************************************************************//**
+*  @fn        const std::shared_ptr<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
+*  @brief     Select DirectX12 Descriptor Heap. return custom heap or default heap
+*  @param[in] const core::DescriptorHeapType type
+*  @return Å@Å@const std::shared_ptr<directX12::RHIDescriptorHeap>
+*****************************************************************************/
+const std::shared_ptr<vulkan::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
+{
+	// Set custom Heap
+	if (_heap) { return std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_heap); }
+
+	// Select default heap based on core::ResourceViewType
+	std::shared_ptr<vulkan::RHIDescriptorHeap> defaultHeap = nullptr;
+	switch (type)
+	{
+		case core::ResourceViewType::ConstantBuffer: { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::CBV)); break; }
+		case core::ResourceViewType::Texture:
+		case core::ResourceViewType::Buffer:
+		case core::ResourceViewType::StructuredBuffer: { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::SRV)); break; }
+		case core::ResourceViewType::RWBuffer:
+		case core::ResourceViewType::RWTexture:
+		case core::ResourceViewType::RWStructuredBuffer:    { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::UAV)); break; }
+		case core::ResourceViewType::RenderTarget:          { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::RTV)); break; }
+		case core::ResourceViewType::DepthStencil:          { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::DSV)); break; }
+		case core::ResourceViewType::AccelerationStructure: { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::SRV)); break; }
+		default:
+		{
+			throw std::runtime_error("not support descriptor view. (vulkan api)");
+		}
+	}
+	_heap = defaultHeap;
+
+	return defaultHeap;
 }
 #pragma endregion Prepare View Function

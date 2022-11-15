@@ -13,7 +13,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDescriptorHeap.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDevice.hpp"
-#include "GameUtility/Math/Include/GMHash.hpp"
+#include <functional>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const std::wstring& 
 	-           Get hash code 
 	---------------------------------------------------------------------*/
 	const auto name = filePath + L"_SRV";
-	size_t hashCode = gm::HashState(&name);
+	size_t hashCode = std::hash<std::wstring>()(name);
 	if (_resourceViews.find(hashCode) != _resourceViews.end())
 	{
 		return _resourceViews.at(hashCode);
@@ -40,7 +40,7 @@ GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const std::wstring& 
 		---------------------------------------------------------------------*/
 		const auto texture = _device->CreateTextureEmpty();
 		texture->Load(filePath, _commandList);
-		texture->SetName(filePath);
+		texture->SetName(name);
 		/*-------------------------------------------------------------------
 		-           Load texture view
 		---------------------------------------------------------------------*/

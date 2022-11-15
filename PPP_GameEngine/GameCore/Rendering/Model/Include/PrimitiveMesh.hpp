@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              Title:  DirectX12PrimitiveGeometry.hpp
-//            Content:  DirectX12 2D or 3D Primitive Geometry
+//              Title:  PrimitiveMesh.hpp
+//            Content:  2D or 3D Primitive Mesh Loader
 //             Author:  Toide Yutaro
-//             Create:  2022_03_14
+//             Create:  2022_11_16
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_PRIMITIVE_GEOMETRY_HPP
-#define DIRECTX12_PRIMITIVE_GEOMETRY_HPP
+#ifndef PRIMITIVE_MESH_HPP
+#define PRIMITIVE_MESH_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -40,7 +40,7 @@ namespace gc
 		~MeshData();
 	};
 
-	enum class MeshType
+	enum class PrimitiveMeshType
 	{
 		Rect,
 		Quadrangle,
@@ -57,7 +57,7 @@ namespace gc
 	*  @struct    GeometryGenerator
 	*  @brief     GeometryGenerator struct (box, grid, sphere, cylinder...)
 	*****************************************************************************/
-	class GeometryGenerator
+	class PrimitiveMeshGenerator
 	{
 	public:
 		/****************************************************************************
@@ -79,11 +79,11 @@ namespace gc
 		**                Constructor
 		*****************************************************************************/
 		// Prohibit Copy and Move 
-		GeometryGenerator() = default;
-		GeometryGenerator(const GeometryGenerator&)            = delete;
-		GeometryGenerator& operator=(const GeometryGenerator&) = delete;
-		GeometryGenerator(GeometryGenerator&&)                 = delete;
-		GeometryGenerator& operator=(GeometryGenerator&&)      = delete;
+		PrimitiveMeshGenerator() = default;
+		PrimitiveMeshGenerator(const PrimitiveMeshGenerator&)            = delete;
+		PrimitiveMeshGenerator& operator=(const PrimitiveMeshGenerator&) = delete;
+		PrimitiveMeshGenerator(PrimitiveMeshGenerator&&)                 = delete;
+		PrimitiveMeshGenerator& operator=(PrimitiveMeshGenerator&&)      = delete;
 
 	private:
 		/****************************************************************************

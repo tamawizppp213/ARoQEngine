@@ -56,11 +56,8 @@ void SampleTexture::Update()
 {
 	Scene::Update();
 
-	std::vector<ui::Image> images;
-	images.push_back(*_image.get());
-
-	_renderer->AddFrameObject(images, _resourceView);
-
+	_renderer->AddFrameObjects({ _image }, _resourceView);
+	_renderer->AddFrameObjects({ _miniImage }, _resourceCache->Load(L"Resources/Cubemap.jpg"));
 }
 /****************************************************************************
 *                       Draw
@@ -126,10 +123,13 @@ void SampleTexture::LoadMaterials()
 	// Create image sprite
 	_image = std::make_shared<Image>();
 	_image->CreateInNDCSpace();
+	_miniImage = std::make_shared<Image>();
+	_miniImage->CreateInScreenSpace(gm::Float3(0, 0, 0), gm::Float2(600, 450));
 
 	// Create Texture
 	_resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
-	_resourceView  = _resourceCache->Load(L"Resources/BackGround.png");
+	_resourceView  = _resourceCache->Load(L"Resources/BackGround2.png");
+	_resourceCache->Load(L"Resources/Cubemap.jpg");
 
 	// Create UI Renderer
 	_renderer = std::make_unique<ui::UIRenderer>(_engine);

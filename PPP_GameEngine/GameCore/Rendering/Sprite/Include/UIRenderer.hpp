@@ -51,11 +51,12 @@ namespace ui
 		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
 		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
 		using ResourceViewPtr   = std::shared_ptr<rhi::core::GPUResourceView>;
+		using ImagePtr = std::shared_ptr<ui::Image>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void AddFrameObject(const std::vector<ui::Image>& images, const ResourceViewPtr& view);
+		void AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view);
 		void Draw();
 		/****************************************************************************
 		**                Public Member Variables
@@ -91,8 +92,10 @@ namespace ui
 		std::vector<ResourceViewPtr> _resourceViews = {};
 		/* @brief regist total image count per frame  */
 		std::uint32_t  _totalImageCount        = 0;
+		// @brief : call drawIndex command count per frame
 		std::uint32_t  _needCallDrawIndexCount = 0;
 		std::vector<std::uint32_t> _imageCountList;
+
 	private:
 		std::uint32_t _maxWritableUICount = 1024;
 		static constexpr int MAX_WRITABLE_UI_COUNT = 1024;

@@ -77,6 +77,7 @@ namespace sample
 		*****************************************************************************/
 		UIRendererPtr _renderer = nullptr;
 		ImagePtr      _image    = nullptr;
+		ImagePtr      _miniImage = nullptr;
 		GPUResourceCachePtr _resourceCache = nullptr;
 		GPUResourceViewPtr _resourceView = nullptr;
 	};

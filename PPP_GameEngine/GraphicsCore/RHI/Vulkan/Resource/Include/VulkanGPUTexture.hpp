@@ -38,7 +38,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkImage GetImage() const noexcept { return _image; }
+		VkImage GetImage() const noexcept     { return _image; }
 		VkImageViewCreateInfo& GetImageInfo() { return _imageViewDesc; }
 		const VkImageViewCreateInfo& GetImageInfo() const noexcept { return _imageViewDesc; }
 		

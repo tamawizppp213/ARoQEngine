@@ -57,7 +57,7 @@ UIRenderer::~UIRenderer()
 *  @param[in] const Texture& texture
 *  @return Å@Å@void
 *****************************************************************************/
-void UIRenderer::AddFrameObject(const std::vector<ui::Image>& images, const ResourceViewPtr& view)
+void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view)
 {
 	/*-------------------------------------------------------------------
 	-               sprite count check
@@ -82,7 +82,7 @@ void UIRenderer::AddFrameObject(const std::vector<ui::Image>& images, const Reso
 	// _maxWritableUICount - _totalImageCount is écÇËÇÃìoò^Ç≈Ç´ÇÈêî
 	for (std::uint32_t i = 0; i < std::min<std::uint32_t>(images.size(), _maxWritableUICount - _totalImageCount); ++i)
 	{
-		vertexBuffer->CopyTotalData(images[i].GetVertices(), 4, (i + _totalImageCount) * oneRectVertexCount);
+		vertexBuffer->CopyTotalData(images[i]->GetVertices(), 4, (i + _totalImageCount) * oneRectVertexCount);
 	}
 	vertexBuffer->CopyEnd();
 	/*-------------------------------------------------------------------

@@ -104,7 +104,7 @@ void GPUBuffer::CopyData(const void* data, const size_t elementIndex)
 void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset)
 {
 	assert(dataLength + indexOffset <= _metaData.Count);
-	std::memcpy(&_mappedData[indexOffset], data, _metaData.Stride * (size_t)dataLength);
+	std::memcpy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (size_t)dataLength);
 }
 /****************************************************************************
 *                     CopyEnd

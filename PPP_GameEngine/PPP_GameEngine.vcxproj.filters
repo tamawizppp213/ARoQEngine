@@ -753,7 +753,7 @@
     <ClInclude Include="GameUtility\Math\Include\GMVertex.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveGeometry.hpp">
+    <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveMesh.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12PrimitiveGeometry.hpp">
@@ -1181,7 +1181,7 @@
     <ClCompile Include="MainGame\Sample\Source\SampleRectangle.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Rendering\Model\Source\PrimitiveGeometry.cpp">
+    <ClCompile Include="GameCore\Rendering\Model\Source\PrimitiveMesh.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12PrimitiveGeometry.cpp">

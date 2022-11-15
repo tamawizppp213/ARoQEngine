@@ -22,6 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::vulkan
 {
+	class RHIDescriptorHeap;
 	/****************************************************************************
 	*				  			GPUBuffer
 	*************************************************************************//**
@@ -34,7 +35,6 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		// ñ¢äÆê¨
 		void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) override;
 		/****************************************************************************
 		**                Public Member Variables
@@ -56,6 +56,7 @@ namespace rhi::vulkan
 		void CreateImageView();
 		void CreateBufferView();
 
+		const std::shared_ptr<vulkan::RHIDescriptorHeap> SelectDescriptorHeap(const core::ResourceViewType type);
 		VkImageAspectFlags GetImageAspectFlags(VkFormat format);
 		/****************************************************************************
 		**                Private Member Variables

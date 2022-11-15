@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Sample/Include/SampleRectangle.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-#include "GameCore/Rendering/Model/Include/PrimitiveGeometry.hpp"
+#include "GameCore/Rendering/Model/Include/PrimitiveMesh.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIRenderPass.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
@@ -195,7 +195,8 @@ void SampleRectangle::ExecuteSceneTransition()
 void SampleRectangle::BuildBuffer()
 {
 	// í∏ì_èÓïÒïœÇ¶ÇÈÇ»ÇÁFrameCountï™ópà”ÇµÇΩï˚Ç™ó«Ç¢.
-	gc::MeshData rectangle = gc::GeometryGenerator::Rect(1.0f, 1.0f, 1.0f, gm::Float4(1,1,0,1));
+	gc::MeshData rectangle = gc::PrimitiveMeshGenerator::Rect
+	(1.0f, 1.0f, 1.0f, gm::Float4(1,1,0,1));
 	/*-------------------------------------------------------------------
 	-             Vertex Buffer
 	---------------------------------------------------------------------*/
