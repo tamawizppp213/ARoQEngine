@@ -11,12 +11,16 @@
 #include "GameCore/Core/Include/Camera.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameUtility/Base/Include/GameTimer.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-
+using namespace gc;
+using namespace rhi;
+using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //							Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -27,13 +31,21 @@ Camera::Camera()
 
 Camera::~Camera()
 {
-
+	if (_resourceView) { _resourceView.reset(); }
+	if (_sceneConstantBuffer) { _sceneConstantBuffer.reset(); }
 }
 
-void Camera::StartUp(IDevice* device)
+Camera::Camera(LowLevelGraphicsEnginePtr engine) : _engine(engine)
 {
+	const auto device = engine->GetDevice();
+
 	SetLens(0.25f * GM_PI, Screen::GetAspectRatio(), 1.0f, 1000.0f);
-	_sceneConstantBuffer = std::make_unique<UploadBuffer>(device, static_cast<UINT>(sizeof(SceneConstants)), 1, true, L"SceneConstants");
+
+	GPUBufferMetaData metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SceneConstants), 1);
+	_sceneConstantBuffer = device->CreateBuffer(metaData);
+	_sceneConstantBuffer->SetName(L"SceneConstants");
+
+	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer, nullptr);
 }
 
 void Camera::Update(GameTimer* gameTimer)
@@ -366,10 +378,7 @@ void Camera::UpdateViewMatrix()
 }
 
 #pragma region Property
-Camera::SceneGPUAddress Camera::GetSceneGPUAddress() const
-{
-	return _sceneConstantBuffer->GetGPUVirtualAddress();
-}
+
 Vector3 Camera::GetPosition() const
 {
 	return Vector3(_position);
@@ -525,8 +534,6 @@ void Camera::UpdateSceneConstants(GameTimer* gameTimer)
 	scene.TotalTime               = gameTimer->TotalTime();
 	scene.DeltaTime               = gameTimer->DeltaTime();
 
-	_sceneConstantBuffer->CopyStart();
-	_sceneConstantBuffer->CopyData(0, &scene);
-	_sceneConstantBuffer->CopyEnd();
+	_sceneConstantBuffer->Pack(&scene, nullptr); 
 }
 #pragma endregion Protected Function

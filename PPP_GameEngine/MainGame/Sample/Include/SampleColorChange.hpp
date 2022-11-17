@@ -1,71 +1,54 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   ColorChange.hpp
-///             @brief  Color change post effect
+///             @file   SampleSky.hpp
+///             @brief  Skybox sample
 ///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @date   2022_04_23
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef COLOR_CHANGE_HPP
-#define COLOR_CHANGE_HPP
+#ifndef SAMPLE_COLOR_CHANGE_HPP
+#define SAMPLE_COLOR_CHANGE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <vector>
-#include <string>
+#include "MainGame/Core/Include/Scene.hpp"
 #include <memory>
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class PipelineState;
-class LowLevelGraphicsEngine;
-namespace rhi::core
+namespace gc
 {
-	class RHIResourceLayout;
-	class GPUResourceView;
-	class GPUGraphicsPipelineState;
-	class GPUBuffer;
-	class GPUTexture;
+	class SkyDome;
+	class Camera;
+	class ColorChange;
 }
+
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace sample
 {
 
-	enum ColorChangeType
-	{
-		None,
-		Monochrome,
-		Sepia,
-		GrayScale,
-		Binary,
-		Invert,
-		CountOfType,
-	};
 	/****************************************************************************
-	*				  			ColorChange
+	*				  			SampleSky
 	*************************************************************************//**
-	*  @class     Color Change
-	*  @brief     color change post effect
+	*  @class     SampleSky
+	*  @brief     Skybox sample
 	*****************************************************************************/
-	class ColorChange : public NonCopyable
+	class SampleColorChange : public Scene
 	{
-		using VertexBufferPtr = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr  = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using ResourceViewPtr   = std::shared_ptr<rhi::core::GPUResourceView>;
-		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
+		using CameraPtr = std::shared_ptr<gc::Camera>;
+		using ColorChangePtr = std::shared_ptr<gc::ColorChange>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Resize frame buffer (Not implement)*/
-		void OnResize(int newWidth, int newHeight);
-		/*@brief : Render to back buffer*/
-		void Draw();
+		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
+		void Update() override;
+		void Draw() override;
+		void Terminate() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -73,28 +56,23 @@ namespace gc
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		ColorChange();
-		~ColorChange();
-		ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName = L"");
-
+		SampleColorChange();
+		~SampleColorChange();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
-		void PreparePipelineState(ColorChangeType type, const std::wstring& addName);
-		void PrepareResourceView();
+		void LoadMaterials() override;
+		void OnKeyboardInput() override;
+		void OnMouseInput() override;
+		void OnGamePadInput() override;
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		/* @brief : frame resources*/
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
-		std::vector<IndexBufferPtr>  _indexBuffers = {};
-		PipelineStatePtr  _pipeline       = nullptr;
-		ResourceLayoutPtr _resourceLayout = nullptr;
-		std::vector<ResourceViewPtr> _resourceViews = {};
-		/* @brief : device and command list*/
-		LowLevelGraphicsEnginePtr _engine = nullptr;
+		SkyDomePtr _skybox = nullptr;
+		CameraPtr _camera = nullptr;
+		std::vector<ColorChangePtr> _colorChanges = {};
+		std::uint32_t _colorIndex = 0;
 	};
 }
 #endif

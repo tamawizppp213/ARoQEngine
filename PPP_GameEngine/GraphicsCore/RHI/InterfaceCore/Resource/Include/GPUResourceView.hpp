@@ -51,6 +51,9 @@ namespace rhi::core
 		core::ResourceViewType GetResourceViewType() const noexcept { return _resourceViewType; }
 
 		std::uint32_t GetDescriptorID() const { return _descriptorID; }
+
+		std::shared_ptr<GPUTexture> GetTexture() const noexcept{ return _texture; }
+		std::shared_ptr<GPUBuffer> GetBuffer() const noexcept { return _buffer; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

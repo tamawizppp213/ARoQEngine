@@ -100,6 +100,7 @@ DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 		case core::PixelFormat::R10G10B10A2_UNORM  : return DXGI_FORMAT_R10G10B10A2_UNORM;
 		case core::PixelFormat::D32_FLOAT          : return DXGI_FORMAT_D32_FLOAT;
 		case core::PixelFormat::B8G8R8A8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+		case core::PixelFormat::BC1_UNORM          : return DXGI_FORMAT_BC1_UNORM;
 		case core::PixelFormat::Unknown: return DXGI_FORMAT_UNKNOWN;
 		default:
 			throw std::runtime_error("not supported Pixel Format type (directX12 api)");

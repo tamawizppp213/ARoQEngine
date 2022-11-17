@@ -8,9 +8,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Sample/Include/SampleSky.hpp"
+#include "MainGame/Sample/Include/SampleColorChange.hpp"
 #include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
 #include "GameCore/Core/Include/Camera.hpp"
+#include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,11 +26,11 @@ using namespace gc;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-SampleSky::SampleSky()
+SampleColorChange::SampleColorChange()
 {
 
 }
-SampleSky::~SampleSky()
+SampleColorChange::~SampleColorChange()
 {
 
 }
@@ -36,28 +38,28 @@ SampleSky::~SampleSky()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleSky::Initialize(GameTimer* gameTimer)
+*  @fn        void SampleColorChange::Initialize(GameTimer* gameTimer)
 *  @brief     Initialize scene
 *  @param[in] GameTimer* gameTimer
 *  @return 　　void
 *****************************************************************************/
-void SampleSky::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleColorChange::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
 /****************************************************************************
 *                       Update
 *************************************************************************//**
-*  @fn        void SampleSky::Update()
+*  @fn        void SampleColorChange::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleSky::Update()
+void SampleColorChange::Update()
 {
 	Scene::Update();
 	_camera->Update(_gameTimer);
-	
+
 }
 /****************************************************************************
 *                       Draw
@@ -67,31 +69,33 @@ void SampleSky::Update()
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleSky::Draw()
+void SampleColorChange::Draw()
 {
 	_engine->BeginDrawFrame();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
+	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
 	commandList->SetViewportAndScissor(
-		core::Viewport   (0, 0, Screen::GetScreenWidth(), Screen::GetScreenHeight()),
+		core::Viewport(0, 0, Screen::GetScreenWidth(), Screen::GetScreenHeight()),
 		core::ScissorRect(0, 0, Screen::GetScreenWidth(), Screen::GetScreenHeight()));
 
 	_skybox->Draw(_camera->GetResourceView());
+	_colorChanges[_colorIndex]->Draw();
 	_engine->EndDrawFrame();
 }
 /****************************************************************************
 *                       Terminate
 *************************************************************************//**
-*  @fn        void SampleSky::Terminate()
+*  @fn        void SampleColorChange::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleSky::Terminate()
+void SampleColorChange::Terminate()
 {
-	
+
 }
 #pragma endregion Public Function
 
@@ -100,19 +104,19 @@ void SampleSky::Terminate()
 /****************************************************************************
 *                       LoadMaterials
 *************************************************************************//**
-*  @fn        void SampleSky::LoadMaterials(GameTimer* gameTimer)
+*  @fn        void SampleColorChange::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleSky::LoadMaterials()
+void SampleColorChange::LoadMaterials()
 {
 	/*-------------------------------------------------------------------
 	-             Open Copy CommandList
 	---------------------------------------------------------------------*/
-	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex());
+	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex());
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
-	copyCommandList    ->BeginRecording();
+	copyCommandList->BeginRecording();
 	graphicsCommandList->BeginRecording();
 	/*-------------------------------------------------------------------
 	-           Camera
@@ -123,7 +127,14 @@ void SampleSky::LoadMaterials()
 	-           Skybox
 	---------------------------------------------------------------------*/
 	_skybox = std::make_shared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
-
+	/*-------------------------------------------------------------------
+	-           Color Changes
+	---------------------------------------------------------------------*/
+	_colorChanges.resize(5);
+	for (size_t i = 0; i < _colorChanges.size(); ++i)
+	{
+		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
+	}
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/
@@ -136,15 +147,15 @@ void SampleSky::LoadMaterials()
 /****************************************************************************
 *                       OnKeyboardInput
 *************************************************************************//**
-*  @fn        void SampleSky::OnKeyboardInput()
+*  @fn        void SampleColorChange::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleSky::OnKeyboardInput()
+void SampleColorChange::OnKeyboardInput()
 {
 	const float deltaTime = _gameTimer->DeltaTime();
-	const float speed     = 0.25f;
+	const float speed = 0.25f;
 	/*-------------------------------------------------------------------
 	-           Keyboad Input W (Move Camera )
 	---------------------------------------------------------------------*/
@@ -159,17 +170,20 @@ void SampleSky::OnKeyboardInput()
 	{
 		_camera->Walk(-speed * deltaTime);
 	}
-
+	if (_gameInput.GetKeyboard().IsTrigger(DIK_P))
+	{
+		_colorIndex = (_colorIndex + 1) % _colorChanges.size();
+	}
 }
 /****************************************************************************
 *                       OnMouseInput
 *************************************************************************//**
-*  @fn        void SampleSky::OnMouseInput()
+*  @fn        void SampleColorChange::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleSky::OnMouseInput()
+void SampleColorChange::OnMouseInput()
 {
 	/*-------------------------------------------------------------------
 	-           Mouse Input Left Button
@@ -186,12 +200,12 @@ void SampleSky::OnMouseInput()
 /****************************************************************************
 *                       OnGamePadInput
 *************************************************************************//**
-*  @fn        void SampleSky::OnGamePadInput()
+*  @fn        void SampleColorChange::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleSky::OnGamePadInput()
+void SampleColorChange::OnGamePadInput()
 {
 
 }

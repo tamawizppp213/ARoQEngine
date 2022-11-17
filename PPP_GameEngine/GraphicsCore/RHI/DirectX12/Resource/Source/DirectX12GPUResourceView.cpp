@@ -134,6 +134,7 @@ void GPUResourceView::CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHe
 				resourceViewDesc.Texture2D.MostDetailedMip     = 0;
 				resourceViewDesc.Texture2D.PlaneSlice          = 0;
 				resourceViewDesc.Texture2D.ResourceMinLODClamp = 0;
+
 				break;
 			}
 			case core::ResourceType::Texture3D:
@@ -575,10 +576,11 @@ void GPUResourceView::CreateCBV(const std::shared_ptr<directX12::RHIDescriptorHe
 	if (_buffer)
 	{
 		DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
+		const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_buffer);
 
 		// Set up constant buffer view descriptor
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
-		desc.BufferLocation = 0;
+		desc.BufferLocation = dxBuffer->GetResource()->GetGPUVirtualAddress();
 		desc.SizeInBytes    = static_cast<UINT>(_buffer->GetTotalByteSize());
 
 		// 256 alignment check

@@ -79,8 +79,8 @@ SamplerInfo SamplerInfo::GetDefaultSampler(DefaultSamplerType type)
 GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState state, MemoryHeap heapType, core::BufferType bufferType)
 	: Stride(stride), Count(count), ResourceUsage(usage), State(state), HeapType(heapType), BufferType(bufferType),ResourceType(core::ResourceType::Buffer)
 {
+	if (bufferType == BufferType::Constant) { Stride = CalcConstantBufferByteSize(stride); }
 	ByteSize = Stride * Count;
-	if (bufferType == BufferType::Constant) { CalcConstantBufferByteSize(ByteSize); }
 }
 GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count)
 {
@@ -88,7 +88,11 @@ GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const siz
 }
 GPUBufferMetaData GPUBufferMetaData::DefaultBuffer(const size_t stride, const size_t count)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, MemoryHeap::Default, BufferType::Constant);
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, MemoryHeap::Default, BufferType::Default);
+}
+GPUBufferMetaData GPUBufferMetaData::ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state)
+{
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, state, heap, BufferType::Constant);
 }
 GPUBufferMetaData GPUBufferMetaData::VertexBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state)
 {

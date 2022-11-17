@@ -762,6 +762,9 @@
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUResourceCache.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="MainGame\Sample\Include\SampleColorChange.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1197,6 +1200,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Resource\Source\GPUResourceCache.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGame\Sample\Source\SamplerColorChange.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

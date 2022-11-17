@@ -67,9 +67,10 @@ public:
 	std::shared_ptr<rhi::core::RHICommandList> GetCommandList(const rhi::core::CommandListType type, const std::uint32_t frameIndex) const noexcept { return _commandLists.at(frameIndex).at(type); }
 	/* @brief : Default RenderPass*/
 	std::shared_ptr<rhi::core::RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
+	std::shared_ptr<rhi::core::RHIFrameBuffer> GetFrameBuffer(const std::uint32_t frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
 	/* @brief : Return Current Frame Index*/
 	std::uint32_t   GetCurrentFrameIndex() const { return _currentFrameIndex; }
-
+	rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/

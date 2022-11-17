@@ -10,10 +10,10 @@
 
 struct VSInputPositionNormalColorTexture
 {
-    float4 Position : POSITION0;
-    float4 Normal   : NORMAL0;
-    float4 Color    : COLOR0;
-    float2 UV       : TEXCOORD0;
+    float4 Position : POSITION;
+    float4 Normal   : NORMAL;
+    float4 Color    : COLOR;
+    float2 UV       : TEXCOORD;
 };
 
 
@@ -22,9 +22,9 @@ struct VSInputPositionNormalColorTexture
 struct VSOutputPositionNormalColorTexture
 {
     float4 Position : SV_POSITION;
-    float4 Normal : NORMAL0;
-    float4 Color : COLOR0;
-    float2 UV : TEXCOORD0;
+    float4 Normal : NORMAL;
+    float4 Color : COLOR;
+    float2 UV : TEXCOORD;
 };
 
 #endif

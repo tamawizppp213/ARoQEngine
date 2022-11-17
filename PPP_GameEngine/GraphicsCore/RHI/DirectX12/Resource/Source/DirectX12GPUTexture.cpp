@@ -46,9 +46,10 @@ namespace
 			case DXGI_FORMAT_R16G16B16A16_FLOAT: return core::PixelFormat::R16G16B16A16_FLOAT;
 			case DXGI_FORMAT_R32G32B32A32_FLOAT: return core::PixelFormat::R32G32B32A32_FLOAT;
 			case DXGI_FORMAT_R32G32B32_FLOAT: return core::PixelFormat::R32G32B32_FLOAT;
-			case  DXGI_FORMAT_D24_UNORM_S8_UINT: return core::PixelFormat::D24_UNORM_S8_UINT;
+			case DXGI_FORMAT_D24_UNORM_S8_UINT: return core::PixelFormat::D24_UNORM_S8_UINT;
 			case DXGI_FORMAT_R10G10B10A2_UNORM: return core::PixelFormat::R10G10B10A2_UNORM;
 			case DXGI_FORMAT_D32_FLOAT: return core::PixelFormat::D32_FLOAT;
+			case DXGI_FORMAT_BC1_UNORM: return core::PixelFormat::BC1_UNORM;
 			default:
 				throw std::runtime_error("not supported Format type");
 		}
@@ -136,8 +137,15 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	/*-------------------------------------------------------------------
 	-                 Create core texture metadata
 	---------------------------------------------------------------------*/
-	_metaData = core::GPUTextureMetaData::Texture2DArray(image->width, image->height, dxMetaData.arraySize,
-		::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+	if (dxMetaData.IsCubemap())
+	{
+		_metaData = core::GPUTextureMetaData::CubeMap(image->width, image->height, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+	}
+	else
+	{
+		_metaData = core::GPUTextureMetaData::Texture2DArray(image->width, image->height, dxMetaData.arraySize,
+			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+	}
 	/*-------------------------------------------------------------------
 	-                 Create directX12 texture buffer
 	---------------------------------------------------------------------*/
@@ -245,7 +253,7 @@ void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDes
 		clearValue.Color[2] = _metaData.ClearColor.Color[2];
 		clearValue.Color[3] = _metaData.ClearColor.Color[3];
 	}
-	else
+	else if(core::EnumHas(_metaData.ResourceUsage, core::ResourceUsage::DepthStencil))
 	{
 		clearValue.DepthStencil.Depth   = _metaData.ClearColor.Depth;
 		clearValue.DepthStencil.Stencil = _metaData.ClearColor.Stencil;

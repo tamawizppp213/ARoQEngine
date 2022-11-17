@@ -422,6 +422,7 @@
     <ClInclude Include="MainGame\Core\Include\Scene.hpp" />
     <ClInclude Include="MainGame\Core\Include\SceneManager.hpp" />
     <ClInclude Include="MainGame\Core\Include\TemplateText.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleColorChange.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleRectangle.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp" />
@@ -571,6 +572,7 @@
     <ClCompile Include="MainGame\Core\Source\Scene.cpp" />
     <ClCompile Include="MainGame\Core\Source\SceneManager.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleEmpty.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SamplerColorChange.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleRectangle.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleSky.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp" />

@@ -104,6 +104,7 @@ namespace rhi::core
 		D24_UNORM_S8_UINT,
 		R32G32B32_FLOAT,
 		B8G8R8A8_UNORM_SRGB,
+		BC1_UNORM,
 		CountOfPixelFormat
 	};
 	class PixelFormatSizeOf
@@ -665,10 +666,11 @@ namespace rhi::core
 #pragma region GPUBuffer
 	enum class BufferType
 	{
-		Vertex,   // Use static mesh
+		Vertex,   
 		Index,
-		Constant,
+		Constant, // Use static mesh
 		Upload,   // Use dynamic mesh
+		Default,
 	};
 
 	/****************************************************************************
@@ -709,10 +711,11 @@ namespace rhi::core
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
-		static GPUBufferMetaData UploadBuffer (const size_t stride, const size_t count);
-		static GPUBufferMetaData DefaultBuffer(const size_t stride, const size_t count);
-		static GPUBufferMetaData VertexBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead);
-		static GPUBufferMetaData IndexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead);
+		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count);
+		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count);
+		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common); // auto alignment 
+		static GPUBufferMetaData VertexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead);
+		static GPUBufferMetaData IndexBuffer   (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common);
 	private:
 		size_t CalcConstantBufferByteSize(const size_t byteSize) { return (byteSize + 255) & ~255; }
 	};

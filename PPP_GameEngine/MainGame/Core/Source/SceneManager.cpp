@@ -11,7 +11,7 @@
 #include "MainGame/Core/Include/SceneManager.hpp"
 #include "GameUtility/Base/Include/GameTimer.hpp"
 #include "MainGame/Core/Include/Scene.hpp"
-#include "MainGame/Sample/Include/SampleSky.hpp"
+#include "MainGame/Sample/Include/SampleColorChange.hpp"
 #include "MainGame/Sample/Include/SampleTexture.hpp"
 #include "MainGame/Sample/Include/SampleRectangle.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,7 +25,7 @@
 void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, GameTimer* gameTimer)
 {
 	_engine = engine;
-	PushScene(new sample::SampleTexture());
+	PushScene(new sample::SampleColorChange());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

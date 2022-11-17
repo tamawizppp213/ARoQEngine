@@ -121,6 +121,7 @@ void GPUBuffer::CopyEnd()
 
 void GPUBuffer::SetName(const std::wstring& name)
 {
+	_name = name;
 	ThrowIfFailed(_resource->SetName(name.c_str()));
 }
 
@@ -128,8 +129,10 @@ void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandLis
 {
 
 	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
-	if ((!_metaData.IsCPUAccessible()) && (copyCommandList != nullptr))
+	if ((!_metaData.IsCPUAccessible()))
 	{
+		assert(copyCommandList->GetType() == core::CommandListType::Copy);
+
 		/*-------------------------------------------------------------------
 		-          Copy CPU memory data into our dafault buffer,
 		-          we need to create an intermediate upload heap
@@ -156,8 +159,6 @@ void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandLis
 		/*-------------------------------------------------------------------
 		-      Schedule to copy the data to the default buffer resource
 		---------------------------------------------------------------------*/
-		assert(copyCommandList->GetType() == core::CommandListType::Copy);
-		
 		const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(copyCommandList)->GetCommandList();
 		const auto beforeState = EnumConverter::Convert(_metaData.State);
 		const auto before      = BARRIER::Transition(_resource.Get(), beforeState, D3D12_RESOURCE_STATE_COPY_DEST);

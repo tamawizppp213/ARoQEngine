@@ -280,6 +280,24 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 	_commandList->ResourceBarrier(numStates, barriers.data());
 }
 #pragma endregion Transition Resource State
+#pragma region Copy 
+void RHICommandList::CopyResource(const std::shared_ptr<core::GPUTexture>& dest, const std::shared_ptr<core::GPUTexture>& source)
+{
+	const auto sourceState = source->GetResourceState();
+	const auto destState   = dest->GetResourceState();
+
+	std::shared_ptr<core::GPUTexture> textures[] = {dest, source};
+	rhi::core::ResourceState befores[] = { dest->GetResourceState()            , source->GetResourceState() };
+	rhi::core::ResourceState afters [] = { core::ResourceState::CopyDestination, core::ResourceState::CopySource };
+	TransitionResourceStates(2, textures, afters);
+	
+	_commandList->CopyResource(
+		std::static_pointer_cast<directX12::GPUTexture>(dest)->GetResource().Get(),
+		std::static_pointer_cast<directX12::GPUTexture>(source)->GetResource().Get());
+
+	TransitionResourceStates(2, textures, befores);
+}
+#pragma endregion Copy
 #pragma endregion GPU Command
 #pragma region Private Function
 /****************************************************************************

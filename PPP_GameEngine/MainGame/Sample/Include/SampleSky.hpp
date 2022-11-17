@@ -16,8 +16,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class SkyDome;
-class Camera;
+namespace gc
+{
+	class SkyDome;
+	class Camera;
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,8 +36,8 @@ namespace sample
 	*****************************************************************************/
 	class SampleSky : public Scene
 	{
-		using SkyDomePtr = std::unique_ptr<SkyDome>;
-		using CameraPtr = std::unique_ptr<Camera>;
+		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
+		using CameraPtr  = std::shared_ptr<gc::Camera>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -55,7 +59,6 @@ namespace sample
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareCamera();
 		void LoadMaterials() override;
 		void OnKeyboardInput() override;
 		void OnMouseInput  () override;

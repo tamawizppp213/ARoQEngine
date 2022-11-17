@@ -68,6 +68,7 @@ namespace rhi::vulkan
 		---------------------------------------------------------------------*/
 		void TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after) override;
 		void TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters) override;
+		void CopyResource(const std::shared_ptr<core::GPUTexture>& dest, const std::shared_ptr<core::GPUTexture>& source) override {};;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
