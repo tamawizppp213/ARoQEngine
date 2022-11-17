@@ -1218,6 +1218,7 @@
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
     <None Include="Shader\Lighting\ShaderBRDF.hlsli" />
     <None Include="Shader\Lighting\ShaderLightType.hlsli" />
+    <None Include="Shader\Effect\ShaderTonemapType.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc">
@@ -1232,5 +1233,6 @@
     <FxCompile Include="Shader\Effect\ShaderDepthOfField.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderLightCulling.hlsl" />
     <FxCompile Include="Shader\Sprite\ShaderTest.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderTonemap.hlsl" />
   </ItemGroup>
 </Project>

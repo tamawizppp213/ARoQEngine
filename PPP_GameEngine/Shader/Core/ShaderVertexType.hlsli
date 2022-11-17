@@ -8,7 +8,7 @@
 #define SHADER_VERTEX_TYPE_HLSLI
 
 
-struct VSInputPositionNormalColorTexture
+struct VSInputVertex
 {
     float4 Position : POSITION;
     float4 Normal   : NORMAL;
@@ -19,12 +19,12 @@ struct VSInputPositionNormalColorTexture
 
 
 // VSOutput
-struct VSOutputPositionNormalColorTexture
+struct VSOutputVertex
 {
     float4 Position : SV_POSITION;
-    float4 Normal : NORMAL;
-    float4 Color : COLOR;
-    float2 UV : TEXCOORD;
+    float4 Normal   : NORMAL;
+    float4 Color    : COLOR;
+    float2 UV       : TEXCOORD;
 };
 
 #endif
