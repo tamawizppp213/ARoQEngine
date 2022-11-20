@@ -30,10 +30,10 @@ namespace rhi::core
 	class RHIRenderPass;
 	class GPUResourceView;
 	/****************************************************************************
-	*				  			TemplateClass
+	*				  			RHIFrameBuffer
 	*************************************************************************//**
-	*  @class     TemplateClass
-	*  @brief     temp
+	*  @class     RHIFrameBuffer
+	*  @brief     Render and Depth Stencil Buffer
 	*****************************************************************************/
 	class RHIFrameBuffer : public NonCopyable
 	{

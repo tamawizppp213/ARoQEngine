@@ -22,6 +22,7 @@ namespace gc
 	class SkyDome;
 	class Camera;
 	class ColorChange;
+	class GaussianBlur;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -39,8 +40,10 @@ namespace sample
 	class SampleColorChange : public Scene
 	{
 		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr = std::shared_ptr<gc::Camera>;
-		using ColorChangePtr = std::shared_ptr<gc::ColorChange>;
+		using CameraPtr  = std::shared_ptr<gc::Camera>;
+		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
+		using GaussianBlurPtr = std::shared_ptr<gc::GaussianBlur>;
+
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -72,6 +75,7 @@ namespace sample
 		SkyDomePtr _skybox = nullptr;
 		CameraPtr _camera = nullptr;
 		std::vector<ColorChangePtr> _colorChanges = {};
+		GaussianBlurPtr _gaussianBlur = nullptr;
 		std::uint32_t _colorIndex = 0;
 	};
 }

@@ -47,15 +47,14 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIRenderPass>              GetRenderPass() const noexcept { return _renderPass; }
 		inline std::shared_ptr<RHIResourceLayout>   GetLayout() const noexcept { return _resourceLayout; }
 		inline void SetLayout(const std::shared_ptr<RHIResourceLayout>& resourceLayout) { _resourceLayout = resourceLayout; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBasePipelineState() = default;
-		explicit GPUBasePipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& layout)
-			: _device(device), _renderPass(renderPass) ,_resourceLayout(layout) { };
+		explicit GPUBasePipelineState(const std::shared_ptr<RHIDevice>& device,  const std::shared_ptr<RHIResourceLayout>& layout)
+			: _device(device) ,_resourceLayout(layout) { };
 		~GPUBasePipelineState() = default;
 	protected:
 		/****************************************************************************
@@ -66,7 +65,6 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::shared_ptr<rhi::core::RHIDevice>     _device        = nullptr;
-		std::shared_ptr<rhi::core::RHIRenderPass> _renderPass    = nullptr;
 		std::shared_ptr<rhi::core::RHIResourceLayout> _resourceLayout = nullptr;
 	};
 
@@ -86,6 +84,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		std::shared_ptr<RHIRenderPass>                GetRenderPass() const noexcept { return _renderPass; }
 		inline std::shared_ptr<GPUInputAssemblyState> GetInputAssemblyState() const noexcept { return _inputAssemblyState; }
 		inline std::shared_ptr<GPURasterizerState>    GetRasterizerState   () const noexcept { return _rasterizerState; }
 		inline std::shared_ptr<GPUDepthStencilState>  GetDepthStencilState () const noexcept { return _depthStencilState; }
@@ -114,7 +113,7 @@ namespace rhi::core
 		*****************************************************************************/
 	protected:
 		GPUGraphicsPipelineState() = default;
-		explicit GPUGraphicsPipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& layout) : core::GPUBasePipelineState(device, renderPass, layout){};
+		explicit GPUGraphicsPipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& layout) : core::GPUBasePipelineState(device, layout), _renderPass(renderPass) {};
 		~GPUGraphicsPipelineState() = default;
 		/****************************************************************************
 		**                Protected Function
@@ -132,6 +131,7 @@ namespace rhi::core
 		std::shared_ptr<GPUShaderState>        _hullShaderState     = nullptr;
 		std::shared_ptr<GPUShaderState>        _domainShaderState   = nullptr;
 		std::shared_ptr<GPUShaderState>        _geometryShaderState = nullptr;
+		std::shared_ptr<RHIRenderPass>          _renderPass = nullptr;
 	};
 
 	/****************************************************************************
@@ -150,13 +150,14 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		void SetComputeShader(const std::shared_ptr<GPUShaderState>& shaderState) { _computeShaderState = shaderState; };
+		virtual void SetName(const std::wstring& name) const = 0;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 	protected:
 		GPUComputePipelineState() = default;
-		explicit GPUComputePipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass = nullptr, const std::shared_ptr<RHIResourceLayout>& layout = nullptr) : core::GPUBasePipelineState(device, renderPass, layout){};
+		explicit GPUComputePipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIResourceLayout>& layout = nullptr) : core::GPUBasePipelineState(device, layout){};
 		~GPUComputePipelineState() = default;
 		/****************************************************************************
 		**                Protected Function

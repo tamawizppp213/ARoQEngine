@@ -143,9 +143,9 @@ std::shared_ptr<core::GPUGraphicsPipelineState> RHIDevice::CreateGraphicPipeline
 {
 	return std::static_pointer_cast<core::GPUGraphicsPipelineState>(std::make_shared<vulkan::GPUGraphicsPipelineState>(shared_from_this(), renderPass, resourceLayout));
 }
-std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState( const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
 {
-	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<vulkan::GPUComputePipelineState>(shared_from_this(), renderPass, resourceLayout));
+	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<vulkan::GPUComputePipelineState>(shared_from_this(), resourceLayout));
 }
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {

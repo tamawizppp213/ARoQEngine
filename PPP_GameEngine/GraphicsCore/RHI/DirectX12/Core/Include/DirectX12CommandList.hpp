@@ -67,6 +67,8 @@ namespace rhi::directX12
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/
+		void SetComputeResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;
+		void SetComputePipeline(const std::shared_ptr<core::GPUComputePipelineState>& pipeline) override;
 		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override;
 		/*-------------------------------------------------------------------
 		-                Transition layout

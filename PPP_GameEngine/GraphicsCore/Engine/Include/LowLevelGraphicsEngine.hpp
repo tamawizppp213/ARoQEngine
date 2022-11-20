@@ -67,6 +67,7 @@ public:
 	std::shared_ptr<rhi::core::RHICommandList> GetCommandList(const rhi::core::CommandListType type, const std::uint32_t frameIndex) const noexcept { return _commandLists.at(frameIndex).at(type); }
 	/* @brief : Default RenderPass*/
 	std::shared_ptr<rhi::core::RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
+	std::shared_ptr<rhi::core::RHIRenderPass> GetDrawContinueRenderPass() const noexcept { return _drawContinueRenderPass; }
 	std::shared_ptr<rhi::core::RHIFrameBuffer> GetFrameBuffer(const std::uint32_t frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
 	/* @brief : Return Current Frame Index*/
 	std::uint32_t   GetCurrentFrameIndex() const { return _currentFrameIndex; }
@@ -107,6 +108,7 @@ protected:
 	std::shared_ptr<rhi::core::RHISwapchain> _swapchain = nullptr;
 	/* @brief : Default rendering pass*/
 	std::shared_ptr<rhi::core::RHIRenderPass> _renderPass = { nullptr }; 
+	std::shared_ptr<rhi::core::RHIRenderPass> _drawContinueRenderPass = nullptr;
 	std::vector<std::shared_ptr<rhi::core::RHIFrameBuffer>> _frameBuffers = { nullptr };
 	/* @brief : current frame index*/
 	std::uint32_t _currentFrameIndex = 0;

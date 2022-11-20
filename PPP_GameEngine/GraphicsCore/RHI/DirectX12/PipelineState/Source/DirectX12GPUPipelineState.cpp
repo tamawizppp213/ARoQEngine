@@ -72,17 +72,25 @@ void GPUGraphicsPipelineState::CompleteSetting()
 #pragma region Compute PSO
 void GPUComputePipelineState::CompleteSetting()
 {
-	DeviceComPtr dxDevice = nullptr;
-	dxDevice = static_cast<RHIDevice*>(_device.get())->GetDevice();
+	const auto dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
+	const auto dxLayout = std::static_pointer_cast<directX12::RHIResourceLayout>(_resourceLayout);
+	const auto dxShader = std::static_pointer_cast<directX12::GPUShaderState>(_computeShaderState);
 
 	/*-------------------------------------------------------------------
 	-                      Set Descriptor
 	---------------------------------------------------------------------*/
 	D3D12_COMPUTE_PIPELINE_STATE_DESC desc = {};
-	desc.CS             = _computeShaderState ? static_cast<GPUShaderState*>(_computeShaderState.get())->GetShader() : D3D12_SHADER_BYTECODE();
+	desc.CS             = _computeShaderState ? dxShader->GetShader() : D3D12_SHADER_BYTECODE();
 	desc.Flags          = D3D12_PIPELINE_STATE_FLAG_NONE;
-	desc.pRootSignature = _resourceLayout ? static_cast<RHIResourceLayout*>(_resourceLayout.get())->GetRootSignature().Get() : nullptr;
+	desc.pRootSignature = _resourceLayout ? dxLayout->GetRootSignature().Get() : nullptr;
 	desc.NodeMask       = 0;
+	
+	ThrowIfFailed(dxDevice->CreateComputePipelineState(&desc, IID_PPV_ARGS(&_computePipeline)));
 
+}
+
+void GPUComputePipelineState::SetName(const std::wstring& name) const 
+{
+	_computePipeline->SetName(name.c_str());
 }
 #pragma endregion Compute PSO

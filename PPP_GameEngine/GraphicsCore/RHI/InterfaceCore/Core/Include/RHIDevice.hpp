@@ -76,7 +76,7 @@ namespace rhi::core
 		virtual std::shared_ptr<RHIResourceLayout>        CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt) = 0;
 		virtual std::shared_ptr<GPUPipelineFactory>       CreatePipelineFactory() = 0;
 		virtual std::shared_ptr<GPUGraphicsPipelineState> CreateGraphicPipelineState(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
-		virtual std::shared_ptr<GPUComputePipelineState>  CreateComputePipelineState(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
+		virtual std::shared_ptr<GPUComputePipelineState>  CreateComputePipelineState(const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
 		virtual std::shared_ptr<RHIRenderPass>            CreateRenderPass(const std::vector<Attachment>& colors, const std::optional<Attachment>& depth) = 0;
 		virtual std::shared_ptr<RHIRenderPass>            CreateRenderPass(const Attachment& color, const std::optional<Attachment>& depth) = 0;
 		virtual std::shared_ptr<GPUResourceView>          CreateResourceView(const ResourceViewType viewType, const std::shared_ptr<GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) = 0;

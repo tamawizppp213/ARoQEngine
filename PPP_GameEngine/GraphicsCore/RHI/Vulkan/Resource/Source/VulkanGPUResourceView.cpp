@@ -84,7 +84,7 @@ GPUResourceView::~GPUResourceView()
 #pragma region Bind Function
 void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
 {
-	assert(commandList->GetType() == core::CommandListType::Graphics);
+	//assert(commandList->GetType() == core::CommandListType::Graphics);
 
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	const auto vkHeap   = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_heap);

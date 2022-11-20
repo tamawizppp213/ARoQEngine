@@ -213,12 +213,22 @@ void RHICommandList::SetResourceLayout(const std::shared_ptr<core::RHIResourceLa
 {
 	_commandList->SetGraphicsRootSignature(std::static_pointer_cast<directX12::RHIResourceLayout>(resourceLayout)->GetRootSignature().Get());
 }
+
+void RHICommandList::SetComputeResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+{
+	_commandList->SetComputeRootSignature(std::static_pointer_cast<directX12::RHIResourceLayout>(resourceLayout)->GetRootSignature().Get());
+}
+
 void RHICommandList::SetGraphicsPipeline(const std::shared_ptr<core::GPUGraphicsPipelineState>& pipelineState)
 {
 	SetPrimitiveTopology(pipelineState->GetInputAssemblyState()->GetPrimitiveTopology());
 	_commandList->SetPipelineState(std::static_pointer_cast<directX12::GPUGraphicsPipelineState>(pipelineState)->GetPipeline().Get());
 }
 
+void RHICommandList::SetComputePipeline(const std::shared_ptr<core::GPUComputePipelineState>& pipelineState)
+{
+	_commandList->SetPipelineState(std::static_pointer_cast<directX12::GPUComputePipelineState>(pipelineState)->GetPipeline().Get());
+}
 void RHICommandList::SetVertexBuffers(const std::vector<std::shared_ptr<core::GPUBuffer>>& buffers, const size_t startSlot)
 {
 	auto views = std::vector<D3D12_VERTEX_BUFFER_VIEW>(buffers.size());

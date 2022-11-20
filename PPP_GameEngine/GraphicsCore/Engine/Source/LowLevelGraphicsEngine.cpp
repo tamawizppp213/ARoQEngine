@@ -95,15 +95,17 @@ void LowLevelGraphicsEngine::BeginDrawFrame()
 	/*-------------------------------------------------------------------
 	-      GPU Command Wait
 	---------------------------------------------------------------------*/
+	_commandQueues[core::CommandListType::Compute] ->Wait(_fence, _fenceValue);
 	_commandQueues[core::CommandListType::Graphics]->Wait(_fence, _fenceValue);
 	_fence->Wait(_fenceValues[_currentFrameIndex]);
 	/*-------------------------------------------------------------------
 	-      Start Recording Command List 
 	---------------------------------------------------------------------*/
 	const auto& graphicsCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Graphics];
+	const auto& computeCommandList  = _commandLists[_currentFrameIndex][core::CommandListType::Compute];
 	graphicsCommandList->BeginRecording();
 	graphicsCommandList->BeginRenderPass(_renderPass, _frameBuffers[_currentFrameIndex]);
-	
+	computeCommandList->BeginRecording();
 }
 /****************************************************************************
 *                     EndDrawFrame
@@ -122,11 +124,14 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	graphicsCommandList->EndRenderPass();
 	graphicsCommandList->EndRecording();
 
+	const auto& computeCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Compute];
+	computeCommandList->EndRecording();
+
 	/*-------------------------------------------------------------------
 	-          Execute GPU Command
 	---------------------------------------------------------------------*/
-	std::vector<std::shared_ptr<rhi::core::RHICommandList>> commandLists;
-	commandLists.push_back(graphicsCommandList);
+	_commandQueues[core::CommandListType::Compute]->Execute({ computeCommandList });
+	_commandQueues[core::CommandListType::Compute]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
 	_commandQueues[core::CommandListType::Graphics]->Execute({graphicsCommandList});
 	_commandQueues[core::CommandListType::Graphics]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
 	/*-------------------------------------------------------------------
@@ -217,13 +222,28 @@ void LowLevelGraphicsEngine::SetUpHeap()
 void LowLevelGraphicsEngine::SetUpRenderResource()
 {
 	// set render pass
-	core::Attachment colorAttachment = core::Attachment::RenderTarget(_pixelFormat);
-	core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat);
+	{
+		core::Attachment colorAttachment = core::Attachment::RenderTarget(_pixelFormat);
+		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat);
 
-	// vulkanの場合, 初期RenderTargetはUnlnownである必要があるとのこと
-	if (_apiVersion == APIVersion::Vulkan) { colorAttachment.InitialLayout = core::ResourceState::Common; }
-	_renderPass = _device->CreateRenderPass(colorAttachment, depthAttachment);
-	_renderPass->SetClearValue(core::ClearValue(0.0f, 0.3f, 0.3f, 1.0f), core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f));
+		// vulkanの場合, 初期RenderTargetはUnlnownである必要があるとのこと
+		if (_apiVersion == APIVersion::Vulkan) { colorAttachment.InitialLayout = core::ResourceState::Common; }
+		_renderPass = _device->CreateRenderPass(colorAttachment, depthAttachment);
+		_renderPass->SetClearValue(core::ClearValue(0.0f, 0.3f, 0.3f, 1.0f), core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f));
+	}
+
+	// set continue drawing render pass (for texture rendering)
+	{
+		core::Attachment colorAttachment = core::Attachment::RenderTarget(_pixelFormat, core::ResourceState::RenderTarget,
+			core::ResourceState::Present, core::AttachmentLoad::Load);
+		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat, core::ResourceState::Common, core::ResourceState::DepthStencil,
+			core::AttachmentLoad::Load);
+
+		// vulkanの場合, 初期RenderTargetはUnlnownである必要があるとのこと
+		if (_apiVersion == APIVersion::Vulkan) { colorAttachment.InitialLayout = core::ResourceState::Common; }
+		_drawContinueRenderPass = _device->CreateRenderPass(colorAttachment, depthAttachment);
+		_drawContinueRenderPass->SetClearValue(core::ClearValue(0.0f, 0.3f, 0.3f, 1.0f), core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f));
+	}
 
 	// resize 
 	_frameBuffers.resize(FRAME_BUFFER_COUNT);

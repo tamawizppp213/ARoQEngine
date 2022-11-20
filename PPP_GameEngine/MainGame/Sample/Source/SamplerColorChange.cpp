@@ -12,6 +12,7 @@
 #include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
 #include "GameCore/Core/Include/Camera.hpp"
 #include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
+#include "GameCore/Rendering/Effect/Include/Blur.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 
@@ -83,6 +84,7 @@ void SampleColorChange::Draw()
 
 	_skybox->Draw(_camera->GetResourceView());
 	_colorChanges[_colorIndex]->Draw();
+	_gaussianBlur->Draw();
 	_engine->EndDrawFrame();
 }
 /****************************************************************************
@@ -114,7 +116,7 @@ void SampleColorChange::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-             Open Copy CommandList
 	---------------------------------------------------------------------*/
-	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex());
+	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy    , _engine->GetCurrentFrameIndex());
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
 	copyCommandList->BeginRecording();
 	graphicsCommandList->BeginRecording();
@@ -135,6 +137,11 @@ void SampleColorChange::LoadMaterials()
 	{
 		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
 	}
+	/*-------------------------------------------------------------------
+	-           Blur
+	---------------------------------------------------------------------*/
+	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
+	
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/

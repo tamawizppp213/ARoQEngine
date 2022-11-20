@@ -30,10 +30,10 @@ namespace rhi::core
 	class GPUResource;
 	class GPUBuffer;
 	/****************************************************************************
-	*				  			GPUResource
+	*				  			RHIDescriptorHeap
 	*************************************************************************//**
-	*  @class     GPUResource
-	*  @brief     Resource (å„Ç≈NoncopyableÇ…ïœçXÇ∑ÇÈ)
+	*  @class     RHIDescriptorHeap
+	*  @brief     Register descriptor view heap 
 	*****************************************************************************/
 	class RHIDescriptorHeap : public NonCopyable
 	{
@@ -83,7 +83,9 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice> _device = nullptr;
+		/* @brief : max total heap count (ex. CBV + SRV + UAV)*/
 		MaxDescriptorSize _totalHeapCount = 0;
+		/* @brief : max descriptor count in each descriptor heap type*/
 		std::map<DescriptorHeapType, MaxDescriptorSize> _heapInfo;
 		static constexpr int INVALID_ID = -1;
 	};

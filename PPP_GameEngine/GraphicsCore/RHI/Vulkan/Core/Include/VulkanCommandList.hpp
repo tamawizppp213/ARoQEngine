@@ -54,6 +54,7 @@ namespace rhi::vulkan
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
+		void SetComputePipeline(const std::shared_ptr<core::GPUComputePipelineState>& pipeline) override {};
 		void SetVertexBuffer (const std::shared_ptr<core::GPUBuffer>& buffer) override;
 		void SetVertexBuffers(const std::vector<std::shared_ptr<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
 		void SetIndexBuffer  (const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
@@ -62,6 +63,7 @@ namespace rhi::vulkan
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/
+		void SetComputeResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override{};
 		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1)override;
 		/*-------------------------------------------------------------------
 		-                Transition Resource State

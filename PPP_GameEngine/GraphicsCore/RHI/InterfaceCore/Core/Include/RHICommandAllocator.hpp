@@ -27,10 +27,10 @@ namespace rhi::core
 	class RHICommandList;
 	class RHIDevice;
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHICommandAllocator
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHICommandAllocator
+	*  @brief     Allocation of memory used by command list
 	*****************************************************************************/
 	class RHICommandAllocator : public NonCopyable
 	{

@@ -22,6 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
+#pragma region API
 	/****************************************************************************
 	*				  			APIVersion
 	*************************************************************************//**
@@ -34,6 +35,7 @@ namespace rhi::core
 		DirectX12  = 1,
 		Vulkan     = 2
 	};
+#pragma endregion         API
 #pragma region CommandList
 	/****************************************************************************
 	*				  			CommandListType
@@ -51,18 +53,30 @@ namespace rhi::core
 	};
 #pragma endregion CommandList
 #pragma region Index
+	/****************************************************************************
+	*				  			IndexType
+	*************************************************************************//**
+	*  @enum      IndexType
+	*  @brief     UINT 32 or 16. This value shows byte count.
+	*****************************************************************************/
 	enum class IndexType
 	{
-		UInt32,
-		UInt16
+		UInt32 = 4,
+		UInt16 = 2,
 	};
+	/****************************************************************************
+	*				  			InputFormat
+	*************************************************************************//**
+	*  @enum      InputFormat
+	*  @brief     Input layout format.  
+	*****************************************************************************/
 	enum class InputFormat
 	{
 		Unknown,
-		R32_FLOAT,
-		R32G32_FLOAT,
-		R32G32B32_FLOAT,
-		R32G32B32A32_FLOAT,
+		R32_FLOAT,          // 4  byte format
+		R32G32_FLOAT,       // 8  byte format
+		R32G32B32_FLOAT,    // 12 byte format
+		R32G32B32A32_FLOAT, // 16 byte format
 	};
 	class InputFormatSizeOf
 	{
@@ -80,7 +94,7 @@ namespace rhi::core
 			}
 		}
 	};
-#pragma endregion Index
+#pragma endregion       Index
 #pragma region Pixel
 	enum class ShadingRate
 	{
@@ -170,18 +184,18 @@ namespace rhi::core
 	*				  			ShaderVisibility
 	*************************************************************************//**
 	*  @enum      ShaderVisibility
-	*  @brief     Visible shader 
+	*  @brief     Visible shader stage type
 	*****************************************************************************/
 	enum class ShaderVisibility : std::uint8_t
 	{
-		All,           // all      shader visible
-		Vertex,        // vertex   shader only
-		Pixel,         // pixel    shader only
-		Hull,          // hull     shader only
-		Domain,        // domain   shader only
-		Geometry,      // geometry shader only
-		Amplification, // amplification shader only,
-		Mesh           // mesh shader only
+		All,           // all      shader stage visible
+		Vertex,        // vertex   shader stage only
+		Pixel,         // pixel    shader stage only
+		Hull,          // hull     shader stage only
+		Domain,        // domain   shader stage only
+		Geometry,      // geometry shader stage only
+		Amplification, // amplification shader stage only,
+		Mesh           // mesh shader stage only
 	};
 	/****************************************************************************
 	*				  			ShaderType
@@ -211,12 +225,13 @@ namespace rhi::core
 	};
 #pragma endregion             Shader Type
 #pragma region Sampler State
+
 	enum class SamplerAddressMode : std::uint8_t
 	{
-		Wrap    = 1,
-		Mirror  = 2,
-		Clamp   = 3,
-		Boarder = 4,
+		Wrap    = 1, // repeat texture pattern
+		Mirror  = 2, // mirror and repeat texture pattern
+		Clamp   = 3, // cut over 1.0 and below 0.0
+		Border  = 4, // set border color 
 	};
 
 	enum class BorderColor : std::uint8_t
@@ -243,21 +258,26 @@ namespace rhi::core
 		MinLinearMagLinearMipLinear = 7,
 		Anisotropy = 8
 	};
-
+	/****************************************************************************
+	*				  			Default Sampler Type
+	*************************************************************************//**
+	*  @enum      DefaultSamplerType
+	*  @brief     Default Sampler state (Point, Linear or Anisotropic + Wrap or Clamp)
+	*****************************************************************************/
 	enum DefaultSamplerType
 	{
-		SamplerPointWrap,
-		SamplerPointClamp,
-		SamplerLinearWrap,
-		SamplerLinearClamp,
-		SamplerAnisotropicWrap,
-		SamplerAnisotropicClamp
+		SamplerPointWrap,         // Point  + Wrap
+		SamplerPointClamp,        // Point  + Clamp
+		SamplerLinearWrap,        // Linear + Wrap
+		SamplerLinearClamp,       // Linear + Clamp
+		SamplerAnisotropicWrap,   // Anisotropic + Wrap
+		SamplerAnisotropicClamp   // Anisotropic + Clamp
 	};
 	/****************************************************************************
 	*				  			SamplerInfo
 	*************************************************************************//**
 	*  @class     SamplerInfo
-	*  @brief     Sampler
+	*  @brief     Custum sampler state. (Normally you should use default sampler type, and call GetDefaultSampler)
 	*****************************************************************************/
 	struct SamplerInfo
 	{
@@ -317,7 +337,6 @@ namespace rhi::core
 		static SamplerInfo GetDefaultSampler(DefaultSamplerType type);
 	};
 
-	
 #pragma endregion      Sampler State
 #pragma region Blend State
 	/****************************************************************************
@@ -645,7 +664,8 @@ namespace rhi::core
 		IndexBuffer    = 0x2,
 		ConstantBuffer = 0x4,
 		RenderTarget   = 0x8, // allow render target
-		DepthStencil   = 0x10 // allow depth stencil
+		DepthStencil   = 0x10, // allow depth stencil
+		UnorderedAccess = 0x20, // allow unordered access 
 	};
 	inline ResourceUsage operator | (const ResourceUsage& left, const ResourceUsage& right)
 	{
@@ -664,13 +684,19 @@ namespace rhi::core
 
 
 #pragma region GPUBuffer
+	/****************************************************************************
+	*				  			BufferType
+	*************************************************************************//**
+	*  @enum      BufferType
+	*  @brief     buffer type 
+	*****************************************************************************/
 	enum class BufferType
 	{
-		Vertex,   
-		Index,
-		Constant, // Use static mesh
-		Upload,   // Use dynamic mesh
-		Default,
+		Vertex,   // Vertex buffers
+		Index,    // Index buffer 
+		Constant, // 256 byte alignment buffer
+		Upload,   // CPU readonly buffer
+		Default,  // GPU readonly buffer
 	};
 
 	/****************************************************************************
@@ -719,7 +745,7 @@ namespace rhi::core
 	private:
 		size_t CalcConstantBufferByteSize(const size_t byteSize) { return (byteSize + 255) & ~255; }
 	};
-#pragma endregion  GPUBuffer
+#pragma endregion         GPUBuffer
 #pragma region GPUTexture
 	
 	
@@ -783,7 +809,7 @@ namespace rhi::core
 		inline void CalculateByteSize() { ByteSize =  Width * Height * (Dimension == ResourceDimension::Dimension3D ? DepthOrArraySize : 1) * PixelFormatSizeOf::Get(PixelFormat) * MultiSampleSizeOf::Get(Sample); }
 	};
 
-#pragma endregion GPUTexture
+#pragma endregion        GPUTexture
 #pragma endregion GPUResource
 #pragma region Render Pass
 	enum class AttachmentLoad : std::uint8_t
@@ -884,8 +910,7 @@ namespace rhi::core
 
 		
 	};
-#pragma endregion Render Pass
-
+#pragma endregion       Render Pass
 #pragma region Window Surface
 	/****************************************************************************
 	*				  			Viewport 
@@ -943,6 +968,6 @@ namespace rhi::core
 			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
 		}
 	};
-#pragma endregion Window Surface
+#pragma endregion    Window Surface
 }
 #endif

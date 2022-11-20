@@ -178,9 +178,9 @@ std::shared_ptr<core::GPUGraphicsPipelineState> RHIDevice::CreateGraphicPipeline
 {
 	return std::static_pointer_cast<core::GPUGraphicsPipelineState>(std::make_shared<directX12::GPUGraphicsPipelineState>(shared_from_this(), renderPass, resourceLayout));
 }
-std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
 {
-	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<directX12::GPUComputePipelineState>(shared_from_this(), renderPass, resourceLayout));
+	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<directX12::GPUComputePipelineState>(shared_from_this(), resourceLayout));
 }
 std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
 {

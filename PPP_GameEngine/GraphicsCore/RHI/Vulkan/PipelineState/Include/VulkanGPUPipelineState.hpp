@@ -81,7 +81,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-	
+		void SetName(const std::wstring& name) const override {};
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -89,8 +89,7 @@ namespace rhi::vulkan
 		~GPUComputePipelineState() = default;
 		explicit GPUComputePipelineState(
 			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr <core::RHIRenderPass>& renderPass = nullptr,
-			const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) : core::GPUComputePipelineState(device, renderPass, layout) {};
+			const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) : core::GPUComputePipelineState(device, layout) {};
 	protected:
 		/****************************************************************************
 		**                Protected Function

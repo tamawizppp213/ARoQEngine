@@ -60,14 +60,21 @@ GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device,
 void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
 {
 	/*-------------------------------------------------------------------
-	-             Graphics command list check
-	---------------------------------------------------------------------*/
-	assert(commandList->GetType() == core::CommandListType::Graphics);
-	/*-------------------------------------------------------------------
-	-             Set Graphics Descirptor Table
+	-             Set Descirptor Table
 	---------------------------------------------------------------------*/
 	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList)->GetCommandList();
-	dxCommandList->SetGraphicsRootDescriptorTable(index, GetGPUHandler());
+	if (commandList->GetType() == core::CommandListType::Graphics)
+	{
+		dxCommandList->SetGraphicsRootDescriptorTable(index, GetGPUHandler());
+	}
+	else if (commandList->GetType() == core::CommandListType::Compute)
+	{
+		dxCommandList->SetComputeRootDescriptorTable(index, GetGPUHandler());
+	}
+	else
+	{
+		throw std::runtime_error("failed to bind root descriptor table");
+	}
 }
 #pragma endregion Bind Function
 #pragma region Setup view
