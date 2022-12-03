@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "RHICommonState.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +41,7 @@ namespace rhi::core
 	*  @class     RHIDevice
 	*  @brief     Device interface
 	*****************************************************************************/
-	class RHICommandList
+	class RHICommandList : public NonCopyable, std::enable_shared_from_this<RHICommandList>
 	{
 	public:
 		/****************************************************************************
@@ -83,6 +84,10 @@ namespace rhi::core
 		virtual void SetComputeResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) = 0;
 		virtual void SetComputePipeline(const std::shared_ptr<GPUComputePipelineState>& pipeline) = 0;
 		virtual void Dispatch(std::uint32_t threadGroupCountX  = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) = 0;
+		/*-------------------------------------------------------------------
+		-                RayTracing Command
+		---------------------------------------------------------------------*/
+		
 		/*-------------------------------------------------------------------
 		-                Copy Resource
 		---------------------------------------------------------------------*/

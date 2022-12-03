@@ -25,6 +25,11 @@
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUBuffer.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUSampler.hpp"
 #include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUPipelineFactory.hpp"
+#include "GraphicsCore/RHI/Vulkan/RayTracing/Include/VulkanRayTracingASInstance.hpp"
+#include "GraphicsCore/RHI/Vulkan/RayTracing/Include/VulkanRayTracingBLASBuffer.hpp"
+#include "GraphicsCore/RHI/Vulkan/RayTracing/Include/VulkanRayTracingTLASBuffer.hpp"
+#include "GraphicsCore/RHI/Vulkan/RayTracing/Include/VulkanRayTracingGeometry.hpp"
+#include "GameUtility/Math/Include/GMMatrix.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <string>
 #include <stdexcept>
@@ -184,7 +189,25 @@ std::shared_ptr<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fence
 	return std::static_pointer_cast<core::RHIFence>(std::make_shared<vulkan::RHIFence>(shared_from_this(), fenceValue));
 }
 
-
+std::shared_ptr<core::RayTracingGeometry> RHIDevice::CreateRayTracingGeometry(const core::RayTracingGeometryFlags flags, const std::shared_ptr<core::GPUBuffer>& vertexBuffer, const std::shared_ptr<core::GPUBuffer>& indexBuffer)
+{
+	return std::static_pointer_cast<core::RayTracingGeometry>(std::make_shared<vulkan::RayTracingGeometry>(shared_from_this(), flags, vertexBuffer, indexBuffer));
+}
+std::shared_ptr<core::ASInstance> RHIDevice::CreateASInstance(
+	const std::shared_ptr<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform,
+	const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex,
+	const std::uint32_t instanceMask, const core::RayTracingInstanceFlags flags)
+{
+	return std::static_pointer_cast<core::ASInstance>(std::make_shared<vulkan::ASInstance>(shared_from_this(), blasBuffer, blasTransform, instanceID, instanceContributionToHitGroupIndex, instanceMask, flags));
+}
+std::shared_ptr<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const std::vector<std::shared_ptr<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
+{
+	return std::static_pointer_cast<core::BLASBuffer>(std::make_shared<vulkan::BLASBuffer>(shared_from_this(), geometryDesc, flags));
+}
+std::shared_ptr<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const std::vector<std::shared_ptr<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
+{
+	return std::static_pointer_cast<core::TLASBuffer>(std::make_shared<vulkan::TLASBuffer>(shared_from_this(), asInstances, flags));
+}
 #pragma endregion Create Resource Function
 #pragma region Set Up Function
 /****************************************************************************
@@ -480,6 +503,14 @@ void RHIDevice::CreateLogicalDevice()
 	if (result != VK_SUCCESS) { throw std::runtime_error("failed to create logical device"); return; }
 }
 
+std::uint64_t RHIDevice::GetDeviceAddress(VkBuffer buffer)
+{
+	VkBufferDeviceAddressInfo addressInfo = {};
+	addressInfo.sType  = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
+	addressInfo.pNext  = nullptr;
+	addressInfo.buffer = buffer;
+	return vkGetBufferDeviceAddress(_logicalDevice, &addressInfo);
+}
 std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags)
 {
 	const auto vkAdapter = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(_adapter);

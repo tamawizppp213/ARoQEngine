@@ -84,7 +84,7 @@ void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView)
 		_resourceViews[i].second->Bind(commandList, _resourceViews[i].first);
 	}
 	cameraResourceView->Bind(commandList, 0);
-	commandList->DrawIndexedInstanced(_indexBuffers[currentFrame]->GetElementCount(), 1);
+	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexBuffers[currentFrame]->GetElementCount()), 1);
 }
 
 
@@ -120,7 +120,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 		-            Set up
 		---------------------------------------------------------------------*/
 		const auto vertexByteSize = sizeof(Vertex);       
-		const auto indexByteSize  = sizeof(std::uint32_t);                                // 32 byte index
+		const auto indexByteSize  = sizeof(std::uint32_t);                                // 4 byte index
 		const auto vertexCount    = sphereMesh.Vertices.size();
 		const auto indexCount     = sphereMesh.Indices.size();
 

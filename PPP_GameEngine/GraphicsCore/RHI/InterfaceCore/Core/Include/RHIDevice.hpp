@@ -24,6 +24,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+namespace gm
+{
+	struct Float3x4;
+}
 namespace rhi::core
 {
 	class RHIDisplayAdapter;
@@ -38,11 +42,16 @@ namespace rhi::core
 	class RHIRenderPass;
 	class GPUGraphicsPipelineState;
 	class GPUComputePipelineState;
+	class GPURayTracingPipelineState;
 	class GPUResourceView;
 	class GPUSampler;
 	class GPUBuffer;
 	class GPUTexture;
 	class GPUPipelineFactory;
+	class RayTracingGeometry;
+	class BLASBuffer;
+	class TLASBuffer;
+	class ASInstance;
 	/****************************************************************************
 	*				  			RHIDevice
 	*************************************************************************//**
@@ -63,28 +72,38 @@ namespace rhi::core
 		bool IsDiscreteGPU() const;
 		
 #pragma region Create Resource
-		virtual void                                      SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) = 0;
-		virtual std::shared_ptr<RHIFrameBuffer>           CreateFrameBuffer(const std::shared_ptr<RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil = nullptr) = 0;
-		virtual std::shared_ptr<RHIFrameBuffer>           CreateFrameBuffer(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil = nullptr) = 0;
-		virtual std::shared_ptr<RHIFence>                 CreateFence(const std::uint64_t fenceValue = 0) = 0;
-		virtual std::shared_ptr<RHICommandList>           CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator) = 0;
-		virtual std::shared_ptr<RHICommandQueue>          CreateCommandQueue(const core::CommandListType type) = 0;
-		virtual std::shared_ptr<RHICommandAllocator>      CreateCommandAllocator(const core::CommandListType type) = 0;
-		virtual std::shared_ptr<RHISwapchain>             CreateSwapchain(const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) = 0;
-		virtual std::shared_ptr<RHIDescriptorHeap>        CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
-		virtual std::shared_ptr<RHIDescriptorHeap>        CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;
-		virtual std::shared_ptr<RHIResourceLayout>        CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt) = 0;
-		virtual std::shared_ptr<GPUPipelineFactory>       CreatePipelineFactory() = 0;
-		virtual std::shared_ptr<GPUGraphicsPipelineState> CreateGraphicPipelineState(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
-		virtual std::shared_ptr<GPUComputePipelineState>  CreateComputePipelineState(const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
-		virtual std::shared_ptr<RHIRenderPass>            CreateRenderPass(const std::vector<Attachment>& colors, const std::optional<Attachment>& depth) = 0;
-		virtual std::shared_ptr<RHIRenderPass>            CreateRenderPass(const Attachment& color, const std::optional<Attachment>& depth) = 0;
-		virtual std::shared_ptr<GPUResourceView>          CreateResourceView(const ResourceViewType viewType, const std::shared_ptr<GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) = 0;
-		virtual std::shared_ptr<GPUResourceView>          CreateResourceView(const ResourceViewType viewType, const std::shared_ptr<GPUBuffer>& buffer, const std::shared_ptr<RHIDescriptorHeap>& customHeap = nullptr) = 0;
-		virtual std::shared_ptr<GPUSampler>               CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
-		virtual std::shared_ptr<GPUBuffer>                CreateBuffer (const core::GPUBufferMetaData& metaData) = 0;
-		virtual std::shared_ptr<GPUTexture>               CreateTexture(const core::GPUTextureMetaData& metaData) = 0;
-		virtual std::shared_ptr<GPUTexture>               CreateTextureEmpty() = 0;
+		virtual void                                        SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) = 0;
+		virtual std::shared_ptr<RHIFrameBuffer>             CreateFrameBuffer(const std::shared_ptr<RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil = nullptr) = 0;
+		virtual std::shared_ptr<RHIFrameBuffer>             CreateFrameBuffer(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil = nullptr) = 0;
+		virtual std::shared_ptr<RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0) = 0;
+		virtual std::shared_ptr<RHICommandList>             CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator) = 0;
+		virtual std::shared_ptr<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type) = 0;
+		virtual std::shared_ptr<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type) = 0;
+		virtual std::shared_ptr<RHISwapchain>               CreateSwapchain(const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) = 0;
+		virtual std::shared_ptr<RHIDescriptorHeap>          CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
+		virtual std::shared_ptr<RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;
+		virtual std::shared_ptr<RHIResourceLayout>          CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt) = 0;
+		virtual std::shared_ptr<GPUPipelineFactory>         CreatePipelineFactory() = 0;
+		virtual std::shared_ptr<GPUGraphicsPipelineState>   CreateGraphicPipelineState(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
+		virtual std::shared_ptr<GPUComputePipelineState>    CreateComputePipelineState(const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
+		virtual std::shared_ptr<RHIRenderPass>              CreateRenderPass(const std::vector<Attachment>& colors, const std::optional<Attachment>& depth) = 0;
+		virtual std::shared_ptr<RHIRenderPass>              CreateRenderPass(const Attachment& color, const std::optional<Attachment>& depth) = 0;
+		virtual std::shared_ptr<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const std::shared_ptr<GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) = 0;
+		virtual std::shared_ptr<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const std::shared_ptr<GPUBuffer>& buffer, const std::shared_ptr<RHIDescriptorHeap>& customHeap = nullptr) = 0;
+		virtual std::shared_ptr<GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
+		virtual std::shared_ptr<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData) = 0;
+		virtual std::shared_ptr<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData) = 0;
+		virtual std::shared_ptr<GPUTexture>                 CreateTextureEmpty() = 0;
+		//virtual std::shared_ptr<GPURayTracingPipelineState> CreateRayTracingPipelineState(const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0;
+		virtual std::shared_ptr<RayTracingGeometry>         CreateRayTracingGeometry(const RayTracingGeometryFlags flags, const std::shared_ptr<GPUBuffer>& vertexBuffer, const std::shared_ptr<GPUBuffer>& indexBuffer = nullptr) = 0;
+		virtual std::shared_ptr<ASInstance>                 CreateASInstance(
+			const std::shared_ptr<BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform, 
+			const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex, 
+			const std::uint32_t instanceMask = 0xFF, 
+			const RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) = 0;
+		virtual std::shared_ptr<BLASBuffer>                 CreateRayTracingBLASBuffer(const std::vector<std::shared_ptr<RayTracingGeometry>>& geometryDesc, const BuildAccelerationStructureFlags flags) = 0;
+		virtual std::shared_ptr<TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<std::shared_ptr<ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) = 0;
+		
 #pragma endregion Create Resource
 		/****************************************************************************
 		**                Public Member Variables

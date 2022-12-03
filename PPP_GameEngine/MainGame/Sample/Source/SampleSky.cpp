@@ -75,8 +75,8 @@ void SampleSky::Draw()
 	---------------------------------------------------------------------*/
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
 	commandList->SetViewportAndScissor(
-		core::Viewport   (0, 0, Screen::GetScreenWidth(), Screen::GetScreenHeight()),
-		core::ScissorRect(0, 0, Screen::GetScreenWidth(), Screen::GetScreenHeight()));
+		core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
 
 	_skybox->Draw(_camera->GetResourceView());
 	_engine->EndDrawFrame();

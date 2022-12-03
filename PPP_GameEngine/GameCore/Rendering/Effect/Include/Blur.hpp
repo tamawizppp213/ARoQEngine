@@ -75,10 +75,6 @@ namespace gc
 		GaussianBlur();
 		~GaussianBlur();
 		GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName = L"");
-		GaussianBlur(const GaussianBlur&) = delete;
-		GaussianBlur& operator=(const GaussianBlur&) = delete;
-		GaussianBlur(GaussianBlur&&) = default;
-		GaussianBlur& operator=(GaussianBlur&&) = default;
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -105,7 +101,7 @@ namespace gc
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
 		static constexpr std::uint32_t WEIGHT_TABLE_SIZE = 8;
-		static constexpr float        DEFAULT_BLUR_SIGMA = 8.0f;
+		static constexpr float         DEFAULT_BLUR_SIGMA = 8.0f;
 		static constexpr std::uint32_t THREAD = 16;
 
 	};

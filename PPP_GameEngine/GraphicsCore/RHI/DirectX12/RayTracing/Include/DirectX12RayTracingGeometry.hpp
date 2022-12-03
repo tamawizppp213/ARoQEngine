@@ -1,80 +1,63 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   SampleSky.hpp
-///             @brief  Skybox sample
+///             @file   RayTracingGeometry.hpp
+///             @brief  RayTracing geometry descriptor
 ///             @author Toide Yutaro
-///             @date   2022_04_23
+///             @date   2022_11_22
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SAMPLE_COLOR_CHANGE_HPP
-#define SAMPLE_COLOR_CHANGE_HPP
-
+#ifndef DIRECTX12_RAYTRACING_GEOMETRY_HPP
+#define DIRECTX12_RAYTRACING_GEOMETRY_HPP
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Core/Include/Scene.hpp"
-#include <memory>
-#include <vector>
+#include "GraphicsCore/RHI/InterfaceCore/RayTracing/Include/RayTracingGeometry.hpp"
+#include <d3d12.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
-{
-	class SkyDome;
-	class Camera;
-	class ColorChange;
-	class GaussianBlur;
-}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace sample
+
+namespace rhi::directX12
 {
 
 	/****************************************************************************
-	*				  			SampleSky
+	*				  			TemplateStruct
 	*************************************************************************//**
-	*  @class     SampleSky
-	*  @brief     Skybox sample
+	*  @struct     TemplateStruct
+	*  @brief     temp
 	*****************************************************************************/
-	class SampleColorChange : public Scene
+	class RayTracingGeometry : public rhi::core::RayTracingGeometry
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr  = std::shared_ptr<gc::Camera>;
-		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
-
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
-		void Update() override;
-		void Draw() override;
-		void Terminate() override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		const D3D12_RAYTRACING_GEOMETRY_DESC& GetDesc() const { return _geometryDesc; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SampleColorChange();
-		~SampleColorChange();
+		RayTracingGeometry() = default;
+		~RayTracingGeometry() = default;
+		RayTracingGeometry(const std::shared_ptr<core::RHIDevice>& device,
+			const core::RayTracingGeometryFlags flags,
+			const std::shared_ptr<core::GPUBuffer>& vertexBuffer,
+			const std::shared_ptr<core::GPUBuffer>& indexBuffer);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void LoadMaterials() override;
-		void OnKeyboardInput() override;
-		void OnMouseInput() override;
-		void OnGamePadInput() override;
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		SkyDomePtr _skybox = nullptr;
-		CameraPtr _camera = nullptr;
-		std::vector<ColorChangePtr> _colorChanges = {};
-		std::uint32_t _colorIndex = 0;
+		D3D12_RAYTRACING_GEOMETRY_DESC _geometryDesc = {};
 	};
 }
 #endif

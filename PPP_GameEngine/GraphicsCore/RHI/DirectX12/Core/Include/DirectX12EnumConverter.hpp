@@ -83,7 +83,11 @@ namespace rhi::directX12
 		static D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE Convert(const rhi::core::AttachmentLoad op);
 		static D3D12_RENDER_PASS_ENDING_ACCESS_TYPE    Convert(const rhi::core::AttachmentStore op);
 #pragma endregion Render Pass
-
+#pragma region RayTracing
+		static D3D12_RAYTRACING_GEOMETRY_FLAGS Convert(const rhi::core::RayTracingGeometryFlags flags);
+		static D3D12_RAYTRACING_INSTANCE_FLAGS Convert(const rhi::core::RayTracingInstanceFlags flags);
+		static D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS Convert(const rhi::core::BuildAccelerationStructureFlags flags);
+#pragma endregion RayTracing
 #pragma endregion GPUResource
 	};
 }

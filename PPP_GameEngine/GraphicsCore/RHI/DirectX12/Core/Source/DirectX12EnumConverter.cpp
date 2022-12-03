@@ -355,3 +355,48 @@ D3D12_RENDER_PASS_ENDING_ACCESS_TYPE    EnumConverter::Convert(const rhi::core::
 	}
 }
 #pragma endregion Render Pass
+#pragma region RayTracing
+D3D12_RAYTRACING_GEOMETRY_FLAGS EnumConverter::Convert(const rhi::core::RayTracingGeometryFlags flags)
+{
+	switch (flags)
+	{
+		case core::RayTracingGeometryFlags::None  : return D3D12_RAYTRACING_GEOMETRY_FLAGS::D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
+		case core::RayTracingGeometryFlags::Opaque: return D3D12_RAYTRACING_GEOMETRY_FLAGS::D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
+		case core::RayTracingGeometryFlags::NoDuplicateAnyHitInvocation: return D3D12_RAYTRACING_GEOMETRY_FLAGS::D3D12_RAYTRACING_GEOMETRY_FLAG_NO_DUPLICATE_ANYHIT_INVOCATION;
+		default:
+		{
+			throw std::runtime_error("not support ray tracing geometry flags");
+		}
+	}
+}
+
+D3D12_RAYTRACING_INSTANCE_FLAGS EnumConverter::Convert(const rhi::core::RayTracingInstanceFlags flags)
+{
+	switch (flags)
+	{
+		case core::RayTracingInstanceFlags::None                         : return D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
+		case core::RayTracingInstanceFlags::TriangleCullDisable          : return D3D12_RAYTRACING_INSTANCE_FLAG_TRIANGLE_CULL_DISABLE;
+		case core::RayTracingInstanceFlags::TriangleFrontCounterClockwise: return D3D12_RAYTRACING_INSTANCE_FLAG_TRIANGLE_FRONT_COUNTERCLOCKWISE;
+		case core::RayTracingInstanceFlags::ForceOpaque                  : return D3D12_RAYTRACING_INSTANCE_FLAG_FORCE_OPAQUE;
+		case core::RayTracingInstanceFlags::ForceNonOpaque               : return D3D12_RAYTRACING_INSTANCE_FLAG_FORCE_NON_OPAQUE;
+		default:
+			throw std::runtime_error("not support raytracing instance flags (directX12 api)");
+	}
+}
+
+D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS EnumConverter::Convert(const rhi::core::BuildAccelerationStructureFlags flags)
+{
+	switch (flags)
+	{
+		case core::BuildAccelerationStructureFlags::None           : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;
+		case core::BuildAccelerationStructureFlags::AllowUpdate    : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
+		case core::BuildAccelerationStructureFlags::AllowCompaction: return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_COMPACTION;
+		case core::BuildAccelerationStructureFlags::PreformUpdate  : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE;
+		case core::BuildAccelerationStructureFlags::MinimizeMemory : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_MINIMIZE_MEMORY;
+		case core::BuildAccelerationStructureFlags::PreferFastBuild: return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_BUILD;
+		case core::BuildAccelerationStructureFlags::PreferFastTrace: return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+		default:
+			throw std::runtime_error("not support acceleration structure build flags (directX12 api)");
+	}
+}
+#pragma endregion RayTracing

@@ -264,17 +264,19 @@ void GPUResourceView::CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHe
 void GPUResourceView::CreateRAS(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
 {
 	if (!_buffer) { return; }
-
+	const auto dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
+	const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_buffer);
+	/*-------------------------------------------------------------------
+	-             Set up resource view descriptor
+	---------------------------------------------------------------------*/
 	D3D12_SHADER_RESOURCE_VIEW_DESC resourceViewDesc = {};
 	resourceViewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	resourceViewDesc.ViewDimension           = D3D12_SRV_DIMENSION_RAYTRACING_ACCELERATION_STRUCTURE;
-	resourceViewDesc.RaytracingAccelerationStructure.Location = NULL;
+	resourceViewDesc.RaytracingAccelerationStructure.Location = dxBuffer->GetResource()->GetGPUVirtualAddress(); // tras—p‚Ìbuffer
 
-	DeviceComPtr  dxDevice     = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
 	std::uint32_t descriptorID = heap->Allocate(core::DescriptorHeapType::SRV);
-	const auto resource        = std::static_pointer_cast<directX12::GPUBuffer>(_buffer)->GetResourcePtr();
-	dxDevice->CreateShaderResourceView(
-		resource, &resourceViewDesc, heap->GetCPUDescHandler(core::DescriptorHeapType::SRV, descriptorID));
+	dxDevice->CreateShaderResourceView( dxBuffer->GetResourcePtr(), &resourceViewDesc, 
+		heap->GetCPUDescHandler(core::DescriptorHeapType::SRV, descriptorID));
 
 }
 /****************************************************************************

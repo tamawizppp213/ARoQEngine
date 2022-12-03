@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Core.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ namespace gc
 	*  @class     Camera
 	*  @brief     Camera
 	*****************************************************************************/
-	class Camera
+	class Camera : public Copyable
 	{
 		struct SceneConstants
 		{
@@ -79,6 +79,7 @@ namespace gc
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Update view materix and scene constants buffer. Please call at a frame*/
 		void Update(GameTimer* gameTimer);
 
 		// Define camera space via LookAt parameters
@@ -87,55 +88,63 @@ namespace gc
 
 		// Camera Motion
 		void Strafe(float distance);
-		void Walk(float distance);
+		void Walk  (float distance);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		SceneConstantBufferPtr GetSceneBuffer() const { return _sceneConstantBuffer; }
 		GPUResourceViewPtr GetResourceView() const { return _resourceView; }
-		// World Camera Position
+		/*-------------------------------------------------------------------
+		-    World Camera Position
+		---------------------------------------------------------------------*/
 		gm::Vector3 GetPosition()   const;
 		gm::Float3  GetPosition3f() const;
 		void SetPosition(const gm::Float3& position);
 		void SetPosition(float x, float y, float z);
 
-		// Rotate the camera
+		/*-------------------------------------------------------------------
+		-   Rotate the camera
+		---------------------------------------------------------------------*/
 		void RotateRoll(float angle);
 		void RotatePitch(float angle);
 		void RotateYaw(float angle);
 		void RotateWorldX(float angle);
 		void RotateWorldY(float angle);
 		void RotateWorldZ(float angle);
-
-		// Get camera basis vectors
+		/*-------------------------------------------------------------------
+		-   Get camera basis vectors
+		---------------------------------------------------------------------*/
 		gm::Vector3 GetRight()   const;
 		gm::Float3  GetRight3f() const;
 		gm::Vector3 GetUp()      const;
 		gm::Float3  GetUp3f()    const;
 		gm::Vector3 GetLook()    const;
 		gm::Float3  GetLook3f()  const;
-
-		// Get frustum properties
+		/*-------------------------------------------------------------------
+		-   Get frustum properties
+		---------------------------------------------------------------------*/
 		float GetNearZ()         const;
 		float GetFarZ()          const;
 		float GetAspect()        const;
 		float GetFovVertical()   const;
 		float GetFovHorizontal() const;
-
-		// Get near and far plane dimensions in view space coordinates
+		/*-------------------------------------------------------------------
+		-   Get near and far plane dimensions in view space coordinates
+		---------------------------------------------------------------------*/
 		float GetNearWindowWidth()  const;
 		float GetNearWindowHeight() const;
 		float GetFarWindowWidth()   const;
 		float GetFarWindowHeight()  const;
-
-		// Get View / Projection Matrix
+		/*-------------------------------------------------------------------
+		-               Get View / Projection Matrix
+		---------------------------------------------------------------------*/
 		gm::Matrix4   GetViewMatrix()           const;
 		gm::Matrix4   GetProjectionMatrix()     const;
 		gm::Float4x4  GetViewMatrix4x4f()       const;
 		gm::Float4x4  GetProjectionMatrix4x4f() const;
-
-
-		// Set frusum
+		/*-------------------------------------------------------------------
+		-               Set Frustum
+		---------------------------------------------------------------------*/
 		void SetLens(float fovVertical, float aspect, float nearZ, float farZ);
 		void SetOrthoLens(float width, float height, float nearZ, float farZ);
 		void SetZRange(float nearZ, float farZ);
@@ -146,11 +155,6 @@ namespace gc
 		*****************************************************************************/
 		Camera();
 		Camera(const LowLevelGraphicsEnginePtr engine);
-		Camera(const Camera&) = default;
-		Camera& operator=(const Camera&) = default;
-		Camera(Camera&&)    = default;
-		Camera& operator=(Camera&&) = default;
-
 		~Camera();
 	protected:
 		/****************************************************************************

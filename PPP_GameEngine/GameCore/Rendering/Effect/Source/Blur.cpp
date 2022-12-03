@@ -38,7 +38,13 @@ GaussianBlur::GaussianBlur()
 }
 GaussianBlur::~GaussianBlur()
 {
-
+	_finalBlurPipeline.reset();
+	_yBlurPipeline.reset();
+	_xBlurPipeline.reset();
+	for (auto& u : _unorderedResourceViews) { u.reset(); }
+	for (auto& s : _shaderResourceViews   ) { s.reset(); }
+	_textureSizeView.reset();
+	_blurParameterView.reset();
 }
 GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName)
 	: _engine(engine)
@@ -88,7 +94,6 @@ void GaussianBlur::OnResize(const std::uint32_t newWidth, const std::uint32_t ne
 void GaussianBlur::Draw()
 {
 	const auto device      = _engine->GetDevice();
-	const auto frameCount  = device->GetFrameCount();
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto commandList = _engine->GetCommandList(CommandListType::Compute, frameIndex);
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);

@@ -108,7 +108,8 @@ void ColorChange::Draw()
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
 	graphicsCommandList->SetIndexBuffer (_indexBuffers[frameIndex]);
 	_resourceViews[frameIndex]->Bind(graphicsCommandList, 0);
-	graphicsCommandList->DrawIndexedInstanced(_indexBuffers[frameIndex]->GetElementCount(), 1);
+	graphicsCommandList->DrawIndexedInstanced(
+		static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
 }
 #pragma endregion Main Function
 
@@ -224,7 +225,7 @@ void ColorChange::PrepareResourceView()
 	const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _engine->GetBackBufferFormat());
 	
 	_resourceViews.resize(frameCount);
-	for (size_t i = 0; i < _resourceViews.size(); ++i)
+	for (std::uint32_t i = 0; i < static_cast<std::uint32_t>(_resourceViews.size()); ++i)
 	{
 		_resourceViews[i] = device->CreateResourceView(ResourceViewType::Texture, _engine->GetFrameBuffer(i)->GetRenderTarget());
 	}

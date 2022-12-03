@@ -82,7 +82,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		CommandListComPtr GetCommandList() { return _commandList; }
+		CommandListComPtr GetCommandList() const noexcept { return _commandList; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

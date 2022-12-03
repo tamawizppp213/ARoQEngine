@@ -35,7 +35,7 @@ namespace rhi::core
 		DirectX12  = 1,
 		Vulkan     = 2
 	};
-#pragma endregion         API
+#pragma endregion           API
 #pragma region CommandList
 	/****************************************************************************
 	*				  			CommandListType
@@ -51,7 +51,7 @@ namespace rhi::core
 		Copy,       // Copy command list
 		CountOfType
 	};
-#pragma endregion CommandList
+#pragma endregion   CommandList
 #pragma region Index
 	/****************************************************************************
 	*				  			IndexType
@@ -94,7 +94,7 @@ namespace rhi::core
 			}
 		}
 	};
-#pragma endregion       Index
+#pragma endregion         Index
 #pragma region Pixel
 	enum class ShadingRate
 	{
@@ -106,9 +106,15 @@ namespace rhi::core
 		K_4x2,
 		K_4x4
 	};
+	/****************************************************************************
+	*				  			PixelFormat
+	*************************************************************************//**
+	*  @class     PixelFormat
+	*  @brief     Render pixel format 
+	*****************************************************************************/
 	enum class PixelFormat
 	{
-		Unknown,
+		Unknown,   
 		R8G8B8A8_UNORM,
 		B8G8R8A8_UNORM,
 		R10G10B10A2_UNORM,
@@ -121,6 +127,12 @@ namespace rhi::core
 		BC1_UNORM,
 		CountOfPixelFormat
 	};
+	/****************************************************************************
+	*				  			PixelFormatSizeOf
+	*************************************************************************//**
+	*  @class     PixelFormatSizeOf
+	*  @brief     Get pixel size. Call the static function "Get"
+	*****************************************************************************/
 	class PixelFormatSizeOf
 	{
 	public:
@@ -178,7 +190,7 @@ namespace rhi::core
 			Depth = depth; Stencil = stencil;
 		}
 	};
-#pragma endregion              Pixel
+#pragma endregion         Pixel
 #pragma region Shader
 	/****************************************************************************
 	*				  			ShaderVisibility
@@ -223,9 +235,14 @@ namespace rhi::core
 		~BlobData() = default;
 		BlobData(void* bufferPointer, size_t bufferSize) : BufferPointer(bufferPointer), BufferSize(bufferSize) {};
 	};
-#pragma endregion             Shader Type
+#pragma endregion        Shader Type
 #pragma region Sampler State
-
+	/****************************************************************************
+	*				  			SamplerAddressMode
+	*************************************************************************//**
+	*  @class     SamplerAddressMode
+	*  @brief     Texture addressing mode // reference : https://learn.microsoft.com/ja-jp/windows/uwp/graphics-concepts/texture-addressing-modes
+	*****************************************************************************/
 	enum class SamplerAddressMode : std::uint8_t
 	{
 		Wrap    = 1, // repeat texture pattern
@@ -233,19 +250,36 @@ namespace rhi::core
 		Clamp   = 3, // cut over 1.0 and below 0.0
 		Border  = 4, // set border color 
 	};
-
+	/****************************************************************************
+	*				  			BorderColor
+	*************************************************************************//**
+	*  @class     BorderColor
+	*  @brief     Specifies the border color for a sampler
+	*****************************************************************************/
 	enum class BorderColor : std::uint8_t
 	{
-		TransparentBlack,
-		OpaqueBlack,
-		OpaqueWhite
+		TransparentBlack, // Indicates black, with the alpha component as fully transparent
+		OpaqueBlack,      // Indicates black, with the alpha component as fully opaque
+		OpaqueWhite       // Indicates white, with the alpha component as fully opaque
 	};
+	/****************************************************************************
+	*				  			FilterMask
+	*************************************************************************//**
+	*  @class     FilterMask
+	*  @brief     Sample mask
+	*****************************************************************************/
 	enum class FilterMask : std::uint8_t
 	{
 		Mip = 0x1,
 		Mag = 0x2,
 		Min = 0x4
 	};
+	/****************************************************************************
+	*				  			FilterOption
+	*************************************************************************//**
+	*  @class     FilterOption
+	*  @brief     Sampling filter option
+	*****************************************************************************/
 	enum class FilterOption : std::uint8_t
 	{
 		MinPointMagPointMipPoint    = 0,
@@ -337,7 +371,7 @@ namespace rhi::core
 		static SamplerInfo GetDefaultSampler(DefaultSamplerType type);
 	};
 
-#pragma endregion      Sampler State
+#pragma endregion Sampler State
 #pragma region Blend State
 	/****************************************************************************
 	*				  			BlendFactor
@@ -810,6 +844,62 @@ namespace rhi::core
 	};
 
 #pragma endregion        GPUTexture
+#pragma region RayTracing
+	/****************************************************************************
+	*				  			RayTracingGeometryFlags
+	*************************************************************************//**
+	*  @enum      RayTracingGeometryFlags
+	*  @brief     Specifies flags for raytracing geometry
+	*****************************************************************************/
+	enum class RayTracingGeometryFlags
+	{
+		None,                         // No options specified  
+		Opaque,                       // When ray encounter this geometry, the geometry acts as if no any hit shader is present.
+		NoDuplicateAnyHitInvocation   // require that intersections be reported to the any hit shader at most once. This flag enables that guarantee for the given geometry, potentially with some performance impact.
+	};
+	/****************************************************************************
+	*				  		 RayTracingInstanceFlags
+	*************************************************************************//**
+	*  @enum      RayTracingInstanceFlags
+	*  @brief     Flags for a raytracing acceleration structure instance
+	*****************************************************************************/
+	enum class RayTracingInstanceFlags
+	{
+		None                          = 0x0,
+		TriangleCullDisable           = 0x1, // Disables front/back face culling for this instance.
+		TriangleFrontCounterClockwise = 0x2, // This flag reverses front and back facings, which is useful if the applicationÅfs natural winding order differs from the default (left coordinate). 
+		ForceOpaque                   = 0x4, // All geometry in the BLAS Opaque
+		ForceNonOpaque                = 0x8  // All geometry in the BLAS Non Opaque
+	};
+	/****************************************************************************
+	*				  		 BuildAccelerationStructureFlags
+	*************************************************************************//**
+	*  @enum      BuildAccelerationStructureFlags
+	*  @brief     How to build acceleration structure
+	*****************************************************************************/
+	enum class BuildAccelerationStructureFlags
+	{
+		None = 0x0000,
+		AllowUpdate     = 0x0001, // Support update, 
+		AllowCompaction = 0x0002, // Compact AS 
+		PreferFastTrace = 0x0004, // RayTracing Performance Maximize. (AS Build time will increase)
+		PreferFastBuild = 0x0008, // Build Time Minimize.
+		MinimizeMemory  = 0x0010, // Minimize Memory. RayTracing Performance will decrease
+		PreformUpdate   = 0x0020, // Update AS
+	};
+	/****************************************************************************
+	*				  	RayTracingASPrebuildInfo
+	*************************************************************************//**
+	*  @struct    RayTracingASPrebuildInfo
+	*  @brief     Acceleration Structure memory data size
+	*****************************************************************************/
+	struct RayTracingASPrebuildInfo
+	{
+		std::uint64_t AccelerationStructureSize = 0;
+		std::uint64_t BuildScratchDataSize      = 0;
+		std::uint64_t UpdateScratchDataSize    = 0;
+	};
+#pragma endregion RayTracing
 #pragma endregion GPUResource
 #pragma region Render Pass
 	enum class AttachmentLoad : std::uint8_t

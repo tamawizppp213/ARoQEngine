@@ -1,56 +1,41 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   SampleSky.hpp
-///             @brief  Skybox sample
+///             @file   DirectX12RayTracingTLASBuffer.hpp
+///             @brief  TLAS Buffer
 ///             @author Toide Yutaro
-///             @date   2022_04_23
+///             @date   2022_11_23
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SAMPLE_COLOR_CHANGE_HPP
-#define SAMPLE_COLOR_CHANGE_HPP
+#ifndef DIRECTX12_RAYTRACING_TLAS_BUFFER_HPP
+#define DIRECTX12_RAYTRACING_TLAS_BUFFER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Core/Include/Scene.hpp"
-#include <memory>
-#include <vector>
+#include "GraphicsCore/RHI/InterfaceCore/RayTracing/Include/RayTracingTLASBuffer.hpp"
+#include <d3d12.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
-{
-	class SkyDome;
-	class Camera;
-	class ColorChange;
-	class GaussianBlur;
-}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace sample
+
+namespace rhi::directX12
 {
-
 	/****************************************************************************
-	*				  			SampleSky
+	*				  			TLASBuffer
 	*************************************************************************//**
-	*  @class     SampleSky
-	*  @brief     Skybox sample
+	*  @struct    TLASBuffer
+	*  @brief     Bottom Level Acceleration Structure Buffer
 	*****************************************************************************/
-	class SampleColorChange : public Scene
+	class TLASBuffer : public core::TLASBuffer
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr  = std::shared_ptr<gc::Camera>;
-		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
-
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
-		void Update() override;
-		void Draw() override;
-		void Terminate() override;
+		void Build(const std::shared_ptr<core::RHICommandList>& commandList) override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -58,23 +43,21 @@ namespace sample
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SampleColorChange();
-		~SampleColorChange();
+		TLASBuffer() = default;
+		~TLASBuffer();
+		TLASBuffer(const std::shared_ptr<core::RHIDevice>& device, 
+			const std::vector<std::shared_ptr<core::ASInstance>>& asInstance,
+			const core::BuildAccelerationStructureFlags flags,
+			const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void LoadMaterials() override;
-		void OnKeyboardInput() override;
-		void OnMouseInput() override;
-		void OnGamePadInput() override;
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		SkyDomePtr _skybox = nullptr;
-		CameraPtr _camera = nullptr;
-		std::vector<ColorChangePtr> _colorChanges = {};
-		std::uint32_t _colorIndex = 0;
+		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC _rayTracingASDesc = {};
 	};
 }
 #endif

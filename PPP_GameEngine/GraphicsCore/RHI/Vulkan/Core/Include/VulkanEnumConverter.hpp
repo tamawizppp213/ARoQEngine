@@ -85,6 +85,11 @@ namespace rhi::vulkan
 		static VkAttachmentStoreOp Convert(const rhi::core::AttachmentStore store);
 		static VkImageLayout       Convert(const rhi::core::ResourceState layout);
 #pragma endregion RenderPass
+#pragma region RayTracing
+		static VkGeometryFlagsKHR Convert(const rhi::core::RayTracingGeometryFlags flags);
+		static VkGeometryInstanceFlagBitsKHR Convert(const rhi::core::RayTracingInstanceFlags flags);
+		static VkBuildAccelerationStructureFlagsKHR Convert(const rhi::core::BuildAccelerationStructureFlags flags);
+#pragma endregion RayTracing
 	};
 }
 #endif

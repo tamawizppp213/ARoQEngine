@@ -1,48 +1,45 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   SampleSky.hpp
-///             @brief  Skybox sample
+///             @file   SampleRectangle.hpp
+///             @brief  Rectangle mesh sample
 ///             @author Toide Yutaro
-///             @date   2022_04_23
+///             @date   2022_10_30
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SAMPLE_COLOR_CHANGE_HPP
-#define SAMPLE_COLOR_CHANGE_HPP
+#ifndef SAMPLE_RECTANGLE_HPP
+#define SAMPLE_RECTANGLE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Core/Include/Scene.hpp"
 #include <memory>
-#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
-{
-	class SkyDome;
-	class Camera;
-	class ColorChange;
-	class GaussianBlur;
-}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+namespace rhi::core
+{
+	class GPUBuffer;
+	class GPUGraphicsPipelineState;
+	class RHIResourceLayout;
+}
 namespace sample
 {
-
 	/****************************************************************************
-	*				  			SampleSky
+	*				  			SampleRectangle
 	*************************************************************************//**
-	*  @class     SampleSky
-	*  @brief     Skybox sample
+	*  @class     SampleRectangle
+	*  @brief     Rectangle color mesh sample 
 	*****************************************************************************/
-	class SampleColorChange : public Scene
+	class SampleRayTracingRectangle : public Scene
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr  = std::shared_ptr<gc::Camera>;
-		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
-
+		using VertexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
+		using IndexBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
+		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
+		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -58,8 +55,8 @@ namespace sample
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SampleColorChange();
-		~SampleColorChange();
+		SampleRayTracingRectangle();
+		~SampleRayTracingRectangle();
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -68,13 +65,20 @@ namespace sample
 		void OnKeyboardInput() override;
 		void OnMouseInput() override;
 		void OnGamePadInput() override;
+		void ExecuteSceneTransition() override;
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		SkyDomePtr _skybox = nullptr;
-		CameraPtr _camera = nullptr;
-		std::vector<ColorChangePtr> _colorChanges = {};
-		std::uint32_t _colorIndex = 0;
+		VertexBufferPtr   _vertexBuffer   = nullptr;
+		IndexBufferPtr    _indexBuffer    = nullptr;
+		PipelineStatePtr  _pipelineState  = nullptr;
+		ResourceLayoutPtr _resourceLayout = nullptr;
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		void BuildBuffer();
+		void BuildPipelineState();
 	};
 }
 #endif

@@ -1,80 +1,67 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   SampleSky.hpp
-///             @brief  Skybox sample
+///             @file   VulkanRayTracingGeometry.hpp
+///             @brief  RayTracing geometry descriptor
 ///             @author Toide Yutaro
-///             @date   2022_04_23
+///             @date   2022_11_22
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SAMPLE_COLOR_CHANGE_HPP
-#define SAMPLE_COLOR_CHANGE_HPP
-
+#ifndef VULKAN_RAYTRACING_AS_INSTANCE_HPP
+#define VULKAN_RAYTRACING_AS_INSTANCE_HPP
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Core/Include/Scene.hpp"
-#include <memory>
-#include <vector>
+#include "GraphicsCore/RHI/InterfaceCore/RayTracing/Include/RayTracingASInstance.hpp"
+#include <vulkan/vulkan.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
-{
-	class SkyDome;
-	class Camera;
-	class ColorChange;
-	class GaussianBlur;
-}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace sample
+
+namespace rhi::vulkan
 {
-
+	class BLASBuffer;
 	/****************************************************************************
-	*				  			SampleSky
+	*				  			TemplateStruct
 	*************************************************************************//**
-	*  @class     SampleSky
-	*  @brief     Skybox sample
+	*  @struct     TemplateStruct
+	*  @brief     temp
 	*****************************************************************************/
-	class SampleColorChange : public Scene
+	class ASInstance : public rhi::core::ASInstance
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr  = std::shared_ptr<gc::Camera>;
-		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
-
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
-		void Update() override;
-		void Draw() override;
-		void Terminate() override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		const VkAccelerationStructureInstanceKHR& GetDesc() const { return _instanceDesc; }
+		std::shared_ptr<vulkan::BLASBuffer> GetVkBLASBuffer() const noexcept { return std::static_pointer_cast<vulkan::BLASBuffer>(_blasBuffer); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SampleColorChange();
-		~SampleColorChange();
+		ASInstance() = default;
+		~ASInstance();
+		ASInstance(const std::shared_ptr<core::RHIDevice>& device,
+			const std::shared_ptr<core::BLASBuffer>& blasBuffer,
+			const gm::Float3x4& blasTransform,
+			const std::uint32_t instanceID,
+			const std::uint32_t instanceContributionToHitGroupIndex,
+			const std::uint32_t instanceMask = 0xFF,
+			const core::RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void LoadMaterials() override;
-		void OnKeyboardInput() override;
-		void OnMouseInput() override;
-		void OnGamePadInput() override;
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		SkyDomePtr _skybox = nullptr;
-		CameraPtr _camera = nullptr;
-		std::vector<ColorChangePtr> _colorChanges = {};
-		std::uint32_t _colorIndex = 0;
+		VkAccelerationStructureInstanceKHR _instanceDesc = {};
 	};
 }
 #endif

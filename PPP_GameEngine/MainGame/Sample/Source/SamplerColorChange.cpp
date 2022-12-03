@@ -79,12 +79,11 @@ void SampleColorChange::Draw()
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
 	commandList->SetViewportAndScissor(
-		core::Viewport(0, 0, Screen::GetScreenWidth(), Screen::GetScreenHeight()),
-		core::ScissorRect(0, 0, Screen::GetScreenWidth(), Screen::GetScreenHeight()));
+		core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
 
 	_skybox->Draw(_camera->GetResourceView());
 	_colorChanges[_colorIndex]->Draw();
-	_gaussianBlur->Draw();
 	_engine->EndDrawFrame();
 }
 /****************************************************************************
@@ -137,11 +136,7 @@ void SampleColorChange::LoadMaterials()
 	{
 		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
 	}
-	/*-------------------------------------------------------------------
-	-           Blur
-	---------------------------------------------------------------------*/
-	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
-	
+
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/

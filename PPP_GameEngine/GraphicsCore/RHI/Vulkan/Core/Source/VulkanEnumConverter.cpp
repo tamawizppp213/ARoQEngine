@@ -508,3 +508,47 @@ VkImageLayout EnumConverter::Convert(const rhi::core::ResourceState layout)
 	}
 }
 #pragma endregion Render Pass
+#pragma region RayTracing
+VkGeometryFlagsKHR EnumConverter::Convert(const rhi::core::RayTracingGeometryFlags flags)
+{
+	switch (flags)
+	{
+		case core::RayTracingGeometryFlags::None: return 0;
+		case core::RayTracingGeometryFlags::Opaque: return VkGeometryFlagBitsKHR::VK_GEOMETRY_OPAQUE_BIT_KHR;
+		case core::RayTracingGeometryFlags::NoDuplicateAnyHitInvocation: return VkGeometryFlagBitsKHR::VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR;
+		default:
+		{
+			throw std::runtime_error("not support geometry flags (vulkan api)");
+		}
+	}
+}
+VkGeometryInstanceFlagBitsKHR EnumConverter::Convert(const rhi::core::RayTracingInstanceFlags flags)
+{
+	switch (flags)
+	{
+		case core::RayTracingInstanceFlags::None: return (VkGeometryInstanceFlagBitsKHR)0;
+		case core::RayTracingInstanceFlags::TriangleCullDisable          : return VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
+		case core::RayTracingInstanceFlags::TriangleFrontCounterClockwise: return VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_KHR;
+		case core::RayTracingInstanceFlags::ForceOpaque                  : return VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR;
+		case core::RayTracingInstanceFlags::ForceNonOpaque               : return VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR;
+		default:
+			throw std::runtime_error("not support instance flags (vulkan api)");
+
+	}
+}
+VkBuildAccelerationStructureFlagsKHR EnumConverter::Convert(const rhi::core::BuildAccelerationStructureFlags flags)
+{
+	switch (flags)
+	{
+		case core::BuildAccelerationStructureFlags::None: return (VkBuildAccelerationStructureFlagBitsKHR)0;
+		case core::BuildAccelerationStructureFlags::AllowUpdate: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR;
+		case core::BuildAccelerationStructureFlags::AllowCompaction: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR;
+		case core::BuildAccelerationStructureFlags::MinimizeMemory: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_KHR;
+		case core::BuildAccelerationStructureFlags::PreferFastBuild: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR;
+		case core::BuildAccelerationStructureFlags::PreferFastTrace: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+		//case core::BuildAccelerationStructureFlags::PreformUpdate: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT;
+		default:
+			throw std::runtime_error("not support build acceleration flags (vulkan api)");
+	}
+}
+#pragma endregion RayTracing

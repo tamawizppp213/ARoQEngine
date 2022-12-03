@@ -1,80 +1,86 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   SampleSky.hpp
-///             @brief  Skybox sample
+///             @file   RayTracingTLASBuffer.hpp
+///             @brief  Top Level Acceleration Structure Buffer
 ///             @author Toide Yutaro
-///             @date   2022_04_23
+///             @date   2022_11_23
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SAMPLE_COLOR_CHANGE_HPP
-#define SAMPLE_COLOR_CHANGE_HPP
+#ifndef RAYTRACING_TLAS_BUFFER_HPP
+#define RAYTRACING_TLAS_BUFFER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Core/Include/Scene.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include <memory>
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
-{
-	class SkyDome;
-	class Camera;
-	class ColorChange;
-	class GaussianBlur;
-}
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                              Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace sample
-{
 
+namespace rhi::core
+{
+	class RHIDevice;
+	class RHICommandList;
+	class ASInstance;
+	class RHIDescriptorHeap;
+	class GPUBuffer;
+	class GPUResourceView;
+	class RayTracingGeometry;
 	/****************************************************************************
-	*				  			SampleSky
+	*				  			TLASBuffer
 	*************************************************************************//**
-	*  @class     SampleSky
-	*  @brief     Skybox sample
+	*  @struct    TLASBuffer
+	*  @brief     TLASBuffer
 	*****************************************************************************/
-	class SampleColorChange : public Scene
+	class TLASBuffer : public NonCopyable
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr  = std::shared_ptr<gc::Camera>;
-		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
-
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
-		void Update() override;
-		void Draw() override;
-		void Terminate() override;
+		virtual void Build(const std::shared_ptr<RHICommandList>& commandList) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		std::shared_ptr<GPUBuffer> GetDest() const noexcept { return _destination; }
+		std::shared_ptr<GPUBuffer> GetScratch() const noexcept { return _scratch; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SampleColorChange();
-		~SampleColorChange();
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void LoadMaterials() override;
-		void OnKeyboardInput() override;
-		void OnMouseInput() override;
-		void OnGamePadInput() override;
+		TLASBuffer() = default;
+		~TLASBuffer() = default;
+		TLASBuffer(const std::shared_ptr<RHIDevice>& device,
+			const std::vector<std::shared_ptr<ASInstance>>& asInstance,
+			const core::BuildAccelerationStructureFlags flags,
+			const std::shared_ptr<RHIDescriptorHeap>& customHeap = nullptr) : _device(device), _asInstance(asInstance), _flags(flags), _customHeap(customHeap)
+		{
+		};
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		SkyDomePtr _skybox = nullptr;
-		CameraPtr _camera = nullptr;
-		std::vector<ColorChangePtr> _colorChanges = {};
-		std::uint32_t _colorIndex = 0;
+		std::shared_ptr<GPUBuffer> _destination           = nullptr;
+		std::shared_ptr<GPUBuffer> _scratch               = nullptr;
+		std::shared_ptr<GPUBuffer> _asInstanceDescsBuffer = nullptr;
+		std::shared_ptr<GPUResourceView> _resourceView    = nullptr;
+		std::shared_ptr<RHIDescriptorHeap> _customHeap    = nullptr;
+		std::vector<std::shared_ptr<core::ASInstance>> _asInstance;
+		BuildAccelerationStructureFlags _flags  = BuildAccelerationStructureFlags::None;
+		std::shared_ptr<RHIDevice> _device = nullptr;
+
+		/*@brief : build ray tracing acceleration structure and prepare create resource view*/
+		bool _hasBuilt = false;
 	};
 }
 #endif

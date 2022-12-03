@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Sample/Include/SampleRectangle.hpp"
+#include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameCore/Rendering/Model/Include/PrimitiveMesh.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIRenderPass.hpp"
@@ -25,11 +25,11 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-SampleRectangle::SampleRectangle()
+SampleRayTracingRectangle::SampleRayTracingRectangle()
 {
 
 }
-SampleRectangle::~SampleRectangle()
+SampleRayTracingRectangle::~SampleRayTracingRectangle()
 {
 
 }
@@ -37,36 +37,36 @@ SampleRectangle::~SampleRectangle()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleRectangle::Initialize(GameTimer* gameTimer)
+*  @fn        void SampleRayTracingRectangle::Initialize(GameTimer* gameTimer)
 *  @brief     Initialize scene
 *  @param[in] GameTimer* gameTimer
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleRayTracingRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
 /****************************************************************************
 *                       Update
 *************************************************************************//**
-*  @fn        void SampleRectangle::Update()
+*  @fn        void SampleRayTracingRectangle::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::Update()
+void SampleRayTracingRectangle::Update()
 {
 	Scene::Update();
 }
 /****************************************************************************
 *                       Draw
 *************************************************************************//**
-*  @fn        void SampleRectangle::Draw()
+*  @fn        void SampleRayTracingRectangle::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::Draw()
+void SampleRayTracingRectangle::Draw()
 {
 	/*-------------------------------------------------------------------
 	-             Start frame
@@ -92,12 +92,12 @@ void SampleRectangle::Draw()
 /****************************************************************************
 *                       Terminate
 *************************************************************************//**
-*  @fn        void SampleRectangle::Terminate()
+*  @fn        void SampleRayTracingRectangle::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::Terminate()
+void SampleRayTracingRectangle::Terminate()
 {
 	if (_resourceLayout) { _resourceLayout.reset(); }
 	if (_pipelineState) { _pipelineState.reset(); }
@@ -110,12 +110,11 @@ void SampleRectangle::Terminate()
 /****************************************************************************
 *                       LoadMaterials
 *************************************************************************//**
-*  @fn        void SampleRectangle::LoadMaterials(GameTimer* gameTimer)
-*  @brief     Load Materials
+*  @fn        void SampleRayTracingRectangle
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::LoadMaterials()
+void SampleRayTracingRectangle::LoadMaterials()
 {
 	/*-------------------------------------------------------------------
 	-             Open Copy CommandList
@@ -137,48 +136,48 @@ void SampleRectangle::LoadMaterials()
 /****************************************************************************
 *                       OnKeyboardInput
 *************************************************************************//**
-*  @fn        void SampleRectangle::OnKeyboardInput()
+*  @fn        void SampleRayTracingRectangle::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::OnKeyboardInput()
+void SampleRayTracingRectangle::OnKeyboardInput()
 {
 
 }
 /****************************************************************************
 *                       OnMouseInput
 *************************************************************************//**
-*  @fn        void SampleRectangle::OnMouseInput()
+*  @fn        void SampleRayTracingRectangle::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::OnMouseInput()
+void SampleRayTracingRectangle::OnMouseInput()
 {
 
 }
 /****************************************************************************
 *                       OnGamePadInput
 *************************************************************************//**
-*  @fn        void SampleRectangle::OnGamePadInput()
+*  @fn        void SampleRayTracingRectangle::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::OnGamePadInput()
+void SampleRayTracingRectangle::OnGamePadInput()
 {
 
 }
 /****************************************************************************
 *                     ExecuteSceneTransition
 *************************************************************************//**
-*  @fn        void SampleRectangle::ExecuteSceneTranstion()
+*  @fn        void SampleRayTracingRectangle::ExecuteSceneTranstion()
 *  @brief     Scene Transition
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::ExecuteSceneTransition()
+void SampleRayTracingRectangle::ExecuteSceneTransition()
 {
 
 }
@@ -187,12 +186,12 @@ void SampleRectangle::ExecuteSceneTransition()
 /****************************************************************************
 *                     BuildBuffer
 *************************************************************************//**
-*  @fn        void SampleRectangle::BuildBuffer()
+*  @fn        void SampleRayTracingRectangle::BuildBuffer()
 *  @brief     Build Vertex and Index Buffers
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::BuildBuffer()
+void SampleRayTracingRectangle::BuildBuffer()
 {
 	// 頂点情報変えるならFrameCount分用意した方が良い.
 	gc::MeshData rectangle = gc::PrimitiveMeshGenerator::Rect
@@ -225,7 +224,7 @@ void SampleRectangle::BuildBuffer()
 	}
 }
 
-void SampleRectangle::BuildPipelineState()
+void SampleRayTracingRectangle::BuildPipelineState()
 {
 	const auto rhiDevice = _engine->GetDevice();
 	/*-------------------------------------------------------------------

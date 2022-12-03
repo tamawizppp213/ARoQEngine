@@ -135,10 +135,10 @@ namespace rhi::core
 	};
 
 	/****************************************************************************
-	*				  			RHIPipelineState
+	*				  			GPUComputePipelineState
 	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	*  @class     GPUComputePipelineState
+	*  @brief     Compute PipelineState
 	*****************************************************************************/
 	class GPUComputePipelineState : public GPUBasePipelineState
 	{
@@ -169,5 +169,39 @@ namespace rhi::core
 		std::shared_ptr<GPUShaderState> _computeShaderState = nullptr;
 	};
 
+	/****************************************************************************
+	*				  			RHIPipelineState
+	*************************************************************************//**
+	*  @class     RHIPipelineState
+	*  @brief     PipelineState
+	*****************************************************************************/
+	class GPURayTracingPipelineState : public GPUBasePipelineState
+	{
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		virtual void CompleteSetting() = 0;
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		void SetShader(const std::shared_ptr<GPUShaderState>& shaderState) { _rayTracingShaderState = shaderState; };
+		virtual void SetName(const std::wstring& name) const = 0;
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+	protected:
+		GPURayTracingPipelineState() = default;
+		explicit GPURayTracingPipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIResourceLayout>& layout = nullptr) : core::GPUBasePipelineState(device, layout) {};
+		~GPURayTracingPipelineState() = default;
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		std::shared_ptr<GPUShaderState> _rayTracingShaderState = nullptr;
+	};
 }
 #endif

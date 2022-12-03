@@ -293,8 +293,6 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 #pragma region Copy 
 void RHICommandList::CopyResource(const std::shared_ptr<core::GPUTexture>& dest, const std::shared_ptr<core::GPUTexture>& source)
 {
-	const auto sourceState = source->GetResourceState();
-	const auto destState   = dest->GetResourceState();
 
 	std::shared_ptr<core::GPUTexture> textures[] = {dest, source};
 	rhi::core::ResourceState befores[] = { dest->GetResourceState()            , source->GetResourceState() };

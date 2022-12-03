@@ -1,80 +1,79 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   SampleSky.hpp
-///             @brief  Skybox sample
+///             @file   RayTracingBLASBuffer.hpp
+///             @brief  Bottom Level Acceleration Structure Buffer
 ///             @author Toide Yutaro
-///             @date   2022_04_23
+///             @date   2022_11_23
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SAMPLE_COLOR_CHANGE_HPP
-#define SAMPLE_COLOR_CHANGE_HPP
+#ifndef RAYTRACING_BLAS_BUFFER_HPP
+#define RAYTRACING_BLAS_BUFFER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Core/Include/Scene.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include <memory>
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
-{
-	class SkyDome;
-	class Camera;
-	class ColorChange;
-	class GaussianBlur;
-}
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                              Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace sample
-{
 
+namespace rhi::core
+{
+	class RHIDevice;
+	class RHICommandList;
+	class GPUBuffer;
+	class RayTracingGeometry;
 	/****************************************************************************
-	*				  			SampleSky
+	*				  			BLASBuffer
 	*************************************************************************//**
-	*  @class     SampleSky
-	*  @brief     Skybox sample
+	*  @struct    BLASBuffer
+	*  @brief     BLASBuffer
 	*****************************************************************************/
-	class SampleColorChange : public Scene
+	class BLASBuffer : public NonCopyable
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr  = std::shared_ptr<gc::Camera>;
-		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
-
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
-		void Update() override;
-		void Draw() override;
-		void Terminate() override;
+		virtual void Build(const std::shared_ptr<RHICommandList>& commandList) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		//std::shared_ptr<GPUBuffer> GetSource () const noexcept { return _source; }
+		std::shared_ptr<GPUBuffer> GetDest   () const noexcept { return _destination; }
+		std::shared_ptr<GPUBuffer> GetScratch() const noexcept { return _scratch; }
+		std::shared_ptr<RayTracingGeometry> GetGeometryDesc(const std::uint64_t index = 0) const noexcept { return _geometryDescs[index]; }
+		std::uint64_t GetGeometryDescSize() const noexcept { return _geometryDescs.size(); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SampleColorChange();
-		~SampleColorChange();
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void LoadMaterials() override;
-		void OnKeyboardInput() override;
-		void OnMouseInput() override;
-		void OnGamePadInput() override;
+		BLASBuffer() = default;
+		~BLASBuffer() = default;
+		BLASBuffer(const std::shared_ptr<RHIDevice>& device, 
+			const std::vector<std::shared_ptr<RayTracingGeometry>>& geometryDesc,
+			const core::BuildAccelerationStructureFlags flags) : _device(device),  _geometryDescs(geometryDesc), _flags(flags) { };
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		SkyDomePtr _skybox = nullptr;
-		CameraPtr _camera = nullptr;
-		std::vector<ColorChangePtr> _colorChanges = {};
-		std::uint32_t _colorIndex = 0;
+		//std::shared_ptr<GPUBuffer> _source        = nullptr;Å@å„Ç≈ïKóvÇ…Ç»ÇÈÇ©Ç‡
+		std::shared_ptr<GPUBuffer> _destination   = nullptr;
+		std::shared_ptr<GPUBuffer> _scratch       = nullptr;
+		BuildAccelerationStructureFlags _flags    = BuildAccelerationStructureFlags::None;
+		std::vector<std::shared_ptr<RayTracingGeometry>> _geometryDescs = {};
+		std::shared_ptr<RHIDevice> _device        = nullptr;
+
+		bool _hasBuilt = false;
 	};
 }
 #endif
