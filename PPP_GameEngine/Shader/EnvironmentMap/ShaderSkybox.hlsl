@@ -58,7 +58,7 @@ VertexOut VSMain(VertexIn vertexIn)
 float4 PSMain(VertexOut input) : SV_TARGET
 {
     float4 result = float4(CubeMap.Sample(SamplerLinearWrap, input.LookDirection));
-    result.rgb    = SRGBToLinear(result.rgb);
+    //result.rgb    = SRGBToLinear(result.rgb); // linear‹óŠÔ‚É’¼‚µ‚Ä‚¢‚é
     return result;
 }
 #endif

@@ -27,10 +27,10 @@ namespace rhi::core
 	class RHICommandList;
 	class RHIDevice;
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHICommandAllocator
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHICommandAllocator
+	*  @brief     Allocation of memory used by command list
 	*****************************************************************************/
 	class RHICommandAllocator : public NonCopyable
 	{
@@ -50,7 +50,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		RHICommandAllocator() = default;
+		RHICommandAllocator () = default;
 		~RHICommandAllocator() = default;
 		explicit RHICommandAllocator(const std::shared_ptr<RHIDevice>& device, const core::CommandListType commandListType) 
 			: _device(device),  _commandListType(commandListType) { };

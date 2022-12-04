@@ -51,18 +51,13 @@ namespace rhi::directX12
 			const core::StencilOperatorInfo& front = core::StencilOperatorInfo(),
 			const core::StencilOperatorInfo& back  = core::StencilOperatorInfo()) override;
 
-		std::shared_ptr<core::GPUShaderState> CreateShaderState(
-			const core::ShaderType type,
-			const std::string& fileName,
-			const std::string& entryPoint = "main",
-			const std::string& shaderVersion = "6.6"
-		) override;
+		std::shared_ptr<core::GPUShaderState> CreateShaderState() override;
 
 		std::shared_ptr<core::GPUBlendState> CreateBlendState(
-			const std::vector<core::BlendProperty>& properties = { core::BlendProperty() }) override;
+			const std::vector<core::BlendProperty>& properties) override;
 
 		std::shared_ptr<core::GPUBlendState> CreateSingleBlendState(
-			const core::BlendProperty& blendProperty = core::BlendProperty()
+			const core::BlendProperty& blendProperty
 		) override ;
 
 		std::shared_ptr<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets)override;

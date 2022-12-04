@@ -59,7 +59,7 @@ void RHIResourceLayout::SetUp()
 	/*-------------------------------------------------------------------
 	-                   Set resource layout state
 	---------------------------------------------------------------------*/
-	for (int i = 0; i < _elements.size(); ++i)
+	for (size_t i = 0; i < _elements.size(); ++i)
 	{
 		ranges[i].RangeType                         = EnumConverter::Convert1(_elements[i].DescriptorType);
 		ranges[i].NumDescriptors                    = 1;
@@ -86,13 +86,16 @@ void RHIResourceLayout::SetUp()
 	std::vector<D3D12_ROOT_PARAMETER> parameters = {};
 	if (!_elements.empty())
 	{
-		_elementsCount = parameters.size();
-		D3D12_ROOT_PARAMETER parameter = {};
-		parameter.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		parameter.ShaderVisibility                    = D3D12_SHADER_VISIBILITY_ALL;
-		parameter.DescriptorTable.NumDescriptorRanges = static_cast<UINT>(ranges.size());
-		parameter.DescriptorTable.pDescriptorRanges   = ranges.data();
-		parameters.push_back(parameter);
+		_elementsCount = _elements.size();
+		for (size_t i = 0; i < _elementsCount; ++i)
+		{
+			D3D12_ROOT_PARAMETER parameter = {};
+			parameter.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+			parameter.ShaderVisibility                    = D3D12_SHADER_VISIBILITY_ALL;
+			parameter.DescriptorTable.NumDescriptorRanges = 1;
+			parameter.DescriptorTable.pDescriptorRanges   = &ranges[i];
+			parameters.push_back(parameter);
+		}
 	}
 	
 

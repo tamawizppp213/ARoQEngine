@@ -9,39 +9,27 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Sprite/Include/UIRenderer.hpp"
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
-#include "GraphicsCore/RHI/DirectX12/SimpleInclude/IncludeGraphicsPSO.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayout.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
+#include <stdexcept>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace rhi::directX12;
+using namespace rhi;
+using namespace rhi::core;
 using namespace ui;
 using namespace gm;
-using namespace directX12;
-namespace
-{
-	RootSignature         s_RootSignature;
-	GraphicsPipelineState s_PipelineState;
-}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-UIRenderer::~UIRenderer()
-{
-
-}
-/****************************************************************************
-*					StartUp
-*************************************************************************//**
-*  @fn        void UIRenderer::StartUp(const std::wstring& addName)
-*  @brief     Start up module
-*  @param[in] const std::wstring& addName
-*  @return 　　void
-*****************************************************************************/
-void UIRenderer::StartUp(const std::wstring& addName)
+UIRenderer::UIRenderer(const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName, const std::uint32_t maxUICount)
+	: _engine(engine), _maxWritableUICount(maxUICount)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
@@ -49,13 +37,16 @@ void UIRenderer::StartUp(const std::wstring& addName)
 	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"UIRenderer::";
 	/*-------------------------------------------------------------------
-	-            Prepare Resource
+	-            Prepare Resources
 	---------------------------------------------------------------------*/
-	PrepareRootSignature(name);
+	PrepareMaxImageBuffer(name);
 	PreparePipelineState(name);
-	PrepareVertexAndIndexBuffer(name);
-
 }
+UIRenderer::~UIRenderer()
+{
+	if (!_vertexBuffers.empty()) { _vertexBuffers.clear(); _vertexBuffers.shrink_to_fit(); }
+	if (!_indexBuffers.empty())  { _indexBuffers.clear(), _indexBuffers.shrink_to_fit(); }
+} 
 
 /****************************************************************************
 *					AddFrameObject
@@ -66,50 +57,41 @@ void UIRenderer::StartUp(const std::wstring& addName)
 *  @param[in] const Texture& texture
 *  @return 　　void
 *****************************************************************************/
-void UIRenderer::AddFrameObject(const std::vector<ui::Image>& images, const Texture& texture)
+void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view)
 {
 	/*-------------------------------------------------------------------
 	-               sprite count check
 	---------------------------------------------------------------------*/
-	if (_imageStackCount + images.size() > MAX_WRITABLE_UI_COUNT)
+	if (_totalImageCount + images.size() > _maxWritableUICount)
 	{
-		MessageBox(NULL, L"The maximum number of sprites exceeded. \n If the maximum number is not exceeded, please check whether DrawEnd is being called.", L"Warning", MB_ICONWARNING);
-		return;
+		throw std::runtime_error("The maximum number of sprites exceeded. \n If the maximum number is not exceeded, please check whether DrawEnd is being called. \n");
 	}
 	/*-------------------------------------------------------------------
 	-               Check whether spriteList is empty
 	---------------------------------------------------------------------*/
 	if (images.empty()) { return ; }
-	/*-------------------------------------------------------------------
-	-               FrameStart Check
-	---------------------------------------------------------------------*/
-	if (!_isFrameStart)
-	{
-		auto& engine  = GraphicsCoreEngine::Instance();
-		_context      = engine.GetCommandContext();
-		_currentFrame = engine.GetGraphicsDevice()->GetCurrentFrameIndex();
-		_isFrameStart = true;
 
-	}
 	/*-------------------------------------------------------------------
 	-               Add vertex data
 	---------------------------------------------------------------------*/
-	_meshBuffer[_currentFrame].VertexBuffer->CopyStart();
-	for (int i = 0; i < (int)gm::Min((float)images.size(), (float)MAX_WRITABLE_UI_COUNT - (float)_imageStackCount); ++i)
+	const auto currentFrame = _engine->GetCurrentFrameIndex();
+	const auto vertexBuffer = _vertexBuffers[currentFrame];
+	const auto oneRectVertexCount = 4;
+
+	vertexBuffer->CopyStart();
+	// _maxWritableUICount - _totalImageCount is 残りの登録できる数
+	for (std::uint32_t i = 0; i < std::min<std::uint32_t>(images.size(), _maxWritableUICount - _totalImageCount); ++i)
 	{
-		for (int j = 0; j < 4; ++j)
-		{
-			_meshBuffer[_currentFrame].VertexBuffer->CopyData((i + _imageStackCount) * 4 + j, (const void*)(&images[i].GetVertices()[j]));
-		}
+		vertexBuffer->CopyTotalData(images[i]->GetVertices(), 4, (i + _totalImageCount) * oneRectVertexCount);
 	}
-	_meshBuffer[_currentFrame].VertexBuffer->CopyEnd();
+	vertexBuffer->CopyEnd();
 	/*-------------------------------------------------------------------
 	-               Count sprite num
 	---------------------------------------------------------------------*/
-	_drawCallNum++;
-	_imageStackCount += static_cast<int>(images.size());
-	_imageCountList.push_back(static_cast<int>(images.size()));
-	_textures.push_back(texture);
+	_needCallDrawIndexCount++;
+	_totalImageCount += static_cast<std::uint32_t>(images.size());
+	_imageCountList.emplace_back(static_cast<std::uint32_t>(images.size()));
+	_resourceViews.emplace_back(view);
 }
 
 /****************************************************************************
@@ -122,136 +104,113 @@ void UIRenderer::AddFrameObject(const std::vector<ui::Image>& images, const Text
 *****************************************************************************/
 void UIRenderer::Draw()
 {
-	_context->SetRootSignature(s_RootSignature.GetSignature());
-	_context->SetPipelineState(s_PipelineState.GetPipelineState());
-	_context->SetPrimitiveTopology(rhi::core::PrimitiveTopology::TriangleList);
-	_context->SetVertexBuffer(_meshBuffer[_currentFrame].VertexBufferView());
-	_context->SetIndexBuffer(_meshBuffer[_currentFrame].IndexBufferView());
+	if (_totalImageCount == 0) { return; }
+
+	const std::uint32_t currentFrame = _engine->GetCurrentFrameIndex();
+	const auto commandList  = _engine->GetCommandList(core::CommandListType::Graphics, currentFrame);
+
+	/*-------------------------------------------------------------------
+	-                 Draw command list
+	---------------------------------------------------------------------*/
+	commandList->SetResourceLayout(_resourceLayout);
+	commandList->SetGraphicsPipeline(_pipeline);
+	commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
+	commandList->SetIndexBuffer (_indexBuffers[currentFrame]);
 
 	/*-------------------------------------------------------------------
 	-                 Draw
 	---------------------------------------------------------------------*/
-	int imageCounter = 0;
-	for (int i = 0; i < _drawCallNum; ++i)
+	std::uint32_t indexOffset = 0;
+	for (std::uint32_t i = 0; i < _needCallDrawIndexCount; ++i)
 	{
-		_context->SetGraphicsRootDescriptorTable(0, GraphicsCoreEngine::Instance().GetGraphicsDevice()->GetGPUResourceView(HeapFlag::SRV, _textures[i].TextureID));
-		_context->DrawIndexedInstanced((UINT)(6 * _imageCountList[i]), 1, 6 * imageCounter, 0, 1);
-		imageCounter += _imageCountList[i];
+		// Regist root descriptor table 
+		commandList->SetDescriptorHeap(_resourceViews[i]->GetHeap());
+		_resourceViews[i]->Bind(commandList, 0);
+
+		// Draw Rects in one texture at a time
+		const std::uint32_t oneImageTotalIndexCount = 6 * _imageCountList[i];
+		commandList->DrawIndexedInstanced(oneImageTotalIndexCount, 1, indexOffset, 0, 0);
+		indexOffset += oneImageTotalIndexCount;
 	}
 
 	/*-------------------------------------------------------------------
-	-               Add vertex data
+	-               Clear vertex data
 	---------------------------------------------------------------------*/
-	_meshBuffer[_currentFrame].VertexBuffer->CopyStart();
-	for (int i = 0; i < (int)gm::Min((float)_imageStackCount, (float)MAX_WRITABLE_UI_COUNT); ++i)
-	{
-		for (int j = 0; j < 4; ++j)
-		{
-			auto vertex = VertexPositionNormalColorTexture(Float3(0, 0, 0), Float3(0, 0, 0), Float4(1, 1, 1, 1), Float2(0, 0));
-			_meshBuffer[_currentFrame].VertexBuffer->CopyData((i + _imageStackCount) * 4 + j, (const void*)(&vertex));
-		}
-	}
-	_meshBuffer[_currentFrame].VertexBuffer->CopyEnd();
+	ClearVertexBuffer(currentFrame, 4 * _totalImageCount);
 
 	/*-------------------------------------------------------------------
 	-               Reset Stack Count
 	---------------------------------------------------------------------*/
-	_imageStackCount = 0;
-	_drawCallNum     = 0;
-	_imageCountList.clear();
-	_textures.clear();
-
-	_isFrameStart = false;
-
-}
-/****************************************************************************
-*					ShutDown
-*************************************************************************//**
-*  @fn        void UIRenderer::ShutDown
-*  @brief     Draw
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void UIRenderer::ShutDown()
-{
-	_meshBuffer    .reset();
-	_textures      .clear(); _textures.shrink_to_fit();
+	_totalImageCount = 0;
+	_needCallDrawIndexCount = 0;
 	_imageCountList.clear(); _imageCountList.shrink_to_fit();
+	_resourceViews.clear(); _resourceViews.shrink_to_fit();
 }
+
 #pragma region Protected Function
-/****************************************************************************
-*					PrepareVertexAndIndexBuffer
-*************************************************************************//**
-*  @fn        void UIRenderer::PrepareVertexAndIndexBuffer(const std::wstring& name)
-*  @brief     Prepare Rect vertex and index buffer
-*  @param[in] const std::wstring& name
-*  @return 　　bool
-*****************************************************************************/
-void UIRenderer::PrepareVertexAndIndexBuffer(const std::wstring& name)
+void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount)
 {
+	if (vertexCount == 0) { return; }
+
+	std::vector<gm::Vertex> v
+	(
+		vertexCount,
+		Vertex(Float3(0, 0, 0), Float3(0, 0, 0), Float4(1, 1, 1, 1), Float2(0, 0))
+	);
+	
+	_vertexBuffers[frameIndex]->Update(v.data(), vertexCount);
+}
+void UIRenderer::PrepareMaxImageBuffer(const std::wstring& name)
+{
+	const auto device = _engine->GetDevice();
+
 	/*-------------------------------------------------------------------
 	-            Create Index List
 	---------------------------------------------------------------------*/
-	std::vector<UINT32> indices(MAX_WRITABLE_UI_COUNT * 6);
-	const UINT32 rectIndex[] = {0,1,3,1,2,3};
-	for (int i = 0; i < MAX_WRITABLE_UI_COUNT; ++i)
+	const std::uint32_t rectIndex[]     = { 0,1,3,1,2,3 };
+	const std::uint32_t rectIndexCount  = static_cast<std::uint32_t>(_countof(rectIndex));
+	const std::uint32_t rectVertexCount = 4;
+
+	std::vector<std::uint32_t> indices(_maxWritableUICount * rectIndexCount);
+	for (std::uint32_t i = 0; i < _maxWritableUICount; ++i)
 	{
-		for (int j = 0; j < 6; ++j)
+		for (std::uint32_t j = 0; j < rectIndexCount; ++j)
 		{
-			indices[(UINT64)6 * i + j] = i * 4 + rectIndex[j];
+			// 次登録するRectには頂点数分ずらす (+4)
+			indices[(std::uint64_t)rectIndexCount * i + j] = i * rectVertexCount + rectIndex[j];
 		}
 	}
 
 	/*-------------------------------------------------------------------
-	-            Create Mesh Buffer
+	-            Create Vertex and Index Buffer
 	---------------------------------------------------------------------*/
-	auto& engine       = GraphicsCoreEngine::Instance();
-	int totalFrameSize = engine.GetFrameBufferCount();
-	_meshBuffer = std::make_unique<MeshBuffer[]>(totalFrameSize);
-	for (int i = 0; i < totalFrameSize; ++i)
+	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
+	
+	// prepare frame count buffer
+	_vertexBuffers.resize(frameCount);
+	_indexBuffers .resize(frameCount);
+
+	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
-		auto& meshBuffer = _meshBuffer[i];
-		/*-------------------------------------------------------------------
-		-            Calcurate Buffer Size
-		---------------------------------------------------------------------*/
-		auto vertexByteSize = sizeof(VertexPositionNormalColorTexture);       
-		auto indexByteSize  = sizeof(UINT32);                                // 32 byte index
-		auto vertexCount    = MAX_WRITABLE_UI_COUNT * 4;
-		auto indexCount     = indices.size();
-
-		/*-------------------------------------------------------------------
-		-            Set Vertex Buffer and Index Buffer
-		---------------------------------------------------------------------*/
-		meshBuffer.VertexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(vertexByteSize), static_cast<UINT>(vertexCount), false, name + L"VertexBuffer");
-		meshBuffer.VertexBuffer->CopyStart();
-		for (int j = 0; j < MAX_WRITABLE_UI_COUNT * 4; ++j)
 		{
-			auto vertex = VertexPositionNormalColorTexture(Float3(0, 0, 0), Float3(0, 0, 0), Float4(1, 1, 1, 1), Float2(0, 0));
-			meshBuffer.VertexBuffer->CopyData(j, &vertex);
+			const auto totalCount = _maxWritableUICount * rectVertexCount;
+			const auto vbMetaData = GPUBufferMetaData::VertexBuffer(sizeof(gm::Vertex), totalCount, core::MemoryHeap::Upload);
+			
+			_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
+			_vertexBuffers[i]->SetName(name + L"VB");
+			ClearVertexBuffer(i, totalCount);
 		}
-		meshBuffer.VertexBuffer->CopyEnd();
 
-		meshBuffer.IndexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(indexByteSize), static_cast<UINT>(indexCount), false, name + L"IndexBuffer");
-		meshBuffer.IndexBuffer->CopyStart();
-		meshBuffer.IndexBuffer->CopyTotalData(indices.data(), static_cast<int>(indexCount));
-		meshBuffer.IndexBuffer->CopyEnd();
+		{
+			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), indices.size(), MemoryHeap::Default, ResourceState::Common);
+			
+			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
+			_indexBuffers[i]->SetName(name + L"IB");
+			_indexBuffers[i]->Pack(indices.data(), _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex()));
+		}
 	}
 }
-/****************************************************************************
-*							PrepareRootSignature
-*************************************************************************//**
-*  @fn        void Skybox::PrepareRootSignature(const std::wstring& name)
-*  @brief     Prepare RootSignature for UIRenderer
-*  @param[in] std::wstring& name
-*  @return 　　void
-*****************************************************************************/
-void UIRenderer::PrepareRootSignature(const std::wstring& name)
-{
-	s_RootSignature.Reset(1, 1);
-	s_RootSignature.SetStaticSampler(SamplerType::SamplerLinearWrap);
-	s_RootSignature[0].InitAsDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1); // Texture
-	s_RootSignature.CompleteSetting(GraphicsCoreEngine::Instance().GetDevice(), name + L"RootSignature");
-}
+
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
@@ -262,24 +221,37 @@ void UIRenderer::PrepareRootSignature(const std::wstring& name)
 *****************************************************************************/
 void UIRenderer::PreparePipelineState(const std::wstring& name)
 {
-	auto device = GraphicsCoreEngine::Instance().GetGraphicsDevice();
-	RASTERIZER_DESC rasterizerState = RASTERIZER_DESC(D3D12_DEFAULT);
-	rasterizerState.CullMode        = D3D12_CULL_MODE_NONE;               // All culling 
+	const auto device  = _engine->GetDevice();
+	const auto factory = device->CreatePipelineFactory();
+	
+	/*-------------------------------------------------------------------
+	-             Setup resource layout elements
+	---------------------------------------------------------------------*/
+	_resourceLayout = device->CreateResourceLayout
+	(
+		{ ResourceLayoutElement(DescriptorHeapType::SRV, 0) },
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0) }
+	);
 
-	DEPTH_STENCIL_DESC depthStencil = DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	depthStencil.DepthFunc          = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	/*-------------------------------------------------------------------
+	-             Set up graphic pipeline state
+	---------------------------------------------------------------------*/
+	const auto vs = factory->CreateShaderState();
+	const auto ps = factory->CreateShaderState();
+	vs->Compile(ShaderType::Vertex, L"Shader\\Sprite\\ShaderDefault2D.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
+	ps->Compile(ShaderType::Pixel , L"Shader\\Sprite\\ShaderDefault2D.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
 
-	BlobComPtr vs = CompileShader(L"Shader\\Sprite\\ShaderDefault2D.hlsl", L"VSMain", L"vs_6_4");
-	BlobComPtr ps = CompileShader(L"Shader\\Sprite\\ShaderDefault2D.hlsl", L"PSMain", L"ps_6_4");
-
-	s_PipelineState.SetGraphicsPipelineStateDescriptor(device->GetDefaultPSOConfig());
-	s_PipelineState.SetRasterizerState(rasterizerState);
-	s_PipelineState.SetInputLayouts(VertexPositionNormalColorTexture::InputLayout);
-	s_PipelineState.SetRootSignature(s_RootSignature);
-	s_PipelineState.SetDepthStencilState(depthStencil);
-	s_PipelineState.SetBlendState(GetBlendState(BlendStateType::AlphaBlend));
-	s_PipelineState.SetVertexShader(vs);
-	s_PipelineState.SetPixelShader(ps);
-	s_PipelineState.CompleteSetting(GraphicsCoreEngine::Instance().GetDevice(), name + L"PipelineState");
+	/*-------------------------------------------------------------------
+	-             Set up graphic pipeline state
+	---------------------------------------------------------------------*/
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline->SetBlendState(factory->CreateSingleBlendState(core::BlendProperty::AlphaBlend()));
+	_pipeline->SetRasterizerState(factory->CreateRasterizerState());
+	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
+	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());
+	_pipeline->SetVertexShader(vs);
+	_pipeline->SetPixelShader(ps);
+	_pipeline->CompleteSetting();
+	_pipeline->SetName(name + L"PSO");
 }
 #pragma endregion Protected Function

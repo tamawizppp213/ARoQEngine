@@ -1,3 +1,4 @@
+
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   TemplateText.hpp
 ///             @brief  TemplateText
@@ -53,6 +54,8 @@ namespace rhi::directX12
 		Resource** GetAddressOf() { return _resource.GetAddressOf(); }
 		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return _resource->GetGPUVirtualAddress(); }
 		D3D12_RESOURCE_STATES GetUsageState() { return _usageState; }
+		
+		void SetName(const std::wstring& name) override { _resource->SetName(name.c_str()); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

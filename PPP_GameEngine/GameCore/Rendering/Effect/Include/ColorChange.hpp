@@ -11,69 +11,90 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <vector>
+#include <string>
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class PipelineState;
+class LowLevelGraphicsEngine;
+namespace rhi::core
+{
+	class RHIResourceLayout;
+	class GPUResourceView;
+	class GPUGraphicsPipelineState;
+	class GPUBuffer;
+	class GPUTexture;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-enum ColorChangeType
+namespace gc
 {
-	None,
-	Monochrome,
-	Sepia,
-	GrayScale,
-	Binary,
-	Invert,
-	CountOfType,
-};
-/****************************************************************************
-*				  			ColorChange
-*************************************************************************//**
-*  @class     Color Change
-*  @brief     color change post effect
-*****************************************************************************/
-class ColorChange
-{
-	using PipelineStatePtr = std::unique_ptr<PipelineState>;
-	using MeshBufferPtr    = std::unique_ptr<MeshBuffer[]>;
-public:
-	/****************************************************************************
-	**                Public Function
-	*****************************************************************************/
-	void StartOn(ColorChangeType type, const std::wstring& addName = L"");
-	void OnResize(int newWidth, int newHeight);
-	void Draw(rhi::directX12::GPUResource* renderTarget);
-	void ShutDown();
-	/****************************************************************************
-	**                Public Member Variables
-	*****************************************************************************/
 
+	enum ColorChangeType
+	{
+		None,
+		Monochrome,
+		Sepia,
+		GrayScale,
+		Binary,
+		Invert,
+		CountOfType,
+	};
 	/****************************************************************************
-	**                Constructor and Destructor
+	*				  			ColorChange
+	*************************************************************************//**
+	*  @class     Color Change
+	*  @brief     color change post effect
 	*****************************************************************************/
-	ColorChange();
-	~ColorChange();
-	ColorChange(const ColorChange&)            = delete;
-	ColorChange& operator=(const ColorChange&) = delete;
-	ColorChange(ColorChange&&)                 = default;
-	ColorChange& operator=(ColorChange&&)      = default;
-protected:
-	/****************************************************************************
-	**                Protected Function
-	*****************************************************************************/
-	void PrepareVertexAndIndexBuffer();
-	void PreparePipelineState(ColorChangeType type);
-	/****************************************************************************
-	**                Protected Member Variables
-	*****************************************************************************/
-	std::wstring     _addName = L"";
-	ColorBuffer      _colorBuffer;
-	PipelineStatePtr _pipelineState = nullptr;
-	MeshBufferPtr    _meshBuffer = nullptr;
-};
+	class ColorChange : public NonCopyable
+	{
+		using VertexBufferPtr = std::shared_ptr<rhi::core::GPUBuffer>;
+		using IndexBufferPtr  = std::shared_ptr<rhi::core::GPUBuffer>;
+		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
+		using ResourceViewPtr   = std::shared_ptr<rhi::core::GPUResourceView>;
+		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		/* @brief : Resize frame buffer (Not implement)*/
+		void OnResize(int newWidth, int newHeight);
+		/*@brief : Render to back buffer*/
+		void Draw();
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
 
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		ColorChange();
+		~ColorChange();
+		ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName = L"");
+
+	protected:
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
+		void PreparePipelineState(ColorChangeType type, const std::wstring& addName);
+		void PrepareResourceView();
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		/* @brief : frame resources*/
+		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		std::vector<IndexBufferPtr>  _indexBuffers = {};
+		PipelineStatePtr  _pipeline       = nullptr;
+		ResourceLayoutPtr _resourceLayout = nullptr;
+		std::vector<ResourceViewPtr> _resourceViews = {};
+		/* @brief : device and command list*/
+		LowLevelGraphicsEnginePtr _engine = nullptr;
+	};
+}
 #endif

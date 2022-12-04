@@ -41,6 +41,8 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		PipelineStateComPtr GetPipeline() const noexcept { return _graphicsPipeline; }
+		// @brief : This function is needed to call after calling completeSetting function 
+		void SetName(const std::wstring& name) override { _graphicsPipeline->SetName(name.c_str());}
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -49,7 +51,7 @@ namespace rhi::directX12
 		explicit GPUGraphicsPipelineState(
 			const std::shared_ptr<core::RHIDevice>& device,
 			const std::shared_ptr<core::RHIRenderPass>&renderPass,
-			const std::shared_ptr<core::RHIResourceLayout>& layout) : core::GPUGraphicsPipelineState(device, renderPass, layout){};
+			const std::shared_ptr<core::RHIResourceLayout>& layout) : core::GPUGraphicsPipelineState(device, renderPass,layout){};
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -80,6 +82,7 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		PipelineStateComPtr GetPipeline() const noexcept { return _computePipeline; }
+		void SetName(const std::wstring& name) const override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -87,8 +90,7 @@ namespace rhi::directX12
 		~GPUComputePipelineState() = default;
 		explicit GPUComputePipelineState(
 			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr <core::RHIRenderPass>& renderPass = nullptr,
-		const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) : core::GPUComputePipelineState(device, renderPass, layout){};
+		const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) : core::GPUComputePipelineState(device, layout){};
 	protected:
 		/****************************************************************************
 		**                Protected Function

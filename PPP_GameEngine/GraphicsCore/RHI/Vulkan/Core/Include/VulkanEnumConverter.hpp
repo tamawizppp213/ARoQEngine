@@ -48,6 +48,8 @@ namespace rhi::vulkan
 #pragma endregion SamplerState
 #pragma region BlendState
 		static VkFormat               Convert(const rhi::core::PixelFormat   pixelFormat);
+		static VkFormat               Convert(const rhi::core::InputFormat   inputFormat);
+		static VkIndexType            Convert(const rhi::core::IndexType     indexFormat);
 		static VkBlendOp              Convert(const rhi::core::BlendOperator blendOperator);
 		static VkBlendFactor          Convert(const rhi::core::BlendFactor   blendFactor);
 		static VkColorComponentFlags  Convert(const rhi::core::ColorMask     colorMask);
@@ -83,6 +85,11 @@ namespace rhi::vulkan
 		static VkAttachmentStoreOp Convert(const rhi::core::AttachmentStore store);
 		static VkImageLayout       Convert(const rhi::core::ResourceState layout);
 #pragma endregion RenderPass
+#pragma region RayTracing
+		static VkGeometryFlagsKHR Convert(const rhi::core::RayTracingGeometryFlags flags);
+		static VkGeometryInstanceFlagBitsKHR Convert(const rhi::core::RayTracingInstanceFlags flags);
+		static VkBuildAccelerationStructureFlagsKHR Convert(const rhi::core::BuildAccelerationStructureFlags flags);
+#pragma endregion RayTracing
 	};
 }
 #endif

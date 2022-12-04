@@ -73,9 +73,9 @@ private:
 	HWND       _mainWindow  = nullptr;
 	WNDCLASSEX _windowClass = {};
 	GameTimer  _gameTimer;
-	GameInput& _gameInput = GameInput::Instance();
-	GameManager& _gameManager = GameManager::Instance();
-	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::Vulkan;
+	GameInput& _gameInput             = GameInput::Instance();
+	GameManager& _gameManager         = GameManager::Instance();
+	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::DirectX12;
 	bool _isApplicationPaused = false;
 };
 #endif

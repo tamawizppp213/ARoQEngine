@@ -79,8 +79,8 @@ SamplerInfo SamplerInfo::GetDefaultSampler(DefaultSamplerType type)
 GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState state, MemoryHeap heapType, core::BufferType bufferType)
 	: Stride(stride), Count(count), ResourceUsage(usage), State(state), HeapType(heapType), BufferType(bufferType),ResourceType(core::ResourceType::Buffer)
 {
+	if (bufferType == BufferType::Constant) { Stride = CalcConstantBufferByteSize(stride); }
 	ByteSize = Stride * Count;
-	if (bufferType == BufferType::Constant) { CalcConstantBufferByteSize(ByteSize); }
 }
 GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count)
 {
@@ -88,7 +88,11 @@ GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const siz
 }
 GPUBufferMetaData GPUBufferMetaData::DefaultBuffer(const size_t stride, const size_t count)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, MemoryHeap::Default, BufferType::Constant);
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, MemoryHeap::Default, BufferType::Default);
+}
+GPUBufferMetaData GPUBufferMetaData::ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state)
+{
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, state, heap, BufferType::Constant);
 }
 GPUBufferMetaData GPUBufferMetaData::VertexBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state)
 {
@@ -299,7 +303,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencil(const size_t width, const si
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
 	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil;
-	metaData.State            = ResourceState::GeneralRead;
+	metaData.State            = ResourceState::DepthStencil;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
 	metaData.HeapType         = core::MemoryHeap::Default;
@@ -317,7 +321,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
 	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil;
-	metaData.State            = ResourceState::GeneralRead;
+	metaData.State            = ResourceState::DepthStencil;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
 	metaData.HeapType         = core::MemoryHeap::Default;
@@ -327,3 +331,28 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 	return metaData;
 }
 #pragma endregion GPUTexture
+#pragma region BlendProperty
+BlendProperty BlendProperty::NoColorWrite()
+{
+	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
+		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
+		BlendFactor::One, BlendFactor::Source_Alpha,
+		ColorMask::None, false);
+}
+
+BlendProperty BlendProperty::OverWrite()
+{
+	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
+		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
+		BlendFactor::One, BlendFactor::Source_Alpha,
+		ColorMask::All, false);
+}
+
+BlendProperty BlendProperty::AlphaBlend()
+{
+	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
+		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
+		BlendFactor::One, BlendFactor::Source_Alpha,
+		ColorMask::All, true);
+}
+#pragma endregion BlendProperty

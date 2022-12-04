@@ -39,7 +39,7 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Allocate view. Return descriptor index*/
-		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout);
+		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;
 		/* @brief : Allocate max view count size heap*/
 		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
 		/* @brief : Allocate max view count size heap*/

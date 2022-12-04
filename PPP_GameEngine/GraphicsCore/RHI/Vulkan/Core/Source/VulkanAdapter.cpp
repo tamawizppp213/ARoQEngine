@@ -29,6 +29,12 @@ RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& i
 	_name     = prop.deviceName;
 	_venderID = prop.vendorID;
 	_deviceID = prop.deviceID;
+	/*-------------------------------------------------------------------
+	-                  Get property and memory infomation
+	---------------------------------------------------------------------*/
+	VkPhysicalDeviceMemoryProperties memoryProperties;
+	vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memoryProperties);
+	_isDiscreteGPU = memoryProperties.memoryHeapCount > 1;
 
 }
 RHIDisplayAdapter::~RHIDisplayAdapter()

@@ -1,17 +1,17 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   Sprite.hpp
-///             @brief  Sprite
+///             @file   Image.hpp
+///             @brief  Image
 ///             @author Toide Yutaro
-///             @date   2022_04_16
+///             @date   2022_11_14
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SPRITE_HPP
-#define SPRITE_HPP
+#ifndef IMAGE_HPP
+#define IMAGE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12VertexTypes.hpp"
+#include "GameUtility/Math/Include/GMVertex.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -24,10 +24,10 @@ namespace ui
 {
 
 	/****************************************************************************
-	*				  			Sprite
+	*				  			Image
 	*************************************************************************//**
-	*  @class     Sprite
-	*  @brief     2D Sprite
+	*  @class     Image
+	*  @brief     UI Image
 	*****************************************************************************/
 	class Image
 	{
@@ -52,7 +52,7 @@ namespace ui
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		inline const VertexPositionNormalColorTexture* GetVertices() const { return _vertices; }
+		const gm::Vertex* GetVertices() const { return _vertices; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -71,7 +71,7 @@ namespace ui
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VertexPositionNormalColorTexture _vertices[4] = {};
+		gm::Vertex _vertices[4] = {};
 		gm::Float2 _size;
 	};
 }

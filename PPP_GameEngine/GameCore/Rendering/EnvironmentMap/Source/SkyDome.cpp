@@ -9,84 +9,84 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
-#include "GraphicsCore/RHI/DirectX12/SimpleInclude/IncludeGraphicsPSO.hpp"
-#include "GameCore/Core/Include/ResourceManager.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
-#include <d3dcompiler.h>
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
+#include "GameCore/Rendering/Model/Include/PrimitiveMesh.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-using namespace directX12;
-namespace
-{
-	constexpr float SKY_SCALE = 5000.0f;
-	RootSignature         s_RootSignature;
-	GraphicsPipelineState s_PipelineState;
-}
+using namespace gc;
+using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 SkyDome::SkyDome() {};
-SkyDome::~SkyDome() {};
-void SkyDome::Initialze(const std::wstring& texturePath, const std::wstring& addName)
+SkyDome::~SkyDome()
+{
+	_skyObject.reset();
+	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
+	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
+	_resourceViews.clear(); _resourceViews.shrink_to_fit();
+	_resourceLayout.reset();
+	_pipeline.reset();
+}
+#pragma region Constructor and Destructor 
+SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cubeMapPath, const std::wstring& addName)
+	:_engine(engine)
 {
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
 	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"Skybox::";
+
 	/*-------------------------------------------------------------------
 	-           Load Texture
 	---------------------------------------------------------------------*/
-	_texture = ResourceManager::Instance().LoadTexture(texturePath, TextureType::TextureCube);
+	const auto frameIndex  = _engine->GetCurrentFrameIndex();
+	const auto device      = _engine->GetDevice();
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto texture     = device->CreateTextureEmpty();
+	texture->Load(cubeMapPath, commandList);
+	texture->SetName(cubeMapPath);
 	/*-------------------------------------------------------------------
 	-           Prepare Pipeline
 	---------------------------------------------------------------------*/
 	PrepareVertexAndIndexBuffer(name);
-	PrepareSkyObject(addName);
-	PrepareRootSignature(addName);
-	PreparePipelineState(addName);
-
+	PrepareSkyObject(name);
+	PreparePipelineState(name);
+	PrepareResourceView(texture);
 }
+#pragma endregion Constructor and Destructor
 
-void SkyDome::Draw(SkyDome::SceneGPUAddress scene) 
+void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView) 
 {
-	auto& engine       = GraphicsCoreEngine::Instance();
-	auto  context      = engine.GetCommandContext();
-	int   currentFrame = engine.GetGraphicsDevice()->GetCurrentFrameIndex();
+	const auto currentFrame = _engine->GetCurrentFrameIndex();
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, currentFrame);
+	
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
 	---------------------------------------------------------------------*/
-	context->SetRootSignature(s_RootSignature.GetSignature());
-	context->SetPipelineState(s_PipelineState.GetPipelineState());
-	context->SetPrimitiveTopology(rhi::core::PrimitiveTopology::TriangleList);
-	context->SetVertexBuffer(_meshBuffer[currentFrame].VertexBufferView());
-	context->SetIndexBuffer (_meshBuffer[currentFrame].IndexBufferView());
-	context->SetGraphicsConstantBufferView(0, scene);
-	context->SetGraphicsConstantBufferView(1, _skyObject->GetGPUVirtualAddress());
-	context->SetGraphicsRootDescriptorTable(2, engine.GetGraphicsDevice()->GetGPUResourceView(HeapFlag::SRV, _texture.TextureID));
-	context->DrawIndexedInstanced(_meshBuffer[currentFrame].IndexBuffer->GetElementCount(),1);
+	commandList->SetResourceLayout(_resourceLayout);
+	commandList->SetGraphicsPipeline(_pipeline);
+	commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
+	commandList->SetIndexBuffer (_indexBuffers[currentFrame]);
+	for (size_t i = 0; i < _resourceViews.size(); ++i) 
+	{
+		commandList->SetDescriptorHeap(_resourceViews[i].second->GetHeap());
+		_resourceViews[i].second->Bind(commandList, _resourceViews[i].first);
+	}
+	cameraResourceView->Bind(commandList, 0);
+	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexBuffers[currentFrame]->GetElementCount()), 1);
+}
 
-}
-/****************************************************************************
-*							Finalize
-*************************************************************************//**
-*  @fn        void SkyDome::Finalize()
-*  @brief     Finalize
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void SkyDome::Finalize()
-{
-	_meshBuffer.reset();
-	_skyObject.reset();
-}
 
 #pragma region Private Function
 /****************************************************************************
@@ -99,38 +99,46 @@ void SkyDome::Finalize()
 *****************************************************************************/
 void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 {
+	const auto frameIndex  = _engine->GetCurrentFrameIndex();
+	const auto device      = _engine->GetDevice();
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy, frameIndex); 
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
-	MeshData sphereMesh = GeometryGenerator::Sphere(0.5f, 20, 20, false);    // Sphere mesh
+	MeshData sphereMesh = PrimitiveMeshGenerator::Sphere(0.5f, 20, 20, false);    // Sphere mesh
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/
-	auto& engine       = GraphicsCoreEngine::Instance();
-	int totalFrameSize = engine.GetFrameBufferCount();
-	_meshBuffer = std::make_unique<MeshBuffer[]>(totalFrameSize);
-	for (int i = 0; i < totalFrameSize; ++i)
+	const auto frameCount = device->GetFrameCount();
+	// prepare frame count buffer
+	_vertexBuffers.resize(frameCount);
+	_indexBuffers .resize(frameCount);
+	
+	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
-		auto& meshBuffer = _meshBuffer[i];
 		/*-------------------------------------------------------------------
-		-            Calcurate Buffer Size
+		-            Set up
 		---------------------------------------------------------------------*/
-		auto vertexByteSize = sizeof(VertexPositionNormalColorTexture);       
-		auto indexByteSize  = sizeof(UINT32);                                // 32 byte index
-		auto vertexCount    = sphereMesh.Vertices.size();
-		auto indexCount     = sphereMesh.Indices.size();
-		/*-------------------------------------------------------------------
-		-            Set Vertex Buffer and Index Buffer
-		---------------------------------------------------------------------*/
-		meshBuffer.VertexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(vertexByteSize), static_cast<UINT>(vertexCount), false, addName + L"VertexBuffer");
-		meshBuffer.VertexBuffer->CopyStart();
-		meshBuffer.VertexBuffer->CopyTotalData(sphereMesh.Vertices.data(), static_cast<int>(vertexCount));
-		meshBuffer.VertexBuffer->CopyEnd();
+		const auto vertexByteSize = sizeof(Vertex);       
+		const auto indexByteSize  = sizeof(std::uint32_t);                                // 4 byte index
+		const auto vertexCount    = sphereMesh.Vertices.size();
+		const auto indexCount     = sphereMesh.Indices.size();
 
-		meshBuffer.IndexBuffer  = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(indexByteSize), static_cast<UINT>(indexCount), false, addName + L"IndexBuffer");
-		meshBuffer.IndexBuffer->CopyStart();
-		meshBuffer.IndexBuffer->CopyTotalData(sphereMesh.Indices.data(), static_cast<int>(indexCount));
-		meshBuffer.IndexBuffer->CopyEnd();
+		/*-------------------------------------------------------------------
+		-            Set Vertex Buffer 
+		---------------------------------------------------------------------*/
+		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
+		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
+		_vertexBuffers[i]->SetName(addName + L"VB");
+		_vertexBuffers[i]->Pack(sphereMesh.Vertices.data()); // Map
+
+		/*-------------------------------------------------------------------
+		-            Set Index Buffer
+		---------------------------------------------------------------------*/
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
+		_indexBuffers[i]->SetName(addName + L"IB");
+		_indexBuffers[i]->Pack(sphereMesh.Indices.data(), commandList);
 
 	}
 }
@@ -144,42 +152,25 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 *****************************************************************************/
 void SkyDome::PrepareSkyObject(const std::wstring& addName)
 {
-	auto& engine = GraphicsCoreEngine::Instance();
-	auto skyObject = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(sizeof(gm::Matrix4)), 1, true, addName + L"ObjectConstant");
+	const auto frameIndex  = _engine->GetCurrentFrameIndex();
+	const auto device      = _engine->GetDevice();
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy, frameIndex);
+
 	/*-------------------------------------------------------------------
 	-			Set Skydata
 	---------------------------------------------------------------------*/
 	Matrix4 skyData; // sphere
 	skyData = gm::Scaling(SKY_SCALE, SKY_SCALE, SKY_SCALE).ToFloat4x4();
+
 	/*-------------------------------------------------------------------
 	-			Copy Sky object data
 	---------------------------------------------------------------------*/
-	skyObject->CopyStart();
-	skyObject->CopyData(0, &skyData);
-	skyObject->CopyEnd();
-	/*-------------------------------------------------------------------
-	-			Move sky object data
-	---------------------------------------------------------------------*/
-	_skyObject = std::move(skyObject);
+	const auto cbMetaData = GPUBufferMetaData::ConstantBuffer(sizeof(Matrix4), 1, MemoryHeap::Upload, ResourceState::Common);
+	_skyObject = device->CreateBuffer(cbMetaData);
+	_skyObject->SetName(addName + L"CB");
+	_skyObject->Pack(&skyData, commandList);
+}
 
-}
-/****************************************************************************
-*							PrepareRootSignature
-*************************************************************************//**
-*  @fn        void Skybox::PrepareRootSignature(const std::wstring& addName)
-*  @brief     Build World Matrix Infomation
-*  @param[in] std::wstring& addName
-*  @return 　　void
-*****************************************************************************/
-void SkyDome::PrepareRootSignature(const std::wstring& addName)
-{
-	s_RootSignature.Reset(3, 1);
-	s_RootSignature.SetStaticSampler(SamplerType::SamplerLinearWrap);
-	s_RootSignature[0].InitAsCBV(0);                                               // Scene Constants
-	s_RootSignature[1].InitAsCBV(1);                                               // World Matrix
-	s_RootSignature[2].InitAsDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,0,1); // TextureCube Cubemap
-	s_RootSignature.CompleteSetting(GraphicsCoreEngine::Instance().GetDevice(), addName + L"RootSignature");
-}
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
@@ -190,24 +181,57 @@ void SkyDome::PrepareRootSignature(const std::wstring& addName)
 *****************************************************************************/
 void SkyDome::PreparePipelineState(const std::wstring& addName)
 {
-	auto device = GraphicsCoreEngine::Instance().GetGraphicsDevice();
-	RASTERIZER_DESC rasterizerState = RASTERIZER_DESC(D3D12_DEFAULT);
-	rasterizerState.CullMode        = D3D12_CULL_MODE_NONE;               // All culling 
+	const auto device = _engine->GetDevice();
+	const auto factory = device->CreatePipelineFactory();
 
-	DEPTH_STENCIL_DESC depthStencil = DEPTH_STENCIL_DESC(D3D12_DEFAULT);  
-	depthStencil.DepthFunc          = D3D12_COMPARISON_FUNC_LESS_EQUAL;
+	/*-------------------------------------------------------------------
+	-             Setup resource layout elements
+	---------------------------------------------------------------------*/
+	_resourceLayout = device->CreateResourceLayout
+	(
+		{
+			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // scene constants
+			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // sky object
+			ResourceLayoutElement(DescriptorHeapType::SRV, 0)  // cubemap
+		},
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)), 0) }
+	);
 
-	BlobComPtr vs = CompileShader(L"Shader\\EnvironmentMap\\ShaderSkybox.hlsl", L"VSMain", L"vs_6_4");
-	BlobComPtr ps = CompileShader(L"Shader\\EnvironmentMap\\ShaderSkybox.hlsl", L"PSMain", L"ps_6_4");
+	/*-------------------------------------------------------------------
+	-             Set up graphic pipeline state
+	---------------------------------------------------------------------*/
+	const auto vs = factory->CreateShaderState();
+	const auto ps = factory->CreateShaderState();
+	vs->Compile(ShaderType::Vertex, L"Shader\\EnvironmentMap\\ShaderSkybox.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
+	ps->Compile(ShaderType::Pixel , L"Shader\\EnvironmentMap\\ShaderSkybox.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
+
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::AlphaBlend()));
+	_pipeline->SetRasterizerState   (factory->CreateRasterizerState());
+	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
+	_pipeline->SetDepthStencilState (factory->CreateDepthStencilState());
+	_pipeline->SetVertexShader(vs);
+	_pipeline->SetPixelShader(ps);
+	_pipeline->CompleteSetting();
+	_pipeline->SetName(addName + L"PSO");
+}
+
+void SkyDome::PrepareResourceView(const std::shared_ptr<GPUTexture>& texture)
+{
+	const auto frameIndex  = _engine->GetCurrentFrameIndex();
+	const auto device      = _engine->GetDevice();
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
 	
-	s_PipelineState.SetGraphicsPipelineStateDescriptor(device->GetDefaultPSOConfig());
-	s_PipelineState.SetRasterizerState(rasterizerState);
-	s_PipelineState.SetInputLayouts(VertexPositionNormalColorTexture::InputLayout);
-	s_PipelineState.SetRootSignature(s_RootSignature);
-	s_PipelineState.SetDepthStencilState(depthStencil);
-	s_PipelineState.SetBlendState(GetBlendState(BlendStateType::OverWrite));
-	s_PipelineState.SetVertexShader(vs);
-	s_PipelineState.SetPixelShader (ps);
-	s_PipelineState.CompleteSetting(GraphicsCoreEngine::Instance().GetDevice(), addName + L"PipelineState");
+	/*-------------------------------------------------------------------
+	-           Prepare Resource View
+	---------------------------------------------------------------------*/
+	_resourceViews.resize(2);
+	// sky object
+	_resourceViews[0].first  = 1; // resource view array index (please see resource layout)
+	_resourceViews[0].second = device->CreateResourceView(ResourceViewType::ConstantBuffer, _skyObject, nullptr);
+
+	// cubemap
+	_resourceViews[1].first  = 2;
+	_resourceViews[1].second = device->CreateResourceView(ResourceViewType::Texture, texture, nullptr);
 }
 #pragma endregion Private Function

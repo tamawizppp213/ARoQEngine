@@ -30,6 +30,7 @@ RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& i
 	_name     = unicode::ToUtf8String(desc.Description);
 	_venderID = desc.VendorId;
 	_deviceID = desc.DeviceId; 
+	_isDiscreteGPU = desc.DedicatedVideoMemory != 0;
 }
 RHIDisplayAdapter::~RHIDisplayAdapter()
 {

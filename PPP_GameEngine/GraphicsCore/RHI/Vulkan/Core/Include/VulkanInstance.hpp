@@ -40,6 +40,8 @@ namespace rhi::vulkan
 		std::vector<std::shared_ptr<core::RHIDisplayAdapter>> EnumrateAdapters() override;
 		/*vulkan : dGPU (not : first select gpu) */
 		std::shared_ptr<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		/*vulkan : iGPU (not : first select gpu) */
+		std::shared_ptr<core::RHIDisplayAdapter> SearchMinimumPowerAdapter() override;
 		/* OutputDebugString : adapter list*/
 		void LogAdapters() override;
 		/****************************************************************************
@@ -58,6 +60,7 @@ namespace rhi::vulkan
 		**                Protected Function
 		*****************************************************************************/
 		bool CheckValidationLayerSupport(); // check enable cpu and gpu debugger
+		std::shared_ptr<core::RHIDisplayAdapter> SearchAdapter(const VkPhysicalDeviceType deviceType);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

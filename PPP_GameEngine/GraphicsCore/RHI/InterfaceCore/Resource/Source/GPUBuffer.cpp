@@ -36,3 +36,10 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBu
 	_metaData.Stride   = isConstantBuffer ? static_cast<size_t>(CalcConstantBufferByteSize(_metaData.Stride)) : _metaData.Stride;
 	_metaData.ByteSize = _metaData.Stride * _metaData.Count;
 }
+
+void GPUBuffer::Update(const void* data, const size_t dataLength)
+{
+	CopyStart();
+	CopyTotalData(data, dataLength, 0);
+	CopyEnd();
+}

@@ -11,20 +11,24 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Texture.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
 #include "Image.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
 #include <string>
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-//struct MeshBuffer;
-//class  UploadBuffer;
-namespace rhi::directX12
+class LowLevelGraphicsEngine;
+namespace rhi::core
 {
-	class  CommandContext;
+	class RHIDevice;
+	class RHICommandList;
+	class GPUBuffer;
+	class GPUGraphicsPipelineState;
+	class RHIResourceLayout;
+	class GPUResourceCache;
+	class GPUResourceView;
 }
 struct Texture;
 
@@ -39,19 +43,21 @@ namespace ui
 	*  @class     Sprite
 	*  @brief     2D Sprite
 	*****************************************************************************/
-	class UIRenderer
+	class UIRenderer : public NonCopyable
 	{
-		using SceneGPUAddress   = uint64_t;
-		using MeshBufferPtr     = std::unique_ptr<MeshBuffer[]>;
-		using CommandContextPtr = rhi::directX12::CommandContext*;
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using VertexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
+		using IndexBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
+		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
+		using ResourceViewPtr   = std::shared_ptr<rhi::core::GPUResourceView>;
+		using ImagePtr = std::shared_ptr<ui::Image>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void StartUp(const std::wstring& addName = L"");
-		void AddFrameObject(const std::vector<ui::Image>& images, const Texture& texture);
+		void AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view);
 		void Draw();
-		virtual void ShutDown();
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -59,32 +65,39 @@ namespace ui
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		UIRenderer() = default;
 		virtual ~UIRenderer();
-		UIRenderer(const UIRenderer&)            = delete;
-		UIRenderer& operator=(const UIRenderer&) = delete;
-		UIRenderer(UIRenderer&&)                 = default;
-		UIRenderer& operator=(UIRenderer&&)      = default;
+		
+		explicit UIRenderer(const LowLevelGraphicsEnginePtr& engine,
+			const std::wstring& addName = L"",
+			const std::uint32_t maxUICount = 1024);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareRootSignature(const std::wstring& name);
+		void PrepareMaxImageBuffer(const std::wstring& name);
 		void PreparePipelineState(const std::wstring& name);
-		void PrepareVertexAndIndexBuffer(const std::wstring& name);
+		void ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		MeshBufferPtr        _meshBuffer = nullptr;
-		CommandContextPtr    _context    = nullptr; 
-		std::vector<Texture> _textures;
-		int  _currentFrame     = 0;
-		int  _imageStackCount  = 0;
-		int  _drawCallNum      = 0;
-		bool _isFrameStart     = false;
-		bool _isFrameEnd       = true;
-		std::vector<int> _imageCountList;
+		LowLevelGraphicsEnginePtr _engine = nullptr;
+		// @brief : total rect vertex buffers (default : 1024 UI)
+		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		// @brief : total rect index buffers (default : 1024 UI)
+		std::vector<IndexBufferPtr>  _indexBuffers  = {};
+		// @brief : Pipeline state
+		PipelineStatePtr _pipeline = nullptr;
+		// @brief bind resource layout and view
+		ResourceLayoutPtr _resourceLayout = nullptr;
+		std::vector<ResourceViewPtr> _resourceViews = {};
+		/* @brief regist total image count per frame  */
+		std::uint32_t  _totalImageCount        = 0;
+		// @brief : call drawIndex command count per frame
+		std::uint32_t  _needCallDrawIndexCount = 0;
+		std::vector<std::uint32_t> _imageCountList;
+
 	private:
+		std::uint32_t _maxWritableUICount = 1024;
 		static constexpr int MAX_WRITABLE_UI_COUNT = 1024;
 	};
 }

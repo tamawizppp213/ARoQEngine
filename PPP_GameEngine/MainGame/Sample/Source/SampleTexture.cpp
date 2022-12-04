@@ -11,11 +11,15 @@
 #include "MainGame/Sample/Include/SampleTexture.hpp"
 #include "GameCore/Rendering/Sprite/Include/UIRenderer.hpp"
 #include "GameCore/Rendering/Sprite/Include/Image.hpp"
+#include "GameUtility/Base/Include/Screen.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace sample;
 using namespace ui;
+using namespace rhi;
+using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -51,6 +55,9 @@ void SampleTexture::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& en
 void SampleTexture::Update()
 {
 	Scene::Update();
+
+	_renderer->AddFrameObjects({ _image }, _resourceView);
+	_renderer->AddFrameObjects({ _miniImage }, _resourceCache->Load(L"Resources/Cubemap.jpg"));
 }
 /****************************************************************************
 *                       Draw
@@ -63,12 +70,14 @@ void SampleTexture::Update()
 void SampleTexture::Draw()
 {
 	_engine->BeginDrawFrame();
+	/*-------------------------------------------------------------------
+	-             Regist graphics pipeline command
+	---------------------------------------------------------------------*/
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	commandList->SetViewportAndScissor(
+		core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
 
-	std::vector<ui::Image> images;
-	images.push_back(*_image.get());
-
-	// Set Image 
-	_renderer->AddFrameObject(images, *_texture.get());
 	_renderer->Draw();
 
 	_engine->EndDrawFrame();
@@ -84,8 +93,8 @@ void SampleTexture::Draw()
 void SampleTexture::Terminate()
 {
 	_image.reset();
-	_texture.reset();
-	_renderer->ShutDown();
+	_resourceView.reset();
+	_resourceCache.reset();
 }
 #pragma endregion Public Function
 
@@ -100,17 +109,39 @@ void SampleTexture::Terminate()
 *****************************************************************************/
 void SampleTexture::LoadMaterials()
 {
+	/*-------------------------------------------------------------------
+	-             Open Copy CommandList
+	---------------------------------------------------------------------*/
+	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex());
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	copyCommandList    ->BeginRecording();
+	graphicsCommandList->BeginRecording();
+
+	/*-------------------------------------------------------------------
+	-             SetUp Resources
+	---------------------------------------------------------------------*/
 	// Create image sprite
-	_image = std::make_unique<Image>();
+	_image = std::make_shared<Image>();
 	_image->CreateInNDCSpace();
+	_miniImage = std::make_shared<Image>();
+	_miniImage->CreateInScreenSpace(gm::Float3(0, 0, 0), gm::Float2(600, 450));
 
 	// Create Texture
-	Texture texture =  _resourceManager.LoadTexture(L"Resources/BackGround.png", TextureType::Texture2D);
-	_texture = std::make_unique<Texture>(texture);
+	_resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
+	_resourceView  = _resourceCache->Load(L"Resources/BackGround2.png");
+	_resourceCache->Load(L"Resources/Cubemap.jpg");
 
 	// Create UI Renderer
-	_renderer = std::make_unique<ui::UIRenderer>();
-	_renderer->StartUp();
+	_renderer = std::make_unique<ui::UIRenderer>(_engine);
+
+	/*-------------------------------------------------------------------
+	-             Close Copy CommandList and Flush CommandQueue
+	---------------------------------------------------------------------*/
+	graphicsCommandList->EndRecording();
+	copyCommandList    ->EndRecording();
+
+	_engine->FlushCommandQueue(CommandListType::Graphics);
+	_engine->FlushCommandQueue(CommandListType::Copy);
 }
 /****************************************************************************
 *                       OnKeyboardInput

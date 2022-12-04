@@ -47,7 +47,7 @@ public:
 	**                Static Configuration
 	*****************************************************************************/
 	static constexpr std::uint32_t FRAME_BUFFER_COUNT = 3;
-	static constexpr std::uint32_t VSYNC = 0; // 0: don't wait, 1:wait(60fps)
+	static constexpr std::uint32_t VSYNC = 1; // 0: don't wait, 1:wait(60fps)
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
@@ -57,6 +57,7 @@ public:
 	void OnResize(const size_t newWidth, const size_t newHeight);
 	void ShutDown();
 
+	void FlushCommandQueue(const rhi::core::CommandListType type);
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
@@ -64,9 +65,13 @@ public:
 	std::shared_ptr<rhi::core::RHIDevice> GetDevice() const noexcept { return _device; }
 	/* @brief : CommandList (Regist GPU Commands) */
 	std::shared_ptr<rhi::core::RHICommandList> GetCommandList(const rhi::core::CommandListType type, const std::uint32_t frameIndex) const noexcept { return _commandLists.at(frameIndex).at(type); }
+	/* @brief : Default RenderPass*/
+	std::shared_ptr<rhi::core::RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
+	std::shared_ptr<rhi::core::RHIRenderPass> GetDrawContinueRenderPass() const noexcept { return _drawContinueRenderPass; }
+	std::shared_ptr<rhi::core::RHIFrameBuffer> GetFrameBuffer(const std::uint32_t frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
 	/* @brief : Return Current Frame Index*/
-	std::uint32_t   GetCurrentFrameIndex() const noexcept { return _currentFrameIndex; }
-
+	std::uint32_t   GetCurrentFrameIndex() const { return _currentFrameIndex; }
+	rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -91,8 +96,7 @@ protected:
 	/* @brief : Logical Device*/
 	std::shared_ptr<rhi::core::RHIDevice>  _device = nullptr;
 	/* @ brief : Command queue (graphics, compute, transfer)*/
-	std::shared_ptr<rhi::core::RHICommandQueue> _graphicsCommandQueue = nullptr;
-	std::shared_ptr<rhi::core::RHICommandQueue> _computeCommandQueue  = nullptr;
+	std::map<rhi::core::CommandListType, std::shared_ptr<rhi::core::RHICommandQueue>> _commandQueues;
 	/* @brief : Command List*/
 	std::vector<std::map<rhi::core::CommandListType, std::shared_ptr<rhi::core::RHICommandList>>> _commandLists;
 
@@ -103,7 +107,8 @@ protected:
 	/* @brief : Rendering swapchain*/
 	std::shared_ptr<rhi::core::RHISwapchain> _swapchain = nullptr;
 	/* @brief : Default rendering pass*/
-	std::vector<std::shared_ptr<rhi::core::RHIRenderPass>> _renderPasses = { nullptr }; // color only
+	std::shared_ptr<rhi::core::RHIRenderPass> _renderPass = { nullptr }; 
+	std::shared_ptr<rhi::core::RHIRenderPass> _drawContinueRenderPass = nullptr;
 	std::vector<std::shared_ptr<rhi::core::RHIFrameBuffer>> _frameBuffers = { nullptr };
 	/* @brief : current frame index*/
 	std::uint32_t _currentFrameIndex = 0;
@@ -115,7 +120,7 @@ protected:
 	bool _useHDR             = false;
 	bool _useRayTracing      = true;
 	rhi::core::PixelFormat _pixelFormat        = rhi::core::PixelFormat::R8G8B8A8_UNORM;
-	rhi::core::PixelFormat _depthStencilFormat = rhi::core::PixelFormat::D24_UNORM_S8_UINT;
+	rhi::core::PixelFormat _depthStencilFormat = rhi::core::PixelFormat::D32_FLOAT;
 		
 	// shutdown check
 	bool _hasCalledShutDown = false;

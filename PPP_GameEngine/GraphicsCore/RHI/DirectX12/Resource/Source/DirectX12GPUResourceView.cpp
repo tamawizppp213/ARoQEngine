@@ -14,6 +14,7 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -55,6 +56,27 @@ GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device,
 	if (_texture) { CreateView(heap); }
 }
 #pragma endregion Constructor and Destructor
+#pragma region Bind Function
+void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
+{
+	/*-------------------------------------------------------------------
+	-             Set Descirptor Table
+	---------------------------------------------------------------------*/
+	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList)->GetCommandList();
+	if (commandList->GetType() == core::CommandListType::Graphics)
+	{
+		dxCommandList->SetGraphicsRootDescriptorTable(index, GetGPUHandler());
+	}
+	else if (commandList->GetType() == core::CommandListType::Compute)
+	{
+		dxCommandList->SetComputeRootDescriptorTable(index, GetGPUHandler());
+	}
+	else
+	{
+		throw std::runtime_error("failed to bind root descriptor table");
+	}
+}
+#pragma endregion Bind Function
 #pragma region Setup view
 void GPUResourceView::CreateView(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
 {
@@ -119,6 +141,7 @@ void GPUResourceView::CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHe
 				resourceViewDesc.Texture2D.MostDetailedMip     = 0;
 				resourceViewDesc.Texture2D.PlaneSlice          = 0;
 				resourceViewDesc.Texture2D.ResourceMinLODClamp = 0;
+
 				break;
 			}
 			case core::ResourceType::Texture3D:
@@ -241,17 +264,19 @@ void GPUResourceView::CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHe
 void GPUResourceView::CreateRAS(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
 {
 	if (!_buffer) { return; }
-
+	const auto dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
+	const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_buffer);
+	/*-------------------------------------------------------------------
+	-             Set up resource view descriptor
+	---------------------------------------------------------------------*/
 	D3D12_SHADER_RESOURCE_VIEW_DESC resourceViewDesc = {};
 	resourceViewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	resourceViewDesc.ViewDimension           = D3D12_SRV_DIMENSION_RAYTRACING_ACCELERATION_STRUCTURE;
-	resourceViewDesc.RaytracingAccelerationStructure.Location = NULL;
+	resourceViewDesc.RaytracingAccelerationStructure.Location = dxBuffer->GetResource()->GetGPUVirtualAddress(); // tras—p‚Ìbuffer
 
-	DeviceComPtr  dxDevice     = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
 	std::uint32_t descriptorID = heap->Allocate(core::DescriptorHeapType::SRV);
-	const auto resource        = std::static_pointer_cast<directX12::GPUBuffer>(_buffer)->GetResourcePtr();
-	dxDevice->CreateShaderResourceView(
-		resource, &resourceViewDesc, heap->GetCPUDescHandler(core::DescriptorHeapType::SRV, descriptorID));
+	dxDevice->CreateShaderResourceView( dxBuffer->GetResourcePtr(), &resourceViewDesc, 
+		heap->GetCPUDescHandler(core::DescriptorHeapType::SRV, descriptorID));
 
 }
 /****************************************************************************
@@ -560,10 +585,11 @@ void GPUResourceView::CreateCBV(const std::shared_ptr<directX12::RHIDescriptorHe
 	if (_buffer)
 	{
 		DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
+		const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_buffer);
 
 		// Set up constant buffer view descriptor
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
-		desc.BufferLocation = 0;
+		desc.BufferLocation = dxBuffer->GetResource()->GetGPUVirtualAddress();
 		desc.SizeInBytes    = static_cast<UINT>(_buffer->GetTotalByteSize());
 
 		// 256 alignment check

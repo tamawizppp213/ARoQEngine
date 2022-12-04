@@ -13,8 +13,12 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanRenderPass.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFrameBuffer.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanResourceLayout.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDescriptorHeap.hpp"
+#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUPipelineState.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
+#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUBuffer.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -42,6 +46,7 @@ RHICommandList::RHICommandList(const std::shared_ptr<core::RHIDevice>& device, c
 	{
 		throw std::runtime_error("failed to allocate command buffer (primary)");
 	}
+	_commandListType = _commandAllocator->GetCommandListType();
 }
 
 RHICommandList::~RHICommandList()
@@ -82,8 +87,8 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 	/*-------------------------------------------------------------------
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
-	std::vector<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
-	TransitionResourceStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().data(), states.data());
+	//std::vector<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
+	//TransitionResourceStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().data(), states.data());
 
 	/*-------------------------------------------------------------------
 	-               Set clear values
@@ -114,12 +119,123 @@ void RHICommandList::EndRenderPass()
 	/*-------------------------------------------------------------------
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
-	std::vector<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
-	TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
+	//std::vector<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
+	//TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
 }
 #pragma endregion SetUp Draw Frame
-#pragma region GPU Command 
+#pragma region GPU Command
+/****************************************************************************
+*                       SetViewport
+*************************************************************************//**
+*  @fn        void rhi::vulkan::RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
+*  @brief     Regist multi viewport to command list
+*  @param[in] const core::Viewport view port
+*  @param[in] std::uint32_t viewport count
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
+{
+	std::vector<VkViewport> v(numViewport);
+	for (std::uint32_t i = 0; i < numViewport; ++i)
+	{
+		v[i].x        = viewport->TopLeftX;
+		v[i].y        = viewport->TopLeftY;
+		v[i].width    = viewport->Width;
+		v[i].height   = viewport->Height;
+		v[i].maxDepth = viewport->MaxDepth;
+		v[i].minDepth = viewport->MinDepth;
+ 	}
+	vkCmdSetViewport(_commandBuffer, 0, numViewport, v.data());
+}
+/****************************************************************************
+*                       SetScissorRect
+*************************************************************************//**
+*  @fn        void RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
+*  @brief     Regist multi scissorRect to command list
+*  @param[in] const core::ScissorRect*
+*  @param[in] std::uint32_t numRect
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
+{
+	std::vector<VkRect2D> r(numRect);
+	for (UINT i = 0; i < numRect; ++i)
+	{
+		r[i].offset.x      = rect->Left;
+		r[i].offset.y      = rect->Top;
+		r[i].extent.width  = rect->Right;
+		r[i].extent.height = rect->Bottom;
+	}
+	vkCmdSetScissor(_commandBuffer, 0, numRect, r.data());
+}
+/****************************************************************************
+*                       SetViewportAndScissor
+*************************************************************************//**
+*  @fn        void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect)
+*  @brief     Regist viewport and scissorRect to command list
+*  @param[in] const core::Viewport& viewport
+*  @param[in] const core::ScissorRect& rect
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect)
+{
+	VkViewport v = {};
+	v.x        = viewport.TopLeftX;
+	v.y        = viewport.TopLeftY;
+	v.width    = viewport.Width;
+	v.height   = viewport.Height;
+	v.maxDepth = viewport.MaxDepth;
+	v.minDepth = viewport.MinDepth;
 
+	VkRect2D r = {};
+	r.offset.x      = rect.Left;
+	r.extent.width  = rect.Right;
+	r.extent.height = rect.Bottom;
+	r.offset.y      = rect.Top;
+
+	vkCmdSetViewport(_commandBuffer, 0, 1, &v);
+	vkCmdSetScissor (_commandBuffer, 0, 1, &r);
+}
+
+#pragma region Graphics Command 
+void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology)
+{
+	vkCmdSetPrimitiveTopology(_commandBuffer, EnumConverter::Convert(topology));
+}
+void RHICommandList::SetResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+{
+	_resourceLayout = std::static_pointer_cast<vulkan::RHIResourceLayout>(resourceLayout);
+}
+void RHICommandList::SetGraphicsPipeline(const std::shared_ptr<core::GPUGraphicsPipelineState>& pipelineState)
+{
+	vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, std::static_pointer_cast<vulkan::GPUGraphicsPipelineState>(pipelineState)->GetPipeline());
+}
+
+void RHICommandList::SetVertexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer)
+{
+	auto vkBuffer = std::static_pointer_cast<vulkan::GPUBuffer>(buffer)->GetBuffer();
+	VkDeviceSize offsets[] = { 0 };
+	vkCmdBindVertexBuffers(_commandBuffer, 0, 1, &vkBuffer, offsets);
+}
+void RHICommandList::SetVertexBuffers(const std::vector<std::shared_ptr<core::GPUBuffer>>& buffers, const size_t startSlot)
+{
+	auto vkBuffers = std::vector<VkBuffer>(buffers.size());
+	auto offsets   = std::vector<VkDeviceSize>(buffers.size(), 0);
+
+	for (size_t i = 0; i < vkBuffers.size(); ++i)
+	{
+		vkBuffers[i] = std::static_pointer_cast<vulkan::GPUBuffer>(buffers[i])->GetBuffer();
+	}
+
+	vkCmdBindVertexBuffers(_commandBuffer, static_cast<std::uint32_t>(startSlot), 
+		static_cast<std::uint32_t>(vkBuffers.size()), vkBuffers.data(), offsets.data());
+}
+void RHICommandList::SetIndexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType)
+{
+	const auto vkBuffer = std::static_pointer_cast<vulkan::GPUBuffer>(buffer)->GetBuffer();
+	vkCmdBindIndexBuffer(_commandBuffer, vkBuffer, 0, EnumConverter::Convert(indexType));
+}
+#pragma endregion Graphics Command
 #pragma region TransitionResourceLayout
 void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after)
 {

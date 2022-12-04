@@ -40,6 +40,16 @@ VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 			throw std::runtime_error("not supported Pixel Format type (vulkan api)");
 	}
 }
+VkIndexType EnumConverter::Convert(const rhi::core::IndexType indexFormat)
+{
+	switch (indexFormat)
+	{
+		case core::IndexType::UInt32: return VkIndexType::VK_INDEX_TYPE_UINT32;
+		case core::IndexType::UInt16: return VkIndexType::VK_INDEX_TYPE_UINT16;
+		default:
+			throw std::runtime_error("not supported Index Format type (vulkan api)");
+	}
+}
 #pragma region Shader Stage
 VkShaderStageFlagBits  EnumConverter::Convert(const rhi::core::ShaderType type)
 {
@@ -103,7 +113,7 @@ VkSamplerAddressMode EnumConverter::Convert(const rhi::core::SamplerAddressMode 
 		case core::SamplerAddressMode::Wrap   : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		case core::SamplerAddressMode::Mirror : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
 		case core::SamplerAddressMode::Clamp  : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-		case core::SamplerAddressMode::Boarder: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		case core::SamplerAddressMode::Border: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 		default:
 			throw std::runtime_error("Not support texture addressing mode (vulkan api)");
 	}
@@ -284,6 +294,18 @@ VkPrimitiveTopology EnumConverter::Convert(const rhi::core::PrimitiveTopology pr
 		case core::PrimitiveTopology::TriangleStrip: return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 		default:
 			throw std::runtime_error("not supported primitive topology type (vulkan api) ");
+	}
+}
+VkFormat EnumConverter::Convert(const rhi::core::InputFormat inputFormat)
+{
+	switch (inputFormat)
+	{
+		case core::InputFormat::R32G32_FLOAT      : return VkFormat::VK_FORMAT_R32G32_SFLOAT;
+		case core::InputFormat::R32G32B32_FLOAT   : return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
+		case core::InputFormat::R32G32B32A32_FLOAT: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+		case core::InputFormat::R32_FLOAT         : return VkFormat::VK_FORMAT_R32_SFLOAT;
+		default:
+			throw std::runtime_error("not supported input layout format type (vulkan api)");
 	}
 }
 #pragma endregion      Input Layout
@@ -476,7 +498,7 @@ VkImageLayout EnumConverter::Convert(const rhi::core::ResourceState layout)
 		case core::ResourceState::GeneralRead    : return VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
 		case core::ResourceState::UnorderedAccess: return VkImageLayout::VK_IMAGE_LAYOUT_GENERAL;
 		case core::ResourceState::RenderTarget   : return VkImageLayout::VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		case core::ResourceState::DepthStencil   : return VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		case core::ResourceState::DepthStencil   : return VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		case core::ResourceState::CopyDestination: return VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 		case core::ResourceState::CopySource     : return VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 		case core::ResourceState::Present        : return VkImageLayout::VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -486,3 +508,47 @@ VkImageLayout EnumConverter::Convert(const rhi::core::ResourceState layout)
 	}
 }
 #pragma endregion Render Pass
+#pragma region RayTracing
+VkGeometryFlagsKHR EnumConverter::Convert(const rhi::core::RayTracingGeometryFlags flags)
+{
+	switch (flags)
+	{
+		case core::RayTracingGeometryFlags::None: return 0;
+		case core::RayTracingGeometryFlags::Opaque: return VkGeometryFlagBitsKHR::VK_GEOMETRY_OPAQUE_BIT_KHR;
+		case core::RayTracingGeometryFlags::NoDuplicateAnyHitInvocation: return VkGeometryFlagBitsKHR::VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR;
+		default:
+		{
+			throw std::runtime_error("not support geometry flags (vulkan api)");
+		}
+	}
+}
+VkGeometryInstanceFlagBitsKHR EnumConverter::Convert(const rhi::core::RayTracingInstanceFlags flags)
+{
+	switch (flags)
+	{
+		case core::RayTracingInstanceFlags::None: return (VkGeometryInstanceFlagBitsKHR)0;
+		case core::RayTracingInstanceFlags::TriangleCullDisable          : return VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR;
+		case core::RayTracingInstanceFlags::TriangleFrontCounterClockwise: return VK_GEOMETRY_INSTANCE_TRIANGLE_FRONT_COUNTERCLOCKWISE_BIT_KHR;
+		case core::RayTracingInstanceFlags::ForceOpaque                  : return VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR;
+		case core::RayTracingInstanceFlags::ForceNonOpaque               : return VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR;
+		default:
+			throw std::runtime_error("not support instance flags (vulkan api)");
+
+	}
+}
+VkBuildAccelerationStructureFlagsKHR EnumConverter::Convert(const rhi::core::BuildAccelerationStructureFlags flags)
+{
+	switch (flags)
+	{
+		case core::BuildAccelerationStructureFlags::None: return (VkBuildAccelerationStructureFlagBitsKHR)0;
+		case core::BuildAccelerationStructureFlags::AllowUpdate: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR;
+		case core::BuildAccelerationStructureFlags::AllowCompaction: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR;
+		case core::BuildAccelerationStructureFlags::MinimizeMemory: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_KHR;
+		case core::BuildAccelerationStructureFlags::PreferFastBuild: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR;
+		case core::BuildAccelerationStructureFlags::PreferFastTrace: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR;
+		//case core::BuildAccelerationStructureFlags::PreformUpdate: return VkBuildAccelerationStructureFlagBitsKHR::VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_OPACITY_MICROMAP_DATA_UPDATE_EXT;
+		default:
+			throw std::runtime_error("not support build acceleration flags (vulkan api)");
+	}
+}
+#pragma endregion RayTracing

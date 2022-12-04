@@ -9,23 +9,21 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Effect/Include/Blur.hpp"
-#include "GraphicsCore/RHI/DirectX12/SimpleInclude/IncludeGraphicsPSO.hpp"
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Texture.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
 
+#include "GameUtility/Base/Include/Screen.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace
-{
-	RootSignature s_RootSignature;
-	ComputePipelineState s_xBlurPipeline;
-	ComputePipelineState s_yBlurPipeline;
-	ComputePipelineState s_finalBlurPipeline;
-	constexpr int WEIGHT_TABLE_SIZE = 8;
-	constexpr float DEFAULT_BLUR_SIGMA = 8.0f;
-}
+using namespace gc;
+using namespace rhi;
+using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
@@ -40,52 +38,50 @@ GaussianBlur::GaussianBlur()
 }
 GaussianBlur::~GaussianBlur()
 {
-
+	_finalBlurPipeline.reset();
+	_yBlurPipeline.reset();
+	_xBlurPipeline.reset();
+	for (auto& u : _unorderedResourceViews) { u.reset(); }
+	for (auto& s : _shaderResourceViews   ) { s.reset(); }
+	_textureSizeView.reset();
+	_blurParameterView.reset();
 }
-
-#pragma region Public Function
-/****************************************************************************
-*							StartOn
-*************************************************************************//**
-*  @fn        void GaussianBlur::OnResize(int newWidth, int newHeight)
-*  @brief     Start Blur
-*  @param[in] int width
-*  @param[in] int height
-*  @param[in] std::wstring& addName
-*  @return 　　void
-*****************************************************************************/
-void GaussianBlur::StartOn(int width, int height, const std::wstring& addName)
+GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName)
+	: _engine(engine)
 {
-	if (addName != L"") { _addName = addName; _addName += L"::"; }
-	_addName += L"GaussianBlur::";
-
-	for(auto& buffer : _colorBuffer)
-	{
-		buffer.Create(*GraphicsCoreEngine::Instance().GetGraphicsDevice(), width, height, 1, addName,
-			GraphicsCoreEngine::Instance().GetGraphicsDevice()->GetBackBufferRenderFormat());
-	}
-
-	PrepareBlurParameters();
-	PrepareTextureSizeBuffer(width, height);
-	PreparePipelineState();
+	/*-------------------------------------------------------------------
+	-            Set debug name
+	---------------------------------------------------------------------*/
+	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	name += L"GaussianBlur::";
+	_addName = name;
+	/*-------------------------------------------------------------------
+	-            Prepare resource
+	---------------------------------------------------------------------*/
+	PrepareBlurParameters(name);
+	PrepareTextureSizeBuffer(width, height, name);
+	PreparePipelineState(name);
+	PrepareResourceView();
 	SetUpWeightTable(DEFAULT_BLUR_SIGMA);
 }
+#pragma region Public Function
+
 /****************************************************************************
 *							OnResize
 *************************************************************************//**
 *  @fn        void GaussianBlur::OnResize(int newWidth, int newHeight)
 *  @brief     OnResize
-*  @param[in] int newWidth
-*  @param[in] int newHeight
+*  @param[in] std::uint32_t newWidth
+*  @param[in] std::uint32_t newHeight
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::OnResize(int newWidth, int newHeight)
+void GaussianBlur::OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight)
 {
-	_colorBuffer[0].OnResize(newWidth, newHeight, 1);
+	/*_colorBuffer[0].OnResize(newWidth, newHeight, 1);
 	_colorBuffer[1].OnResize(newWidth / 2, newHeight, 1);
 	_colorBuffer[2].OnResize(newWidth / 2, newHeight / 2, 1);
-	_colorBuffer[3].OnResize(newWidth, newHeight, 1);
-	PrepareTextureSizeBuffer(newWidth, newHeight);
+	_colorBuffer[3].OnResize(newWidth, newHeight, 1);*/
+	PrepareTextureSizeBuffer(newWidth, newHeight, _addName);
 }
 /****************************************************************************
 *							Draw
@@ -95,54 +91,57 @@ void GaussianBlur::OnResize(int newWidth, int newHeight)
 *  @param[in,out] GPUResource* renderTarget
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::Draw(rhi::directX12::GPUResource* renderTarget)
+void GaussianBlur::Draw()
 {
-	auto& engine       = GraphicsCoreEngine::Instance();
-	auto  context      = engine.GetCommandContext();
+	const auto device      = _engine->GetDevice();
+	const auto frameIndex  = _engine->GetCurrentFrameIndex();
+	const auto commandList = _engine->GetCommandList(CommandListType::Compute, frameIndex);
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	/*-------------------------------------------------------------------
+	-               Pause current render pass
+	---------------------------------------------------------------------*/
+	graphicsCommandList->EndRenderPass();
 
-	_colorBuffer[0].CopyFrom(context, renderTarget);
+	graphicsCommandList->CopyResource(_shaderResourceViews[0]->GetTexture() , _engine->GetFrameBuffer(frameIndex)->GetRenderTarget(0));
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
 	---------------------------------------------------------------------*/
-	context->SetComputeRootSignature(s_RootSignature.GetSignature());
-	context->SetComputeConstantBufferView(0, _blurParameter->GetGPUVirtualAddress());
-	context->SetComputeConstantBufferView(1, _textureSizeBuffer->GetGPUVirtualAddress());
+	commandList->SetDescriptorHeap(_blurParameterView->GetHeap());
+	commandList->SetComputeResourceLayout(_resourceLayout);
+	_blurParameterView->Bind(commandList, 0);
+	_textureSizeView  ->Bind(commandList, 1);
+	
 	/*-------------------------------------------------------------------
 	-               Execute XBlur Command
 	---------------------------------------------------------------------*/
-	context->SetPipelineState(s_xBlurPipeline.GetPipelineState());
-	context->SetComputeRootDescriptorTable(2, _colorBuffer[0].GetGPUSRV());
-	context->SetComputeRootDescriptorTable(3, _colorBuffer[1].GetGPUUAV());
-	context->Dispatch( _textureSize.XBlurTexture[0] / 16, _textureSize.XBlurTexture[1] / 16, 1);
+	_shaderResourceViews   [0]->Bind(commandList, 2);
+	_unorderedResourceViews[0]->Bind(commandList, 3);
+	commandList->SetComputePipeline(_xBlurPipeline);
+	commandList->Dispatch( _textureSize.XBlurTexture[0] / THREAD, _textureSize.XBlurTexture[1] / THREAD, 1);
+	
 	/*-------------------------------------------------------------------
 	-               Execute YBlur Command
 	---------------------------------------------------------------------*/
-	context->SetPipelineState(s_yBlurPipeline.GetPipelineState());
-	context->SetComputeRootDescriptorTable(2, _colorBuffer[1].GetGPUSRV());
-	context->SetComputeRootDescriptorTable(3, _colorBuffer[2].GetGPUUAV());
-	context->Dispatch( _textureSize.YBlurTexture[0] / 16, _textureSize.YBlurTexture[1] / 16, 1);
+	_shaderResourceViews   [1]->Bind(commandList, 2);
+	_unorderedResourceViews[1]->Bind(commandList, 3);
+	commandList->SetComputePipeline(_yBlurPipeline);
+	commandList->Dispatch( _textureSize.YBlurTexture[0] / THREAD, _textureSize.YBlurTexture[1] / THREAD, 1);
+	
 	/*-------------------------------------------------------------------
 	-               Execute FinalBlur Command
 	---------------------------------------------------------------------*/
-	context->SetPipelineState(s_finalBlurPipeline.GetPipelineState());
-	context->SetComputeRootDescriptorTable(2, _colorBuffer[2].GetGPUSRV());
-	context->SetComputeRootDescriptorTable(3, _colorBuffer[3].GetGPUUAV());
-	context->Dispatch(_textureSize.OriginalTexture[0] / 16, _textureSize.OriginalTexture[1] / 16, 1);
-	context->CopyBuffer(renderTarget, &_colorBuffer[3].GetColorBuffer()->Resource);
+	_shaderResourceViews   [2]->Bind(commandList, 2);
+	_unorderedResourceViews[2]->Bind(commandList, 3);
+	commandList->SetComputePipeline(_finalBlurPipeline);
+	commandList->Dispatch(_textureSize.OriginalTexture[0] / THREAD, _textureSize.OriginalTexture[1] / THREAD, 1);
+	graphicsCommandList->CopyResource(_engine->GetFrameBuffer(frameIndex)->GetRenderTarget(0), _unorderedResourceViews[2]->GetTexture());
+	
+	/*-------------------------------------------------------------------
+	-               Restart current render pass
+	---------------------------------------------------------------------*/
+	graphicsCommandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), _engine->GetFrameBuffer(frameIndex));
 }
-/****************************************************************************
-*							ShutDown
-*************************************************************************//**
-*  @fn        void GaussianBlur::ShutDown()
-*  @brief     Shut down
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GaussianBlur::ShutDown()
-{
-	_blurParameter.reset();
-	_textureSizeBuffer.reset();
-}
+
 /****************************************************************************
 *							SetUpWeightTable
 *************************************************************************//**
@@ -155,15 +154,15 @@ void GaussianBlur::SetUpWeightTable(float sigma)
 {
 	float weights[WEIGHT_TABLE_SIZE]={0.0f};
 	float total = 0.0f;
-	for (int i = 0; i < WEIGHT_TABLE_SIZE; ++i)
+	for (std::uint32_t i = 0; i < WEIGHT_TABLE_SIZE; ++i)
 	{
-		weights[i] = expf(-0.5f * (float)(i * i) / (sigma * sigma));
-		if (i == 0) { total += weights[i]; }
-		else { total += 2.0f * weights[i]; }
+		weights[i] = GaussianDistribution((float)i, sigma);
+		if (i == 0) { total +=        weights[i]; }
+		else        { total += 2.0f * weights[i]; }
 	}
 
 	// normalize
-	for (int i = 0; i < 8; ++i)
+	for (std::uint32_t i = 0; i < WEIGHT_TABLE_SIZE; ++i)
 	{
 		weights[i] /= total;
 	}
@@ -173,9 +172,7 @@ void GaussianBlur::SetUpWeightTable(float sigma)
 	parameter.Weights[0] = gm::Float4(weights[0], weights[1], weights[2], weights[3]);
 	parameter.Weights[1] = gm::Float4(weights[4], weights[5], weights[6], weights[7]);
 	
-	_blurParameter->CopyStart();
-	_blurParameter->CopyTotalData(&parameter, 1);
-	_blurParameter->CopyEnd();
+	_blurParameterView->GetBuffer()->Update(&parameter, 1);
 }
 #pragma endregion Public Function
 #pragma region Protected Function
@@ -184,35 +181,43 @@ void GaussianBlur::SetUpWeightTable(float sigma)
 *************************************************************************//**
 *  @fn        void GaussianBlur::PrepareBlurParameters()
 *  @brief     Prepare Blur Parameter
-*  @param[in] void
+*  @param[in] const std::wstring& name
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::PrepareBlurParameters()
+void GaussianBlur::PrepareBlurParameters(const std::wstring& name)
 {
-	auto& engine = GraphicsCoreEngine::Instance();
+	const auto device = _engine->GetDevice();
 
 	BlurParameter parameter;
 	parameter.Weights[0] = gm::Float4(0, 0, 0, 0);
 	parameter.Weights[1] = gm::Float4(0, 0, 0, 0);
 
-	_blurParameter = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(sizeof(BlurParameter)), 1, true, _addName + L"BlurParameter");
-	_blurParameter->CopyStart();
-	_blurParameter->CopyData(0, &parameter);
-	_blurParameter->CopyEnd();
+	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurParameter), 1, MemoryHeap::Upload, ResourceState::Common);
+	
+	const auto blurParameter = _engine->GetDevice()->CreateBuffer(metaData);
+	// Blur parameter gpu resource name 
+	blurParameter->SetName(name + L"BlurParameter");
+	// Pack blur paramter init data 
+	blurParameter->Pack(&parameter, nullptr);
+
+	_blurParameterView = device->CreateResourceView(ResourceViewType::ConstantBuffer, blurParameter, nullptr);
 }
 /****************************************************************************
 *							PrepareTextureSizeBuffer
 *************************************************************************//**
 *  @fn        void GaussianBlur::PrepareTextureSizeBuffer(int width, int height)
 *  @brief     Prepare Texture Size Buffer
-*  @param[in] int width
-*  @param[in] int height
+*  @param[in] std::uint32_t width
+*  @param[in] std::uint32_t height
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::PrepareTextureSizeBuffer(int width, int height)
+void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const std::wstring& name)
 {
-	auto& engine         = GraphicsCoreEngine::Instance();
-	auto parameterBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(sizeof(TextureSizeParameter)), 1, true, _addName + L"TextureSizeParameter");
+	const auto device   = _engine->GetDevice();
+	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(TextureSizeParameter), 1, MemoryHeap::Upload, ResourceState::Common);
+	
+	const auto textureSizeBuffer = _engine->GetDevice()->CreateBuffer(metaData);
+	textureSizeBuffer->SetName(name + L"TextureSize");
 	/*-------------------------------------------------------------------
 	-			Set Texture Size Parameter
 	---------------------------------------------------------------------*/
@@ -223,11 +228,8 @@ void GaussianBlur::PrepareTextureSizeBuffer(int width, int height)
 	_textureSize.YBlurTexture[0]    = width / 2;
 	_textureSize.YBlurTexture[1]    = height / 2;
 
-	parameterBuffer->CopyStart();
-	parameterBuffer->CopyData(0, &_textureSize);
-	parameterBuffer->CopyEnd();
-
-	_textureSizeBuffer = std::move(parameterBuffer);
+	textureSizeBuffer->Pack(&_textureSize, nullptr);
+	_textureSizeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, textureSizeBuffer, nullptr);
 }
 /****************************************************************************
 *							PreparePipelineState
@@ -237,37 +239,88 @@ void GaussianBlur::PrepareTextureSizeBuffer(int width, int height)
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::PreparePipelineState()
+void GaussianBlur::PreparePipelineState(const std::wstring& name)
 {
 	std::wstring defaultPath = L"Shader\\Effect\\ShaderGaussianBlur.hlsl";
-	auto device = GraphicsCoreEngine::Instance().GetDevice();
+	const auto device = _engine->GetDevice();
+	const auto factory = device->CreatePipelineFactory();
 	/*-------------------------------------------------------------------
-	-			Set Root signature
+	-             Setup resource layout elements
 	---------------------------------------------------------------------*/
-	s_RootSignature.Reset(4, 0);
-	s_RootSignature[0].InitAsCBV(0); // weight table
-	s_RootSignature[1].InitAsCBV(1); // texture size
-	s_RootSignature[2].InitAsDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1);
-	s_RootSignature[3].InitAsDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 0, 1);
-	s_RootSignature.CompleteSetting(device,_addName + L"RootSignature");
+	_resourceLayout = device->CreateResourceLayout
+	(
+		{
+			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // weight table 
+			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // texture size
+			ResourceLayoutElement(DescriptorHeapType::SRV, 0), // source texture
+			ResourceLayoutElement(DescriptorHeapType::UAV, 0), // dest texture
+		},
+		{ }
+	);
+
 	/*-------------------------------------------------------------------
 	-			Load Blob data
 	---------------------------------------------------------------------*/
-	BlobComPtr xBlurCS, yBlurCS, finalBlurCS;
-	xBlurCS     = CompileShader(defaultPath, L"XBlur", L"cs_6_4");
-	yBlurCS     = CompileShader(defaultPath, L"YBlur", L"cs_6_4");
-	finalBlurCS = CompileShader(defaultPath, L"FinalBlur", L"cs_6_4");
+	const auto xBlurCS = factory->CreateShaderState(); 
+	const auto yBlurCS = factory->CreateShaderState();
+	const auto finalBlurCS = factory->CreateShaderState();;
+	xBlurCS    ->Compile(ShaderType::Compute, defaultPath, L"XBlur", 6.4f, { L"Shader\\Core" });
+	yBlurCS    ->Compile(ShaderType::Compute, defaultPath, L"YBlur", 6.4f, { L"Shader\\Core" });
+	finalBlurCS->Compile(ShaderType::Compute, defaultPath, L"FinalBlur", 6.4f, { L"Shader\\Core" });
 	/*-------------------------------------------------------------------
 	-			Set pipeline state
 	---------------------------------------------------------------------*/
-	s_xBlurPipeline    .SetRootSignature(s_RootSignature);
-	s_yBlurPipeline    .SetRootSignature(s_RootSignature);
-	s_finalBlurPipeline.SetRootSignature(s_RootSignature);
-	s_xBlurPipeline    .SetComputeShader(xBlurCS);
-	s_yBlurPipeline    .SetComputeShader(yBlurCS);
-	s_finalBlurPipeline.SetComputeShader(finalBlurCS);
-	s_xBlurPipeline    .CompleteSetting(device, _addName + L"XBlurPSO");
-	s_yBlurPipeline    .CompleteSetting(device, _addName + L"YBlurPSO");
-	s_finalBlurPipeline.CompleteSetting(device, _addName + L"FinalBlurPSO");
+	_xBlurPipeline     = device->CreateComputePipelineState(_resourceLayout);
+	_yBlurPipeline     = device->CreateComputePipelineState(_resourceLayout);
+	_finalBlurPipeline = device->CreateComputePipelineState(_resourceLayout);
+
+	_xBlurPipeline    ->SetComputeShader(xBlurCS);
+	_yBlurPipeline    ->SetComputeShader(yBlurCS);
+	_finalBlurPipeline->SetComputeShader(finalBlurCS);
+	
+	_xBlurPipeline    ->CompleteSetting();
+	_yBlurPipeline    ->CompleteSetting();
+	_finalBlurPipeline->CompleteSetting();
+
+	_xBlurPipeline    ->SetName(name + L"XBlurPSO");
+	_yBlurPipeline    ->SetName(name + L"YBlurPSO");
+	_finalBlurPipeline->SetName(name + L"FinalBlurPSO");
+}
+/****************************************************************************
+*							PrepareResourceView
+*************************************************************************//**
+*  @fn        void GaussianBlur::PrepareResourceView()
+*  @brief     Prepare xblur, yblur, and finalblur resource views
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void GaussianBlur::PrepareResourceView()
+{
+	const auto device = _engine->GetDevice();
+	const auto format = _engine->GetBackBufferFormat();
+
+	//  xblur
+	{
+		const auto srcData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth()    , Screen::GetScreenHeight(), format);
+		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess);
+		const auto srcTexture  = device->CreateTexture(srcData);
+		const auto destTexture = device->CreateTexture(dstData);
+		_shaderResourceViews   [0] = device->CreateResourceView(ResourceViewType::Texture  , srcTexture , nullptr); // original texture
+		_unorderedResourceViews[0] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr); // x half texture uav
+		_shaderResourceViews   [1] = device->CreateResourceView(ResourceViewType::Texture  , destTexture, nullptr); // x half texture srv
+	}
+	// yblur
+	{
+		const auto dstData         = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight() / 2, format, 1, ResourceUsage::UnorderedAccess);
+		const auto destTexture     = device->CreateTexture(dstData);
+		_unorderedResourceViews[1] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr);
+		_shaderResourceViews[2]    = device->CreateResourceView(ResourceViewType::Texture  , destTexture, nullptr);
+	}
+	// finalblur
+	{
+		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth()    , Screen::GetScreenHeight()    , format, 1, ResourceUsage::UnorderedAccess);
+		const auto destTexture = device->CreateTexture(dstData);
+		_unorderedResourceViews[2] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr);
+	}
 }
 #pragma endregion Protected Function

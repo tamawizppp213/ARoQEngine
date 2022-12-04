@@ -20,9 +20,9 @@ cbuffer WeightTable : register(b0)
 }
 cbuffer TextureSize : register(b1)
 {
-    int2 OriginalTexture;
-    int2 XBlurTexture;
-    int2 YBlurTexture;
+    uint2 OriginalTexture;
+    uint2 XBlurTexture;
+    uint2 YBlurTexture;
 }
 Texture2D           inputImage : register(t0);
 RWTexture2D<float4> outputImage : register(u0);
@@ -102,8 +102,6 @@ void YBlur(uint3 id : SV_DispatchThreadID)
     color += GetPixelColor(basePosition.x, basePosition.y - 7) * Weights[1].w;
     
     outputImage[id.xy] = color;
-
-    
 }
 
 
@@ -119,7 +117,6 @@ void FinalBlur(uint3 id : SV_DispatchThreadID)
     color += GetPixelColor(basePosition.x + 1, basePosition.y + 1);
     color /= 4.0f;
     
-    uint pixelIndex = GetPixelIndexFromXYCoordinate(id.x, id.y, OriginalTexture.x);
     outputImage[id.xy] = color;
 }
 #endif

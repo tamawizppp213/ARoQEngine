@@ -60,7 +60,8 @@ namespace rhi::vulkan
 		std::shared_ptr<core::RHIRenderPass>           CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
 		std::shared_ptr<core::RHIRenderPass>           CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
 		std::shared_ptr<core::GPUGraphicsPipelineState> CreateGraphicPipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;  // after action: setting pipeline
-		std::shared_ptr<core::GPUComputePipelineState> CreateComputePipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
+		std::shared_ptr<core::GPUComputePipelineState> CreateComputePipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
+		//std::shared_ptr<core::GPURayTracingPipelineState>CreateRayTracingPipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override { return nullptr; };
 		std::shared_ptr<core::RHIResourceLayout>       CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt) override;
 		std::shared_ptr<core::GPUPipelineFactory>      CreatePipelineFactory() override;
 		std::shared_ptr<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) override;
@@ -68,6 +69,14 @@ namespace rhi::vulkan
 		std::shared_ptr<core::GPUSampler>              CreateSampler(const core::SamplerInfo& samplerInfo); // both
 		std::shared_ptr<core::GPUBuffer>               CreateBuffer(const core::GPUBufferMetaData& metaData) override;
 		std::shared_ptr<core::GPUTexture>              CreateTexture(const core::GPUTextureMetaData& metaData) override;
+		std::shared_ptr<core::GPUTexture>              CreateTextureEmpty() override;
+		std::shared_ptr<core::RayTracingGeometry>         CreateRayTracingGeometry(const core::RayTracingGeometryFlags flags, const std::shared_ptr<core::GPUBuffer>& vertexBuffer, const std::shared_ptr<core::GPUBuffer>& indexBuffer = nullptr) override;
+		std::shared_ptr<core::ASInstance>                       CreateASInstance(
+			const std::shared_ptr<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform,
+			const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex,
+			const std::uint32_t instanceMask = 0xFF, const core::RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) override;
+		std::shared_ptr<core::BLASBuffer>                 CreateRayTracingBLASBuffer(const std::vector<std::shared_ptr<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags) override;
+		std::shared_ptr<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<std::shared_ptr<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
 #pragma endregion Create Resource
 		size_t GetQueueFamilyIndex(const core::CommandListType type) { return _commandQueueInfo[type].QueueFamilyIndex; }
 		/****************************************************************************
@@ -80,6 +89,7 @@ namespace rhi::vulkan
 		std::shared_ptr<core::RHICommandQueue> GetCommandQueue(const core::CommandListType commandListType) override;
 		std::shared_ptr<core::RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount = 0) override;
 		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
+		std::uint64_t GetDeviceAddress(VkBuffer buffer);
 		/*-------------------------------------------------------------------
 		-               Device Support Check
 		---------------------------------------------------------------------*/

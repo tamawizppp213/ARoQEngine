@@ -11,14 +11,16 @@
 #include "MainGame/Sample/Include/SampleSky.hpp"
 #include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
 #include "GameCore/Core/Include/Camera.hpp"
+#include "GameUtility/Base/Include/Screen.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace sample;
-namespace
-{
-}
+using namespace rhi;
+using namespace rhi::core;
+using namespace gc;
+
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,7 +44,6 @@ SampleSky::~SampleSky()
 void SampleSky::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
-	PrepareCamera();
 }
 /****************************************************************************
 *                       Update
@@ -56,6 +57,7 @@ void SampleSky::Update()
 {
 	Scene::Update();
 	_camera->Update(_gameTimer);
+	
 }
 /****************************************************************************
 *                       Draw
@@ -68,7 +70,15 @@ void SampleSky::Update()
 void SampleSky::Draw()
 {
 	_engine->BeginDrawFrame();
-	_skybox->Draw(_camera->GetSceneGPUAddress());
+	/*-------------------------------------------------------------------
+	-             Regist graphics pipeline command
+	---------------------------------------------------------------------*/
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	commandList->SetViewportAndScissor(
+		core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
+
+	_skybox->Draw(_camera->GetResourceView());
 	_engine->EndDrawFrame();
 }
 /****************************************************************************
@@ -81,29 +91,12 @@ void SampleSky::Draw()
 *****************************************************************************/
 void SampleSky::Terminate()
 {
-	_skybox->Finalize();
+	
 }
 #pragma endregion Public Function
 
 #pragma region Protected Function
-/****************************************************************************
-*                       PrepareCamera
-*************************************************************************//**
-*  @fn        void SampleSky::PrepareCamera()
-*  @brief     Prepare camera
-*  @param[in] void
-*  @return Å@Å@void
-*****************************************************************************/
-void SampleSky::PrepareCamera()
-{
-	/*-------------------------------------------------------------------
-	-           Camera
-	---------------------------------------------------------------------*/
-	/*_camera = std::make_unique<Camera>();
-	_camera->StartUp(_engine->GetDevice());
-	_camera->SetPosition(0.0f, 10.0f, -20.0f);*/
 
-}
 /****************************************************************************
 *                       LoadMaterials
 *************************************************************************//**
@@ -115,10 +108,30 @@ void SampleSky::PrepareCamera()
 void SampleSky::LoadMaterials()
 {
 	/*-------------------------------------------------------------------
+	-             Open Copy CommandList
+	---------------------------------------------------------------------*/
+	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex());
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	copyCommandList    ->BeginRecording();
+	graphicsCommandList->BeginRecording();
+	/*-------------------------------------------------------------------
+	-           Camera
+	---------------------------------------------------------------------*/
+	_camera = std::make_shared<Camera>(_engine);
+	_camera->SetPosition(0.0f, 10.0f, -20.0f);
+	/*-------------------------------------------------------------------
 	-           Skybox
 	---------------------------------------------------------------------*/
-	_skybox = std::make_unique<SkyDome>();
-	_skybox->Initialze(L"Resources/grasscube1024.dds");
+	_skybox = std::make_shared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
+
+	/*-------------------------------------------------------------------
+	-             Close Copy CommandList and Flush CommandQueue
+	---------------------------------------------------------------------*/
+	graphicsCommandList->EndRecording();
+	copyCommandList->EndRecording();
+
+	_engine->FlushCommandQueue(CommandListType::Graphics);
+	_engine->FlushCommandQueue(CommandListType::Copy);
 }
 /****************************************************************************
 *                       OnKeyboardInput

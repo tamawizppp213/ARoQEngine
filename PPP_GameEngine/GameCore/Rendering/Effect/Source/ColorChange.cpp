@@ -9,19 +9,26 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
-#include "GraphicsCore/RHI/DirectX12/SimpleInclude/IncludeGraphicsPSO.hpp"
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PrimitiveGeometry.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
+#include "GameCore/Rendering/Model/Include/PrimitiveMesh.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-using namespace directX12;
+using namespace gc;
+using namespace rhi;
+using namespace rhi::core;
 
 namespace
 {
-	RootSignature s_RootSignature;
 	std::wstring s_ShaderFunctionName[ColorChangeType::CountOfType] = 
 	{ 
 		L"None",
@@ -30,91 +37,81 @@ namespace
 		L"PSGrayScale",
 		L"PSBinary",
 		L"PSInvert",
-
 	};
 }
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 ColorChange::ColorChange()
 {
 
 }
 ColorChange::~ColorChange()
 {
-
+	_pipeline.reset();
+	_resourceLayout.reset();
+	_resourceViews.clear(); _resourceViews.shrink_to_fit();
+	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
+	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
 }
-/****************************************************************************
-*							StartOn
-*************************************************************************//**
-*  @fn        void ColorChange::StartOn(ColorChangeType type, const std::wstring& addName)
-*  @brief     Start ColorChange Effect
-*  @param[in] ColorChangeType type
-*  @param[in] const std::wstring& addName
-*  @return 　　void
-*****************************************************************************/
-void ColorChange::StartOn(ColorChangeType type, const std::wstring& addName)
+ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName) : _engine(engine)
 {
-	if (addName != L"") { _addName = addName; _addName += L"::"; }
-	_addName += L"ColorChange::";
-	_colorBuffer.Create(*GraphicsCoreEngine::Instance().GetGraphicsDevice(), Screen::GetScreenWidth(), Screen::GetScreenHeight(), 1, addName,
-		GraphicsCoreEngine::Instance().GetGraphicsDevice()->GetBackBufferRenderFormat());
-	
-	PrepareVertexAndIndexBuffer();
-	PreparePipelineState(type);
+	/*-------------------------------------------------------------------
+	-            Set debug name
+	---------------------------------------------------------------------*/
+	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	name += L"ColorChange::";
+	/*-------------------------------------------------------------------
+	-           Prepare Pipeline
+	---------------------------------------------------------------------*/
+	PrepareVertexAndIndexBuffer(name);
+	PreparePipelineState(type, name);
+	PrepareResourceView();
 }
+
+#pragma endregion Constructor and Destructor
+#pragma region Main Function
 /****************************************************************************
 *							OnResize
 *************************************************************************//**
 *  @fn        void ColorChange::OnResize(int newWidth, int newHeight)
 *  @brief     OnResize
-*  @param[in] ColorChangeType type
-*  @param[in] const std::wstring& addName
+*  @param[in] int newWidth
+*  @param[in] int newHeight
 *  @return 　　void
 *****************************************************************************/
 void ColorChange::OnResize(int newWidth, int newHeight)
 {
-	_colorBuffer.OnResize(newWidth, newHeight, 1);
+	
 }
 /****************************************************************************
-*							OnResize
+*							Draw
 *************************************************************************//**
-*  @fn        void ColorChange::OnResize(int newWidth, int newHeight)
-*  @brief     OnResize
-*  @param[in] ColorChangeType type
-*  @param[in] const std::wstring& addName
-*  @return 　　void
-*****************************************************************************/
-void ColorChange::Draw(rhi::directX12::GPUResource* renderTarget)
-{
-	auto& engine       = GraphicsCoreEngine::Instance();
-	auto  context      = engine.GetCommandContext();
-	int   currentFrame = engine.GetGraphicsDevice()->GetCurrentFrameIndex();
-	/*-------------------------------------------------------------------
-	-               Execute commandlist
-	---------------------------------------------------------------------*/
-	_colorBuffer.CopyFrom(context, renderTarget);
-	context->SetRootSignature(s_RootSignature.GetSignature());
-	context->SetPipelineState(_pipelineState->GetPipelineState());
-	context->SetVertexBuffer(_meshBuffer[currentFrame].VertexBufferView());
-	context->SetIndexBuffer (_meshBuffer[currentFrame].IndexBufferView());
-	context->SetGraphicsRootDescriptorTable(0, _colorBuffer.GetGPUSRV());
-	context->DrawIndexedInstanced(_meshBuffer[currentFrame].IndexBuffer->GetElementCount(),1);
-}
-/****************************************************************************
-*							ShutDown
-*************************************************************************//**
-*  @fn        void ColorChange::ShutDown()
-*  @brief     ShutDownColorChangeEffect
+*  @fn        void ColorChange::Draw
+*  @brief     Render to Back Buffer
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void ColorChange::ShutDown()
+void ColorChange::Draw()
 {
-	_meshBuffer.get()->Dispose();
-	_pipelineState.reset();
+	const auto frameIndex          = _engine->GetCurrentFrameIndex();
+	const auto device              = _engine->GetDevice();
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+
+	/*-------------------------------------------------------------------
+	-               Execute commandlist
+	---------------------------------------------------------------------*/
+	graphicsCommandList->SetResourceLayout(_resourceLayout);
+	graphicsCommandList->SetGraphicsPipeline(_pipeline);
+	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
+	graphicsCommandList->SetIndexBuffer (_indexBuffers[frameIndex]);
+	_resourceViews[frameIndex]->Bind(graphicsCommandList, 0);
+	graphicsCommandList->DrawIndexedInstanced(
+		static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
 }
+#pragma endregion Main Function
 
 #pragma region Protected Function
 /****************************************************************************
@@ -122,43 +119,50 @@ void ColorChange::ShutDown()
 *************************************************************************//**
 *  @fn        void ColorChange::PrepareVertexAndIndexBuffer()
 *  @brief     Prepare Rect Vertex and Index Buffer
-*  @param[in] void
+*  @param[in] const std::wstring& addName
 *  @return 　　void
 *****************************************************************************/
-void ColorChange::PrepareVertexAndIndexBuffer()
+void ColorChange::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 {
+	const auto frameIndex = _engine->GetCurrentFrameIndex();
+	const auto device     = _engine->GetDevice();
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy, frameIndex);
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
-	MeshData rectMesh = GeometryGenerator::Rect(2.0f, 2.0f, 0.0f);
+	MeshData rectMesh = PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/
-	auto& engine       = GraphicsCoreEngine::Instance();
-	int totalFrameSize = engine.GetFrameBufferCount();
-	_meshBuffer = std::make_unique<MeshBuffer[]>(totalFrameSize);
-	for (int i = 0; i < totalFrameSize; ++i)
+	const auto frameCount = device->GetFrameCount();
+	// prepare frame count buffer
+	_vertexBuffers.resize(frameCount);
+	_indexBuffers .resize(frameCount);
+	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
-		auto& meshBuffer = _meshBuffer[i];
 		/*-------------------------------------------------------------------
-		-            Calcurate Buffer Size
+		-            Set up
 		---------------------------------------------------------------------*/
-		auto vertexByteSize = sizeof(VertexPositionNormalTexture);
-		auto indexByteSize  = sizeof(UINT16);
+		auto vertexByteSize = sizeof(Vertex);
+		auto indexByteSize  = sizeof(std::uint32_t);
 		auto vertexCount    = rectMesh.Vertices.size();
 		auto indexCount     = rectMesh.Indices.size();
-		/*-------------------------------------------------------------------
-		-            Set Vertex Buffer and Index Buffer
-		---------------------------------------------------------------------*/
-		meshBuffer.VertexBuffer = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(vertexByteSize), static_cast<UINT>(vertexCount), false, _addName + L"VertexBuffer");
-		meshBuffer.VertexBuffer->CopyStart();
-		meshBuffer.VertexBuffer->CopyTotalData(rectMesh.Vertices.data(), static_cast<int>(vertexCount));
-		meshBuffer.VertexBuffer->CopyEnd();
 
-		meshBuffer.IndexBuffer  = std::make_unique<UploadBuffer>(engine.GetDevice(), static_cast<UINT>(indexByteSize), static_cast<UINT>(indexCount), false, _addName + L"IndexBuffer");
-		meshBuffer.IndexBuffer->CopyStart();
-		meshBuffer.IndexBuffer->CopyTotalData(rectMesh.Indices.data(), static_cast<int>(indexCount));
-		meshBuffer.IndexBuffer->CopyEnd();
+		/*-------------------------------------------------------------------
+		-            Set Vertex Buffer 
+		---------------------------------------------------------------------*/
+		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
+		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
+		_vertexBuffers[i]->SetName(addName + L"VB");
+		_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
+
+		/*-------------------------------------------------------------------
+		-            Set Index Buffer
+		---------------------------------------------------------------------*/
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
+		_indexBuffers[i]->SetName(addName + L"IB");
+		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
 
 	}
 }
@@ -168,34 +172,62 @@ void ColorChange::PrepareVertexAndIndexBuffer()
 *  @fn        void ColorChange::PreparePipelineState(ColorChangeType type)
 *  @brief     Prepare PipelineState
 *  @param[in] ColorChangeType type
+*  @param[in] const std::wstring& addName
 *  @return 　　void
 *****************************************************************************/
-void ColorChange::PreparePipelineState(ColorChangeType type)
+void ColorChange::PreparePipelineState(ColorChangeType type, const std::wstring& addName)
 {
-	auto device = GraphicsCoreEngine::Instance().GetGraphicsDevice();
+	const auto device  = _engine->GetDevice();
+	const auto factory = device->CreatePipelineFactory();
+
+	/*-------------------------------------------------------------------
+	-             Setup resource layout elements
+	---------------------------------------------------------------------*/
+	_resourceLayout = device->CreateResourceLayout
+	(
+		{ ResourceLayoutElement(DescriptorHeapType::SRV, 0)},
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearClamp)), 0) }
+	);
+
 	/*-------------------------------------------------------------------
 	-			SetShader
 	---------------------------------------------------------------------*/
-	BlobComPtr vs = CompileShader(L"Shader\\Effect\\ShaderColorChange.hlsl", L"VSMain", L"vs_6_4");
-	BlobComPtr ps = CompileShader(L"Shader\\Effect\\ShaderColorChange.hlsl", s_ShaderFunctionName[(int)type], L"ps_6_4");
-	/*-------------------------------------------------------------------
-	-			Build root signature
-	---------------------------------------------------------------------*/
-	s_RootSignature.Reset(1, 1);
-	s_RootSignature.SetStaticSampler(SamplerType::SamplerLinearClamp);
-	s_RootSignature[0].InitAsDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1);
-	s_RootSignature.CompleteSetting(device->GetDevice(), _addName + L"RootSignature");
+	const auto vs = factory->CreateShaderState();
+	const auto ps = factory->CreateShaderState();
+	vs->Compile(ShaderType::Vertex, L"Shader\\Effect\\ShaderColorChange.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
+	ps->Compile(ShaderType::Pixel , L"Shader\\Effect\\ShaderColorChange.hlsl", s_ShaderFunctionName[(int)type], 6.4f, { L"Shader\\Core" });
+
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
 	---------------------------------------------------------------------*/
-	auto pipelineState = std::make_unique<GraphicsPipelineState>();
-	pipelineState->SetGraphicsPipelineStateDescriptor(device->GetDefaultPSOConfig());
-	pipelineState->SetRootSignature(s_RootSignature);
-	pipelineState->SetInputLayouts(VertexPositionNormalTexture::InputLayout);
-	pipelineState->SetBlendState(GetBlendState(BlendStateType::OverWrite));
-	pipelineState->SetVertexShader(vs);
-	pipelineState->SetPixelShader(ps);
-	pipelineState->CompleteSetting(device->GetDevice(), _addName + L"PSO");
-	_pipelineState = std::move(pipelineState);
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::OverWrite()));
+	_pipeline->SetRasterizerState   (factory->CreateRasterizerState());
+	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
+	_pipeline->SetDepthStencilState (factory->CreateDepthStencilState());
+	_pipeline->SetVertexShader(vs);
+	_pipeline->SetPixelShader (ps);
+	_pipeline->CompleteSetting();
+	_pipeline->SetName(addName + L"PSO");
+}
+/****************************************************************************
+*							PrepareResourceView
+*************************************************************************//**
+*  @fn        void ColorChange::PrepareResourceView()
+*  @brief     Prepare resource view and render texture (back buffer)
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void ColorChange::PrepareResourceView()
+{
+	const auto device     = _engine->GetDevice();
+	const auto frameCount = device->GetFrameCount();
+	const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _engine->GetBackBufferFormat());
+	
+	_resourceViews.resize(frameCount);
+	for (std::uint32_t i = 0; i < static_cast<std::uint32_t>(_resourceViews.size()); ++i)
+	{
+		_resourceViews[i] = device->CreateResourceView(ResourceViewType::Texture, _engine->GetFrameBuffer(i)->GetRenderTarget());
+	}
 }
 #pragma endregion Protected Function

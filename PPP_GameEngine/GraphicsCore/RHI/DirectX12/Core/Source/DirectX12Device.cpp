@@ -26,6 +26,11 @@
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineFactory.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingASInstance.hpp"
+#include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingBLASBuffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingTLASBuffer.hpp"
+#include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingGeometry.hpp"
+#include "GameUtility/Math/Include/GMMatrix.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <vector>
@@ -178,9 +183,9 @@ std::shared_ptr<core::GPUGraphicsPipelineState> RHIDevice::CreateGraphicPipeline
 {
 	return std::static_pointer_cast<core::GPUGraphicsPipelineState>(std::make_shared<directX12::GPUGraphicsPipelineState>(shared_from_this(), renderPass, resourceLayout));
 }
-std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
 {
-	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<directX12::GPUComputePipelineState>(shared_from_this(), renderPass, resourceLayout));
+	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<directX12::GPUComputePipelineState>(shared_from_this(), resourceLayout));
 }
 std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
 {
@@ -188,7 +193,7 @@ std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const s
 }
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {
-	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<directX12::GPUPipelineFactory>());
+	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<directX12::GPUPipelineFactory>(shared_from_this()));
 }
 std::shared_ptr<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
 {
@@ -210,7 +215,33 @@ std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextur
 {
 	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this(), metaData));
 }
-
+std::shared_ptr<core::GPUTexture> RHIDevice::CreateTextureEmpty()
+{
+	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this()));
+}
+//std::shared_ptr<core::GPURayTracingPipelineState> RHIDevice::CreateRayTracingPipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+//{
+//	return nullptr;
+//}
+std::shared_ptr<core::RayTracingGeometry> RHIDevice::CreateRayTracingGeometry(const core::RayTracingGeometryFlags flags, const std::shared_ptr<core::GPUBuffer>& vertexBuffer, const std::shared_ptr<core::GPUBuffer>& indexBuffer)
+{
+	return std::static_pointer_cast<core::RayTracingGeometry>(std::make_shared<directX12::RayTracingGeometry>(shared_from_this(), flags, vertexBuffer, indexBuffer));
+}
+std::shared_ptr<core::ASInstance> RHIDevice::CreateASInstance(
+	const std::shared_ptr<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform,
+	const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex,
+	const std::uint32_t instanceMask, const core::RayTracingInstanceFlags flags)
+{
+	return std::static_pointer_cast<core::ASInstance>(std::make_shared<directX12::ASInstance>(shared_from_this(), blasBuffer, blasTransform, instanceID, instanceContributionToHitGroupIndex, instanceMask, flags));
+}
+std::shared_ptr<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const std::vector<std::shared_ptr<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
+{
+	return std::static_pointer_cast<core::BLASBuffer>(std::make_shared<directX12::BLASBuffer>(shared_from_this(), geometryDesc, flags));
+}
+std::shared_ptr<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const std::vector<std::shared_ptr<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
+{
+	return std::static_pointer_cast<core::TLASBuffer>(std::make_shared<directX12::TLASBuffer>(shared_from_this(), asInstances, flags));
+}
 #pragma endregion           Create Resource Function
 #pragma region Debug Function
 

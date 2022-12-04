@@ -47,15 +47,14 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIRenderPass>              GetRenderPass() const noexcept { return _renderPass; }
 		inline std::shared_ptr<RHIResourceLayout>   GetLayout() const noexcept { return _resourceLayout; }
 		inline void SetLayout(const std::shared_ptr<RHIResourceLayout>& resourceLayout) { _resourceLayout = resourceLayout; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBasePipelineState() = default;
-		explicit GPUBasePipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& layout)
-			: _device(device), _renderPass(renderPass) ,_resourceLayout(layout) { };
+		explicit GPUBasePipelineState(const std::shared_ptr<RHIDevice>& device,  const std::shared_ptr<RHIResourceLayout>& layout)
+			: _device(device) ,_resourceLayout(layout) { };
 		~GPUBasePipelineState() = default;
 	protected:
 		/****************************************************************************
@@ -66,8 +65,7 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::shared_ptr<rhi::core::RHIDevice>     _device        = nullptr;
-		std::shared_ptr<rhi::core::RHIRenderPass> _renderPass    = nullptr;
-		std::shared_ptr<rhi::core::RHIResourceLayout>       _resourceLayout = nullptr;
+		std::shared_ptr<rhi::core::RHIResourceLayout> _resourceLayout = nullptr;
 	};
 
 	/****************************************************************************
@@ -86,6 +84,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		std::shared_ptr<RHIRenderPass>                GetRenderPass() const noexcept { return _renderPass; }
 		inline std::shared_ptr<GPUInputAssemblyState> GetInputAssemblyState() const noexcept { return _inputAssemblyState; }
 		inline std::shared_ptr<GPURasterizerState>    GetRasterizerState   () const noexcept { return _rasterizerState; }
 		inline std::shared_ptr<GPUDepthStencilState>  GetDepthStencilState () const noexcept { return _depthStencilState; }
@@ -101,17 +100,20 @@ namespace rhi::core
 		inline void SetDepthStencilState (const std::shared_ptr<GPUDepthStencilState> & depthStencilState) { _depthStencilState  = depthStencilState; }
 		inline void SetBlendState        (const std::shared_ptr<GPUBlendState>        & blendState)        { _blendState         = blendState; }
 		
-		inline void SetVertexShader  (const std::shared_ptr<GPUShaderState>& vertexShader)   { _vertexShaderState   = (_vertexShaderState  ->GetShaderType() != ShaderType::Vertex  ) ? vertexShader   : nullptr; }
-		inline void SetPixelShader   (const std::shared_ptr<GPUShaderState>& pixelShader)    { _pixelShaderState    = (_pixelShaderState   ->GetShaderType() != ShaderType::Pixel   ) ? pixelShader    : nullptr; }
-		inline void SetGeometryShader(const std::shared_ptr<GPUShaderState>& geometryShader) { _geometryShaderState = (_geometryShaderState->GetShaderType() != ShaderType::Geometry) ? geometryShader : nullptr; }
-		inline void SetHullShader    (const std::shared_ptr<GPUShaderState>& hullShader)     { _hullShaderState     = (_hullShaderState    ->GetShaderType() != ShaderType::Hull    ) ? hullShader     : nullptr; }
-		inline void SetDomainShader  (const std::shared_ptr<GPUShaderState>& domainShader)   { _domainShaderState   = (_domainShaderState  ->GetShaderType() != ShaderType::Domain  ) ? domainShader   : nullptr; }
+		inline void SetVertexShader  (const std::shared_ptr<GPUShaderState>& vertexShader)   { _vertexShaderState   = (vertexShader  ->GetShaderType() == ShaderType::Vertex  ) ? vertexShader   : nullptr; }
+		inline void SetPixelShader   (const std::shared_ptr<GPUShaderState>& pixelShader)    { _pixelShaderState    = (pixelShader   ->GetShaderType() == ShaderType::Pixel   ) ? pixelShader    : nullptr; }
+		inline void SetGeometryShader(const std::shared_ptr<GPUShaderState>& geometryShader) { _geometryShaderState = (geometryShader->GetShaderType() == ShaderType::Geometry) ? geometryShader : nullptr; }
+		inline void SetHullShader    (const std::shared_ptr<GPUShaderState>& hullShader)     { _hullShaderState     = (hullShader    ->GetShaderType() == ShaderType::Hull    ) ? hullShader     : nullptr; }
+		inline void SetDomainShader  (const std::shared_ptr<GPUShaderState>& domainShader)   { _domainShaderState   = (domainShader  ->GetShaderType() == ShaderType::Domain  ) ? domainShader   : nullptr; }
+		
+		// @brief : This function is needed to call after calling completeSetting function 
+		virtual void SetName(const std::wstring& name) = 0;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 	protected:
 		GPUGraphicsPipelineState() = default;
-		explicit GPUGraphicsPipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& layout) : core::GPUBasePipelineState(device, renderPass, layout){};
+		explicit GPUGraphicsPipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIResourceLayout>& layout) : core::GPUBasePipelineState(device, layout), _renderPass(renderPass) {};
 		~GPUGraphicsPipelineState() = default;
 		/****************************************************************************
 		**                Protected Function
@@ -129,13 +131,14 @@ namespace rhi::core
 		std::shared_ptr<GPUShaderState>        _hullShaderState     = nullptr;
 		std::shared_ptr<GPUShaderState>        _domainShaderState   = nullptr;
 		std::shared_ptr<GPUShaderState>        _geometryShaderState = nullptr;
+		std::shared_ptr<RHIRenderPass>          _renderPass = nullptr;
 	};
 
 	/****************************************************************************
-	*				  			RHIPipelineState
+	*				  			GPUComputePipelineState
 	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	*  @class     GPUComputePipelineState
+	*  @brief     Compute PipelineState
 	*****************************************************************************/
 	class GPUComputePipelineState : public GPUBasePipelineState
 	{
@@ -147,13 +150,14 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		void SetComputeShader(const std::shared_ptr<GPUShaderState>& shaderState) { _computeShaderState = shaderState; };
+		virtual void SetName(const std::wstring& name) const = 0;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 	protected:
 		GPUComputePipelineState() = default;
-		explicit GPUComputePipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIRenderPass>& renderPass = nullptr, const std::shared_ptr<RHIResourceLayout>& layout = nullptr) : core::GPUBasePipelineState(device, renderPass, layout){};
+		explicit GPUComputePipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIResourceLayout>& layout = nullptr) : core::GPUBasePipelineState(device, layout){};
 		~GPUComputePipelineState() = default;
 		/****************************************************************************
 		**                Protected Function
@@ -165,5 +169,39 @@ namespace rhi::core
 		std::shared_ptr<GPUShaderState> _computeShaderState = nullptr;
 	};
 
+	/****************************************************************************
+	*				  			RHIPipelineState
+	*************************************************************************//**
+	*  @class     RHIPipelineState
+	*  @brief     PipelineState
+	*****************************************************************************/
+	class GPURayTracingPipelineState : public GPUBasePipelineState
+	{
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		virtual void CompleteSetting() = 0;
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		void SetShader(const std::shared_ptr<GPUShaderState>& shaderState) { _rayTracingShaderState = shaderState; };
+		virtual void SetName(const std::wstring& name) const = 0;
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+	protected:
+		GPURayTracingPipelineState() = default;
+		explicit GPURayTracingPipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIResourceLayout>& layout = nullptr) : core::GPUBasePipelineState(device, layout) {};
+		~GPURayTracingPipelineState() = default;
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		std::shared_ptr<GPUShaderState> _rayTracingShaderState = nullptr;
+	};
 }
 #endif

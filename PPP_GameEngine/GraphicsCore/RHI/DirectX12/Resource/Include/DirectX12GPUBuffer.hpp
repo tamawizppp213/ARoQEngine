@@ -35,26 +35,32 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		// @brief : Basically for Default Buffer Initialize. Total Buffer Copy
+		//          Create temp upload buffer and copy this to default buffer
+		void Pack(const void* data, const std::shared_ptr<rhi::core::RHICommandList>& copyCommandList = nullptr) override;
 		// @brief : Begin Map Function
 		void CopyStart() override;
 		// @brief : GPU copy to one element 
-		void CopyData(int elementIndex, const void* data) override ;
+		void CopyData(const void* data, const size_t elementIndex) override ;
 		/* @brief : GPU copy the specified range*/
-		void CopyTotalData(const void* data, int dataLength) override;
+		void CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset = 0) override;
 		// @brief : Unmap Function
 		void CopyEnd() override ;
 
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		ResourceComPtr GetResource   () const noexcept { return _resource; }
 		Resource*      GetResourcePtr() const noexcept { return _resource.Get(); }
 		Resource**     GetAddressOf  () { return _resource.GetAddressOf(); }
+
+		void SetName(const std::wstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBuffer() = default;
-		~GPUBuffer() = default;
+		~GPUBuffer();
 		explicit GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData);
 	protected:
 		/****************************************************************************
@@ -69,6 +75,7 @@ namespace rhi::directX12
 		**                Protected Member Variables
 		*****************************************************************************/
 		ResourceComPtr _resource = nullptr;
+		ResourceComPtr _intermediateBuffer = nullptr; // for default buffer
 	};
 }
 #endif

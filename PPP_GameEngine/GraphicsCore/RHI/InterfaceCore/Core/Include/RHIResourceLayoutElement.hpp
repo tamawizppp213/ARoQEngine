@@ -94,12 +94,23 @@ namespace rhi::core
 	*****************************************************************************/
 	struct InputLayoutElement
 	{
-		PixelFormat Format = PixelFormat::Unknown;
-		std::string Name = "";
-		size_t      Slot = 0;
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		InputFormat Format       = InputFormat::Unknown;
+		std::string SemanticName = "";
+		size_t      Slot         = 0;
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
 		InputLayoutElement() = default;
 		~InputLayoutElement() = default;
-		explicit InputLayoutElement(const std::string& name, const PixelFormat format, const size_t slot = 0) : Format(format), Name(name), Slot(slot) {};
+		explicit InputLayoutElement(const std::string& name, const InputFormat format, const size_t slot = 0) : Format(format), SemanticName(name), Slot(slot) {};
 	};
 
 	struct Value32Bit

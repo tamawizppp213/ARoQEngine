@@ -1,57 +1,54 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIShader.hpp
-///             @brief  RHIShader
+///             @file   RayTracingGeometry.hpp
+///             @brief  RayTracing geometry descriptor
 ///             @author Toide Yutaro
-///             @date   2022_10_31
+///             @date   2022_11_22
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef RHI_SHADER_HPP
-#define RHI_SHADER_HPP
-
+#ifndef DIRECTX12_RAYTRACING_GEOMETRY_HPP
+#define DIRECTX12_RAYTRACING_GEOMETRY_HPP
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <string>
-#include <memory>
+#include "GraphicsCore/RHI/InterfaceCore/RayTracing/Include/RayTracingGeometry.hpp"
+#include <d3d12.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                               Class
+//                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
 
-/****************************************************************************
-*				  			    RHIShader
-*************************************************************************//**
-*  @class     RHIShader
-*  @brief     Shader
-*****************************************************************************/
-namespace rhi::core
+namespace rhi::directX12
 {
-	class RHIDevice;
 
-	class RHIShader : public NonCopyable
+	/****************************************************************************
+	*				  			TemplateStruct
+	*************************************************************************//**
+	*  @struct     TemplateStruct
+	*  @brief     temp
+	*****************************************************************************/
+	class RayTracingGeometry : public rhi::core::RayTracingGeometry
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Compile(const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target) = 0;
-		virtual void LoadBinary(const std::wstring& fileName) = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void* GetBufferPointer() const noexcept { return _bufferPointer; }
-		std::uint64_t GetBufferByteSize() const { return _bufferByteSize; }
+		const D3D12_RAYTRACING_GEOMETRY_DESC& GetDesc() const { return _geometryDesc; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		RHIShader() = default;
-		virtual ~RHIShader() = default;
-		RHIShader(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
+		RayTracingGeometry() = default;
+		~RayTracingGeometry() = default;
+		RayTracingGeometry(const std::shared_ptr<core::RHIDevice>& device,
+			const core::RayTracingGeometryFlags flags,
+			const std::shared_ptr<core::GPUBuffer>& vertexBuffer,
+			const std::shared_ptr<core::GPUBuffer>& indexBuffer);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -60,10 +57,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
-		void*         _bufferPointer  = nullptr;
-		std::uint64_t _bufferByteSize = 0;
+		D3D12_RAYTRACING_GEOMETRY_DESC _geometryDesc = {};
 	};
-
 }
 #endif

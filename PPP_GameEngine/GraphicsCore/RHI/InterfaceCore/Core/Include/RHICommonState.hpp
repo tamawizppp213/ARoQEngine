@@ -22,6 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
+#pragma region API
 	/****************************************************************************
 	*				  			APIVersion
 	*************************************************************************//**
@@ -34,6 +35,7 @@ namespace rhi::core
 		DirectX12  = 1,
 		Vulkan     = 2
 	};
+#pragma endregion           API
 #pragma region CommandList
 	/****************************************************************************
 	*				  			CommandListType
@@ -49,13 +51,50 @@ namespace rhi::core
 		Copy,       // Copy command list
 		CountOfType
 	};
-#pragma endregion CommandList
+#pragma endregion   CommandList
 #pragma region Index
+	/****************************************************************************
+	*				  			IndexType
+	*************************************************************************//**
+	*  @enum      IndexType
+	*  @brief     UINT 32 or 16. This value shows byte count.
+	*****************************************************************************/
 	enum class IndexType
 	{
-		UInt32
+		UInt32 = 4,
+		UInt16 = 2,
 	};
-#pragma endregion Index
+	/****************************************************************************
+	*				  			InputFormat
+	*************************************************************************//**
+	*  @enum      InputFormat
+	*  @brief     Input layout format.  
+	*****************************************************************************/
+	enum class InputFormat
+	{
+		Unknown,
+		R32_FLOAT,          // 4  byte format
+		R32G32_FLOAT,       // 8  byte format
+		R32G32B32_FLOAT,    // 12 byte format
+		R32G32B32A32_FLOAT, // 16 byte format
+	};
+	class InputFormatSizeOf
+	{
+	public :
+		InputFormatSizeOf() = delete;
+		static size_t Get(const core::InputFormat inputFormat)
+		{
+			switch (inputFormat)
+			{
+				case InputFormat::R32G32_FLOAT      : return 8;
+				case InputFormat::R32G32B32_FLOAT   : return 12;
+				case InputFormat::R32G32B32A32_FLOAT: return 16;
+				case InputFormat::R32_FLOAT         : return 4;
+				default: return 0;
+			}
+		}
+	};
+#pragma endregion         Index
 #pragma region Pixel
 	enum class ShadingRate
 	{
@@ -67,9 +106,15 @@ namespace rhi::core
 		K_4x2,
 		K_4x4
 	};
+	/****************************************************************************
+	*				  			PixelFormat
+	*************************************************************************//**
+	*  @class     PixelFormat
+	*  @brief     Render pixel format 
+	*****************************************************************************/
 	enum class PixelFormat
 	{
-		Unknown,
+		Unknown,   
 		R8G8B8A8_UNORM,
 		B8G8R8A8_UNORM,
 		R10G10B10A2_UNORM,
@@ -78,8 +123,16 @@ namespace rhi::core
 		D32_FLOAT,
 		D24_UNORM_S8_UINT,
 		R32G32B32_FLOAT,
+		B8G8R8A8_UNORM_SRGB,
+		BC1_UNORM,
 		CountOfPixelFormat
 	};
+	/****************************************************************************
+	*				  			PixelFormatSizeOf
+	*************************************************************************//**
+	*  @class     PixelFormatSizeOf
+	*  @brief     Get pixel size. Call the static function "Get"
+	*****************************************************************************/
 	class PixelFormatSizeOf
 	{
 	public:
@@ -137,24 +190,24 @@ namespace rhi::core
 			Depth = depth; Stencil = stencil;
 		}
 	};
-#pragma endregion              Pixel
+#pragma endregion         Pixel
 #pragma region Shader
 	/****************************************************************************
 	*				  			ShaderVisibility
 	*************************************************************************//**
 	*  @enum      ShaderVisibility
-	*  @brief     Visible shader 
+	*  @brief     Visible shader stage type
 	*****************************************************************************/
 	enum class ShaderVisibility : std::uint8_t
 	{
-		All,           // all      shader visible
-		Vertex,        // vertex   shader only
-		Pixel,         // pixel    shader only
-		Hull,          // hull     shader only
-		Domain,        // domain   shader only
-		Geometry,      // geometry shader only
-		Amplification, // amplification shader only,
-		Mesh           // mesh shader only
+		All,           // all      shader stage visible
+		Vertex,        // vertex   shader stage only
+		Pixel,         // pixel    shader stage only
+		Hull,          // hull     shader stage only
+		Domain,        // domain   shader stage only
+		Geometry,      // geometry shader stage only
+		Amplification, // amplification shader stage only,
+		Mesh           // mesh shader stage only
 	};
 	/****************************************************************************
 	*				  			ShaderType
@@ -162,7 +215,7 @@ namespace rhi::core
 	*  @enum      ShaderType
 	*  @brief     Shader type
 	*****************************************************************************/
-	enum class ShaderType : std::uint8_t
+	enum class ShaderType
 	{
 		Vertex,           // vertex shader 
 		Pixel,            // pixel  shader
@@ -182,28 +235,51 @@ namespace rhi::core
 		~BlobData() = default;
 		BlobData(void* bufferPointer, size_t bufferSize) : BufferPointer(bufferPointer), BufferSize(bufferSize) {};
 	};
-#pragma endregion             Shader Type
+#pragma endregion        Shader Type
 #pragma region Sampler State
+	/****************************************************************************
+	*				  			SamplerAddressMode
+	*************************************************************************//**
+	*  @class     SamplerAddressMode
+	*  @brief     Texture addressing mode // reference : https://learn.microsoft.com/ja-jp/windows/uwp/graphics-concepts/texture-addressing-modes
+	*****************************************************************************/
 	enum class SamplerAddressMode : std::uint8_t
 	{
-		Wrap    = 1,
-		Mirror  = 2,
-		Clamp   = 3,
-		Boarder = 4,
+		Wrap    = 1, // repeat texture pattern
+		Mirror  = 2, // mirror and repeat texture pattern
+		Clamp   = 3, // cut over 1.0 and below 0.0
+		Border  = 4, // set border color 
 	};
-
+	/****************************************************************************
+	*				  			BorderColor
+	*************************************************************************//**
+	*  @class     BorderColor
+	*  @brief     Specifies the border color for a sampler
+	*****************************************************************************/
 	enum class BorderColor : std::uint8_t
 	{
-		TransparentBlack,
-		OpaqueBlack,
-		OpaqueWhite
+		TransparentBlack, // Indicates black, with the alpha component as fully transparent
+		OpaqueBlack,      // Indicates black, with the alpha component as fully opaque
+		OpaqueWhite       // Indicates white, with the alpha component as fully opaque
 	};
+	/****************************************************************************
+	*				  			FilterMask
+	*************************************************************************//**
+	*  @class     FilterMask
+	*  @brief     Sample mask
+	*****************************************************************************/
 	enum class FilterMask : std::uint8_t
 	{
 		Mip = 0x1,
 		Mag = 0x2,
 		Min = 0x4
 	};
+	/****************************************************************************
+	*				  			FilterOption
+	*************************************************************************//**
+	*  @class     FilterOption
+	*  @brief     Sampling filter option
+	*****************************************************************************/
 	enum class FilterOption : std::uint8_t
 	{
 		MinPointMagPointMipPoint    = 0,
@@ -217,23 +293,29 @@ namespace rhi::core
 		Anisotropy = 8
 	};
 	/****************************************************************************
+	*				  			Default Sampler Type
+	*************************************************************************//**
+	*  @enum      DefaultSamplerType
+	*  @brief     Default Sampler state (Point, Linear or Anisotropic + Wrap or Clamp)
+	*****************************************************************************/
+	enum DefaultSamplerType
+	{
+		SamplerPointWrap,         // Point  + Wrap
+		SamplerPointClamp,        // Point  + Clamp
+		SamplerLinearWrap,        // Linear + Wrap
+		SamplerLinearClamp,       // Linear + Clamp
+		SamplerAnisotropicWrap,   // Anisotropic + Wrap
+		SamplerAnisotropicClamp   // Anisotropic + Clamp
+	};
+	/****************************************************************************
 	*				  			SamplerInfo
 	*************************************************************************//**
 	*  @class     SamplerInfo
-	*  @brief     Sampler
+	*  @brief     Custum sampler state. (Normally you should use default sampler type, and call GetDefaultSampler)
 	*****************************************************************************/
 	struct SamplerInfo
 	{
 	public:
-		enum DefaultSamplerType
-		{
-			SamplerPointWrap,
-			SamplerPointClamp,
-			SamplerLinearWrap,
-			SamplerLinearClamp,
-			SamplerAnisotropicWrap,
-			SamplerAnisotropicClamp
-		};
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -289,8 +371,7 @@ namespace rhi::core
 		static SamplerInfo GetDefaultSampler(DefaultSamplerType type);
 	};
 
-	
-#pragma endregion      Sampler State
+#pragma endregion Sampler State
 #pragma region Blend State
 	/****************************************************************************
 	*				  			BlendFactor
@@ -363,6 +444,16 @@ namespace rhi::core
 
 		bool Enable = false;
 		BlendProperty() = default;
+
+		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, BlendFactor destAlpha, BlendFactor dest,
+			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool enable = false) :
+			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), Destination(dest), SourceAlpha(srcAlpha),
+			Source(src), ColorMask(colorMask), Enable(enable) { };
+		
+		static BlendProperty NoColorWrite();
+		static BlendProperty OverWrite();
+		static BlendProperty AlphaBlend();
+		
 	};
 #pragma endregion        Blend State
 #pragma region Rasterizer State
@@ -607,7 +698,8 @@ namespace rhi::core
 		IndexBuffer    = 0x2,
 		ConstantBuffer = 0x4,
 		RenderTarget   = 0x8, // allow render target
-		DepthStencil   = 0x10 // allow depth stencil
+		DepthStencil   = 0x10, // allow depth stencil
+		UnorderedAccess = 0x20, // allow unordered access 
 	};
 	inline ResourceUsage operator | (const ResourceUsage& left, const ResourceUsage& right)
 	{
@@ -626,12 +718,19 @@ namespace rhi::core
 
 
 #pragma region GPUBuffer
+	/****************************************************************************
+	*				  			BufferType
+	*************************************************************************//**
+	*  @enum      BufferType
+	*  @brief     buffer type 
+	*****************************************************************************/
 	enum class BufferType
 	{
-		Vertex,   // Use static mesh
-		Index,
-		Constant,
-		Upload,   // Use dynamic mesh
+		Vertex,   // Vertex buffers
+		Index,    // Index buffer 
+		Constant, // 256 byte alignment buffer
+		Upload,   // CPU readonly buffer
+		Default,  // GPU readonly buffer
 	};
 
 	/****************************************************************************
@@ -656,6 +755,15 @@ namespace rhi::core
 		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
 
 		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		bool IsCPUAccessible() const
+		{
+			return HeapType == MemoryHeap::Upload || HeapType == MemoryHeap::Readback
+			|| (HeapType == MemoryHeap::Custom);
+		}
+
+		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBufferMetaData() = default;
@@ -663,14 +771,15 @@ namespace rhi::core
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
-		static GPUBufferMetaData UploadBuffer (const size_t stride, const size_t count);
-		static GPUBufferMetaData DefaultBuffer(const size_t stride, const size_t count);
-		static GPUBufferMetaData VertexBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead);
-		static GPUBufferMetaData IndexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead);
+		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count);
+		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count);
+		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common); // auto alignment 
+		static GPUBufferMetaData VertexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead);
+		static GPUBufferMetaData IndexBuffer   (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common);
 	private:
 		size_t CalcConstantBufferByteSize(const size_t byteSize) { return (byteSize + 255) & ~255; }
 	};
-#pragma endregion  GPUBuffer
+#pragma endregion         GPUBuffer
 #pragma region GPUTexture
 	
 	
@@ -683,10 +792,7 @@ namespace rhi::core
 	struct GPUTextureMetaData
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		
+	
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -703,7 +809,14 @@ namespace rhi::core
 		ClearValue        ClearColor       = ClearValue();                   // clear color 
 		ResourceState     State            = ResourceState::GeneralRead;    // resource layout
 		MemoryHeap        HeapType         = MemoryHeap::Default;            // gpu heap type
-
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		bool IsCPUAccessible() const
+		{
+			return HeapType == MemoryHeap::Upload || HeapType == MemoryHeap::Readback
+				|| (HeapType == MemoryHeap::Custom);
+		}
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -730,7 +843,63 @@ namespace rhi::core
 		inline void CalculateByteSize() { ByteSize =  Width * Height * (Dimension == ResourceDimension::Dimension3D ? DepthOrArraySize : 1) * PixelFormatSizeOf::Get(PixelFormat) * MultiSampleSizeOf::Get(Sample); }
 	};
 
-#pragma endregion GPUTexture
+#pragma endregion        GPUTexture
+#pragma region RayTracing
+	/****************************************************************************
+	*				  			RayTracingGeometryFlags
+	*************************************************************************//**
+	*  @enum      RayTracingGeometryFlags
+	*  @brief     Specifies flags for raytracing geometry
+	*****************************************************************************/
+	enum class RayTracingGeometryFlags
+	{
+		None,                         // No options specified  
+		Opaque,                       // When ray encounter this geometry, the geometry acts as if no any hit shader is present.
+		NoDuplicateAnyHitInvocation   // require that intersections be reported to the any hit shader at most once. This flag enables that guarantee for the given geometry, potentially with some performance impact.
+	};
+	/****************************************************************************
+	*				  		 RayTracingInstanceFlags
+	*************************************************************************//**
+	*  @enum      RayTracingInstanceFlags
+	*  @brief     Flags for a raytracing acceleration structure instance
+	*****************************************************************************/
+	enum class RayTracingInstanceFlags
+	{
+		None                          = 0x0,
+		TriangleCullDisable           = 0x1, // Disables front/back face culling for this instance.
+		TriangleFrontCounterClockwise = 0x2, // This flag reverses front and back facings, which is useful if the applicationfs natural winding order differs from the default (left coordinate). 
+		ForceOpaque                   = 0x4, // All geometry in the BLAS Opaque
+		ForceNonOpaque                = 0x8  // All geometry in the BLAS Non Opaque
+	};
+	/****************************************************************************
+	*				  		 BuildAccelerationStructureFlags
+	*************************************************************************//**
+	*  @enum      BuildAccelerationStructureFlags
+	*  @brief     How to build acceleration structure
+	*****************************************************************************/
+	enum class BuildAccelerationStructureFlags
+	{
+		None = 0x0000,
+		AllowUpdate     = 0x0001, // Support update, 
+		AllowCompaction = 0x0002, // Compact AS 
+		PreferFastTrace = 0x0004, // RayTracing Performance Maximize. (AS Build time will increase)
+		PreferFastBuild = 0x0008, // Build Time Minimize.
+		MinimizeMemory  = 0x0010, // Minimize Memory. RayTracing Performance will decrease
+		PreformUpdate   = 0x0020, // Update AS
+	};
+	/****************************************************************************
+	*				  	RayTracingASPrebuildInfo
+	*************************************************************************//**
+	*  @struct    RayTracingASPrebuildInfo
+	*  @brief     Acceleration Structure memory data size
+	*****************************************************************************/
+	struct RayTracingASPrebuildInfo
+	{
+		std::uint64_t AccelerationStructureSize = 0;
+		std::uint64_t BuildScratchDataSize      = 0;
+		std::uint64_t UpdateScratchDataSize    = 0;
+	};
+#pragma endregion RayTracing
 #pragma endregion GPUResource
 #pragma region Render Pass
 	enum class AttachmentLoad : std::uint8_t
@@ -776,8 +945,8 @@ namespace rhi::core
 		}
 
 		static Attachment DepthStencil(const PixelFormat format,
-			const ResourceState   initialState  = ResourceState::DepthStencil,
-			const ResourceState   finalState    = ResourceState::GeneralRead,
+			const ResourceState   initialState  = ResourceState::Common,
+			const ResourceState   finalState    = ResourceState::DepthStencil,
 			const AttachmentLoad  load          = AttachmentLoad::Clear,
 			const AttachmentStore store         = AttachmentStore::Store,
 			const AttachmentLoad  stencilLoad   = AttachmentLoad::DontCare,
@@ -831,8 +1000,7 @@ namespace rhi::core
 
 		
 	};
-#pragma endregion Render Pass
-
+#pragma endregion       Render Pass
 #pragma region Window Surface
 	/****************************************************************************
 	*				  			Viewport 
@@ -890,6 +1058,6 @@ namespace rhi::core
 			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
 		}
 	};
-#pragma endregion Window Surface
+#pragma endregion    Window Surface
 }
 #endif
