@@ -83,6 +83,7 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapt
 *  @param[in] void
 *  @return Å@Å@std::shared_ptr<core::RHIDisplayAdapter>
 *****************************************************************************/
+
 std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 {
 	return SearchAdapter(DXGI_GPU_PREFERENCE_MINIMUM_POWER);

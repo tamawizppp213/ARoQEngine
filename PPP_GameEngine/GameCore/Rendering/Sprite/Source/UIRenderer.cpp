@@ -121,7 +121,7 @@ void UIRenderer::Draw()
 	-                 Draw
 	---------------------------------------------------------------------*/
 	std::uint32_t indexOffset = 0;
-	for (int i = 0; i < _needCallDrawIndexCount; ++i)
+	for (std::uint32_t i = 0; i < _needCallDrawIndexCount; ++i)
 	{
 		// Regist root descriptor table 
 		commandList->SetDescriptorHeap(_resourceViews[i]->GetHeap());

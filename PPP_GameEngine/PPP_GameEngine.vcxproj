@@ -192,8 +192,10 @@
     <ClInclude Include="GameCore\Input\Include\GamePad.hpp" />
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
-    <ClInclude Include="GameCore\Network\Include\ITransport.hpp" />
-    <ClInclude Include="GameCore\Network\Include\TransportTCP.hpp" />
+    <ClInclude Include="GameCore\Network\Public\Include\ITransport.hpp" />
+    <ClInclude Include="GameCore\Network\Public\Include\Socket.hpp" />
+    <ClInclude Include="GameCore\Network\Public\Include\TransportTCP.hpp" />
+    <ClInclude Include="GameCore\Network\Private\Include\NetworkErrorCode.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassGBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassLightCulling.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassZPrepass.hpp" />
@@ -458,8 +460,10 @@
     <ClCompile Include="GameCore\Input\Source\GamePad.cpp" />
     <ClCompile Include="GameCore\Input\Source\Keyboard.cpp" />
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
-    <ClCompile Include="GameCore\Network\Source\ITransport.cpp" />
-    <ClCompile Include="GameCore\Network\Source\TransportTCP.cpp" />
+    <ClCompile Include="GameCore\Network\Private\Source\NetworkErrorCode.cpp" />
+    <ClCompile Include="GameCore\Network\Public\Source\ITransport.cpp" />
+    <ClCompile Include="GameCore\Network\Public\Source\Socket.cpp" />
+    <ClCompile Include="GameCore\Network\Public\Source\TransportTCP.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassGBuffer.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassLightCulling.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassZPrepass.cpp" />

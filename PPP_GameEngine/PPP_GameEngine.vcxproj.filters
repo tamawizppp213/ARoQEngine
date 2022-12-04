@@ -801,10 +801,16 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\RayTracing\Include\VulkanRayTracingTLASBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Network\Include\ITransport.hpp">
+    <ClInclude Include="GameCore\Network\Public\Include\ITransport.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Network\Include\TransportTCP.hpp">
+    <ClInclude Include="GameCore\Network\Public\Include\TransportTCP.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Network\Public\Include\Socket.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Network\Private\Include\NetworkErrorCode.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1274,10 +1280,16 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\RayTracing\Source\VulkanRayTracingTLASBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Network\Source\TransportTCP.cpp">
+    <ClCompile Include="GameCore\Network\Public\Source\TransportTCP.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Network\Source\ITransport.cpp">
+    <ClCompile Include="GameCore\Network\Public\Source\ITransport.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Network\Public\Source\Socket.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Network\Private\Source\NetworkErrorCode.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

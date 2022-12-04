@@ -37,7 +37,7 @@ RayTracingGeometry::RayTracingGeometry(const std::shared_ptr<core::RHIDevice>& d
 	if (_indexBuffer)
 	{
 		_geometryDesc.Triangles.IndexBuffer = dxIndexBuffer->GetResource()->GetGPUVirtualAddress();
-		_geometryDesc.Triangles.IndexCount  = dxIndexBuffer->GetElementCount();
+		_geometryDesc.Triangles.IndexCount  = static_cast<UINT>(dxIndexBuffer->GetElementCount());
 		_geometryDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT; // å„Ç≈ïœçXÇ∑ÇÈ
 	}
 

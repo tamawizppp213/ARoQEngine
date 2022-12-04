@@ -5,13 +5,15 @@
 ///             @date   2022_12_04
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef TRANSPORT_TCP_HPP
-#define TRANSPORT_TCP_HPP
+#ifndef ITRANSPORT_HPP
+#define ITRANSPORT_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "ITransport.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <WinSock2.h>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -28,38 +30,32 @@ namespace gc
 	*  @class     TransportTCP
 	*  @brief     TCP Connection Class (Winsock (windows only))
 	*****************************************************************************/
-	class TransportTCP : public ITransport
+	class ITransport: public NonCopyable
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Transport Connection (return true: Connection Success, false: Connection Fail)*/
-		bool Connect(const std::string& address, const std::uint32_t port) override;
+		virtual bool Connect(const std::string& address, const std::uint32_t port) = 0;
 		/* @brief : Transport Disconnection*/
-		void Disconnect() override;
+		virtual void Disconnect() = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-
+		bool IsConnected() const { return _isConnected; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		TransportTCP();
-		~TransportTCP();
-		TransportTCP(const SOCKET socket, const std::string& transportName);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-
+		ITransport();
+		virtual ~ITransport();
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		/* @brief: Connection Socket*/
-		SOCKET _socket = NULL;
-		/* @brief: Transport Name*/
-		std::string _transportName = "";
 		/* @brief: Connection Flags*/
 		bool _isConnected = false;
 	};
