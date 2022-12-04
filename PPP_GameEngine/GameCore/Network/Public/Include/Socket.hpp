@@ -56,6 +56,12 @@ namespace gc
 		// @brief : Connect to server. Use client socket
 		bool Connect(const std::string& ipAddress, const std::uint32_t port);
 
+		/* @brief : Ready to wait for connection requestes form TCP clients */
+		void Listen(const std::int32_t backlog);
+
+		/* @brief : Accepts connection requests from TCP clients. Return new Socket*/
+		Socket Accept();
+
 		/* @brief : Close socket*/
 		void Close();
 		/****************************************************************************
@@ -70,6 +76,7 @@ namespace gc
 		*****************************************************************************/
 		Socket() = default;
 		~Socket() = default;
+		Socket(SOCKET socket, const SocketType socketType, const ProtocolType protocolType);
 		Socket(const SocketType socketType, const ProtocolType protocolType);
 	private:
 		/****************************************************************************

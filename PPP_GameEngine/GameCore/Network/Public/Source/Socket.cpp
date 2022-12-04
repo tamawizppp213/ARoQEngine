@@ -32,6 +32,12 @@ Socket::Socket(const SocketType socketType, const ProtocolType protocolType)
 	}
 }
 
+Socket::Socket(const SOCKET socket, const SocketType socketType, const ProtocolType protocolType)
+	: _socket(socket), _socketType(socketType), _protocolType(protocolType)
+{
+
+}
+
 #pragma region Main Function
 /****************************************************************************
 *                     Connect
@@ -43,7 +49,7 @@ Socket::Socket(const SocketType socketType, const ProtocolType protocolType)
 *  @param[in] const std::string&  ipAddress
 *  @param[in] const std::uint32_t portNum
 *
-*  @return 　　void
+*  @return    void
 *****************************************************************************/
 bool Socket::Connect(const std::string& ipAddress, const std::uint32_t port)
 {
@@ -72,6 +78,78 @@ bool Socket::Connect(const std::string& ipAddress, const std::uint32_t port)
 }
 
 /****************************************************************************
+*                     Accept
+*************************************************************************//**
+*  @fn        Socket Socket::Accept()
+*
+*  @brief     Accepts connection requests from TCP clients. Return new Socket
+*
+*  @param[in] void
+*
+*  @return    Socket newSocket
+*****************************************************************************/
+Socket Socket::Accept()
+{
+	if (_socket == NULL) { throw std::runtime_error("Null socket"); }
+
+	/*-------------------------------------------------------------------
+	-                  client address (IPv4)
+	---------------------------------------------------------------------*/
+	SOCKADDR_IN clientAddress = {};
+
+	/*-------------------------------------------------------------------
+	-                  Connection to server
+	---------------------------------------------------------------------*/
+	int byteLength   = static_cast<int>(sizeof(clientAddress));
+	SOCKET newSocket = accept(_socket, (struct sockaddr*)&clientAddress, &byteLength);
+
+	/*-------------------------------------------------------------------
+	-                  Show Debug Client Connect Log
+	---------------------------------------------------------------------*/
+#ifdef _DEBUG
+	std::string addressInfo = inet_ntoa(clientAddress.sin_addr);
+	std::string portInfo    = std::to_string(ntohs(clientAddress.sin_port));
+	OutputDebugStringA("Accepted connection from ");
+	OutputDebugStringA(addressInfo.c_str());
+	OutputDebugStringA(", port = ");
+	OutputDebugStringA(portInfo.c_str());
+	OutputDebugStringA("\n");
+#endif
+
+	return Socket(newSocket, _socketType, _protocolType);
+}
+
+/****************************************************************************
+*                     Listen
+*************************************************************************//**
+*  @fn        void Socket::Listen(const std::int32_t backlog)
+*
+*  @brief     Ready to wait for connection requestes form TCP clients
+*
+*  @param[in] const std::int32_t backlog (Maximum length of queue of pending connections.)
+*
+*  @return    void
+*****************************************************************************/
+void Socket::Listen(const std::int32_t backlog)
+{
+	if (_socket == INVALID_SOCKET) { return; }
+
+	/*-------------------------------------------------------------------
+	-                Wait for connection
+	---------------------------------------------------------------------*/
+	const int result = listen(_socket, backlog);
+
+	/*-------------------------------------------------------------------
+	-                Show error log
+	---------------------------------------------------------------------*/
+	if (result == SOCKET_ERROR)
+	{
+		NetworkException exception(result);
+		exception.Log();
+	}
+}
+
+/****************************************************************************
 *                     Close
 *************************************************************************//**
 *  @fn        void Socket::Close()
@@ -80,7 +158,7 @@ bool Socket::Connect(const std::string& ipAddress, const std::uint32_t port)
 * 
 *  @param[in] void
 * 
-*  @return 　　void
+*  @return    void
 *****************************************************************************/
 void Socket::Close()
 {
