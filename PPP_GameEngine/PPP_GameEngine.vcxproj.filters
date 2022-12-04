@@ -801,6 +801,12 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\RayTracing\Include\VulkanRayTracingTLASBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Network\Include\ITransport.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Network\Include\TransportTCP.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1266,6 +1272,12 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\Vulkan\RayTracing\Source\VulkanRayTracingTLASBuffer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Network\Source\TransportTCP.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Network\Source\ITransport.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

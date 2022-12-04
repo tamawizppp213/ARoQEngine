@@ -50,7 +50,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		RHICommandAllocator() = default;
+		RHICommandAllocator () = default;
 		~RHICommandAllocator() = default;
 		explicit RHICommandAllocator(const std::shared_ptr<RHIDevice>& device, const core::CommandListType commandListType) 
 			: _device(device),  _commandListType(commandListType) { };

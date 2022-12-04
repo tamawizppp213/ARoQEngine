@@ -38,6 +38,8 @@ namespace rhi::directX12
 		*****************************************************************************/
 		/* directX12 : (High) xGPU, dGPU iGPU (Low) selected*/
 		std::shared_ptr<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		/* directX12 : (Low) iGPU, dGPU xGPU (High)*/
+		std::shared_ptr<core::RHIDisplayAdapter> SearchMinimumPowerAdapter ()override;
 		/* return all available display adapter*/
 		std::vector<std::shared_ptr<core::RHIDisplayAdapter>> EnumrateAdapters() override;
 		/* OutputDebugString : adapter list*/
@@ -58,8 +60,12 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void EnabledDebugLayer();           // debug mode only use
+		/* @brief : CPU debugger*/
+		void EnabledDebugLayer();            // debug mode only use
+		/* @brief : GPU debugger*/
 		void EnabledShaderBasedValidation(); // It has a significant impact on the frame rate.
+		/* @brief : Select High performance or minimum power ( (High) xGPU, dGPU iGPU (Low))*/
+		std::shared_ptr<core::RHIDisplayAdapter> SearchAdapter(const DXGI_GPU_PREFERENCE preference);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

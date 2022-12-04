@@ -261,10 +261,36 @@ std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapt
 *****************************************************************************/
 std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 {
+	return SearchAdapter(VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
+}
+
+/****************************************************************************
+*                     SearchMinimumPowerAdapter
+*************************************************************************//**
+*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+*  @brief     Return integrated GPU adapter. not found : first adapter
+*  @param[in] void
+*  @return 　　std::shared_ptr<core::RHIAdapter>
+*****************************************************************************/
+std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+{
+	return SearchAdapter(VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU);
+}
+
+/****************************************************************************
+*                     SearchAdapter
+*************************************************************************//**
+*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
+*  @brief     Return proper GPU adapte. not found : first found adapter 
+*  @param[in] void
+*  @return 　　std::shared_ptr<core::RHIAdapter>
+*****************************************************************************/
+std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
+{
 	const auto& devices = EnumratePhysicalDevices();
 	if (devices.size() == 0) { return nullptr; }
 
-	std::shared_ptr<core::RHIDisplayAdapter> adapter = std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(),devices[0]);
+	std::shared_ptr<core::RHIDisplayAdapter> adapter = std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(), devices[0]);
 	for (int i = 1; i < devices.size(); ++i)
 	{
 		/*-------------------------------------------------------------------
@@ -275,15 +301,14 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapt
 		/*-------------------------------------------------------------------
 		-               Discrete GPU check
 		---------------------------------------------------------------------*/
-		if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+		if (properties.deviceType == deviceType)
 		{
-			adapter = std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(),devices[i]); break;
+			adapter = std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(), devices[i]); break;
 		}
 	}
 
 	return adapter;
 }
-
 /****************************************************************************
 *                     LogAdapters
 *************************************************************************//**
@@ -332,6 +357,7 @@ std::vector<std::string> RHIInstance::AcquireExtensionList()
 	}
 	return foundExtensions;
 }
+
 /****************************************************************************
 *                     EnumratePhysicalDevices
 *************************************************************************//**

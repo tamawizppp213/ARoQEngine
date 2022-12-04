@@ -1,41 +1,45 @@
-//////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12RayTracingTLASBuffer.hpp
-///             @brief  TLAS Buffer
+#pragma once//////////////////////////////////////////////////////////////////////////////////
+///             @file   TransportTCP.hpp
+///             @brief  Winsock2 TCP Module
 ///             @author Toide Yutaro
-///             @date   2022_11_23
+///             @date   2022_12_04
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_RAYTRACING_TLAS_BUFFER_HPP
-#define DIRECTX12_RAYTRACING_TLAS_BUFFER_HPP
+#ifndef ITRANSPORT_HPP
+#define ITRANSPORT_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/RayTracing/Include/RayTracingTLASBuffer.hpp"
-#include <vulkan/vulkan.h>
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <WinSock2.h>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-#pragma warning(disable : 4100)
-//////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
-//////////////////////////////////////////////////////////////////////////////////
 
-namespace rhi::vulkan
+//////////////////////////////////////////////////////////////////////////////////
+//                               Class
+//////////////////////////////////////////////////////////////////////////////////
+namespace gc
 {
+
 	/****************************************************************************
-	*				  			TLASBuffer
+	*				  			 TransportTCP
 	*************************************************************************//**
-	*  @struct    TLASBuffer
-	*  @brief     Bottom Level Acceleration Structure Buffer
+	*  @class     TransportTCP
+	*  @brief     TCP Connection Class (Winsock (windows only))
 	*****************************************************************************/
-	class TLASBuffer : public core::TLASBuffer
+	class ITransport: public NonCopyable
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Build(const std::shared_ptr<core::RHICommandList>& commandList) override {};
+		/* @brief : Transport Connection (return true: Connection Success, false: Connection Fail)*/
+		virtual bool Connect(const std::string& address, const std::uint32_t port) = 0;
+		/* @brief : Transport Disconnection*/
+		virtual void Disconnect() = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -43,20 +47,15 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		TLASBuffer() = default;
-		~TLASBuffer();
-		TLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
-			const std::vector<std::shared_ptr<core::ASInstance>>& blasBuffers,
-			const core::BuildAccelerationStructureFlags flags);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-
+		ITransport();
+		virtual ~ITransport();
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-
 	};
 }
 #endif

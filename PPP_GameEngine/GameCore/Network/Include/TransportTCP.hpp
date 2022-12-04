@@ -1,41 +1,43 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12RayTracingTLASBuffer.hpp
-///             @brief  TLAS Buffer
+///             @file   TransportTCP.hpp
+///             @brief  Winsock2 TCP Module
 ///             @author Toide Yutaro
-///             @date   2022_11_23
+///             @date   2022_12_04
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_RAYTRACING_TLAS_BUFFER_HPP
-#define DIRECTX12_RAYTRACING_TLAS_BUFFER_HPP
+#ifndef TRANSPORT_TCP_HPP
+#define TRANSPORT_TCP_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/RayTracing/Include/RayTracingTLASBuffer.hpp"
-#include <vulkan/vulkan.h>
+#include "ITransport.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-#pragma warning(disable : 4100)
-//////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
-//////////////////////////////////////////////////////////////////////////////////
 
-namespace rhi::vulkan
+//////////////////////////////////////////////////////////////////////////////////
+//                               Class
+//////////////////////////////////////////////////////////////////////////////////
+namespace gc
 {
+
 	/****************************************************************************
-	*				  			TLASBuffer
+	*				  			 TransportTCP
 	*************************************************************************//**
-	*  @struct    TLASBuffer
-	*  @brief     Bottom Level Acceleration Structure Buffer
+	*  @class     TransportTCP
+	*  @brief     TCP Connection Class (Winsock (windows only))
 	*****************************************************************************/
-	class TLASBuffer : public core::TLASBuffer
+	class TransportTCP : public ITransport
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Build(const std::shared_ptr<core::RHICommandList>& commandList) override {};
+		/* @brief : Transport Connection (return true: Connection Success, false: Connection Fail)*/
+		bool Connect(const std::string& address, const std::uint32_t port) override;
+		/* @brief : Transport Disconnection*/
+		void Disconnect() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -43,11 +45,9 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		TLASBuffer() = default;
-		~TLASBuffer();
-		TLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
-			const std::vector<std::shared_ptr<core::ASInstance>>& blasBuffers,
-			const core::BuildAccelerationStructureFlags flags);
+		TransportTCP();
+		~TransportTCP();
+		TransportTCP(const SOCKET socket, const std::string& transportName);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -56,7 +56,12 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-
+		/* @brief: Connection Socket*/
+		SOCKET _socket = NULL;
+		/* @brief: Transport Name*/
+		std::string _transportName = "";
+		/* @brief: Connection Flags*/
+		bool _isConnected = false;
 	};
 }
 #endif
