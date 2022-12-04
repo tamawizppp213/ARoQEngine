@@ -34,6 +34,7 @@ RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<rhi::core::RHIDev
 	ThrowIfFailed(dxDevice->CreateCommandAllocator(
 		EnumConverter::Convert(type),              // Enable to execute all command 
 		IID_PPV_ARGS(&_commandAllocator)));
+
 	_commandAllocator->SetName(L"DirectX12::CommandAllocator");
 }
 

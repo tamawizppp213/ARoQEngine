@@ -38,11 +38,14 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Reset command allocator*/
 		virtual void Reset() = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		core::CommandListType GetCommandListType() const { return _commandListType; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -51,7 +54,9 @@ namespace rhi::core
 		**                Protected Function
 		*****************************************************************************/
 		RHICommandAllocator () = default;
+
 		~RHICommandAllocator() = default;
+
 		explicit RHICommandAllocator(const std::shared_ptr<RHIDevice>& device, const core::CommandListType commandListType) 
 			: _device(device),  _commandListType(commandListType) { };
 		/****************************************************************************

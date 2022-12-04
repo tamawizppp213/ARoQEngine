@@ -49,7 +49,7 @@ RHIDisplayAdapter::~RHIDisplayAdapter()
 * 
 *  @param[in] std::uint32_t frameCount
 * 
-*  @return Å@ std::shared_ptr<core::RHIDevice> (directX12)
+*  @return    std::shared_ptr<core::RHIDevice> (directX12)
 *****************************************************************************/
 std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint32_t frameCount)
 {

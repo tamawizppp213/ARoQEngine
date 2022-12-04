@@ -35,7 +35,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Reset command allocator*/
 		void Reset() override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -45,7 +47,9 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHICommandAllocator() = default;
+
 		~RHICommandAllocator();
+
 		explicit RHICommandAllocator(
 			const std::shared_ptr<rhi::core::RHIDevice>& device, 
 			const core::CommandListType type);
