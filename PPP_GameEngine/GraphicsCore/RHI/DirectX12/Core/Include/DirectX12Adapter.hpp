@@ -38,8 +38,10 @@ namespace rhi::directX12
 		*****************************************************************************/
 		/* return logical device shared pointer. frame count is used for the command allocators*/
 		std::shared_ptr<core::RHIDevice> CreateDevice(const std::uint32_t frameCount) override;
+
 		/* Describe physical device name and spec */
 		void PrintInfo() override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -48,6 +50,7 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const AdapterComPtr& adapter);
+
 		~RHIDisplayAdapter();
 	protected:
 		/****************************************************************************

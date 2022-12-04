@@ -32,6 +32,7 @@ RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& i
 	_deviceID = desc.DeviceId; 
 	_isDiscreteGPU = desc.DedicatedVideoMemory != 0;
 }
+
 RHIDisplayAdapter::~RHIDisplayAdapter()
 {
 	if (_adapter) { _adapter.Reset(); }
@@ -43,14 +44,19 @@ RHIDisplayAdapter::~RHIDisplayAdapter()
 *                     CreateDevice
 *************************************************************************//**
 *  @fn        std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint32_t frameCount)
+* 
 *  @brief     Return directX12 logical device.
+* 
 *  @param[in] std::uint32_t frameCount
+* 
 *  @return Å@ std::shared_ptr<core::RHIDevice> (directX12)
 *****************************************************************************/
 std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint32_t frameCount)
 {
 	std::shared_ptr<core::RHIDevice> device = std::make_shared<RHIDevice>(shared_from_this(), frameCount);
+	
 	device->SetUp();
+
 	return device;
 }
 #pragma endregion Factory
@@ -60,9 +66,12 @@ std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint
 *                     PrintInfo
 *************************************************************************//**
 *  @fn        void RHIAdapter::PrintInfo()
+* 
 *  @brief     Print physical device information
+* 
 *  @param[in] void
-*  @return Å@  void
+* 
+*  @return    void
 *****************************************************************************/
 void RHIDisplayAdapter::PrintInfo()
 {
@@ -84,6 +93,7 @@ void RHIDisplayAdapter::PrintInfo()
 	const std::wstring systemMemoryStr       = L"System memory: "         + std::to_wstring(desc.DedicatedSystemMemory) + L"\n";
 	const std::wstring videoMemoryStr        = L"Video memory : "         + std::to_wstring(desc.DedicatedVideoMemory) + L"\n";
 	const std::wstring sharedSystemMemoryStr = L"Shared system memory : " + std::to_wstring(desc.SharedSystemMemory) + L"\n";
+	
 	OutputDebugString(systemMemoryStr.c_str());
 	OutputDebugString(videoMemoryStr.c_str());
 	OutputDebugString(sharedSystemMemoryStr.c_str());
@@ -92,15 +102,20 @@ void RHIDisplayAdapter::PrintInfo()
 	-                  Print Display Name
 	---------------------------------------------------------------------*/
 	IOutput* output = nullptr;
+
 	for(int i = 0; _adapter->EnumOutputs(i, (IDXGIOutput**)&output) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
+		// Get output descriptor
 		DXGI_OUTPUT_DESC outputDesc;
 		output->GetDesc(&outputDesc);
 
+		// Show Device Name to Output Debugger
 		std::wstring text = L"\n***Output: ";
 		text += outputDesc.DeviceName;
 		text += L"n";
 		OutputDebugString(text.c_str());
+
+		// Release IOutput Pointer
 		SAFE_RELEASE(output);
 	}
 }

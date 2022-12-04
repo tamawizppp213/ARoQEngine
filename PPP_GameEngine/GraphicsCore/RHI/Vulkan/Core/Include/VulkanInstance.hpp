@@ -38,28 +38,35 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		/* return all available display adapter*/
 		std::vector<std::shared_ptr<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		
 		/*vulkan : dGPU (not : first select gpu) */
 		std::shared_ptr<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		
 		/*vulkan : iGPU (not : first select gpu) */
 		std::shared_ptr<core::RHIDisplayAdapter> SearchMinimumPowerAdapter() override;
+		
 		/* OutputDebugString : adapter list*/
 		void LogAdapters() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkInstance       GetVkInstance()       { return _instance; }
+		
 		const VkInstance GetVkInstance() const { return _instance; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIInstance() = default;
+
 		~RHIInstance();
+
 		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		bool CheckValidationLayerSupport(); // check enable cpu and gpu debugger
+		
 		std::shared_ptr<core::RHIDisplayAdapter> SearchAdapter(const VkPhysicalDeviceType deviceType);
 		/****************************************************************************
 		**                Protected Member Variables
@@ -75,6 +82,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		// Set up
 		std::vector<std::string>      AcquireExtensionList();
+
 		std::vector<VkPhysicalDevice> EnumratePhysicalDevices();
 		
 		// debugging
