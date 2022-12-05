@@ -1,80 +1,65 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   Image.hpp
-///             @brief  Image
+///             @file   IPAddress.hpp
+///             @brief  IPAddress
 ///             @author Toide Yutaro
-///             @date   2022_11_14
+///             @date   2022_12_05
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef IMAGE_HPP
-#define IMAGE_HPP
+#ifndef IPADDRESS_HPP
+#define IPADDRESS_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include "GameUtility/Math/Include/GMVertex.hpp"
-
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace ui
+namespace gc
 {
-
+	enum class UniqueIPAddressType
+	{
+		None,
+		Any, 
+		BroadCast,
+		LoopBack
+	};
 	/****************************************************************************
-	*				  			Image
+	*				  			 NetworkError
 	*************************************************************************//**
-	*  @class     Image
-	*  @brief     UI Image
+	*  @class     Tra
+	*  @brief     TCP Connection Class (Winsock (windows only))
 	*****************************************************************************/
-	class Image : public Copyable
+	class IPAddress
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Create image ui in Screen Space*/
-		void CreateInScreenSpace(
-			const gm::Float3& position,
-			const gm::Float2& rectSize,
-			const gm::Float2& u = gm::Float2(0, 1),
-			const gm::Float2& v = gm::Float2(0, 1),
-			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
-			float radian = 0);
-
-		/* @brief : Create image ui in NDC space (x, y, z: -1Å`1)*/
-		void CreateInNDCSpace(
-			const gm::Float3& position = gm::Float3(0, 0, 0),
-			const gm::Float2& rectSize = gm::Float2(2, 2),
-			const gm::Float2& u = gm::Float2(0, 1),
-			const gm::Float2& v = gm::Float2(0, 1),
-			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
-			float radian = 0);
+		static IPAddress GetUniqueIPAddress(const UniqueIPAddressType type);
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const gm::Vertex* GetVertices() const { return _vertices; }
-
+		std::uint64_t Get() const { return _ipAddress; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Image() = default;
-		~Image();
+		IPAddress(const std::string& ipAddress);
+		IPAddress(const std::uint64_t ipAddress);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		/* Create rect */
-		void CreateRect(const gm::Float3& position, const gm::Float2& rectSize, const gm::Float4& color, const gm::Float2& u, const gm::Float2& v, float radian);
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		gm::Vertex _vertices[4] = {};
-		gm::Float2 _size;
+		std::uint64_t _ipAddress = 0;
 	};
 }
 #endif

@@ -11,36 +11,20 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "../../Private/Include/NetworkDefine.hpp"
 #include <WinSock2.h>
 #include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
-{
-	enum class SocketType
-	{
-		Unknown         = -1,
-		Stream          = 1, // Supports reliable, bidirectional, connection-based byte streams without data replication and boundary maintenance.
-		Datagram        = 2, // It supports datagrams. This is a connectionless, fixed (usually short) maximum length, unreliable message
-		Raw             = 3,
-		RDM             = 4,
-		SequencedPacket = 5
-	};
-
-	enum class ProtocolType
-	{
-        Unknown = -1,
-		IPv4    = 4,
-        TCP     = 6,
-		UDP     = 17,
-		IDP     = 22,
-		IPv6    = 41
-	};
+	
 
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
+namespace gc
+{
+	class IPAddress;
 	/****************************************************************************
 	*				  			    Socket
 	*************************************************************************//**
@@ -53,17 +37,26 @@ namespace gc
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Accepts connection requests from TCP clients. Return new Socket*/
+		Socket Accept();
+
+		/* @brief : Associate a local address with a socket.*/
+		void Bind(const IPAddress& ipAddress, const std::uint16_t port);
+		
+		/* @brief : Close socket*/
+		void Close();
+
 		// @brief : Connect to server. Use client socket
-		bool Connect(const std::string& ipAddress, const std::uint32_t port);
+		bool Connect(const IPAddress& ipAddress, const std::uint16_t port);
 
 		/* @brief : Ready to wait for connection requestes form TCP clients */
 		void Listen(const std::int32_t backlog);
 
-		/* @brief : Accepts connection requests from TCP clients. Return new Socket*/
-		Socket Accept();
+		/* @brief : Close the status of socket. */
+		void Poll(const std::int32_t waitMicroSeconds = 10000); // 10000 : MaxWaitTime 
 
-		/* @brief : Close socket*/
-		void Close();
+		/* @brief : Shutdown socket*/
+		void Shutdown(const ShutdownType type);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -75,8 +68,11 @@ namespace gc
 		**                Constructor and Destructor
 		*****************************************************************************/
 		Socket() = default;
+
 		~Socket() = default;
+
 		Socket(SOCKET socket, const SocketType socketType, const ProtocolType protocolType);
+		
 		Socket(const SocketType socketType, const ProtocolType protocolType);
 	private:
 		/****************************************************************************

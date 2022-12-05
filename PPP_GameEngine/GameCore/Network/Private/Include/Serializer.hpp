@@ -1,80 +1,83 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   Image.hpp
-///             @brief  Image
+///             @file   Serializer.hpp
+///             @brief  Serialize
 ///             @author Toide Yutaro
-///             @date   2022_11_14
+///             @date   2022_12_05
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef IMAGE_HPP
-#define IMAGE_HPP
+#ifndef SERIALIZER_HPP
+#define SERIALIZER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include "GameUtility/Math/Include/GMVertex.hpp"
-
+#include "NetworkDefine.hpp"
+#include <stdint.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace ui
+namespace gc
 {
-
+	
 	/****************************************************************************
-	*				  			Image
+	*				  			 Serializer
 	*************************************************************************//**
-	*  @class     Image
-	*  @brief     UI Image
+	*  @class     Serializer
+	*  @brief     serialize data 
 	*****************************************************************************/
-	class Image : public Copyable
+	class Serializer
 	{
+
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Create image ui in Screen Space*/
-		void CreateInScreenSpace(
-			const gm::Float3& position,
-			const gm::Float2& rectSize,
-			const gm::Float2& u = gm::Float2(0, 1),
-			const gm::Float2& v = gm::Float2(0, 1),
-			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
-			float radian = 0);
-
-		/* @brief : Create image ui in NDC space (x, y, z: -1Å`1)*/
-		void CreateInNDCSpace(
-			const gm::Float3& position = gm::Float3(0, 0, 0),
-			const gm::Float2& rectSize = gm::Float2(2, 2),
-			const gm::Float2& u = gm::Float2(0, 1),
-			const gm::Float2& v = gm::Float2(0, 1),
-			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
-			float radian = 0);
+		/* @brief : Serialize */
+		template<typename T> bool Serialize(const T element)
+		{
+			return true;
+		}
+		
+		/* @brief : Deserialize*/
+		template<typename T> bool Deserialize(T& element)
+		{
+			return true;
+		}
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const gm::Vertex* GetVertices() const { return _vertices; }
-
+		Endian GetEndian() const { return _endian; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Image() = default;
-		~Image();
+		Serializer() = default;
+
+		virtual ~Serializer()
+		{
+			
+		}
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		/* Create rect */
-		void CreateRect(const gm::Float3& position, const gm::Float2& rectSize, const gm::Float4& color, const gm::Float2& u, const gm::Float2& v, float radian);
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		gm::Vertex _vertices[4] = {};
-		gm::Float2 _size;
+		
+	private:
+		/****************************************************************************
+		**                Private Member Variables
+		*****************************************************************************/
+		Endian _endian = Endian::BigEndian;
+		
+		uint64_t _offsetIndex = 0;
 	};
 }
 #endif

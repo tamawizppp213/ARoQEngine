@@ -39,25 +39,43 @@ RHIDescriptorHeap::~RHIDescriptorHeap()
 
 #pragma endregion Constructor and Destructor
 #pragma region Public Function 
+/****************************************************************************
+*                     Allocate
+*************************************************************************//**
+*  @fn        RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+*
+*  @brief     Allocate view.Return descriptor index(only use resourceLayout in vulkan api
+*
+*  @param[in] const core::DescriptorHeapType heapType
+*  @param[in] const std::shared_ptr<core::RHIResourceLayout>& resourceLayout
+*
+*  @return 　　DescriptorID
+*****************************************************************************/
 RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
 {
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
 	if (_heapInfo.find(heapType) == _heapInfo.end()) { return static_cast<DescriptorID>(INVALID_ID); }
+
 	/*-------------------------------------------------------------------
 	-			     Issue ID
 	---------------------------------------------------------------------*/
 	auto& resourceAllocator = _resourceAllocators[heapType];
 	return resourceAllocator.IssueID(); // resource view index in each heap.
 }
+
 /****************************************************************************
 *                     Resize
 *************************************************************************//**
 *  @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
+* 
 *  @brief     Resize max view count size heap
+* 
 *  @param[in] const core::DescriptorHeapType type
+* 
 *  @param[in] const size_t viewCount
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
@@ -69,14 +87,21 @@ void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t
 
 	std::map<core::DescriptorHeapType, MaxDescriptorSize> heapInfo;
 	heapInfo[type] = viewCount;
+
+	/*-------------------------------------------------------------------
+	-			    Resize Heap
+	---------------------------------------------------------------------*/
 	Resize(heapInfo);
 }
 /****************************************************************************
 *                     Resize
 *************************************************************************//**
 *  @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
+* 
 *  @brief     Resize max view count size heap
+* 
 *  @param[in] const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
@@ -87,7 +112,9 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	-	Count total descriptor size and Check Heap Type (CBV or SRV or UAV)
 	---------------------------------------------------------------------*/
 	if (!CheckCorrectViewConbination(heapInfos)) { throw std::runtime_error("wrong conbination view"); }
+
 	size_t totalDescriptorCount = 0;
+
 	for (const auto& desc : heapInfos) 
 	{ 
 		// count total descriptor size
@@ -128,7 +155,8 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 				_resourceAllocators[heapInfo.first].GetMaxDescriptorCount(),                           // copy   descriptor count 
 				D3D12_CPU_DESCRIPTOR_HANDLE(heap->GetCPUDescriptorHandleForHeapStart().ptr + pointer), // dest   descriptor range 
 				_resourceAllocators[heapInfo.first].GetCPUDescHandler(),                               // source descriptor range
-				heapType);                                               
+				heapType);     
+
 			// Proceed cpu and gpu pointer 
 			pointer += _descriptorByteSize * heapInfo.second;
 		}
@@ -140,6 +168,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	_totalHeapCount     = totalDescriptorCount;
 	_descriptorByteSize = dxDevice->GetDescriptorHandleIncrementSize(heapType);
 	_descriptorHeap     = heap;
+
 	{
 		size_t pointer = 0;
 		for (const auto& heapInfo : heapInfos)
@@ -152,7 +181,9 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 				D3D12_GPU_DESCRIPTOR_HANDLE() : 
 				D3D12_GPU_DESCRIPTOR_HANDLE(_descriptorHeap->GetGPUDescriptorHandleForHeapStart().ptr + pointer) // gpu start pointer
 			);
+
 			_heapInfo[heapInfo.first] = heapInfo.second;
+
 			pointer += _descriptorByteSize * heapInfo.second;
 		}
 	}
@@ -162,8 +193,11 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 *                     Reset
 *************************************************************************//**
 *  @fn        void GraphicsDeviceDirectX12::ReportLiveObjects()
+* 
 *  @brief     Reset (ResetFlag: All -> Heap Count 0, or OnlyOffset)
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIDescriptorHeap::Reset(const ResetFlag flag)
@@ -172,6 +206,7 @@ void RHIDescriptorHeap::Reset(const ResetFlag flag)
 	{
 		resourceAllocator.second.ResetID();
 	}
+
 	if (flag == ResetFlag::All && _descriptorHeap != nullptr) 
 	{
 		_descriptorHeap.Reset(); 
@@ -185,6 +220,7 @@ void RHIDescriptorHeap::Reset(const ResetFlag flag)
 bool RHIDescriptorHeap::CheckCorrectViewConbination(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
 {
 	bool foundSingleView = false;
+
 	for (const auto& heapInfo : heapInfos)
 	{
 		if (heapInfo.first == core::DescriptorHeapType::RTV)     { foundSingleView = true; break; }

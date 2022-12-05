@@ -9,6 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Network/Public/Include/Socket.hpp"
+#include "GameCore/Network/Private/Include/IPAddress.hpp"
 #include "GameCore/Network/Private/Include/NetworkErrorCode.hpp"
 #include <stdexcept>
 #include <string>
@@ -16,6 +17,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gc;
+#pragma warning(disable : 4996)
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -46,12 +48,12 @@ Socket::Socket(const SOCKET socket, const SocketType socketType, const ProtocolT
 *
 *  @brief     Establish a connection to the specified server socket 
 *
-*  @param[in] const std::string&  ipAddress
-*  @param[in] const std::uint32_t portNum
+*  @param[in] const IPAddress&  ipAddress
+*  @param[in] const std::uint16_t portNum
 *
 *  @return    void
 *****************************************************************************/
-bool Socket::Connect(const std::string& ipAddress, const std::uint32_t port)
+bool Socket::Connect(const IPAddress& ipAddress, const std::uint16_t port)
 {
 	if (_socket == NULL) { return false; }
 
@@ -59,20 +61,23 @@ bool Socket::Connect(const std::string& ipAddress, const std::uint32_t port)
 	-                  Set up server address (IPv4)
 	---------------------------------------------------------------------*/
 	SOCKADDR_IN serverAddress = {};
-	serverAddress.sin_family           = AF_INET;
+	serverAddress.sin_family           = AF_INET; // Œã‚Å•Ï‚¦‚é‚©‚à
 	serverAddress.sin_port             = htons(port); // host byte order -> network byte order
-	serverAddress.sin_addr.S_un.S_addr = inet_addr(ipAddress.c_str());
+	serverAddress.sin_addr.S_un.S_addr = ipAddress.Get(); // string -> 32bit binary
 
 	/*-------------------------------------------------------------------
 	-                  Connection to server
 	---------------------------------------------------------------------*/
 	const int result = connect(_socket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-
+	
 	if (result == SOCKET_ERROR)
 	{
 		Close();
+		NetworkException exception(result);
+		exception.Log();
 	}
-
+	
+	OutputDebugStringA("Connect");
 	_connected = true;
 	return _connected;
 }
@@ -96,7 +101,7 @@ Socket Socket::Accept()
 	-                  client address (IPv4)
 	---------------------------------------------------------------------*/
 	SOCKADDR_IN clientAddress = {};
-
+	
 	/*-------------------------------------------------------------------
 	-                  Connection to server
 	---------------------------------------------------------------------*/
@@ -117,6 +122,42 @@ Socket Socket::Accept()
 #endif
 
 	return Socket(newSocket, _socketType, _protocolType);
+}
+
+/****************************************************************************
+*                     Bind
+*************************************************************************//**
+*  @fn        void Socket::Bind(const std::string& ipAddress, const std::uint32_t port)
+*
+*  @brief     Associate a local address with a socket.
+*
+*  @param[in] const IPAddress& ipAddress
+*  @param[in] const std::uint16_t port
+*
+*  @return    void
+*****************************************************************************/
+void Socket::Bind(const IPAddress& ipAddress, const std::uint16_t port)
+{
+	if (_socket == NULL) { return; }
+
+	/*-------------------------------------------------------------------
+	-                  Set up server address (IPv4)
+	---------------------------------------------------------------------*/
+	SOCKADDR_IN address = {};
+	address.sin_family           = AF_INET;
+	address.sin_port             = htons(port); // host byte order -> network byte order
+	address.sin_addr.S_un.S_addr = ipAddress.Get(); // string -> 32bit binary
+
+	/*-------------------------------------------------------------------
+	-                   Bind
+	---------------------------------------------------------------------*/
+	const int result = bind(_socket, (struct sockaddr*)&address, static_cast<int>(sizeof(address)));
+
+	if (result == SOCKET_ERROR)
+	{
+		NetworkException exception(result);
+		exception.Log();
+	}
 }
 
 /****************************************************************************
@@ -173,6 +214,77 @@ void Socket::Close()
 	---------------------------------------------------------------------*/
 	if (result == SOCKET_ERROR)
 	{
+		NetworkException exception(result);
+		exception.Log();
+	}
+}
+
+/****************************************************************************
+*                     Poll
+*************************************************************************//**
+*  @fn        void Socket::Poll(const std::int32_t waitMicroSeconds)
+*
+*  @brief     Close the status of socket. 
+*
+*  @param[in] const std::int32_t waitMicroSeconds. (this parameter sets INT_MAX, Choice Blocking mode) Max Blocking = 10s
+*
+*  @return    void
+*****************************************************************************/
+void Socket::Poll(const std::int32_t waitMicroSeconds)
+{
+	fd_set readSocket = {};
+
+	/*-------------------------------------------------------------------
+	-                 Initialize
+	---------------------------------------------------------------------*/
+	FD_ZERO(&readSocket);
+
+	/*-------------------------------------------------------------------
+	-                 Regist read socket
+	---------------------------------------------------------------------*/
+	FD_SET(_socket, &readSocket);
+
+	/*-------------------------------------------------------------------
+	-                 Set up time
+	---------------------------------------------------------------------*/
+	const std::int32_t maxTime = 10000;
+	timeval waitTime = {};
+	waitTime.tv_sec  = 0;
+	waitTime.tv_usec = waitMicroSeconds <= maxTime ? waitMicroSeconds : maxTime;
+
+	/*-------------------------------------------------------------------
+	-                 Polling
+	---------------------------------------------------------------------*/
+	const int result = select(0, &readSocket, NULL, NULL, &waitTime);
+
+	if (result == 0)
+	{
+		OutputDebugStringA("Time out");
+	}
+}
+
+/****************************************************************************
+*                     Shutdown
+*************************************************************************//**
+*  @fn        void Socket::Shutdown()
+*
+*  @brief     Disconnects the currently established communication session
+*
+*  @param[in] const ShutdownType
+*
+*  @return    void
+*****************************************************************************/
+void Socket::Shutdown(const ShutdownType type)
+{
+	/*-------------------------------------------------------------------
+	-                  Shutdown 
+	---------------------------------------------------------------------*/
+	const int result = shutdown(_socket, static_cast<int>(type));
+
+	if (result == SOCKET_ERROR)
+	{
+		Close();
+
 		NetworkException exception(result);
 		exception.Log();
 	}

@@ -27,24 +27,58 @@ Image::~Image()
 {
 
 }
+
+/****************************************************************************
+*                       CreateInScreenSpace
+*************************************************************************//**
+*  @fn        void ui::Image::CreateInScreenSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
+*
+*  @brief     Create Screen space rectangle
+*
+*  @param[in] const Float3& position (rect center position)
+*  @param[in] const Float2& rectSize ([0]: width, [1] height)
+*  @param[in] const Float4& color    ( R, G, B, Alpha)
+*  @param[in] const float radian
+*
+*  @return    void
+*****************************************************************************/
 void ui::Image::CreateInScreenSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
 {
 	CreateRect(Float3(position.x / Screen::GetScreenWidth(), position.y / Screen::GetScreenHeight(), position.z), Float2(rectSize.x / Screen::GetScreenWidth(), rectSize.y / Screen::GetScreenHeight()),
 		color, u, v, radian);
 }
+
+/****************************************************************************
+*                       CreateInNDCSpace
+*************************************************************************//**
+*  @fn        void ui::Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
+*
+*  @brief     Create NDC space rectangle
+*
+*  @param[in] const Float3& position (rect center position)
+*  @param[in] const Float2& rectSize ([0]: width, [1] height)
+*  @param[in] const Float4& color    ( R, G, B, Alpha)
+*  @param[in] const float radian
+*
+*  @return    void
+*****************************************************************************/
 void ui::Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
 {
 	CreateRect(position, rectSize,color, u, v, radian);
 }
+
 /****************************************************************************
 *                       CreateRect
 *************************************************************************//**
 *  @fn        void Sprite::CreateRect(const Float3& position, const Float2& rectSize, const Float4& color)
+* 
 *  @brief     Create Rectangle
+* 
 *  @param[in] const Float3& position (rect center position)
 *  @param[in] const Float2& rectSize ([0]: width, [1] height)
 *  @param[in] const Float4& color    ( R, G, B, Alpha)
-*  @return Å@Å@void
+* 
+*  @return    void
 *****************************************************************************/
 void Image::CreateRect(const Float3& position, const Float2& rectSize, const Float4& color, const Float2& u, const Float2& v, float radian)
 {

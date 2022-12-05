@@ -27,6 +27,7 @@ namespace rhi::core
 	*				  			APIVersion
 	*************************************************************************//**
 	*  @enum      APIVersion
+	* 
 	*  @brief     Graphics api version (Add as needed.)
 	*****************************************************************************/
 	enum class APIVersion : std::uint8_t
