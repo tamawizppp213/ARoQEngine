@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   Network error code.hpp
-///             @brief  Network error code
+///             @file   MemoryStream.hpp
+///             @brief  byte memory stream
 ///             @author Toide Yutaro
-///             @date   2022_12_04
+///             @date   2022_12_05
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@ using namespace gc;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
-MemoryStream::MemoryStream(const std::vector<std::uint8_t>& array) : _stream(array)
+MemoryStream::MemoryStream(const std::vector<std::byte>& array) : _stream(array)
 {
 
 }
@@ -34,7 +34,19 @@ MemoryStream::~MemoryStream()
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function
-void MemoryStream::Seek(const std::int64_t offset, SeekOrigin origin)
+/****************************************************************************
+*                     Seek
+*************************************************************************//**
+*  @fn        void MemoryStream::Seek(const std::int64_t offset, SeekOrigin origin)
+*
+*  @brief     Sets the read position in the current stream to the specified value
+*
+*  @param[in] const std::int64_t offset
+*  @param[in] const SeekOrigin origin
+*
+*  @return    void
+*****************************************************************************/
+void MemoryStream::Seek(const std::int64_t offset, const SeekOrigin origin)
 {
 	switch (origin)
 	{
@@ -46,20 +58,64 @@ void MemoryStream::Seek(const std::int64_t offset, SeekOrigin origin)
 	if (_position >= _stream.size()) { throw std::runtime_error("Exceed max stream size"); }
 }
 
-void MemoryStream::Write(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count)
+/****************************************************************************
+*                     Write
+*************************************************************************//**
+*  @fn        void MemoryStream::Write(const std::vector<std::byte>& buffer, const std::uint64_t offset, const std::uint64_t count)
+*
+*  @brief     Write to memory streamBuffer.
+*
+*  @param[in] const std::vector<std::byte>& inputBuffer
+*  @param[in] const std::uint64_t read start offset index
+*  @pamra[in] const std::uint64_t byteCount
+*
+*  @return    void
+*****************************************************************************/
+void MemoryStream::Write(const std::vector<std::byte>& buffer, const std::uint64_t offset, const std::uint64_t count)
 {
 	if (offset + count >= _stream.size()) { throw std::runtime_error("Exceed max stream size"); }
 
 	std::memcpy(_stream.data(), &buffer[offset], count);
 }
 
-void MemoryStream::WriteByte(const std::uint8_t byte)
+/****************************************************************************
+*                     AppendByte
+*************************************************************************//**
+*  @fn        void MemoryStream::AppendByte(const std::byte byte)
+*
+*  @brief     Push back byte
+*
+*  @param[in] const std::byte byte
+*
+*  @return    void
+*****************************************************************************/
+void MemoryStream::AppendByte(const std::byte byte)
 {
 	_stream.push_back(byte);
 }
 
-void MemoryStream::Read(std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count)
+/****************************************************************************
+*                     Read
+*************************************************************************//**
+*  @fn        std::vector<std::byte> MemoryStream::Read(const std::uint64_t count)
+*
+*  @brief     Read byte array and proceed byte indexer
+		      Not taking endian into account
+*
+*  @param[in] const std::uint64_t arrayCount (= byteLength) 
+*
+*  @return    std::vector<std::byte>
+*****************************************************************************/
+std::vector<std::byte> MemoryStream::Read(const std::uint64_t count)
 {
+	std::vector<std::byte> result(count);
 
+	// memory copy 
+	std::memcpy(result.data(), &_stream[_position], count);
+
+	// proceed seekPosition by byteLength
+	_position += count;
+
+	return result;
 }
 #pragma endregion Main Function

@@ -39,11 +39,13 @@ RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& de
 	/*-------------------------------------------------------------------
 	-                   Set up command queue info
 	---------------------------------------------------------------------*/
-	D3D12_COMMAND_QUEUE_DESC cmdQDesc = {};
-	cmdQDesc.NodeMask = 0;                                   // Single GPU
-	cmdQDesc.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL; // Command queue priority (ç°å„ïœÇ¶ÇÈÇ©Ç‡)
-	cmdQDesc.Type     = dxCommandListType;                   // Enable to execute all command 
-	cmdQDesc.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE;       // Default 
+	const D3D12_COMMAND_QUEUE_DESC cmdQDesc =
+	{
+		.Type     = dxCommandListType,                    // Enable to execute all command 
+		.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL,  // Command queue priority (ç°å„ïœÇ¶ÇÈÇ©Ç‡)
+		.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE,        // Default 
+		.NodeMask = 0                                     // Single GPU
+	};
 
 	/*-------------------------------------------------------------------
 	-                   Create command queue

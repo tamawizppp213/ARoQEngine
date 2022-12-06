@@ -56,7 +56,7 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (_heapInfo.find(heapType) == _heapInfo.end()) { return static_cast<DescriptorID>(INVALID_ID); }
+	if (!_heapInfo.contains(heapType)) { return static_cast<DescriptorID>(INVALID_ID); }
 
 	/*-------------------------------------------------------------------
 	-			     Issue ID
@@ -83,7 +83,7 @@ void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t
 	/*-------------------------------------------------------------------
 	-			     Check max heap size
 	---------------------------------------------------------------------*/
-	if (_heapInfo.find(type) != _heapInfo.end() && _heapInfo.at(type) > viewCount) { return; }
+	if (_heapInfo.contains(type) && _heapInfo.at(type) > viewCount) { return; }
 
 	std::map<core::DescriptorHeapType, MaxDescriptorSize> heapInfo;
 	heapInfo[type] = viewCount;
@@ -128,12 +128,15 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	/*-------------------------------------------------------------------
 	-			     Count total descriptor size
 	---------------------------------------------------------------------*/
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-	D3D12_DESCRIPTOR_HEAP_TYPE heapType = EnumConverter::Convert(heapInfos.begin()->first);
-	heapDesc.NumDescriptors = static_cast<UINT>(totalDescriptorCount);
-	heapDesc.Type           = heapType;
-	heapDesc.Flags          = heapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	heapDesc.NodeMask       = 0;
+	const D3D12_DESCRIPTOR_HEAP_TYPE heapType = EnumConverter::Convert(heapInfos.begin()->first);
+	
+	const D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
+	{
+		.Type           = heapType,
+		.NumDescriptors = static_cast<UINT>(totalDescriptorCount),
+		.Flags          = heapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+		.NodeMask       = 0
+	};
 
 	/*-------------------------------------------------------------------
 	-			     Create heap desc
