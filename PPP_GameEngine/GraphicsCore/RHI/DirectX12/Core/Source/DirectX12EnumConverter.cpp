@@ -25,9 +25,12 @@ D3D12_COMMAND_LIST_TYPE EnumConverter::Convert(const rhi::core::CommandListType 
 {
 	switch (type)
 	{
-		case core::CommandListType::Graphics: return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_DIRECT;
-		case core::CommandListType::Compute : return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_COMPUTE;
-		case core::CommandListType::Copy    : return D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_COPY;
+		using enum core::CommandListType;
+
+		case Graphics: return D3D12_COMMAND_LIST_TYPE_DIRECT;
+		case Compute : return D3D12_COMMAND_LIST_TYPE_COMPUTE;
+		case Copy    : return D3D12_COMMAND_LIST_TYPE_COPY;
+
 		default:
 			throw std::runtime_error("Not supported command list type (directX12 api)");
 	}
@@ -38,14 +41,17 @@ D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibility
 {
 	switch (visibility)
 	{
-		case core::ShaderVisibility::All          : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_ALL;
-		case core::ShaderVisibility::Vertex       : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_VERTEX;
-		case core::ShaderVisibility::Pixel        : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_PIXEL;
-		case core::ShaderVisibility::Geometry     : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_GEOMETRY;
-		case core::ShaderVisibility::Mesh         : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_MESH;
-		case core::ShaderVisibility::Amplification: return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_AMPLIFICATION;
-		case core::ShaderVisibility::Hull         : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_HULL;
-		case core::ShaderVisibility::Domain       : return D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_DOMAIN;
+		using enum core::ShaderVisibility;
+
+		case All          : return D3D12_SHADER_VISIBILITY_ALL;
+		case Vertex       : return D3D12_SHADER_VISIBILITY_VERTEX;
+		case Pixel        : return D3D12_SHADER_VISIBILITY_PIXEL;
+		case Geometry     : return D3D12_SHADER_VISIBILITY_GEOMETRY;
+		case Mesh         : return D3D12_SHADER_VISIBILITY_MESH;
+		case Amplification: return D3D12_SHADER_VISIBILITY_AMPLIFICATION;
+		case Hull         : return D3D12_SHADER_VISIBILITY_HULL;
+		case Domain       : return D3D12_SHADER_VISIBILITY_DOMAIN;
+		
 		default:
 			throw std::runtime_error("Not supported shader visibility (directX12 api)");
 	}
@@ -61,9 +67,12 @@ D3D12_STATIC_BORDER_COLOR EnumConverter::Convert(const rhi::core::BorderColor bo
 {
 	switch (borderColor)
 	{
-		case core::BorderColor::TransparentBlack: return D3D12_STATIC_BORDER_COLOR::D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-		case core::BorderColor::OpaqueWhite     : return D3D12_STATIC_BORDER_COLOR::D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
-		case core::BorderColor::OpaqueBlack     : return D3D12_STATIC_BORDER_COLOR::D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
+		using enum core::BorderColor;
+
+		case TransparentBlack: return D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+		case OpaqueWhite     : return D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE;
+		case OpaqueBlack     : return D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
+
 		default:
 			throw std::runtime_error("failed to convert static border color (directX12 api)");
 	}
@@ -73,15 +82,18 @@ D3D12_FILTER EnumConverter::Convert(const rhi::core::FilterOption filter)
 {
 	switch (filter)
 	{
-		case core::FilterOption::MinPointMagPointMipPoint   : return D3D12_FILTER_MIN_MAG_MIP_POINT;
-		case core::FilterOption::MinPointMagPointMipLinear  : return D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR;
-		case core::FilterOption::MinPointMagLinearMipPoint  : return D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
-		case core::FilterOption::MinPointMagLinearMipLinear : return D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR;
-		case core::FilterOption::MinLinearMagPointMipPoint  : return D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT;
-		case core::FilterOption::MinLinearMagPointMipLinear : return D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
-		case core::FilterOption::MinLinearMagLinearMipPoint : return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-		case core::FilterOption::MinLinearMagLinearMipLinear: return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-		case core::FilterOption::Anisotropy                 : return D3D12_FILTER_ANISOTROPIC;
+		using enum core::FilterOption;
+
+		case MinPointMagPointMipPoint   : return D3D12_FILTER_MIN_MAG_MIP_POINT;
+		case MinPointMagPointMipLinear  : return D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+		case MinPointMagLinearMipPoint  : return D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+		case MinPointMagLinearMipLinear : return D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+		case MinLinearMagPointMipPoint  : return D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT;
+		case MinLinearMagPointMipLinear : return D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+		case MinLinearMagLinearMipPoint : return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		case MinLinearMagLinearMipLinear: return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		case Anisotropy                 : return D3D12_FILTER_ANISOTROPIC;
+
 		default:
 			throw std::runtime_error("not supported filter option (directX12 api)");
 	}
@@ -91,17 +103,20 @@ DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 {
 	switch (pixelFormat)
 	{
-		case core::PixelFormat::R8G8B8A8_UNORM     : return DXGI_FORMAT_R8G8B8A8_UNORM;
-		case core::PixelFormat::B8G8R8A8_UNORM     : return DXGI_FORMAT_B8G8R8A8_UNORM;
-		case core::PixelFormat::R16G16B16A16_FLOAT : return DXGI_FORMAT_R16G16B16A16_FLOAT;
-		case core::PixelFormat::R32G32B32A32_FLOAT : return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case core::PixelFormat::R32G32B32_FLOAT    : return DXGI_FORMAT_R32G32B32_FLOAT;
-		case core::PixelFormat::D24_UNORM_S8_UINT  : return DXGI_FORMAT_D24_UNORM_S8_UINT;
-		case core::PixelFormat::R10G10B10A2_UNORM  : return DXGI_FORMAT_R10G10B10A2_UNORM;
-		case core::PixelFormat::D32_FLOAT          : return DXGI_FORMAT_D32_FLOAT;
-		case core::PixelFormat::B8G8R8A8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
-		case core::PixelFormat::BC1_UNORM          : return DXGI_FORMAT_BC1_UNORM;
-		case core::PixelFormat::Unknown: return DXGI_FORMAT_UNKNOWN;
+		using enum core::PixelFormat;
+
+		case R8G8B8A8_UNORM     : return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case B8G8R8A8_UNORM     : return DXGI_FORMAT_B8G8R8A8_UNORM;
+		case R16G16B16A16_FLOAT : return DXGI_FORMAT_R16G16B16A16_FLOAT;
+		case R32G32B32A32_FLOAT : return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		case R32G32B32_FLOAT    : return DXGI_FORMAT_R32G32B32_FLOAT;
+		case D24_UNORM_S8_UINT  : return DXGI_FORMAT_D24_UNORM_S8_UINT;
+		case R10G10B10A2_UNORM  : return DXGI_FORMAT_R10G10B10A2_UNORM;
+		case D32_FLOAT          : return DXGI_FORMAT_D32_FLOAT;
+		case B8G8R8A8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+		case BC1_UNORM          : return DXGI_FORMAT_BC1_UNORM;
+		case Unknown            : return DXGI_FORMAT_UNKNOWN;
+
 		default:
 			throw std::runtime_error("not supported Pixel Format type (directX12 api)");
 	}
@@ -110,8 +125,11 @@ DXGI_FORMAT EnumConverter::Convert(const rhi::core::IndexType indexFormat)
 {
 	switch (indexFormat)
 	{
-		case core::IndexType::UInt32: return DXGI_FORMAT_R32_UINT;
-		case core::IndexType::UInt16: return DXGI_FORMAT_R16_UINT;
+		using enum core::IndexType;
+
+		case UInt32: return DXGI_FORMAT_R32_UINT;
+		case UInt16: return DXGI_FORMAT_R16_UINT;
+		
 		default:
 			throw std::runtime_error("not supported Index Format type (directX12 api)");
 	}
@@ -135,8 +153,11 @@ D3D12_FILL_MODE EnumConverter::Convert(const rhi::core::FillMode fillMode)
 {
 	switch (fillMode)
 	{
-		case core::FillMode::Solid    : return D3D12_FILL_MODE::D3D12_FILL_MODE_SOLID;
-		case core::FillMode::WireFrame: return D3D12_FILL_MODE::D3D12_FILL_MODE_WIREFRAME;
+		using enum core::FillMode;
+
+		case Solid    : return D3D12_FILL_MODE_SOLID;
+		case WireFrame: return D3D12_FILL_MODE_WIREFRAME;
+
 		default:
 			throw std::runtime_error("not supported fill mode type (directX12 api)");
 	}
@@ -145,9 +166,12 @@ D3D12_CULL_MODE EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
 {
 	switch (cullingMode)
 	{
-		case core::CullingMode::None : return D3D12_CULL_MODE::D3D12_CULL_MODE_NONE;
-		case core::CullingMode::Front: return D3D12_CULL_MODE::D3D12_CULL_MODE_FRONT;
-		case core::CullingMode::Back : return D3D12_CULL_MODE::D3D12_CULL_MODE_BACK;
+		using enum core::CullingMode;
+
+		case None : return D3D12_CULL_MODE_NONE;
+		case Front: return D3D12_CULL_MODE_FRONT;
+		case Back : return D3D12_CULL_MODE_BACK;
+		
 		default:
 			throw std::runtime_error("not supported culling mode type (directX12 api)");
 	}
@@ -162,14 +186,16 @@ D3D12_COMPARISON_FUNC EnumConverter::Convert(const core::CompareOperator op)
 {
 	switch (op)
 	{
-		case core::CompareOperator::Never       : return D3D12_COMPARISON_FUNC_NEVER;
-		case core::CompareOperator::Less        : return D3D12_COMPARISON_FUNC_LESS;
-		case core::CompareOperator::Equal       : return D3D12_COMPARISON_FUNC_EQUAL;
-		case core::CompareOperator::LessEqual   : return D3D12_COMPARISON_FUNC_LESS_EQUAL;
-		case core::CompareOperator::Greater     : return D3D12_COMPARISON_FUNC_GREATER;
-		case core::CompareOperator::NotEqual    : return D3D12_COMPARISON_FUNC_NOT_EQUAL;
-		case core::CompareOperator::GreaterEqual: return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
-		case core::CompareOperator::Always      : return D3D12_COMPARISON_FUNC_ALWAYS;
+		using enum core::CompareOperator;
+
+		case Never       : return D3D12_COMPARISON_FUNC_NEVER;
+		case Less        : return D3D12_COMPARISON_FUNC_LESS;
+		case Equal       : return D3D12_COMPARISON_FUNC_EQUAL;
+		case LessEqual   : return D3D12_COMPARISON_FUNC_LESS_EQUAL;
+		case Greater     : return D3D12_COMPARISON_FUNC_GREATER;
+		case NotEqual    : return D3D12_COMPARISON_FUNC_NOT_EQUAL;
+		case GreaterEqual: return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+		case Always      : return D3D12_COMPARISON_FUNC_ALWAYS;
 		default:
 			throw std::runtime_error("not supported compare operator type (directX12 api)");
 	}
@@ -179,14 +205,16 @@ D3D12_STENCIL_OP EnumConverter::Convert(const core::StencilOperator op)
 {
 	switch (op)
 	{
-		case core::StencilOperator::Keep             : return D3D12_STENCIL_OP_KEEP;
-		case core::StencilOperator::Zero             : return D3D12_STENCIL_OP_ZERO;
-		case core::StencilOperator::Replace          : return D3D12_STENCIL_OP_REPLACE;
-		case core::StencilOperator::IncrementAndClamp: return D3D12_STENCIL_OP_INCR_SAT;
-		case core::StencilOperator::DecrementAndClamp: return D3D12_STENCIL_OP_DECR_SAT;
-		case core::StencilOperator::Invert           : return D3D12_STENCIL_OP_INVERT;
-		case core::StencilOperator::IncrementAndWrap : return D3D12_STENCIL_OP_INCR;
-		case core::StencilOperator::DecrementAndWrap : return D3D12_STENCIL_OP_DECR;
+		using enum core::StencilOperator;
+
+		case Keep             : return D3D12_STENCIL_OP_KEEP;
+		case Zero             : return D3D12_STENCIL_OP_ZERO;
+		case Replace          : return D3D12_STENCIL_OP_REPLACE;
+		case IncrementAndClamp: return D3D12_STENCIL_OP_INCR_SAT;
+		case DecrementAndClamp: return D3D12_STENCIL_OP_DECR_SAT;
+		case Invert           : return D3D12_STENCIL_OP_INVERT;
+		case IncrementAndWrap : return D3D12_STENCIL_OP_INCR;
+		case DecrementAndWrap : return D3D12_STENCIL_OP_DECR;
 		default:
 			throw std::runtime_error("not supported stencil operator type (directX12 api)");
 	}
@@ -199,25 +227,29 @@ D3D_PRIMITIVE_TOPOLOGY  EnumConverter::Convert(const rhi::core::PrimitiveTopolog
 }
 D3D12_PRIMITIVE_TOPOLOGY_TYPE EnumConverter::Convert1(const rhi::core::PrimitiveTopology primitiveTopology)
 {
+	using enum core::PrimitiveTopology;
+
 	switch (primitiveTopology)
 	{
-		case core::PrimitiveTopology::PointList    : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
-		case core::PrimitiveTopology::LineList     : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
-		case core::PrimitiveTopology::LineStrip    : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
-		case core::PrimitiveTopology::TriangleList : return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-		case core::PrimitiveTopology::TriangleStrip: return D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		case PointList    : return D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+		case LineList     : return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+		case LineStrip    : return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+		case TriangleList : return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		case TriangleStrip: return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		default:
 			throw std::runtime_error("not supported primitive topology type (directX12 api)");
 	}
 }
 DXGI_FORMAT EnumConverter::Convert(const core::InputFormat inputFormat)
 {
+	using enum core::InputFormat;
+
 	switch (inputFormat)
 	{
-		case core::InputFormat::R32G32_FLOAT      : return DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT;
-		case core::InputFormat::R32G32B32_FLOAT   : return DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT;
-		case core::InputFormat::R32G32B32A32_FLOAT: return DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case core::InputFormat::R32_FLOAT         : return DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT;
+		case R32G32_FLOAT      : return DXGI_FORMAT_R32G32_FLOAT;
+		case R32G32B32_FLOAT   : return DXGI_FORMAT_R32G32B32_FLOAT;
+		case R32G32B32A32_FLOAT: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		case R32_FLOAT         : return DXGI_FORMAT_R32_FLOAT;
 		default:
 			throw std::runtime_error("not supported input format");
 	}
@@ -226,15 +258,18 @@ DXGI_FORMAT EnumConverter::Convert(const core::InputFormat inputFormat)
 #pragma region GPUResource
 D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage)
 {
+	using enum core::ResourceUsage;
+
 	static std::vector<core::ResourceUsage> sourcePool = {
-		core::ResourceUsage::None,
-		core::ResourceUsage::VertexBuffer,
-		core::ResourceUsage::IndexBuffer,
-		core::ResourceUsage::ConstantBuffer,
-		core::ResourceUsage::RenderTarget,
-		core::ResourceUsage::DepthStencil,
-		core::ResourceUsage::UnorderedAccess
+		None,
+		VertexBuffer,
+		IndexBuffer,
+		ConstantBuffer,
+		RenderTarget,
+		DepthStencil,
+		UnorderedAccess
 	};
+
 	static std::vector<D3D12_RESOURCE_FLAGS> targetPool =
 	{
 		D3D12_RESOURCE_FLAG_NONE,
@@ -258,12 +293,14 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 }
 D3D12_RESOURCE_DIMENSION   EnumConverter::Convert(const rhi::core::ResourceDimension dimension)
 {
+	using enum core::ResourceDimension;
+
 	switch (dimension)
 	{
-		case core::ResourceDimension::Dimension1D: return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
-		case core::ResourceDimension::Dimension2D: return D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-		case core::ResourceDimension::Dimension3D: return D3D12_RESOURCE_DIMENSION_TEXTURE3D;
-		case core::ResourceDimension::Buffer: return D3D12_RESOURCE_DIMENSION_BUFFER;
+		case Dimension1D: return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+		case Dimension2D: return D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		case Dimension3D: return D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+		case Buffer     : return D3D12_RESOURCE_DIMENSION_BUFFER;
 		default:
 			throw std::runtime_error("not supported resource dimension (directX12 api)");
 	}
@@ -274,26 +311,29 @@ D3D12_SRV_DIMENSION        EnumConverter::Convert(const rhi::core::ResourceType 
 }
 D3D12_DESCRIPTOR_HEAP_TYPE EnumConverter::Convert(const rhi::core::DescriptorHeapType heapType)
 {
+	using enum core::DescriptorHeapType;
+
 	switch (heapType)
 	{
-		case core::DescriptorHeapType::CBV:
-		case core::DescriptorHeapType::SRV:
-		case core::DescriptorHeapType::UAV        : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		case core::DescriptorHeapType::SAMPLER    : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-		case core::DescriptorHeapType::RTV        : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-		case core::DescriptorHeapType::DSV        : return D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+		case CBV:
+		case SRV:
+		case UAV        : return D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		case SAMPLER    : return D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+		case RTV        : return D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+		case DSV        : return D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 		default:
 			throw std::runtime_error("not supported descriptor heap type (directX12 api)");
 	}
 }
 D3D12_DESCRIPTOR_RANGE_TYPE EnumConverter::Convert1(const rhi::core::DescriptorHeapType descriptorType)
 {
+	using enum core::DescriptorHeapType;
 	switch (descriptorType)
 	{
-		case core::DescriptorHeapType::CBV: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-		case core::DescriptorHeapType::SRV: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-		case core::DescriptorHeapType::UAV: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
-		case core::DescriptorHeapType::SAMPLER: return D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+		case CBV: return D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+		case SRV: return D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		case UAV: return D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+		case SAMPLER: return D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
 		default:
 			throw std::runtime_error("not supported descriptor range type (directX12 api)");
 	}
@@ -301,11 +341,12 @@ D3D12_DESCRIPTOR_RANGE_TYPE EnumConverter::Convert1(const rhi::core::DescriptorH
 #pragma region GPUBuffer
 D3D12_HEAP_TYPE  EnumConverter::Convert(const rhi::core::MemoryHeap memoryHeap)
 {
+	using enum core::MemoryHeap;
 	switch (memoryHeap)
 	{
-		case core::MemoryHeap::Default: return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_DEFAULT;
-		case core::MemoryHeap::Upload : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_UPLOAD;
-		case core::MemoryHeap::Custom : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_CUSTOM;
+		case Default: return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_DEFAULT;
+		case Upload : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_UPLOAD;
+		case Custom : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_CUSTOM;
 		default:
 			throw std::runtime_error("not supported heap type (directX12 api)");
 	}
@@ -313,19 +354,19 @@ D3D12_HEAP_TYPE  EnumConverter::Convert(const rhi::core::MemoryHeap memoryHeap)
 D3D12_RESOURCE_STATES EnumConverter::Convert(const rhi::core::ResourceState resourceState)
 {
 	static D3D12_RESOURCE_STATES states[] = {
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_GENERIC_READ,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_INDEX_BUFFER,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
-		D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE
+		D3D12_RESOURCE_STATE_COMMON,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER,
+		D3D12_RESOURCE_STATE_INDEX_BUFFER,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_DEPTH_WRITE,
+		D3D12_RESOURCE_STATE_COPY_DEST,
+		D3D12_RESOURCE_STATE_COPY_SOURCE,
+		D3D12_RESOURCE_STATE_PRESENT,
+		D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT,
+		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
+		D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE
 	};
 
 	return states[(int)resourceState];
@@ -337,19 +378,24 @@ D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE EnumConverter::Convert(const rhi::core::
 {
 	switch (op)
 	{
-		case core::AttachmentLoad::Load    : return D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_PRESERVE;
-		case core::AttachmentLoad::Clear   : return D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
-		case core::AttachmentLoad::DontCare: return D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_DISCARD;
+		using enum core::AttachmentLoad;
+
+		case Load    : return D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_PRESERVE;
+		case Clear   : return D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+		case DontCare: return D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_DISCARD;
+		
 		default: 
 			throw std::runtime_error("not support render pass beginning type (directX12 api)");
 	}
 }
 D3D12_RENDER_PASS_ENDING_ACCESS_TYPE    EnumConverter::Convert(const rhi::core::AttachmentStore op)
 {
+	using enum core::AttachmentStore;
+
 	switch (op)
 	{
-		case core::AttachmentStore::Store   : return D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
-		case core::AttachmentStore::DontCare: return D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_DISCARD;
+		case Store   : return D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
+		case DontCare: return D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_DISCARD;
 		default:
 			throw std::runtime_error("not support render pass ending type (directX12 api)");
 	}
@@ -358,11 +404,13 @@ D3D12_RENDER_PASS_ENDING_ACCESS_TYPE    EnumConverter::Convert(const rhi::core::
 #pragma region RayTracing
 D3D12_RAYTRACING_GEOMETRY_FLAGS EnumConverter::Convert(const rhi::core::RayTracingGeometryFlags flags)
 {
+	using enum core::RayTracingGeometryFlags;
+
 	switch (flags)
 	{
-		case core::RayTracingGeometryFlags::None  : return D3D12_RAYTRACING_GEOMETRY_FLAGS::D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
-		case core::RayTracingGeometryFlags::Opaque: return D3D12_RAYTRACING_GEOMETRY_FLAGS::D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
-		case core::RayTracingGeometryFlags::NoDuplicateAnyHitInvocation: return D3D12_RAYTRACING_GEOMETRY_FLAGS::D3D12_RAYTRACING_GEOMETRY_FLAG_NO_DUPLICATE_ANYHIT_INVOCATION;
+		case None                        : return D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
+		case Opaque                      : return D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
+		case NoDuplicateAnyHitInvocation : return D3D12_RAYTRACING_GEOMETRY_FLAG_NO_DUPLICATE_ANYHIT_INVOCATION;
 		default:
 		{
 			throw std::runtime_error("not support ray tracing geometry flags");
@@ -372,13 +420,15 @@ D3D12_RAYTRACING_GEOMETRY_FLAGS EnumConverter::Convert(const rhi::core::RayTraci
 
 D3D12_RAYTRACING_INSTANCE_FLAGS EnumConverter::Convert(const rhi::core::RayTracingInstanceFlags flags)
 {
+	using enum core::RayTracingInstanceFlags;
+
 	switch (flags)
 	{
-		case core::RayTracingInstanceFlags::None                         : return D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
-		case core::RayTracingInstanceFlags::TriangleCullDisable          : return D3D12_RAYTRACING_INSTANCE_FLAG_TRIANGLE_CULL_DISABLE;
-		case core::RayTracingInstanceFlags::TriangleFrontCounterClockwise: return D3D12_RAYTRACING_INSTANCE_FLAG_TRIANGLE_FRONT_COUNTERCLOCKWISE;
-		case core::RayTracingInstanceFlags::ForceOpaque                  : return D3D12_RAYTRACING_INSTANCE_FLAG_FORCE_OPAQUE;
-		case core::RayTracingInstanceFlags::ForceNonOpaque               : return D3D12_RAYTRACING_INSTANCE_FLAG_FORCE_NON_OPAQUE;
+		case None                         : return D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
+		case TriangleCullDisable          : return D3D12_RAYTRACING_INSTANCE_FLAG_TRIANGLE_CULL_DISABLE;
+		case TriangleFrontCounterClockwise: return D3D12_RAYTRACING_INSTANCE_FLAG_TRIANGLE_FRONT_COUNTERCLOCKWISE;
+		case ForceOpaque                  : return D3D12_RAYTRACING_INSTANCE_FLAG_FORCE_OPAQUE;
+		case ForceNonOpaque               : return D3D12_RAYTRACING_INSTANCE_FLAG_FORCE_NON_OPAQUE;
 		default:
 			throw std::runtime_error("not support raytracing instance flags (directX12 api)");
 	}
@@ -386,15 +436,17 @@ D3D12_RAYTRACING_INSTANCE_FLAGS EnumConverter::Convert(const rhi::core::RayTraci
 
 D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS EnumConverter::Convert(const rhi::core::BuildAccelerationStructureFlags flags)
 {
+	using enum core::BuildAccelerationStructureFlags;
+
 	switch (flags)
 	{
-		case core::BuildAccelerationStructureFlags::None           : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;
-		case core::BuildAccelerationStructureFlags::AllowUpdate    : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
-		case core::BuildAccelerationStructureFlags::AllowCompaction: return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_COMPACTION;
-		case core::BuildAccelerationStructureFlags::PreformUpdate  : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE;
-		case core::BuildAccelerationStructureFlags::MinimizeMemory : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_MINIMIZE_MEMORY;
-		case core::BuildAccelerationStructureFlags::PreferFastBuild: return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_BUILD;
-		case core::BuildAccelerationStructureFlags::PreferFastTrace: return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+		case None           : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_NONE;
+		case AllowUpdate    : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
+		case AllowCompaction: return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_COMPACTION;
+		case PreformUpdate  : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PERFORM_UPDATE;
+		case MinimizeMemory : return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_MINIMIZE_MEMORY;
+		case PreferFastBuild: return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_BUILD;
+		case PreferFastTrace: return D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
 		default:
 			throw std::runtime_error("not support acceleration structure build flags (directX12 api)");
 	}

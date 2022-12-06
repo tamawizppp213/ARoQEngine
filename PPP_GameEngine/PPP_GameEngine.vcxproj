@@ -192,7 +192,9 @@
     <ClInclude Include="GameCore\Input\Include\GamePad.hpp" />
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
+    <ClInclude Include="GameUtility\File\Include\BitConverter.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\IPAddress.hpp" />
+    <ClInclude Include="GameCore\Network\Private\Include\MemoryStream.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\NetworkDefine.hpp" />
     <ClInclude Include="GameCore\Network\Public\Include\ITransport.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\Serializer.hpp" />
@@ -461,7 +463,9 @@
     <ClCompile Include="GameCore\Input\Source\GamePad.cpp" />
     <ClCompile Include="GameCore\Input\Source\Keyboard.cpp" />
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
+    <ClCompile Include="GameUtility\File\Source\BitConverter.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\IPAddress.cpp" />
+    <ClCompile Include="GameCore\Network\Private\Source\MemoryStream.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\NetworkErrorCode.cpp" />
     <ClCompile Include="GameCore\Network\Public\Source\ITransport.cpp" />
     <ClCompile Include="GameCore\Network\Public\Source\Socket.cpp" />
