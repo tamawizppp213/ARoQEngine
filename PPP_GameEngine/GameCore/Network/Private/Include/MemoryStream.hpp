@@ -46,31 +46,39 @@ namespace gc
 		void Seek(const std::int64_t offset, const SeekOrigin origin);
 
 		/* @ brief : Writes a block of bytes to the current stream using data read from the buffer.*/
-		void Write(const std::vector<std::byte>& buffer, const std::uint64_t offset, const std::uint64_t count);
+		void Write(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count);
 
 		/* @brief : Writes 1 byte to the current position in the current stream.*/
-		void AppendByte(const std::byte byte);
+		void AppendByte(const std::uint8_t byte);
+
+		/* @brief : Append */
+		void Append(const std::vector<std::uint8_t>& buffer);
 
 		/* @brief : Read byte array and proceed byte indexer
 		            Not taking endian into account*/
-		std::vector<std::byte> Read(const std::uint64_t count);
+		std::vector<std::uint8_t> Read(const std::uint64_t count);
 
 		/* @brief : Read value and proceed byte indexer (+= sizeof(T))
 		            Taking endian into account.*/
 		template<typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
 		T Read(const bool isLittleEndian);
+
+		/* Clear buffer*/
+		void Clear();
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const std::vector<std::byte>& Get() const { return _stream; }
+		const std::vector<std::uint8_t>& Get() const { return _stream; }
 		
-		void SetByteLength(std::uint64_t byteLength) { _stream.resize(byteLength); };
+		std::uint64_t GetBufferSize() const { return _stream.size(); }
+
+		void SetBufferSize(const std::uint64_t byteLength) { _stream.resize(byteLength); };
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		MemoryStream() = default;
 
-		MemoryStream(const std::vector<std::byte>& array);
+		MemoryStream(const std::vector<std::uint8_t>& array);
 
 		~MemoryStream();
 	protected:
@@ -81,7 +89,7 @@ namespace gc
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<std::byte> _stream = {}; // actual stream buffer to store buffer
+		std::vector<std::uint8_t> _stream = {}; // actual stream buffer to store buffer
 
 		std::uint64_t _position = 0; // current pointing position in the array
 	};

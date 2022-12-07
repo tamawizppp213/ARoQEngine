@@ -19,17 +19,14 @@ using namespace gc;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
-MemoryStream::MemoryStream(const std::vector<std::byte>& array) : _stream(array)
+MemoryStream::MemoryStream(const std::vector<std::uint8_t>& array) : _stream(array)
 {
 
 }
 
 MemoryStream::~MemoryStream()
 {
-	if (!_stream.empty())
-	{
-		_stream.clear(); _stream.shrink_to_fit();
-	}
+	Clear();
 }
 #pragma endregion Constructor and Destructor
 
@@ -61,17 +58,17 @@ void MemoryStream::Seek(const std::int64_t offset, const SeekOrigin origin)
 /****************************************************************************
 *                     Write
 *************************************************************************//**
-*  @fn        void MemoryStream::Write(const std::vector<std::byte>& buffer, const std::uint64_t offset, const std::uint64_t count)
+*  @fn        void MemoryStream::Write(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count)
 *
-*  @brief     Write to memory streamBuffer.
+*  @brief     Write to memory streamBuffer. Already allocate buffer is written.
 *
-*  @param[in] const std::vector<std::byte>& inputBuffer
+*  @param[in] const std::vector<std::uint8_t>& inputBuffer
 *  @param[in] const std::uint64_t read start offset index
 *  @pamra[in] const std::uint64_t byteCount
 *
 *  @return    void
 *****************************************************************************/
-void MemoryStream::Write(const std::vector<std::byte>& buffer, const std::uint64_t offset, const std::uint64_t count)
+void MemoryStream::Write(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count)
 {
 	if (offset + count >= _stream.size()) { throw std::runtime_error("Exceed max stream size"); }
 
@@ -81,7 +78,7 @@ void MemoryStream::Write(const std::vector<std::byte>& buffer, const std::uint64
 /****************************************************************************
 *                     AppendByte
 *************************************************************************//**
-*  @fn        void MemoryStream::AppendByte(const std::byte byte)
+*  @fn        void MemoryStream::AppendByte(const uint8_t byte)
 *
 *  @brief     Push back byte
 *
@@ -89,9 +86,28 @@ void MemoryStream::Write(const std::vector<std::byte>& buffer, const std::uint64
 *
 *  @return    void
 *****************************************************************************/
-void MemoryStream::AppendByte(const std::byte byte)
+void MemoryStream::AppendByte(const uint8_t byte)
 {
 	_stream.push_back(byte);
+}
+
+/****************************************************************************
+*                      Append
+*************************************************************************//**
+*  @fn        void MemoryStream::Append(const std::vector<std::uint8_t>& buffer)
+*
+*  @brief     Push back bytes
+*
+*  @param[in] const std::vector<std::uint8_t>& buffer
+*
+*  @return    void
+*****************************************************************************/
+void MemoryStream::Append(const std::vector<std::uint8_t>& buffers)
+{
+	for (const auto& buffer : buffers)
+	{
+		_stream.push_back(buffer);
+	}
 }
 
 /****************************************************************************
@@ -106,9 +122,9 @@ void MemoryStream::AppendByte(const std::byte byte)
 *
 *  @return    std::vector<std::byte>
 *****************************************************************************/
-std::vector<std::byte> MemoryStream::Read(const std::uint64_t count)
+std::vector<std::uint8_t> MemoryStream::Read(const std::uint64_t count)
 {
-	std::vector<std::byte> result(count);
+	std::vector<std::uint8_t> result(count);
 
 	// memory copy 
 	std::memcpy(result.data(), &_stream[_position], count);
@@ -117,5 +133,24 @@ std::vector<std::byte> MemoryStream::Read(const std::uint64_t count)
 	_position += count;
 
 	return result;
+}
+
+/****************************************************************************
+*                      Clear
+*************************************************************************//**
+*  @fn        void MemoryStream::Clear()
+*
+*  @brief     Clear buffer
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
+void MemoryStream::Clear()
+{
+	if (!_stream.empty())
+	{
+		_stream.clear(); _stream.shrink_to_fit();
+	}
 }
 #pragma endregion Main Function

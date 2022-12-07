@@ -11,7 +11,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "MemoryStream.hpp"
 #include "NetworkDefine.hpp"
+#include <string>
 #include <stdint.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -36,18 +38,21 @@ namespace gc
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Serialize */
-		template<typename T> bool Serialize(const T element)
-		{
-			return true;
-		}
-		
-		/* @brief : Deserialize*/
-		template<typename T> bool Deserialize(T& element)
-		{
-			return true;
-		}
+		/* @brief : Serialize T -> byte length*/
+		template<typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
+		void Serialize(const T element);
 
+		/* @brief : Serialize byte vector -> write stream buffer*/
+		void Serialize(const std::vector<std::uint8_t>& byte);
+
+		/* @brief : Deserialize*/
+		template<typename T> T Deserialize();
+
+		/* @brief : Deserialize std::string -> byteLenght*/
+		std::string Deserialize(const std::uint64_t byteLength);
+
+		/* Clear memory stream*/
+		void Clear();
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -56,12 +61,9 @@ namespace gc
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Serializer() = default;
+		Serializer();
 
-		virtual ~Serializer()
-		{
-			
-		}
+		virtual ~Serializer();
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -75,9 +77,47 @@ namespace gc
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
+		MemoryStream _stream;
+
 		Endian _endian = Endian::BigEndian;
-		
-		uint64_t _offsetIndex = 0;
 	};
+
+	/****************************************************************************
+	*                      Serialize
+	*************************************************************************//**
+	*  @fn        template <typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
+	              void Serializer::Serialize(const T element) 
+	*
+	*  @brief     Serialize (T type -> std::vector<std::uint8_t>)
+	*
+	*  @param[in] cosnt T element
+	*
+	*  @return    void
+	*****************************************************************************/
+	template <typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
+	void Serializer::Serialize(const T element) 
+	{
+		const std::vector<std::uint8_t> data = BitConverter::GetBytes(element);
+		_stream.Append(buffer);
+	}
+
+	/****************************************************************************
+	*                      Deserialize
+	*************************************************************************//**
+	*  @fn        template <typename T> T Serializer::Deserialize()
+	*
+	*  @brief     Deserialize (Read) value
+	*
+	*  @param[in] void
+	*
+	*  @return    void
+	*****************************************************************************/
+	template <typename T> T Serializer::Deserialize()
+	{
+		const auto byteSize = sizeof(T);
+		const auto data     = _stream.Read(byteSize);
+		
+		return BitConverter::GetValue<T>(data, 0);
+	}
 }
 #endif

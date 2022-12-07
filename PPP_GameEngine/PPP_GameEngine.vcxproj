@@ -463,6 +463,7 @@
     <ClCompile Include="GameCore\Input\Source\GamePad.cpp" />
     <ClCompile Include="GameCore\Input\Source\Keyboard.cpp" />
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
+    <ClCompile Include="GameCore\Network\Private\Source\Serializer.cpp" />
     <ClCompile Include="GameUtility\File\Source\BitConverter.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\IPAddress.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\MemoryStream.cpp" />

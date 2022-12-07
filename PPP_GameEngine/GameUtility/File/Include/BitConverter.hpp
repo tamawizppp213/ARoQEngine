@@ -36,15 +36,15 @@ public:
 	*****************************************************************************/
 	/* @brief : Convert bytes array*/
 	template<typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
-	static std::vector<std::byte> GetBytes(const T value, bool isLittleEndian = true);
+	static std::vector<std::uint8_t> GetBytes(const T value);
 
 	/* @brief : Convert byte array data into T value*/
 	template<typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
-	static T GetValue(const std::vector<std::byte>& inputs, const std::uint32_t startIndex = 0, bool isLittleEndian = true);
+	static T GetValue(const std::vector<std::uint8_t>& inputs, const std::uint32_t startIndex = 0);
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	
+	static bool IsLittleEndian() { return _isLittleEndian; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -59,7 +59,7 @@ protected:
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
-	
+	static bool _isLittleEndian;
 };
 
 /****************************************************************************
@@ -70,12 +70,11 @@ protected:
 *  @brief     Convert Default type input bytes array
 *
 *  @param[in] const T value
-*  @param[in] bool isLittleEndian
 *
 *  @return    std::vector<std::uint8_t>
 *****************************************************************************/
 template<typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
-std::vector<std::byte> BitConverter::GetBytes(const T value, bool isLittleEndian)
+std::vector<std::uint8_t> BitConverter::GetBytes(const T value)
 {
 	/*-------------------------------------------------------------------
 	-                Set up byte array size
@@ -88,10 +87,10 @@ std::vector<std::byte> BitConverter::GetBytes(const T value, bool isLittleEndian
 	-                Convert T -> std::vector<std::uint8_t> 
 	---------------------------------------------------------------------*/
 	const std::uint64_t oneByteSize = 8;
-	const std::byte     bitMask     = 0xff;
+	const std::uint8_t  bitMask     = 0xff;
 
 	// Little endian set up
-	if (isLittleEndian)
+	if (_isLittleEndian)
 	{
 		for (std::uint64_t i = 0; i < byteSize; ++i)
 		{
@@ -124,12 +123,11 @@ std::vector<std::byte> BitConverter::GetBytes(const T value, bool isLittleEndian
 *
 *  @param[in] const std::vector<std::uint8_t>& inputs
 *  @oaram[in] const std::uint32_t startOffset
-*  @param[in] bool isLittleEndian
 *
 *  @return    std::vector<std::uint8_t>
 *****************************************************************************/
 template<typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
-T BitConverter::GetValue(const std::vector<std::byte>& inputs, const std::uint32_t startOffset, bool isLittleEndian)
+T BitConverter::GetValue(const std::vector<std::uint8_t>& inputs, const std::uint32_t startOffset)
 {
 	/*-------------------------------------------------------------------
 	-                Error check
@@ -145,7 +143,7 @@ T BitConverter::GetValue(const std::vector<std::byte>& inputs, const std::uint32
 	
 	T result = 0;
 
-	if (isLittleEndian)
+	if (_isLittleEndian)
 	{
 		for (std::uint64_t i = 0; i < byteSize; ++i)
 		{

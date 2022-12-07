@@ -28,7 +28,9 @@ using namespace Microsoft::WRL;
 RHIFence::RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint64_t initialValue)
 {
 	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(device.get())->GetDevice();
+	
 	ThrowIfFailed(dxDevice->CreateFence(initialValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
+	
 	_fence->SetName(L"directX12::Fence");
 
 	_device = device;
@@ -44,8 +46,11 @@ RHIFence::~RHIFence()
 *                     GetCompletedValue
 *************************************************************************//**
 *  @fn        std::uint64_t RHIFence::GetCompletedValue()
+* 
 *  @brief     Return current fence value
+* 
 *  @param[in] void
+* 
 *  @return 　　std::uint64_t fenceValue
 *****************************************************************************/
 std::uint64_t RHIFence::GetCompletedValue()
@@ -57,8 +62,11 @@ std::uint64_t RHIFence::GetCompletedValue()
 *                     Signal
 *************************************************************************//**
 *  @fn        void RHIFence::Signal(const std::shared_ptr<rhi::core::RHICommandQueue>& queue)
+* 
 *  @brief     @brief: Set fence value from CPU side. (in case RHICommandQueue::Signal -> Set fence value from GPU side)
+* 
 *  @param[in] std::uint64_t value
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIFence::Signal(const std::uint64_t value)
@@ -70,8 +78,11 @@ void RHIFence::Signal(const std::uint64_t value)
 *                     Wait
 *************************************************************************//**
 *  @fn        void RHIFence::Wait(std::uint64_t value)
+* 
 *  @brief     Detect the completion of GPU processing on the CPU side. If not, it waits.
+* 
 *  @param[in] std::uint64_t value
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIFence::Wait(const std::uint64_t value)

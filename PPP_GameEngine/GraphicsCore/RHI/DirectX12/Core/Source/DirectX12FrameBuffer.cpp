@@ -48,6 +48,17 @@ RHIFrameBuffer::~RHIFrameBuffer()
 	if (_depthStencilHeap) { _depthStencilHeap.reset(); }
 }
 #pragma region Prepare
+/****************************************************************************
+*                      Prepare
+*************************************************************************//**
+*  @fn        void RHIFrameBuffer::Prepare()
+*
+*  @brief     Prepare heap and resource view (render target and depth stencil)
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void RHIFrameBuffer::Prepare()
 {
 	const auto rhiDevice = std::static_pointer_cast<directX12::RHIDevice>(_device);
@@ -96,6 +107,7 @@ DescriptorHeapComPtr RHIFrameBuffer::GetRTVHeap() const noexcept
 {
 	return _renderTargetHeap->GetHeap();
 }
+
 DescriptorHeapComPtr RHIFrameBuffer::GetDSVHeap() const noexcept
 {
 	return _depthStencilHeap->GetHeap();
