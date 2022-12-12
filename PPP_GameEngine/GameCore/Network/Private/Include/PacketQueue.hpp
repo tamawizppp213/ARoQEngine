@@ -1,21 +1,19 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TransportTCP.hpp
-///             @brief  Winsock2 TCP Module
+///             @file   IPAddress.hpp
+///             @brief  IPAddress
 ///             @author Toide Yutaro
-///             @date   2022_12_04
+///             @date   2022_12_05
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef ITRANSPORT_HPP
-#define ITRANSPORT_HPP
+#ifndef PACKET_QUEUE_HPP
+#define PACKET_QUEUE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "IPAddress.hpp"
+#include "MemoryStream.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <WinSock2.h>
-#include <vector>
-#include <memory>
+#include <queue>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,71 +23,59 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace gc
 {
-	class PacketQueue;
-	class Socket;
+	class MemoryStream;
+	
 	/****************************************************************************
-	*				  			 TransportTCP
+	*				  			 PacketQueue
 	*************************************************************************//**
-	*  @class     TransportTCP
-	*  @brief     TCP Connection Class (Winsock (windows only))
+	*  @class     PacketQueue
+	*  @brief     Packet buffer
 	*****************************************************************************/
-	class ITransport: public NonCopyable
+	class PacketQueue : public NonCopyable
 	{
-	protected :
-		using PacketQueuePtr = std::shared_ptr<PacketQueue>;
-		using SocketPtr      = std::shared_ptr<Socket>;
+		using DataSize = std::int32_t;
+		struct PacketInfo
+		{
+			std::uint64_t Offset;
+			std::uint64_t ByteSize;
+		};
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Transmission processing on the communication thread side.*/
-		virtual void SendPacket() = 0;
-		
-		/* @brief : Transmission processing on the communication thread side.*/
-		virtual void ReceivePacket() = 0;
+		/* @brief : Enqueue packet byte data to the memory stream.*/
+		void Enqueue(const std::vector<std::uint8_t>& data, const std::uint64_t byteSize);
 
-		/* @brief : Transport Connection (return true: Connection Success, false: Connection Fail)*/
-		virtual bool Connect(const IPAddress& address, const std::uint32_t port) = 0;
+		/* @brief : Dequeue packet byte data from the memory stream. Return dataSize*/
+		DataSize Dequeue(std::vector<std::uint8_t>& buffer, const std::uint64_t byteSize);
+
 		
-		/* @brief : Transport Disconnection*/
-		virtual void Disconnect() = 0;
+		void Clear() { _memoryStream.Clear(); }
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		bool IsConnected() const { return _isConnected; }
-
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		PacketQueue();
+		
+		virtual ~PacketQueue();
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		ITransport();
 
-		ITransport(const SocketPtr& socket, const std::string& transportName) : _socket(socket), _transportName(transportName) {};
-		
-		virtual ~ITransport();
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		/* @brief: Connection Flags*/
-		bool _isConnected = false;
+		MemoryStream _memoryStream;
+		
+		std::queue<PacketInfo> _offsetList = {};
 
-		// @brief :Packet queue
-		PacketQueuePtr _sendQueue    = nullptr;  // Send
-		PacketQueuePtr _receiveQueue = nullptr;  // Receive
+		std::uint64_t _seekPosition = 0;
 
-		/* @brief: Communication socket*/
-		SocketPtr _socket = nullptr;
-
-		/* @brief : Transport name*/
-		std::string _transportName = "";
-
-		/* @brief : Maximum size of packets to send and receive.
-		            This size is decided by MTU configuration. (MTU: Maximum data size that can be sent at a time )
-					Ethernet maximum MTS is 1500 bytes.*/
-		static constexpr std::uint32_t MaxPacketSize = 1400; 
 	};
 }
 #endif

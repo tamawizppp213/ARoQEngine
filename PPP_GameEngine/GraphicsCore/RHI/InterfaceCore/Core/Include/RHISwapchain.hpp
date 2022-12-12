@@ -42,20 +42,28 @@ namespace rhi::core
 		*****************************************************************************/
 		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
 		virtual std::uint32_t PrepareNextImage(const std::shared_ptr<RHIFence>& fence, std::uint64_t signalValue) = 0;
+		
 		/* @brief : Display front buffer*/
 		virtual void Present(const std::shared_ptr<RHIFence>& fence, std::uint64_t waitValue) = 0;
+		
 		/* @brief : Resize screen size. Rebuild everything once and update again.*/
 		virtual void Resize(const size_t width, const size_t height) = 0;
+		
 		/* @brief : Return current frame buffer*/
 		virtual size_t GetCurrentBufferIndex() const = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		size_t      GetWidth      () const noexcept { return _windowInfo.Width; }
+
 		size_t      GetHeight     () const noexcept { return _windowInfo.Height; }
+
 		PixelFormat GetPixelFormat() const noexcept { return _pixelFormat; }
+
 		WindowInfo  GetWindowInfo () const noexcept { return _windowInfo; }
+
 		std::shared_ptr<GPUTexture> GetBuffer(const size_t index) { return _backBuffers[index]; }
+		
 		size_t      GetBufferCount() const noexcept { return _backBuffers.size(); }
 
 		/****************************************************************************
@@ -67,16 +75,19 @@ namespace rhi::core
 		**                Protected Function
 		*****************************************************************************/
 		RHISwapchain() = default;
+
 		virtual ~RHISwapchain()
 		{
 			_backBuffers.clear(); _backBuffers.shrink_to_fit();
 			if (_commandQueue) { _commandQueue.reset(); }
 			if (_device)       { _device.reset(); }
 		};
+
 		explicit RHISwapchain(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, size_t frameBufferCount = 3, std::uint32_t vsync = 0, bool isValidHDR = true)
 		{
 			_device = device; _commandQueue = commandQueue; _windowInfo = windowInfo; _pixelFormat = pixelFormat; _vsync = vsync; _frameBufferCount = frameBufferCount; _isValidHDR = isValidHDR;
 		}
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

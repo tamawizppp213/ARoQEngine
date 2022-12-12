@@ -44,9 +44,12 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIRenderPass() = default;
+
 		~RHIRenderPass() = default;
+
 		explicit RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth = std::nullopt) : 
 			core::RHIRenderPass(device, colors, depth){}
+
 		explicit RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth = std::nullopt) :
 			core::RHIRenderPass(device, color, depth){};
 	protected:

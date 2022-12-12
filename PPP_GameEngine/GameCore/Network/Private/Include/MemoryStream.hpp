@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/File/Include/BitConverter.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -35,9 +36,9 @@ namespace gc
 	*  @class     MemoryStream
 	*  @brief     Memory Stream Buffer
 	*****************************************************************************/
-	class MemoryStream
+	class MemoryStream : public NonCopyable
 	{
-
+		using DataSize = std::int32_t;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -46,13 +47,17 @@ namespace gc
 		void Seek(const std::int64_t offset, const SeekOrigin origin);
 
 		/* @ brief : Writes a block of bytes to the current stream using data read from the buffer.*/
-		void Write(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count);
+		void Write(const std::vector<std::uint8_t>& sourceBuffer, const std::uint64_t sourceBufferOffset, const std::uint64_t count);
 
 		/* @brief : Writes 1 byte to the current position in the current stream.*/
 		void AppendByte(const std::uint8_t byte);
 
 		/* @brief : Append */
 		void Append(const std::vector<std::uint8_t>& buffer);
+
+#pragma region Read Function
+		/* @brief : Read memory stream to write to already allocated buffer. Return dataSize*/
+		DataSize Read(std::vector<std::uint8_t>& destBuffer, const std::uint64_t destBufferOffset, const std::uint64_t count);
 
 		/* @brief : Read byte array and proceed byte indexer
 		            Not taking endian into account*/
@@ -62,6 +67,10 @@ namespace gc
 		            Taking endian into account.*/
 		template<typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
 		T Read(const bool isLittleEndian);
+		
+		/* @biref : Finish reading buffer. current index == stream last index position*/
+		bool DoneRead() { return _position >= _stream.size();}
+#pragma endregion Read Function
 
 		/* Clear buffer*/
 		void Clear();
@@ -79,6 +88,8 @@ namespace gc
 		MemoryStream() = default;
 
 		MemoryStream(const std::vector<std::uint8_t>& array);
+
+		MemoryStream(const std::uint64_t streamByteSize);
 
 		~MemoryStream();
 	protected:

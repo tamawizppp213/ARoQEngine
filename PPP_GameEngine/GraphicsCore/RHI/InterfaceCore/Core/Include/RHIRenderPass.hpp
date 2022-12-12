@@ -48,23 +48,30 @@ namespace rhi::core
 			_colorClearValues = color.has_value() ? std::vector<ClearValue>{color.value()} : std::vector<ClearValue>{};
 			_depthClearValue  = depth;
 		}
+
 		void SetClearValue(const std::vector  <ClearValue>& colors, const std::optional<ClearValue>& depth = std::nullopt)
 		{
 			_colorClearValues = colors;
 			_depthClearValue  = depth;
 		}
+
 		bool Compatible(const std::shared_ptr<RHIFrameBuffer>& frameBuffer) const;
 		
 		/* @brief : Return multi sample count*/
 		MultiSample GetMaxSample() const noexcept { return _maxSample; }
+		
 		/* @brief : Return clear color value*/
 		const std::vector<ClearValue>& GetClearColor() const noexcept { return _colorClearValues; }
+		
 		/* @brief : Return clear depth color value*/
 		std::optional<ClearValue> GetDepthClear() const noexcept { return _depthClearValue; }
+		
 		/* @brief : Return Get color attachment*/
 		std::optional<Attachment> GetColorAttachment(const size_t index = 0) const { return _colorAttachments[index]; }
+		
 		/* @brief : Return Get Depth attachment*/
 		std::optional<Attachment> GetDepthAttachment() const noexcept { return _depthAttachment; }
+		
 		/* @brief : Return color attachment size*/
 		size_t GetColorAttachmentSize() const noexcept { return _colorAttachments.size(); }
 		/****************************************************************************
@@ -76,6 +83,7 @@ namespace rhi::core
 		**                Protected Function
 		*****************************************************************************/
 		RHIRenderPass() = default;
+
 		virtual ~RHIRenderPass()
 		{
 			_depthClearValue.reset();
@@ -83,16 +91,20 @@ namespace rhi::core
 			_colorClearValues.clear(); _colorClearValues.shrink_to_fit();
 			_colorAttachments.clear(); _colorAttachments.shrink_to_fit();
 		}
+
 		explicit RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const std::vector<Attachment>& colors, const std::optional<Attachment>& depth = std::nullopt);
+		
 		explicit RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const Attachment& color, const std::optional<Attachment>& depth = std::nullopt);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice> _device = nullptr;
 
+		/* Render Target Render Pass*/
 		std::vector<Attachment>    _colorAttachments = {};
 		std::vector<ClearValue>    _colorClearValues = {};
 
+		/* Depth Stencil Render pass*/
 		std::optional<Attachment> _depthAttachment;
 		std::optional<ClearValue> _depthClearValue;
 

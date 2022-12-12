@@ -9,7 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Network/Public/Include/Socket.hpp"
-#include "GameCore/Network/Private/Include/IPAddress.hpp"
+#include "GameCore/Network/Public/Include/IPAddress.hpp"
 #include "GameCore/Network/Private/Include/NetworkErrorCode.hpp"
 #include <stdexcept>
 #include <string>
@@ -63,7 +63,7 @@ bool Socket::Connect(const IPAddress& ipAddress, const std::uint16_t port)
 	SOCKADDR_IN serverAddress = {};
 	serverAddress.sin_family           = AF_INET; // 後で変えるかも
 	serverAddress.sin_port             = htons(port); // host byte order -> network byte order
-	serverAddress.sin_addr.S_un.S_addr = ipAddress.Get(); // string -> 32bit binary
+	serverAddress.sin_addr.S_un.S_addr = static_cast<ULONG>(ipAddress.Get()); // string -> 32bit binary
 
 	/*-------------------------------------------------------------------
 	-                  Connection to server
@@ -146,7 +146,7 @@ void Socket::Bind(const IPAddress& ipAddress, const std::uint16_t port)
 	SOCKADDR_IN address = {};
 	address.sin_family           = AF_INET;
 	address.sin_port             = htons(port); // host byte order -> network byte order
-	address.sin_addr.S_un.S_addr = ipAddress.Get(); // string -> 32bit binary
+	address.sin_addr.S_un.S_addr = static_cast<ULONG>(ipAddress.Get()); // string -> 32bit binary
 
 	/*-------------------------------------------------------------------
 	-                   Bind
@@ -226,23 +226,24 @@ void Socket::Close()
 *
 *  @brief     Close the status of socket. 
 *
+*  @param[in] const SelectMode selectMode
 *  @param[in] const std::int32_t waitMicroSeconds. (this parameter sets INT_MAX, Choice Blocking mode) Max Blocking = 10s
 *
 *  @return    void
 *****************************************************************************/
-void Socket::Poll(const std::int32_t waitMicroSeconds)
+bool Socket::Poll(const SelectMode selectMode, const std::int32_t waitMicroSeconds)
 {
-	fd_set readSocket = {};
+	fd_set setSocket = {};
 
 	/*-------------------------------------------------------------------
 	-                 Initialize
 	---------------------------------------------------------------------*/
-	FD_ZERO(&readSocket);
+	FD_ZERO(&setSocket);
 
 	/*-------------------------------------------------------------------
 	-                 Regist read socket
 	---------------------------------------------------------------------*/
-	FD_SET(_socket, &readSocket);
+	FD_SET(_socket, &setSocket);
 
 	/*-------------------------------------------------------------------
 	-                 Set up time
@@ -255,11 +256,115 @@ void Socket::Poll(const std::int32_t waitMicroSeconds)
 	/*-------------------------------------------------------------------
 	-                 Polling
 	---------------------------------------------------------------------*/
-	const int result = select(0, &readSocket, NULL, NULL, &waitTime);
+	const int result = select(0,
+		SelectMode::SelectRead  == selectMode ? &setSocket : NULL,
+		SelectMode::SelectWrite == selectMode ? &setSocket : NULL,
+		SelectMode::SelectError == selectMode ? &setSocket : NULL,
+		&waitTime);
 
 	if (result == 0)
 	{
 		OutputDebugStringA("Time out");
+	}
+
+	return result > 0;
+}
+
+/****************************************************************************
+*                     Receive
+*************************************************************************//**
+*  @fn        std::vector<std::uint8_t> Socket::Receive(const std::uint64_t byteSize, const SocketFlags socketFlags)
+*
+*  @brief     Receive data from the connected socket
+*
+*  @param[in] const std::uint64_t receiveSize
+*  @param[in] const SocketFlags socketFlags
+*
+*  @return    std::vector<std::uint8_t> byteData
+*****************************************************************************/
+std::vector<std::uint8_t> Socket::Receive(const std::uint64_t byteSize, const SocketFlags socketFlags)
+{
+	std::vector<std::uint8_t> buffer(byteSize);
+
+	/*-------------------------------------------------------------------
+	-            Receive
+	---------------------------------------------------------------------*/
+	const int result = recv(_socket, (char*)buffer.data(), (int)byteSize, (int)socketFlags);
+
+	if (result == -1)
+	{
+		NetworkException exception(result);
+		exception.Log();
+	}
+
+	return buffer;
+}
+
+/****************************************************************************
+*                     Receive
+*************************************************************************//**
+*  @fn        void Socket::Receive(std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count, const SocketFlags socketFlags = SocketFlags::None)
+*
+*  @brief     Receive data from the connected socket
+*
+*  @param[in,out] std::vector<std::uint8_t>& buffer
+*  @param[in] const std::uint64_t receiveSize
+*  @param[in] const SocketFlags socketFlags
+*
+*  @return    std::int32_t result (-1 : error, 0 : timeout, other : byte size)
+*****************************************************************************/
+std::int32_t Socket::Receive(std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count, const SocketFlags socketFlags)
+{
+	/*-------------------------------------------------------------------
+	-             Exceed buffer size check
+	---------------------------------------------------------------------*/
+	if (offset + count > buffer.size()) { return -1; }
+
+	/*-------------------------------------------------------------------
+	-            Receive
+	---------------------------------------------------------------------*/
+	const int result = recv(_socket, (char*)(&buffer[offset]), (int)count, (int)socketFlags);
+
+	if (result == -1)
+	{
+		NetworkException exception(result);
+		exception.Log();
+	}
+
+	return result;
+}
+
+/****************************************************************************
+*                     Send
+*************************************************************************//**
+*  @fn        void Socket::Send(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t size, const SocketFlags socketFlags)
+*
+*  @brief     Send data on the connected socket
+*
+*  @param[in] const std::vector<std::uint8_t>& buffer
+*  @param[in] const std::uint64_t offset
+*  @param[in] const std::uint64_t sendSize
+*  @param[in] const SocketFlags socketFlags
+*
+*  @return    void
+*****************************************************************************/
+void Socket::Send(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t size, const SocketFlags socketFlags)
+{
+	/*-------------------------------------------------------------------
+	-             Exceed buffer size check
+	---------------------------------------------------------------------*/
+	if (offset + size > buffer.size()) { return; }
+
+	/*-------------------------------------------------------------------
+	-             Send 
+	---------------------------------------------------------------------*/
+	const int result = send(_socket, (char*)(&buffer[offset]), (int)size, (int)socketFlags); // キャストが心配
+
+
+	if (result == -1)
+	{
+		NetworkException exception(result);
+		exception.Log();
 	}
 }
 

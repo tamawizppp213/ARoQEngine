@@ -10,7 +10,9 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Network/Public/Include/TransportTCP.hpp"
-
+#include "GameCore/Network/Public/Include/Socket.hpp"
+#include "GameCore/Network/Private/Include/PacketQueue.hpp"
+#include "GameCore/Network/Private/Include/NetworkDefine.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -27,8 +29,8 @@ TransportTCP::TransportTCP() : ITransport()
 	
 }
 
-TransportTCP::TransportTCP(const SOCKET socket, const std::string& transportName)
-	:ITransport(), _socket(socket), _transportName(transportName)
+TransportTCP::TransportTCP(const SocketPtr& socket, const std::string& transportName)
+	:ITransport(socket, transportName)
 {
 
 }
@@ -42,22 +44,148 @@ TransportTCP::~TransportTCP()
 #pragma endregion Constructor and Destructor
 
 #pragma region Public Function 
-/* @brief : Transport Connection (return true: Connection Success, false: Connection Fail)*/
-bool TransportTCP::Connect(const std::string& address, const std::uint32_t port)
+/****************************************************************************
+*                      SendPacket
+*************************************************************************//**
+*  @fn        void TransportTCP::SendPacket()
+*
+*  @brief     Send packet
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
+void TransportTCP::SendPacket()
+{
+	if (_socket == nullptr) { return; }
+
+	/*-------------------------------------------------------------------
+	-                      Polling (Non wait time)
+	---------------------------------------------------------------------*/
+	_socket->Poll(SelectWrite, 0);
+
+	/*-------------------------------------------------------------------
+	-              Push packet byte data from packet queue
+	---------------------------------------------------------------------*/
+	// Prepare max packet size buffer
+	std::vector<std::uint8_t> buffer(MaxPacketSize);
+
+	// send packet data
+	int32_t sendSize = _sendQueue->Dequeue(buffer, buffer.size()); // Buffer size and sendSize may differ
+	int32_t sum      = sendSize;
+
+	while (sendSize > 0)
+	{
+		// update next sendqueue's offset and size
+		sendSize = _sendQueue->Dequeue(buffer, buffer.size());
+		sum     += sendSize > 0 ? sendSize : 0;
+	}
+
+	/*-------------------------------------------------------------------
+	-                      Send packet data
+	---------------------------------------------------------------------*/
+	_socket->Send(buffer, 0, sum, SocketFlags::None);
+}
+
+/****************************************************************************
+*                      ReceivePacket
+*************************************************************************//**
+*  @fn        void TransportTCP::ReceivePacket()
+*
+*  @brief     Transmission processing on the communication thread side.
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
+void TransportTCP::ReceivePacket()
+{
+	if (_socket == nullptr) { return; }
+
+	/*-------------------------------------------------------------------
+	-                      Polling (Non wait time)
+	---------------------------------------------------------------------*/
+	while (_socket->Poll(SelectRead, 0))
+	{
+		std::vector<std::uint8_t> buffer(MaxPacketSize);
+
+		const auto receiveSize = _socket->Receive(buffer, 0, buffer.size(), SocketFlags::None);
+		
+		// If result == 0, Disconnection from a communication partner
+		if (receiveSize == 0)
+		{
+			OutputDebugStringA("[TCP] Disconnect receive from other");
+			Disconnect();
+			break;
+		}
+		if (receiveSize > 0)
+		{
+			_receiveQueue->Enqueue(buffer, receiveSize);
+			break;
+		}
+	}
+}
+
+/****************************************************************************
+*                      Connect
+*************************************************************************//**
+*  @fn        bool TransportTCP::Connect(const IPAddress& address, const std::uint32_t port)
+*
+*  @brief     Transport Connection (return true: Connection Success, false: Connection Fail)
+*
+*  @param[in] const IPAddress& address
+*  @param[in] const std::uint32_t port
+*
+*  @return    bool result : (true) connection succuess (false) connection failed
+*****************************************************************************/
+bool TransportTCP::Connect(const IPAddress& address, const std::uint32_t port)
 {
 	/*-------------------------------------------------------------------
 	-                 Enable to use socket check
 	---------------------------------------------------------------------*/
-	if (_socket != NULL) { return false; }
+	if (_socket != nullptr) { OutputDebugStringA("Connection failed");  return false; }
 
+	/*-------------------------------------------------------------------
+	-                 Create new socket 
+	---------------------------------------------------------------------*/
+	_socket = std::make_shared<Socket>(SocketType::Stream, ProtocolType::TCP);
 	
-	return true;
+	/*-------------------------------------------------------------------
+	-                 Connect
+	---------------------------------------------------------------------*/
+	_socket->Connect(address, port);
+	_isConnected = true;
+	OutputDebugStringA("Connection Success");
+
+	// Todo : 接続結果をイベント通知できるようにする.
+
+	return _isConnected;
 }
-/* @brief : Transport Disconnection*/
+/****************************************************************************
+*                      Disonnect
+*************************************************************************//**
+*  @fn        void TransportTCP::Disconnect()
+*
+*  @brief     Transport Disconnection
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void TransportTCP::Disconnect()
 {
 	_isConnected = false;
 
+	/*-------------------------------------------------------------------
+	-                 Disconnect
+	---------------------------------------------------------------------*/
+	if (_socket == nullptr) { return; }
 
+	// close socket
+	_socket->Shutdown(ShutdownType::Both);
+	_socket->Close();
+	_socket.reset();
+
+	// Todo : 切断結果を通知します.
 }
 #pragma endregion Public Function

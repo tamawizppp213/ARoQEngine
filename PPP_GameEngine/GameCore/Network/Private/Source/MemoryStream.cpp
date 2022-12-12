@@ -24,6 +24,11 @@ MemoryStream::MemoryStream(const std::vector<std::uint8_t>& array) : _stream(arr
 
 }
 
+MemoryStream::MemoryStream(const std::uint64_t streamByteSize)
+{
+	_stream.resize(streamByteSize);
+}
+
 MemoryStream::~MemoryStream()
 {
 	Clear();
@@ -61,18 +66,33 @@ void MemoryStream::Seek(const std::int64_t offset, const SeekOrigin origin)
 *  @fn        void MemoryStream::Write(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count)
 *
 *  @brief     Write to memory streamBuffer. Already allocate buffer is written.
+*             If _position + count >= stream size, this stream buffer is resized.
+	          Basically, in this case, you should use Append function!!!
 *
 *  @param[in] const std::vector<std::uint8_t>& inputBuffer
-*  @param[in] const std::uint64_t read start offset index
+*  @param[in] const std::uint64_t sourceBuffer offset
 *  @pamra[in] const std::uint64_t byteCount
 *
 *  @return    void
 *****************************************************************************/
 void MemoryStream::Write(const std::vector<std::uint8_t>& buffer, const std::uint64_t offset, const std::uint64_t count)
 {
-	if (offset + count >= _stream.size()) { throw std::runtime_error("Exceed max stream size"); }
+	if (offset + count >= buffer.size()) { throw std::runtime_error("Exceed source buffer max stream size"); }
 
-	std::memcpy(_stream.data(), &buffer[offset], count);
+	/* If desired count >= stream size, this stream buffer is resized.
+	   Basically, in this case, you should use Append function!!!*/
+	const std::uint64_t desiredCount = _position + count;
+
+	if (desiredCount >= _stream.size())
+	{
+		_stream.resize(desiredCount);
+	}
+
+	// Buffer copy from std::vector<std::uint8_t> -> Stream buffer
+	std::memcpy(&_stream[_position], &buffer[offset], count);
+
+	// Proceed seek position by byteLength
+	_position += count;
 }
 
 /****************************************************************************
@@ -133,6 +153,35 @@ std::vector<std::uint8_t> MemoryStream::Read(const std::uint64_t count)
 	_position += count;
 
 	return result;
+}
+
+/****************************************************************************
+*                     Read
+*************************************************************************//**
+*  @fn        std::vector<std::byte> MemoryStream::Read(const std::uint64_t count)
+*
+*  @brief     Read memory stream to write to already allocated buffer. Return dataSize
+*
+*  @param[in, out] std::vector<std::uint8_t>& destBuffer, 
+*  @param[in] const std::uint64_t destBufferOffset, 
+*  @param[in] const std::uint64_t count
+*
+*  @return    Datasize 
+*****************************************************************************/
+MemoryStream::DataSize MemoryStream::Read(std::vector<std::uint8_t>& destBuffer, const std::uint64_t destBufferOffset, const std::uint64_t count)
+{
+	if (count + destBufferOffset > destBuffer.size()) { throw std::runtime_error("Exceed source buffer size"); }
+
+	const auto remainByteSize = _stream.size() - _position;
+	const auto readByteCount  = (remainByteSize <= count) ? remainByteSize : count;
+
+	// memory copy
+	std::memcpy(&destBuffer[destBufferOffset], &_stream[_position], readByteCount);
+
+	// proceed seekPosition by byteLength
+	_position += count;
+
+	return readByteCount;
 }
 
 /****************************************************************************

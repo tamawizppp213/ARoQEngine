@@ -807,7 +807,7 @@
     <ClInclude Include="GameCore\Network\Private\Include\NetworkErrorCode.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Network\Private\Include\IPAddress.hpp">
+    <ClInclude Include="GameCore\Network\Public\Include\IPAddress.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameCore\Network\Private\Include\NetworkDefine.hpp">
@@ -820,6 +820,12 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\File\Include\BitConverter.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Include\GMSimdMath.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1298,7 +1304,7 @@
     <ClCompile Include="GameCore\Network\Private\Source\NetworkErrorCode.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Network\Private\Source\IPAddress.cpp">
+    <ClCompile Include="GameCore\Network\Public\Source\IPAddress.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Network\Private\Source\MemoryStream.cpp">
@@ -1308,6 +1314,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Network\Private\Source\Serializer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Network\Private\Source\PacketQueue.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

@@ -34,8 +34,15 @@ namespace gc
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Transmission processing on the communication thread side.*/
+		void SendPacket() override;
+
+		/* @brief : Transmission processing on the communication thread side.*/
+		void ReceivePacket() override;
+
 		/* @brief : Transport Connection (return true: Connection Success, false: Connection Fail)*/
-		bool Connect(const std::string& address, const std::uint32_t port) override;
+		bool Connect(const IPAddress& address, const std::uint32_t port) override;
+		
 		/* @brief : Transport Disconnection*/
 		void Disconnect() override;
 		/****************************************************************************
@@ -46,8 +53,10 @@ namespace gc
 		**                Constructor and Destructor
 		*****************************************************************************/
 		TransportTCP();
+
 		~TransportTCP();
-		TransportTCP(const SOCKET socket, const std::string& transportName);
+
+		TransportTCP(const SocketPtr& socket, const std::string& transportName);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -56,10 +65,6 @@ namespace gc
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		/* @brief: Connection Socket*/
-		SOCKET _socket = NULL;
-		/* @brief: Transport Name*/
-		std::string _transportName = "";
 	};
 }
 #endif

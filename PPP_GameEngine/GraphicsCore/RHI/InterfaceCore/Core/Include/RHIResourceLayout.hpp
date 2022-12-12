@@ -43,10 +43,13 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		const ResourceLayoutElement&  GetResourceElement(const size_t index) const { return _elements[index]; }
+		
 		const SamplerLayoutElement&   GetSamplerElement (const size_t index) const { return _samplers[index]; }
+		
 		std::optional<Constant32Bits> GetConstant32Bits() const noexcept { return _constant32Bits; }
 
 		const std::vector<ResourceLayoutElement>& GetResourceElements() const{ return _elements; }
+		
 		const std::vector<SamplerLayoutElement>&  GetSamplerElements () const{ return _samplers; }
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -57,12 +60,14 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIResourceLayout() = default;
+
 		virtual ~RHIResourceLayout()
 		{
 			_elements.clear(); _elements.shrink_to_fit();
 			_samplers.clear(); _samplers.shrink_to_fit();
 
 		}
+
 		explicit RHIResourceLayout(
 			const std::shared_ptr<RHIDevice>& device,
 			const std::vector<core::ResourceLayoutElement>& elements = {},
