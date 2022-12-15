@@ -35,16 +35,17 @@ struct Texture;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace ui
+namespace gc::ui
 {
 	/****************************************************************************
-	*				  			Sprite
+	*				  			UIRenderer
 	*************************************************************************//**
-	*  @class     Sprite
+	*  @class     UIRenderer
 	*  @brief     2D Sprite
 	*****************************************************************************/
 	class UIRenderer : public NonCopyable
 	{
+	protected:
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 		using VertexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
 		using IndexBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
@@ -52,6 +53,7 @@ namespace ui
 		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
 		using ResourceViewPtr   = std::shared_ptr<rhi::core::GPUResourceView>;
 		using ImagePtr = std::shared_ptr<ui::Image>;
+
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -81,15 +83,18 @@ namespace ui
 		**                Protected Member Variables
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
+
 		// @brief : total rect vertex buffers (default : 1024 UI)
 		std::vector<VertexBufferPtr> _vertexBuffers = {};
 		// @brief : total rect index buffers (default : 1024 UI)
 		std::vector<IndexBufferPtr>  _indexBuffers  = {};
+		
 		// @brief : Pipeline state
 		PipelineStatePtr _pipeline = nullptr;
 		// @brief bind resource layout and view
 		ResourceLayoutPtr _resourceLayout = nullptr;
 		std::vector<ResourceViewPtr> _resourceViews = {};
+		
 		/* @brief regist total image count per frame  */
 		std::uint32_t  _totalImageCount        = 0;
 		// @brief : call drawIndex command count per frame

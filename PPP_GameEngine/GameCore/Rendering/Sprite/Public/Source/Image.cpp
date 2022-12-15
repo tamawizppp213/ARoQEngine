@@ -8,12 +8,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Rendering/Sprite/Include/Image.hpp"
+#include "../Include/Image.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace ui;
+using namespace gc::ui;
 using namespace gm;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -28,10 +29,28 @@ Image::~Image()
 
 }
 
+Image::Image(
+	const CoordinateType coordinateType,
+	const gm::Float3& position,
+	const gm::Float2& rectSize,
+	const gm::Float2& u,
+	const gm::Float2& v,
+	const gm::Float4& color,
+	float radian)
+{
+	switch (coordinateType)
+	{
+		case CoordinateType::Screen: CreateInScreenSpace(position, rectSize, u, v, color, radian);
+		case CoordinateType::NDC   : CreateInNDCSpace   (position, rectSize, u, v, color, radian);
+		default: 
+			throw std::runtime_error("unknown type");
+	}
+}
+
 /****************************************************************************
 *                       CreateInScreenSpace
 *************************************************************************//**
-*  @fn        void ui::Image::CreateInScreenSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
+*  @fn        void Image::CreateInScreenSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
 *
 *  @brief     Create Screen space rectangle
 *
@@ -42,7 +61,7 @@ Image::~Image()
 *
 *  @return    void
 *****************************************************************************/
-void ui::Image::CreateInScreenSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
+void Image::CreateInScreenSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
 {
 	CreateRect(Float3(position.x / Screen::GetScreenWidth(), position.y / Screen::GetScreenHeight(), position.z), Float2(rectSize.x / Screen::GetScreenWidth(), rectSize.y / Screen::GetScreenHeight()),
 		color, u, v, radian);
@@ -51,7 +70,7 @@ void ui::Image::CreateInScreenSpace(const Float3& position, const Float2& rectSi
 /****************************************************************************
 *                       CreateInNDCSpace
 *************************************************************************//**
-*  @fn        void ui::Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
+*  @fn        void Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
 *
 *  @brief     Create NDC space rectangle
 *
@@ -62,7 +81,7 @@ void ui::Image::CreateInScreenSpace(const Float3& position, const Float2& rectSi
 *
 *  @return    void
 *****************************************************************************/
-void ui::Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
+void Image::CreateInNDCSpace(const Float3& position, const Float2& rectSize, const Float2& u, const Float2& v, const Float4& color, float radian)
 {
 	CreateRect(position, rectSize,color, u, v, radian);
 }

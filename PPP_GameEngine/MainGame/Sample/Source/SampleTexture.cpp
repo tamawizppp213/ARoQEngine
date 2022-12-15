@@ -9,15 +9,15 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Sample/Include/SampleTexture.hpp"
-#include "GameCore/Rendering/Sprite/Include/UIRenderer.hpp"
-#include "GameCore/Rendering/Sprite/Include/Image.hpp"
+#include "GameCore/Rendering/Sprite/Public/Include/UIRenderer.hpp"
+#include "GameCore/Rendering/Sprite/Public/Include/Image.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace sample;
-using namespace ui;
+using namespace gc::ui;
 using namespace rhi;
 using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +132,7 @@ void SampleTexture::LoadMaterials()
 	_resourceCache->Load(L"Resources/Cubemap.jpg");
 
 	// Create UI Renderer
-	_renderer = std::make_unique<ui::UIRenderer>(_engine);
+	_renderer = std::make_unique<gc::ui::UIRenderer>(_engine);
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

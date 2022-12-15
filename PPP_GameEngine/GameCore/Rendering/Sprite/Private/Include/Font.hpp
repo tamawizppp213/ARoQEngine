@@ -1,19 +1,20 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   SampleTexture.hpp
-///             @brief  Texture Sample
+///             @file   Font.hpp
+///             @brief  Font
 ///             @author Toide Yutaro
-///             @date   2022_06_01
+///             @date   2022_04_16
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SAMPLE_TEXTURE_HPP
-#define SAMPLE_TEXTURE_HPP
+#ifndef FONT_HPP
+#define FONT_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Core/Include/Scene.hpp"
-#include "GameCore/Core/Include/ResourceManager.hpp"
+#include "GameUtility/Math/Include/GMVector.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -21,65 +22,80 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+class LowLevelGraphicsEngine;
 namespace rhi::core
 {
-	class GPUResourceCache;
+	class GPUTexture;
 	class GPUResourceView;
 }
 namespace gc::ui
 {
-	class Image;
-	class UIRenderer;
-}
-namespace sample
-{
-	
 	/****************************************************************************
-	*				  			SampleEmpty
+	*				  			FontLoader
 	*************************************************************************//**
-	*  @class     SampleEmpty
-	*  @brief     Empty sample
+	*  @class     FontLoader
+	*  @brief     Font load and register static class
 	*****************************************************************************/
-	class SampleTexture : public Scene
+	class Font: public NonCopyable
 	{
-		using UIRendererPtr = std::shared_ptr<gc::ui::UIRenderer>;
-		using ImagePtr      = std::shared_ptr<gc::ui::Image>;
-		using GPUResourceCachePtr = std::shared_ptr<rhi::core::GPUResourceCache>;
-		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using TexturePtr      = std::shared_ptr<rhi::core::GPUTexture>;
+		using ResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
-		void Update() override;
-		void Draw() override;
-		void Terminate() override;
+		/* @brief : Load texture*/
+		bool Load(const LowLevelGraphicsEnginePtr& engine, const std::wstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth);
+
+		/* @brief: Reset texture resource and infomation*/
+		void Reset();
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/*@brief: Return shared_ptr<GPUResourceView> font image and font resource view*/
+		ResourceViewPtr GetFontResourceView() const noexcept;
 
+		/* @brief: Return font texture shared_ptr*/
+		TexturePtr GetFontTexture() const noexcept;
+
+		/* @brief : Call load function. (Has existed texture view pointer)*/
+		bool HasLoaded() const noexcept { return _textureView != nullptr; }
+		
+		/* @brief : Each character pixel size*/
+		const gm::Float2& GetPixelPerChar() const { return _pixelPerChar; }
+
+		/* @brief : Total image width */
+		float GetImagePixelWidth() const { return _imagePixelWidth; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SampleTexture();
-		~SampleTexture();
+		Font() = default;
+
+		/* @brief : Load font constructor*/
+		Font(const LowLevelGraphicsEnginePtr& engine, const std::wstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth);
+		
+		~Font();
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void LoadMaterials() override;
-		void OnKeyboardInput() override;
-		void OnMouseInput() override;
-		void OnGamePadInput() override;
-		void ExecuteSceneTransition() override;
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		UIRendererPtr _renderer = nullptr;
-		ImagePtr      _image    = nullptr;
-		ImagePtr      _miniImage = nullptr;
-		GPUResourceCachePtr _resourceCache = nullptr;
-		GPUResourceViewPtr _resourceView = nullptr;
+		LowLevelGraphicsEnginePtr _engine = nullptr;
+
+		/* @brief : Each character pixel size*/
+		gm::Float2      _pixelPerChar    = {};
+
+		/* @brief : Total image width */
+		float           _imagePixelWidth = 0;
+
+		/* @brief : Texture and texture view resource*/
+		ResourceViewPtr _textureView    = nullptr;
 	};
 }
 #endif

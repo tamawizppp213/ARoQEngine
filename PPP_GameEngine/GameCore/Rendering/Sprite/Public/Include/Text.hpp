@@ -1,17 +1,23 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TransportTCP.hpp
-///             @brief  Winsock2 TCP Module
+///             @file   Text.hpp
+///             @brief  Text object (string, number)
+///                     現在では, 一行分の大きな自作テクスチャ画像を読み込んで, UV値に合わせて表示しています. 
+///                     今後の予定では,　ttfファイルを読み込んでBitmapに変換, その後テクスチャを読み込んで
+/// 　　　　　　　　　　　　　各文字を表示できるようにしたいと考えています. (現状では工数がかなりかかるためやってません)
+///                     行う場合は破壊的変更が生じることが考えられます. 
 ///             @author Toide Yutaro
-///             @date   2022_12_04
+///             @date   2022_12_14
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef TRANSPORT_TCP_HPP
-#define TRANSPORT_TCP_HPP
+#ifndef TEXT_HPP
+#define TEXT_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "ITransport.hpp"
+#include "Image.hpp"
+#include <vector>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,57 +25,74 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+
+namespace gc::ui
 {
+	struct StringInfo
+	{
+		std::string String;
+		gm::Float2  SizePerChar;
+		gm::Float3  StartPosition; // rect lect upper point
+		float       Space = 0.0f;
+		gm::Float4  Color = gm::Float4(1,1,1,1);
+	};
+
+	struct NumberInfo
+	{
+		std::uint32_t Number;
+		std::uint32_t Digit;
+		gm::Float2    SizePerDigit;
+		gm::Float3    StartPosition;
+		float         Space = 0.0f;
+		gm::Float4    Color = gm::Float4(1,1,1,1);
+	};
 
 	/****************************************************************************
-	*				  			 TransportTCP
+	*				  			    Text
 	*************************************************************************//**
-	*  @class     TransportTCP
-	*  @brief     TCP Connection Class (Winsock (windows only))
+	*  @class     Text
+	*  @brief     現在では, 一行分の大きな自作テクスチャ画像を読み込んで, UV値に合わせて表示しています. 
+	              今後の予定では,　ttfファイルを読み込んでBitmapに変換, その後テクスチャを読み込んで
+    　　　　　　　　　各文字を表示できるようにしたいと考えています. (現状では工数がかなりかかるためやってません)
+			      行う場合は破壊的変更が生じることが考えられます. 
 	*****************************************************************************/
-	class TransportTCP : public ITransport
+	class Text 
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Transmission processing on the communication thread side.*/
-		void SendPacket() override;
 
-		/* @brief : Transmission processing on the communication thread side.*/
-		void ReceivePacket() override;
-
-		/* @brief : Transport Connection (return true: Connection Success, false: Connection Fail)*/
-		bool Connect(const IPAddress& address, const std::uint32_t port) override;
-		
-		/* @brief : Transport Disconnection*/
-		void Disconnect() override;
-
-		/* @brief : Enqueue send packet queue*/
-		void PackSendQueue(const std::vector<std::uint8_t>& data, const std::uint64_t size);
-
-		/* @ brief : Dequeue receive packet queue*/
-		std::int32_t UnpackReceiveQueue(std::vector<std::uint8_t>& buffer, const std::uint64_t size);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/* @brief : Get text image list*/
+		const std::vector<Image>& GetTextImages() const { return _images; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		TransportTCP();
+		/* @brief : Text string constructor */
+		Text(const CoordinateType type, const StringInfo& stringInfo);
+		
+		/* @brief : Text number constructor*/
+		Text(const CoordinateType type, const NumberInfo& numberInfo);
 
-		~TransportTCP();
-
-		TransportTCP(const SocketPtr& socket, const std::string& transportName);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-
+		
 		/****************************************************************************
 		**                Protected Member Variables
+		*****************************************************************************/
+		std::vector<Image> _images = {};
+
+		static constexpr std::int32_t ASCII_START_CHAR = 32;
+
+	private:
+		/****************************************************************************
+		**                Private Function
 		*****************************************************************************/
 	};
 }

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Rendering/Sprite/Include/UIRenderer.hpp"
+#include "../Include/UIRenderer.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayout.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
@@ -22,7 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::core;
-using namespace ui;
+using namespace gc::ui;
 using namespace gm;
 
 //////////////////////////////////////////////////////////////////////////////////

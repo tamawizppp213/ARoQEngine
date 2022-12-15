@@ -188,4 +188,14 @@ void TransportTCP::Disconnect()
 
 	// Todo : Ø’fŒ‹‰Ê‚ğ’Ê’m‚µ‚Ü‚·.
 }
+
+void TransportTCP::PackSendQueue(const std::vector<std::uint8_t>& data, const std::uint64_t size)
+{
+	_sendQueue->Enqueue(data, size);
+}
+
+std::int32_t TransportTCP::UnpackReceiveQueue(std::vector<std::uint8_t>& buffer, const std::uint64_t size)
+{
+	return _receiveQueue->Dequeue(buffer, size);
+}
 #pragma endregion Public Function

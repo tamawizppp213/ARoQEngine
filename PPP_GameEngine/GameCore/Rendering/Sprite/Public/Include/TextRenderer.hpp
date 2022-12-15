@@ -1,80 +1,61 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   Image.hpp
-///             @brief  Image
+///             @file   TextRenderer.hpp
+///             @brief  Text rendering
 ///             @author Toide Yutaro
-///             @date   2022_11_14
+///             @date   2022_12_14
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef IMAGE_HPP
-#define IMAGE_HPP
+#ifndef TEXT_RENDERER_HPP
+#define TEXT_RENDERER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include "GameUtility/Math/Include/GMVertex.hpp"
+#include "UIRenderer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace ui
+namespace gc::ui
 {
-
 	/****************************************************************************
-	*				  			Image
+	*				  			TextRenderer
 	*************************************************************************//**
-	*  @class     Image
-	*  @brief     UI Image
+	*  @class     TextRenderer
+	*  @brief     Rendering Text string or number
 	*****************************************************************************/
-	class Image : public Copyable
+	class TextRenderer : protected UIRenderer // Limited Release for Drawing Function
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Create image ui in Screen Space*/
-		void CreateInScreenSpace(
-			const gm::Float3& position,
-			const gm::Float2& rectSize,
-			const gm::Float2& u = gm::Float2(0, 1),
-			const gm::Float2& v = gm::Float2(0, 1),
-			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
-			float radian = 0);
-
-		/* @brief : Create image ui in NDC space (x, y, z: -1Å`1)*/
-		void CreateInNDCSpace(
-			const gm::Float3& position = gm::Float3(0, 0, 0),
-			const gm::Float2& rectSize = gm::Float2(2, 2),
-			const gm::Float2& u = gm::Float2(0, 1),
-			const gm::Float2& v = gm::Float2(0, 1),
-			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
-			float radian = 0);
+		void DrawString();
+		void DrawNumber();
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const gm::Vertex* GetVertices() const { return _vertices; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Image() = default;
-		~Image();
+		~TextRenderer();
+
+		explicit TextRenderer(const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName, const std::uint32_t maxCharCount = 1024);
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		/* Create rect */
-		void CreateRect(const gm::Float3& position, const gm::Float2& rectSize, const gm::Float4& color, const gm::Float2& u, const gm::Float2& v, float radian);
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		gm::Vertex _vertices[4] = {};
-		gm::Float2 _size;
 	};
 }
 #endif

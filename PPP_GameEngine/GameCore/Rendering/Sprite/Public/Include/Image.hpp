@@ -1,19 +1,19 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   SampleTexture.hpp
-///             @brief  Texture Sample
+///             @file   Image.hpp
+///             @brief  Image
 ///             @author Toide Yutaro
-///             @date   2022_06_01
+///             @date   2022_11_14
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SAMPLE_TEXTURE_HPP
-#define SAMPLE_TEXTURE_HPP
+#ifndef IMAGE_HPP
+#define IMAGE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Core/Include/Scene.hpp"
-#include "GameCore/Core/Include/ResourceManager.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Math/Include/GMVertex.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -21,65 +21,74 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
-{
-	class GPUResourceCache;
-	class GPUResourceView;
-}
 namespace gc::ui
 {
-	class Image;
-	class UIRenderer;
-}
-namespace sample
-{
-	
-	/****************************************************************************
-	*				  			SampleEmpty
-	*************************************************************************//**
-	*  @class     SampleEmpty
-	*  @brief     Empty sample
-	*****************************************************************************/
-	class SampleTexture : public Scene
+	enum class CoordinateType
 	{
-		using UIRendererPtr = std::shared_ptr<gc::ui::UIRenderer>;
-		using ImagePtr      = std::shared_ptr<gc::ui::Image>;
-		using GPUResourceCachePtr = std::shared_ptr<rhi::core::GPUResourceCache>;
-		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
+		Screen,
+		NDC,
+	};
+	/****************************************************************************
+	*				  			Image
+	*************************************************************************//**
+	*  @class     Image
+	*  @brief     UI Image
+	*****************************************************************************/
+	class Image : public Copyable
+	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
-		void Update() override;
-		void Draw() override;
-		void Terminate() override;
+		/* @brief : Create image ui in Screen Space*/
+		void CreateInScreenSpace(
+			const gm::Float3& position,
+			const gm::Float2& rectSize,
+			const gm::Float2& u = gm::Float2(0, 1),
+			const gm::Float2& v = gm::Float2(0, 1),
+			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
+			float radian = 0);
+
+		/* @brief : Create image ui in NDC space (x, y, z: -1Å`1)*/
+		void CreateInNDCSpace(
+			const gm::Float3& position = gm::Float3(0, 0, 0),
+			const gm::Float2& rectSize = gm::Float2(2, 2),
+			const gm::Float2& u = gm::Float2(0, 1),
+			const gm::Float2& v = gm::Float2(0, 1),
+			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
+			float radian = 0);
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		const gm::Vertex* GetVertices() const { return _vertices; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SampleTexture();
-		~SampleTexture();
+		Image() = default;
+		~Image();
+		
+		Image(
+			const CoordinateType coordinateType,
+			const gm::Float3& position,
+			const gm::Float2& rectSize,
+			const gm::Float2& u = gm::Float2(0, 1),
+			const gm::Float2& v = gm::Float2(0, 1),
+			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
+			float radian = 0);
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void LoadMaterials() override;
-		void OnKeyboardInput() override;
-		void OnMouseInput() override;
-		void OnGamePadInput() override;
-		void ExecuteSceneTransition() override;
+		/* Create rect */
+		void CreateRect(const gm::Float3& position, const gm::Float2& rectSize, const gm::Float4& color, const gm::Float2& u, const gm::Float2& v, float radian);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		UIRendererPtr _renderer = nullptr;
-		ImagePtr      _image    = nullptr;
-		ImagePtr      _miniImage = nullptr;
-		GPUResourceCachePtr _resourceCache = nullptr;
-		GPUResourceViewPtr _resourceView = nullptr;
+		gm::Vertex _vertices[4] = {};
+		gm::Float2 _size;
 	};
 }
 #endif
