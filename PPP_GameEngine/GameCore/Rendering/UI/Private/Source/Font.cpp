@@ -11,6 +11,7 @@
 #include "../Include/Font.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -93,3 +94,15 @@ void Font::Reset()
 	_engine = nullptr;
 }
 #pragma endregion Main Function
+
+#pragma region Property
+Font::ResourceViewPtr Font::GetFontResourceView() const noexcept
+{
+	return _textureView;
+}
+
+Font::TexturePtr Font::GetFontTexture() const noexcept
+{
+	return _textureView->GetTexture();
+}
+#pragma endregion Property

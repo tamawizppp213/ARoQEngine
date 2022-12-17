@@ -9,6 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/Text.hpp"
+#include "../../Private/Include/Font.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -21,8 +22,10 @@ using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
 /* @brief : Text string constructor */
-Text::Text(const CoordinateType type, const StringInfo& info)
+Text::Text(const CoordinateType type, const Font& font, const StringInfo& info)
 {
+	if (!font.HasLoaded()) { throw std::runtime_error("Font isn't read. You should read font."); }
+
 	/*-------------------------------------------------------------------
 	-              Prepare image buffer
 	---------------------------------------------------------------------*/
@@ -47,8 +50,8 @@ Text::Text(const CoordinateType type, const StringInfo& info)
 		-          Texture uv value
 		---------------------------------------------------------------------*/
 		Float2 u = Float2(
-			//(string[i]     - ASCII_START_CHAR) * (fontInfo->PixelSizePerChar.x / fontInfo->ImagePixelWidth)
-			//(string[i] + 1 - ASCII_START_CHAR) * (fontInfo->PixelSizePerChar.x / fontInfo->ImagePixelWidth)
+			(info.String[i]     - ASCII_START_CHAR) * (font.GetPixelPerChar().x / font.GetImagePixelWidth()),
+			(info.String[i] + 1 - ASCII_START_CHAR) * (font.GetPixelPerChar().x / font.GetImagePixelWidth())
 		);
 
 		Float2 v = Float2(0.0f, 1.0f);
@@ -68,7 +71,7 @@ Text::Text(const CoordinateType type, const StringInfo& info)
 }
 
 /* @brief : Text number constructor*/
-Text::Text(const CoordinateType type, const NumberInfo& info)
+Text::Text(const CoordinateType type, const Font& font, const NumberInfo& info)
 {
 	/*-------------------------------------------------------------------
 	-              Prepare image buffer
@@ -99,8 +102,8 @@ Text::Text(const CoordinateType type, const NumberInfo& info)
 			info.StartPosition.z);
 
 		Float2 u = Float2(
-			//values[i]       * (fontInfo->PixelSizePerChar.x / fontInfo->ImagePixelWidth),
-			//(values[i] + 1) * (fontInfo->PixelSizePerChar.x / fontInfo->ImagePixelWidth)
+			(values[i]    ) * (font.GetPixelPerChar().x / font.GetImagePixelWidth()),
+			(values[i] + 1) * (font.GetPixelPerChar().x / font.GetImagePixelWidth())
 		);
 
 		Float2 v = Float2(0.0f, 1.0f);

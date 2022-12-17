@@ -28,6 +28,7 @@ using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 UIRenderer::UIRenderer(const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName, const std::uint32_t maxUICount)
 	: _engine(engine), _maxWritableUICount(maxUICount)
 {
@@ -36,25 +37,33 @@ UIRenderer::UIRenderer(const LowLevelGraphicsEnginePtr& engine, const std::wstri
 	---------------------------------------------------------------------*/
 	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"UIRenderer::";
+
 	/*-------------------------------------------------------------------
 	-            Prepare Resources
 	---------------------------------------------------------------------*/
 	PrepareMaxImageBuffer(name);
 	PreparePipelineState(name);
 }
+
+
 UIRenderer::~UIRenderer()
 {
 	if (!_vertexBuffers.empty()) { _vertexBuffers.clear(); _vertexBuffers.shrink_to_fit(); }
-	if (!_indexBuffers.empty())  { _indexBuffers.clear(), _indexBuffers.shrink_to_fit(); }
+	if (!_indexBuffers .empty()) { _indexBuffers .clear(), _indexBuffers .shrink_to_fit(); }
 } 
 
+#pragma endregion Constructor and Destructor 
 /****************************************************************************
 *					AddFrameObject
 *************************************************************************//**
 *  @fn        void UIRenderer::AddFrameObject(const std::vector<ui::Image>& images, const Texture& texture)
+* 
 *  @brief     Add Frame Object
-*  @param[in] const std::vector<ui::Image>& image
-*  @param[in] const Texture& texture
+* 
+*  @param[in] const std::vector<ImagePtr>& image
+* 
+*  @param[in] const ResourceViewPtr& resourceView
+* 
 *  @return 　　void
 *****************************************************************************/
 void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view)
@@ -66,6 +75,7 @@ void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const Reso
 	{
 		throw std::runtime_error("The maximum number of sprites exceeded. \n If the maximum number is not exceeded, please check whether DrawEnd is being called. \n");
 	}
+
 	/*-------------------------------------------------------------------
 	-               Check whether spriteList is empty
 	---------------------------------------------------------------------*/
@@ -85,6 +95,7 @@ void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const Reso
 		vertexBuffer->CopyTotalData(images[i]->GetVertices(), 4, (i + _totalImageCount) * oneRectVertexCount);
 	}
 	vertexBuffer->CopyEnd();
+
 	/*-------------------------------------------------------------------
 	-               Count sprite num
 	---------------------------------------------------------------------*/
@@ -98,8 +109,11 @@ void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const Reso
 *					Draw
 *************************************************************************//**
 *  @fn        void UIRenderer::Draw()
-*  @brief     Draw
+* 
+*  @brief     Render all registered frame ui objects
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void UIRenderer::Draw()
@@ -148,6 +162,18 @@ void UIRenderer::Draw()
 }
 
 #pragma region Protected Function
+/****************************************************************************
+*						ClearVertexBuffer
+*************************************************************************//**
+*  @fn        void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount)
+*
+*  @brief     Clear gpu vertex buffer
+*
+*  @param[in] const std::uint32_t frameIndex
+*  @param[in] const size_t vertexCount
+*
+*  @return 　　void
+*****************************************************************************/
 void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount)
 {
 	if (vertexCount == 0) { return; }
@@ -160,6 +186,18 @@ void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t 
 	
 	_vertexBuffers[frameIndex]->Update(v.data(), vertexCount);
 }
+
+/****************************************************************************
+*						PrepareMaxImageBuffer
+*************************************************************************//**
+*  @fn        void UIRenderer::PrepareMaxImageBuffer(const std::wstring& name)
+*
+*  @brief     Prepare max writable ui count size buffer
+*
+*  @param[in] std::wstring& name
+*
+*  @return 　　void
+*****************************************************************************/
 void UIRenderer::PrepareMaxImageBuffer(const std::wstring& name)
 {
 	const auto device = _engine->GetDevice();
@@ -215,8 +253,11 @@ void UIRenderer::PrepareMaxImageBuffer(const std::wstring& name)
 *							PreparePipelineState
 *************************************************************************//**
 *  @fn        void Skybox::PreparePipelineState(const std::wstring& name)
+* 
 *  @brief     Prepare pipelineState
+* 
 *  @param[in] std::wstring& name
+* 
 *  @return 　　void
 *****************************************************************************/
 void UIRenderer::PreparePipelineState(const std::wstring& name)

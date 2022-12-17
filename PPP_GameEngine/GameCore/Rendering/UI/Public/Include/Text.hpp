@@ -28,6 +28,8 @@
 
 namespace gc::ui
 {
+	class Font;
+
 	struct StringInfo
 	{
 		std::string String;
@@ -73,10 +75,10 @@ namespace gc::ui
 		**                Constructor and Destructor
 		*****************************************************************************/
 		/* @brief : Text string constructor */
-		Text(const CoordinateType type, const StringInfo& stringInfo);
+		Text(const CoordinateType type, const Font& font, const StringInfo& stringInfo);
 		
 		/* @brief : Text number constructor*/
-		Text(const CoordinateType type, const NumberInfo& numberInfo);
+		Text(const CoordinateType type, const Font& font, const NumberInfo& numberInfo);
 
 	protected:
 		/****************************************************************************

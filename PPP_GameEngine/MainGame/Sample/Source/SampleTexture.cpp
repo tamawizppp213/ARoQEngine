@@ -9,8 +9,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Sample/Include/SampleTexture.hpp"
-#include "GameCore/Rendering/Sprite/Public/Include/UIRenderer.hpp"
-#include "GameCore/Rendering/Sprite/Public/Include/Image.hpp"
+#include "GameCore/Rendering/UI/Public/Include/UIRenderer.hpp"
+#include "GameCore/Rendering/UI/Public/Include/Image.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
 //////////////////////////////////////////////////////////////////////////////////

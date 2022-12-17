@@ -58,8 +58,12 @@ namespace gc::ui
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Add frame ui objects (image, text etc...)*/
 		void AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view);
+		
+		/* @brief : Render all registered frame ui objects*/
 		void Draw();
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -72,13 +76,20 @@ namespace gc::ui
 		explicit UIRenderer(const LowLevelGraphicsEnginePtr& engine,
 			const std::wstring& addName = L"",
 			const std::uint32_t maxUICount = 1024);
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		/* @brief: Prepare max writable ui count size buffer*/
 		void PrepareMaxImageBuffer(const std::wstring& name);
+
+		/* @brief: Prepare graphics pipeline state objects. */
 		void PreparePipelineState(const std::wstring& name);
+
+		/* @brief: Clear gpu vertex buffer */
 		void ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount);
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
@@ -91,19 +102,20 @@ namespace gc::ui
 		
 		// @brief : Pipeline state
 		PipelineStatePtr _pipeline = nullptr;
+
 		// @brief bind resource layout and view
 		ResourceLayoutPtr _resourceLayout = nullptr;
 		std::vector<ResourceViewPtr> _resourceViews = {};
 		
 		/* @brief regist total image count per frame  */
 		std::uint32_t  _totalImageCount        = 0;
+
 		// @brief : call drawIndex command count per frame
 		std::uint32_t  _needCallDrawIndexCount = 0;
-		std::vector<std::uint32_t> _imageCountList;
+		std::vector<std::uint32_t> _imageCountList = {};
 
 	private:
 		std::uint32_t _maxWritableUICount = 1024;
-		static constexpr int MAX_WRITABLE_UI_COUNT = 1024;
 	};
 }
 #endif

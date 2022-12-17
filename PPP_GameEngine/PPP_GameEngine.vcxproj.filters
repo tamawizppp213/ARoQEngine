@@ -189,7 +189,7 @@
     <ClInclude Include="GameCore\Core\Include\GameActor.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Sprite\Public\Include\Sprite.hpp">
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\Sprite.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\SkyDome.hpp">
@@ -198,7 +198,7 @@
     <ClInclude Include="GameCore\Rendering\Light\LightType.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Sprite\Public\Include\Image.hpp">
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\Image.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Math\Include\GMHash.hpp">
@@ -468,7 +468,7 @@
     <ClInclude Include="GameCore\Rendering\Model\External\GLTF\Private\Include\GLTFColor.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Sprite\Public\Include\UIRenderer.hpp">
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIRenderer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp">
@@ -828,16 +828,10 @@
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Sprite\Public\Include\Text.hpp">
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\Text.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Sprite\Public\Include\TextRenderer.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Sprite\Private\Include\FontLoader.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Sprite\Private\Include\Font.hpp">
+    <ClInclude Include="GameCore\Rendering\UI\Private\Include\Font.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -950,10 +944,10 @@
     <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\SkyDome.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Rendering\Sprite\Public\Source\Sprite.cpp">
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\Sprite.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Rendering\Sprite\Public\Source\Image.cpp">
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\Image.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12RootSignature.cpp">
@@ -1061,7 +1055,7 @@
     <ClCompile Include="GameCore\Rendering\Model\External\GLTF\Private\Source\GLTFAnimationUtils.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Rendering\Sprite\Public\Source\UIRenderer.cpp">
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIRenderer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp">
@@ -1331,16 +1325,10 @@
     <ClCompile Include="GameCore\Network\Private\Source\PacketQueue.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Rendering\Sprite\Public\Source\TextRenderer.cpp">
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\Text.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Rendering\Sprite\Public\Source\Text.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameCore\Rendering\Sprite\Private\Source\FontLoader.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GameCore\Rendering\Sprite\Private\Source\Font.cpp">
+    <ClCompile Include="GameCore\Rendering\UI\Private\Source\Font.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
