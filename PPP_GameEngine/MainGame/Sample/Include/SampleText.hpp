@@ -1,17 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUBlendState.hpp
-///             @brief  Blend State
+///             @file   SampleText.hpp
+///             @brief  Text Sample
 ///             @author Toide Yutaro
-///             @date   2022_06_28
+///             @date   2022_12_19
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GPU_STATE_HPP
-#define GPU_STATE_HPP
+#ifndef SAMPLE_TEXT_HPP
+#define SAMPLE_TEXT_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "MainGame/Core/Include/Scene.hpp"
+#include "GameCore/Core/Include/ResourceManager.hpp"
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -22,47 +23,64 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
-	class RHIDevice;
+	class GPUResourceCache;
+	class GPUResourceView;
+}
+namespace gc::ui
+{
+	class Font;
+	class Text;
+	class UIRenderer;
+}
+namespace sample
+{
+	
 	/****************************************************************************
-	*				  			GPUState
+	*				  			SampleEmpty
 	*************************************************************************//**
-	*  @class     GPUState
-	*  @brief     GPUState
+	*  @class     SampleEmpty
+	*  @brief     Empty sample
 	*****************************************************************************/
-	class GPUState : public NonCopyable
+	class SampleText : public Scene
 	{
+		using UIRendererPtr = std::shared_ptr<gc::ui::UIRenderer>;
+		using TextPtr       = std::shared_ptr<gc::ui::Text>;
+		using FontPtr       = std::shared_ptr<gc::ui::Font>;
+		using GPUResourceCachePtr = std::shared_ptr<rhi::core::GPUResourceCache>;
+		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
+		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
+		void Update() override;
+		void Draw() override;
+		void Terminate() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-
+		SampleText();
+		~SampleText();
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		GPUState() = default;
-
-		virtual ~GPUState() = default;
-
-		explicit GPUState(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
-		
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-
+		void LoadMaterials  () override;
+		void OnKeyboardInput() override;
+		void OnMouseInput   () override;
+		void OnGamePadInput () override;
+		void ExecuteSceneTransition() override;
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice>  _device = nullptr;
+		UIRendererPtr _renderer = nullptr;
+		TextPtr       _text     = nullptr;
+		GPUResourceCachePtr _resourceCache = nullptr;
+		GPUResourceViewPtr _resourceView = nullptr;
 	};
-
 }
 #endif

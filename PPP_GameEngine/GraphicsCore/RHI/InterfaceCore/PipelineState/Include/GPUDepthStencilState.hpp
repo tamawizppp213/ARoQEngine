@@ -40,11 +40,17 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		bool GetDepthWriteEnable() const noexcept { return _depthWriteEnable; }
+
 		bool GetStencilEnable   () const noexcept { return _stencilEnable; }
+
 		bool GetDepthEnable     () const noexcept { return _depthEnable; }
+
 		const CompareOperator& GetDepthOperator() const noexcept { return _depthOperator; }
+		
 		const StencilOperatorInfo& GetFrontFace() const noexcept { return _frontFace; }
+		
 		const StencilOperatorInfo& GetBackFace () const noexcept { return _backFace; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -54,7 +60,9 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUDepthStencilState() = default;
+
 		virtual ~GPUDepthStencilState() = default;
+
 		explicit GPUDepthStencilState(
 			const std::shared_ptr<rhi::core::RHIDevice>& device,
 			const bool            depthEnable      = true,
@@ -64,6 +72,7 @@ namespace rhi::core
 			const StencilOperatorInfo& front       = StencilOperatorInfo(),
 			const StencilOperatorInfo& back        = StencilOperatorInfo()
 		) : GPUState(device), _depthWriteEnable(depthWriteEnable), _stencilEnable(stencilEnable), _depthEnable(depthEnable), _depthOperator(depthOperator), _frontFace(front), _backFace(back) { }
+		
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/

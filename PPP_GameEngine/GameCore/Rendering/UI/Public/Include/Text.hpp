@@ -18,6 +18,7 @@
 #include "Image.hpp"
 #include <vector>
 #include <string>
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,7 +26,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-
+namespace rhi::core
+{
+	class GPUResourceView;
+}
 namespace gc::ui
 {
 	class Font;
@@ -71,15 +75,19 @@ namespace gc::ui
 		/* @brief : Get text image list*/
 		const std::vector<Image>& GetTextImages() const { return _images; }
 
+		const std::shared_ptr<Font> GetFont() const noexcept { return _font; }
+
+		const std::shared_ptr<rhi::core::GPUResourceView> GetFontView() const noexcept;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		/* @brief : Text string constructor */
-		Text(const CoordinateType type, const Font& font, const StringInfo& stringInfo);
+		Text(const CoordinateType type, const std::shared_ptr<Font>& font, const StringInfo& stringInfo);
 		
 		/* @brief : Text number constructor*/
-		Text(const CoordinateType type, const Font& font, const NumberInfo& numberInfo);
+		Text(const CoordinateType type, const std::shared_ptr<Font>& font, const NumberInfo& numberInfo);
 
+		~Text();
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -88,7 +96,9 @@ namespace gc::ui
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<Image> _images = {};
+		std::vector<Image>  _images = {};
+
+		std::shared_ptr<Font> _font = nullptr;
 
 		static constexpr std::int32_t ASCII_START_CHAR = 32;
 

@@ -39,17 +39,24 @@ namespace rhi::core
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
 		virtual void Compile   (const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}) = 0;
+		
 		// @brief : Offline Compile, already compiled fileName(filePath)
 		virtual void LoadBinary(const core::ShaderType type, const std::wstring& fileName) = 0;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		// @brief : Return Buffer pointer and Buffer byte size
 		BlobData           GetBlobData      () const noexcept { return _blobData; }
+		
 		void*              GetBufferPointer () const noexcept { return _blobData.BufferPointer; }
+		
 		std::uint64_t      GetBufferByteSize() const noexcept { return _blobData.BufferSize; }
+		
 		ShaderType         GetShaderType    () const noexcept { return _shaderType; }
+		
 		float              GetShaderVersion () const noexcept { return _version; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -59,14 +66,19 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUShaderState() = default;
+
 		~GPUShaderState() = default;
+
 		explicit GPUShaderState(
 			const std::shared_ptr<core::RHIDevice>& device) : GPUState(device){};
+
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		std::wstring GetShaderTypeName(ShaderType shaderType);
+
 		std::wstring Format(float version);
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

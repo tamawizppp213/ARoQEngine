@@ -60,7 +60,8 @@ namespace gc::ui
 		*****************************************************************************/
 		/* @brief : Add frame ui objects (image, text etc...)*/
 		void AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view);
-		
+		void AddFrameObjects(const std::vector<ui::Image>& images, const ResourceViewPtr& view);
+
 		/* @brief : Render all registered frame ui objects*/
 		void Draw();
 
@@ -115,6 +116,15 @@ namespace gc::ui
 		std::vector<std::uint32_t> _imageCountList = {};
 
 	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		/* @brief : AddFrameObject function is used. count up draw image and push back resource view.s*/
+		void CountUpDrawImageAndView(const std::uint64_t arrayLength, const ResourceViewPtr& view);
+		
+		/****************************************************************************
+		**             Private Member Variables
+		*****************************************************************************/
 		std::uint32_t _maxWritableUICount = 1024;
 	};
 }

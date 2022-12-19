@@ -831,7 +831,10 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\Text.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\UI\Private\Include\Font.hpp">
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\Font.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGame\Sample\Include\SampleText.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1328,7 +1331,10 @@
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\Text.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Rendering\UI\Private\Source\Font.cpp">
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\Font.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGame\Sample\Source\SampleText.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

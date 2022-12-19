@@ -193,7 +193,7 @@
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
-    <ClInclude Include="GameCore\Rendering\UI\Private\Include\Font.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\Font.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\Text.hpp" />
     <ClInclude Include="GameUtility\File\Include\BitConverter.hpp" />
     <ClInclude Include="GameCore\Network\Public\Include\IPAddress.hpp" />
@@ -448,6 +448,7 @@
     <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleRayTracingRectangle.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleRectangle.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleText.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp" />
     <ClInclude Include="resource.h" />
@@ -469,7 +470,7 @@
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\PacketQueue.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\Serializer.cpp" />
-    <ClCompile Include="GameCore\Rendering\UI\Private\Source\Font.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\Font.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\Text.cpp" />
     <ClCompile Include="GameUtility\File\Source\BitConverter.cpp" />
     <ClCompile Include="GameCore\Network\Public\Source\IPAddress.cpp" />
@@ -617,6 +618,7 @@
     <ClCompile Include="MainGame\Sample\Source\SamplerColorChange.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleRectangle.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleSky.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleText.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp" />
   </ItemGroup>
   <ItemGroup>

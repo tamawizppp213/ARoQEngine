@@ -99,12 +99,44 @@ void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const Reso
 	/*-------------------------------------------------------------------
 	-               Count sprite num
 	---------------------------------------------------------------------*/
-	_needCallDrawIndexCount++;
-	_totalImageCount += static_cast<std::uint32_t>(images.size());
-	_imageCountList.emplace_back(static_cast<std::uint32_t>(images.size()));
-	_resourceViews.emplace_back(view);
+	CountUpDrawImageAndView(images.size(), view);
 }
 
+void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const ResourceViewPtr& view)
+{
+	/*-------------------------------------------------------------------
+	-               sprite count check
+	---------------------------------------------------------------------*/
+	if (_totalImageCount + images.size() > _maxWritableUICount)
+	{
+		throw std::runtime_error("The maximum number of sprites exceeded. \n If the maximum number is not exceeded, please check whether DrawEnd is being called. \n");
+	}
+
+	/*-------------------------------------------------------------------
+	-               Check whether spriteList is empty
+	---------------------------------------------------------------------*/
+	if (images.empty()) { return ; }
+
+	/*-------------------------------------------------------------------
+	-               Add vertex data
+	---------------------------------------------------------------------*/
+	const auto currentFrame = _engine->GetCurrentFrameIndex();
+	const auto vertexBuffer = _vertexBuffers[currentFrame];
+	const auto oneRectVertexCount = 4;
+
+	vertexBuffer->CopyStart();
+	// _maxWritableUICount - _totalImageCount is écÇËÇÃìoò^Ç≈Ç´ÇÈêî
+	for (std::uint32_t i = 0; i < std::min<std::uint32_t>(images.size(), _maxWritableUICount - _totalImageCount); ++i)
+	{
+		vertexBuffer->CopyTotalData(images[i].GetVertices(), 4, (i + _totalImageCount) * oneRectVertexCount);
+	}
+	vertexBuffer->CopyEnd();
+
+	/*-------------------------------------------------------------------
+	-               Count sprite num
+	---------------------------------------------------------------------*/
+	CountUpDrawImageAndView(images.size(), view);
+}
 /****************************************************************************
 *					Draw
 *************************************************************************//**
@@ -296,3 +328,13 @@ void UIRenderer::PreparePipelineState(const std::wstring& name)
 	_pipeline->SetName(name + L"PSO");
 }
 #pragma endregion Protected Function
+
+#pragma region Private Function
+void UIRenderer::CountUpDrawImageAndView(const std::uint64_t arrayLength, const ResourceViewPtr& view)
+{
+	_needCallDrawIndexCount++;
+	_totalImageCount += static_cast<std::uint32_t>(arrayLength);
+	_imageCountList.emplace_back(static_cast<std::uint32_t>(arrayLength));
+	_resourceViews.emplace_back(view);
+}
+#pragma endregion Private Function

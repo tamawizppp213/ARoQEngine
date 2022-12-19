@@ -9,7 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/Text.hpp"
-#include "../../Private/Include/Font.hpp"
+#include "../Include/Font.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -22,9 +22,10 @@ using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
 /* @brief : Text string constructor */
-Text::Text(const CoordinateType type, const Font& font, const StringInfo& info)
+Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const StringInfo& info)
+	: _font(font)
 {
-	if (!font.HasLoaded()) { throw std::runtime_error("Font isn't read. You should read font."); }
+	if (!font->HasLoaded()) { throw std::runtime_error("Font isn't read. You should read font."); }
 
 	/*-------------------------------------------------------------------
 	-              Prepare image buffer
@@ -41,7 +42,7 @@ Text::Text(const CoordinateType type, const Font& font, const StringInfo& info)
 		---------------------------------------------------------------------*/
 		Float3 centerPosition = Float3
 		(
-			info.StartPosition.x + (i * 0.5f) * info.SizePerChar.x * i * info.Space,
+			info.StartPosition.x + (i + 0.5f) * info.SizePerChar.x + i * info.Space,
 			info.StartPosition.y - info.SizePerChar.y,
 			info.StartPosition.z
 		);
@@ -50,8 +51,8 @@ Text::Text(const CoordinateType type, const Font& font, const StringInfo& info)
 		-          Texture uv value
 		---------------------------------------------------------------------*/
 		Float2 u = Float2(
-			(info.String[i]     - ASCII_START_CHAR) * (font.GetPixelPerChar().x / font.GetImagePixelWidth()),
-			(info.String[i] + 1 - ASCII_START_CHAR) * (font.GetPixelPerChar().x / font.GetImagePixelWidth())
+			(info.String[i]     - ASCII_START_CHAR) * (font->GetPixelPerChar().x / font->GetImagePixelWidth()),
+			(info.String[i] + 1 - ASCII_START_CHAR) * (font->GetPixelPerChar().x / font->GetImagePixelWidth())
 		);
 
 		Float2 v = Float2(0.0f, 1.0f);
@@ -62,8 +63,8 @@ Text::Text(const CoordinateType type, const Font& font, const StringInfo& info)
 		switch (type)
 		{
 			using enum CoordinateType;
-			case Screen : { _images[i].CreateInScreenSpace(centerPosition, info.SizePerChar, u, v, info.Color); }
-			case NDC    : { _images[i].CreateInNDCSpace   (centerPosition, info.SizePerChar, u, v, info.Color); }
+			case Screen : { _images[i].CreateInScreenSpace(centerPosition, info.SizePerChar, u, v, info.Color); break;}
+			case NDC    : { _images[i].CreateInNDCSpace   (centerPosition, info.SizePerChar, u, v, info.Color); break;}
 			default: 
 				throw std::runtime_error("Choice wrong type");
 		}
@@ -71,7 +72,7 @@ Text::Text(const CoordinateType type, const Font& font, const StringInfo& info)
 }
 
 /* @brief : Text number constructor*/
-Text::Text(const CoordinateType type, const Font& font, const NumberInfo& info)
+Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const NumberInfo& info)
 {
 	/*-------------------------------------------------------------------
 	-              Prepare image buffer
@@ -102,8 +103,8 @@ Text::Text(const CoordinateType type, const Font& font, const NumberInfo& info)
 			info.StartPosition.z);
 
 		Float2 u = Float2(
-			(values[i]    ) * (font.GetPixelPerChar().x / font.GetImagePixelWidth()),
-			(values[i] + 1) * (font.GetPixelPerChar().x / font.GetImagePixelWidth())
+			(values[i]    ) * (font->GetPixelPerChar().x / font->GetImagePixelWidth()),
+			(values[i] + 1) * (font->GetPixelPerChar().x / font->GetImagePixelWidth())
 		);
 
 		Float2 v = Float2(0.0f, 1.0f);
@@ -115,10 +116,22 @@ Text::Text(const CoordinateType type, const Font& font, const NumberInfo& info)
 		{
 			using enum CoordinateType;
 			case Screen : { _images[i].CreateInScreenSpace(centerPosition, info.SizePerDigit, u, v, info.Color); }
-			case NDC    : { _images[i].CreateInNDCSpace   (centerPosition, info.SizePerDigit, u, v, info.Color); }
+			case NDC    : { _images[i].CreateInNDCSpace    (centerPosition, info.SizePerDigit, u, v, info.Color); }
 			default: 
 				throw std::runtime_error("Choice wrong type");
 		}
 	}
 }
+
+Text::~Text()
+{
+	_images.clear(); _images.shrink_to_fit();
+}
 #pragma endregion Constructor and Destructor
+
+#pragma region Property
+const std::shared_ptr<rhi::core::GPUResourceView> Text::GetFontView() const noexcept
+{
+	return _font->GetFontResourceView();
+}
+#pragma endregion Property

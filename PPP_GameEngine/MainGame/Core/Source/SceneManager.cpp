@@ -13,6 +13,7 @@
 #include "MainGame/Core/Include/Scene.hpp"
 #include "MainGame/Sample/Include/SampleColorChange.hpp"
 #include "MainGame/Sample/Include/SampleTexture.hpp"
+#include "MainGame/Sample/Include/SampleText.hpp"
 #include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -25,7 +26,7 @@
 void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, GameTimer* gameTimer)
 {
 	_engine = engine;
-	PushScene(new sample::SampleRayTracingRectangle());
+	PushScene(new sample::SampleText());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

@@ -51,6 +51,7 @@ namespace rhi::core
 		
 		/* @brief : Return current frame buffer*/
 		virtual size_t GetCurrentBufferIndex() const = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

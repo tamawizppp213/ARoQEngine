@@ -42,16 +42,21 @@ namespace rhi::core
 		*****************************************************************************/
 		// Note : V‚½‚ÉVertex‚ğGameCore‚Å’è‹`‚·‚éê‡‚Í‚±‚ÌŠÖ”‚ğæ‚èœ‚«, ˆÚ“®‚·‚é. 
 		static std::vector<InputLayoutElement> GetDefaultVertexElement() { return DEFAULT_VERTEX_ELEMENTS; }
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		size_t GetSlot() const noexcept { return _slotCount; }
+		
 		/* @brief return input layout element*/
 		const InputLayoutElement& GetElement(const size_t index) const { return _elements[index]; }
+		
 		/* @brief return input layout elements*/
 		const std::vector<InputLayoutElement>& GetElements() const { return _elements; }
+		
 		/* @brief return primitive topology*/
 		PrimitiveTopology GetPrimitiveTopology() const { return _primitiveTopology; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -61,7 +66,9 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUInputAssemblyState() = default;
+
 		~GPUInputAssemblyState() = default;
+
 		explicit GPUInputAssemblyState(
 			const std::shared_ptr<RHIDevice>& device,
 			const std::vector<InputLayoutElement>& elements,
