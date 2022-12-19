@@ -55,16 +55,22 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/* @brief: Return swapchain's render pixel width*/
 		size_t      GetWidth      () const noexcept { return _windowInfo.Width; }
 
+		/* @brief: Return swapchain's render pixel height*/
 		size_t      GetHeight     () const noexcept { return _windowInfo.Height; }
 
+		/* @brief : Return pixel format */
 		PixelFormat GetPixelFormat() const noexcept { return _pixelFormat; }
 
+		/* @brief : Return render window information (width, height, window handle pointer)*/
 		WindowInfo  GetWindowInfo () const noexcept { return _windowInfo; }
 
+		/* @brief : Return back buffer of the specified frame*/
 		std::shared_ptr<GPUTexture> GetBuffer(const size_t index) { return _backBuffers[index]; }
 		
+		/* @biref : Return back buffer's total frame count*/
 		size_t      GetBufferCount() const noexcept { return _backBuffers.size(); }
 
 		/****************************************************************************
@@ -96,15 +102,21 @@ namespace rhi::core
 		std::shared_ptr<RHICommandQueue> _commandQueue = nullptr;
 		
 		std::vector<std::shared_ptr<GPUTexture>> _backBuffers; //[0] : render target 
+		
 		/* pixel color format*/
 		PixelFormat _pixelFormat;
+		
 		/* screen size and hwnd, hInstance (Windows API) */
 		WindowInfo  _windowInfo;
+
 		/* vertical syncronization: 0 : not wait, 1: 60 fps fixed frame rate*/
 		std::uint32_t _vsync = 0;
+		
 		/* frame buffer count (default : 3)*/
-		size_t        _frameBufferCount = 0;
-		bool          _isValidHDR;
+		size_t _frameBufferCount = 0;
+		
+		/* optional : use HDR*/
+		bool   _isValidHDR;
 	};
 }
 #endif
