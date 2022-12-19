@@ -79,6 +79,7 @@ namespace sample
 		*****************************************************************************/
 		UIRendererPtr _renderer = nullptr;
 		TextPtr       _text     = nullptr;
+		FontPtr       _font     = nullptr;
 		GPUResourceCachePtr _resourceCache = nullptr;
 		GPUResourceViewPtr _resourceView = nullptr;
 	};

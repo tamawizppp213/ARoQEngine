@@ -14,6 +14,7 @@
 #include "GameCore/Rendering/UI/Public/Include/Font.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +57,17 @@ void SampleText::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engin
 void SampleText::Update()
 {
 	Scene::Update();
+
+	/*-------------------------------------------------------------------
+	-            Update Text Color
+	---------------------------------------------------------------------*/
+	StringInfo info = 
+	{   .String = "Text Sample", .SizePerChar = {0.1f, 0.15f}, 
+		.StartPosition = {0.5f * gm::Cos(_gameTimer->TotalTime()) - 0.5f, 0.5f * gm::Sin(_gameTimer->TotalTime()), 1.0f},
+		.Space = 0.0f, 
+		.Color = {gm::Sin(_gameTimer->TotalTime()),gm::Cos(_gameTimer->TotalTime()),1,1}
+	};
+	_text = std::make_shared<Text>(CoordinateType::NDC, _font, info);
 
 	_renderer->AddFrameObjects(_text->GetTextImages(), _text->GetFontView());
 }
@@ -119,10 +131,10 @@ void SampleText::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-             SetUp Resources
 	---------------------------------------------------------------------*/
-	const auto font = std::make_shared<Font>(_engine, L"Resources/Font/GennokakuEnglish.png", gm::Float2(35.0f, 64.0f), 3325.0f);
+	_font = std::make_shared<Font>(_engine, L"Resources/Font/GennokakuEnglish.png", gm::Float2(35.0f, 64.0f), 3325.0f);
 	// Create image sprite
 	StringInfo info = { .String = "Text Sample", .SizePerChar = {0.1f, 0.15f}, .StartPosition = {-0.6f, 0.0f, 1.0f}, .Space = 0.0f, .Color = {1,1,1,1} };
-	_text = std::make_shared<Text>(CoordinateType::NDC, font, info);
+	_text = std::make_shared<Text>(CoordinateType::NDC, _font, info);
 
 	// Create Texture
 	_resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
