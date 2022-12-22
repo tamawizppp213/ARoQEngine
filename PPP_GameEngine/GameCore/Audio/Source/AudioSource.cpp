@@ -17,6 +17,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+using namespace gc::audio;
+using namespace gc::core;
 static constexpr float DEFAULT_VOLUME = 1.0f;
 static constexpr float MAX_VOLUME = 2.0f;
 
@@ -25,13 +27,18 @@ static constexpr float MAX_VOLUME = 2.0f;
 //////////////////////////////////////////////////////////////////////////////////
 float AudioSource::_volumeRatio[] = { DEFAULT_VOLUME ,DEFAULT_VOLUME ,DEFAULT_VOLUME ,DEFAULT_VOLUME };
 
-AudioSource::AudioSource()
+AudioSource::AudioSource(const std::shared_ptr<AudioMaster>& audioMaster)
+	: _audioMaster(audioMaster), _maxPitch(XAUDIO2_DEFAULT_FREQ_RATIO), _maxVolume(MAX_VOLUME)
 {
-	_maxVolume = MAX_VOLUME;
-	_maxPitch = XAUDIO2_DEFAULT_FREQ_RATIO;
-	_isLoop = false;
-	
+	_isLoop = false;	
 }
+
+AudioSource::AudioSource(const std::shared_ptr<AudioMaster>& audioMaster, const AudioClipPtr& audioClip, const SoundType soundType, const float volume)
+	:_audioMaster(audioMaster), _maxPitch(XAUDIO2_DEFAULT_FREQ_RATIO), _maxVolume(MAX_VOLUME)
+{
+	SetUp(audioClip, soundType, volume);
+}
+
 AudioSource::~AudioSource()
 {
 
@@ -136,25 +143,53 @@ bool AudioSource::ExitLoop()
 	}
 	else { return false; }
 }
+
 /****************************************************************************
-*                       LoadSound
+*                       SetUp
 *************************************************************************//**
-*  @fn        bool AudioSource::LoadSound(const std::wstring& filePath, SoundType soundType, float volume)
-*  @brief     Load Sound
-*  @param[in] const std::wstring& filePath
-*  @param[in] SoundType soundType
-*  @param[in] float volume : (0.0f (Attenuation) ～ 1.0f (Default) ～ 2.0f (Amplifier))
+*  @fn        bool AudioSource::SetUp(const AudioClipPtr& audioClip, const SoundType soundType, const float volume)
+* 
+*  @brief     Set audio clip.
+* 
+*  @param[in] const AudioClipPtr& audioClip
+* 
+*  @param[in] const SoundType soundType
+* 
+*  @param[in] const float volume : (0.0f (Attenuation) ～ 1.0f (Default) ～ 2.0f (Amplifier))
+* 
 *  @return 　　bool
 *****************************************************************************/
-bool AudioSource::LoadSound(const std::wstring& filePath, SoundType soundType, float volume)
+bool AudioSource::SetUp(const AudioClipPtr& audioClip, const SoundType soundType, const float volume)
 {
-	if (!LoadAudioClip(filePath))    { return false; }
+	/*-------------------------------------------------------------------
+	-                 Load check. To reduce processing load
+	---------------------------------------------------------------------*/
+	if (_hasLoaded) { OutputDebugStringA("Already loaded."); return false; }
+
+	/*-------------------------------------------------------------------
+	-                Set up audio clip
+	---------------------------------------------------------------------*/
+	_audioClip = audioClip;
+
+	/*-------------------------------------------------------------------
+	-                Create source voice
+	---------------------------------------------------------------------*/
 	if (!CreateSourceVoice())        { return false; }
-	if (!CreateReverb())             { return false; }
-	if (!SelectSoundType(soundType)) { return false; }
+
+	/*-------------------------------------------------------------------
+	-            BGM, BLS -> Loop On, SE, ME -> Loop Off
+	---------------------------------------------------------------------*/
+	if (!SelectIsLoop(soundType)) { return false; }
+
+	/*-------------------------------------------------------------------
+	-            Set up audio volume
+	---------------------------------------------------------------------*/
 	if (!SetVolume(volume)) { return false; }
+
+	_hasLoaded = true;
 	return true;
 }
+
 /****************************************************************************
 *                       SetPan
 *************************************************************************//**
@@ -449,62 +484,43 @@ bool AudioSource::IsRemainedSourceBufferQueue()
 }
 
 /****************************************************************************
-*                       LoadAudioClip
-*************************************************************************//**
-*  @fn        bool AudioSource::LoadAudioClip(const std::wstring& filePath)
-*  @brief     Load Audio Clip
-*  @param[in] void
-*  @return 　　bool
-*****************************************************************************/
-bool AudioSource::LoadAudioClip(const std::wstring& filePath)
-{
-	/*-------------------------------------------------------------------
-	-               If the file is loaded once, read from it
-	---------------------------------------------------------------------*/
-	if (ResourceManager::Instance().ExistsAudioClip(filePath))
-	{
-		_audioClip = &ResourceManager::Instance().GetAudioClip(filePath);
-		return true;
-	}
-
-	/*-------------------------------------------------------------------
-	-               Create Audio Clip
-	---------------------------------------------------------------------*/
-	AudioClip& audioClip = ResourceManager::Instance().GetAudioClip(filePath);
-	if (audioClip.LoadFromFile(filePath))
-	{
-		_audioClip = &audioClip;
-		return true;
-	}
-	else
-	{
-		::OutputDebugString(L"couldn't create audio clip");
-		return false;
-	}
-}
-
-/****************************************************************************
 *                       CreateSourceVoice
 *************************************************************************//**
 *  @fn        bool AudioSource::CreateSourceVoice()
+* 
 *  @brief     Load Xaudio SourceVoice
+* 
 *  @param[in] void
+* 
 *  @return 　　bool
 *****************************************************************************/
 bool AudioSource::CreateSourceVoice()
 {
 	/*-------------------------------------------------------------------
+	-               Get XAudio2
+	---------------------------------------------------------------------*/
+	const auto xAudio = _audioMaster->GetAudioInterface();
+
+	if (!xAudio) { OutputDebugStringA("Mastering Voice is nullptr"); return false; }
+
+	/*-------------------------------------------------------------------
 	-               Create Source Voice
 	---------------------------------------------------------------------*/
-	Microsoft::WRL::ComPtr<IXAudio2> xAudio = AudioMaster::GetAudioInterface();
-
-	HRESULT hresult = xAudio->CreateSourceVoice(&_sourceVoice, &_audioClip->GetFileFormatEx());
+	IXAudio2SourceVoice* audioSource = nullptr;
+	
+	// Todo : 後で色々設定を追加する. 
+	HRESULT hresult = xAudio->CreateSourceVoice(&audioSource, &_audioClip->GetFileFormatEx());
+	
 	if (FAILED(hresult))
 	{
-		MessageBox(NULL, L"Couldn't create source voice.", L"Warning", MB_ICONWARNING);
+		OutputDebugStringA("Couldn't create source voice.");
 		return false;
 	}
 
+	/*-------------------------------------------------------------------
+	-               Set up
+	---------------------------------------------------------------------*/
+	_sourceVoice = std::shared_ptr<IXAudio2SourceVoice>(audioSource);
 	return true;
 }
 
@@ -541,12 +557,15 @@ bool AudioSource::CreateReverb()
 /****************************************************************************
 *                       SelectSoundType
 *************************************************************************//**
-*  @fn        bool AudioSource::SelectSoundType()
+*  @fn        bool AudioSource::SelectIsLoop(const SoundType soundType)
+* 
 *  @brief     Change the number of loops by SoundType.
+* 
 *  @param[in] void
+* 
 *  @return 　　bool
 *****************************************************************************/
-bool AudioSource::SelectSoundType(SoundType soundType)
+bool AudioSource::SelectIsLoop(const SoundType soundType)
 {
 	switch (soundType)
 	{

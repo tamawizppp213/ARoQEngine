@@ -46,7 +46,7 @@ namespace gc::ui
 	struct NumberInfo
 	{
 		std::uint32_t Number;
-		std::uint32_t Digit;
+		std::uint32_t Digit = 1;
 		gm::Float2    SizePerDigit;
 		gm::Float3    StartPosition;
 		float         Space = 0.0f;

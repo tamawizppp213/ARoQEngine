@@ -15,13 +15,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+using namespace gc::audio;
 #define STEREO_AUDIO 2
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-AudioSource3D::AudioSource3D() : AudioSource()
+AudioSource3D::AudioSource3D(const AudioMasterPtr& audioMaster) : AudioSource(audioMaster)
 {
 	memset(&_emitter, 0, sizeof(_emitter));
 	memset(&_listener, 0, sizeof(_listener));
@@ -128,15 +129,15 @@ Audio3DParameter AudioSource3D::Calculate3DSound(const X3DAUDIO_LISTENER* listen
 	dsp.DstChannelCount = STEREO_AUDIO;
 	dsp.pMatrixCoefficients = matrix;
 
-	/*-------------------------------------------------------------------
-	-              CalculateX3DAudio
-	---------------------------------------------------------------------*/
-	X3DAudioCalculate(
-		AudioMaster::GetX3DAudioInterface(),
-		listener,
-		emitter,
-		X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER,
-		&dsp);
+	///*-------------------------------------------------------------------
+	//-              CalculateX3DAudio
+	//---------------------------------------------------------------------*/
+	//X3DAudioCalculate(
+	//	AudioMaster::GetX3DAudioInterface(),
+	//	listener,
+	//	emitter,
+	//	X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER,
+	//	&dsp);
 
 	/*-------------------------------------------------------------------
 	-              Copy dsp

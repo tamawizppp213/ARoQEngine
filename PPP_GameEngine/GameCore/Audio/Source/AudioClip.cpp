@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+using namespace gc::audio;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
@@ -32,12 +32,15 @@ AudioClip::~AudioClip()
 /****************************************************************************
 *                       LoadFromFile
 *************************************************************************//**
-*  @fn        bool AudioClip::LoadFromFile()
+*  @fn        bool AudioClip::Load(const std::wstring& filePath)
+* 
 *  @brief     Load wav file
+* 
 *  @param[in] const std::wstring& filePath
+* 
 *  @return Å@Å@bool
 *****************************************************************************/
-bool AudioClip::LoadFromFile(const std::wstring& filePath)
+bool AudioClip::Load(const std::wstring& filePath)
 {
 	/*-------------------------------------------------------------------
 	-    Select the appropriate sound loading function for each extension
@@ -56,7 +59,7 @@ bool AudioClip::LoadFromFile(const std::wstring& filePath)
 	}
 	else
 	{
-		MessageBox(NULL, L"The file format cannot be read.", L"Warning", MB_ICONWARNING);
+		OutputDebugStringA("The file format cannot be read.");
 		return false;
 	}
 }
@@ -64,8 +67,11 @@ bool AudioClip::LoadFromFile(const std::wstring& filePath)
 *                       GetFilePath
 *************************************************************************//**
 *  @fn        const std::wstring& AudioClip::GetFilePath() const
+* 
 *  @brief     Return file path
+* 
 *  @param[in] void
+* 
 *  @return    std::wstring&
 *****************************************************************************/
 const std::wstring& AudioClip::GetFilePath() const
@@ -77,8 +83,11 @@ const std::wstring& AudioClip::GetFilePath() const
 *                       GetSoundSize
 *************************************************************************//**
 *  @fn        const size_t AudioClip::GetSoundSize() const
+* 
 *  @brief     Return sound size (only waveData Byte Size)
+* 
 *  @param[in] void
+* 
 *  @return    size_t
 *****************************************************************************/
 const size_t AudioClip::GetSoundSize() const
@@ -90,8 +99,11 @@ const size_t AudioClip::GetSoundSize() const
 *                       GetSoundSize
 *************************************************************************//**
 *  @fn        const size_t AudioClip::GetSoundSize() const
+* 
 *  @brief     Return sound size (only waveData Byte Size)
+* 
 *  @param[in] void
+* 
 *  @return    size_t
 *****************************************************************************/
 const WAVEFORMATEX& AudioClip::GetFileFormatEx() const
@@ -101,16 +113,12 @@ const WAVEFORMATEX& AudioClip::GetFileFormatEx() const
 /****************************************************************************
 *                       GetSoundData
 *************************************************************************//**
-*  @fn        const size_t AudioClip::GetSoundData() const
+*  @fn        const size_t AudioClip::GetSoundData() const noexcept
 *  @brief     Return file path
 *  @param[in] void
 *  @return    const std::shared_ptr<BYTE[]>&
 *****************************************************************************/
-const std::shared_ptr<BYTE[]>& AudioClip::GetSoundData() const
+std::shared_ptr<BYTE[]> AudioClip::GetSoundData() const noexcept
 {
-	if (_soundData == nullptr)
-	{
-		MessageBox(NULL, L"_soundData is nullptr", L"Warning", MB_ICONWARNING);
-	}
 	return _soundData;
 }

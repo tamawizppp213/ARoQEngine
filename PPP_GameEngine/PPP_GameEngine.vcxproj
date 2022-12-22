@@ -179,6 +179,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GameCore\Audio\Include\AudioClip.hpp" />
+    <ClInclude Include="GameCore\Audio\Include\AudioClipCache.hpp" />
     <ClInclude Include="GameCore\Audio\Include\AudioMaster.hpp" />
     <ClInclude Include="GameCore\Audio\Include\AudioSource.hpp" />
     <ClInclude Include="GameCore\Audio\Include\AudioSource3D.hpp" />
@@ -455,6 +456,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameCore\Audio\Source\AudioClip.cpp" />
+    <ClCompile Include="GameCore\Audio\Source\AudioClipCache.cpp" />
     <ClCompile Include="GameCore\Audio\Source\AudioMaster.cpp" />
     <ClCompile Include="GameCore\Audio\Source\AudioSource.cpp" />
     <ClCompile Include="GameCore\Audio\Source\AudioSource3D.cpp" />

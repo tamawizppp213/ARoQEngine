@@ -11,59 +11,42 @@
 #include <xaudio2.h>
 #include <xaudio2fx.h>
 #include <x3daudio.h>
+
 #pragma comment(lib, "xaudio2.lib")
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-AudioMaster::IXAudio2Ptr AudioMaster::_xAudio                    = nullptr;
-AudioMaster::IXAudio2MasteringVoicePtr AudioMaster::_masterVoice = nullptr;
-X3DAUDIO_HANDLE AudioMaster::_x3dAudio                           = { 0 };
-UINT32 AudioMaster::_debugFlag    = 0;
-bool AudioMaster::_hasInitialized = true;
+using namespace gc::audio;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
-#pragma region Public Function
-/****************************************************************************
-*                       Initialize
-*************************************************************************//**
-*  @fn        bool AudioMaster::Initialize()
-*  @brief     Initialize Audio Interface
-*  @param[in] void
-*  @return 　　bool
-*****************************************************************************/
-bool AudioMaster::Initialize()
+#pragma region Constructor and Destructor 
+AudioMaster::AudioMaster()
 {
-	if (_hasInitialized) { return false; }
-	if (!CreateXAudio2())     { return false; }
-	if (!CreateMasterVoice()) { return false; }
-	if (!CreateX3DAudio())    { return false; }
-
-	return true;
+	if (_hasInitialized)         { return; }
+	if (!CreateXAudio2())        { return; }
+	if (!CreateMasteringVoice()) { return; }
+	if (!CreateX3DAudio())       { return; }
+	_hasInitialized = true;
 }
 
-/****************************************************************************
-*                       Finalize
-*************************************************************************//**
-*  @fn        bool AudioMaster::Finalize()
-*  @brief     Finalize Audio Interface
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void AudioMaster::Finalize()
+AudioMaster::~AudioMaster()
 {
 	/*-------------------------------------------------------------------
 	-              Destroy Master Voice
 	---------------------------------------------------------------------*/
-	_masterVoice->DestroyVoice();
-	_masterVoice = NULL;
+	if (_masteringVoice)
+	{
+		_masteringVoice->DestroyVoice();
+		_masteringVoice.reset();
+	}
 
 	/*-------------------------------------------------------------------
 	-              Release XAudio2 Object
 	---------------------------------------------------------------------*/
-	if (_xAudio != NULL)
+	if (_xAudio)
 	{
 		_xAudio->Release();
 		_xAudio = nullptr;
@@ -74,15 +57,21 @@ void AudioMaster::Finalize()
 	---------------------------------------------------------------------*/
 	CoUninitialize();
 }
+#pragma endregion Constructor and Destructor
+#pragma region Public Function
+
 /****************************************************************************
 *                       GetAudioInterface
 *************************************************************************//**
-*  @fn        IXAudio2* AudioMaster::GetAudioInterface() const
-*  @brief     Get XAudio2 Interface
+*  @fn        IXAudio2* AudioMaster::GetAudioInterface() const noexcept
+* 
+*  @brief     Get XAudio2 Interface Pointer
+* 
 *  @param[in] void
-*  @return 　　IXAudio2*
+* 
+*  @return    IXAudio2Ptr (Comptr<IXAudio2>)
 *****************************************************************************/
-const AudioMaster::IXAudio2Ptr& AudioMaster::GetAudioInterface()
+AudioMaster::IXAudio2Ptr AudioMaster::GetAudioInterface() const noexcept
 {
 	return _xAudio;
 }
@@ -90,14 +79,17 @@ const AudioMaster::IXAudio2Ptr& AudioMaster::GetAudioInterface()
 /****************************************************************************
 *                       GetMasteringVoice
 *************************************************************************//**
-*  @fn        IXAudio2MasteringVoice* AudioMaster::GetMasteringVoice() const
+*  @fn        IXAudio2MasteringVoice* AudioMaster::GetMasteringVoice() const noexcept
+* 
 *  @brief     Get Mastering Voice
+* 
 *  @param[in] void
+* 
 *  @return 　　IXAudio2MasteringVoice*
 *****************************************************************************/
-const AudioMaster::IXAudio2MasteringVoicePtr& AudioMaster::GetMasteringVoice()
+AudioMaster::IXAudio2MasteringVoicePtr AudioMaster::GetMasteringVoice() const noexcept
 {
-	return _masterVoice;
+	return _masteringVoice;
 }
 
 /****************************************************************************
@@ -118,37 +110,54 @@ const AudioMaster::X3DAudioHandler& AudioMaster::GetX3DAudioInterface()
 *                       CreateXAudio2
 *************************************************************************//**
 *  @fn        bool AudioMaster::CreateXAudio2()
-*  @brief     Create XAudio
+* 
+*  @brief     Create XAudio2 Instance and Set debug mode
+* 
 *  @param[in] void
-*  @return 　　bool
+* 
+*  @return    bool (true : success create XAudio2, false : failed to create XAudio2)
 *****************************************************************************/
 bool AudioMaster::CreateXAudio2()
 {
 	/*-------------------------------------------------------------------
-	-              COM initialize
+	-              COM Initialize
 	---------------------------------------------------------------------*/
-	if (FAILED(CoInitializeEx(NULL, COINIT_MULTITHREADED)))
+	if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
 	{
-		MessageBox(NULL, L"can't initialize COM.", L"Warning", MB_ICONWARNING);
+		OutputDebugStringA("can't initialize COM.");
 		return false;
 	}
 
 	/*-------------------------------------------------------------------
-	-              Check debug flag
+	-              Check debug flag (Under Win7 version)
 	---------------------------------------------------------------------*/
-#ifdef _DEBUG
+#if _WIN32_WINNT < _WIN32_WINNT_WIN8 && defined(_DEBUG)
 	_debugFlag |= XAUDIO2_DEBUG_ENGINE;
-#endif
+#endif // _DEBUG
 
 	/*-------------------------------------------------------------------
 	-              Create XAudio2
 	---------------------------------------------------------------------*/
 	if (!FAILED(XAudio2Create(AudioMaster::_xAudio.GetAddressOf(), _debugFlag)))
 	{
-		MessageBox(NULL, L"can't initialize COM.", L"Warning", MB_ICONWARNING);
+		OutputDebugStringA("can't initialize COM.");
 		CoUninitialize();
 		return false;
 	}
+	
+	/*-------------------------------------------------------------------
+	-              Check debug flag (Over Win8 version)
+	---------------------------------------------------------------------*/
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+	XAUDIO2_DEBUG_CONFIGURATION debug = {};
+	debug.TraceMask       = XAUDIO2_LOG_ERRORS | XAUDIO2_LOG_WARNINGS;
+	debug.BreakMask       = XAUDIO2_LOG_ERRORS;
+	debug.LogFileline     = TRUE;
+	debug.LogFunctionName = TRUE;
+	debug.LogTiming       = TRUE;
+	debug.LogThreadID     = TRUE;
+	_xAudio->SetDebugConfiguration(&debug, nullptr);
+#endif
 
 	return true;
 }
@@ -156,18 +165,23 @@ bool AudioMaster::CreateXAudio2()
 /****************************************************************************
 *                       CreateMasterVoice
 *************************************************************************//**
-*  @fn        bool AudioMaster::CreateMasterVoice()
-*  @brief     Create Master Voice for Initialize
+*  @fn        bool AudioMaster::CreateMasteringVoice()
+* 
+*  @brief     Create Mastering Voice for Initialize
+* 
 *  @param[in] void
-*  @return 　　bool
+* 
+*  @return 　　bool (true : success create MasteringVoice, false : failed to create MasteringVoice)
 *****************************************************************************/
-bool AudioMaster::CreateMasterVoice()
+bool AudioMaster::CreateMasteringVoice()
 {
-	if (FAILED(_xAudio->CreateMasteringVoice(&_masterVoice)))
+	IXAudio2MasteringVoice* masterVoice = nullptr;
+	if (FAILED(_xAudio->CreateMasteringVoice(&masterVoice))) // 今後各引数を導入する.
 	{
-		MessageBox(NULL, L"can't create Mastering Voice.", L"Warning", MB_ICONWARNING);
+		OutputDebugStringA("Failed to create Mastering Voice.");
 
-		if (_xAudio != nullptr)
+		// Safe Release XAudio
+		if (_xAudio)
 		{
 			_xAudio->Release();
 			_xAudio = nullptr;
@@ -176,6 +190,8 @@ bool AudioMaster::CreateMasterVoice()
 		CoUninitialize();
 		return false;
 	}
+
+	_masteringVoice = std::shared_ptr<IXAudio2MasteringVoice>(masterVoice);
 	return true;
 }
 

@@ -58,7 +58,7 @@ private:
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
-	HMMIO _handle = nullptr;
+	HMMIO        _handle   = nullptr;
 	ByteArrayPtr _waveData = nullptr;
 	size_t       _waveDataSize   = 0;
 	std::wstring _filePath = L"";

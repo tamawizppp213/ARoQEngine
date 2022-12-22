@@ -1,86 +1,72 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   AudioMaster.hpp
-///             @brief  AudioMaster.hpp
+///             @file   AudioClipCache.hpp
+///             @brief  Audio clip cache
 ///             @author Toide Yutaro
-///             @date   2021_01_03
+///             @date   2022_12_22
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef AUDIO_MASTER_HPP
-#define AUDIO_MASTER_HPP
+#ifndef AUDIO_CLIP_CACHE_HPP
+#define AUDIO_CLIP_CACHE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <wrl.h>
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <string>
 #include <memory>
+#include <map>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-struct IXAudio2;
-struct IXAudio2MasteringVoice;
+
+//////////////////////////////////////////////////////////////////////////////////
+//                         AudioClip
+//////////////////////////////////////////////////////////////////////////////////
 
 namespace gc::audio
 {
+	class AudioClip;
 	/****************************************************************************
-	*				  			AudioMaster
+	*				  		AudioClipCache
 	*************************************************************************//**
-	*  @class     AudioMaster
-	*  @brief     Audio master
+	*  @class     AudioClipCache
+	*  @brief     audio clip resource cache. (Basically, This class is used by ResourceManager class.)
 	*****************************************************************************/
-	class AudioMaster
+	class AudioClipCache : public NonCopyable
 	{
-	public:
-		using IXAudio2Ptr = Microsoft::WRL::ComPtr<IXAudio2>;
-		using IXAudio2MasteringVoicePtr = std::shared_ptr<IXAudio2MasteringVoice>;
-		using X3DAudioHandler = unsigned char[20];
+		using AudioClipPtr = std::shared_ptr<AudioClip>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Load audio clip*/
+		AudioClipPtr Load(const std::wstring& filePath);
+
+		// @brief : Exist audio clip
+		bool Exist(const std::wstring& filePath);
+
+		/* @brief : Clear audio clip list.*/
+		void Clear() { _audioClipList.clear(); };
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		IXAudio2Ptr               GetAudioInterface() const noexcept;
-		IXAudio2MasteringVoicePtr GetMasteringVoice() const noexcept;
-		const X3DAudioHandler& GetX3DAudioInterface();
-
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		AudioMaster();
+		AudioClipCache();
+		~AudioClipCache();
 
-		~AudioMaster();
-
-	private:
+	protected:
 		/****************************************************************************
-		**                Constructor and Destructor
+		**                Protected Function
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Function
+		**                Protected Member Variables
 		*****************************************************************************/
-		bool CreateXAudio2();
-		bool CreateMasteringVoice();
-		bool CreateX3DAudio();
-
-		/****************************************************************************
-		**                Private Member Variables
-		*****************************************************************************/
-		/* @brief: XAudio interface*/
-		IXAudio2Ptr _xAudio = nullptr;
-
-		/* @brief : Final output destination for audio*/
-		IXAudio2MasteringVoicePtr _masteringVoice = nullptr;
-
-		/* @brief : X3DAudio interface*/
-		X3DAudioHandler _x3dAudio = {};
-
-		/* @brief : This flag is used under Window 7.*/
-		unsigned int    _debugFlag = 0;
-
-		/* @brief : Initialized flags*/
-		bool _hasInitialized = false;
+		std::map<std::uint64_t, AudioClipPtr> _audioClipList = {};
 
 	};
 }

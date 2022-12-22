@@ -29,7 +29,7 @@ GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const std::wstring& 
 	---------------------------------------------------------------------*/
 	const auto name = filePath + L"_SRV";
 	size_t hashCode = std::hash<std::wstring>()(name);
-	if (_resourceViews.find(hashCode) != _resourceViews.end())
+	if (_resourceViews.contains(hashCode))
 	{
 		return _resourceViews.at(hashCode);
 	}

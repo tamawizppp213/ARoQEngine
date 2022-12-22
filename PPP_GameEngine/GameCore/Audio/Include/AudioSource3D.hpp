@@ -72,64 +72,69 @@ struct Audio3DParameter
 	float LPFDirectCoefficient;
 };
 
-/****************************************************************************
-*				  			AudioSource
-*************************************************************************//**
-*  @class     AudioSource
-*  @brief     Audio Source (for 3D sound)
-*****************************************************************************/
-class AudioSource3D : public AudioSource
+namespace gc::audio
 {
-public:
-	/****************************************************************************
-	**                Public Function
-	*****************************************************************************/
-	virtual bool Play() override;
-	bool ApplyChange();
-
-	static Audio3DParameter Calculate3DSound(
-		const X3DAUDIO_LISTENER* listener,
-		const X3DAUDIO_EMITTER* emitter);
 
 	/****************************************************************************
-	**                Public Member Variables
+	*				  			AudioSource
+	*************************************************************************//**
+	*  @class     AudioSource
+	*  @brief     Audio Source (for 3D sound)
 	*****************************************************************************/
-	void SetListenerFront(const gm::Float3& front);
-	void SetListenerUp(const gm::Float3& top);
-	void SetListenerPosition(const gm::Float3& position);
-	void SetListenerVelocity(const gm::Float3& velocity);
+	class AudioSource3D : public AudioSource
+	{
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		virtual bool Play() override;
+		bool ApplyChange();
 
-	void SetEmitterFront(const gm::Float3& front);
-	void SetEmitterUp(const gm::Float3& top);
-	void SetEmitterPosition(const gm::Float3& position);
-	void SetEmitterVelocity(const gm::Float3& velocity);
-	void SetEmitterDopplerLevel(float level);
-	void SetEmitterRadius(float radius);
+		static Audio3DParameter Calculate3DSound(
+			const X3DAUDIO_LISTENER* listener,
+			const X3DAUDIO_EMITTER* emitter);
 
-	/****************************************************************************
-	**                Constructor and Destructor
-	*****************************************************************************/
-	AudioSource3D();
-	~AudioSource3D();
-protected:
-	/****************************************************************************
-	**                Protected Function
-	*****************************************************************************/
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		void SetListenerFront(const gm::Float3& front);
+		void SetListenerUp(const gm::Float3& top);
+		void SetListenerPosition(const gm::Float3& position);
+		void SetListenerVelocity(const gm::Float3& velocity);
 
-	/****************************************************************************
-	**                Protected Member Variables
-	*****************************************************************************/
-private:
-	/****************************************************************************
-	**                Private Function
-	*****************************************************************************/
+		void SetEmitterFront(const gm::Float3& front);
+		void SetEmitterUp(const gm::Float3& top);
+		void SetEmitterPosition(const gm::Float3& position);
+		void SetEmitterVelocity(const gm::Float3& velocity);
+		void SetEmitterDopplerLevel(float level);
+		void SetEmitterRadius(float radius);
 
-	/****************************************************************************
-	**                Private Member Variables
-	*****************************************************************************/
-	AudioEmitter  _emitter;
-	AudioListener _listener;
-	bool _using3DSound = true;
-};
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		AudioSource3D(const AudioMasterPtr& audioMaster);
+		~AudioSource3D();
+	protected:
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Private Member Variables
+		*****************************************************************************/
+		AudioEmitter  _emitter;
+		AudioListener _listener;
+		bool _using3DSound = true;
+	};
+
+}
 
 #endif

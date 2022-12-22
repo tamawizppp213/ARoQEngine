@@ -11,6 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <string>
 #include <memory>
 #include <Windows.h>
@@ -22,49 +23,49 @@
 //                         AudioClip
 //////////////////////////////////////////////////////////////////////////////////
 
-/****************************************************************************
-*				  		AudioClip
-*************************************************************************//**
-*  @class     Audio Clip
-*  @brief     Save audio data (current .wav only)
-*****************************************************************************/
-class AudioClip
+namespace gc::audio
 {
-public:
-	/****************************************************************************
-	**                Public Function
-	*****************************************************************************/
-	bool LoadFromFile(const std::wstring& filePath);
 
 	/****************************************************************************
-	**                Public Member Variables
+	*				  		AudioClip
+	*************************************************************************//**
+	*  @class     Audio Clip
+	*  @brief     Save audio data (current .wav only)
 	*****************************************************************************/
-	const std::wstring&            GetFilePath()     const;
-	const size_t                   GetSoundSize()    const;
-	const std::shared_ptr<BYTE[]>& GetSoundData()    const;
-	const WAVEFORMATEX&            GetFileFormatEx() const;
-	/****************************************************************************
-	**                Constructor and Destructor
-	*****************************************************************************/
-	AudioClip();
-	~AudioClip();
-	AudioClip(const AudioClip&)            = default;
-	AudioClip& operator=(const AudioClip&) = default;
-	AudioClip(AudioClip&&)                 = default;
-	AudioClip& operator=(AudioClip&&)      = default;
-protected:
-	/****************************************************************************
-	**                Protected Function
-	*****************************************************************************/
+	class AudioClip : public NonCopyable
+	{
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		bool Load(const std::wstring& filePath);
 
-	/****************************************************************************
-	**                Protected Member Variables
-	*****************************************************************************/
-	std::wstring            _filePath  = L"";
-	size_t                  _soundSize = 0;
-	WAVEFORMATEX            _waveFormatEx;
-	std::shared_ptr<BYTE[]> _soundData = nullptr;
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		const std::wstring& GetFilePath()      const;
+		const size_t        GetSoundSize()     const;
+		const WAVEFORMATEX& GetFileFormatEx()  const;
+		std::shared_ptr<BYTE[]> GetSoundData() const noexcept;
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		AudioClip();
+		~AudioClip();
 
-};
+	protected:
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
 
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		std::wstring            _filePath = L"";
+		size_t                  _soundSize = 0;
+		WAVEFORMATEX            _waveFormatEx;
+		std::shared_ptr<BYTE[]> _soundData = nullptr;
+
+	};
+}
 #endif

@@ -11,104 +11,115 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <string>
 #include <memory>
 #include <wrl.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class AudioClip;
 struct IXAudio2SourceVoice;
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-/*************************************************************************//**
-*  @enum      SoundType
-*****************************************************************************/
-enum class SoundType
+namespace gc::audio
 {
-	BGM,
-	BGS,
-	ME,
-	SE,
-	NONE
-};
-/****************************************************************************
-*				  			AudioSource
-*************************************************************************//**
-*  @class     AudioSource
-*  @brief     Audio Source
-*****************************************************************************/
-class AudioSource
-{
-protected:
-	using AudioClipPtr   = AudioClip*; // é¿ëÃÇÕunordered mapÇ≈ä«óùÇµÇƒÇ¢ÇÈÇΩÇﬂ, é©ìÆÇ≈îjä¸Ç∑ÇÈïKóvÇ»Çµ.
-	using SourceVoucePtr =IXAudio2SourceVoice*;
-public:
-	/****************************************************************************
-	**                Public Function
+	class AudioMaster;
+	class AudioClip;
+
+	/*************************************************************************//**
+	*  @enum      SoundType
 	*****************************************************************************/
-	virtual bool Play();
-	bool Stop();
-	bool Replay();
-	bool Pause();
-	bool ExitLoop();
-	bool LoadSound(const std::wstring& filePath, SoundType soundType, float volume = 1.0f);
+	enum class SoundType
+	{
+		BGM,
+		BGS,
+		ME,
+		SE,
+		NONE
+	};
 
 	/****************************************************************************
-	**                Public Member Variables
+	*				  			AudioSource
+	*************************************************************************//**
+	*  @class     AudioSource
+	*  @brief     Play, Stop, Pause sound file.
 	*****************************************************************************/
-	bool IsLoop() const;
-	bool IsPlaying();
+	class AudioSource : public NonCopyable
+	{
+	protected:
+		using AudioClipPtr = std::shared_ptr<AudioClip>; // é¿ëÃÇÕunordered mapÇ≈ä«óùÇµÇƒÇ¢ÇÈÇΩÇﬂ, é©ìÆÇ≈îjä¸Ç∑ÇÈïKóvÇ»Çµ.
+		using SourceVoucePtr = std::shared_ptr<IXAudio2SourceVoice>;
+		using AudioMasterPtr = std::shared_ptr<AudioMaster>;
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		/* @brief : Load wav file. SoundType : BGM, BGS -> Loop On, ME , SE -> Loop Off */
+		bool SetUp(const AudioClipPtr& audioClip, const SoundType soundType, const float volume = 1.0f);
 
-	/*-------------------------------------------------------------------
-	-              Pitch
-	---------------------------------------------------------------------*/
-	float GetPitch();
-	void SetPitch  (float pitch);
-	void SetMaxPitch(float maxPitch);
-	void AdjustPitch(float diffPitch);
-	/*-------------------------------------------------------------------
-	-              Volume
-	---------------------------------------------------------------------*/
-	float GetVolume();
-	bool  SetVolume(float volume);
-	void  AdjustVolume(float diffVolume);
+		virtual bool Play();
+		bool Stop();
+		bool Replay();
+		bool Pause();
+		bool ExitLoop();
 
-	bool SetPan(float pan);
-	bool IsUseReverb(bool useReverb);
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		bool IsLoop() const;
+		bool IsPlaying();
 
-	/****************************************************************************
-	**                Constructor and Destructor
-	*****************************************************************************/
-	AudioSource();
-	~AudioSource();
-	AudioSource(const AudioSource&) = default;
-	AudioSource& operator=(const AudioSource&) = default;
-	AudioSource(AudioSource&&) = default;
-	AudioSource& operator=(AudioSource&&) = default;
-protected:
-	/****************************************************************************
-	**                Protected Function
-	*****************************************************************************/
-	void FlushAudioData();
-	bool IsExistedSourceVoice();
-	bool IsRemainedSourceBufferQueue();
-	bool LoadAudioClip(const std::wstring& filePath);
-	bool CreateSourceVoice();
-	bool CreateReverb();
-	bool SelectSoundType(SoundType soundType);
+		/*-------------------------------------------------------------------
+		-              Pitch
+		---------------------------------------------------------------------*/
+		float GetPitch();
+		void SetPitch(float pitch);
+		void SetMaxPitch(float maxPitch);
+		void AdjustPitch(float diffPitch);
+		/*-------------------------------------------------------------------
+		-              Volume
+		---------------------------------------------------------------------*/
+		float GetVolume();
+		bool  SetVolume(float volume);
+		void  AdjustVolume(float diffVolume);
 
-	/****************************************************************************
-	**                Protected Member Variables
-	*****************************************************************************/
-	AudioClipPtr   _audioClip = nullptr;
-	SourceVoucePtr _sourceVoice = nullptr;
-	SoundType _soundType = SoundType::NONE;
-	bool  _isLoop;
-	float _maxVolume;
-	float _maxPitch;
-	static float _volumeRatio[4];
-};
+		bool SetPan(float pan);
+		bool IsUseReverb(bool useReverb);
 
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		AudioSource(const std::shared_ptr<AudioMaster>& audioMaster);
+
+		AudioSource(const std::shared_ptr<AudioMaster>& audioMaster, const AudioClipPtr& audioClip, const SoundType soundType, const float volume = 1.0f);
+
+		~AudioSource();
+	protected:
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+		void FlushAudioData();
+		bool IsExistedSourceVoice();
+		bool IsRemainedSourceBufferQueue();
+		bool CreateSourceVoice();
+		bool CreateReverb();
+		bool SelectIsLoop(const SoundType soundType);
+
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		AudioClipPtr   _audioClip = nullptr;
+		SourceVoucePtr _sourceVoice = nullptr;
+		AudioMasterPtr _audioMaster = nullptr;
+		SoundType _soundType = SoundType::NONE;
+		bool  _isLoop    = false;
+		float _maxVolume = 0.0f;
+		float _maxPitch  = 0.0f;
+
+		/* @brief : Has loaded sound file. (true : load, false : not yet)*/
+		bool  _hasLoaded = false;
+		static float _volumeRatio[4];
+	};
+}
 #endif
