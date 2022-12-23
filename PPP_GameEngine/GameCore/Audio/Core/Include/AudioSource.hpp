@@ -51,7 +51,7 @@ namespace gc::audio
 	protected:
 		
 		using AudioClipPtr = std::shared_ptr<AudioClip>; // À‘Ì‚Íunordered map‚ÅŠÇ—‚µ‚Ä‚¢‚é‚½‚ß, ©“®‚Å”jŠü‚·‚é•K—v‚È‚µ.
-		using SourceVoucePtr = std::shared_ptr<IXAudio2SourceVoice>;
+		using SourceVoucePtr = IXAudio2SourceVoice*;
 		using AudioMasterPtr = std::shared_ptr<AudioMaster>;
 	
 	public:
@@ -76,7 +76,6 @@ namespace gc::audio
 
 		/* @brief: Pause sound*/
 		bool Pause();
-
 
 		bool ExitLoop();
 

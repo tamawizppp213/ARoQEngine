@@ -5,8 +5,8 @@
 ///             @date   2021_01_03
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef AUDIO_MASTER_HPP
-#define AUDIO_MASTER_HPP
+#ifndef AUDIO_SUBMIX_HPP
+#define AUDIO_SUBMIX_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -16,23 +16,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-struct IXAudio2;
-struct IXAudio2MasteringVoice;
 
 namespace gc::audio
 {
 	/****************************************************************************
-	*				  			AudioMaster
+	*				  			AudioSubmix
 	*************************************************************************//**
-	*  @class     AudioMaster
-	*  @brief     Audio master
+	*  @class     AudioSubmix
+	*  @brief     Manage AudioSource in one place
 	*****************************************************************************/
-	class AudioMaster
+	class AudioSubmix
 	{
 	public:
-		using IXAudio2Ptr = Microsoft::WRL::ComPtr<IXAudio2>;
-		using IXAudio2MasteringVoicePtr = IXAudio2MasteringVoice*;
-		using X3DAudioHandler = unsigned char[20];
+		
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -41,16 +37,13 @@ namespace gc::audio
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		IXAudio2Ptr               GetAudioInterface() const noexcept;
-		IXAudio2MasteringVoicePtr GetMasteringVoice() const noexcept;
-		const X3DAudioHandler& GetX3DAudioInterface();
+		
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		AudioMaster();
-
-		~AudioMaster();
+		AudioSubmix() = default;
+		~AudioSubmix() = default;
 
 	private:
 		/****************************************************************************
@@ -60,27 +53,11 @@ namespace gc::audio
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-		bool CreateXAudio2();
-		bool CreateMasteringVoice();
-		bool CreateX3DAudio();
-
+		
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		/* @brief: XAudio interface*/
-		IXAudio2Ptr _xAudio = nullptr;
-
-		/* @brief : Final output destination for audio*/
-		IXAudio2MasteringVoicePtr _masteringVoice = nullptr;
-
-		/* @brief : X3DAudio interface*/
-		X3DAudioHandler _x3dAudio = {};
-
-		/* @brief : This flag is used under Window 7.*/
-		unsigned int    _debugFlag = 0;
-
-		/* @brief : Initialized flags*/
-		bool _hasInitialized = false;
+		
 
 	};
 }

@@ -49,7 +49,6 @@ AudioSource::~AudioSource()
 	{
 		Stop();
 		_sourceVoice->DestroyVoice();
-		_sourceVoice.reset();
 	}
 
 	_audioMaster.reset();
@@ -240,7 +239,7 @@ bool AudioSource::SetPan(float pan)
 	/*-------------------------------------------------------------------
 	-              Threshold
 	---------------------------------------------------------------------*/
-	if (pan > 1.0f) { pan = 1.0f; }
+	if (pan > 1.0f)  { pan = 1.0f; }
 	if (pan < -1.0f) { pan = -1.0f; }
 
 	/*-------------------------------------------------------------------
@@ -524,7 +523,7 @@ bool AudioSource::CreateSourceVoice()
 	IXAudio2SourceVoice* audioSource = nullptr;
 	
 	// Todo : Œã‚ÅFXÝ’è‚ð’Ç‰Á‚·‚é. 
-	HRESULT hresult = xAudio->CreateSourceVoice(&audioSource, &_audioClip->GetFileFormatEx());
+	HRESULT hresult = xAudio->CreateSourceVoice(&_sourceVoice, &_audioClip->GetFileFormatEx());
 	
 	if (FAILED(hresult))
 	{
@@ -535,7 +534,7 @@ bool AudioSource::CreateSourceVoice()
 	/*-------------------------------------------------------------------
 	-               Set up
 	---------------------------------------------------------------------*/
-	_sourceVoice = std::shared_ptr<IXAudio2SourceVoice>(audioSource);
+	//_sourceVoice = std::move(audioSource);
 	return true;
 }
 

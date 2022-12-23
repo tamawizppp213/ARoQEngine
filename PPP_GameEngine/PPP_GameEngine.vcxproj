@@ -178,6 +178,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioSubmix.hpp" />
     <ClInclude Include="GameCore\Audio\Effect\Include\AudioFader.hpp" />
     <ClInclude Include="GameCore\Audio\Effect\Source\AudioFader.cpp" />
     <ClInclude Include="GameCore\Audio\Core\Include\AudioClip.hpp" />
@@ -463,6 +464,7 @@
     <ClCompile Include="GameCore\Audio\Core\Source\AudioMaster.cpp" />
     <ClCompile Include="GameCore\Audio\Core\Source\AudioSource.cpp" />
     <ClCompile Include="GameCore\Audio\Core\Source\AudioSource3D.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioSubmix.cpp" />
     <ClCompile Include="GameCore\Audio\Private\Source\WavDecoder.cpp" />
     <ClCompile Include="GameCore\Core\Source\Camera.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameActor.cpp" />

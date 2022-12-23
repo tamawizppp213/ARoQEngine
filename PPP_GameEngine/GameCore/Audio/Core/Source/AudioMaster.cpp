@@ -40,7 +40,7 @@ AudioMaster::~AudioMaster()
 	if (_masteringVoice)
 	{
 		_masteringVoice->DestroyVoice();
-		_masteringVoice.reset();
+		//_masteringVoice.reset();
 	}
 
 	/*-------------------------------------------------------------------
@@ -73,6 +73,7 @@ AudioMaster::~AudioMaster()
 *****************************************************************************/
 AudioMaster::IXAudio2Ptr AudioMaster::GetAudioInterface() const noexcept
 {
+	_xAudio->AddRef();
 	return _xAudio;
 }
 
@@ -175,8 +176,7 @@ bool AudioMaster::CreateXAudio2()
 *****************************************************************************/
 bool AudioMaster::CreateMasteringVoice()
 {
-	IXAudio2MasteringVoice* masterVoice = nullptr;
-	if (FAILED(_xAudio->CreateMasteringVoice(&masterVoice))) // ¡ŒãŠeˆø”‚ğ“±“ü‚·‚é.
+	if (FAILED(_xAudio->CreateMasteringVoice(&_masteringVoice))) // ¡ŒãŠeˆø”‚ğ“±“ü‚·‚é.
 	{
 		OutputDebugStringA("Failed to create Mastering Voice.");
 
@@ -191,7 +191,6 @@ bool AudioMaster::CreateMasteringVoice()
 		return false;
 	}
 
-	_masteringVoice = std::shared_ptr<IXAudio2MasteringVoice>(masterVoice);
 	return true;
 }
 
