@@ -12,7 +12,7 @@
 #include "GameUtility/Base/Include/GameTimer.hpp"
 #include "MainGame/Core/Include/Scene.hpp"
 #include "MainGame/Sample/Include/SampleColorChange.hpp"
-#include "MainGame/Sample/Include/SampleTexture.hpp"
+#include "MainGame/Sample/Include/SampleAudio.hpp"
 #include "MainGame/Sample/Include/SampleText.hpp"
 #include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@
 void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_ptr<GameTimer>& gameTimer)
 {
 	_engine = engine;
-	PushScene(new sample::SampleText());
+	PushScene(new sample::SampleAudio());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

@@ -178,13 +178,13 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GameCore\Audio\Private\Include\AudioFader.hpp" />
-    <ClInclude Include="GameCore\Audio\Private\Source\AudioFader.hpp" />
-    <ClInclude Include="GameCore\Audio\Public\Include\AudioClip.hpp" />
-    <ClInclude Include="GameCore\Audio\Public\Include\AudioClipCache.hpp" />
-    <ClInclude Include="GameCore\Audio\Public\Include\AudioMaster.hpp" />
-    <ClInclude Include="GameCore\Audio\Public\Include\AudioSource.hpp" />
-    <ClInclude Include="GameCore\Audio\Public\Include\AudioSource3D.hpp" />
+    <ClInclude Include="GameCore\Audio\Effect\Include\AudioFader.hpp" />
+    <ClInclude Include="GameCore\Audio\Effect\Source\AudioFader.cpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioClip.hpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioClipCache.hpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioMaster.hpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioSource.hpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioSource3D.hpp" />
     <ClInclude Include="GameCore\Audio\Private\Include\WavDecoder.hpp" />
     <ClInclude Include="GameCore\Core\Include\Camera.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameActor.hpp" />
@@ -447,6 +447,7 @@
     <ClInclude Include="MainGame\Core\Include\Scene.hpp" />
     <ClInclude Include="MainGame\Core\Include\SceneManager.hpp" />
     <ClInclude Include="MainGame\Core\Include\TemplateText.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleAudio.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleColorChange.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleRayTracingRectangle.hpp" />
@@ -457,11 +458,11 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameCore\Audio\Public\Source\AudioClip.cpp" />
-    <ClCompile Include="GameCore\Audio\Public\Source\AudioClipCache.cpp" />
-    <ClCompile Include="GameCore\Audio\Public\Source\AudioMaster.cpp" />
-    <ClCompile Include="GameCore\Audio\Public\Source\AudioSource.cpp" />
-    <ClCompile Include="GameCore\Audio\Public\Source\AudioSource3D.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioClip.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioClipCache.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioMaster.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioSource.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioSource3D.cpp" />
     <ClCompile Include="GameCore\Audio\Private\Source\WavDecoder.cpp" />
     <ClCompile Include="GameCore\Core\Source\Camera.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameActor.cpp" />
@@ -617,6 +618,7 @@
     <ClCompile Include="MainGame\Core\Source\Main.cpp" />
     <ClCompile Include="MainGame\Core\Source\Scene.cpp" />
     <ClCompile Include="MainGame\Core\Source\SceneManager.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleAudio.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleEmpty.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleRayTracingRectangle.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SamplerColorChange.cpp" />

@@ -34,8 +34,8 @@ public:
 
 	const WAVEFORMATEX& GetFileFormatEx() const;
 	const std::wstring& GetFilePath()     const;
-	const std::shared_ptr<BYTE[]>& GetWaveData()     const;
-	const size_t                   GetWaveSize()     const;
+	const std::shared_ptr<BYTE[]>& GetWaveData() const;
+	const size_t                   GetWaveSize()  const;
 
 	/****************************************************************************
 	**                Public Member Variables

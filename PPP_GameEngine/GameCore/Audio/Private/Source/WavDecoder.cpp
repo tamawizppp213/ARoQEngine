@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Audio/Include/WavDecoder.hpp"
+#include "../Include/WavDecoder.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -106,7 +106,7 @@ bool WavDecoder::Open(const std::wstring& filePath)
 	std::wstring extension = file::FileSystem::GetExtension(filePath);
 	if (extension != L"wav")
 	{
-		MessageBox(NULL, L"can't read wavFile", L"Warning", MB_ICONWARNING);
+		OutputDebugStringA("can't read wavFile");
 		return false;
 	}
 
@@ -114,9 +114,12 @@ bool WavDecoder::Open(const std::wstring& filePath)
 	-              File Open
 	---------------------------------------------------------------------*/
 	LPWSTR path = (LPWSTR)filePath.c_str();
-	if (!(_handle == mmioOpen(path, &mmioInfo, MMIO_READ)))
+
+	_handle = mmioOpenW(path, &mmioInfo, MMIO_READ);
+
+	if(_handle == nullptr)
 	{
-		MessageBox(NULL, L"can't create MMIO.", L"Warning", MB_ICONWARNING);
+		OutputDebugStringA("can't create MMIO.");
 		return false;
 	}
 
