@@ -37,12 +37,12 @@ SampleRectangle::~SampleRectangle()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleRectangle::Initialize(GameTimer* gameTimer)
+*  @fn        void SampleRectangle::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
-*  @param[in] GameTimer* gameTimer
+*  @param[in]  const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

@@ -69,25 +69,25 @@
     <ClInclude Include="GameUtility\File\Include\Json.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Audio\Include\WavDecoder.hpp">
+    <ClInclude Include="GameCore\Audio\Private\Include\WavDecoder.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\File\Include\FileSystem.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Audio\Include\AudioClip.hpp">
+    <ClInclude Include="GameCore\Audio\Public\Include\AudioClip.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Audio\Include\AudioMaster.hpp">
+    <ClInclude Include="GameCore\Audio\Public\Include\AudioMaster.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Audio\Include\AudioSource.hpp">
+    <ClInclude Include="GameCore\Audio\Public\Include\AudioSource.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Audio\Include\AudioSource3D.hpp">
+    <ClInclude Include="GameCore\Audio\Public\Include\AudioSource3D.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp">
@@ -837,7 +837,13 @@
     <ClInclude Include="MainGame\Sample\Include\SampleText.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Audio\Include\AudioClipCache.hpp">
+    <ClInclude Include="GameCore\Audio\Public\Include\AudioClipCache.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Audio\Private\Include\AudioFader.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Audio\Private\Source\AudioFader.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -851,25 +857,25 @@
     <ClCompile Include="GameUtility\File\Source\Json.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Audio\Source\WavDecoder.cpp">
+    <ClCompile Include="GameCore\Audio\Private\Source\WavDecoder.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameUtility\File\Source\FileSystem.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Audio\Source\AudioClip.cpp">
+    <ClCompile Include="GameCore\Audio\Public\Source\AudioClip.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Audio\Source\AudioMaster.cpp">
+    <ClCompile Include="GameCore\Audio\Public\Source\AudioMaster.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Audio\Source\AudioSource.cpp">
+    <ClCompile Include="GameCore\Audio\Public\Source\AudioSource.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Core\Source\ResourceManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Audio\Source\AudioSource3D.cpp">
+    <ClCompile Include="GameCore\Audio\Public\Source\AudioSource3D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp">
@@ -1340,7 +1346,7 @@
     <ClCompile Include="MainGame\Sample\Source\SampleText.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Audio\Source\AudioClipCache.cpp">
+    <ClCompile Include="GameCore\Audio\Public\Source\AudioClipCache.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

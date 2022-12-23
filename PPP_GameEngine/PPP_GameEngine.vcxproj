@@ -178,12 +178,14 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GameCore\Audio\Include\AudioClip.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\AudioClipCache.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\AudioMaster.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\AudioSource.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\AudioSource3D.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\WavDecoder.hpp" />
+    <ClInclude Include="GameCore\Audio\Private\Include\AudioFader.hpp" />
+    <ClInclude Include="GameCore\Audio\Private\Source\AudioFader.hpp" />
+    <ClInclude Include="GameCore\Audio\Public\Include\AudioClip.hpp" />
+    <ClInclude Include="GameCore\Audio\Public\Include\AudioClipCache.hpp" />
+    <ClInclude Include="GameCore\Audio\Public\Include\AudioMaster.hpp" />
+    <ClInclude Include="GameCore\Audio\Public\Include\AudioSource.hpp" />
+    <ClInclude Include="GameCore\Audio\Public\Include\AudioSource3D.hpp" />
+    <ClInclude Include="GameCore\Audio\Private\Include\WavDecoder.hpp" />
     <ClInclude Include="GameCore\Core\Include\Camera.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameActor.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameComponent.hpp" />
@@ -455,12 +457,12 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameCore\Audio\Source\AudioClip.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\AudioClipCache.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\AudioMaster.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\AudioSource.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\AudioSource3D.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\WavDecoder.cpp" />
+    <ClCompile Include="GameCore\Audio\Public\Source\AudioClip.cpp" />
+    <ClCompile Include="GameCore\Audio\Public\Source\AudioClipCache.cpp" />
+    <ClCompile Include="GameCore\Audio\Public\Source\AudioMaster.cpp" />
+    <ClCompile Include="GameCore\Audio\Public\Source\AudioSource.cpp" />
+    <ClCompile Include="GameCore\Audio\Public\Source\AudioSource3D.cpp" />
+    <ClCompile Include="GameCore\Audio\Private\Source\WavDecoder.cpp" />
     <ClCompile Include="GameCore\Core\Source\Camera.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameActor.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameComponent.cpp" />

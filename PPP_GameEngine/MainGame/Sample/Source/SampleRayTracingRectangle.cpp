@@ -39,10 +39,10 @@ SampleRayTracingRectangle::~SampleRayTracingRectangle()
 *************************************************************************//**
 *  @fn        void SampleRayTracingRectangle::Initialize(GameTimer* gameTimer)
 *  @brief     Initialize scene
-*  @param[in] GameTimer* gameTimer
+*  @param[in]  const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleRayTracingRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleRayTracingRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

@@ -23,7 +23,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, GameTimer* gameTimer)
+void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_ptr<GameTimer>& gameTimer)
 {
 	_engine = engine;
 	PushScene(new sample::SampleText());
@@ -38,7 +38,7 @@ void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, GameTimer* gameTime
 *  @param[in] GameTimer& gameTimer
 *  @return @@void
 *****************************************************************************/
-void SceneManager::TransitScene(ScenePtr scene, GameTimer* gameTimer)
+void SceneManager::TransitScene(ScenePtr scene, const GameTimerPtr& gameTimer)
 {
 	CallSceneTerminate();
 	_currentScene.pop();
@@ -46,7 +46,7 @@ void SceneManager::TransitScene(ScenePtr scene, GameTimer* gameTimer)
 	CallSceneInitialize(gameTimer);
 }
 
-void SceneManager::CallSceneInitialize( GameTimer* gameTimer)
+void SceneManager::CallSceneInitialize( const GameTimerPtr& gameTimer)
 {
 	if (_currentScene.empty()) { return; }
 	_currentScene.top()->Initialize(_engine, gameTimer);

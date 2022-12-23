@@ -39,12 +39,12 @@ SampleColorChange::~SampleColorChange()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleColorChange::Initialize(GameTimer* gameTimer)
+*  @fn        void SampleColorChange::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
-*  @param[in] GameTimer* gameTimer
+*  @param[in]  const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleColorChange::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleColorChange::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

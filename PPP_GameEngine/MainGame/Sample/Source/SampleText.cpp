@@ -37,12 +37,12 @@ SampleText::~SampleText()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleEmpty::Initialize(GameTimer* gameTimer)
+*  @fn        void SampleEmpty::Initialize(const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
-*  @param[in] GameTimer* gameTimer
+*  @param[in] const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleText::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleText::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

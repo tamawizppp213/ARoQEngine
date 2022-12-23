@@ -30,6 +30,7 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 
 bool Application::StartUp()
 {
+	_gameTimer = std::make_shared<GameTimer>();
 	if (!CreateMainWindow())                               { return false; }
 	if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
 	return true;
@@ -39,7 +40,7 @@ void Application::Run()
 {
 	MSG message = { NULL };
 
-	_gameTimer.Reset();
+	_gameTimer->Reset();
 	_gameManager.GameStart(_apiVersion, _gameTimer, _mainWindow, _appInstance);
 	/*---------------------------------------------------------------
 						Main Loop
@@ -53,10 +54,10 @@ void Application::Run()
 		}
 		else
 		{
-			_gameTimer.Tick();
+			_gameTimer->Tick();
 			if (!_isApplicationPaused)
 			{
-				_gameTimer.AverageFrame(_mainWindow);
+				_gameTimer->AverageFrame(_mainWindow);
 				_gameInput.Update();
 				_gameManager.GameMain();
 			}

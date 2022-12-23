@@ -36,12 +36,12 @@ SampleSky::~SampleSky()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleSky::Initialize(GameTimer* gameTimer)
+*  @fn        void SampleSky::Initialize(const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in] GameTimer* gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleSky::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleSky::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

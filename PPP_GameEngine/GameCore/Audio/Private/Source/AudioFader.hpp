@@ -1,53 +1,42 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   SampleRectangle.hpp
-///             @brief  Rectangle mesh sample
+///             @file   AudioFader.hpp
+///             @brief  Fade in Fade out
 ///             @author Toide Yutaro
-///             @date   2022_10_30
+///             @date   2022_12_22
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SAMPLE_RECTANGLE_HPP
-#define SAMPLE_RECTANGLE_HPP
+#ifndef AUDIO_FADER_HPP
+#define AUDIO_FADER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Core/Include/Scene.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                         AudioClip
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
-{
-	class GPUBuffer;
-	class GPUGraphicsPipelineState;
-	class RHIResourceLayout;
-}
-namespace sample
+
+namespace gc::audio
 {
 	/****************************************************************************
-	*				  			SampleRectangle
+	*				  		AudioFader
 	*************************************************************************//**
-	*  @class     SampleRectangle
-	*  @brief     Rectangle color mesh sample 
+	*  @class     AudioFader
+	*  @brief     Fade
 	*****************************************************************************/
-	class SampleRayTracingRectangle : public Scene
+	class AudioFader : public NonCopyable
 	{
-		using VertexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
-		void Update() override;
-		void Draw() override;
-		void Terminate() override;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -55,30 +44,17 @@ namespace sample
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SampleRayTracingRectangle();
-		~SampleRayTracingRectangle();
+		
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void LoadMaterials() override;
-		void OnKeyboardInput() override;
-		void OnMouseInput() override;
-		void OnGamePadInput() override;
-		void ExecuteSceneTransition() override;
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VertexBufferPtr   _vertexBuffer   = nullptr;
-		IndexBufferPtr    _indexBuffer    = nullptr;
-		PipelineStatePtr  _pipelineState  = nullptr;
-		ResourceLayoutPtr _resourceLayout = nullptr;
-	private:
-		/****************************************************************************
-		**                Private Function
-		*****************************************************************************/
-		void BuildBuffer();
-		void BuildPipelineState();
+		
+
 	};
 }
 #endif

@@ -19,11 +19,11 @@ using namespace gc::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-void GameManager::GameStart(APIVersion apiVersion, GameTimer& gameTimer, HWND hwnd, HINSTANCE hInstance)
+void GameManager::GameStart(APIVersion apiVersion, const std::shared_ptr<GameTimer>& gameTimer, HWND hwnd, HINSTANCE hInstance)
 {
 	_engine = std::make_shared<LowLevelGraphicsEngine>();
 	_engine->StartUp(apiVersion, hwnd, hInstance);
-	_sceneManager.StartUp(_engine, &gameTimer);
+	_sceneManager.StartUp(_engine, gameTimer);
 }
 
 void GameManager::GameMain()
