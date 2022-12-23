@@ -7,10 +7,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Audio/Include/AudioSource.hpp"
-#include "GameCore/Audio/Include/AudioMaster.hpp"
-#include "GameCore/Audio/Include/WavDecoder.hpp"
-#include "GameCore/Audio/Include/AudioClip.hpp"
+#include "../Include/AudioSource.hpp"
+#include "../Include/AudioMaster.hpp"
+#include "../../Private/Include/WavDecoder.hpp"
+#include "../Include/AudioClip.hpp"
 #include "GameCore/Core/Include/ResourceManager.hpp"
 
 #define XAUDIO2_HELPER_FUNCTIONS
