@@ -37,9 +37,12 @@ GameTimer::GameTimer() :
 *                       TotalTime
 *************************************************************************//**
 *  @fn        float GameTimer::TotalTime() const 
+* 
 *  @brief     Return totalTime
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
 float GameTimer::TotalTime() const
 {
@@ -75,9 +78,12 @@ float GameTimer::TotalTime() const
 *                       DeltaTime
 *************************************************************************//**
 *  @fn        float GameTimer::DeltaTime() const 
+* 
 *  @brief     Return deltaTime
+* 
 *  @param[in] void
-*  @return 　　float
+* 
+*  @return    float
 *****************************************************************************/
 float GameTimer::DeltaTime() const
 {
@@ -87,9 +93,12 @@ float GameTimer::DeltaTime() const
 *                       Reset
 *************************************************************************//**
 *  @fn        void GameTimer::Reset()
+* 
 *  @brief     Reset GameTimer
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
 void GameTimer::Reset()
 {
@@ -106,8 +115,11 @@ void GameTimer::Reset()
 *                       Start
 *************************************************************************//**
 *  @fn        void GameTimer::Start()
+* 
 *  @brief     Start GameTimer
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void GameTimer::Start()
@@ -128,9 +140,12 @@ void GameTimer::Start()
 *                       Stop
 *************************************************************************//**
 *  @fn        void GameTimer& Stop()
+* 
 *  @brief     Stop timer
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
 void GameTimer::Stop()
 {
@@ -187,9 +202,12 @@ void GameTimer::Tick()
 *                       AvrageFrame
 *************************************************************************//**
 *  @fn        void GameTimer::Average(const HWND& hwnd)
+* 
 *  @brief     Show average fps
+* 
 *  @param[in] HWND& hwnd
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
 void GameTimer::AverageFrame(const HWND &hwnd)
 {

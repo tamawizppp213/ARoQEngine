@@ -56,9 +56,11 @@ namespace gc::audio
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Load wav file. SoundType : BGM, BGS -> Loop On, ME , SE -> Loop Off */
-		bool SetUp(const AudioClipPtr& audioClip, const SoundType soundType, const float volume = 1.0f);
+		virtual bool SetUp(const AudioClipPtr& audioClip, const SoundType soundType, const float volume = 1.0f);
 
+		/* @brief : Play sound. */
 		virtual bool Play();
+
 		bool Stop();
 		bool Replay();
 		bool Pause();
@@ -67,7 +69,10 @@ namespace gc::audio
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		bool IsLoop() const;
+		/* @brief : (true-> loop, false -> not loop)*/
+		bool IsLoop() const { return _isLoop; };
+
+		/* @brief : Is playing sound (true-> playing, false -> not playing)*/
 		bool IsPlaying();
 
 		/*-------------------------------------------------------------------
@@ -77,10 +82,11 @@ namespace gc::audio
 		void SetPitch(float pitch);
 		void SetMaxPitch(float maxPitch);
 		void AdjustPitch(float diffPitch);
+
 		/*-------------------------------------------------------------------
 		-              Volume
 		---------------------------------------------------------------------*/
-		float GetVolume();
+		float GetVolume() const;
 		bool  SetVolume(float volume);
 		void  AdjustVolume(float diffVolume);
 
@@ -100,11 +106,12 @@ namespace gc::audio
 		**                Protected Function
 		*****************************************************************************/
 		void FlushAudioData();
-		bool IsExistedSourceVoice();
-		bool IsRemainedSourceBufferQueue();
 		bool CreateSourceVoice();
 		bool CreateReverb();
 		bool SelectIsLoop(const SoundType soundType);
+
+		/* @brief : is Existed source voice (true -> exist, false -> not exist)*/
+		bool IsExistedSourceVoice() const { return  _sourceVoice != nullptr; };
 
 		/****************************************************************************
 		**                Protected Member Variables

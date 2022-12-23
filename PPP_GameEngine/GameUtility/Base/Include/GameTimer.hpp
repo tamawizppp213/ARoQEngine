@@ -26,22 +26,36 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	GameTimer();
-	~GameTimer() = default;
+	/* @brief : Return the elapsed time up to the current time in seconds. */
+	float TotalTime() const;
 
-	float TotalTime() const; // in seconds
-	float DeltaTime() const; // in seconds
+	/* @brief : Return deltaTime in seconds. */
+	float DeltaTime() const;
 
-	void Reset(); // Call before message loop
-	void Start(); // Call when unpaused
-	void Stop();  // Call when paused
-	void Tick();  // Call every frame
+	/* @brief : Reset game timer. Call before message loop*/
+	void Reset();
 
+	/* @brief : Start or Restart game timer. If stopped before, the pause time is measured.*/
+	void Start();
+
+	/* @brief : Stop timer*/
+	void Stop();
+
+	/* @brief : Record deltaTime and previous frame. This function needs to be called every frame*/
+	void Tick();
+
+	/* @brief : Show sverage fps at window*/
 	void AverageFrame(const HWND& hwnd);
+
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
 
+	/****************************************************************************
+	**                Constructor and Destructor
+	*****************************************************************************/
+	GameTimer();
+	~GameTimer() = default;
 private:
 	/****************************************************************************
 	**                Private Function

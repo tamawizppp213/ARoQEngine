@@ -12,6 +12,8 @@
 #include "GameCore/Audio/Include/WavDecoder.hpp"
 #include "GameCore/Audio/Include/AudioClip.hpp"
 #include "GameCore/Core/Include/ResourceManager.hpp"
+
+#define XAUDIO2_HELPER_FUNCTIONS
 #include <xaudio2.h>
 #include <xaudio2fx.h>
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,7 +22,7 @@
 using namespace gc::audio;
 using namespace gc::core;
 static constexpr float DEFAULT_VOLUME = 1.0f;
-static constexpr float MAX_VOLUME = 2.0f;
+static constexpr float MAX_VOLUME     = 2.0f;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
@@ -41,20 +43,32 @@ AudioSource::AudioSource(const std::shared_ptr<AudioMaster>& audioMaster, const 
 
 AudioSource::~AudioSource()
 {
+	_audioClip  .reset();
+	
+	if (_sourceVoice)
+	{
+		Stop();
+		_sourceVoice->DestroyVoice();
+		_sourceVoice.reset();
+	}
 
+	_audioMaster.reset();
 }
 #pragma region Public Function
 /****************************************************************************
 *                       Play
 *************************************************************************//**
 *  @fn        bool AudioSource::Play()
+* 
 *  @brief     Play audio data. If it has been paused before, it will resume from the memory position.
+* 
 *  @param[in] void
-*  @return 　　bool
+* 
+*  @return    bool
 *****************************************************************************/
 bool AudioSource::Play()
 {
-	if (!IsRemainedSourceBufferQueue())
+	if (!IsPlaying())
 	{
 		_sourceVoice->FlushSourceBuffers();
 		FlushAudioData();
@@ -78,7 +92,7 @@ bool AudioSource::Play()
 *****************************************************************************/
 bool AudioSource::Pause()
 {
-	if (IsRemainedSourceBufferQueue())
+	if (IsPlaying())
 	{
 		_sourceVoice->Stop(0);
 		return true;
@@ -95,7 +109,7 @@ bool AudioSource::Pause()
 *****************************************************************************/
 bool AudioSource::Stop()
 {
-	if (IsRemainedSourceBufferQueue())
+	if (IsPlaying())
 	{
 		_sourceVoice->Stop(0);
 		_sourceVoice->FlushSourceBuffers();
@@ -113,7 +127,7 @@ bool AudioSource::Stop()
 *****************************************************************************/
 bool AudioSource::Replay()
 {
-	if (IsRemainedSourceBufferQueue())
+	if (IsPlaying())
 	{
 		Stop();
 		Play();
@@ -136,7 +150,7 @@ bool AudioSource::ExitLoop()
 		return false;
 	}
 
-	if (IsRemainedSourceBufferQueue())
+	if (IsPlaying())
 	{
 		_sourceVoice->ExitLoop();
 		return true;
@@ -265,30 +279,39 @@ bool AudioSource::IsUseReverb(bool isReverb)
 	return true;
 }
 
-/****************************************************************************
-*                       IsLoop
-*************************************************************************//**
-*  @fn        bool AudioSource::IsLoop()
-*  @brief     Is Loop (true-> loop, false -> not loop)
-*  @param[in] void
-*  @return 　　bool
-*****************************************************************************/
-bool AudioSource::IsLoop() const
-{
-	return this->_isLoop;
-}
 
 /****************************************************************************
 *                       IsPlaying
 *************************************************************************//**
 *  @fn        bool AudioSource::IsPlaying()
+* 
 *  @brief     Is playing (true-> playing, false -> not playing)
+* 
 *  @param[in] void
+* 
 *  @return 　　bool
 *****************************************************************************/
 bool AudioSource::IsPlaying()
 {
-	return IsRemainedSourceBufferQueue();
+	/*-------------------------------------------------------------------
+	-              Nullptr check
+	---------------------------------------------------------------------*/
+	if (!IsExistedSourceVoice()) { return false; }
+
+	/*-------------------------------------------------------------------
+	-              Acquire source voice state
+	---------------------------------------------------------------------*/
+	XAUDIO2_VOICE_STATE xState = {};
+
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+	_sourceVoice->GetState(&xState, XAUDIO2_VOICE_NOSAMPLESPLAYED);
+#else
+	_sourceVoice->GetState(&xState);
+#endif
+
+	// xState.BuffersQueued == 0 -> Finish playing audio, xState.BuffersQueued > 0 -> playing.
+	// buffersQueued : Number of buffers remaining that need to be played
+	return xState.BuffersQueued > 0;
 }
 
 /****************************************************************************
@@ -361,18 +384,20 @@ void AudioSource::AdjustPitch(float diffPitch)
 /****************************************************************************
 *                       GetVolume
 *************************************************************************//**
-*  @fn        float AudioSource::GetVolume()
+*  @fn        float AudioSource::GetVolume() const]
+*
 *  @brief     Get Current Volume
+* 
 *  @param[in] void
+* 
 *  @return 　　float
 *****************************************************************************/
-float AudioSource::GetVolume()
+float AudioSource::GetVolume() const
 {
+	if (!IsExistedSourceVoice()) { return 0.0f; }
+	
 	float volume = 0.0f;
-	if (IsExistedSourceVoice())
-	{
-		_sourceVoice->GetVolume(&volume);
-	}
+	_sourceVoice->GetVolume(&volume);
 	return volume;
 }
 
@@ -386,18 +411,12 @@ float AudioSource::GetVolume()
 *****************************************************************************/
 bool AudioSource::SetVolume(float volume)
 {
-	if (IsExistedSourceVoice())
-	{
-		float adjustVolume = volume * _volumeRatio[(int)_soundType];
-		_sourceVoice->SetVolume(max(min(adjustVolume, _maxVolume), 0));
-		return true;
-	}
-	else
-	{
-		::OutputDebugString(L"Couldn't set volume");
-		return false;
-	}
+	if (!IsExistedSourceVoice()) { return false; }
+	
+	float adjustVolume = volume * _volumeRatio[(int)_soundType];
 
+	// 0 <= adjustVolume <= _maxVolume
+	return _sourceVoice->SetVolume(max(min(adjustVolume, _maxVolume), 0));
 }
 
 /****************************************************************************
@@ -418,70 +437,33 @@ void AudioSource::AdjustVolume(float diffVolume)
 *                       FlushAudioData
 *************************************************************************//**
 *  @fn        void AudioSource::FlushAudioData()
+* 
 *  @brief     Flush Audio Data
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
 void AudioSource::FlushAudioData()
 {
-	XAUDIO2_BUFFER buffer;
-	memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
-	buffer.AudioBytes = static_cast<UINT32>(_audioClip->GetSoundSize());
-	buffer.pAudioData = _audioClip->GetSoundData().get();
-	buffer.LoopCount  = IsLoop() ? XAUDIO2_LOOP_INFINITE : 0;
-	buffer.Flags      = XAUDIO2_END_OF_STREAM;
-
-	// Nullptr check has been done in advance.
-	if (_sourceVoice)_sourceVoice->SubmitSourceBuffer(&buffer);
-}
-
-/****************************************************************************
-*                       IsExistedSourceVoice
-*************************************************************************//**
-*  @fn        void AudioSource::IsExistedSourceVoice()
-*  @brief     is Existed source voice (true -> exist, false -> not exist)
-*  @param[in] void
-*  @return 　　bool
-*****************************************************************************/
-bool AudioSource::IsExistedSourceVoice()
-{
-	if (_sourceVoice == nullptr)
+	XAUDIO2_BUFFER buffer =
 	{
-		//OutputDebugString(L"SourceVoice is nullptr.");
-		return false;
-	}
-
-	return true;
+		.Flags      = XAUDIO2_END_OF_STREAM,                // tell the source voice not to expect any data after this buffer
+		.AudioBytes = static_cast<UINT32>(_audioClip->GetSoundSize()),
+		.pAudioData = _audioClip->GetSoundData().get(),
+		.PlayBegin  = 0, // play begin sample count
+		.PlayLength = 0, // All sample play
+		.LoopBegin  = 0,
+		.LoopLength = 0,
+		.LoopCount  = IsLoop() ? (UINT32)XAUDIO2_LOOP_INFINITE : 0,
+		.pContext   = nullptr
+	};
+	
+	// Adding waveform data to the source voice 
+	// Max : 64 XAUDIO2_MAX_QUEUEED_BUFFERS
+	if (_sourceVoice) { _sourceVoice->SubmitSourceBuffer(&buffer); }
 }
 
-/****************************************************************************
-*                       IsRemainedSourceBufferQueue
-*************************************************************************//**
-*  @fn        void AudioSource::IsRemainedSourceBufferQueue)
-*  @brief     is remained source buffer queue (true -> remain, false -> not remain)
-*  @param[in] void
-*  @return 　　bool
-*****************************************************************************/
-bool AudioSource::IsRemainedSourceBufferQueue()
-{
-	/*-------------------------------------------------------------------
-	-              Nullptr check
-	---------------------------------------------------------------------*/
-	if (!IsExistedSourceVoice()) { return false; }
-
-	/*-------------------------------------------------------------------
-	-              Check buffer queue
-	---------------------------------------------------------------------*/
-	XAUDIO2_VOICE_STATE xState;
-	_sourceVoice->GetState(&xState);
-
-	if (xState.BuffersQueued == 0)
-	{
-		return false;
-	}
-
-	return true;
-}
 
 /****************************************************************************
 *                       CreateSourceVoice
@@ -492,7 +474,7 @@ bool AudioSource::IsRemainedSourceBufferQueue()
 * 
 *  @param[in] void
 * 
-*  @return 　　bool
+*  @return    bool
 *****************************************************************************/
 bool AudioSource::CreateSourceVoice()
 {
