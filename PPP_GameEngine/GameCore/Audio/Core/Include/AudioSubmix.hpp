@@ -11,14 +11,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <wrl.h>
 #include <memory>
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+class IXAudio2SubmixVoice;
+class IXAudio2SourceVoice;
 
 namespace gc::audio
 {
+	class AudioMaster;
+	class AudioSource;
+
 	/****************************************************************************
 	*				  			AudioSubmix
 	*************************************************************************//**
@@ -27,38 +32,56 @@ namespace gc::audio
 	*****************************************************************************/
 	class AudioSubmix
 	{
-	public:
-		
+		using SubmixVoicePtr = IXAudio2SubmixVoice*;
+		using SourceVoicePtr = IXAudio2SourceVoice*;
+		using AudioMasterPtr = std::shared_ptr<AudioMaster>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Regist source voice*/
+		void Regist(const std::shared_ptr<AudioSource>& sourceVoice);
+		
+		/* @brief : Use Reverve*/
+		void Reverb(bool isOn);
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		
+		SubmixVoicePtr GetSubmixVoice() { return _submixVoice; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		AudioSubmix() = default;
-		~AudioSubmix() = default;
 
-	private:
+		AudioSubmix(const AudioMasterPtr& audioMaster, const std::uint32_t channel, const std::uint32_t samplingRate);
+
+		~AudioSubmix();
+
+	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Function
+		**                Protected Function
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Private Member Variables
+		**                Protected Member Variables
 		*****************************************************************************/
-		
+		SubmixVoicePtr _submixVoice  = nullptr;
+		AudioMasterPtr _audioMaster  = nullptr;
+		std::uint32_t  _channel      = 0;
+		std::uint32_t  _samplingRate = 0;
+		bool _hasCreatedReverve = false;
 
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		bool CreateReverb();
 	};
 }
 #endif

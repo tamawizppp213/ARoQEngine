@@ -32,7 +32,7 @@ AudioSource3D::AudioSource3D(const AudioMasterPtr& audioMaster) : AudioSource(au
 	SetEmitterPosition(Float3(0.0f, 0.0f, 1.0f));
 
 	SetListenerFront(Float3(0.0f, 0.0f, 1.0f));
-	SetListenerUp(Float3(0.0f, 1.0f, 0.0f));
+	SetListenerUp   (Float3(0.0f, 1.0f, 0.0f));
 	SetListenerPosition(Float3(0.0f, 0.0f, -1.0f));
 
 	_emitter.ChannelCount = 1;
@@ -56,7 +56,7 @@ AudioSource3D::~AudioSource3D()
 *****************************************************************************/
 bool AudioSource3D::Play()
 {
-	if (!ApplyChange()) { return false; }
+	if (!ApplyChange())       { return false; }
 	if (!AudioSource::Play()) { return false; }
 	return true;
 }
@@ -80,9 +80,9 @@ bool AudioSource3D::ApplyChange()
 	memset(&listener, 0, sizeof(listener));
 
 	listener.OrientFront = _listener.Front;
-	listener.OrientTop = _listener.Up;
-	listener.Position = _listener.Position;
-	listener.Velocity = _listener.Velocity;
+	listener.OrientTop   = _listener.Up;
+	listener.Position    = _listener.Position;
+	listener.Velocity    = _listener.Velocity;
 
 	/*-------------------------------------------------------------------
 	-              Create Audio Emitter
@@ -90,23 +90,22 @@ bool AudioSource3D::ApplyChange()
 	X3DAUDIO_EMITTER emitter;
 	memset(&emitter, 0, sizeof(emitter));
 
-	emitter.OrientFront = _emitter.Front;
-	emitter.OrientTop = _emitter.Up;
-	emitter.Position = _emitter.Position;
-	emitter.Velocity = _emitter.Velocity;
-	emitter.ChannelCount = _emitter.ChannelCount;
-	emitter.ChannelRadius = _emitter.ChannelRadius;
+	emitter.OrientFront         = _emitter.Front;
+	emitter.OrientTop           = _emitter.Up;
+	emitter.Position            = _emitter.Position;
+	emitter.Velocity            = _emitter.Velocity;
+	emitter.ChannelCount        = _emitter.ChannelCount;
+	emitter.ChannelRadius       = _emitter.ChannelRadius;
 	emitter.CurveDistanceScaler = _emitter.CurveDistanceScaler;
-	emitter.DopplerScaler = _emitter.DopplerScaler;
-	emitter.InnerRadius = _emitter.InnerRadius;
-	emitter.InnerRadiusAngle = _emitter.InnerRadiusAngle;
+	emitter.DopplerScaler       = _emitter.DopplerScaler;
+	emitter.InnerRadius         = _emitter.InnerRadius;
+	emitter.InnerRadiusAngle    = _emitter.InnerRadiusAngle;
 
 	/*-------------------------------------------------------------------
 	-              Create 3DSound
 	---------------------------------------------------------------------*/
 	Audio3DParameter parameter = Calculate3DSound(&listener, &emitter);
-	if (!IsExistedSourceVoice()) { return false; }
-
+	
 	_sourceVoice->SetOutputMatrix(nullptr, parameter.SourceChannel, parameter.DestinationChannel, parameter.Matrix);
 	_sourceVoice->SetFrequencyRatio(parameter.Doppler);
 	return true;
@@ -129,15 +128,15 @@ Audio3DParameter AudioSource3D::Calculate3DSound(const X3DAUDIO_LISTENER* listen
 	dsp.DstChannelCount = STEREO_AUDIO;
 	dsp.pMatrixCoefficients = matrix;
 
-	///*-------------------------------------------------------------------
-	//-              CalculateX3DAudio
-	//---------------------------------------------------------------------*/
-	//X3DAudioCalculate(
-	//	AudioMaster::GetX3DAudioInterface(),
-	//	listener,
-	//	emitter,
-	//	X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER,
-	//	&dsp);
+	/*-------------------------------------------------------------------
+	-              CalculateX3DAudio
+	---------------------------------------------------------------------*/
+	X3DAudioCalculate(
+		_audioMaster->GetX3DAudioInterface(),
+		listener,
+		emitter,
+		X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER,
+		&dsp);
 
 	/*-------------------------------------------------------------------
 	-              Copy dsp

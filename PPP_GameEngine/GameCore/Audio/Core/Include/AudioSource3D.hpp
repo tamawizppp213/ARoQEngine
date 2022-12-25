@@ -88,11 +88,12 @@ namespace gc::audio
 		**                Public Function
 		*****************************************************************************/
 		bool Play();
+
 		bool ApplyChange();
 
-		static Audio3DParameter Calculate3DSound(
+		Audio3DParameter Calculate3DSound(
 			const X3DAUDIO_LISTENER* listener,
-			const X3DAUDIO_EMITTER* emitter);
+			const X3DAUDIO_EMITTER*  emitter);
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -113,7 +114,9 @@ namespace gc::audio
 		**                Constructor and Destructor
 		*****************************************************************************/
 		AudioSource3D(const AudioMasterPtr& audioMaster);
+
 		~AudioSource3D();
+
 	protected:
 		/****************************************************************************
 		**                Protected Function

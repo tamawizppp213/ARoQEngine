@@ -19,6 +19,7 @@
 namespace gc::audio
 {
 	class AudioSource;
+	class AudioSubmix;
 	class AudioMaster;
 }
 //////////////////////////////////////////////////////////////////////////////////
@@ -43,6 +44,7 @@ namespace sample
 	class SampleAudio : public Scene
 	{
 		using AudioSourcePtr = std::shared_ptr<gc::audio::AudioSource>;
+		using AudioSubmixPtr = std::shared_ptr<gc::audio::AudioSubmix>;
 		using AudioMasterPtr = std::shared_ptr<gc::audio::AudioMaster>;
 	public:
 		/****************************************************************************
@@ -77,9 +79,11 @@ namespace sample
 		*****************************************************************************/
 		AudioMode _mode = AudioMode::None;
 		AudioSourcePtr _audioSource = nullptr;
+		AudioSubmixPtr _audioSubmix = nullptr;
 		AudioMasterPtr _audioMaster = nullptr;
 		float _pan = 0.5f;
 		bool _isOn = true;
+		bool _useReverb = true;
 	};
 }
 #endif

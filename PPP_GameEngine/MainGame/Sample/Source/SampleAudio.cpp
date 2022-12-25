@@ -13,6 +13,7 @@
 #include "GameCore/Audio/Core/Include/AudioSource.hpp"
 #include "GameCore/Audio/Core/Include/AudioClip.hpp"
 #include "GameCore/Audio/Core/Include/AudioMaster.hpp"
+#include "GameCore/Audio/Core/Include/AudioSubmix.hpp"
 #include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -81,7 +82,12 @@ void SampleAudio::Draw()
 *****************************************************************************/
 void SampleAudio::Terminate()
 {
+	// ’ˆÓ! ‡”Ô‚ÉDestructorŒÄ‚Î‚È‚¢‚ÆƒGƒ‰[‚É‚È‚è‚Ü‚·. 
 	_audioSource->Stop();
+	_audioSource.reset();
+	_audioSubmix.reset();
+	_audioMaster.reset();
+
 }
 #pragma endregion Public Function
 
@@ -125,6 +131,10 @@ void SampleAudio::LoadMaterials()
 
 	_audioSource = std::make_shared<AudioSource>(_audioMaster, audioClip, SoundType::BGM, 1.0f);
 	_audioSource->Play();
+
+	_audioSubmix = std::make_shared<AudioSubmix>(_audioMaster, 2, audioClip->GetSamplingFrequency());
+	_audioSubmix->Regist(_audioSource);
+	_audioSubmix->Reverb(true);
 }
 /****************************************************************************
 *                       OnKeyboardInput
@@ -159,7 +169,12 @@ void SampleAudio::OnKeyboardInput()
 			_audioSource->Pause(); 
 		}
 	}
-	
+	if (keyboard.IsTrigger(DIK_I))
+	{
+		_useReverb = _useReverb ? false : true;
+		_audioSubmix->Reverb(_useReverb);
+	}
+
 	/*-------------------------------------------------------------------
 	-             Adjust value
 	---------------------------------------------------------------------*/

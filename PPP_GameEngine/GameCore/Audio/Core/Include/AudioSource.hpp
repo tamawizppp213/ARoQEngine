@@ -51,7 +51,7 @@ namespace gc::audio
 	protected:
 		
 		using AudioClipPtr = std::shared_ptr<AudioClip>; // é¿ëÃÇÕunordered mapÇ≈ä«óùÇµÇƒÇ¢ÇÈÇΩÇﬂ, é©ìÆÇ≈îjä¸Ç∑ÇÈïKóvÇ»Çµ.
-		using SourceVoucePtr = IXAudio2SourceVoice*;
+		using SourceVoicePtr = IXAudio2SourceVoice*;
 		using AudioMasterPtr = std::shared_ptr<AudioMaster>;
 	
 	public:
@@ -107,7 +107,13 @@ namespace gc::audio
 		bool SetMaxVolumeLimit(const float maxVolume);
 
 		bool SetPan(float pan);
+
 		bool IsUseReverb(bool useReverb);
+
+		/*-------------------------------------------------------------------
+		-              XAudio2 Property
+		---------------------------------------------------------------------*/
+		SourceVoicePtr GetSourceVoice() { return _sourceVoice; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -136,9 +142,15 @@ namespace gc::audio
 		/* @brief : Fader. Play and Stop function are called once, start fade in and fade out.*/
 		AudioFader _fader;
 
+		/* @brief : wav sound data config*/
 		AudioClipPtr   _audioClip  = nullptr;
-		SourceVoucePtr _sourceVoice = nullptr;
+
+		/* @brief : sound source voice.*/
+		SourceVoicePtr _sourceVoice = nullptr;
+
+		/* @brief : audio mastering.*/
 		AudioMasterPtr _audioMaster = nullptr;
+
 		SoundType _soundType = SoundType::NONE;
 
 		/*-------------------------------------------------------------------

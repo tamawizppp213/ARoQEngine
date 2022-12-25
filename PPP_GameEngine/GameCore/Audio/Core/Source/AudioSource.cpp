@@ -2,7 +2,7 @@
 ///             @file   AudioSource.cpp
 ///             @brief  AudioSource.cpp
 ///             @author Toide Yutaro
-///             @date   2021_01_12
+///             @date   2022_12_23
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -131,7 +131,7 @@ bool AudioSource::Stop()
 {
 	if (!IsPlaying()) { return false; }
 
-	SafeClearSourceBuffer();
+	return SafeClearSourceBuffer();
 }
 /****************************************************************************
 *                       Replay
@@ -156,9 +156,12 @@ bool AudioSource::Replay()
 *                       ExitLoop
 *************************************************************************//**
 *  @fn        bool AudioSource::ExitLoop()
+* 
 *  @brief     ExitLoop.
+* 
 *  @param[in] void
-*  @return 　　bool
+* 
+*  @return    bool
 *****************************************************************************/
 bool AudioSource::ExitLoop()
 {
@@ -520,8 +523,6 @@ bool AudioSource::CreateSourceVoice()
 	/*-------------------------------------------------------------------
 	-               Create Source Voice
 	---------------------------------------------------------------------*/
-	IXAudio2SourceVoice* audioSource = nullptr;
-	
 	// Todo : 後で色々設定を追加する. 
 	HRESULT hresult = xAudio->CreateSourceVoice(&_sourceVoice, &_audioClip->GetFileFormatEx());
 	
@@ -531,10 +532,6 @@ bool AudioSource::CreateSourceVoice()
 		return false;
 	}
 
-	/*-------------------------------------------------------------------
-	-               Set up
-	---------------------------------------------------------------------*/
-	//_sourceVoice = std::move(audioSource);
 	return true;
 }
 
