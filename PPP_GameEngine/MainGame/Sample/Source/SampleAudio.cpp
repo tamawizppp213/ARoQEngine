@@ -57,6 +57,7 @@ void SampleAudio::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engi
 void SampleAudio::Update()
 {
 	Scene::Update();
+
 }
 /****************************************************************************
 *                       Draw
@@ -203,7 +204,7 @@ void SampleAudio::OnKeyboardInput()
 *****************************************************************************/
 void SampleAudio::OnMouseInput()
 {
-
+	
 }
 /****************************************************************************
 *                       OnGamePadInput
@@ -228,6 +229,16 @@ void SampleAudio::OnGamePadInput()
 void SampleAudio::ExecuteSceneTransition()
 {
 
+}
+
+void SampleAudio::ShowVolumeLog()
+{
+	float peakLevels[2];
+	float rmsLevels[2];
+	_audioMaster->GetVolumeParamters(peakLevels, rmsLevels, 2);
+
+	std::cout << "peak: " << peakLevels[0] << "," << peakLevels[1] << std::endl;
+	std::cout << "rms : " << rmsLevels[0] << "," << rmsLevels[1] << std::endl;
 }
 
 void SampleAudio::Act(const float adjustValue)

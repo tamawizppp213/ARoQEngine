@@ -73,6 +73,7 @@ namespace sample
 		void OnGamePadInput() override;
 		void ExecuteSceneTransition() override;
 
+		void ShowVolumeLog();
 		void Act(const float adjustValue);
 		/****************************************************************************
 		**                Protected Member Variables

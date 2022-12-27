@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Sample/Include/SampleTexture.hpp"
 #include "GameCore/Rendering/UI/Public/Include/UIRenderer.hpp"
-#include "GameCore/Rendering/UI/Public/Include/Image.hpp"
+#include "GameCore/Rendering/UI/Public/Include/UIImage.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
 //////////////////////////////////////////////////////////////////////////////////

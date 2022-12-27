@@ -180,6 +180,7 @@
   <ItemGroup>
     <ClInclude Include="GameCore\Audio\Core\Include\AudioSubmix.hpp" />
     <ClInclude Include="GameCore\Audio\Effect\Include\AudioFader.hpp" />
+    <ClInclude Include="GameCore\Audio\Effect\Include\AudioIEffect.hpp" />
     <ClInclude Include="GameCore\Audio\Effect\Source\AudioFader.cpp" />
     <ClInclude Include="GameCore\Audio\Core\Include\AudioClip.hpp" />
     <ClInclude Include="GameCore\Audio\Core\Include\AudioClipCache.hpp" />
@@ -197,8 +198,9 @@
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
-    <ClInclude Include="GameCore\Rendering\UI\Public\Include\Font.hpp" />
-    <ClInclude Include="GameCore\Rendering\UI\Public\Include\Text.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIButton.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
     <ClInclude Include="GameUtility\File\Include\BitConverter.hpp" />
     <ClInclude Include="GameCore\Network\Public\Include\IPAddress.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\MemoryStream.hpp" />
@@ -261,8 +263,7 @@
     <ClInclude Include="GameCore\Rendering\Model\Include\Model.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\ModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveMesh.hpp" />
-    <ClInclude Include="GameCore\Rendering\UI\Public\Include\Image.hpp" />
-    <ClInclude Include="GameCore\Rendering\UI\Public\Include\Sprite.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIImage.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIRenderer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\ClassUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
@@ -477,8 +478,9 @@
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\PacketQueue.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\Serializer.cpp" />
-    <ClCompile Include="GameCore\Rendering\UI\Public\Source\Font.cpp" />
-    <ClCompile Include="GameCore\Rendering\UI\Public\Source\Text.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIText.cpp" />
     <ClCompile Include="GameUtility\File\Source\BitConverter.cpp" />
     <ClCompile Include="GameCore\Network\Public\Source\IPAddress.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\MemoryStream.cpp" />
@@ -523,8 +525,7 @@
     <ClCompile Include="GameCore\Rendering\Model\Source\Model.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\ModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\PrimitiveMesh.cpp" />
-    <ClCompile Include="GameCore\Rendering\UI\Public\Source\Image.cpp" />
-    <ClCompile Include="GameCore\Rendering\UI\Public\Source\Sprite.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIImage.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIRenderer.cpp" />
     <ClCompile Include="GameUtility\Base\Source\GameTimer.cpp" />
     <ClCompile Include="GameUtility\Base\Source\Screen.cpp" />

@@ -29,6 +29,7 @@ AudioMaster::AudioMaster()
 	if (!CreateXAudio2())        { return; }
 	if (!CreateMasteringVoice()) { return; }
 	if (!CreateX3DAudio())       { return; }
+	if (!CreateVolumeMeter())    { return; }
 	_hasInitialized = true;
 }
 
@@ -104,6 +105,20 @@ AudioMaster::IXAudio2MasteringVoicePtr AudioMaster::GetMasteringVoice() const no
 const AudioMaster::X3DAudioHandler& AudioMaster::GetX3DAudioInterface()
 {
 	return _x3dAudio;
+}
+
+bool AudioMaster::GetVolumeParamters(float* peakLevels, float* rmsParams, const UINT32 channel)
+{
+	XAUDIO2FX_VOLUMEMETER_LEVELS levels =
+	{
+		.pPeakLevels  = peakLevels,
+		.pRMSLevels   = rmsParams,
+		.ChannelCount = channel
+	};
+
+	if(FAILED(_masteringVoice->GetEffectParameters(0, &levels, sizeof(levels)))){return false;}
+	
+	return true;
 }
 #pragma endregion Public Function
 #pragma region Protected Function
@@ -198,18 +213,66 @@ bool AudioMaster::CreateMasteringVoice()
 *                       CreateX3DAudio
 *************************************************************************//**
 *  @fn        bool AudioMaster::CreateX3DAudio()
+* 
 *  @brief     Create X3DAudio for Initialize
+* 
 *  @param[in] void
-*  @return @@bool
+* 
+*  @return    bool
 *****************************************************************************/
 bool AudioMaster::CreateX3DAudio()
 {
 	if (FAILED(X3DAudioInitialize(SPEAKER_STEREO, X3DAUDIO_SPEED_OF_SOUND, _x3dAudio)))
 	{
-		MessageBox(NULL, L"can't initialize x3dAudio.", L"Warning", MB_ICONWARNING);
+		OutputDebugStringA("can't initialize x3dAudio.");
 		return false;
 	}
 	return true;
 }
 
+/****************************************************************************
+*                       CreateVolumeMeter
+*************************************************************************//**
+*  @fn        bool AudioMaster::CreateVolumeMeter()
+*
+*  @brief     Create total volume logger
+*
+*  @param[in] void
+*
+*  @return    bool
+*****************************************************************************/
+bool AudioMaster::CreateVolumeMeter()
+{
+	IUnknown* volumeMeter;
+	if (FAILED(XAudio2CreateVolumeMeter(&volumeMeter)))
+	{
+		OutputDebugStringA("Couldn't create volume meter");
+		return false;
+	}
+
+	XAUDIO2_EFFECT_DESCRIPTOR effectDesc =
+	{
+		.pEffect        = volumeMeter,
+		.InitialState   = true,
+		.OutputChannels = 8 // ‚È‚º8‚¾‚Æ‘åä•v‚È‚Ì‚©“ä. 
+	};
+	
+	XAUDIO2_EFFECT_CHAIN effectChain = 
+	{
+		.EffectCount = 1,
+		.pEffectDescriptors = &effectDesc
+	};
+
+	/*-------------------------------------------------------------------
+	-              Set effect chain to submix voice
+	---------------------------------------------------------------------*/
+	if (FAILED(_masteringVoice->SetEffectChain(&effectChain)))
+	{
+		OutputDebugStringA("Coundn't set effect chain");
+		return false;
+	};
+
+	volumeMeter->Release();
+	return true;
+}
 #pragma endregion Protected Function

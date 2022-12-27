@@ -10,8 +10,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Sample/Include/SampleText.hpp"
 #include "GameCore/Rendering/UI/Public/Include/UIRenderer.hpp"
-#include "GameCore/Rendering/UI/Public/Include/Text.hpp"
-#include "GameCore/Rendering/UI/Public/Include/Font.hpp"
+#include "GameCore/Rendering/UI/Public/Include/UIText.hpp"
+#include "GameCore/Rendering/UI/Public/Include/UIFont.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
 

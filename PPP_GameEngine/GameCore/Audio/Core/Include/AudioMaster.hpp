@@ -45,6 +45,7 @@ namespace gc::audio
 		IXAudio2MasteringVoicePtr GetMasteringVoice() const noexcept;
 		const X3DAudioHandler& GetX3DAudioInterface();
 
+		bool GetVolumeParamters(float* peakLevels, float* rmsParams, const UINT32 channel);
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -63,6 +64,7 @@ namespace gc::audio
 		bool CreateXAudio2();
 		bool CreateMasteringVoice();
 		bool CreateX3DAudio();
+		bool CreateVolumeMeter();
 
 		/****************************************************************************
 		**                Private Member Variables

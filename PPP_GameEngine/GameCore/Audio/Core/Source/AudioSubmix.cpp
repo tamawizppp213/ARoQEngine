@@ -97,6 +97,9 @@ bool AudioSubmix::CreateReverb()
 {
 	if (_hasCreatedReverve) { return true; }
 
+	/*-------------------------------------------------------------------
+	-              Create reverb XAPO effect
+	---------------------------------------------------------------------*/
 	IUnknown* reverb;
 	if (FAILED(XAudio2CreateReverb(&reverb)))
 	{
@@ -117,6 +120,9 @@ bool AudioSubmix::CreateReverb()
 		.pEffectDescriptors = &effectDesc
 	};
 	
+	/*-------------------------------------------------------------------
+	-              Set effect chain to submix voice
+	---------------------------------------------------------------------*/
 	if(FAILED(_submixVoice->SetEffectChain(&effectChain)))
 	{
 		OutputDebugStringA("Coundn't set effect chain");
