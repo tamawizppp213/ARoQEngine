@@ -39,7 +39,7 @@ namespace gc::ui
 		std::string String;
 		gm::Float2  SizePerChar;
 		gm::Float3  StartPosition; // rect lect upper point
-		float       Space = 0.0f;
+		gm::Float2  Space = { 0.0f, 0.0f };
 		gm::Float4  Color = gm::Float4(1,1,1,1);
 	};
 

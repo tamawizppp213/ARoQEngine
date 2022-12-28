@@ -11,15 +11,22 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <memory>
+#include <cstdint>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+namespace rhi::core
+{
+	class RHIResourceLayout;
+	class GPUGraphicsPipelineState;
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace basepass
+namespace gc::basepass
 {
 
 	/****************************************************************************
@@ -28,8 +35,10 @@ namespace basepass
 	*  @class     TemplateClass
 	*  @brief     temp
 	*****************************************************************************/
-	class ZPrepass
+	class ZPrepass : public NonCopyable
 	{
+		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -42,7 +51,12 @@ namespace basepass
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-	private:
+		ZPrepass() = default;
+
+		ZPrepass(const std::uint32_t width, const std::uint32_t height);
+
+		~ZPrepass();
+	protected:
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
@@ -50,6 +64,9 @@ namespace basepass
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
+		PipelineStatePtr  _pipeline = nullptr;
+
+		ResourceLayoutPtr _resourceLayout = nullptr;
 	};
 }
 #endif

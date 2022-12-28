@@ -28,22 +28,30 @@ Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const S
 	if (!font->HasLoaded()) { throw std::runtime_error("Font isn't read. You should read font."); }
 
 	/*-------------------------------------------------------------------
-	-              Prepare image buffer
-	---------------------------------------------------------------------*/
-	_images.resize(info.String.size());
-
-	/*-------------------------------------------------------------------
 	-              Create sprite
 	---------------------------------------------------------------------*/
-	for (int i = 0; i < _images.size(); ++i)
+	int callAddNewLineCount = 0;
+	int xMoveCount = 0;
+	for (int i = 0; i < info.String.size(); ++i, ++xMoveCount)
 	{
+		/*-------------------------------------------------------------------
+		-              Add new line check
+		---------------------------------------------------------------------*/
+		bool addNewLine = info.String[i] == '\n';
+		if (addNewLine) 
+		{
+			callAddNewLineCount++; 
+			xMoveCount = -1; // reset xStart position, ++xMoveCount‚É‚æ‚Á‚Ä0‚É•ÏX‚³‚ê‚é‚½‚ß, -1‚É‚µ‚Ä‚é.
+			continue; 
+		}
+
 		/*-------------------------------------------------------------------
 		-          Rect center position
 		---------------------------------------------------------------------*/
 		Float3 centerPosition = Float3
 		(
-			info.StartPosition.x + (i + 0.5f) * info.SizePerChar.x + i * info.Space,
-			info.StartPosition.y - info.SizePerChar.y,
+			info.StartPosition.x + (xMoveCount + 0.5f) * info.SizePerChar.x + xMoveCount * info.Space.x,
+			info.StartPosition.y - info.SizePerChar.y - callAddNewLineCount * (info.SizePerChar.y + info.Space.y),
 			info.StartPosition.z
 		);
 
@@ -60,14 +68,17 @@ Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const S
 		/*-------------------------------------------------------------------
 		-          Create a sprite in the selected coordinate space
 		---------------------------------------------------------------------*/
+		auto image = Image();
 		switch (type)
 		{
 			using enum CoordinateType;
-			case Screen : { _images[i].CreateInScreenSpace(centerPosition, info.SizePerChar, u, v, info.Color); break;}
-			case NDC    : { _images[i].CreateInNDCSpace   (centerPosition, info.SizePerChar, u, v, info.Color); break;}
+			case Screen : { image.CreateInScreenSpace(centerPosition, info.SizePerChar, u, v, info.Color); break;}
+			case NDC    : { image.CreateInNDCSpace   (centerPosition, info.SizePerChar, u, v, info.Color); break;}
 			default: 
 				throw std::runtime_error("Choice wrong type");
 		}
+
+		_images.emplace_back(image);
 	}
 }
 

@@ -62,9 +62,9 @@ void SampleText::Update()
 	-            Update Text Color
 	---------------------------------------------------------------------*/
 	StringInfo info = 
-	{   .String = "Text Sample", .SizePerChar = {0.1f, 0.15f}, 
+	{   .String = "Text\nSample", .SizePerChar = {0.1f, 0.167f}, 
 		.StartPosition = {0.5f * gm::Cos(_gameTimer->TotalTime()) - 0.5f, 0.5f * gm::Sin(_gameTimer->TotalTime()), 1.0f},
-		.Space = 0.0f, 
+		.Space = {0.0f, 0.0f},
 		.Color = {gm::Sin(_gameTimer->TotalTime()),gm::Cos(_gameTimer->TotalTime()),1,1}
 	};
 	_text = std::make_shared<Text>(CoordinateType::NDC, _font, info);

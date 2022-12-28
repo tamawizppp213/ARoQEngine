@@ -62,12 +62,15 @@ namespace gc::ui
 		**                Public Member Variables
 		*****************************************************************************/
 		const gm::Vertex* GetVertices() const { return _vertices; }
+		
+		gm::Float2 GetRectSize() const { return _size; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		Image() = default;
-		~Image();
+		
+		virtual ~Image();
 		
 		Image(
 			const CoordinateType coordinateType,
