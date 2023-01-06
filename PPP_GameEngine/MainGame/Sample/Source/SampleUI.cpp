@@ -8,30 +8,28 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Sample/Include/SampleColorChange.hpp"
-#include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
-#include "GameCore/Core/Include/Camera.hpp"
-#include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
-#include "GameCore/Rendering/Effect/Include/Blur.hpp"
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
+#include "MainGame/Sample/Include/SampleUI.hpp"
+#include "GameCore/Rendering/UI/Public/Include/UIRenderer.hpp"
+#include "GameCore/Rendering/UI/Public/Include/UIImage.hpp"
+#include "GameCore/Rendering/UI/Public/Include/UIButton.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
+#include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace sample;
+using namespace gc::ui;
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc;
-
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-SampleColorChange::SampleColorChange()
+SampleUI::SampleUI()
 {
 
 }
-SampleColorChange::~SampleColorChange()
+SampleUI::~SampleUI()
 {
 
 }
@@ -39,109 +37,105 @@ SampleColorChange::~SampleColorChange()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleColorChange::Initialize( const GameTimerPtr& gameTimer)
+*  @fn        void SampleUI::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
-*  @param[in]  const GameTimerPtr& gameTimer
+*  @param[in] const GameTimerPtr& gameTimer
 *  @return 　　void
 *****************************************************************************/
-void SampleColorChange::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleUI::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
 /****************************************************************************
 *                       Update
 *************************************************************************//**
-*  @fn        void SampleColorChange::Update()
+*  @fn        void SampleUI::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleColorChange::Update()
+void SampleUI::Update()
 {
 	Scene::Update();
-	_camera->Update(_gameTimer);
 
+	_renderer->AddFrameObjects({ _button }, _resourceView);
 }
 /****************************************************************************
 *                       Draw
 *************************************************************************//**
-*  @fn        void SampleSky::Draw()
+*  @fn        void SampleUI::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleColorChange::Draw()
+void SampleUI::Draw()
 {
 	_engine->BeginDrawFrame();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
-	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
 	commandList->SetViewportAndScissor(
-		core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
-		core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
+		core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
 
-	_skybox->Draw(_camera->GetResourceView());
-	_colorChanges[_colorIndex]->Draw();
+	_renderer->Draw();
+
 	_engine->EndDrawFrame();
 }
 /****************************************************************************
 *                       Terminate
 *************************************************************************//**
-*  @fn        void SampleColorChange::Terminate()
+*  @fn        void SampleUI::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleColorChange::Terminate()
+void SampleUI::Terminate()
 {
-
+	_resourceView.reset();
+	_resourceCache.reset();
 }
 #pragma endregion Public Function
 
 #pragma region Protected Function
-
 /****************************************************************************
 *                       LoadMaterials
 *************************************************************************//**
-*  @fn        void SampleColorChange::LoadMaterials(GameTimer* gameTimer)
+*  @fn        void SampleUI::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleColorChange::LoadMaterials()
+void SampleUI::LoadMaterials()
 {
 	/*-------------------------------------------------------------------
 	-             Open Copy CommandList
 	---------------------------------------------------------------------*/
-	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy    , _engine->GetCurrentFrameIndex());
+	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex());
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
-	copyCommandList->BeginRecording();
+	copyCommandList    ->BeginRecording();
 	graphicsCommandList->BeginRecording();
+
 	/*-------------------------------------------------------------------
-	-           Camera
+	-             SetUp Resources
 	---------------------------------------------------------------------*/
-	_camera = std::make_shared<Camera>(_engine);
-	_camera->SetPosition(0.0f, 10.0f, -20.0f);
-	/*-------------------------------------------------------------------
-	-           Skybox
-	---------------------------------------------------------------------*/
-	_skybox = std::make_shared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
-	/*-------------------------------------------------------------------
-	-           Color Changes
-	---------------------------------------------------------------------*/
-	_colorChanges.resize(5);
-	for (size_t i = 0; i < _colorChanges.size(); ++i)
-	{
-		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
-	}
+	_button = std::make_shared<Button>(_gameInput.GetMouse());
+	_button->CreateInNDCSpace({ 0,0,0 }, { 0.5f,0.5f });
+
+	// Create Texture
+	_resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
+	_resourceView  = _resourceCache->Load(L"Resources/BackGround2.png");
+	_resourceCache->Load(L"Resources/Cubemap.jpg");
+
+	// Create UI Renderer
+	_renderer = std::make_unique<gc::ui::UIRenderer>(_engine);
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/
 	graphicsCommandList->EndRecording();
-	copyCommandList->EndRecording();
+	copyCommandList    ->EndRecording();
 
 	_engine->FlushCommandQueue(CommandListType::Graphics);
 	_engine->FlushCommandQueue(CommandListType::Copy);
@@ -149,67 +143,52 @@ void SampleColorChange::LoadMaterials()
 /****************************************************************************
 *                       OnKeyboardInput
 *************************************************************************//**
-*  @fn        void SampleColorChange::OnKeyboardInput()
+*  @fn        void SampleUI::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleColorChange::OnKeyboardInput()
+void SampleUI::OnKeyboardInput()
 {
-	const float deltaTime = _gameTimer->DeltaTime();
-	const float speed = 0.25f;
-	/*-------------------------------------------------------------------
-	-           Keyboad Input W (Move Camera )
-	---------------------------------------------------------------------*/
-	if (_gameInput.GetKeyboard()->IsPress(DIK_W))
-	{
-		_camera->Walk(speed * deltaTime);
-	}
-	/*-------------------------------------------------------------------
-	-           Keyboad Input S (Move Camera)
-	---------------------------------------------------------------------*/
-	if (_gameInput.GetKeyboard()->IsPress(DIK_S))
-	{
-		_camera->Walk(-speed * deltaTime);
-	}
-	if (_gameInput.GetKeyboard()->IsTrigger(DIK_P))
-	{
-		_colorIndex = (_colorIndex + 1) % _colorChanges.size();
-	}
+
 }
 /****************************************************************************
 *                       OnMouseInput
 *************************************************************************//**
-*  @fn        void SampleColorChange::OnMouseInput()
+*  @fn        void SampleUI::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleColorChange::OnMouseInput()
+void SampleUI::OnMouseInput()
 {
-	/*-------------------------------------------------------------------
-	-           Mouse Input Left Button
-	---------------------------------------------------------------------*/
-	if (_gameInput.GetMouse()->IsPress(MouseButton::LEFT))
+	if (_button->IsPress())
 	{
-		float dx = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse()->GetMouseVelocity().x)); // 0.25f: 感度設定したい
-		float dy = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse()->GetMouseVelocity().y));
-
-		_camera->RotatePitch(dy);
-		_camera->RotateWorldY(dx);
-	}
+		std::cout << "Click!!" << std::endl;
+	};
 }
 /****************************************************************************
 *                       OnGamePadInput
 *************************************************************************//**
-*  @fn        void SampleColorChange::OnGamePadInput()
+*  @fn        void SampleUI::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void SampleColorChange::OnGamePadInput()
+void SampleUI::OnGamePadInput()
 {
 
 }
+/****************************************************************************
+*                     ExecuteSceneTransition
+*************************************************************************//**
+*  @fn        void SampleUI::ExecuteSceneTranstion()
+*  @brief     Scene Transition
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
+void SampleUI::ExecuteSceneTransition()
+{
 
+}
 #pragma endregion Protected Function

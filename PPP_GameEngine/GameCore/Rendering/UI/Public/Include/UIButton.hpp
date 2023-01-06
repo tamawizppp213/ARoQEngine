@@ -12,7 +12,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIImage.hpp"
-
+#include "GameCore/Input/Include/Mouse.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,10 +25,10 @@ namespace gc::ui
 {
 	
 	/****************************************************************************
-	*				  			    Text
+	*				  			    Button
 	*************************************************************************//**
-	*  @class     Text
-	*  @brief     a
+	*  @class     Button
+	*  @brief     UI : Button (Click Detection)
 	*****************************************************************************/
 	class Button : public Image
 	{
@@ -35,9 +36,11 @@ namespace gc::ui
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : cursolPosition : Screen space*/
-		virtual bool OnClick(const int cursolX, const int cursolY) const;
+		/* @brief : cursolPosition : Screen space. Trigger mode*/
+		virtual bool OnClick(const MouseButton mouseButton = MouseButton::LEFT) const;
 
+		/* @brief : Returns true for the entire duration of the click.*/
+		virtual bool IsPress(const MouseButton mouseButton = MouseButton::LEFT) const;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -48,7 +51,7 @@ namespace gc::ui
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Button();
+		Button(const std::shared_ptr<Mouse>& mouse);
 
 		~Button();
 
@@ -56,11 +59,14 @@ namespace gc::ui
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		bool DetectClick() const;
 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		bool _isInteractive = false;
+		bool _isInteractive = true;
+		
+		std::shared_ptr<Mouse> _mouse = nullptr;
 
 	};
 }

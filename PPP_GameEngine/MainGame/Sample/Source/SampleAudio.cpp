@@ -147,17 +147,17 @@ void SampleAudio::LoadMaterials()
 *****************************************************************************/
 void SampleAudio::OnKeyboardInput()
 {
-	Keyboard keyboard = _gameInput.GetKeyboard();
+	const auto keyboard = _gameInput.GetKeyboard();
 	
 	/*-------------------------------------------------------------------
 	-             Press check
 	---------------------------------------------------------------------*/
-	if (keyboard.IsTrigger(DIK_P))
+	if (keyboard->IsTrigger(DIK_P))
 	{
 		_mode = (AudioMode)((_mode + 1) % AudioMode::CountOf);
 		std::cout << _mode << std::endl;
 	}
-	if (keyboard.IsTrigger(DIK_O))
+	if (keyboard->IsTrigger(DIK_O))
 	{
 		_isOn = _isOn ? false : true;
 		
@@ -170,7 +170,7 @@ void SampleAudio::OnKeyboardInput()
 			_audioSource->Pause(); 
 		}
 	}
-	if (keyboard.IsTrigger(DIK_I))
+	if (keyboard->IsTrigger(DIK_I))
 	{
 		_useReverb = _useReverb ? false : true;
 		_audioSubmix->Reverb(_useReverb);
@@ -180,11 +180,11 @@ void SampleAudio::OnKeyboardInput()
 	-             Adjust value
 	---------------------------------------------------------------------*/
 	float adjustValue = 0;
-	if (keyboard.IsPress(DIK_RIGHTARROW))
+	if (keyboard->IsPress(DIK_RIGHTARROW))
 	{
 		adjustValue += 0.1f * _gameTimer->DeltaTime();
 	}
-	if (keyboard.IsPress(DIK_LEFTARROW))
+	if (keyboard->IsPress(DIK_LEFTARROW))
 	{
 		adjustValue -= 0.1f * _gameTimer->DeltaTime();
 	}

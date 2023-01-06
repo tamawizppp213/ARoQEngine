@@ -105,7 +105,8 @@ void Image::CreateRect(const Float3& position, const Float2& rectSize, const Flo
 	/*-------------------------------------------------------------------
 	-              Get rect info
 	-------------------------t-------------------------------------------*/
-	_size = rectSize;
+	_size        = rectSize;
+	_positionNDC = position;
 	float w2 = rectSize.x / 2;
 	float h2 = rectSize.y / 2;
 

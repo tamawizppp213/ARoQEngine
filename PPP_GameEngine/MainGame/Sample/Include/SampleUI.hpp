@@ -1,19 +1,19 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   Image.hpp
-///             @brief  Image
+///             @file   SampleUI.hpp
+///             @brief  UI Sample
 ///             @author Toide Yutaro
-///             @date   2022_11_14
+///             @date   2023_01_06
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef IMAGE_HPP
-#define IMAGE_HPP
+#ifndef SAMPLE_UI_HPP
+#define SAMPLE_UI_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include "GameUtility/Math/Include/GMVertex.hpp"
-
+#include "MainGame/Core/Include/Scene.hpp"
+#include "GameCore/Core/Include/ResourceManager.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -21,78 +21,68 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+namespace rhi::core
+{
+	class GPUResourceCache;
+	class GPUResourceView;
+}
 namespace gc::ui
 {
-	enum class CoordinateType
-	{
-		Screen,
-		NDC,
-	};
+	class Button;
+	class Image;
+	class UIRenderer;
+}
+namespace sample
+{
+
 	/****************************************************************************
-	*				  			Image
+	*				  			SampleUI
 	*************************************************************************//**
-	*  @class     Image
-	*  @brief     UI Image
+	*  @class     SampleUI
+	*  @brief     UI sample
 	*****************************************************************************/
-	class Image : public Copyable
+	class SampleUI : public Scene
 	{
+		using UIRendererPtr       = std::shared_ptr<gc::ui::UIRenderer>;
+		using ImagePtr            = std::shared_ptr<gc::ui::Image>;
+		using ButtonPtr           = std::shared_ptr<gc::ui::Button>;
+		using GPUResourceCachePtr = std::shared_ptr<rhi::core::GPUResourceCache>;
+		using GPUResourceViewPtr  = std::shared_ptr<rhi::core::GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Create image ui in Screen Space*/
-		void CreateInScreenSpace(
-			const gm::Float3& position,
-			const gm::Float2& rectSize,
-			const gm::Float2& u = gm::Float2(0, 1),
-			const gm::Float2& v = gm::Float2(0, 1),
-			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
-			float radian = 0);
-
-		/* @brief : Create image ui in NDC space (x, y, z: -1Å`1)*/
-		void CreateInNDCSpace(
-			const gm::Float3& position = gm::Float3(0, 0, 0),
-			const gm::Float2& rectSize = gm::Float2(2, 2),
-			const gm::Float2& u = gm::Float2(0, 1),
-			const gm::Float2& v = gm::Float2(0, 1),
-			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
-			float radian = 0);
-
+		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
+		void Update() override;
+		void Draw() override;
+		void Terminate() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const gm::Vertex* GetVertices() const { return _vertices; }
-		
-		gm::Float2 GetRectSize() const { return _size; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Image() = default;
-		
-		virtual ~Image();
-		
-		Image(
-			const CoordinateType coordinateType,
-			const gm::Float3& position,
-			const gm::Float2& rectSize,
-			const gm::Float2& u = gm::Float2(0, 1),
-			const gm::Float2& v = gm::Float2(0, 1),
-			const gm::Float4& color = gm::Float4(1, 1, 1, 1),
-			float radian = 0);
-
+		SampleUI();
+		~SampleUI();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		/* Create rect */
-		void CreateRect(const gm::Float3& position, const gm::Float2& rectSize, const gm::Float4& color, const gm::Float2& u, const gm::Float2& v, float radian);
+		void LoadMaterials() override;
+		void OnKeyboardInput() override;
+		void OnMouseInput() override;
+		void OnGamePadInput() override;
+		void ExecuteSceneTransition() override;
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		gm::Vertex _vertices[4] = {};
-		gm::Float3 _positionNDC = gm::Float3(0, 0, 0);
-		gm::Float2 _size;
+		UIRendererPtr       _renderer      = nullptr;
+		GPUResourceCachePtr _resourceCache = nullptr;
+		GPUResourceViewPtr  _resourceView  = nullptr;
+
+		// UI
+		ButtonPtr _button = nullptr;
 	};
 }
 #endif

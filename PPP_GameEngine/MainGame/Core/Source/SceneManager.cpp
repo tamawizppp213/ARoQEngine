@@ -14,6 +14,7 @@
 #include "MainGame/Sample/Include/SampleColorChange.hpp"
 #include "MainGame/Sample/Include/SampleAudio.hpp"
 #include "MainGame/Sample/Include/SampleText.hpp"
+#include "MainGame/Sample/Include/SampleUI.hpp"
 #include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -26,7 +27,7 @@
 void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_ptr<GameTimer>& gameTimer)
 {
 	_engine = engine;
-	PushScene(new sample::SampleText());
+	PushScene(new sample::SampleUI());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

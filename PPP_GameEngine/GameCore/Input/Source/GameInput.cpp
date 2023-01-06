@@ -23,26 +23,30 @@ bool GameInput::Initialize(HINSTANCE hInstance, HWND hwnd)
 {
 	bool result = true;
 
+	_keyboard = std::make_shared<Keyboard>();
+	_mouse    = std::make_shared<Mouse>();
+	_gamePad  = std::make_shared<GamePad>();
+
 	result = DInputInitialize(hInstance);
-	result = _keyboard.Initialize(_dInput, hInstance, hwnd);
-	result = _mouse   .Initialize(_dInput, hInstance, hwnd);
-	result = _gamePad .Initialize();
+	result = _keyboard->Initialize(_dInput, hInstance, hwnd);
+	result = _mouse   ->Initialize(_dInput, hInstance, hwnd);
+	result = _gamePad ->Initialize();
 
 	return result;
 }
 
 void GameInput::Update()
 {
-	_keyboard.Update();
-	_mouse   .Update();
-	_gamePad .Update();
+	_keyboard->Update();
+	_mouse   ->Update();
+	_gamePad ->Update();
 }
 
 void GameInput::Finalize()
 {
-	_gamePad .Finalize();
-	_mouse   .Finalize();
-	_keyboard.Finalize();
+	_gamePad ->Finalize();
+	_mouse   ->Finalize();
+	_keyboard->Finalize();
 	DInputFinalize();
 }
 
