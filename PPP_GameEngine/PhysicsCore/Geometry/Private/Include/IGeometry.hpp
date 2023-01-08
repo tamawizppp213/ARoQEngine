@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GeometryType.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -27,12 +28,14 @@ namespace physics::geometry
 	*  @class     IGeometry
 	*  @brief     Geometry interface
 	*****************************************************************************/
-	class IGeometry 
+	class IGeometry : public Copyable
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Valid member variables check.*/
+		virtual bool IsValid() const = 0; 
 
 		/****************************************************************************
 		**                Public Member Variables

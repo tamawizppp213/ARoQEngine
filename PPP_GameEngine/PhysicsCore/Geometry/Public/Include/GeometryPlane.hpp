@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GeometryBox.hpp
-///             @brief  Geometry box interface. 
+///             @file   IGeometry.hpp
+///             @brief  Geometry interface. 
 ///             @author Toide Yutaro
 ///             @date   2023_01_09
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef PHYSICS_BOX_GEOMETRY_HPP
-#define PHYSICS_BOX_GEOMETRY_HPP
+#ifndef PHYSICS_PLANE_GEOMETRY_HPP
+#define PHYSICS_PLANE_GEOMETRY_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -23,42 +23,40 @@
 namespace physics::geometry
 {
 	/****************************************************************************
-	*				  			  GeometryBox
+	*				  			  IGeometry
 	*************************************************************************//**
-	*  @class     GeometryBox
+	*  @class     IGeometry
 	*  @brief     Geometry interface
 	*****************************************************************************/
-	class GeometryBox : public IGeometry
+	class GeometryPlane : public IGeometry
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool IsValid() const override;
+		bool IsValid() const override
+		{
+			return _geometryType == GeometryType::Plane;
+		}
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		// @brief: half of the width, height, and depth of the box.
-		gm::Float3 HalfExtents = { 0.0f, 0.0f, 0.0f };
-
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GeometryBox(const gm::Float3& halfExtents) : IGeometry(GeometryType::Box), HalfExtents(halfExtents) {};
-
-		GeometryBox(const float hx = 0.0f, const float hy = 0.0f, const float hz = 0.0f)
-			: IGeometry(GeometryType::Box), HalfExtents({ hx, hy, hz }) { };
+		GeometryPlane() : IGeometry(GeometryType::Plane) {}
 
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		
+
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

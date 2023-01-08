@@ -464,6 +464,8 @@
     <ClInclude Include="PhysicsCore\Geometry\Private\Include\IGeometry.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryBox.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryCapsule.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryPlane.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometrySphere.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -639,6 +641,9 @@
     <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleUI.cpp" />
     <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsScene.cpp" />
+    <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryBox.cpp" />
+    <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCapsule.cpp" />
+    <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometrySphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />
