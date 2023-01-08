@@ -459,6 +459,7 @@
     <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleUI.hpp" />
+    <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsScene.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -633,6 +634,7 @@
     <ClCompile Include="MainGame\Sample\Source\SampleText.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleUI.cpp" />
+    <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />

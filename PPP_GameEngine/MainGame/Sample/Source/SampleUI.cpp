@@ -132,9 +132,11 @@ void SampleUI::LoadMaterials()
 	_resourceView = _resourceCache->Load(L"Resources/BackGround2.png");
 	_resourceCache->Load(L"Resources/Cubemap.jpg");
 
+	// button 
 	_button = std::make_shared<Button>(_gameInput.GetMouse());
 	_button->CreateInNDCSpace({ 0,0,0 }, { 0.5f,0.5f });
 
+	// slider
 	_slider = std::make_shared<Slider>();
 	_slider->CreateInNDCSpace({ -0.65f, 0.8f, 0.0f }, { 0.3f, 0.1f }, { 0, 1, 0.2f, 1.0f });
 	_slider->SetTexture(Slider::BackGround, _resourceCache->Load(L"Resources/Preset/DefaultSlider.png"));
