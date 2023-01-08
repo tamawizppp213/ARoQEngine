@@ -86,8 +86,8 @@ void Slider::Add(const float difference)
 	/*-------------------------------------------------------------------
 	-             Exceed check
 	---------------------------------------------------------------------*/
-	if (value > _maxValue) { value = _maxValue; }
-	if (value < _minValue) { value = _minValue; }
+	if (value >= _maxValue) { value = _maxValue; }
+	if (value <= _minValue) { value = _minValue; }
 
 	/*-------------------------------------------------------------------
 	-             Execute function list
@@ -139,7 +139,7 @@ bool Slider::OnValueChanged(const float newValue)
 	---------------------------------------------------------------------*/
 	for (size_t i = 0; i < _functionList.size(); ++i)
 	{
-		(*_functionList[i])(_value);
+		(*_functionList[i])(newValue);
 	}
 	return true;
 }
@@ -185,8 +185,8 @@ void Slider::RecreateSliderUI()
 *****************************************************************************/
 void Slider::SetValue(float value)
 {
-	if (value > _maxValue) { value = _maxValue; }
-	if (value < _minValue) { value = _minValue; }
+	if (value >= _maxValue) { value = _maxValue; }
+	if (value <= _minValue) { value = _minValue; }
 	if (!OnValueChanged(value)) { return; };
 	_value = value;
 }

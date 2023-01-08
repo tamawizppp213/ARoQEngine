@@ -26,6 +26,10 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+namespace
+{
+	void DebugTest(const float value) { std::cout << "static function: " << value << std::endl; }
+}
 SampleUI::SampleUI()
 {
 
@@ -136,6 +140,10 @@ void SampleUI::LoadMaterials()
 	_slider->SetTexture(Slider::BackGround, _resourceCache->Load(L"Resources/Preset/DefaultSlider.png"));
 	_slider->SetTexture(Slider::Color     , _resourceCache->Load(L"Resources/Preset/NullAlbedoMap.png"));
 
+	// Slider‚Ì’l‚ª•Ï‚í‚Á‚½Žž‚Ìˆ—
+	_slider->AddListener(std::make_shared<std::function<void(float)>>(DebugTest));
+	_slider->AddListener(std::make_shared<std::function<void(float)>>([&](float value) { return DebugSliderValue(value); }));
+
 	// Create UI Renderer
 	_renderer = std::make_unique<gc::ui::UIRenderer>(_engine);
 
@@ -206,5 +214,10 @@ void SampleUI::OnGamePadInput()
 void SampleUI::ExecuteSceneTransition()
 {
 
+}
+
+void SampleUI::DebugSliderValue(const float value)
+{
+	std::cout << "member function: " << value << std::endl;
 }
 #pragma endregion Protected Function

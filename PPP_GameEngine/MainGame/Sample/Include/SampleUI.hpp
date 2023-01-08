@@ -76,6 +76,7 @@ namespace sample
 		void OnMouseInput() override;
 		void OnGamePadInput() override;
 		void ExecuteSceneTransition() override;
+		void DebugSliderValue(const float value);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
