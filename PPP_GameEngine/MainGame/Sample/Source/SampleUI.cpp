@@ -12,6 +12,7 @@
 #include "GameCore/Rendering/UI/Public/Include/UIRenderer.hpp"
 #include "GameCore/Rendering/UI/Public/Include/UIImage.hpp"
 #include "GameCore/Rendering/UI/Public/Include/UIButton.hpp"
+#include "GameCore/Rendering/UI/Public/Include/UISlider.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
 #include <iostream>
@@ -59,6 +60,8 @@ void SampleUI::Update()
 	Scene::Update();
 
 	_renderer->AddFrameObjects({ _button }, _resourceView);
+	_renderer->AddFrameObjects({ _slider->GetRenderResource(Slider::BackGround).Image }, _slider->GetRenderResource(Slider::BackGround).ResourceView);
+	_renderer->AddFrameObjects({ _slider->GetRenderResource(Slider::Color).Image }, _slider->GetRenderResource(Slider::Color).ResourceView);
 }
 /****************************************************************************
 *                       Draw
@@ -120,13 +123,18 @@ void SampleUI::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-             SetUp Resources
 	---------------------------------------------------------------------*/
+	// Create Texture
+	_resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
+	_resourceView = _resourceCache->Load(L"Resources/BackGround2.png");
+	_resourceCache->Load(L"Resources/Cubemap.jpg");
+
 	_button = std::make_shared<Button>(_gameInput.GetMouse());
 	_button->CreateInNDCSpace({ 0,0,0 }, { 0.5f,0.5f });
 
-	// Create Texture
-	_resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
-	_resourceView  = _resourceCache->Load(L"Resources/BackGround2.png");
-	_resourceCache->Load(L"Resources/Cubemap.jpg");
+	_slider = std::make_shared<Slider>();
+	_slider->CreateInNDCSpace({ -0.65f, 0.8f, 0.0f }, { 0.3f, 0.1f }, { 0, 1, 0.2f, 1.0f });
+	_slider->SetTexture(Slider::BackGround, _resourceCache->Load(L"Resources/Preset/DefaultSlider.png"));
+	_slider->SetTexture(Slider::Color     , _resourceCache->Load(L"Resources/Preset/NullAlbedoMap.png"));
 
 	// Create UI Renderer
 	_renderer = std::make_unique<gc::ui::UIRenderer>(_engine);
@@ -150,7 +158,15 @@ void SampleUI::LoadMaterials()
 *****************************************************************************/
 void SampleUI::OnKeyboardInput()
 {
-
+	const auto keyboard = _gameInput.GetKeyboard();
+	if (keyboard->IsPress(DIK_RIGHTARROW))
+	{
+		_slider->Step(true);
+	}
+	if (keyboard->IsPress(DIK_LEFTARROW))
+	{
+		_slider->Step(false);
+	}
 }
 /****************************************************************************
 *                       OnMouseInput

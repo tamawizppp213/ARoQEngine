@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   UIButton.hpp
-///             @brief  Button object (string, number)
+///             @brief  Button object
 ///             @author Toide Yutaro
-///             @date   2022_12_27
+///             @date   2023_01_07
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef UIBUTTON_HPP

@@ -28,6 +28,7 @@ namespace rhi::core
 }
 namespace gc::ui
 {
+	class Slider;
 	class Button;
 	class Image;
 	class UIRenderer;
@@ -46,6 +47,7 @@ namespace sample
 		using UIRendererPtr       = std::shared_ptr<gc::ui::UIRenderer>;
 		using ImagePtr            = std::shared_ptr<gc::ui::Image>;
 		using ButtonPtr           = std::shared_ptr<gc::ui::Button>;
+		using SliderPtr           = std::shared_ptr<gc::ui::Slider>;
 		using GPUResourceCachePtr = std::shared_ptr<rhi::core::GPUResourceCache>;
 		using GPUResourceViewPtr  = std::shared_ptr<rhi::core::GPUResourceView>;
 	public:
@@ -83,6 +85,8 @@ namespace sample
 
 		// UI
 		ButtonPtr _button = nullptr;
+		SliderPtr _slider = nullptr;
+
 	};
 }
 #endif
