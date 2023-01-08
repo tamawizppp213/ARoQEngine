@@ -460,6 +460,10 @@
     <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleUI.hpp" />
     <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsScene.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Private\Include\GeometryType.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Private\Include\IGeometry.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryBox.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryCapsule.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
