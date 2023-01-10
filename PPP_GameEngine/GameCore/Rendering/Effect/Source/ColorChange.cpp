@@ -130,7 +130,7 @@ void ColorChange::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
-	MeshData rectMesh = PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
+	PrimitiveMesh rectMesh = PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/

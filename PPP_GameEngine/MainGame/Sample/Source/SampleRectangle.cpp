@@ -195,7 +195,7 @@ void SampleRectangle::ExecuteSceneTransition()
 void SampleRectangle::BuildBuffer()
 {
 	// ’¸“_î•ñ•Ï‚¦‚é‚È‚çFrameCount•ª—pˆÓ‚µ‚½•û‚ª—Ç‚¢.
-	gc::MeshData rectangle = gc::PrimitiveMeshGenerator::Rect
+	gc::PrimitiveMesh rectangle = gc::PrimitiveMeshGenerator::Rect
 	(1.0f, 1.0f, 1.0f, gm::Float4(1,1,0,1));
 	/*-------------------------------------------------------------------
 	-             Vertex Buffer

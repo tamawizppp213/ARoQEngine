@@ -105,7 +105,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
-	MeshData sphereMesh = PrimitiveMeshGenerator::Sphere(0.5f, 20, 20, false);    // Sphere mesh
+	PrimitiveMesh sphereMesh = PrimitiveMeshGenerator::Sphere(0.5f, 20, 20, false);    // Sphere mesh
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/
