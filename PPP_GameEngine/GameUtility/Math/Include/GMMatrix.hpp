@@ -234,7 +234,7 @@ namespace gm
 
 		INLINE Scalar TDotX(const Vector3& v) const { return _matrix[0].GetX() * v.GetX() + _matrix[1].GetX() * v.GetY() + _matrix[2].GetX() * v.GetZ(); }
 		INLINE Scalar TDotY(const Vector3& v) const { return _matrix[0].GetY() * v.GetX() + _matrix[1].GetY() * v.GetY() + _matrix[2].GetY() * v.GetZ(); }
-		INLINE Scalar TDotZ(const Vector3& v) const { return _matrix[0].GetZ() * v.GetX() + _matrix[2].GetZ() * v.GetY() + _matrix[2].GetZ() * v.GetZ(); }
+		INLINE Scalar TDotZ(const Vector3& v) const { return _matrix[0].GetZ() * v.GetX() + _matrix[1].GetZ() * v.GetY() + _matrix[2].GetZ() * v.GetZ(); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

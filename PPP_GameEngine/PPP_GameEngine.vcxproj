@@ -459,6 +459,8 @@
     <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleUI.hpp" />
+    <ClInclude Include="PhysicsCore\Core\Private\Include\PhysicsActor.hpp" />
+    <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsRigidBody.hpp" />
     <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsScene.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Private\Include\GeometryType.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Private\Include\IGeometry.hpp" />
@@ -640,6 +642,8 @@
     <ClCompile Include="MainGame\Sample\Source\SampleText.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleUI.cpp" />
+    <ClCompile Include="PhysicsCore\Core\Private\Source\PhysicsActor.cpp" />
+    <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsRigidBody.cpp" />
     <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsScene.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryBox.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCapsule.cpp" />
