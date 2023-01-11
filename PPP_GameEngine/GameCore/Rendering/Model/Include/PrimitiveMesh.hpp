@@ -31,7 +31,6 @@ namespace gc
 	public:
 		std::vector<gm::Vertex>    Vertices; /// Vertex (Position, Normal, UV)
 		std::vector<std::uint32_t> Indices;  /// Index  (note: Index uses UINT16)
-		std::uint32_t              MaterialID = 0;
 		PrimitiveMesh() = default;
 		~PrimitiveMesh();
 	};

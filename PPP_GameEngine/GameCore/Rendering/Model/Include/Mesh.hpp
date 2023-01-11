@@ -12,64 +12,82 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include "GameUtility/Math/Include/GMVertex.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <vector>
+#include <memory>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-struct MeshData;
+class LowLevelGraphicsEngine;
+namespace rhi::core
+{
+	struct GPUBufferMetaData;
+	class  GPUBuffer;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                         Mesh Class
 //////////////////////////////////////////////////////////////////////////////////
-
-/****************************************************************************
-*				  			Mesh
-*************************************************************************//**
-*  @class     Mesh
-*  @brief     Mesh
-*****************************************************************************/
-class Mesh
+namespace gc
 {
-	using MeshBufferPtr   = std::unique_ptr<MeshBuffer[]>;
-	using SceneGPUAddress = UINT64;
-public:
+	struct PrimitiveMesh;
 	/****************************************************************************
-	**                Public Function
+	*				  			Mesh
+	*************************************************************************//**
+	*  @class     Mesh
+	*  @brief     Mesh
 	*****************************************************************************/
-	bool Initialize(const MeshData& meshData, const std::wstring& addName = L"");
-	bool Initialize(const void* vertexData, UINT vertexByteSize, UINT vertexCount, const void* indexData, UINT indexByteSize, UINT indexCount, UINT materialID = 0, bool hasSkin = false, const std::wstring& addName = L"");
-	void Draw(rhi::directX12::CommandContext* context, int currentFrameIndex);
-	void Terminate();
+	class Mesh : public NonCopyable
+	{
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using VertexBufferPtr  = std::shared_ptr<rhi::core::GPUBuffer>;
+		using IndexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		virtual void Draw();
 
-	/****************************************************************************
-	**                Public Member Variables
-	*****************************************************************************/
-	MeshBuffer* GetBufferPtr(int frameIndex) { return &_meshBuffer.get()[frameIndex]; }
-	inline UINT32 GetMaterialID() const { return _materialID; }
-	inline UINT32 GetIndexCount() const { return _indexCount; }
-	inline bool   HasSkin      ()const { return _hasSkin; }
-	/****************************************************************************
-	**                Constructor and Destructor
-	*****************************************************************************/
-	Mesh() = default;
-	virtual ~Mesh();
-	Mesh(Mesh&&)            = default;
-	Mesh& operator=(Mesh&&) = default;
-protected:
-	/****************************************************************************
-	**                Protected Function                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-	*****************************************************************************/
-	Mesh(const Mesh&)            = delete; 
-	Mesh operator= (const Mesh&) = delete;
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		std::int32_t GetMaterialID() const { return _materialID; }
 
-	void PrepareVertexAndIndexBuffer(const MeshData& meshData, const std::wstring& name);
-	void PrepareVertexAndIndexBuffer(const void* vertexData, UINT vertexByteSize, UINT vertexCount, const void* indexData, UINT indexByteSize, UINT indexCount, const std::wstring& name);
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		Mesh() = default;
+		
+		Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const std::int32_t materialID = NEEDLESS, const std::wstring& addName = L"");
 
-	/****************************************************************************
-	**                Protected Member Variables
-	*****************************************************************************/
-	MeshBufferPtr   _meshBuffer;  // vertex and index buffer
-	UINT32          _materialID;  // material ID in CBV Allocator
-	UINT32          _indexCount;  // index Count
-	bool            _hasSkin = false;
-};
+		Mesh(const LowLevelGraphicsEnginePtr& engine, 
+			const rhi::core::GPUBufferMetaData& vertexInfo,
+			const rhi::core::GPUBufferMetaData& indexInfo,
+			const int32_t materialID = NEEDLESS,
+			const std::wstring& addName = L"");
+
+		virtual ~Mesh();
+
+	protected:
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+		void Prepare(const PrimitiveMesh& mesh, const std::wstring& name);
+		
+		void Prepare(const rhi::core::GPUBufferMetaData& vertexInfo, const rhi::core::GPUBufferMetaData& indexInfo, const std::wstring& name);
+
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		LowLevelGraphicsEnginePtr _engine = nullptr;
+		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		IndexBufferPtr   _indexBuffer  = nullptr;
+		std::int32_t     _materialID   = NEEDLESS;  // material ID in CBV Allocator
+		std::uint64_t    _indexCount   = 0;
+
+		static constexpr std::int32_t NEEDLESS = -1;
+	};
+}
+
 #endif

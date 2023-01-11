@@ -59,7 +59,7 @@ private:
 *****************************************************************************/
 class Model : public GameActor
 {
-	using MeshArray     = std::vector<Mesh>;
+	using MeshArray     = std::vector<gc::Mesh>;
 	using BoneBufferPtr = std::unique_ptr<UploadBuffer>;
 public:
 	/****************************************************************************
