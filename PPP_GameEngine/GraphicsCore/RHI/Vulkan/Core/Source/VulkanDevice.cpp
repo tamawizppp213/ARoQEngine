@@ -62,6 +62,7 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, co
 
 void RHIDevice::SetUp()
 {
+
 	SetUpCommandQueue();
 	CreateLogicalDevice();
 	SetUpCommandPool();

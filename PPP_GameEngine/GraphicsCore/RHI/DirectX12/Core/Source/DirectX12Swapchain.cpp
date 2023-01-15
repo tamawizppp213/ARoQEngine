@@ -42,13 +42,14 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	-        SwapChain Flag
 	---------------------------------------------------------------------*/
 	int flag = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	//if (rhiDevice->IsSupportedTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
+	if (rhiDevice->IsSupportedTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
 	_swapchainFlag = static_cast<DXGI_SWAP_CHAIN_FLAG>(flag);
 
 	/*-------------------------------------------------------------------
 	-        BackBuffer format
 	---------------------------------------------------------------------*/
 	_backBufferFormat = EnumConverter::Convert(_pixelFormat);
+
 	/*-------------------------------------------------------------------
 	-                   Create Swapchain Descriptor
 	---------------------------------------------------------------------*/
@@ -72,10 +73,13 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	fullScreenDesc.Scaling                 = DXGI_MODE_SCALING_STRETCHED;
 	fullScreenDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	fullScreenDesc.Windowed                = FALSE;
+
 	/*-------------------------------------------------------------------
 	-                   Create Swapchain for hwnd
 	---------------------------------------------------------------------*/
-	ThrowIfFailed(static_cast<directX12::RHIInstance*>(device->GetDisplayAdapter()->GetInstance())->GetFactory()->CreateSwapChainForHwnd(
+	ThrowIfFailed(static_cast<directX12::RHIInstance*>(device->GetDisplayAdapter()->GetInstance())->GetFactory()->
+	CreateSwapChainForHwnd
+	(
 		dxQueue.Get(),
 		(HWND)windowInfo.Handle,
 		&sd,
@@ -106,10 +110,13 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 		_backBuffers[i] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
 	}
 }
+
+
 RHISwapchain::~RHISwapchain()
 {
 	if (_swapchain) { _swapchain.Reset(); }
 }
+
 #pragma endregion Constructor and Destructor
 #pragma region Main Function
 /****************************************************************************
@@ -127,10 +134,12 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	-          If the size is not change, we do nothing
 	---------------------------------------------------------------------*/
 	if (_windowInfo.Width == width && _windowInfo.Height == height) { return; }
+
 	/*-------------------------------------------------------------------
 	-         window size check
 	---------------------------------------------------------------------*/
 	if (_windowInfo.Width == 0 || _windowInfo.Height == 0) { throw std::runtime_error("Width or height is zero."); }
+
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
@@ -141,6 +150,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 		static_cast<UINT>(_windowInfo.Height),
 		_backBufferFormat,
 		_swapchainFlag));
+
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
@@ -150,7 +160,10 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(index), IID_PPV_ARGS(backBuffer.GetAddressOf())));
 
 		auto info = core::GPUTextureMetaData::Texture2D(
-			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
+			static_cast<size_t>(_windowInfo.Width),
+			static_cast<size_t>(_windowInfo.Height), 
+			_pixelFormat, 1, core::ResourceUsage::RenderTarget);
+
 		info.State = core::ResourceState::Present;
 
 		_backBuffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
@@ -200,13 +213,17 @@ size_t RHISwapchain::GetCurrentBufferIndex() const
 	return static_cast<size_t>(_swapchain->GetCurrentBackBufferIndex());
 }
 #pragma endregion Main Function
+
 # pragma region Color Space
 /****************************************************************************
 *                     EnsureSwapChainColorSpace
 *************************************************************************//**
 *  @fn        void RHISwapchain::EnsureSwapChainColorSpace()
+* 
 *  @brief     Check SwapChain Color Space
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHISwapchain::EnsureSwapChainColorSpace()
@@ -237,8 +254,11 @@ void RHISwapchain::EnsureSwapChainColorSpace()
 *                     SetHDRMetaData
 *************************************************************************//**
 *  @fn        void RHISwapchain::SetHDRMetaData()
+* 
 *  @brief     Set HDR Meta Data
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHISwapchain::SetHDRMetaData()

@@ -58,6 +58,8 @@ namespace gc::ui
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		void Clear();
+
 		/* @brief : Add frame ui objects (image, text etc...)*/
 		void AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view);
 		void AddFrameObjects(const std::vector<ui::Image>& images, const ResourceViewPtr& view);
@@ -109,7 +111,8 @@ namespace gc::ui
 		std::vector<ResourceViewPtr> _resourceViews = {};
 		
 		/* @brief regist total image count per frame  */
-		std::uint32_t  _totalImageCount        = 0;
+		std::uint32_t  _totalImageCount = 0;
+		std::uint32_t  _prevTotalImageCount = 0;
 
 		// @brief : call drawIndex command count per frame
 		std::uint32_t  _needCallDrawIndexCount = 0;

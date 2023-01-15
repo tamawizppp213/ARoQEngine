@@ -69,6 +69,7 @@ void SampleText::Update()
 	};
 	_text = std::make_shared<Text>(CoordinateType::NDC, _font, info);
 
+	_renderer->Clear();
 	_renderer->AddFrameObjects(_text->GetTextImages(), _text->GetFontView());
 }
 /****************************************************************************

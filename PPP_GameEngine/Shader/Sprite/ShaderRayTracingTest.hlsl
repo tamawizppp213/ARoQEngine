@@ -56,7 +56,7 @@ void RayGeneration()
     Payload payload;
     payload.Color = float3(0, 0, 0);
     
-    TraceRay(Scene, 0, 0xFF, 0, 1, 0, rayDescriptor, payload);
+    //TraceRay(Scene, 0, 0xFF, 0, 1, 0, rayDescriptor, payload);
 }
 
 /****************************************************************************

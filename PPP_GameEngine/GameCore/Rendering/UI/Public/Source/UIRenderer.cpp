@@ -53,6 +53,14 @@ UIRenderer::~UIRenderer()
 } 
 
 #pragma endregion Constructor and Destructor 
+void UIRenderer::Clear()
+{
+	if (_prevTotalImageCount == 0) { return; }
+
+	const auto prevFrameIndex = (_engine->GetCurrentFrameIndex() + LowLevelGraphicsEngine::FRAME_BUFFER_COUNT - 1) % LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
+	ClearVertexBuffer(prevFrameIndex, _prevTotalImageCount);
+}
+
 /****************************************************************************
 *					AddFrameObject
 *************************************************************************//**
@@ -151,6 +159,7 @@ void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const Res
 *****************************************************************************/
 void UIRenderer::Draw()
 {
+	_prevTotalImageCount = _totalImageCount;
 	if (_totalImageCount == 0) { return; }
 
 	const std::uint32_t currentFrame = _engine->GetCurrentFrameIndex();
@@ -179,11 +188,6 @@ void UIRenderer::Draw()
 		commandList->DrawIndexedInstanced(oneImageTotalIndexCount, 1, indexOffset, 0, 0);
 		indexOffset += oneImageTotalIndexCount;
 	}
-
-	/*-------------------------------------------------------------------
-	-               Clear vertex data
-	---------------------------------------------------------------------*/
-	ClearVertexBuffer(currentFrame, 4 * _totalImageCount);
 
 	/*-------------------------------------------------------------------
 	-               Reset Stack Count

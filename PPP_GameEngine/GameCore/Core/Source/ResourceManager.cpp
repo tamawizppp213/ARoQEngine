@@ -9,7 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Core/Include/ResourceManager.hpp"
-#include "GameCore/Audio/Public/Include/AudioClip.hpp"
+#include "GameCore/Audio/Core/Include/AudioClip.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Texture.hpp"
 #include <unordered_map>
 //////////////////////////////////////////////////////////////////////////////////

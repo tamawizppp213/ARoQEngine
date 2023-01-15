@@ -84,6 +84,12 @@ void SampleColorChange::Draw()
 
 	_skybox->Draw(_camera->GetResourceView());
 	_colorChanges[_colorIndex]->Draw();
+	
+	if (_useBlur)
+	{
+		_gaussianBlur->Draw();
+	}
+
 	_engine->EndDrawFrame();
 }
 /****************************************************************************
@@ -136,6 +142,7 @@ void SampleColorChange::LoadMaterials()
 	{
 		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
 	}
+	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
@@ -175,6 +182,10 @@ void SampleColorChange::OnKeyboardInput()
 	if (_gameInput.GetKeyboard()->IsTrigger(DIK_P))
 	{
 		_colorIndex = (_colorIndex + 1) % _colorChanges.size();
+	}
+	if (_gameInput.GetKeyboard()->IsTrigger(DIK_O))
+	{
+		_useBlur = _useBlur ? false : true;
 	}
 }
 /****************************************************************************

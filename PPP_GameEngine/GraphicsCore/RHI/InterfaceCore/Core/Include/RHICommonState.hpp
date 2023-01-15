@@ -1060,11 +1060,14 @@ namespace rhi::core
 		size_t Height    = 0;       // window height
 		void*  Handle    = nullptr; // window handle pointer 
 		void*  HInstance = nullptr; // window instance for Windows API
+
 		WindowInfo()  = default;
+
 		WindowInfo(size_t width, size_t height, void* handle, void* hInstance = nullptr)
 		{
 			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
 		}
+
 	};
 #pragma endregion    Window Surface
 }

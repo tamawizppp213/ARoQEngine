@@ -553,10 +553,10 @@ std::shared_ptr<core::RHICommandQueue> RHIDevice::GetCommandQueue(const core::Co
 *
 *  @return    std::shared_ptr<core::RHICommandAllocator>
 *****************************************************************************/
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount)
+std::shared_ptr<core::RHICommandAllocator> RHIDevice::GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t currentFrame)
 {
-	assert(frameCount < _frameCount);
-	return _commandAllocators[frameCount].at(commandListType);
+	assert(currentFrame < _frameCount);
+	return _commandAllocators[currentFrame].at(commandListType);
 }
 
 /****************************************************************************

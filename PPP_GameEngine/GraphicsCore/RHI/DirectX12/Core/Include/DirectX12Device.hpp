@@ -109,7 +109,7 @@ namespace rhi::directX12
 
 		std::shared_ptr<core::RHICommandQueue>     GetCommandQueue    (const core::CommandListType commandListType) override ;
 
-		std::shared_ptr<core::RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount = 0) override;
+		std::shared_ptr<core::RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t currentFrame = 0) override;
 		
 		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 

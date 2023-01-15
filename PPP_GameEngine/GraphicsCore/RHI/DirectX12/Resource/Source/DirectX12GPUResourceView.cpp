@@ -592,9 +592,10 @@ void GPUResourceView::CreateCBV(const std::shared_ptr<directX12::RHIDescriptorHe
 		desc.BufferLocation = dxBuffer->GetResource()->GetGPUVirtualAddress();
 		desc.SizeInBytes    = static_cast<UINT>(_buffer->GetTotalByteSize());
 
+#if _DEBUG
 		// 256 alignment check
 		assert(desc.SizeInBytes % 256 == 0);
-
+#endif
 		// Set heap descriptor id.
 		_heapOffset.first = core::DescriptorHeapType::CBV;
 		_heapOffset.second = heap->Allocate(core::DescriptorHeapType::CBV);

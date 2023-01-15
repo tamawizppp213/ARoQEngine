@@ -64,6 +64,7 @@ void SampleUI::Update()
 {
 	Scene::Update();
 
+	_renderer->Clear();
 	_renderer->AddFrameObjects({ _button }, _resourceView);
 	_renderer->AddFrameObjects({ _slider->GetRenderResource(Slider::BackGround).Image }, _slider->GetRenderResource(Slider::BackGround).ResourceView);
 	_renderer->AddFrameObjects({ _slider->GetRenderResource(Slider::Color).Image }, _slider->GetRenderResource(Slider::Color).ResourceView);

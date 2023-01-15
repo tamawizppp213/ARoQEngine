@@ -42,6 +42,7 @@ namespace sample
 		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
 		using CameraPtr  = std::shared_ptr<gc::Camera>;
 		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
+		using GaussianBlurPtr = std::shared_ptr<gc::GaussianBlur>;
 
 	public:
 		/****************************************************************************
@@ -74,6 +75,8 @@ namespace sample
 		SkyDomePtr _skybox = nullptr;
 		CameraPtr _camera = nullptr;
 		std::vector<ColorChangePtr> _colorChanges = {};
+		GaussianBlurPtr _gaussianBlur = nullptr;
+		bool _useBlur = false;
 		std::uint32_t _colorIndex = 0;
 	};
 }
