@@ -84,9 +84,9 @@ void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const Reso
 	/*-------------------------------------------------------------------
 	-               Add vertex data
 	---------------------------------------------------------------------*/
-	const auto currentFrame = _engine->GetCurrentFrameIndex();
-	const auto vertexBuffer = _vertexBuffers[currentFrame];
-	const auto oneRectVertexCount = 4;
+	const auto  currentFrame = _engine->GetCurrentFrameIndex();
+	const auto& vertexBuffer = _vertexBuffers[currentFrame];
+	const auto  oneRectVertexCount = 4;
 
 	vertexBuffer->CopyStart();
 	// _maxWritableUICount - _totalImageCount is c‚è‚Ì“o˜^‚Å‚«‚é”
@@ -100,6 +100,7 @@ void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const Reso
 	-               Count sprite num
 	---------------------------------------------------------------------*/
 	CountUpDrawImageAndView(images.size(), view);
+	
 }
 
 void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const ResourceViewPtr& view)
@@ -120,9 +121,9 @@ void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const Res
 	/*-------------------------------------------------------------------
 	-               Add vertex data
 	---------------------------------------------------------------------*/
-	const auto currentFrame = _engine->GetCurrentFrameIndex();
-	const auto vertexBuffer = _vertexBuffers[currentFrame];
-	const auto oneRectVertexCount = 4;
+	const auto  currentFrame = _engine->GetCurrentFrameIndex();
+	const auto& vertexBuffer = _vertexBuffers[currentFrame];
+	const auto  oneRectVertexCount = 4;
 
 	vertexBuffer->CopyStart();
 	// _maxWritableUICount - _totalImageCount is c‚è‚Ì“o˜^‚Å‚«‚é”

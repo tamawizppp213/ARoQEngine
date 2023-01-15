@@ -34,7 +34,8 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief: Set fence value from CPU side. (in case RHICommandQueue::Signal -> Set fence value from GPU side)*/
+		/* @brief: Set fence value from CPU side. 
+		(in case RHICommandQueue::Signal -> Set fence value from GPU side)*/
 		void Signal(const std::uint64_t value) override ;
 		
 		/* @brief:  Detect the completion of GPU processing on the CPU side. If not, it waits.*/

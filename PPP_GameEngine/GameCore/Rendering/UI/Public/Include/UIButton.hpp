@@ -14,6 +14,8 @@
 #include "UIImage.hpp"
 #include "GameCore/Input/Include/Mouse.hpp"
 #include <memory>
+#include <string>
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +25,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace gc::ui
 {
-	
+	class Text;
+	class Font;
+
 	/****************************************************************************
 	*				  			    Button
 	*************************************************************************//**
@@ -41,6 +45,8 @@ namespace gc::ui
 
 		/* @brief : Returns true for the entire duration of the click.*/
 		virtual bool IsPress(const MouseButton mouseButton = MouseButton::LEFT) const;
+
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -48,6 +54,7 @@ namespace gc::ui
 
 		void SetIsInteractive(const bool isInteractive) { _isInteractive = isInteractive; }
 
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -61,13 +68,13 @@ namespace gc::ui
 		*****************************************************************************/
 		bool DetectClick() const;
 
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		bool _isInteractive = true;
 		
 		std::shared_ptr<Mouse> _mouse = nullptr;
-
 	};
 }
 #endif

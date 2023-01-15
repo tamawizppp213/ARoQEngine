@@ -226,6 +226,11 @@ namespace rhi::core
 		Geometry,         // geometry shader
 		Amplification,    // amplication shader
 		Mesh,             // mesh shader
+		RayGeneration,    // ray tracing ray generation shader
+		Intersection,     // ray tracing intersection shader
+		AnyHit,           // ray tracing any hit shader
+		ClosestHit,       // ray tracing closest hit shader
+		Miss              // ray tracing miss shader
 	};
 	
 	struct BlobData
@@ -901,6 +906,7 @@ namespace rhi::core
 		std::uint64_t BuildScratchDataSize      = 0;
 		std::uint64_t UpdateScratchDataSize    = 0;
 	};
+	
 #pragma endregion RayTracing
 #pragma endregion GPUResource
 #pragma region Render Pass

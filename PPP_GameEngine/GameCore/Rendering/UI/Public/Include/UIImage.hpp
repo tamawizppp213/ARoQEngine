@@ -41,7 +41,7 @@ namespace gc::ui
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Create image ui in Screen Space*/
-		void CreateInScreenSpace(
+		virtual void CreateInScreenSpace(
 			const gm::Float3& position,
 			const gm::Float2& rectSize,
 			const gm::Float2& u = gm::Float2(0, 1),
@@ -50,7 +50,7 @@ namespace gc::ui
 			float radian = 0);
 
 		/* @brief : Create image ui in NDC space (x, y, z: -1Å`1)*/
-		void CreateInNDCSpace(
+		virtual void CreateInNDCSpace(
 			const gm::Float3& position = gm::Float3(0, 0, 0),
 			const gm::Float2& rectSize = gm::Float2(2, 2),
 			const gm::Float2& u = gm::Float2(0, 1),

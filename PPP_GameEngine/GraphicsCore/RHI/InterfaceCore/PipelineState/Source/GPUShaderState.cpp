@@ -34,6 +34,11 @@ std::wstring GPUShaderState::GetShaderTypeName(core::ShaderType shaderType)
 		case ShaderType::Domain       : return L"ds";
 		case ShaderType::Geometry     : return L"gs";
 		case ShaderType::Hull         : return L"hs";
+		case ShaderType::RayGeneration:
+		case ShaderType::Intersection:
+		case ShaderType::AnyHit:
+		case ShaderType::ClosestHit:
+		case ShaderType::Miss:         return L"lib";
 		default:
 			throw std::runtime_error("not supported shader type");
 	}

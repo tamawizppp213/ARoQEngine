@@ -132,4 +132,3 @@ bool Button::DetectClick() const
 
 	return true;
 }
-#pragma endregion Main Function

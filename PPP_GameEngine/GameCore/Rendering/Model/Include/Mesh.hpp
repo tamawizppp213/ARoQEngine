@@ -54,6 +54,8 @@ namespace gc
 		*****************************************************************************/
 		std::int32_t GetMaterialID() const { return _materialID; }
 
+		void SetMaterialID(const std::int32_t id) { _materialID = id; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -81,6 +83,7 @@ namespace gc
 		**                Protected Member Variables
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
+
 		std::vector<VertexBufferPtr> _vertexBuffers = {};
 		IndexBufferPtr   _indexBuffer  = nullptr;
 		std::int32_t     _materialID   = NEEDLESS;  // material ID in CBV Allocator

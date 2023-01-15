@@ -13,6 +13,7 @@
 #include "GameCore/Rendering/UI/Public/Include/UIImage.hpp"
 #include "GameCore/Rendering/UI/Public/Include/UIButton.hpp"
 #include "GameCore/Rendering/UI/Public/Include/UISlider.hpp"
+#include "GameCore/Rendering/UI/Public/Include/UIFont.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
 #include <iostream>
@@ -131,6 +132,8 @@ void SampleUI::LoadMaterials()
 	_resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
 	_resourceView = _resourceCache->Load(L"Resources/BackGround2.png");
 	_resourceCache->Load(L"Resources/Cubemap.jpg");
+
+	_font = std::make_shared<Font>(_engine, L"Resources/Font/GennokakuEnglish.png", gm::Float2(35.0f, 64.0f), 3325.0f);
 
 	// button 
 	_button = std::make_shared<Button>(_gameInput.GetMouse());

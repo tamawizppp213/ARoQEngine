@@ -43,19 +43,46 @@ LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 	if (!_hasCalledShutDown) { ShutDown(); }
 }
 #pragma endregion Destructor
+/****************************************************************************
+*                     Start Up
+*************************************************************************//**
+*  @fn        void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
+* 
+*  @brief     Windows api start up lowlevel graphics engine
+* 
+*  @param[in] APIVersion apiVersion
+*  @param[in] HWND hwnd
+*  @param[in] HINSTANCE hInstance
+* 
+*  @return @@void
+*****************************************************************************/
 void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
 {
 	_hwnd = hwnd; _hInstance = hInstance; _apiVersion = apiVersion;
+
+	/*-------------------------------------------------------------------
+	-      Create Instance
+	---------------------------------------------------------------------*/
+#if _DEBUG
+	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, true, false);
+#else
+	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, false, false);
+#endif
+	_instance->LogAdapters();
+
 	/*-------------------------------------------------------------------
 	-      Select proper physical device 
 	---------------------------------------------------------------------*/
-	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, true, false);
-	_instance->LogAdapters();
 	_adapter = _instance->SearchHighPerformanceAdapter();
+
+	/*-------------------------------------------------------------------
+	-      Create logical device
+	---------------------------------------------------------------------*/
+	_device = _adapter->CreateDevice(FRAME_BUFFER_COUNT);
+
 	/*-------------------------------------------------------------------
 	-      Create device resources
 	---------------------------------------------------------------------*/
-	_device                = _adapter->CreateDevice(FRAME_BUFFER_COUNT);
 	_commandQueues[CommandListType::Graphics] = _device->GetCommandQueue(CommandListType::Graphics);
 	_commandQueues[CommandListType::Compute]  = _device->GetCommandQueue    (CommandListType::Compute);
 	_commandQueues[CommandListType::Copy]     = _device->GetCommandQueue    (CommandListType::Copy);
@@ -91,13 +118,6 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 *****************************************************************************/
 void LowLevelGraphicsEngine::BeginDrawFrame()
 {
-	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, ++_fenceValue);
-	/*-------------------------------------------------------------------
-	-      GPU Command Wait
-	---------------------------------------------------------------------*/
-	_commandQueues[core::CommandListType::Compute] ->Wait(_fence, _fenceValue);
-	_commandQueues[core::CommandListType::Graphics]->Wait(_fence, _fenceValue);
-	_fence->Wait(_fenceValues[_currentFrameIndex]);
 	/*-------------------------------------------------------------------
 	-      Start Recording Command List 
 	---------------------------------------------------------------------*/
@@ -120,24 +140,38 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	/*-------------------------------------------------------------------
 	-      Finish recording commands list
 	---------------------------------------------------------------------*/
+	// compute command list
+	const auto& computeCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Compute];
+	computeCommandList->EndRecording();
+
+	// graphics command list
 	const auto& graphicsCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Graphics];
 	graphicsCommandList->EndRenderPass();
 	graphicsCommandList->EndRecording();
-
-	const auto& computeCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Compute];
-	computeCommandList->EndRecording();
 
 	/*-------------------------------------------------------------------
 	-          Execute GPU Command
 	---------------------------------------------------------------------*/
 	_commandQueues[core::CommandListType::Compute]->Execute({ computeCommandList });
 	_commandQueues[core::CommandListType::Compute]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
+
+	_commandQueues[core::CommandListType::Graphics]->Wait(_fence, _fenceValues[_currentFrameIndex]);
 	_commandQueues[core::CommandListType::Graphics]->Execute({graphicsCommandList});
 	_commandQueues[core::CommandListType::Graphics]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
+	
 	/*-------------------------------------------------------------------
 	-          Flip Screen
 	---------------------------------------------------------------------*/
 	_swapchain->Present(_fence, _fenceValues[_currentFrameIndex]);
+
+	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, ++_fenceValue);
+	/*-------------------------------------------------------------------
+	-      GPU Command Wait
+	---------------------------------------------------------------------*/
+	_commandQueues[core::CommandListType::Compute]->Wait(_fence, _fenceValue);
+	_commandQueues[core::CommandListType::Graphics]->Wait(_fence, _fenceValue);
+	_fence->Wait(_fenceValue);
+
 }
 
 void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType type)
@@ -169,10 +203,10 @@ void LowLevelGraphicsEngine::ShutDown()
 	if (_hasCalledShutDown) { return; }
 
 	// finish all render command queue
-	_commandQueues[CommandListType::Graphics]->Signal(_fence, _fenceValues[_currentFrameIndex]);
+	/*_commandQueues[CommandListType::Graphics]->Signal(_fence, _fenceValues[_currentFrameIndex]);
 	_commandQueues[CommandListType::Compute] ->Signal(_fence, _fenceValues[_currentFrameIndex]);
 	_commandQueues[CommandListType::Copy]    ->Signal(_fence, _fenceValues[_currentFrameIndex]);
-	_fence->Wait(_fenceValue);
+	_fence->Wait(_fenceValue);*/
 	
 	if (_swapchain) { _swapchain.reset(); }
 	_frameBuffers.clear(); _frameBuffers.shrink_to_fit();

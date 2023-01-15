@@ -38,7 +38,8 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @ brief : Used to wait for another Command queue to complete execution. (in GPU)*/
+		/* @ brief : Used to wait for another Command queue to complete execution. (in GPU)
+		             他のコマンドキューとの実行順序を保証するために使用する.*/
 		void Wait  (const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
 		
 		/* @ brief : Update the fence value (value) when the submitted Command Queue execution completes.*/

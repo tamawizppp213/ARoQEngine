@@ -189,8 +189,6 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 		/*-------------------------------------------------------------------
 		-                 Copy Texture Data
 		---------------------------------------------------------------------*/
-		const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList)->GetCommandList();
-	
 		const auto beforeState = EnumConverter::Convert(_metaData.State);
 		const auto before      = BARRIER::Transition(_resource.Get(), beforeState, D3D12_RESOURCE_STATE_COPY_DEST);
 

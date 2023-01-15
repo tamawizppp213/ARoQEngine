@@ -63,7 +63,8 @@ std::uint64_t RHIFence::GetCompletedValue()
 *************************************************************************//**
 *  @fn        void RHIFence::Signal(const std::shared_ptr<rhi::core::RHICommandQueue>& queue)
 * 
-*  @brief     @brief: Set fence value from CPU side. (in case RHICommandQueue::Signal -> Set fence value from GPU side)
+*  @brief     @brief: Set fence value from CPU side. 
+              (in case RHICommandQueue::Signal -> Set fence value from GPU side)
 * 
 *  @param[in] std::uint64_t value
 * 
@@ -91,16 +92,15 @@ void RHIFence::Wait(const std::uint64_t value)
 	-   Wait until the GPU has completed commands up to this fence point
 	    (GPUˆ—‚ªŠ®—¹‚µ‚Ä‚¢‚È‚¢ê‡, ‘Ò‚Â (command queue‚Æ•¹—p))
 	---------------------------------------------------------------------*/
-	if (_fence->GetCompletedValue() < value)
-	{
-		const auto fenceEvent = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
-		ThrowIfFailed(_fence->SetEventOnCompletion(value, fenceEvent));
+	if (_fence->GetCompletedValue() >= value) { return; }
 
-		if (fenceEvent != 0)
-		{
-			WaitForSingleObject(fenceEvent, INFINITE);
-			CloseHandle(fenceEvent);
-		}
+	const auto fenceEvent = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
+	ThrowIfFailed(_fence->SetEventOnCompletion(value, fenceEvent));
+
+	if (fenceEvent != 0)
+	{
+		WaitForSingleObject(fenceEvent, INFINITE);
+		CloseHandle(fenceEvent);
 	}
 }
 #pragma endregion Public Function

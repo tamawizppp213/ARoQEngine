@@ -77,7 +77,7 @@ void SampleColorChange::Draw()
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
 	commandList->SetViewportAndScissor(
 		core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
