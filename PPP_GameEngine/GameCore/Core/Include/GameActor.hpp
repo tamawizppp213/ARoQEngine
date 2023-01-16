@@ -26,7 +26,7 @@
 *  @class     GameActor
 *  @brief     Updatable object
 *****************************************************************************/
-class GameActor : public GameObject
+class GameActor : public gc::core::GameObject
 {
 protected:
 	using SceneGPUAddress = uint64_t;
@@ -35,6 +35,7 @@ public:
 	**                Public Function
 	*****************************************************************************/
 	virtual void Update(float deltaTime) = 0;
+
 	virtual void Draw(SceneGPUAddress address) = 0;
 	/****************************************************************************
 	**                Public Member Variables

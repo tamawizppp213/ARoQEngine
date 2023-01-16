@@ -1476,5 +1476,6 @@
     <FxCompile Include="Shader\Effect\ShaderTonemap.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderBloom.hlsl" />
     <FxCompile Include="Shader\Sprite\ShaderRayTracingTest.hlsl" />
+    <FxCompile Include="Shader\Lighting\ShaderZPrepass.hlsl" />
   </ItemGroup>
 </Project>

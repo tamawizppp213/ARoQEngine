@@ -43,6 +43,8 @@ LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 	if (!_hasCalledShutDown) { ShutDown(); }
 }
 #pragma endregion Destructor
+
+#pragma region Main Function
 /****************************************************************************
 *                     Start Up
 *************************************************************************//**
@@ -190,17 +192,25 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	---------------------------------------------------------------------*/
 	_swapchain->Present(_fence, _fenceValues[_currentFrameIndex]);
 
-	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, ++_fenceValue);
-
 	/*-------------------------------------------------------------------
 	-      GPU Command Wait
 	---------------------------------------------------------------------*/
-	_commandQueues[core::CommandListType::Compute]->Wait(_fence, _fenceValue);
-	_commandQueues[core::CommandListType::Graphics]->Wait(_fence, _fenceValue);
+	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, ++_fenceValue);
 	_fence->Wait(_fenceValue);
 
 }
 
+/****************************************************************************
+*                     FlushCommandQueue
+*************************************************************************//**
+*  @fn        void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType type)
+*
+*  @brief     Execute command queue 
+*
+*  @param[in] const rhi::core::CommandListType type
+*
+*  @return 　　void
+*****************************************************************************/
 void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType type)
 {
 	// set command lists
@@ -226,23 +236,48 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 {
 	_swapchain->Resize(newWidth, newHeight);
 }
+
+/****************************************************************************
+*                     ShutDown
+*************************************************************************//**
+*  @fn        void LowLevelGraphicsEngine::ShutDown()
+*
+*  @brief     Release all render resources
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
 void LowLevelGraphicsEngine::ShutDown()
 {
+	/*-------------------------------------------------------------------
+	-      This function is called only once
+	---------------------------------------------------------------------*/
 	if (_hasCalledShutDown) { return; }
 
-	// finish all render command queue
-	/*_commandQueues[CommandListType::Graphics]->Signal(_fence, _fenceValues[_currentFrameIndex]);
-	_commandQueues[CommandListType::Compute] ->Signal(_fence, _fenceValues[_currentFrameIndex]);
-	_commandQueues[CommandListType::Copy]    ->Signal(_fence, _fenceValues[_currentFrameIndex]);
-	_fence->Wait(_fenceValue);*/
-	
+	/*-------------------------------------------------------------------
+	-      Clear render resouces
+	---------------------------------------------------------------------*/
 	if (_swapchain) { _swapchain.reset(); }
-	_frameBuffers.clear(); _frameBuffers.shrink_to_fit();
-	if (_renderPass) { _renderPass.reset(); }
-	_commandLists.clear(); _commandLists.shrink_to_fit();
 	
-	if (_fence)                { _fence               .reset(); }
+	_frameBuffers.clear(); 
+	_frameBuffers.shrink_to_fit();
+
+	if (_renderPass) { _renderPass.reset(); }
+
+	/*-------------------------------------------------------------------
+	-      Clear command list
+	---------------------------------------------------------------------*/
+	if (_fence) { _fence.reset(); }
+	
+	_commandLists.clear(); 
+	_commandLists.shrink_to_fit();
+
 	if (!_commandQueues.empty()) { _commandQueues.clear(); }
+
+	/*-------------------------------------------------------------------
+	-      Clear Device resources
+	---------------------------------------------------------------------*/
 	_device->Destroy();
 	if (_device)    { _device.reset(); }
 	if (_adapter)   { _adapter.reset(); }
@@ -250,6 +285,8 @@ void LowLevelGraphicsEngine::ShutDown()
 
 	_hasCalledShutDown = true;
 }
+
+#pragma endregion Main Function
 
 #pragma region Private Function
 #pragma region SetUp

@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+using namespace gc::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -38,8 +38,8 @@ GameActor::~GameActor()
 *****************************************************************************/
 void GameActor::UpdateComponents(float deltaTime)
 {
-	for (auto component : _components)
+	/*for (auto component : _components)
 	{
 		component->Update(deltaTime);
-	}
+	}*/
 }

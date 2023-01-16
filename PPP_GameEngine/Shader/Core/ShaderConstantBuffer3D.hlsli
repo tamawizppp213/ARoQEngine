@@ -35,7 +35,6 @@ cbuffer SceneConstants : register(b0)
     float  DeltaTime;
 }
 
-
 //ConstantBuffer<SceneLights> SceneLightConstants : register(b3);
 
 #endif

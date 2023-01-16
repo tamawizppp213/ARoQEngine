@@ -14,12 +14,18 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
 #include <cstdint>
+#include <vector>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+class GameActor;
+class LowLevelGraphicsEngine;
+
 namespace rhi::core
 {
 	class RHIResourceLayout;
+	class GPUResourceView;
 	class GPUGraphicsPipelineState;
 }
 
@@ -39,10 +45,22 @@ namespace gc::basepass
 	{
 		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
 		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
+		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
+		using GameActorPtr      = std::shared_ptr<GameActor>;
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		void OnResize(const std::uint32_t width, const std::uint32_t height);
+
+		void Draw(const GPUResourceViewPtr& scene);
+
+		void Add(const std::shared_ptr<GameActor>& actor);
+
+		void Clear();
+
+		void Clear(const std::shared_ptr<GameActor>& actor);
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -53,17 +71,24 @@ namespace gc::basepass
 		*****************************************************************************/
 		ZPrepass() = default;
 
-		ZPrepass(const std::uint32_t width, const std::uint32_t height);
+		ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName = L"");
 
 		~ZPrepass();
 	protected:
 		/****************************************************************************
-		**                Private Function
+		**                Protected Function
 		*****************************************************************************/
-
+		void PreparePipelineState(const std::wstring& name);
 		/****************************************************************************
-		**                Private Member Variables
+		**                Protected Member Variables
 		*****************************************************************************/
+		LowLevelGraphicsEnginePtr _engine = nullptr;
+
+		std::vector<GameActorPtr> _gameActors = {};
+
+		std::uint32_t _width = 0;
+		std::uint32_t _height = 0;
+		
 		PipelineStatePtr  _pipeline = nullptr;
 
 		ResourceLayoutPtr _resourceLayout = nullptr;
