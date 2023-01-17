@@ -39,12 +39,12 @@ void Model::Initialize(const std::wstring& filePath, const std::wstring& addName
     std::wcout << filePath << std::endl;
     std::wcout << addName << std::endl;
 }
-void Model::Update(float deltaTime)
+void Model::Update(const float deltaTime, const bool enableUpdateChild)
 {
-    deltaTime = 0;
+    GameActor::Update(deltaTime, enableUpdateChild);
 }
-void Model::Draw(SceneGPUAddress address)
+void Model::Draw(const GPUResourceViewPtr& address)
 {
-    address = 0;
+    
 }
 #pragma endregion Model

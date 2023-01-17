@@ -26,7 +26,11 @@ class Component;
 
 namespace gc::core
 {
-
+	enum class ObjectType
+	{
+		Static,
+		Actor,
+	};
 	/****************************************************************************
 	*				  			GameObject
 	*************************************************************************//**
@@ -53,13 +57,13 @@ namespace gc::core
 		/*-------------------------------------------------------------------
 		-               Destroy and Clear
 		---------------------------------------------------------------------*/
-		/* @brief : (Safe delete ) This function destroy the game object with the same assigned object*/
+		/* @brief : This function destroy the game object with the same assigned object*/
 		static bool Destroy(GameObjectPtr& gameObject);
 
-		/* @brief : Safe delete ) Destroy objects including parent and children object*/
+		/* @brief : Destroy objects including parent and children object*/
 		static void DestroyWithChildren(GameObjectPtr& parent);
 
-		/* @brief : Safe delete ) destroy all objects have the tag*/
+		/* @brief : destroy all objects have the tag*/
 		static void DestroyAllTagObjects(const std::wstring& tag);
 
 		/* @brief : Clear all game objects*/
@@ -115,6 +119,8 @@ namespace gc::core
 
 		inline std::wstring GetLayerName() const { return LayerList[_layer]; }
 
+		inline ObjectType GetType() const { return _type; }
+
 		inline void SetName(const std::wstring& name) { _name = name; }
 
 		inline void SetTag(const std::wstring& name) { _tag = name; }
@@ -157,6 +163,8 @@ namespace gc::core
 		std::wstring _tag  = L""; // object tag
 
 		int          _layer = 0;
+
+		ObjectType _type = ObjectType::Static;
 
 		/*-------------------------------------------------------------------
 		-           gameObject state

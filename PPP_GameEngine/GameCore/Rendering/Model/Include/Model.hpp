@@ -57,7 +57,7 @@ private:
 *  @class     Model
 *  @brief     Model
 *****************************************************************************/
-class Model : public GameActor
+class Model : public gc::core::GameActor
 {
 	using MeshArray     = std::vector<gc::Mesh>;
 	using BoneBufferPtr = std::unique_ptr<UploadBuffer>;
@@ -66,8 +66,8 @@ public:
 	**                Public Function
 	*****************************************************************************/
 	void Initialize(const std::wstring& filePath, const std::wstring& addName = L"");
-	void Update(float deltaTime)       override;
-	void Draw(SceneGPUAddress address) override;
+	void Update(const float deltaTime, const bool enableUpdateChild = false)       override;
+	void Draw(const GPUResourceViewPtr& scene) override;
 	void Finalize();
 	/****************************************************************************
 	**                Public Member Variables
