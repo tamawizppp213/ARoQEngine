@@ -97,7 +97,7 @@ Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const N
 
 	// push back digit value
 	int tempValue = info.Number;
-	for (int i = info.Digit - 1; i >= 0; --i)
+	for (int i = (int)info.Digit - 1; i >= 0; --i)
 	{
 		values[i] = (tempValue % 10);
 		tempValue = tempValue / 10;
@@ -106,7 +106,7 @@ Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const N
 	/*-------------------------------------------------------------------
 	-              Create Sprite (DirectX Coordinates)
 	---------------------------------------------------------------------*/
-	for (int i = 0; i < info.Digit; ++i)
+	for (int i = 0; i < (int)info.Digit; ++i)
 	{
 		Float3 centerPosition = Float3(
 			info.StartPosition.x + (i + 0.5f) * info.SizePerDigit.x + i * info.Space,

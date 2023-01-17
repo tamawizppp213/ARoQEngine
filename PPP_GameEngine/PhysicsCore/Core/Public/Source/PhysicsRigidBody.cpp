@@ -119,8 +119,8 @@ void RigidBody::AddSpatialForce(const gm::Vector3* force, const gm::Vector3* tor
 *****************************************************************************/
 void RigidBody::SetMass(const float mass)
 {
-	if (mass != isfinite(mass)) { OutputDebugStringA("The mass is invalid float")   ; return; }
-	if (mass < 0.0f)            { OutputDebugStringA("The mass must be nonnegative"); return; }
+	if (!isfinite(mass)) { OutputDebugStringA("The mass is invalid float")   ; return; }
+	if (mass < 0.0f)     { OutputDebugStringA("The mass must be nonnegative"); return; }
 
 	_mass        = mass;
 	_inverseMass = mass > 0.0f ? 1.0f / mass : 0.0f;
@@ -173,8 +173,8 @@ void RigidBody::SetAngularVelocity(const Vector3& angularVelocity)
 *****************************************************************************/
 void RigidBody::SetLinearDamping(const float linearDamping)
 {
-	if (linearDamping != isfinite(linearDamping)) { OutputDebugStringA("The linear damping is invalid float");  return; }
-	if (linearDamping < 0.0f)                     { OutputDebugStringA("The linear damping must be nonnegative"); return; }
+	if (!isfinite(linearDamping)) { OutputDebugStringA("The linear damping is invalid float");  return; }
+	if (linearDamping < 0.0f)   { OutputDebugStringA("The linear damping must be nonnegative"); return; }
 
 	_linearDamping = linearDamping;
 }
@@ -192,8 +192,8 @@ void RigidBody::SetLinearDamping(const float linearDamping)
 *****************************************************************************/
 void RigidBody::SetAngularDamping(const float angularDamping)
 {
-	if (angularDamping != isfinite(angularDamping)) { OutputDebugStringA("The angular damping is invalid float");  return; }
-	if (angularDamping < 0.0f)                      { OutputDebugStringA("The angular damping must be nonnegative"); return; }
+	if (!isfinite(angularDamping)) { OutputDebugStringA("The angular damping is invalid float");  return; }
+	if (angularDamping < 0.0f)     { OutputDebugStringA("The angular damping must be nonnegative"); return; }
 
 	_angularDamping = angularDamping;
 }
