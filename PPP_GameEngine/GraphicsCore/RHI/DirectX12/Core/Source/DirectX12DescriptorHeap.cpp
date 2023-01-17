@@ -66,6 +66,31 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 }
 
 /****************************************************************************
+*                     Free
+*************************************************************************//**
+*  @fn        void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex)
+*
+*  @brief     Free Resource allocator and heap
+*
+*  @param[in] const core::DescriptorHeapType heapType
+*  @param[in] const DescriptorID offsetID
+*
+*  @return Å@Å@void
+*****************************************************************************/
+void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex)
+{
+	/*-------------------------------------------------------------------
+	-			     Check heap type
+	---------------------------------------------------------------------*/
+	if (!_heapInfo.contains(heapType)) { return; }
+
+	/*-------------------------------------------------------------------
+	-			     Free ID
+	---------------------------------------------------------------------*/
+	_resourceAllocators[heapType].FreeID(offsetIndex); // resource view index in each heap.s
+}
+
+/****************************************************************************
 *                     Resize
 *************************************************************************//**
 *  @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)

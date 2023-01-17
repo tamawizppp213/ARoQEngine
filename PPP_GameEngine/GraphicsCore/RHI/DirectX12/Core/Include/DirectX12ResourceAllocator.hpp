@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "DirectX12BaseStruct.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <queue>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +41,21 @@ namespace rhi::directX12
 		{
 			if ((UINT)_currentID + 1 > _maxDescriptorCount) { MessageBox(NULL, L"The number of IDs has exceeded the expected number. ", L"Warning", MB_ICONWARNING); }
 
+			if (!_availableID.empty()) 
+			{
+				const auto id = _availableID.front();
+				_availableID.pop();
+				return id; 
+			}
+
 			_currentID++; return _currentID;
+		}
+
+		inline void FreeID(const UINT id)
+		{
+			if (id >= _maxDescriptorCount) { OutputDebugStringA("Non available id"); return; }
+
+			_availableID.push(id);
 		}
 
 		/* @brief: Back offset ID (The contents of the heap are not reset.)*/
@@ -48,12 +63,16 @@ namespace rhi::directX12
 		{
 			_currentID = INVALID_ID + offsetIndex;
 		}
+
 		/* @brief: Return current descriptor index */
 		inline UINT GetCurrentID() const { return _currentID; }
+
 		/* @brief : Return heap size. (maxDescriptorViewCount * OneDescriptorSize)*/
 		inline UINT GetHeapSize() const { return _maxDescriptorCount * _descriptorSize; }
+		
 		/* @brief : Return max descriptor count*/
 		inline UINT GetMaxDescriptorCount() const { return _maxDescriptorCount; }
+
 		/* @brief : Return DirectX12::CPU_DESCRIPTOR_HANDLE*/
 		inline CPU_DESC_HANDLER GetCPUDescHandler(UINT offsetIndex = 0) const
 		{
@@ -90,10 +109,12 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		ResourceAllocator() = default;
+
 		ResourceAllocator(UINT maxDescriptorCount, UINT descriptorSize, D3D12_CPU_DESCRIPTOR_HANDLE cpuHeapPtr, D3D12_GPU_DESCRIPTOR_HANDLE gpuHeapPtr)
 		{
 			SetResourceAllocator(maxDescriptorCount, descriptorSize, cpuHeapPtr, gpuHeapPtr);
 		}
+
 	private:
 		/****************************************************************************
 		**                Private Function
@@ -103,10 +124,17 @@ namespace rhi::directX12
 		**                Private Member Variables
 		*****************************************************************************/
 		D3D12_CPU_DESCRIPTOR_HANDLE _cpuHeapPtr = D3D12_CPU_DESCRIPTOR_HANDLE();
+		
 		D3D12_GPU_DESCRIPTOR_HANDLE _gpuHeapPtr = D3D12_GPU_DESCRIPTOR_HANDLE(); // rtv and dsv are not used. 
+		
 		UINT                        _descriptorSize = 0;
+		
 		UINT                        _maxDescriptorCount = 0;
+		
 		int                         _currentID = INVALID_ID;
+
+		std::queue<UINT> _availableID = {};
+
 		static constexpr int INVALID_ID = -1;
 	};
 }
