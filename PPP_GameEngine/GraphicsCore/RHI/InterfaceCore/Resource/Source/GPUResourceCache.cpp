@@ -44,7 +44,7 @@ GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const std::wstring& 
 		/*-------------------------------------------------------------------
 		-           Load texture view
 		---------------------------------------------------------------------*/
-		const auto view = _device->CreateResourceView(core::ResourceViewType::Texture, texture, nullptr);
+		const auto view = _device->CreateResourceView(core::ResourceViewType::Texture, texture, _customHeap);
 		// regist resource view
 		_resourceViews[hashCode] = view;
 		return view;
