@@ -26,6 +26,7 @@ using namespace gm;
 using namespace gc;
 using namespace rhi;
 using namespace rhi::core;
+using namespace gc::core;
 
 namespace
 {

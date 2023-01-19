@@ -10,95 +10,122 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Model/Include/Material.hpp"
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameCore/Core/Include/ResourceManager.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDescriptorHeap.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceCache.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gc::core;
+using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-MaterialBuffer::MaterialBuffer()
+std::uint64_t gc::core::Material::InstanceCount = 0;
+gc::core::Material::GPUResourceCachePtr gc::core::Material::ResourceCache = nullptr;
+
+#pragma region Constructor and Destructor 
+Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaData& bufferInfo, const std::wstring& addName, 
+	const RHIDescriptorHeapPtr& customHeap): _engine(engine), _customHeap(customHeap)
 {
-
-}
-MaterialBuffer::~MaterialBuffer()
-{
-
-}
-
-/****************************************************************************
-*                       Initialize
-*************************************************************************//**
-*  @fn        bool MaterialBuffer::Initialize(size_t materialByteSize, size_t materialCount, const std::wstring& addName)
-*  @brief     Set Initialize Buffer
-*  @param[in] size_t materialByteSize
-*  @param[in] size_t materialCount
-*  @param[in] const std::wstring& addName
-*  @return 　　bool
-*****************************************************************************/
-bool MaterialBuffer::Initialize(size_t materialByteSize, size_t materialCount, const std::wstring& addName)
-{
-	Finalize();
-
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
 	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"Material::";
+
 	/*-------------------------------------------------------------------
-	-            Set Constant Buffer
+	-            Set constant buffer (material buffer)
 	---------------------------------------------------------------------*/
-	_constantBuffer = std::make_unique<UploadBuffer>(GraphicsCoreEngine::Instance().GetDevice(), (UINT)materialByteSize, (UINT)materialCount, true, name);
+	SetUpBuffer(bufferInfo, name);
+
 	/*-------------------------------------------------------------------
-	-            Set Null Texture 
+	-            Set Texture
 	---------------------------------------------------------------------*/
-	auto& resourceManager = ResourceManager::Instance();
-	_textures.resize(materialCount);
-	for (int i = 0; i < materialCount; ++i)
+	if (InstanceCount == 0)
 	{
-		_textures[i].Textures[(int)UsageTexture::Diffuse]  = std::shared_ptr<const Texture>(&resourceManager.LoadTexture(L"Resources/Preset/NullAlbedoMap.png"));
-		_textures[i].Textures[(int)UsageTexture::Normal ]  = std::shared_ptr<const Texture>(&resourceManager.LoadTexture(L"Resources/Preset/NullNormalMap.DDS"));
-		_textures[i].Textures[(int)UsageTexture::Specular] = std::shared_ptr<const Texture>(&resourceManager.LoadTexture(L"Resources/Preset/NullSpecMap.DDS"));
+		const auto device      = _engine->GetDevice();
+		const auto frameIndex  = _engine->GetCurrentFrameIndex();
+		const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+		ResourceCache = std::make_shared<GPUResourceCache>(device, commandList);
 	}
-	return true;
+
+	_textures[(int)UsageTexture::Diffuse]  = ResourceCache->Load(L"Resources/Preset/NullAlbedoMap.png");
+	_textures[(int)UsageTexture::Normal]   = ResourceCache->Load(L"Resources/Preset/NullNormalMap.DDS");
+	_textures[(int)UsageTexture::Specular] = ResourceCache->Load(L"Resources/Preset/NullSpecMap.DDS");
+
+	InstanceCount++;
 }
-/****************************************************************************
-*                       Finalize
-*************************************************************************//**
-*  @fn        void MaterialBuffer::Finalize()
-*  @brief     Clear Buffer
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void MaterialBuffer::Finalize()
+
+Material::~Material()
 {
-	_constantBuffer.reset();
 	for (auto& texture : _textures)
 	{
-		texture.Textures[(int)UsageTexture::Diffuse].reset();
-		texture.Textures[(int)UsageTexture::Normal  ].reset();
-		texture.Textures[(int)UsageTexture::Specular].reset();
+		texture.reset();
 	}
-	_textures.clear(); _textures.shrink_to_fit();
+
+	InstanceCount--;
+	if (InstanceCount == 0)
+	{
+		ResourceCache.reset();
+	}
 }
+#pragma endregion Constructor and Destructor 
+
+#pragma region Main Function
 /****************************************************************************
-*                       SetTexture
+*					PackMaterial
 *************************************************************************//**
-*  @fn        bool MaterialBuffer::SetTexture(const std::wstring& texturePath, UsageTexture usage)
-*  @brief     Set texture
-*  @param[in] const std::wstring& texturePath
-*  @param[in] UsageTexture usage
-*  @return 　　bool
+*  @fn        void Material::PackMaterial(const void* data)
+*
+*  @brief     Pack constant material buffer
+*
+*  @param[in] const void* data
+*
+*  @return 　　void
 *****************************************************************************/
-bool MaterialBuffer::SetTexture(const std::wstring& texturePath, UsageTexture usage)
+void Material::PackMaterial(const void* data)
 {
-	UINT32 index = static_cast<UINT32>(usage);
-	if (index >= GetMaterialCount()) { return false; }
-	
-	auto& resourceManager                 = ResourceManager::Instance();
-	_textures[index].Textures[(int)usage] = std::shared_ptr<const Texture>(&resourceManager.LoadTexture(texturePath));
-	return true;
+	const auto buffer = _materialBufferView->GetBuffer();
+	buffer->Update(data, 1);
 }
+
+#pragma endregion Main Function
+
+#pragma region Set up function
+/****************************************************************************
+*					SetUpBuffer
+*************************************************************************//**
+*  @fn        void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const std::wstring& name)
+*
+*  @brief     Set up cbv buffer (for material)
+*
+*  @param[in] const GPUBufferMetaData& bufferInfo, 
+*  @param[in] const std::wstring& name
+*
+*  @return 　　void
+*****************************************************************************/
+void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const std::wstring& name)
+{
+	if (bufferInfo.BufferType != BufferType::Constant) 
+	{
+		OutputDebugStringA("SetUpBuffer: Unavailable buffer type"); 
+		return; 
+	}
+
+	const auto device = _engine->GetDevice();
+
+	/*-------------------------------------------------------------------
+	-            Get material buffer
+	---------------------------------------------------------------------*/
+	const auto materialBuffer = device->CreateBuffer(bufferInfo);
+	materialBuffer->SetName(name + L"CB");
+
+	_materialBufferView = device->CreateResourceView(
+		ResourceViewType::ConstantBuffer, materialBuffer, _customHeap);
+}
+#pragma endregion Set up function

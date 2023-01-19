@@ -58,6 +58,7 @@ namespace rhi::core
 		*****************************************************************************/
 		GPUResourceCache(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHICommandList>& graphicsCommandList) :
 			_device(device), _commandList(graphicsCommandList){};
+
 		~GPUResourceCache() { _resourceViews.clear(); }
 	protected:
 		/****************************************************************************

@@ -43,6 +43,7 @@ GameActor::~GameActor()
 *****************************************************************************/
 void GameActor::Update(const float deltaTime, const bool enableUpdateChild)
 {
+	if (!_isActive) { return; }
 	if (enableUpdateChild) { UpdateChild(deltaTime); }
 }
 
