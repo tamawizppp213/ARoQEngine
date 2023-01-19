@@ -42,6 +42,7 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		virtual void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) = 0;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

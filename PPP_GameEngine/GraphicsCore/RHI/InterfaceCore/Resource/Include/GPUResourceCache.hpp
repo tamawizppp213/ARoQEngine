@@ -40,8 +40,8 @@ namespace rhi::core
 	*****************************************************************************/
 	class GPUResourceCache : public NonCopyable
 	{
-		using GPUResourceViewPtr = std::shared_ptr<core::GPUResourceView>;
-		using DescriptorID       = std::uint32_t;
+		using GPUResourceViewPtr   = std::shared_ptr<core::GPUResourceView>;
+		using DescriptorID         = std::uint32_t;
 		using ShaderResourceViewID = std::uint32_t;
 	public:
 		/****************************************************************************
