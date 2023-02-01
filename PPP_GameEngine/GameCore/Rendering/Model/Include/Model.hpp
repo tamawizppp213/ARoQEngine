@@ -13,60 +13,36 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Core/Include/GameActor.hpp"
 #include "PrimitiveMesh.hpp"
+#include <vector>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+class LowLevelGraphicsEngine;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-//struct SkinMeshVertex
-//{
-//	gm::Float3 Position;
-//	gm::Float3 Normal;
-//	gm::Float2 UV;
-//	INT32      BoneIndices[4] = {0};
-//	float      BoneWeights[4] = {0};
-//
-//	static const D3D12_INPUT_LAYOUT_DESC InputLayout;
-//	SkinMeshVertex() = default;
-//	SkinMeshVertex(const SkinMeshVertex&)             = default;
-//	SkinMeshVertex& operator=(const SkinMeshVertex&) = default;
-//	SkinMeshVertex& operator=(SkinMeshVertex&&)       = default;
-//	SkinMeshVertex(DirectX::XMFLOAT3 const& position, DirectX::XMFLOAT3 const& normal, DirectX::XMFLOAT2 const& uv)
-//		: Position(position), Normal(normal), UV(uv)
-//	{
-//	};
-//	SkinMeshVertex(DirectX::FXMVECTOR position, DirectX::FXMVECTOR normal, DirectX::FXMVECTOR uv)
-//	{
-//		DirectX::XMStoreFloat3(&this->Position, position);
-//		DirectX::XMStoreFloat3(&this->Normal, normal);
-//		DirectX::XMStoreFloat2(&this->UV, uv);
-//	}
-//
-//private:
-//	static constexpr unsigned int InputElementCount = 5;
-//	static const D3D12_INPUT_ELEMENT_DESC InputElements[InputElementCount];
-//};
-
 namespace gc::core
 {
 	class Mesh;
+	class Material;
 	/****************************************************************************
 	*				  			Model
 	*************************************************************************//**
 	*  @class     Model
-	*  @brief     Model
+	*  @brief     This class doesn't have the skin mesh. If you use skin mesh, you should use SkinModel class.
 	*****************************************************************************/
 	class Model : public gc::core::GameActor
 	{
-		using MeshPtr = std::shared_ptr<Mesh>;
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using MeshPtr     = std::shared_ptr<Mesh>;
+		using MaterialPtr = std::shared_ptr<Material>;
+	
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Load(const PrimitiveMeshType type);
+		void Load(const PrimitiveMeshType type, const MaterialPtr& material = nullptr);
 
 		void Load(const std::wstring& filePath);
 		
@@ -77,12 +53,18 @@ namespace gc::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		const std::vector<MeshPtr>& GetMeshes() const { return _meshes; }
 
+		bool HasSkin() const { return _hasSkin; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Model();
+		Model(const LowLevelGraphicsEnginePtr& engine);
+
+		Model(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh);
+
+		Model(const LowLevelGraphicsEnginePtr& engine, const std::vector<MeshPtr>& mesh);
 
 		~Model();
 	protected:
@@ -93,7 +75,17 @@ namespace gc::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<MeshPtr> _meshes = {};
+		std::vector<MeshPtr> _meshes = {}; // each material mesh
+
+		MeshPtr _totalMesh = nullptr;      // total mesh (ignore material)
+
+		bool _hasSkin = false;
+
+		LowLevelGraphicsEnginePtr _engine = nullptr;
+
+	public:
+		friend class PMXConverter;
+		friend class PMDConverter;
 	};
 }
 #endif

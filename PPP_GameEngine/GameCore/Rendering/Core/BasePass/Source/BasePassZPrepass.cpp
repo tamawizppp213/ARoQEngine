@@ -123,7 +123,7 @@ void ZPrepass::PreparePipelineState(const std::wstring& name)
 	-             Set up graphic pipeline state
 	---------------------------------------------------------------------*/
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
-	_pipeline->SetRasterizerState(factory->CreateRasterizerState());
+	_pipeline->SetRasterizerState   (factory->CreateRasterizerState());
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);

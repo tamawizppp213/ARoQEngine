@@ -8,16 +8,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Rendering/Model/Include/ModelConverter.hpp"
-#include "GameCore/Rendering/Model/External/GLTF/Public/Include/GLTFResourceReader.hpp"
-#include "GameCore/Rendering/Model/Include/Model.hpp"
-#include "GameCore/Rendering/Model/Include/Material.hpp"
-#include "GameCore/Rendering/Model/External/MMD/Include/PMDParser.hpp"
-#include "GameCore/Rendering/Model/External/MMD/Include/PMXParser.hpp"
-#include "GameCore/Rendering/Model/External/GLTF/Public/Include/GLTFParser.hpp"
-#include "GameUtility/File/Include/FileSystem.hpp"
-#include "GameUtility/File/Include/UnicodeUtility.hpp"
-#
+#include "../Include/ModelConverter.hpp"
+#include "../Include/Model.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

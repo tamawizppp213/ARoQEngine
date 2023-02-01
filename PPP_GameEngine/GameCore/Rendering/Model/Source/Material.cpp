@@ -32,6 +32,12 @@ gc::core::Material::GPUResourceCachePtr gc::core::Material::ResourceCache = null
 Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaData& bufferInfo, const std::wstring& addName, 
 	const RHIDescriptorHeapPtr& customHeap): _engine(engine), _customHeap(customHeap)
 {
+#ifdef _DEBUG
+	assert(bufferInfo.Count == 1);
+	assert(bufferInfo.ResourceUsage == ResourceUsage::ConstantBuffer);
+	assert(bufferInfo.BufferType == BufferType::Constant);
+#endif
+
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/

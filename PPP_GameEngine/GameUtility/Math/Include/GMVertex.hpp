@@ -30,14 +30,15 @@ namespace gm
 	{
 	public:
 		/****************************************************************************
-		**                Public Function
+		**                Public Member Variables
 		*****************************************************************************/
 		gm::Float3 Position; /// Position
 		gm::Float3 Normal;   /// Normal
 		gm::Float4 Color;    /// Color
 		gm::Float2 UV;       /// UV
+
 		/****************************************************************************
-		**                Public Member Variables
+		**                Constructor and Destructor
 		*****************************************************************************/
 		Vertex()                         = default;
 		Vertex(const Vertex&)            = default;
@@ -55,9 +56,6 @@ namespace gm
 			DirectX::XMStoreFloat4(&this->Color, color);
 			DirectX::XMStoreFloat2(&this->UV, uv);
 		}
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
 	private:
 		/****************************************************************************
 		**                Private Function
@@ -67,6 +65,37 @@ namespace gm
 		**                Private Member Variables
 		*****************************************************************************/
 	};
+
+	struct SkinMeshVertex
+	{
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		gm::Float3   Position;
+		gm::Float3   Normal;
+		gm::Float2   UV;
+		int          BoneIndices[4] = {0};
+		float        BoneWeights[4] = {0};
+
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		SkinMeshVertex()                                 = default;
+		SkinMeshVertex(const SkinMeshVertex&)            = default;
+		SkinMeshVertex& operator=(const SkinMeshVertex&) = default;
+		SkinMeshVertex& operator=(SkinMeshVertex&&)      = default;
+		SkinMeshVertex(DirectX::XMFLOAT3 const& position, DirectX::XMFLOAT3 const& normal, DirectX::XMFLOAT2 const& uv)
+			: Position(position), Normal(normal), UV(uv)
+		{
+		};
+		SkinMeshVertex(DirectX::FXMVECTOR position, DirectX::FXMVECTOR normal, DirectX::FXMVECTOR uv)
+		{
+			DirectX::XMStoreFloat3(&this->Position, position);
+			DirectX::XMStoreFloat3(&this->Normal, normal);
+			DirectX::XMStoreFloat2(&this->UV, uv);
+		}
+	};
+
 }
 
 #endif

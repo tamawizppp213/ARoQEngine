@@ -32,6 +32,7 @@ namespace rhi::core
 namespace gc::core
 {
 	struct PrimitiveMesh;
+	class  Material;
 	/****************************************************************************
 	*				  			Mesh
 	*************************************************************************//**
@@ -43,6 +44,7 @@ namespace gc::core
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 		using VertexBufferPtr  = std::shared_ptr<rhi::core::GPUBuffer>;
 		using IndexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
+		using MaterialPtr      = std::shared_ptr<Material>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -52,22 +54,32 @@ namespace gc::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		std::int32_t GetMaterialID() const { return _materialID; }
+		
+		MaterialPtr GetMaterial() const noexcept { return _material; }
 
-		void SetMaterialID(const std::int32_t id) { _materialID = id; }
+		void SetMaterial(const MaterialPtr& material) { _material = material; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		Mesh() = default;
 		
-		Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const std::int32_t materialID = NEEDLESS, const std::wstring& addName = L"");
+		Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const MaterialPtr& material = nullptr, const std::wstring& addName = L"");
 
+		/* @brief : This constructor is used when creating new vb and ib*/
 		Mesh(const LowLevelGraphicsEnginePtr& engine, 
 			const rhi::core::GPUBufferMetaData& vertexInfo,
 			const rhi::core::GPUBufferMetaData& indexInfo,
-			const int32_t materialID = NEEDLESS,
+			const MaterialPtr& material = nullptr,
 			const std::wstring& addName = L"");
+
+		// @brief : This constructor is used, when sharing one VB and Index and separating each material. (e.g. Model drawing)
+		Mesh(const LowLevelGraphicsEnginePtr& engine,
+			const std::vector<VertexBufferPtr>& vertexBuffers,
+			const IndexBufferPtr& indexBuffer,
+			const std::uint64_t indexCount = 0,
+			const std::uint32_t indexOffset = 0,
+			const MaterialPtr& material = nullptr);
 
 		virtual ~Mesh();
 
@@ -79,17 +91,26 @@ namespace gc::core
 		
 		void Prepare(const rhi::core::GPUBufferMetaData& vertexInfo, const rhi::core::GPUBufferMetaData& indexInfo, const std::wstring& name);
 
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
+		/* @brief : frame count size vertex buffer*/
 		std::vector<VertexBufferPtr> _vertexBuffers = {};
-		IndexBufferPtr   _indexBuffer  = nullptr;
-		std::int32_t     _materialID   = NEEDLESS;  // material ID in CBV Allocator
-		std::uint64_t    _indexCount   = 0;
 
-		static constexpr std::int32_t NEEDLESS = -1;
+		/* @brief : index data buffer*/
+		IndexBufferPtr _indexBuffer  = nullptr;
+
+		/* @brief : If you use material, you should set this variable.*/
+		MaterialPtr _material = nullptr;
+
+		std::uint64_t _indexCount  = 0; // index bufferÇÃCountÇÕIndexBufferëSëÃÇÃCountêîÇæÇ™, Ç±Ç¡ÇøÇÕMaterialÇ…ëŒâûÇµÇΩIndexCount
+		std::uint32_t _indexOffset = 0;
+
+		bool _hasCreatedNewBuffer = false;
+
 	};
 }
 

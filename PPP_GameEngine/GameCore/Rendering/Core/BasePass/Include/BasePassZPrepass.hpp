@@ -43,10 +43,10 @@ namespace gc::basepass
 	*****************************************************************************/
 	class ZPrepass : public NonCopyable
 	{
-		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
+		using PipelineStatePtr   = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		using ResourceLayoutPtr  = std::shared_ptr<rhi::core::RHIResourceLayout>;
 		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
-		using GameActorPtr      = std::shared_ptr<GameActor>;
+		using GameActorPtr       = std::shared_ptr<GameActor>;
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
@@ -74,11 +74,13 @@ namespace gc::basepass
 		ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName = L"");
 
 		~ZPrepass();
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		void PreparePipelineState(const std::wstring& name);
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

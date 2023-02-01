@@ -9,9 +9,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Rendering/Model/Include/Mesh.hpp"
-#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "../Include/Mesh.hpp"
 #include "../Include/PrimitiveMesh.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -29,8 +29,8 @@ Mesh::~Mesh()
 	_indexBuffer.reset();
 }
 
-Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const std::int32_t materialID, const std::wstring& addName)
-	: _engine(engine), _materialID(materialID)
+Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const MaterialPtr& material, const std::wstring& addName)
+	: _engine(engine), _material(material)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
@@ -47,9 +47,9 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, c
 Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine,
 	const rhi::core::GPUBufferMetaData& vertexInfo,
 	const rhi::core::GPUBufferMetaData& indexInfo,
-	const int32_t materialID,
+	const MaterialPtr& material,
 	const std::wstring& addName)
-	: _engine(engine), _materialID(materialID)
+	: _engine(engine), _material(material)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
@@ -61,6 +61,22 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine,
 	-            Prepare each buffer
 	---------------------------------------------------------------------*/
 	Prepare(vertexInfo, indexInfo, name);
+}
+
+Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const std::vector<VertexBufferPtr>& vertexBuffers,
+	const IndexBufferPtr& indexBuffer,
+	const std::uint64_t indexCount, 
+	const std::uint32_t indexOffset,
+	const MaterialPtr& material):
+	_engine(engine), _vertexBuffers(vertexBuffers), _indexBuffer(indexBuffer), _indexCount(indexCount), _material(material)
+{
+	if (LowLevelGraphicsEngine::FRAME_BUFFER_COUNT != vertexBuffers.size())
+	{
+		OutputDebugStringA("FrameBufferCount is not same with vertexBuffer size");
+		return;
+	}
+
+	_hasCreatedNewBuffer = false;
 }
 #pragma endregion Constructor and Destructor
 
@@ -78,12 +94,17 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine,
 *****************************************************************************/
 void Mesh::Draw()
 {
-	const auto currentFrame    = _engine->GetCurrentFrameIndex();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, currentFrame);
-	commandList->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
-	commandList->SetIndexBuffer (_indexBuffer);
-	commandList->DrawIndexedInstanced(_indexCount, 1, 0);
+	const auto currentFrame = _engine->GetCurrentFrameIndex();
+	const auto commandList  = _engine->GetCommandList(CommandListType::Graphics, currentFrame);
+	
+	if (_hasCreatedNewBuffer)
+	{
+		commandList->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+		commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
+		commandList->SetIndexBuffer(_indexBuffer);
+	}
+
+	commandList->DrawIndexedInstanced(_indexCount, 1, _indexOffset);
 }
 
 /****************************************************************************
@@ -130,6 +151,7 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const std::wstring& name)
 		_indexBuffer->Pack(mesh.Indices.data(), copyCommandList);
 	}
 
+	_hasCreatedNewBuffer = true;
 }
 
 /****************************************************************************
@@ -180,4 +202,6 @@ void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData&
 
 		if (indexInfo.InitData) { _indexBuffer->Pack(indexInfo.InitData, copyCommandList); }
 	}
+
+	_hasCreatedNewBuffer = true;
 }

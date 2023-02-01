@@ -25,8 +25,19 @@ bool PMXFile::Load(const std::wstring& filePath)
 	/*-------------------------------------------------------------------
 	-             Open File
 	---------------------------------------------------------------------*/
+	if (file::FileSystem::GetExtension(filePath) != L"pmx") 
+	{ 
+		OutputDebugStringA("pmx error: wrong extension type");
+		return false; 
+	};
+
 	FILE* filePtr = file::FileSystem::OpenFile(filePath);
-	if (filePtr == nullptr) { return false; }
+	if (filePtr == nullptr) 
+	{ 
+		OutputDebugStringA("failed to open file");
+		return false; 
+	}
+
 	Directory     = file::FileSystem::GetDirectory(unicode::ToUtf8String(filePath));
 	/*-------------------------------------------------------------------
 	-             Read Data

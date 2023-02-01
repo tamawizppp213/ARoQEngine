@@ -900,6 +900,9 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\RayTracing\Include\VulkanRayTracingShaderTable.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelConverter.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1443,6 +1446,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Source\RayTracingShaderTable.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

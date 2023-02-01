@@ -199,6 +199,7 @@
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\UniversalRenderPipeline.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIButton.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
@@ -494,6 +495,7 @@
     <ClCompile Include="GameCore\Network\Private\Source\PacketQueue.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\Serializer.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\UniversalRenderPipeline.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UISlider.cpp" />

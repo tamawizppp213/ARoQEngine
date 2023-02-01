@@ -11,7 +11,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <string>
+#include <memory>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -22,10 +24,14 @@ namespace gc::core
 	//////////////////////////////////////////////////////////////////////////////////
 	//                         Template Class
 	//////////////////////////////////////////////////////////////////////////////////
-	class ModelConverter
+	class IModelConverter
 	{
-		bool ToModel(const std::wstring& filePath, Model* model);
-		bool FromModel(const std::wstring& filePath, const Model* model);
+	protected:
+		using ModelPtr = Model*;
+	public:
+		virtual bool Load(const std::wstring& filePath, ModelPtr model) = 0;
+		
+		virtual bool Save(const std::wstring& filePath, const ModelPtr model) = 0;
 	};
 }
 
