@@ -20,12 +20,14 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class Component;
+class LowLevelGraphicsEngine;
 //////////////////////////////////////////////////////////////////////////////////
 //								Class 
 //////////////////////////////////////////////////////////////////////////////////
 
 namespace gc::core
 {
+	class GameObject;
 	enum class ObjectType
 	{
 		Static,
@@ -42,10 +44,22 @@ namespace gc::core
 	{
 	protected:
 		using GameObjectPtr = std::shared_ptr<GameObject>;
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
+		/*-------------------------------------------------------------------
+		-                       Create
+		---------------------------------------------------------------------*/
+		template <typename T> requires std::is_base_of_v<GameObject, T>
+		static std::shared_ptr<T> Create(const LowLevelGraphicsEnginePtr& engine)
+		{
+			const auto gameObject = std::make_shared<T>(engine);
+			GameObjects.push_back(gameObject);
+			return gameObject;
+		}
+
 		/*-------------------------------------------------------------------
 		-                       Find
 		---------------------------------------------------------------------*/
@@ -145,14 +159,14 @@ namespace gc::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GameObject();
+		GameObject(const LowLevelGraphicsEnginePtr& engine);
 
 		virtual ~GameObject();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
@@ -181,6 +195,8 @@ namespace gc::core
 		-           parent tree
 		---------------------------------------------------------------------*/
 		GameObjectPtr _parent = nullptr;
+
+		LowLevelGraphicsEnginePtr _engine = nullptr;
 
 		std::vector<GameObjectPtr> _children = {};
 		

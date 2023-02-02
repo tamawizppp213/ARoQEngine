@@ -458,6 +458,7 @@
     <ClInclude Include="MainGame\Sample\Include\SampleAudio.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleColorChange.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleModel.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleRayTracingRectangle.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleRectangle.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleText.hpp" />
@@ -645,6 +646,7 @@
     <ClCompile Include="MainGame\Core\Source\SceneManager.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleAudio.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleEmpty.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleModel.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleRayTracingRectangle.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SamplerColorChange.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleRectangle.cpp" />

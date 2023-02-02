@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Core/Include/GameActor.hpp"
 #include "GameCore/Core/Include/GameComponent.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +20,7 @@ using namespace gc::core;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GameActor::GameActor() : GameObject()
+GameActor::GameActor(const LowLevelGraphicsEnginePtr& engine) : GameObject(engine)
 {
 	_type = ObjectType::Actor;
 }

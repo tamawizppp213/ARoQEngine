@@ -54,7 +54,10 @@ namespace gc::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		
+		std::vector<VertexBufferPtr> GetVertexBuffers() const noexcept { return _vertexBuffers; }
+
+		IndexBufferPtr GetIndexBuffer() const noexcept { return _indexBuffer; }
+
 		MaterialPtr GetMaterial() const noexcept { return _material; }
 
 		void SetMaterial(const MaterialPtr& material) { _material = material; }

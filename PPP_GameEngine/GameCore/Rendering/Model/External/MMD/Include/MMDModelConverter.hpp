@@ -23,10 +23,10 @@
 namespace gc::core
 {
 	/****************************************************************************
-	*				  			    Class
+	*				  			    PMXConverter
 	*************************************************************************//**
-	*  @class     Class
-	*  @brief     temp
+	*  @class     PMXConverter
+	*  @brief     PMX model <-> Game engine model
 	*****************************************************************************/
 	class PMXConverter : public IModelConverter, public Copyable
 	{

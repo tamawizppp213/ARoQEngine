@@ -35,8 +35,9 @@ namespace gc::core
 	class Model : public gc::core::GameActor
 	{
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using MeshPtr     = std::shared_ptr<Mesh>;
-		using MaterialPtr = std::shared_ptr<Material>;
+		using MeshPtr      = std::shared_ptr<Mesh>; // single mesh pointer
+		using MeshArrayPtr = std::vector<MeshPtr>; // material count array 
+		using MaterialPtr  = std::shared_ptr<Material>;
 	
 	public:
 		/****************************************************************************
@@ -53,7 +54,11 @@ namespace gc::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const std::vector<MeshPtr>& GetMeshes() const { return _meshes; }
+		MeshPtr GetTotalMesh() const noexcept { return _totalMesh; }
+
+		MeshArrayPtr GetMeshes() const noexcept { return _meshes; }
+
+		size_t GetMaterialCount() const { return _materialCount; }
 
 		bool HasSkin() const { return _hasSkin; }
 
@@ -64,7 +69,6 @@ namespace gc::core
 
 		Model(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh);
 
-		Model(const LowLevelGraphicsEnginePtr& engine, const std::vector<MeshPtr>& mesh);
 
 		~Model();
 	protected:
@@ -75,13 +79,20 @@ namespace gc::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<MeshPtr> _meshes = {}; // each material mesh
+		/* @brief : each material mesh. (length : material count)*/
+		MeshArrayPtr _meshes = {};
 
-		MeshPtr _totalMesh = nullptr;      // total mesh (ignore material)
+		/* @brief : total mesh (ignore material)*/
+		MeshPtr _totalMesh = nullptr;
 
+		/* @brief : material */
+		std::vector<MaterialPtr> _materials = {};
+
+		/* @brief : Material count*/
+		size_t  _materialCount = 0;
+
+		/* @brief : Uses skin mesh model (true: Has skin mesh , false : Doesn't have skin mesh)*/
 		bool _hasSkin = false;
-
-		LowLevelGraphicsEnginePtr _engine = nullptr;
 
 	public:
 		friend class PMXConverter;

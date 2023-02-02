@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Core/Include/GameObject.hpp"
 #include "GameCore/Core/Include/GameComponent.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
@@ -27,9 +28,8 @@ namespace gc::core
 }
 
 #pragma region Constructor and Destructor 
-GameObject::GameObject()
+GameObject::GameObject(const LowLevelGraphicsEnginePtr& engine) : _engine(engine)
 {
-	GameObjects.emplace_back(shared_from_this());
 	_tag     = L"";
 	_name    = L"";
 	_isActive = true;

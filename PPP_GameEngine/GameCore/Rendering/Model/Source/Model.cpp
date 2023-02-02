@@ -42,22 +42,17 @@ using namespace gc::core;
 #pragma region Model
 
 #pragma region Constructor and Destructor
-Model::Model(const LowLevelGraphicsEnginePtr& engine) : _engine(engine)
+Model::Model(const LowLevelGraphicsEnginePtr& engine) : GameActor(engine)
 {
-
+    
 }
 
 Model::Model(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh)
-    : _engine(engine)
+    : GameActor(engine)
 {
-    _meshes.push_back(mesh);
+    _meshes.clear();
 }
 
-Model::Model(const LowLevelGraphicsEnginePtr& engine, const std::vector<MeshPtr>& meshes)
-    :_engine(engine), _meshes(meshes)
-{
-
-}
 
 Model::~Model()
 {
