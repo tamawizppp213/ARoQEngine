@@ -48,6 +48,7 @@ GameWorldInfo::~GameWorldInfo()
 	_gameWorldConstants.reset();
 	_engine.reset();
 }
+
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function

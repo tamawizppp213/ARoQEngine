@@ -26,6 +26,7 @@ namespace gc::core
 {
 	class Mesh;
 	class Material;
+	class GameWorldInfo;
 	/****************************************************************************
 	*				  			Model
 	*************************************************************************//**
@@ -35,9 +36,10 @@ namespace gc::core
 	class GameModel : public gc::core::GameActor
 	{
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using MeshPtr      = std::shared_ptr<Mesh>; // single mesh pointer
-		using MeshArrayPtr = std::vector<MeshPtr>; // material count array 
-		using MaterialPtr  = std::shared_ptr<Material>;
+		using MeshPtr          = std::shared_ptr<Mesh>; // single mesh pointer
+		using MeshArrayPtr     = std::vector<MeshPtr>; // material count array 
+		using MaterialPtr      = std::shared_ptr<Material>;
+		using GameWorldInfoPtr = std::shared_ptr<GameWorldInfo>;
 	
 	public:
 		/****************************************************************************
@@ -68,9 +70,9 @@ namespace gc::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GameModel(const LowLevelGraphicsEnginePtr& engine);
+		GameModel(const LowLevelGraphicsEnginePtr& engine, const GameWorldInfoPtr& customGameWorldInfo = nullptr);
 
-		GameModel(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh);
+		GameModel(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh, const GameWorldInfoPtr& customGameWorldInfo = nullptr);
 
 
 		~GameModel();
@@ -82,6 +84,9 @@ namespace gc::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		/* @brief : world position matrix. When you use the instancing drawing,  you should set the custom game world information.  */
+		GameWorldInfoPtr _gameWorld = nullptr;
+
 		/*-------------------------------------------------------------------
 		-            Mesh
 		---------------------------------------------------------------------*/
@@ -105,6 +110,9 @@ namespace gc::core
 		---------------------------------------------------------------------*/
 		/* @brief : Uses skin mesh model (true: Has skin mesh , false : Doesn't have skin mesh)*/
 		bool _hasSkin = false;
+
+	private:
+		void PrepareGameWorldBuffer(); 
 
 	public:
 		friend class PMXConverter;

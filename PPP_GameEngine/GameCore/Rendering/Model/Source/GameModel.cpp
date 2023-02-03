@@ -12,6 +12,7 @@
 #include "../Include/PrimitiveMesh.hpp"
 #include "../Include/Mesh.hpp"
 #include "../Include/Material.hpp"
+#include "../../../Core/Include/GameWorldInfo.hpp"
 #include "../External/MMD/Include/MMDModelConverter.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
@@ -42,20 +43,23 @@ using namespace gc::core;
 #pragma region Model
 
 #pragma region Constructor and Destructor
-GameModel::GameModel(const LowLevelGraphicsEnginePtr& engine) : GameActor(engine)
+GameModel::GameModel(const LowLevelGraphicsEnginePtr& engine, const GameWorldInfoPtr& customGameWorldInfo) : GameActor(engine), _gameWorld(customGameWorldInfo)
 {
-    
+    PrepareGameWorldBuffer();
 }
 
-GameModel::GameModel(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh)
-    : GameActor(engine)
+GameModel::GameModel(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh, const GameWorldInfoPtr& customGameWorldInfo)
+    : GameActor(engine), _gameWorld(customGameWorldInfo)
 {
-    _meshes.clear();
+    _meshes.push_back(mesh);
+    PrepareGameWorldBuffer();
 }
 
 
 GameModel::~GameModel()
 {
+    _materials.clear();
+    _materials.shrink_to_fit();
     _meshes.clear();
     _meshes.shrink_to_fit();
 }
@@ -146,7 +150,25 @@ void GameModel::Draw(const GPUResourceViewPtr& address)
 }
 #pragma endregion Main Function
 
-#pragma region Load
 
-#pragma endregion Load
 #pragma endregion Model
+
+#pragma region Set up
+/****************************************************************************
+*					PrepareGameWorldBuffer
+*************************************************************************//**
+*  @fn        void GameModel::PrepareGameWorldBuffer()
+*
+*  @brief     Prepare Game world constant buffer
+*
+*  @param[in] void
+*
+*  @return Å@Å@void
+*****************************************************************************/
+void GameModel::PrepareGameWorldBuffer()
+{
+    if (_gameWorld) { return; }
+
+    _gameWorld = std::make_shared<GameWorldInfo>(_engine, 1);
+}
+#pragma endregion Set up
