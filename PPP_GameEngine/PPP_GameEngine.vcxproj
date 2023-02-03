@@ -192,6 +192,7 @@
     <ClInclude Include="GameCore\Core\Include\GameActor.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameComponent.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameObject.hpp" />
+    <ClInclude Include="GameCore\Core\Include\GameWorldInfo.hpp" />
     <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp" />
     <ClInclude Include="GameCore\Input\Include\GameInput.hpp" />
     <ClInclude Include="GameCore\Input\Include\GamePad.hpp" />
@@ -263,8 +264,8 @@
     <ClInclude Include="GameCore\Rendering\Model\Include\Material.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\MaterialType.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\Mesh.hpp" />
-    <ClInclude Include="GameCore\Rendering\Model\Include\Model.hpp" />
-    <ClInclude Include="GameCore\Rendering\Model\Include\ModelConverter.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\GameModel.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\GameModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveMesh.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIImage.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIRenderer.hpp" />
@@ -488,6 +489,7 @@
     <ClCompile Include="GameCore\Core\Source\GameActor.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameComponent.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameObject.cpp" />
+    <ClCompile Include="GameCore\Core\Source\GameWorldInfo.cpp" />
     <ClCompile Include="GameCore\Core\Source\ResourceManager.cpp" />
     <ClCompile Include="GameCore\Input\Source\GameInput.cpp" />
     <ClCompile Include="GameCore\Input\Source\GamePad.cpp" />
@@ -542,7 +544,7 @@
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJUtils.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\Material.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\Mesh.cpp" />
-    <ClCompile Include="GameCore\Rendering\Model\Source\Model.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\GameModel.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\ModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\PrimitiveMesh.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIImage.cpp" />

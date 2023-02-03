@@ -63,6 +63,8 @@ namespace gc::core
 		*****************************************************************************/
 		void PackMaterial(const void* data);
 
+		GPUResourceViewPtr LoadTexture(const std::wstring& filePath, const UsageTexture textureType);
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

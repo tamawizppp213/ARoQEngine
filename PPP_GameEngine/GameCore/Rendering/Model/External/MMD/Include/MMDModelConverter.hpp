@@ -11,11 +11,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../../../Include/ModelConverter.hpp"
+#include "../../../Include/GameModelConverter.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+namespace pmx
+{
+	class PMXFile;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -28,21 +31,28 @@ namespace gc::core
 	*  @class     PMXConverter
 	*  @brief     PMX model <-> Game engine model
 	*****************************************************************************/
-	class PMXConverter : public IModelConverter, public Copyable
+	class PMXConverter : public IGameModelConverter, public Copyable
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Load(const std::wstring& filePath, ModelPtr model) override;
+		bool Load(const std::wstring& filePath, GameModelPtr model) override;
 
-		bool Save(const std::wstring& filePath, const ModelPtr model) override { return false; };
+		bool Save(const std::wstring& filePath, const GameModelPtr model) override { return false; };
 
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		void PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file);
+
+		void PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFile& file);
 	};
 
 	/****************************************************************************
@@ -51,15 +61,15 @@ namespace gc::core
 	*  @class     Class
 	*  @brief     temp
 	*****************************************************************************/
-	class PMDConverter : public IModelConverter, public Copyable
+	class PMDConverter : public IGameModelConverter, public Copyable
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Load(const std::wstring& filePath, ModelPtr model) override;
+		bool Load(const std::wstring& filePath, GameModelPtr model) override;
 
-		bool Save(const std::wstring& filePath, const ModelPtr model) override { return false; };
+		bool Save(const std::wstring& filePath, const GameModelPtr model) override { return false; };
 
 
 		/****************************************************************************

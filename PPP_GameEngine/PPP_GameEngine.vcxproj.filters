@@ -480,13 +480,13 @@
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\RenderPipeline.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Model\Include\Model.hpp">
+    <ClInclude Include="GameCore\Rendering\Model\Include\GameModel.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameCore\Rendering\Model\Include\MaterialType.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Model\Include\ModelConverter.hpp">
+    <ClInclude Include="GameCore\Rendering\Model\Include\GameModelConverter.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanGraphicsDevice.hpp">
@@ -906,6 +906,9 @@
     <ClInclude Include="MainGame\Sample\Include\SampleModel.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Core\Include\GameWorldInfo.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1139,7 +1142,7 @@
     <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\RenderingPipeline.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameCore\Rendering\Model\Source\Model.cpp">
+    <ClCompile Include="GameCore\Rendering\Model\Source\GameModel.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Rendering\Model\Source\ModelConverter.cpp">
@@ -1455,6 +1458,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="MainGame\Sample\Source\SampleModel.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Core\Source\GameWorldInfo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

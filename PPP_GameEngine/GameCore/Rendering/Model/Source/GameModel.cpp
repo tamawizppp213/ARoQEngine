@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/Model.hpp"
+#include "../Include/GameModel.hpp"
 #include "../Include/PrimitiveMesh.hpp"
 #include "../Include/Mesh.hpp"
 #include "../Include/Material.hpp"
@@ -42,19 +42,19 @@ using namespace gc::core;
 #pragma region Model
 
 #pragma region Constructor and Destructor
-Model::Model(const LowLevelGraphicsEnginePtr& engine) : GameActor(engine)
+GameModel::GameModel(const LowLevelGraphicsEnginePtr& engine) : GameActor(engine)
 {
     
 }
 
-Model::Model(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh)
+GameModel::GameModel(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh)
     : GameActor(engine)
 {
     _meshes.clear();
 }
 
 
-Model::~Model()
+GameModel::~GameModel()
 {
     _meshes.clear();
     _meshes.shrink_to_fit();
@@ -75,7 +75,7 @@ Model::~Model()
 *
 *  @return 　　void
 *****************************************************************************/
-void Model::Load(const PrimitiveMeshType type, const MaterialPtr& material)
+void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
 {
 #if _DEBUG
     assert(_engine);
@@ -115,9 +115,9 @@ void Model::Load(const PrimitiveMeshType type, const MaterialPtr& material)
 *
 *  @return 　　void
 *****************************************************************************/
-void Model::Load(const std::wstring& filePath)
+void GameModel::Load(const std::wstring& filePath)
 {
-    std::unique_ptr<IModelConverter> loader = nullptr;
+    std::unique_ptr<IGameModelConverter> loader = nullptr;
 
     /*-------------------------------------------------------------------
     -              Load
@@ -133,14 +133,14 @@ void Model::Load(const std::wstring& filePath)
     if (!loader->Load(filePath, this)) { throw std::runtime_error("failed to load model"); }
 }
 
-void Model::Update(const float deltaTime, const bool enableUpdateChild)
+void GameModel::Update(const float deltaTime, const bool enableUpdateChild)
 {
     if (!_isActive) { return; }
 
     GameActor::Update(deltaTime, enableUpdateChild);
 }
 
-void Model::Draw(const GPUResourceViewPtr& address)
+void GameModel::Draw(const GPUResourceViewPtr& address)
 {
     
 }

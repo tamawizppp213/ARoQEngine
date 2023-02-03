@@ -20,18 +20,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace gc::core
 {
-	class Model;
+	class GameModel;
 	//////////////////////////////////////////////////////////////////////////////////
 	//                         Template Class
 	//////////////////////////////////////////////////////////////////////////////////
-	class IModelConverter
+	class IGameModelConverter
 	{
 	protected:
-		using ModelPtr = Model*;
+		using GameModelPtr = GameModel*;
 	public:
-		virtual bool Load(const std::wstring& filePath, ModelPtr model) = 0;
+		virtual bool Load(const std::wstring& filePath, GameModelPtr model) = 0;
 		
-		virtual bool Save(const std::wstring& filePath, const ModelPtr model) = 0;
+		virtual bool Save(const std::wstring& filePath, const GameModelPtr model) = 0;
 	};
 }
 

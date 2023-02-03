@@ -187,7 +187,7 @@ void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData&
 
 		_vertexBuffers[i]->SetName(name + L"VB");
 
-		if (vertexInfo.InitData) { _vertexBuffers[i]->Pack(vertexInfo.InitData); }
+		if (vertexInfo.InitData) { _vertexBuffers[i]->Pack(vertexInfo.InitData, copyCommandList); }
 	}
 
 	/*-------------------------------------------------------------------

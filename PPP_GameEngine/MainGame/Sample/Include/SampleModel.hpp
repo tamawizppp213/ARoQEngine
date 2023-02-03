@@ -42,7 +42,7 @@ namespace sample
 	{
 		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
 		using CameraPtr = std::shared_ptr<gc::Camera>;
-		using ModelPtr = std::shared_ptr<gc::core::Model>;
+		using ModelPtr = std::shared_ptr<gc::core::GameModel>;
 	public:
 		/****************************************************************************
 		**                Public Function

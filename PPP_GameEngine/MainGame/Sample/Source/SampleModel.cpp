@@ -11,7 +11,7 @@
 #include "MainGame/Sample/Include/SampleModel.hpp"
 #include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
 #include "GameCore/Core/Include/Camera.hpp"
-#include "GameCore/Rendering/Model/Include/Model.hpp"
+#include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +128,7 @@ void SampleModel::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Model
 	---------------------------------------------------------------------*/
-	_model = GameObject::Create<Model>(_engine);
+	_model = GameObject::Create<GameModel>(_engine);
 	_model->Load(L"Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx");
 
 	/*-------------------------------------------------------------------

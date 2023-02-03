@@ -11,7 +11,7 @@
 #include "../Include/MMDModelConverter.hpp"
 #include "../Include/PMXParser.hpp"
 #include "../Include/PMDParser.hpp"
-#include "../../../Include/Model.hpp"
+#include "../../../Include/GameModel.hpp"
 #include "../../../Include/Mesh.hpp"
 #include "../../../Include/Material.hpp"
 #include "../../../Include/MaterialType.hpp"
@@ -24,14 +24,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gc::core;
 using namespace rhi::core;
+namespace
+{
+	constexpr std::int32_t INVALID_ID = -1;
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Main Function
-bool PMXConverter::Load(const std::wstring& filePath, ModelPtr model)
+bool PMXConverter::Load(const std::wstring& filePath, GameModelPtr model)
 {
-	if (model == nullptr) { OutputDebugStringA("model is nullptr.");  return false; }
+	if (model == nullptr)          { OutputDebugStringA("model is nullptr.");  return false; }
+	if (model->_engine == nullptr) { OutputDebugStringA("engine is nullptr"); return false; }
 
 	/*-------------------------------------------------------------------
 	-            PMXFile Load
@@ -40,10 +45,53 @@ bool PMXConverter::Load(const std::wstring& filePath, ModelPtr model)
 	if(!file.Load(filePath)) {return false;}
 
 	/*-------------------------------------------------------------------
-	-            PMXFile Load
+	-            Set up resource
+	---------------------------------------------------------------------*/
+	PrepareTotalMesh(model, file);
+	PrepareEachMaterialMesh(model, file);
+	
+	/*-------------------------------------------------------------------
+	-            Check skin mesh model
 	---------------------------------------------------------------------*/
 	model->_hasSkin = !file.Bones.empty();
 
+	return true;
+}
+
+
+bool PMDConverter::Load(const std::wstring& filePath, GameModelPtr model)
+{
+	if (model == nullptr)          { OutputDebugStringA("model is nullptr") ; return false; }
+	if (model->_engine == nullptr) { OutputDebugStringA("engine is nullptr"); return false; }
+	
+	/*-------------------------------------------------------------------
+	-            PMXFile Load
+	---------------------------------------------------------------------*/
+	pmd::PMDFile file;
+	if (!file.Load(filePath)) { return false; }
+
+
+	return true;
+}
+
+
+#pragma endregion Main Function
+
+#pragma region PMX 
+/****************************************************************************
+*					PrepareTotalMesh
+*************************************************************************//**
+*  @fn        void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file)
+*
+*  @brief     Prepare total mesh buffer (all material index buffer and vertex buffer)(ignore material)
+*
+*  @param[in] const GameModelPtr
+*  @param[in] pmx::PMXFile& file
+*
+*  @return 　　void
+*****************************************************************************/
+void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file)
+{
 	/*-------------------------------------------------------------------
 	-            Copy PMXvertex -> skin vertex
 	---------------------------------------------------------------------*/
@@ -59,61 +107,74 @@ bool PMXConverter::Load(const std::wstring& filePath, ModelPtr model)
 		std::memcpy(vertices[i].BoneWeights, pmxVertex.BoneWeights, sizeof(pmxVertex.BoneWeights));
 	}
 
-	///*-------------------------------------------------------------------
-	//-            Total mesh
-	//---------------------------------------------------------------------*/
-	//const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.size(), MemoryHeap::Default, ResourceState::Common, vertices.get());
-	//const auto ibData = GPUBufferMetaData::IndexBuffer (sizeof(UINT32)            , file.Indices .size(), MemoryHeap::Default, ResourceState::Common, file.Indices.data());
-	//model->_totalMesh = std::make_shared<Mesh>(model->_engine, vbData, ibData);	
-
-	///*-------------------------------------------------------------------
-	//-            Mesh of each material
-	//---------------------------------------------------------------------*/
-	//model->_materialCount = file.Materials.size();
-	//model->_meshes   .resize(file.Materials.size());
-	//model->_materials.resize(file.Materials.size());
-
-	//size_t indexOffset = 0;
-	//for (size_t i = 0; i < model->_materialCount; ++i)
-	//{
-	//	auto& mesh     = model->_meshes[i];
-	//	auto& material = model->_materials[i];
-
-	//	/*-------------------------------------------------------------------
-	//	-            Create material
-	//	---------------------------------------------------------------------*/
-	//	// Set up physical material
-	//	PBRMaterial pbrMaterial;
-	//	{
-	//		pbrMaterial.Diffuse           = file.Materials[i].Diffuse;
-	//		pbrMaterial.Ambient           = file.Materials[i].Ambient;
-	//		pbrMaterial.Specular          = file.Materials[i].Specular;
-	//		pbrMaterial.SpecularIntensity = file.Materials[i].SpecularPower;
-	//	};
-
-	//	// GPU constant buffer information
-	//	GPUBufferMetaData bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1, MemoryHeap::Upload, ResourceState::Common, &pbrMaterial);
-	//	
-	//	// material buffer
-	//	material = std::make_shared<Material>(model->_engine, bufferInfo, unicode::ToWString(file.Materials[i].MaterialName));
-
-	//	/*-------------------------------------------------------------------
-	//	-            Create mesh
-	//	---------------------------------------------------------------------*/
-	//	mesh = std::make_shared<Mesh>(model->_engine, 
-	//		model->_totalMesh->GetVertexBuffers(), 
-	//		model->_totalMesh->GetIndexBuffer(), 
-	//		file.Materials[i].FaceIndicesCount,
-	//		indexOffset);
-	//}
-	return true;
+	/*-------------------------------------------------------------------
+	-            Total mesh
+	---------------------------------------------------------------------*/
+	const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.size(), MemoryHeap::Upload , ResourceState::Common, vertices.get());
+	const auto ibData = GPUBufferMetaData::IndexBuffer (sizeof(UINT32)            , file.Indices .size(), MemoryHeap::Default, ResourceState::Common, file.Indices.data());
+	model->_totalMesh = std::make_shared<Mesh>(model->_engine, vbData, ibData);	
 }
 
-
-bool PMDConverter::Load(const std::wstring& filePath, ModelPtr model)
+/****************************************************************************
+*					PrepareEachMaterialMesh
+*************************************************************************//**
+*  @fn        vvoid PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFile& file)
+*
+*  @brief     Prepare each material mesh
+*
+*  @param[in] const GameModelPtr
+*  @param[in] pmx::PMXFile& file
+*
+*  @return 　　void
+*****************************************************************************/
+void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFile& file)
 {
-	return true;
+	model->_materialCount = file.Materials.size();
+	model->_meshes.resize(file.Materials.size());
+	model->_materials.resize(file.Materials.size());
+
+	size_t indexOffset = 0;
+	for (size_t i = 0; i < model->_materialCount; ++i)
+	{
+		auto& mesh = model->_meshes[i];
+		auto& material = model->_materials[i];
+
+		/*-------------------------------------------------------------------
+		-            Create material
+		---------------------------------------------------------------------*/
+		// Set up physical material
+		PBRMaterial pbrMaterial;
+		{
+			pbrMaterial.Diffuse = file.Materials[i].Diffuse;
+			pbrMaterial.Ambient = file.Materials[i].Ambient;
+			pbrMaterial.Specular = file.Materials[i].Specular;
+			pbrMaterial.SpecularIntensity = file.Materials[i].SpecularPower;
+		};
+
+		// GPU constant buffer information
+		GPUBufferMetaData bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1, MemoryHeap::Upload, ResourceState::Common, &pbrMaterial);
+
+		// material buffer
+		material = std::make_shared<Material>(model->_engine, bufferInfo, unicode::ToWString(file.Materials[i].MaterialName));
+
+		/*-------------------------------------------------------------------
+		-            Set up texture
+		---------------------------------------------------------------------*/
+		if (file.Materials[i].TextureIndex != INVALID_ID)
+		{
+			material->LoadTexture(unicode::ToWString(file.TexturePathList[file.Materials[i].TextureIndex]), Material::UsageTexture::Diffuse);
+		}
+
+		/*-------------------------------------------------------------------
+		-            Create mesh
+		---------------------------------------------------------------------*/
+		mesh = std::make_shared<Mesh>(model->_engine,
+			model->_totalMesh->GetVertexBuffers(),
+			model->_totalMesh->GetIndexBuffer(),
+			file.Materials[i].FaceIndicesCount,
+			indexOffset);
+
+		indexOffset += file.Materials[i].FaceIndicesCount;
+	}
 }
-
-
-#pragma endregion Main Function
+#pragma endregion PMX

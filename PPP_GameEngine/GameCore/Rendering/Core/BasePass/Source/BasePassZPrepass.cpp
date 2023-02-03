@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::core;
 using namespace gc;
+using namespace gc::core;
 using namespace gc::basepass;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +77,7 @@ void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 	---------------------------------------------------------------------*/
 }
 
-void ZPrepass::Add(const std::shared_ptr<GameActor>& actor)
+void ZPrepass::Add(const GameActorPtr& actor)
 {
 	_gameActors.emplace_back(actor);
 }
@@ -87,7 +88,7 @@ void ZPrepass::Clear()
 	_gameActors.shrink_to_fit();
 }
 
-void ZPrepass::Clear(const std::shared_ptr<GameActor>& actor)
+void ZPrepass::Clear(const GameActorPtr& actor)
 {
 	std::erase(_gameActors, actor);
 }

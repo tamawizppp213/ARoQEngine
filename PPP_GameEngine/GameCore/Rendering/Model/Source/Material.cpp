@@ -100,6 +100,26 @@ void Material::PackMaterial(const void* data)
 	buffer->Update(data, 1);
 }
 
+/****************************************************************************
+*					LoadTexture
+*************************************************************************//**
+*  @fn        Material::GPUResourceViewPtr Material::LoadTexture(const std::wstring& filePath, const UsageTexture textureType)
+*
+*  @brief     Load texture according to the usage texture.
+*
+*  @param[in] const std::wstring& filePath
+*  @param[in] const UsageTexture texture Type
+*
+*  @return Å@Å@GPUResourceViewPtr (std::shard_ptr<GPUResourceView>)
+*****************************************************************************/
+Material::GPUResourceViewPtr Material::LoadTexture(const std::wstring& filePath, const UsageTexture textureType)
+{
+	const auto resourceView = ResourceCache->Load(filePath);
+
+	_textures[(int)textureType] = resourceView;
+
+	return resourceView;
+}
 #pragma endregion Main Function
 
 #pragma region Set up function

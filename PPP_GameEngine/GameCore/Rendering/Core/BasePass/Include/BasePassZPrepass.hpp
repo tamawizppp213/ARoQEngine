@@ -19,7 +19,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class GameActor;
 class LowLevelGraphicsEngine;
 
 namespace rhi::core
@@ -29,6 +28,10 @@ namespace rhi::core
 	class GPUGraphicsPipelineState;
 }
 
+namespace gc::core
+{
+	class GameActor;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +49,7 @@ namespace gc::basepass
 		using PipelineStatePtr   = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
 		using ResourceLayoutPtr  = std::shared_ptr<rhi::core::RHIResourceLayout>;
 		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
-		using GameActorPtr       = std::shared_ptr<GameActor>;
+		using GameActorPtr       = std::shared_ptr<gc::core::GameActor>;
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
@@ -56,11 +59,11 @@ namespace gc::basepass
 
 		void Draw(const GPUResourceViewPtr& scene);
 
-		void Add(const std::shared_ptr<GameActor>& actor);
+		void Add(const GameActorPtr& actor);
 
 		void Clear();
 
-		void Clear(const std::shared_ptr<GameActor>& actor);
+		void Clear(const GameActorPtr& actor);
 
 		/****************************************************************************
 		**                Public Member Variables

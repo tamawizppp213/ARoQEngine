@@ -1,76 +1,79 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   Model.hpp
-///             @brief  Model
+///             @file   GameWorldInfo.hpp
+///             @brief  Game object information to exist in the game world. (World position etc...)
 ///             @author Toide Yutaro
-///             @date   2022_06_06
+///             @date   2023_02_03
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef MODEL_HPP
-#define MODEL_HPP
+#ifndef GAME_WORLD_INFO_HPP
+#define GAME_WORLD_INFO_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Core/Include/GameActor.hpp"
-#include "PrimitiveMesh.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
+#include "GameUtility/Base/Include/HLSLUtility.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
-
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
+
+namespace rhi::core
+{
+	class GPUResourceView;
+	class RHICommandList;
+}
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                               Class
 //////////////////////////////////////////////////////////////////////////////////
 namespace gc::core
 {
-	class Mesh;
-	class Material;
+	struct GameWorldConstant
+	{
+		hlsl::matrix World; // Scale * Rotation * Translation
+	};
+
 	/****************************************************************************
-	*				  			Model
+	*				  		GameWorldInfo
 	*************************************************************************//**
-	*  @class     Model
-	*  @brief     This class doesn't have the skin mesh. If you use skin mesh, you should use SkinModel class.
+	*  @class     GameWorldInfo
+	*  @brief     GameWorld constant buffer (This class can be used for both individual drawings and instancing drawings. )
 	*****************************************************************************/
-	class Model : public gc::core::GameActor
+	class GameWorldInfo : public NonCopyable
 	{
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using MeshPtr      = std::shared_ptr<Mesh>; // single mesh pointer
-		using MeshArrayPtr = std::vector<MeshPtr>; // material count array 
-		using MaterialPtr  = std::shared_ptr<Material>;
-	
+		using ConstantBufferPtr         = std::shared_ptr<rhi::core::GPUBuffer>;
+		using ConstantBufferViewPtr     = std::shared_ptr<rhi::core::GPUResourceView>;
+		using GraphicsCommandListPtr    = std::shared_ptr<rhi::core::RHICommandList>;
+
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Load(const PrimitiveMeshType type, const MaterialPtr& material = nullptr);
-
-		void Load(const std::wstring& filePath);
-		
-		void Update(const float deltaTime, const bool enableUpdateChild = false) override;
-		
-		void Draw(const GPUResourceViewPtr& scene) override;
+		/* @brief : Bind constant buffer view. index : root descriptor table id.*/
+		void Bind(const GraphicsCommandListPtr& commandList, const std::uint32_t index);
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		MeshPtr GetTotalMesh() const noexcept { return _totalMesh; }
+		/* @brief : Return max instance count for instance drawing. */
+		std::uint64_t GetMaxInsntanceCount() const { return _maxInstanceCount; }
 
-		MeshArrayPtr GetMeshes() const noexcept { return _meshes; }
+		/* @brief : Return gpu buffer pointer*/
+		ConstantBufferPtr GetBuffer() const noexcept { return _gameWorldConstants; }
 
-		size_t GetMaterialCount() const { return _materialCount; }
-
-		bool HasSkin() const { return _hasSkin; }
+		/* @brief: Return constant buffer view including the Game world constants.*/
+		ConstantBufferViewPtr GetBufferView() const noexcept { return _resourceView; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Model(const LowLevelGraphicsEnginePtr& engine);
+		GameWorldInfo(const LowLevelGraphicsEnginePtr& engine, const std::uint64_t maxInstanceCount = 1);
 
-		Model(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh);
-
-
-		~Model();
+		virtual ~GameWorldInfo();
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -79,24 +82,16 @@ namespace gc::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		/* @brief : each material mesh. (length : material count)*/
-		MeshArrayPtr _meshes = {};
+		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		/* @brief : total mesh (ignore material)*/
-		MeshPtr _totalMesh = nullptr;
+		/* @brief : Constant buffer used for holding the Game world constants*/
+		ConstantBufferPtr _gameWorldConstants = nullptr;
 
-		/* @brief : material */
-		std::vector<MaterialPtr> _materials = {};
-
-		/* @brief : Material count*/
-		size_t  _materialCount = 0;
-
-		/* @brief : Uses skin mesh model (true: Has skin mesh , false : Doesn't have skin mesh)*/
-		bool _hasSkin = false;
-
-	public:
-		friend class PMXConverter;
-		friend class PMDConverter;
+		/* @brief : Constant buffer view including the Game world constants. */
+		ConstantBufferViewPtr _resourceView = nullptr;
+		
+		/* @brief : For instancing drawing. max Instance count*/
+		std::uint64_t _maxInstanceCount = 1;
 	};
 }
 #endif
