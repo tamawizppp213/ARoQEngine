@@ -42,6 +42,7 @@ namespace rhi::core
 		*****************************************************************************/
 		// Note : V‚½‚ÉVertex‚ğGameCore‚Å’è‹`‚·‚éê‡‚Í‚±‚ÌŠÖ”‚ğæ‚èœ‚«, ˆÚ“®‚·‚é. 
 		static std::vector<InputLayoutElement> GetDefaultVertexElement() { return DEFAULT_VERTEX_ELEMENTS; }
+		static std::vector<InputLayoutElement> GetDefaultSkinVertexElement() { return DEFAULT_SKINVERTEX_ELEMENTS; }
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -94,6 +95,7 @@ namespace rhi::core
 		core::PrimitiveTopology _primitiveTopology = PrimitiveTopology::TriangleList;
 	private:
 		static const std::vector<InputLayoutElement> DEFAULT_VERTEX_ELEMENTS;
+		static const std::vector<InputLayoutElement> DEFAULT_SKINVERTEX_ELEMENTS;
 	};
 
 }

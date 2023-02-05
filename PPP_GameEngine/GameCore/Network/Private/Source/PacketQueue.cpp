@@ -121,7 +121,7 @@ PacketQueue::DataSize PacketQueue::Dequeue(std::vector<std::uint8_t>& buffer, co
 
 		// Acquire packet data
 		_memoryStream.Seek(_offsetList.front().Offset, SeekOrigin::Begin);
-		receiveSize = _memoryStream.Read(buffer, 0, std::min<int>(_offsetList.front().ByteSize, byteSize));
+		receiveSize = _memoryStream.Read(buffer, 0, desiredReadByteSize);
 
 		// Delete the first element now that the queue data has been extracted 
 		if (receiveSize > 0) { _offsetList.pop(); }

@@ -21,36 +21,24 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gc::core;
+using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-//const D3D12_INPUT_ELEMENT_DESC SkinMeshVertex::InputElements[] =
-//{
-//    { "POSITION",   0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-//    { "NORMAL",     0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-//    { "TEXCOORD",   0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-//    { "BONE_NO",    0, DXGI_FORMAT_R32G32B32A32_SINT , 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-//    { "WEIGHT"   ,  0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-//};
-//
-//static_assert(sizeof(SkinMeshVertex) == 64, "Vertex struct/layout mismatch");
-//const D3D12_INPUT_LAYOUT_DESC SkinMeshVertex::InputLayout =
-//{
-//    SkinMeshVertex::InputElements,
-//    SkinMeshVertex::InputElementCount
-//};
 #pragma region Model
 
 #pragma region Constructor and Destructor
 GameModel::GameModel(const LowLevelGraphicsEnginePtr& engine, const GameWorldInfoPtr& customGameWorldInfo) : GameActor(engine), _gameWorld(customGameWorldInfo)
 {
+    if (customGameWorldInfo) { _hasCustomGameWorld = true; }
     PrepareGameWorldBuffer();
 }
 
 GameModel::GameModel(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mesh, const GameWorldInfoPtr& customGameWorldInfo)
     : GameActor(engine), _gameWorld(customGameWorldInfo)
 {
+    if (customGameWorldInfo) { _hasCustomGameWorld = true; }
     _meshes.push_back(mesh);
     PrepareGameWorldBuffer();
 }
@@ -141,12 +129,23 @@ void GameModel::Update(const float deltaTime, const bool enableUpdateChild)
 {
     if (!_isActive) { return; }
 
+    if (!_hasCustomGameWorld)
+    {
+        _gameWorld->GetBuffer()->Update(&_transform.GetFloat4x4(), 1);
+    }
     GameActor::Update(deltaTime, enableUpdateChild);
 }
 
-void GameModel::Draw(const GPUResourceViewPtr& address)
+void GameModel::Draw(bool isDrawingEachMaterial, const std::uint32_t materialOffsetID)
 {
-    
+    if (isDrawingEachMaterial)
+    {
+        DrawWithMaterials(materialOffsetID);
+    }
+    else
+    {
+        DrawWithoutMaterial();
+    }
 }
 #pragma endregion Main Function
 
@@ -170,5 +169,47 @@ void GameModel::PrepareGameWorldBuffer()
     if (_gameWorld) { return; }
 
     _gameWorld = std::make_shared<GameWorldInfo>(_engine, 1);
+
 }
 #pragma endregion Set up
+#pragma region Draw
+void GameModel::DrawWithMaterials(const std::uint32_t materialOffsetID)
+{
+    const auto frameIndex = _engine->GetCurrentFrameIndex();
+    const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+
+    /*-------------------------------------------------------------------
+    -              Get texture ids Shift by 1 from the next to the materialID
+    ---------------------------------------------------------------------*/
+    std::vector<std::uint32_t> textureIDs((std::uint32_t)UsageTexture::CountOf);
+    for (std::uint32_t i = 0; i < (std::uint32_t)UsageTexture::CountOf; ++i)
+    {
+        textureIDs[i] = materialOffsetID + i + 1;
+    }
+
+    /*-------------------------------------------------------------------
+    -              Total Mesh Set up
+    ---------------------------------------------------------------------*/
+    commandList->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+    commandList->SetVertexBuffer(_totalMesh->GetVertexBuffers()[frameIndex]);
+    commandList->SetIndexBuffer(_totalMesh->GetIndexBuffer());
+
+    /*-------------------------------------------------------------------
+    -              Draw each material mesh
+    ---------------------------------------------------------------------*/
+    _gameWorld->Bind(commandList, 1);
+    for (size_t i = 0; i < _materialCount; ++i)
+    {
+        _materials[i]->Bind(commandList, frameIndex, materialOffsetID, textureIDs);
+        _meshes[i]->Draw(commandList, frameIndex);
+    }
+}
+
+void GameModel::DrawWithoutMaterial()
+{
+    const auto frameIndex = _engine->GetCurrentFrameIndex();
+    const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+    _gameWorld->Bind(commandList, 1);
+    _totalMesh->Draw(commandList, frameIndex);
+}
+#pragma endregion Draw

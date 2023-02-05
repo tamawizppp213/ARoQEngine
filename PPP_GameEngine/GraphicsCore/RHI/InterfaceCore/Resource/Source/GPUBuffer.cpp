@@ -33,7 +33,7 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBu
 	/*-------------------------------------------------------------------
 	-          Set Stride and Element Count
 	---------------------------------------------------------------------*/
-	_metaData.Stride   = isConstantBuffer ? static_cast<size_t>(CalcConstantBufferByteSize(_metaData.Stride)) : _metaData.Stride;
+	_metaData.Stride   = isConstantBuffer ? static_cast<size_t>(CalcConstantBufferByteSize((std::uint32_t)_metaData.Stride)) : _metaData.Stride;
 	_metaData.ByteSize = _metaData.Stride * _metaData.Count;
 }
 

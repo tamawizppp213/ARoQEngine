@@ -162,7 +162,7 @@ void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFil
 		---------------------------------------------------------------------*/
 		if (file.Materials[i].TextureIndex != INVALID_ID)
 		{
-			material->LoadTexture(unicode::ToWString(file.TexturePathList[file.Materials[i].TextureIndex]), Material::UsageTexture::Diffuse);
+			material->LoadTexture(unicode::ToWString(file.TexturePathList[file.Materials[i].TextureIndex]), UsageTexture::Diffuse);
 		}
 
 		/*-------------------------------------------------------------------

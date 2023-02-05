@@ -113,6 +113,7 @@ DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 		case D24_UNORM_S8_UINT  : return DXGI_FORMAT_D24_UNORM_S8_UINT;
 		case R10G10B10A2_UNORM  : return DXGI_FORMAT_R10G10B10A2_UNORM;
 		case D32_FLOAT          : return DXGI_FORMAT_D32_FLOAT;
+		case R32_FLOAT          : return DXGI_FORMAT_R32_FLOAT;
 		case B8G8R8A8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 		case BC1_UNORM          : return DXGI_FORMAT_BC1_UNORM;
 		case Unknown            : return DXGI_FORMAT_UNKNOWN;
@@ -249,6 +250,7 @@ DXGI_FORMAT EnumConverter::Convert(const core::InputFormat inputFormat)
 		case R32G32_FLOAT      : return DXGI_FORMAT_R32G32_FLOAT;
 		case R32G32B32_FLOAT   : return DXGI_FORMAT_R32G32B32_FLOAT;
 		case R32G32B32A32_FLOAT: return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		case R32G32B32A32_INT  : return DXGI_FORMAT_R32G32B32A32_SINT;
 		case R32_FLOAT         : return DXGI_FORMAT_R32_FLOAT;
 		default:
 			throw std::runtime_error("not supported input format");

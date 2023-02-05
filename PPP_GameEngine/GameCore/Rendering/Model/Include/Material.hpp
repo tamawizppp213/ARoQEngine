@@ -15,6 +15,7 @@
 #include "MaterialType.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <vector>
 #include <memory>
 #include <string>
 
@@ -28,6 +29,7 @@ namespace rhi::core
 	class GPUBuffer;
 	class GPUResourceView;
 	class GPUResourceCache;
+	class RHICommandList;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
@@ -35,6 +37,13 @@ namespace rhi::core
 
 namespace gc::core
 {
+	enum class UsageTexture
+	{
+		Diffuse,
+		Specular,
+		Normal,
+		CountOf
+	};
 
 	/****************************************************************************
 	*				  			Material
@@ -51,16 +60,14 @@ namespace gc::core
 		using GPUResourceCachePtr       = std::shared_ptr<rhi::core::GPUResourceCache>;
 		
 	public:
-		enum class UsageTexture
-		{
-			Diffuse,
-			Specular,
-			Normal,
-			CountOf
-		};
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		virtual void Bind(const std::shared_ptr<rhi::core::RHICommandList>& graphicsCommandList, const std::uint32_t frameIndex, 
+			const std::uint32_t materialID, // bind material constant buffer id
+			const std::vector<std::uint32_t>& textureIDs
+		);
+
 		void PackMaterial(const void* data);
 
 		GPUResourceViewPtr LoadTexture(const std::wstring& filePath, const UsageTexture textureType);

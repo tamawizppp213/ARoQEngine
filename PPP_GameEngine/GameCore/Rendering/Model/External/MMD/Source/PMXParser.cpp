@@ -265,7 +265,17 @@ void PMXFile::ReadSoftBodies   (FILE* filePtr)
 #pragma region EachReadFunction
 void PMXSetting     ::Read(FILE* filePtr)
 {
-	fread_s(this, sizeof(PMXSetting), sizeof(PMXSetting), 1, filePtr);
+	fread_s(Signature          , sizeof(Signature)         , sizeof(char)     , sizeof(Signature), filePtr);
+	fread_s(&Version           , sizeof(Version)           , sizeof(float)    , 1, filePtr);
+	fread_s(&DataSize          , sizeof(DataSize)          , sizeof(UINT8)    , 1, filePtr);
+	fread_s(&Encode            , sizeof(Encode)            , sizeof(PMXEncode), 1, filePtr);
+	fread_s(&AddUVCount        , sizeof(AddUVCount)        , sizeof(UINT8)    , 1, filePtr);
+	fread_s(&VertexIndexSize   , sizeof(VertexIndexSize)   , sizeof(UINT8)    , 1, filePtr);
+	fread_s(&TextureIndexSize  , sizeof(TextureIndexSize)  , sizeof(UINT8)    , 1, filePtr);
+	fread_s(&MaterialIndexSize , sizeof(MaterialIndexSize) , sizeof(UINT8)    , 1, filePtr);
+	fread_s(&BoneIndexSize     , sizeof(BoneIndexSize)     , sizeof(UINT8)    , 1, filePtr);
+	fread_s(&FaceIndexSize     , sizeof(FaceIndexSize)     , sizeof(UINT8)    , 1, filePtr);
+	fread_s(&RigidBodyIndexSize, sizeof(RigidBodyIndexSize), sizeof(UINT8)    , 1, filePtr);
 }
 bool PMXInfo        ::Read(FILE* filePtr, const PMXSetting* setting)
 {

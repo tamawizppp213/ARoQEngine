@@ -16,7 +16,15 @@ struct VSInputVertex
     float2 UV       : TEXCOORD;
 };
 
-
+struct VSInputSkinVertex
+{
+    float4 Position : POSITION;
+    float4 Normal   : NORMAL;
+    float2 UV       : TEXCOORD;
+    int4 BoneNo     : BONE_NO;
+    float4 Weight   : WEIGHT;
+    
+};
 
 // VSOutput
 struct VSOutputVertex

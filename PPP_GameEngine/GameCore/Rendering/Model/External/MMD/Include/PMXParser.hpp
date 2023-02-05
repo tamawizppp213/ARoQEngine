@@ -25,7 +25,6 @@
 namespace pmx
 {
 	using namespace gm;
-#pragma pack(1)
 
 	enum class PMXEncode : UINT8
 	{
@@ -526,7 +525,7 @@ namespace pmx
 			VertexIndices.clear(); VertexIndices.shrink_to_fit();
 		}
 	};
-#pragma pack()
+
 	/****************************************************************************
 	*				  			PMXFile
 	*************************************************************************//**

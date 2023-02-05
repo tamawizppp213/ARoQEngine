@@ -41,6 +41,7 @@ namespace gc::core
 	*************************************************************************//**
 	*  @class     GameWorldInfo
 	*  @brief     GameWorld constant buffer (This class can be used for both individual drawings and instancing drawings. )
+	*             When you would like to change the contents in the buffer, you should use GetBuffer function.
 	*****************************************************************************/
 	class GameWorldInfo : public NonCopyable
 	{

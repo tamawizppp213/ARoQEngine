@@ -85,6 +85,9 @@ Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const S
 /* @brief : Text number constructor*/
 Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const NumberInfo& info)
 {
+#ifdef _DEBUG
+	assert(info.Digit >= 1);
+#endif
 	/*-------------------------------------------------------------------
 	-              Prepare image buffer
 	---------------------------------------------------------------------*/

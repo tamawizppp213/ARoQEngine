@@ -24,13 +24,16 @@ class LowLevelGraphicsEngine;
 namespace rhi::core
 {
 	class RHIResourceLayout;
+	class RHIFrameBuffer;
+	class RHIRenderPass;
 	class GPUResourceView;
 	class GPUGraphicsPipelineState;
+	class GPUTexture;
 }
 
 namespace gc::core
 {
-	class GameActor;
+	class GameModel;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
@@ -49,7 +52,10 @@ namespace gc::basepass
 		using PipelineStatePtr   = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
 		using ResourceLayoutPtr  = std::shared_ptr<rhi::core::RHIResourceLayout>;
 		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
-		using GameActorPtr       = std::shared_ptr<gc::core::GameActor>;
+		using FrameBufferPtr     = std::shared_ptr<rhi::core::RHIFrameBuffer>;
+		using TexturePtr         = std::shared_ptr<rhi::core::GPUTexture>;
+		using RenderPassPtr      = std::shared_ptr<rhi::core::RHIRenderPass>;
+		using GameModelPtr       = std::shared_ptr<gc::core::GameModel>;
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
@@ -59,15 +65,16 @@ namespace gc::basepass
 
 		void Draw(const GPUResourceViewPtr& scene);
 
-		void Add(const GameActorPtr& actor);
+		void Add(const GameModelPtr& actor);
 
 		void Clear();
 
-		void Clear(const GameActorPtr& actor);
+		void Clear(const GameModelPtr& actor);
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		TexturePtr GetRenderedTexture() const noexcept;
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -84,19 +91,28 @@ namespace gc::basepass
 		*****************************************************************************/
 		void PreparePipelineState(const std::wstring& name);
 		
+		void PrepareFrameBuffers();
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		std::vector<GameActorPtr> _gameActors = {};
+		std::vector<GameModelPtr> _gameModels = {};
 
 		std::uint32_t _width = 0;
 		std::uint32_t _height = 0;
 		
+		/*-------------------------------------------------------------------
+		-          Render Resource
+		---------------------------------------------------------------------*/
 		PipelineStatePtr  _pipeline = nullptr;
 
 		ResourceLayoutPtr _resourceLayout = nullptr;
+
+		RenderPassPtr _renderPass = nullptr;
+
+		std::vector<FrameBufferPtr> _frameBuffers = {};
 	};
 }
 #endif

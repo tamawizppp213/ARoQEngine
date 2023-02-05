@@ -52,9 +52,9 @@ namespace gc::core
 		void Load(const std::wstring& filePath);
 		
 		/* @brief : Update motion*/
-		void Update(const float deltaTime, const bool enableUpdateChild = false) override;
+		virtual void Update(const float deltaTime, const bool enableUpdateChild = false) override;
 		
-		void Draw(const GPUResourceViewPtr& scene) override;
+		virtual void Draw(const bool isDrawingEachMaterial = true, const std::uint32_t materialOffsetID = 2);
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -80,12 +80,15 @@ namespace gc::core
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		virtual void DrawWithMaterials(const std::uint32_t materialOffsetID);
+		virtual void DrawWithoutMaterial();
 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		/* @brief : world position matrix. When you use the instancing drawing,  you should set the custom game world information.  */
 		GameWorldInfoPtr _gameWorld = nullptr;
+		bool _hasCustomGameWorld = false;
 
 		/*-------------------------------------------------------------------
 		-            Mesh

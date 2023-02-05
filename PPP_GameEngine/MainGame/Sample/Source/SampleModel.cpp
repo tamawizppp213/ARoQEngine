@@ -13,6 +13,7 @@
 #include "GameCore/Core/Include/Camera.hpp"
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -23,6 +24,7 @@ using namespace rhi::core;
 using namespace gc;
 using namespace gc::core;
 
+std::shared_ptr<basepass::ZPrepass> zprepass = nullptr;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +61,7 @@ void SampleModel::Update()
 {
 	Scene::Update();
 	_camera->Update(_gameTimer);
-
+	_model->Update(_gameTimer->DeltaTime());
 }
 /****************************************************************************
 *                       Draw
@@ -79,7 +81,8 @@ void SampleModel::Draw()
 	commandList->SetViewportAndScissor(
 		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
-
+	
+	zprepass->Draw(_camera->GetResourceView());
 	_skybox->Draw(_camera->GetResourceView());
 	_engine->EndDrawFrame();
 }
@@ -131,6 +134,8 @@ void SampleModel::LoadMaterials()
 	_model = GameObject::Create<GameModel>(_engine);
 	_model->Load(L"Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx");
 
+	zprepass = std::make_shared<basepass::ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
+	zprepass->Add(_model);
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/

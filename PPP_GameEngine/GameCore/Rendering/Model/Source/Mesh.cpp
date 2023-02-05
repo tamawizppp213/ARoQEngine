@@ -68,7 +68,7 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const std::vector<VertexBuff
 	const std::uint64_t indexCount, 
 	const std::uint32_t indexOffset,
 	const MaterialPtr& material):
-	_engine(engine), _vertexBuffers(vertexBuffers), _indexBuffer(indexBuffer), _indexCount(indexCount), _material(material)
+	_engine(engine), _vertexBuffers(vertexBuffers), _indexBuffer(indexBuffer), _indexCount(indexCount), _material(material), _indexOffset(indexOffset)
 {
 	if (LowLevelGraphicsEngine::FRAME_BUFFER_COUNT != vertexBuffers.size())
 	{
@@ -87,24 +87,26 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const std::vector<VertexBuff
 * 
 *  @brief     Mesh Renderer must need. (ç≈í·å¿ÇÃDrawCall)
 * 
-*  @param[in] CommandContext* context
-*  @param[in] int currentFrameIndex
+*  @param[in] std::shared_ptr<RHICommandList>& graphicsCommandList
+*  @param[in] std::uint32_t currentFrameIndex
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-void Mesh::Draw()
+void Mesh::Draw(const std::shared_ptr<RHICommandList>& commandList, const std::uint32_t frameIndex)
 {
-	const auto currentFrame = _engine->GetCurrentFrameIndex();
-	const auto commandList  = _engine->GetCommandList(CommandListType::Graphics, currentFrame);
-	
+#ifdef _DEBUG
+	assert(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);
+	assert(commandList->GetType() == CommandListType::Graphics);
+#endif
+
 	if (_hasCreatedNewBuffer)
 	{
 		commandList->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-		commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
+		commandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
 		commandList->SetIndexBuffer(_indexBuffer);
 	}
 
-	commandList->DrawIndexedInstanced(_indexCount, 1, _indexOffset);
+	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexCount), 1, _indexOffset);
 }
 
 /****************************************************************************

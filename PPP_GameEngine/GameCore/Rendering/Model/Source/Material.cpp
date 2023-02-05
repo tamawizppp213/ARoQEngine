@@ -12,6 +12,7 @@
 #include "GameCore/Rendering/Model/Include/Material.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameCore/Core/Include/ResourceManager.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDescriptorHeap.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
@@ -83,6 +84,41 @@ Material::~Material()
 #pragma endregion Constructor and Destructor 
 
 #pragma region Main Function
+/****************************************************************************
+*					Bind
+*************************************************************************//**
+*  @fn      void Material::Bind(const std::shared_ptr<rhi::core::RHICommandList>& commandList,
+			const std::uint32_t frameIndex,
+			const std::uint32_t bindID,
+			const std::vector<std::uint32_t>& bindTextureIDs)
+*
+*  @brief     Draw material
+*
+*  @param[in] const std::shard_ptr<rhi::core::RHICommandList>& graphicsCommandList
+*  @param[in] const std::uint32_t currentFrameIndex
+*  @param[in] const std::uint32_t bind id : material constant buffer 
+*  @param[in] const std::vector<std::uint32_t>& texture srv ids 
+*
+*  @return Å@Å@void
+*****************************************************************************/
+void Material::Bind(const std::shared_ptr<rhi::core::RHICommandList>& commandList,
+	const std::uint32_t frameIndex,
+	const std::uint32_t bindID,
+	const std::vector<std::uint32_t>& bindTextureIDs)
+{
+#ifdef _DEBUG
+	assert(commandList->GetType() == CommandListType::Graphics);
+	assert(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);
+	assert(bindTextureIDs.size() == (size_t)UsageTexture::CountOf);
+#endif
+
+	_materialBufferView->Bind(commandList, bindID);
+
+	for (size_t i = 0; i < (size_t)UsageTexture::CountOf; ++i)
+	{
+		_textures[i]->Bind(commandList, bindTextureIDs[i]);
+	}
+}
 /****************************************************************************
 *					PackMaterial
 *************************************************************************//**

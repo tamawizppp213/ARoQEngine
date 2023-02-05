@@ -78,6 +78,7 @@ namespace rhi::core
 		R32G32_FLOAT,       // 8  byte format
 		R32G32B32_FLOAT,    // 12 byte format
 		R32G32B32A32_FLOAT, // 16 byte format
+		R32G32B32A32_INT,   // 16 byte format
 	};
 	class InputFormatSizeOf
 	{
@@ -89,6 +90,7 @@ namespace rhi::core
 			{
 				case InputFormat::R32G32_FLOAT      : return 8;
 				case InputFormat::R32G32B32_FLOAT   : return 12;
+				case InputFormat::R32G32B32A32_INT  :
 				case InputFormat::R32G32B32A32_FLOAT: return 16;
 				case InputFormat::R32_FLOAT         : return 4;
 				default: return 0;
@@ -122,6 +124,7 @@ namespace rhi::core
 		R32G32B32A32_FLOAT,
 		R16G16B16A16_FLOAT,
 		D32_FLOAT,
+		R32_FLOAT,
 		D24_UNORM_S8_UINT,
 		R32G32B32_FLOAT,
 		B8G8R8A8_UNORM_SRGB,

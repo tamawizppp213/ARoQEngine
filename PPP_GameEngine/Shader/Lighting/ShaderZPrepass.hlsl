@@ -23,13 +23,13 @@ cbuffer ObjectConstants : register(b1)
 struct PSIn
 {
     float4 Position : SV_POSITION;
-    float Depth     : TEXCOORD0;
+    float  Depth     : TEXCOORD0;
 };
 
 //////////////////////////////////////////////////////////////////////////////////
 //                            Implement
 //////////////////////////////////////////////////////////////////////////////////
-PSIn VSMain( VSInputVertex vertexIn)
+PSIn VSMain( VSInputSkinVertex vertexIn)
 {
 	PSIn result;
 	
@@ -38,8 +38,6 @@ PSIn VSMain( VSInputVertex vertexIn)
 	---------------------------------------------------------------------*/
 	float4 positionWorld = mul(World, vertexIn.Position);
 	result.Position      = mul(ProjectionView, positionWorld);
-	
-	result.Position = float4(1,1,1,1);
 	result.Depth    = result.Position.z / result.Position.w; // normalize
 	return result;
 }

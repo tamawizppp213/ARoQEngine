@@ -44,7 +44,6 @@ namespace gc::core
 		*****************************************************************************/
 		virtual void Update(const float deltaTime, const bool enableUpdateChild = false);
 
-		virtual void Draw(const GPUResourceViewPtr& scene) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

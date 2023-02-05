@@ -23,6 +23,7 @@
 class LowLevelGraphicsEngine;
 namespace rhi::core
 {
+	class  RHICommandList;
 	struct GPUBufferMetaData;
 	class  GPUBuffer;
 }
@@ -49,12 +50,13 @@ namespace gc::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Draw();
+		virtual void Draw(const std::shared_ptr<rhi::core::RHICommandList>& graphicsCommandList, 
+			const std::uint32_t frameIndex);
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		std::vector<VertexBufferPtr> GetVertexBuffers() const noexcept { return _vertexBuffers; }
+		const std::vector<VertexBufferPtr>& GetVertexBuffers() const noexcept { return _vertexBuffers; }
 
 		IndexBufferPtr GetIndexBuffer() const noexcept { return _indexBuffer; }
 

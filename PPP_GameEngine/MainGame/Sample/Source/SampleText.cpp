@@ -134,7 +134,7 @@ void SampleText::LoadMaterials()
 	---------------------------------------------------------------------*/
 	_font = std::make_shared<Font>(_engine, L"Resources/Font/GennokakuEnglish.png", gm::Float2(35.0f, 64.0f), 3325.0f);
 	// Create image sprite
-	StringInfo info = { .String = "Text Sample", .SizePerChar = {0.1f, 0.15}, .StartPosition = {-0.6f, 0.0f, 1.0f}, .Space = 0.0f, .Color = {1,1,1,1} };
+	StringInfo info = { .String = "Text Sample", .SizePerChar = {0.1f, 0.15f}, .StartPosition = {-0.6f, 0.0f, 1.0f}, .Space = 0.0f, .Color = {1,1,1,1} };
 	_text = std::make_shared<Text>(CoordinateType::NDC, _font, info);
 
 	// Create Texture
