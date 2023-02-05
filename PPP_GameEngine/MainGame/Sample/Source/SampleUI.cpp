@@ -80,6 +80,7 @@ void SampleUI::Update()
 void SampleUI::Draw()
 {
 	_engine->BeginDrawFrame();
+	_engine->BeginSwapchainRenderPass();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/

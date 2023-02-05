@@ -70,6 +70,7 @@ void SampleTexture::Update()
 void SampleTexture::Draw()
 {
 	_engine->BeginDrawFrame();
+	_engine->BeginSwapchainRenderPass();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/

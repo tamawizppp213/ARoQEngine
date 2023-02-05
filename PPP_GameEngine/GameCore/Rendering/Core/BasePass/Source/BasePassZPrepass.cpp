@@ -56,6 +56,17 @@ void ZPrepass::OnResize(const std::uint32_t width, const std::uint32_t height)
 
 }
 
+/****************************************************************************
+*                          Draw
+*************************************************************************//**
+*  @fn        void ZPrepass::Draw(const GPUResourceViewPtr& scene)
+*
+*  @brief     Draw zprepass texture (ZPrepass : the texture which saves z values from render scene camera)
+*
+*  @param[in] const GPUResourceViewPtr& sceneConstantBuffer
+*
+*  @return 　　void
+*****************************************************************************/
 void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 {
 	const auto currentFrame = _engine->GetCurrentFrameIndex();
@@ -64,7 +75,6 @@ void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 	/*-------------------------------------------------------------------
 	-                 Change render target
 	---------------------------------------------------------------------*/
-	commandList->EndRenderPass();
 	commandList->BeginRenderPass(_renderPass, _frameBuffers[currentFrame]);
 
 	/*-------------------------------------------------------------------
@@ -83,7 +93,6 @@ void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 	-                 Return current render target
 	---------------------------------------------------------------------*/
 	commandList->EndRenderPass();
-	commandList->BeginRenderPass(_engine->GetRenderPass(), _engine->GetFrameBuffer(currentFrame));
 }
 
 void ZPrepass::Add(const GameModelPtr& actor)
@@ -109,6 +118,17 @@ ZPrepass::TexturePtr ZPrepass::GetRenderedTexture() const noexcept
 #pragma endregion Main Function
 
 #pragma region Setup Function
+/****************************************************************************
+*                          PreparePipelineState
+*************************************************************************//**
+*  @fn        void ZPrepass::PrepareFrameBuffers()
+*
+*  @brief     void ZPrepass::PreparePipelineState(const std::wstring& name)
+*
+*  @param[in] std::wstring& name
+*
+*  @return 　　void
+*****************************************************************************/
 void ZPrepass::PreparePipelineState(const std::wstring& name)
 {
 	const auto device  = _engine->GetDevice();
@@ -147,6 +167,17 @@ void ZPrepass::PreparePipelineState(const std::wstring& name)
 	_pipeline->SetName(name + L"PSO");
 }
 
+/****************************************************************************
+*                          PrepareFrameBuffers
+*************************************************************************//**
+*  @fn        void ZPrepass::PrepareFrameBuffers()
+*
+*  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
 void ZPrepass::PrepareFrameBuffers()
 {
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;

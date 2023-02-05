@@ -83,6 +83,7 @@ void SampleText::Update()
 void SampleText::Draw()
 {
 	_engine->BeginDrawFrame();
+	_engine->BeginSwapchainRenderPass();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/

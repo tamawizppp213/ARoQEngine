@@ -61,6 +61,7 @@ void SampleEmpty::Update()
 void SampleEmpty::Draw()
 {
 	_engine->BeginDrawFrame();
+	_engine->BeginSwapchainRenderPass();
 
 	_engine->EndDrawFrame();
 }

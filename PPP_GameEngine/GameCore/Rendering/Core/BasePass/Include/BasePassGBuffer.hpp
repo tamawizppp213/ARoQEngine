@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,20 +34,19 @@ namespace basepass
 	*****************************************************************************/
 	class GBuffer
 	{
-		using RenderTarget = ColorBuffer;
-		using SceneGPUAddress = UINT64;
+		
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		void Initialize(int screenWidth, int screenHeight);
 		void OnResize(int newWidth, int newHeight);
-		void Draw(SceneGPUAddress scene);
+		
 		void Finalize();
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const ColorBuffer& GetGBuffer(GBufferType type) const { return _renderTargets[(int)type]; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -65,7 +64,7 @@ namespace basepass
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		RenderTarget _renderTargets[(int)GBufferType::CountOfGBufferType];
+		
 	};
 }
 #endif

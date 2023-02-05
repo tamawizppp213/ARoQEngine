@@ -54,6 +54,7 @@ public:
 	void StartUp(rhi::core::APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance);
 	void BeginDrawFrame(); // call at begin draw frame
 	void EndDrawFrame();   // call at end draw frame
+	void BeginSwapchainRenderPass(); // back buffer render pass
 	void OnResize(const size_t newWidth, const size_t newHeight);
 	void ShutDown();
 

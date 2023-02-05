@@ -148,7 +148,6 @@ void LowLevelGraphicsEngine::BeginDrawFrame()
 	-      Start Recording Command List
 	---------------------------------------------------------------------*/
 	graphicsCommandList->BeginRecording();
-	graphicsCommandList->BeginRenderPass(_renderPass, _frameBuffers[_currentFrameIndex]);
 	computeCommandList->BeginRecording();
 }
 
@@ -235,6 +234,12 @@ void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType 
 void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHeight)
 {
 	_swapchain->Resize(newWidth, newHeight);
+}
+
+void LowLevelGraphicsEngine::BeginSwapchainRenderPass()
+{
+	const auto& graphicsCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Graphics];
+	graphicsCommandList->BeginRenderPass(_renderPass, _frameBuffers[_currentFrameIndex]);
 }
 
 /****************************************************************************

@@ -70,6 +70,7 @@ void SampleAudio::Update()
 void SampleAudio::Draw()
 {
 	_engine->BeginDrawFrame();
+	_engine->BeginSwapchainRenderPass();
 
 	_engine->EndDrawFrame();
 }

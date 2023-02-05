@@ -17,7 +17,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace gc
 {
-	class UIRenderer;
+	namespace ui
+	{
+		class UIRenderer;
+	}
+
+	namespace basepass
+	{
+		class ZPrepass;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +41,8 @@ namespace gc
 	*****************************************************************************/
 	class URP : public IRenderPipeline
 	{
-		using UIRendererPtr = std::shared_ptr<UIRenderer>;
+		using UIRendererPtr = std::shared_ptr<ui::UIRenderer>;
+		using ZPrepassPtr   = std::shared_ptr<basepass::ZPrepass>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -60,6 +69,8 @@ namespace gc
 		**                Private Member Variables
 		*****************************************************************************/
 		UIRendererPtr _uiRenderer = nullptr;
+
+		ZPrepassPtr _zPrepass = nullptr;
 	};
 }
 #endif

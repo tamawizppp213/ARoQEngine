@@ -72,6 +72,7 @@ void SampleRectangle::Draw()
 	-             Start frame
 	---------------------------------------------------------------------*/
 	_engine->BeginDrawFrame();
+	_engine->BeginSwapchainRenderPass();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/

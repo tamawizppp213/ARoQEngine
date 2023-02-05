@@ -83,6 +83,7 @@ void SampleModel::Draw()
 		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
 	
 	zprepass->Draw(_camera->GetResourceView());
+	_engine->BeginSwapchainRenderPass();
 	_skybox->Draw(_camera->GetResourceView());
 	_engine->EndDrawFrame();
 }
