@@ -199,6 +199,8 @@
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\UniversalRenderPipeline.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIButton.hpp" />
@@ -497,6 +499,7 @@
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\PacketQueue.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\Serializer.cpp" />
+    <ClCompile Include="GameCore\Rendering\Core\Interface\Source\GBuffer.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\UniversalRenderPipeline.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
@@ -722,6 +725,12 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SamplingLuminance</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Effect\ShaderTonemap.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\Lighting\ShaderGBuffer.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>

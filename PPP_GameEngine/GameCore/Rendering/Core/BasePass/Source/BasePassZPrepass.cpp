@@ -95,11 +95,33 @@ void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 	commandList->EndRenderPass();
 }
 
+/****************************************************************************
+*                          Add
+*************************************************************************//**
+*  @fn        void ZPrepass::Add(const GameModelPtr& actor)
+*
+*  @brief     Add model
+*
+*  @param[in] const GameModelPtr& model
+*
+*  @return 　　void
+*****************************************************************************/
 void ZPrepass::Add(const GameModelPtr& actor)
 {
 	_gameModels.emplace_back(actor);
 }
 
+/****************************************************************************
+*                          Clear
+*************************************************************************//**
+*  @fn        void ZPrepass::Clear()
+*
+*  @brief     Clear registered model buffer
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
 void ZPrepass::Clear()
 {
 	_gameModels.clear();
@@ -197,7 +219,7 @@ void ZPrepass::PrepareFrameBuffers()
 	}
 
 	/*-------------------------------------------------------------------
-	-             Setup resource layout elements
+	-             Setup frame buffer
 	---------------------------------------------------------------------*/
 	_frameBuffers.resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)

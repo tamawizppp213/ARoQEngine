@@ -11,6 +11,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "../../Interface/Include/GBuffer.hpp"
+
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -19,50 +21,55 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace basepass
+namespace gc::basepass
 {
-	enum class GBufferType
-	{
-		Albedo,
-		CountOfGBufferType,
-	};
 	/****************************************************************************
 	*				  			GBuffer
 	*************************************************************************//**
 	*  @class     GBuffer
-	*  @brief     GBuffer
+	*  @brief     GBuffer (普段はDefaultTypeを使用するが, カスタマイズも可能にしている.)
 	*****************************************************************************/
-	class GBuffer
+	class GBuffer : public gc::rendering::GBuffer
 	{
-		
 	public:
+		enum DefaultType
+		{
+			Albedo,
+			CountOf
+		};
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(int screenWidth, int screenHeight);
-		void OnResize(int newWidth, int newHeight);
-		
-		void Finalize();
+
+		void OnResize(const std::uint32_t width, const std::uint32_t height) override;
+
+		void Draw(const GPUResourceViewPtr& scene) override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GBuffer();
+		GBuffer() = default;
+		
+		GBuffer(const LowLevelGraphicsEnginePtr& engine,
+			const gc::rendering::GBufferDesc& desc = gc::rendering::GBufferDesc((std::uint64_t)DefaultType::CountOf),
+			const std::wstring& addName = L"");
+
 		~GBuffer();
-		GBuffer(const GBuffer&)            = delete;
-		GBuffer& operator=(const GBuffer&) = delete;
-		GBuffer(GBuffer&&)                 = default;
-		GBuffer& operator=(GBuffer&&)      = default;
-	private:
+		
+	protected:
 		/****************************************************************************
-		**                Private Function
+		**                Protected Function
 		*****************************************************************************/
+		void PreparePipelineState(const std::wstring& name) override;
+
+		void PrepareFrameBuffers() override;
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Protected Member Variables
 		*****************************************************************************/
 		
 	};

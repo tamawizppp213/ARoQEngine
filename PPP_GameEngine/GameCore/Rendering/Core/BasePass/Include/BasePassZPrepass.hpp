@@ -49,6 +49,7 @@ namespace gc::basepass
 	*****************************************************************************/
 	class ZPrepass : public NonCopyable
 	{
+	protected:
 		using PipelineStatePtr   = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
 		using ResourceLayoutPtr  = std::shared_ptr<rhi::core::RHIResourceLayout>;
 		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
