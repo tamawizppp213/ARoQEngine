@@ -14,6 +14,7 @@
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
+#include "GameCore/Rendering/Core/BasePass/Include/BasePassGBuffer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -25,6 +26,7 @@ using namespace gc;
 using namespace gc::core;
 
 std::shared_ptr<basepass::ZPrepass> zprepass = nullptr;
+std::shared_ptr<basepass::GBuffer> gbuffer = nullptr;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +85,7 @@ void SampleModel::Draw()
 		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
 	
 	zprepass->Draw(_camera->GetResourceView());
+	gbuffer->Draw(_camera->GetResourceView());
 	_engine->BeginSwapchainRenderPass();
 	_skybox->Draw(_camera->GetResourceView());
 	_engine->EndDrawFrame();
@@ -134,9 +137,12 @@ void SampleModel::LoadMaterials()
 	---------------------------------------------------------------------*/
 	_model = GameObject::Create<GameModel>(_engine);
 	_model->Load(L"Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx");
+	_model->SetPosition(0, 0, 20);
 
 	zprepass = std::make_shared<basepass::ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
 	zprepass->Add(_model);
+	gbuffer = std::make_shared<basepass::GBuffer>(_engine);
+	gbuffer->Add(_model);
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/

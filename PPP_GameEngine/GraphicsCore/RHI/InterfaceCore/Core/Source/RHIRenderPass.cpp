@@ -19,8 +19,10 @@ using namespace rhi::core;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 RHIRenderPass::RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const std::vector<Attachment>& colors, const std::optional<Attachment>& depth)
-	: _device(device), _colorAttachments(colors), _depthAttachment(depth),_depthClearValue(ClearValue())
+	: _device(device), _colorAttachments(colors), _depthAttachment(depth), _depthClearValue(ClearValue())
 {
+	_colorClearValues = std::vector<ClearValue>(colors.size(), ClearValue());
+
 	std::uint32_t maxSample = 1;
 	for (int i = 0; i < _colorAttachments.size(); ++i)
 	{
@@ -37,6 +39,8 @@ RHIRenderPass::RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const std
 RHIRenderPass::RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const Attachment& color, const std::optional<Attachment>& depth)
 	: _device(device), _colorAttachments(std::vector<Attachment>{color}), _depthAttachment(depth)
 {
+	_colorClearValues = std::vector<ClearValue>(1, ClearValue());
+
 	std::uint32_t maxSample = 1;
 	for (int i = 0; i < _colorAttachments.size(); ++i)
 	{

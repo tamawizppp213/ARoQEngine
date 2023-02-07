@@ -9,9 +9,11 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/BasePassGBuffer.hpp"
+#include "../../../Model/Include/GameModel.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIRenderPass.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayout.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
@@ -53,7 +55,27 @@ void GBuffer::OnResize(const std::uint32_t width, const std::uint32_t height)
 
 void GBuffer::Draw(const GPUResourceViewPtr& scene)
 {
+	const auto currentFrame = _engine->GetCurrentFrameIndex();
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, currentFrame);
 
+	/*-------------------------------------------------------------------
+	-                 Change render target
+	---------------------------------------------------------------------*/
+	commandList->BeginRenderPass(_renderPass, _frameBuffers[currentFrame]);
+
+	/*-------------------------------------------------------------------
+	-                 Execute command list
+	---------------------------------------------------------------------*/
+	commandList->SetDescriptorHeap(scene->GetHeap());
+	commandList->SetResourceLayout(_resourceLayout);
+	commandList->SetGraphicsPipeline(_pipeline);
+	scene->Bind(commandList, 0);
+	for (const auto gameModel : _gameModels)
+	{
+		gameModel->Draw(true);
+	}
+
+	commandList->EndRenderPass();
 }
 
 
@@ -84,7 +106,12 @@ void GBuffer::PreparePipelineState(const std::wstring& name)
 		{
 			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // Scene constant 
 			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // object world position information
-		}
+			ResourceLayoutElement(DescriptorHeapType::CBV, 2), // material constants
+			ResourceLayoutElement(DescriptorHeapType::SRV, 0), // Diffuse map
+			ResourceLayoutElement(DescriptorHeapType::SRV, 1), // Specular map
+			ResourceLayoutElement(DescriptorHeapType::SRV, 2), // Normal map
+		},
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0) }
 	);
 
 	/*-------------------------------------------------------------------
@@ -140,7 +167,7 @@ void GBuffer::PrepareFrameBuffers()
 		Attachment depthAttachment = Attachment::DepthStencil(PixelFormat::D32_FLOAT);
 
 		_renderPass = device->CreateRenderPass(colorAttachment, depthAttachment);
-		_renderPass->SetClearValue(clearColor, depthClearColor);
+		_renderPass->SetClearValue(std::vector<ClearValue>(_desc.BufferCount, clearColor), depthClearColor);
 	}
 
 	/*-------------------------------------------------------------------
@@ -151,7 +178,11 @@ void GBuffer::PrepareFrameBuffers()
 	{
 		const auto renderInfo = GPUTextureMetaData::RenderTarget(_desc.Width, _desc.Height, PixelFormat::R32G32B32A32_FLOAT, clearColor);
 		const auto depthInfo  = GPUTextureMetaData::DepthStencil(_desc.Width, _desc.Height, PixelFormat::D32_FLOAT, depthClearColor);
-		std::vector<TexturePtr> renderTexture(_desc.BufferCount, device->CreateTexture(renderInfo));
+		std::vector<TexturePtr> renderTexture(_desc.BufferCount);
+		for (size_t i = 0; i < _desc.BufferCount; ++i)
+		{
+			renderTexture[i] = device->CreateTexture(renderInfo);
+		}
 		const auto depthTexture = device->CreateTexture(depthInfo);
 
 		_frameBuffers[i] = device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);

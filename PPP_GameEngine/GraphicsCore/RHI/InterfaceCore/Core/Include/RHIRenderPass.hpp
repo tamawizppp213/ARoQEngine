@@ -43,13 +43,16 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void SetClearValue(const std::optional<ClearValue>& color, const std::optional<ClearValue>& depth = std::nullopt)
+		void SetClearValue(const std::optional<ClearValue>& color, const std::optional<ClearValue>& depth = std::nullopt, const std::uint32_t index = 0)
 		{
-			_colorClearValues = color.has_value() ? std::vector<ClearValue>{color.value()} : std::vector<ClearValue>{};
-			_depthClearValue  = depth;
+			if (color.has_value())
+			{
+				_colorClearValues[index] = color.value();
+			}
+			_depthClearValue     = depth;
 		}
 
-		void SetClearValue(const std::vector  <ClearValue>& colors, const std::optional<ClearValue>& depth = std::nullopt)
+		void SetClearValue(const std::vector<ClearValue>& colors, const std::optional<ClearValue>& depth = std::nullopt)
 		{
 			_colorClearValues = colors;
 			_depthClearValue  = depth;

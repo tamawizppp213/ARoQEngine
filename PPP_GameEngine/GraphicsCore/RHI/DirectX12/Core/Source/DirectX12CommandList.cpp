@@ -407,7 +407,7 @@ void RHICommandList::BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRen
 	{
 		// get rtv handle
 		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
-#if __DEBUG
+#ifdef _DEBUG
 		assert(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
 #endif
 

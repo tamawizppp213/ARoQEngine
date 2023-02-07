@@ -32,15 +32,15 @@ namespace gc::basepass
 	class GBuffer : public gc::rendering::GBuffer
 	{
 	public:
-		enum DefaultType
+		enum BufferType
 		{
 			Albedo,
+			Normal,
 			CountOf
 		};
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-
 		void OnResize(const std::uint32_t width, const std::uint32_t height) override;
 
 		void Draw(const GPUResourceViewPtr& scene) override;
@@ -55,7 +55,7 @@ namespace gc::basepass
 		GBuffer() = default;
 		
 		GBuffer(const LowLevelGraphicsEnginePtr& engine,
-			const gc::rendering::GBufferDesc& desc = gc::rendering::GBufferDesc((std::uint64_t)DefaultType::CountOf),
+			const gc::rendering::GBufferDesc& desc = gc::rendering::GBufferDesc((std::uint64_t)BufferType::CountOf),
 			const std::wstring& addName = L"");
 
 		~GBuffer();
