@@ -103,7 +103,9 @@ void GPUBuffer::CopyData(const void* data, const size_t elementIndex)
 *****************************************************************************/
 void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset)
 {
+#if _DEBUG
 	assert(dataLength + indexOffset <= _metaData.Count);
+#endif
 	std::memcpy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (size_t)dataLength);
 }
 /****************************************************************************
@@ -131,7 +133,9 @@ void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandLis
 	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
 	if ((!_metaData.IsCPUAccessible()))
 	{
+#if _DEBUG
 		assert(copyCommandList->GetType() == core::CommandListType::Copy);
+#endif
 
 		/*-------------------------------------------------------------------
 		-          Copy CPU memory data into our dafault buffer,

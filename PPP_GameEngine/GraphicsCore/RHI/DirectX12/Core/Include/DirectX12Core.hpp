@@ -38,6 +38,8 @@ struct ID3D12Fence;
 struct  ID3D10Blob;
 struct ID3D12Debug5;
 struct ID3D12Heap;
+struct D3D12_GLOBAL_ROOT_SIGNATURE;
+struct D3D12_LOCAL_ROOT_SIGNATURE;
 
 using IDevice           = ID3D12Device9;
 using IFactory          = IDXGIFactory7;

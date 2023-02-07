@@ -12,7 +12,10 @@
 #include "GameUtility/Base/Include/GameTimer.hpp"
 #include "MainGame/Core/Include/Scene.hpp"
 #include "MainGame/Sample/Include/SampleColorChange.hpp"
-#include "MainGame/Sample/Include/SampleTexture.hpp"
+#include "MainGame/Sample/Include/SampleAudio.hpp"
+#include "MainGame/Sample/Include/SampleText.hpp"
+#include "MainGame/Sample/Include/SampleUI.hpp"
+#include "MainGame/Sample/Include/SampleModel.hpp"
 #include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -22,10 +25,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, GameTimer* gameTimer)
+void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_ptr<GameTimer>& gameTimer)
 {
 	_engine = engine;
-	PushScene(new sample::SampleRayTracingRectangle());
+	PushScene(new sample::SampleModel());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************
@@ -37,7 +40,7 @@ void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, GameTimer* gameTime
 *  @param[in] GameTimer& gameTimer
 *  @return @@void
 *****************************************************************************/
-void SceneManager::TransitScene(ScenePtr scene, GameTimer* gameTimer)
+void SceneManager::TransitScene(ScenePtr scene, const GameTimerPtr& gameTimer)
 {
 	CallSceneTerminate();
 	_currentScene.pop();
@@ -45,7 +48,7 @@ void SceneManager::TransitScene(ScenePtr scene, GameTimer* gameTimer)
 	CallSceneInitialize(gameTimer);
 }
 
-void SceneManager::CallSceneInitialize( GameTimer* gameTimer)
+void SceneManager::CallSceneInitialize( const GameTimerPtr& gameTimer)
 {
 	if (_currentScene.empty()) { return; }
 	_currentScene.top()->Initialize(_engine, gameTimer);

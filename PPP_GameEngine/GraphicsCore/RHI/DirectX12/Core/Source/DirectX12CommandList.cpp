@@ -38,45 +38,94 @@ using namespace Microsoft::WRL;
 #pragma region Constructor and Destructor
 RHICommandList::~RHICommandList()
 {
-	//if (_commandList) { _commandList.Reset(); _commandList = nullptr; }
+	if (_commandList) { _commandList.Reset(); _commandList = nullptr; }
 }
 
 RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator) : 
 	rhi::core::RHICommandList(device, commandAllocator)
 {
+	/*-------------------------------------------------------------------
+	-               Get device and command allocator
+	---------------------------------------------------------------------*/
 	const auto dxDevice     = static_cast<RHIDevice*>(_device.get())->GetDevice();
 	const auto rhiAllocator = std::static_pointer_cast<directX12::RHICommandAllocator>(_commandAllocator);
 	const auto dxAllocator  = rhiAllocator->GetAllocator();
+
+	/*-------------------------------------------------------------------
+	-               Get command list type
+	---------------------------------------------------------------------*/
+	_commandListType = rhiAllocator->GetCommandListType();
+
 	/*-------------------------------------------------------------------
 	-               Prepare Closed Command List
 	---------------------------------------------------------------------*/
 	ThrowIfFailed(dxDevice->CreateCommandList(
 		0,
-		EnumConverter::Convert(rhiAllocator->GetCommandListType()),
+		EnumConverter::Convert(_commandListType),
 		dxAllocator.Get(), // Associated command allocator
 		nullptr,           // Initial PipeLine State Object
 		IID_PPV_ARGS(_commandList.GetAddressOf())));
+
 	ThrowIfFailed(_commandList->SetName(L"DirectX12::CommandList"));
 	ThrowIfFailed(_commandList->Close());
-	_commandListType = rhiAllocator->GetCommandListType();
 }
 
 #pragma endregion Constructor and Destructor
+
 #pragma region Call Draw Frame
+/****************************************************************************
+*                     BeginRecording
+*************************************************************************//**
+*  @fn        void RHICommandList::BeginRecording()
+*
+*  @brief     Call at begin draw frame
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void RHICommandList::BeginRecording()
 {
+	/*-------------------------------------------------------------------
+	-          Reset command list and allocator
+	---------------------------------------------------------------------*/
 	_commandAllocator->Reset();
 	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
+	
 	if (_commandAllocator->GetCommandListType() == core::CommandListType::Graphics)
 	{
 		_commandList->ClearState(nullptr); // Œ³‚Ìó‘Ô‚É–ß‚é
 	}
-
 }
+
+/****************************************************************************
+*                     EndRecording
+*************************************************************************//**
+*  @fn        void RHICommandList::EndRecording()
+*
+*  @brief     Call at end draw frame. Close executed command list.
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void RHICommandList::EndRecording()
 {
 	ThrowIfFailed(_commandList->Close());
 }
+
+/****************************************************************************
+*                     BeginRenderPass
+*************************************************************************//**
+*  @fn        void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer)
+*
+*  @brief     Begin render pass and frame buffer.
+*
+*  @param[in] const std::shared_ptr<core::RHIRenderPass>& renderPass
+*  @param[in] const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer
+*
+*  @return    void
+*****************************************************************************/
 void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer)
 {
 	/*-------------------------------------------------------------------
@@ -84,6 +133,7 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 	---------------------------------------------------------------------*/
 	std::vector<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
 	TransitionResourceStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().data(), states.data());
+
 	/*-------------------------------------------------------------------
 	-          Select renderpass and frame buffer action
 	---------------------------------------------------------------------*/
@@ -93,16 +143,31 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 	_renderPass  = renderPass;
 	_frameBuffer = frameBuffer;
 }
+
+/****************************************************************************
+*                     EndRenderPass
+*************************************************************************//**
+*  @fn        void RHICommandList::EndRenderPass()
+*
+*  @brief     End render pass
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void RHICommandList::EndRenderPass()
 {
 	if (_device->IsSupportedRenderPass()) { _commandList->EndRenderPass(); }
+
 	/*-------------------------------------------------------------------
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
 	std::vector<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
 	TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
 }
+
 #pragma endregion Call Draw Frame
+
 #pragma region GPU Command
 void RHICommandList::SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptorHeap>& heap)
 {
@@ -196,8 +261,10 @@ void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const
 
 void RHICommandList::SetVertexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer)
 {
+#if __DEBUG
 	// Is vertex buffer
 	assert(buffer->GetUsage() == core::ResourceUsage::VertexBuffer);
+#endif
 
 	// Set up vertex buffer view
 	D3D12_VERTEX_BUFFER_VIEW view = {
@@ -234,7 +301,9 @@ void RHICommandList::SetVertexBuffers(const std::vector<std::shared_ptr<core::GP
 	auto views = std::vector<D3D12_VERTEX_BUFFER_VIEW>(buffers.size());
 	for (size_t i = 0; i < views.size(); ++i)
 	{
+#if __DEBUG
 		assert(buffers[i]->GetUsage() == core::ResourceUsage::VertexBuffer);
+#endif
 		views[i].BufferLocation = std::static_pointer_cast<directX12::GPUBuffer>(buffers[i])->GetResourcePtr()->GetGPUVirtualAddress();
 		views[i].SizeInBytes    = static_cast<UINT>(buffers[i]->GetTotalByteSize());
 		views[i].StrideInBytes  = static_cast<UINT>(buffers[i]->GetElementByteSize());
@@ -245,7 +314,9 @@ void RHICommandList::SetVertexBuffers(const std::vector<std::shared_ptr<core::GP
 
 void RHICommandList::SetIndexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType)
 {
+#if __DEBUG
 	assert(buffer->GetUsage() == core::ResourceUsage::IndexBuffer);
+#endif
 
 	D3D12_INDEX_BUFFER_VIEW view = {};
 	view.BufferLocation = std::static_pointer_cast<directX12::GPUBuffer>(buffer)->GetResourcePtr()->GetGPUVirtualAddress();
@@ -336,7 +407,9 @@ void RHICommandList::BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRen
 	{
 		// get rtv handle
 		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
+#ifdef _DEBUG
 		assert(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
+#endif
 
 		const auto rtvHandle = view->GetCPUHandler();
 		if (!rtvHandle.ptr) { continue; }
@@ -363,7 +436,11 @@ void RHICommandList::BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRen
 	{
 		// get dsv handle
 		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
+
+#if __DEBUG
 		assert(view->GetResourceViewType() == core::ResourceViewType::DepthStencil);
+#endif
+
 		const auto dsvHandle = view->GetCPUHandler();
 
 		// set depth render pass load op
@@ -411,14 +488,20 @@ void RHICommandList::OMSetFrameBuffer(const std::shared_ptr<directX12::RHIRender
 	for (size_t i = 0; i < rtvHandle.size(); ++i)
 	{
 		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
+
+#if _DEBUG
 		assert(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
+#endif 
+
 		rtvHandle[i] = view->GetCPUHandler();
 	}
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = {};
 	if (hasDSV)
 	{
 		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
+#if _DEBUG
 		assert(view->GetResourceViewType() == core::ResourceViewType::DepthStencil);
+#endif
 		dsvHandle = view->GetCPUHandler();
 	}
 	/*-------------------------------------------------------------------

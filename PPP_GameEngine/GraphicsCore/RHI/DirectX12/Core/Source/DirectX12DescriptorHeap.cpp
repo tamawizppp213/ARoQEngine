@@ -39,25 +39,68 @@ RHIDescriptorHeap::~RHIDescriptorHeap()
 
 #pragma endregion Constructor and Destructor
 #pragma region Public Function 
+/****************************************************************************
+*                     Allocate
+*************************************************************************//**
+*  @fn        RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+*
+*  @brief     Allocate view.Return descriptor index(only use resourceLayout in vulkan api
+*
+*  @param[in] const core::DescriptorHeapType heapType
+*  @param[in] const std::shared_ptr<core::RHIResourceLayout>& resourceLayout
+*
+*  @return 　　DescriptorID
+*****************************************************************************/
 RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
 {
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (_heapInfo.find(heapType) == _heapInfo.end()) { return static_cast<DescriptorID>(INVALID_ID); }
+	if (!_heapInfo.contains(heapType)) { return static_cast<DescriptorID>(INVALID_ID); }
+
 	/*-------------------------------------------------------------------
 	-			     Issue ID
 	---------------------------------------------------------------------*/
 	auto& resourceAllocator = _resourceAllocators[heapType];
 	return resourceAllocator.IssueID(); // resource view index in each heap.
 }
+
+/****************************************************************************
+*                     Free
+*************************************************************************//**
+*  @fn        void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex)
+*
+*  @brief     Free Resource allocator and heap
+*
+*  @param[in] const core::DescriptorHeapType heapType
+*  @param[in] const DescriptorID offsetID
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex)
+{
+	/*-------------------------------------------------------------------
+	-			     Check heap type
+	---------------------------------------------------------------------*/
+	if (!_heapInfo.contains(heapType)) { return; }
+
+	/*-------------------------------------------------------------------
+	-			     Free ID
+	---------------------------------------------------------------------*/
+	_resourceAllocators[heapType].FreeID(offsetIndex); // resource view index in each heap.s
+}
+
 /****************************************************************************
 *                     Resize
 *************************************************************************//**
 *  @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
+* 
 *  @brief     Resize max view count size heap
+* 
 *  @param[in] const core::DescriptorHeapType type
+* 
 *  @param[in] const size_t viewCount
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
@@ -65,18 +108,25 @@ void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t
 	/*-------------------------------------------------------------------
 	-			     Check max heap size
 	---------------------------------------------------------------------*/
-	if (_heapInfo.find(type) != _heapInfo.end() && _heapInfo.at(type) > viewCount) { return; }
+	if (_heapInfo.contains(type) && _heapInfo.at(type) > viewCount) { return; }
 
 	std::map<core::DescriptorHeapType, MaxDescriptorSize> heapInfo;
 	heapInfo[type] = viewCount;
+
+	/*-------------------------------------------------------------------
+	-			    Resize Heap
+	---------------------------------------------------------------------*/
 	Resize(heapInfo);
 }
 /****************************************************************************
 *                     Resize
 *************************************************************************//**
 *  @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
+* 
 *  @brief     Resize max view count size heap
+* 
 *  @param[in] const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
@@ -87,7 +137,9 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	-	Count total descriptor size and Check Heap Type (CBV or SRV or UAV)
 	---------------------------------------------------------------------*/
 	if (!CheckCorrectViewConbination(heapInfos)) { throw std::runtime_error("wrong conbination view"); }
+
 	size_t totalDescriptorCount = 0;
+
 	for (const auto& desc : heapInfos) 
 	{ 
 		// count total descriptor size
@@ -101,12 +153,15 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	/*-------------------------------------------------------------------
 	-			     Count total descriptor size
 	---------------------------------------------------------------------*/
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-	D3D12_DESCRIPTOR_HEAP_TYPE heapType = EnumConverter::Convert(heapInfos.begin()->first);
-	heapDesc.NumDescriptors = static_cast<UINT>(totalDescriptorCount);
-	heapDesc.Type           = heapType;
-	heapDesc.Flags          = heapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	heapDesc.NodeMask       = 0;
+	const D3D12_DESCRIPTOR_HEAP_TYPE heapType = EnumConverter::Convert(heapInfos.begin()->first);
+	
+	const D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
+	{
+		.Type           = heapType,
+		.NumDescriptors = static_cast<UINT>(totalDescriptorCount),
+		.Flags          = heapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+		.NodeMask       = 0
+	};
 
 	/*-------------------------------------------------------------------
 	-			     Create heap desc
@@ -128,7 +183,8 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 				_resourceAllocators[heapInfo.first].GetMaxDescriptorCount(),                           // copy   descriptor count 
 				D3D12_CPU_DESCRIPTOR_HANDLE(heap->GetCPUDescriptorHandleForHeapStart().ptr + pointer), // dest   descriptor range 
 				_resourceAllocators[heapInfo.first].GetCPUDescHandler(),                               // source descriptor range
-				heapType);                                               
+				heapType);     
+
 			// Proceed cpu and gpu pointer 
 			pointer += _descriptorByteSize * heapInfo.second;
 		}
@@ -140,11 +196,13 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	_totalHeapCount     = totalDescriptorCount;
 	_descriptorByteSize = dxDevice->GetDescriptorHandleIncrementSize(heapType);
 	_descriptorHeap     = heap;
+
 	{
 		size_t pointer = 0;
 		for (const auto& heapInfo : heapInfos)
 		{
-			_resourceAllocators[heapInfo.first].SetResourceAllocator(
+			_resourceAllocators[heapInfo.first].SetResourceAllocator
+			(
 				static_cast<std::uint32_t>(heapInfo.second),            // max descriptor count
 				static_cast<std::uint32_t>(_descriptorByteSize),        // one descriptor byte size
 				D3D12_CPU_DESCRIPTOR_HANDLE(_descriptorHeap->GetCPUDescriptorHandleForHeapStart().ptr + pointer), // cpu start pointer
@@ -152,7 +210,9 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 				D3D12_GPU_DESCRIPTOR_HANDLE() : 
 				D3D12_GPU_DESCRIPTOR_HANDLE(_descriptorHeap->GetGPUDescriptorHandleForHeapStart().ptr + pointer) // gpu start pointer
 			);
+
 			_heapInfo[heapInfo.first] = heapInfo.second;
+
 			pointer += _descriptorByteSize * heapInfo.second;
 		}
 	}
@@ -162,8 +222,11 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 *                     Reset
 *************************************************************************//**
 *  @fn        void GraphicsDeviceDirectX12::ReportLiveObjects()
+* 
 *  @brief     Reset (ResetFlag: All -> Heap Count 0, or OnlyOffset)
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIDescriptorHeap::Reset(const ResetFlag flag)
@@ -172,6 +235,7 @@ void RHIDescriptorHeap::Reset(const ResetFlag flag)
 	{
 		resourceAllocator.second.ResetID();
 	}
+
 	if (flag == ResetFlag::All && _descriptorHeap != nullptr) 
 	{
 		_descriptorHeap.Reset(); 
@@ -185,6 +249,7 @@ void RHIDescriptorHeap::Reset(const ResetFlag flag)
 bool RHIDescriptorHeap::CheckCorrectViewConbination(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
 {
 	bool foundSingleView = false;
+
 	for (const auto& heapInfo : heapInfos)
 	{
 		if (heapInfo.first == core::DescriptorHeapType::RTV)     { foundSingleView = true; break; }

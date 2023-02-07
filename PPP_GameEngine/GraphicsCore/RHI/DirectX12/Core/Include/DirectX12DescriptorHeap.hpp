@@ -40,11 +40,16 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		// @brief : Allocate view.Return descriptor index(only use resourceLayout in vulkan api :
 		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout = nullptr) override;
+		
+		void Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex);
+
 		/* @brief : Resize max view count size heap*/
 		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
 		/* @brief : Resize max view count size heap*/
 		void Resize(const core::DescriptorHeapType type, const size_t viewCount) override;
+		
 		/* @brief : Reset view offset*/
 		void Reset(const ResetFlag flag = ResetFlag::OnlyOffset) override;
 
@@ -56,19 +61,24 @@ namespace rhi::directX12
 		{ 
 			return _resourceAllocators.at(type).GetCPUDescHandler(offsetIndex); 
 		}
+
 		/* @brief : Return directX12 gpu virtual pointer handler*/
 		inline GPU_DESC_HANDLER GetGPUDescHandler(const core::DescriptorHeapType type, const std::uint32_t offsetIndex = 0)
 		{
 			return _resourceAllocators.at(type).GetGPUDescHandler(offsetIndex);
 		}
+
 		/* brief : Return Descriptor Heap pointer (COM)*/
 		inline DescriptorHeapComPtr GetHeap() const noexcept { return _descriptorHeap; }
+		
 		inline size_t GetDescriptorByteSize() const noexcept { return _descriptorByteSize; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIDescriptorHeap() = default;
+		
 		~RHIDescriptorHeap();
+		
 		explicit RHIDescriptorHeap(const std::shared_ptr<core::RHIDevice>& device);
 
 	protected:

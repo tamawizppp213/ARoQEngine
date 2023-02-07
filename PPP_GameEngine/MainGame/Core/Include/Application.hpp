@@ -72,7 +72,7 @@ private:
 	HINSTANCE  _appInstance = nullptr;
 	HWND       _mainWindow  = nullptr;
 	WNDCLASSEX _windowClass = {};
-	GameTimer  _gameTimer;
+	std::shared_ptr<GameTimer> _gameTimer = nullptr;
 	GameInput& _gameInput             = GameInput::Instance();
 	GameManager& _gameManager         = GameManager::Instance();
 	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::DirectX12;

@@ -11,9 +11,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "IPAddress.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <WinSock2.h>
-#include <string>
+#include <vector>
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +25,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace gc
 {
-
+	class PacketQueue;
+	class Socket;
 	/****************************************************************************
 	*				  			 TransportTCP
 	*************************************************************************//**
@@ -32,18 +35,29 @@ namespace gc
 	*****************************************************************************/
 	class ITransport: public NonCopyable
 	{
+	protected :
+		using PacketQueuePtr = std::shared_ptr<PacketQueue>;
+		using SocketPtr      = std::shared_ptr<Socket>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Transmission processing on the communication thread side.*/
+		virtual void SendPacket() = 0;
+		
+		/* @brief : Transmission processing on the communication thread side.*/
+		virtual void ReceivePacket() = 0;
+
 		/* @brief : Transport Connection (return true: Connection Success, false: Connection Fail)*/
-		virtual bool Connect(const std::string& address, const std::uint32_t port) = 0;
+		virtual bool Connect(const IPAddress& address, const std::uint32_t port) = 0;
+		
 		/* @brief : Transport Disconnection*/
 		virtual void Disconnect() = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		bool IsConnected() const { return _isConnected; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -52,12 +66,30 @@ namespace gc
 		**                Protected Function
 		*****************************************************************************/
 		ITransport();
+
+		ITransport(const SocketPtr& socket, const std::string& transportName) : _socket(socket), _transportName(transportName) {};
+		
 		virtual ~ITransport();
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		/* @brief: Connection Flags*/
 		bool _isConnected = false;
+
+		// @brief :Packet queue
+		PacketQueuePtr _sendQueue    = nullptr;  // Send
+		PacketQueuePtr _receiveQueue = nullptr;  // Receive
+
+		/* @brief: Communication socket*/
+		SocketPtr _socket = nullptr;
+
+		/* @brief : Transport name*/
+		std::string _transportName = "";
+
+		/* @brief : Maximum size of packets to send and receive.
+		            This size is decided by MTU configuration. (MTU: Maximum data size that can be sent at a time )
+					Ethernet maximum MTS is 1500 bytes.*/
+		static constexpr std::uint32_t MaxPacketSize = 1400; 
 	};
 }
 #endif

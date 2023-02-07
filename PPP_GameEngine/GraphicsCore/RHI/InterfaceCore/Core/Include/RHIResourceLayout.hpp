@@ -42,11 +42,19 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/* @brief: Return gpu resource shader binding element*/
 		const ResourceLayoutElement&  GetResourceElement(const size_t index) const { return _elements[index]; }
+		
+		/* @brief : Return shader layout element of the sampler state*/
 		const SamplerLayoutElement&   GetSamplerElement (const size_t index) const { return _samplers[index]; }
+		
+		/* @brief : Return Constant32Bits data*/
 		std::optional<Constant32Bits> GetConstant32Bits() const noexcept { return _constant32Bits; }
 
+		/* @brief : Return All gpu resource shader binding elements*/
 		const std::vector<ResourceLayoutElement>& GetResourceElements() const{ return _elements; }
+		
+		/* @brief : Return all sampler state shader binding elements*/
 		const std::vector<SamplerLayoutElement>&  GetSamplerElements () const{ return _samplers; }
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -57,12 +65,14 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIResourceLayout() = default;
+
 		virtual ~RHIResourceLayout()
 		{
 			_elements.clear(); _elements.shrink_to_fit();
 			_samplers.clear(); _samplers.shrink_to_fit();
 
 		}
+
 		explicit RHIResourceLayout(
 			const std::shared_ptr<RHIDevice>& device,
 			const std::vector<core::ResourceLayoutElement>& elements = {},

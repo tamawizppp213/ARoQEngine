@@ -37,12 +37,12 @@ SampleRectangle::~SampleRectangle()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleRectangle::Initialize(GameTimer* gameTimer)
+*  @fn        void SampleRectangle::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
-*  @param[in] GameTimer* gameTimer
+*  @param[in]  const GameTimerPtr& gameTimer
 *  @return 　　void
 *****************************************************************************/
-void SampleRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -72,6 +72,7 @@ void SampleRectangle::Draw()
 	-             Start frame
 	---------------------------------------------------------------------*/
 	_engine->BeginDrawFrame();
+	_engine->BeginSwapchainRenderPass();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
@@ -195,7 +196,7 @@ void SampleRectangle::ExecuteSceneTransition()
 void SampleRectangle::BuildBuffer()
 {
 	// 頂点情報変えるならFrameCount分用意した方が良い.
-	gc::MeshData rectangle = gc::PrimitiveMeshGenerator::Rect
+	gc::core::PrimitiveMesh rectangle = gc::core::PrimitiveMeshGenerator::Rect
 	(1.0f, 1.0f, 1.0f, gm::Float4(1,1,0,1));
 	/*-------------------------------------------------------------------
 	-             Vertex Buffer

@@ -41,7 +41,9 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger):
 	---------------------------------------------------------------------*/
 #ifdef _DEBUG
 	if (_enableCPUDebugger) { EnabledDebugLayer(); }
+
 	if (_enableGPUDebugger) { EnabledShaderBasedValidation();}
+
 	/*-------------------------------------------------------------------
 	-                   Create Factory
 	---------------------------------------------------------------------*/
@@ -58,15 +60,20 @@ RHIInstance::~RHIInstance()
 
 	printf("DestroyInstance");
 }
+
 #pragma endregion Constructor and Destructor
+
 #pragma region Public Function
 /****************************************************************************
 *                     SearchHighPerformanceAdapter
 *************************************************************************//**
 *  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
+* 
 *  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの多いものから 
 *             (High) xGPU, dGPU iGPU (Low) selected
+* 
 *  @param[in] void
+* 
 *  @return 　　std::shared_ptr<core::RHIDisplayAdapter>
 *****************************************************************************/
 std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
@@ -78,12 +85,14 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapt
 *                     SearchMinimumPowerAdapter
 *************************************************************************//**
 *  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+* 
 *  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの少ないものから
 *             (Low) iGPU, dGPU xGPU (High)
+* 
 *  @param[in] void
+* 
 *  @return 　　std::shared_ptr<core::RHIDisplayAdapter>
 *****************************************************************************/
-
 std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 {
 	return SearchAdapter(DXGI_GPU_PREFERENCE_MINIMUM_POWER);
@@ -93,18 +102,23 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter(
 *                     SearchAdapter
 *************************************************************************//**
 *  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
+* 
 *  @brief     Search Proper Physical Device Adapter
+* 
 *  @param[in] const DXGI_GPU_PREFERENCE preference (high performance or minimum power)
+* 
 *  @return 　　std::shared_ptr<core::RHIDisplayAdapter>
 *****************************************************************************/
 std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
 {
 	AdapterComPtr adapter = nullptr;
+
 	// (High) xGPU, dGPU iGPU (Low) selected
 	if (_factory->EnumAdapterByGpuPreference(0, preference, IID_PPV_ARGS(&adapter)) == DXGI_ERROR_NOT_FOUND)
 	{
 		throw std::runtime_error("failed to search adapter");
 	}
+
 	return std::make_shared<RHIDisplayAdapter>(shared_from_this(), adapter);
 }
 
@@ -112,8 +126,11 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_G
 *                     EnumrateAdapters
 *************************************************************************//**
 *  @fn        std::vector<std::shared_ptr<core::RHIAdapter>> EnumrateAdapters()
+* 
 *  @brief     Return all availablle adapter lists
+* 
 *  @param[in] void
+* 
 *  @return 　　std::vector<std::shared_ptr<core::RHIAdapter>>
 *****************************************************************************/
 std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
@@ -138,12 +155,16 @@ std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapt
 	}
 	return adapterLists;
 }
+
 /****************************************************************************
 *                     LogAdapters
 *************************************************************************//**
 *  @fn        void RHIInstance::LogAdapters()
+* 
 *  @brief     Show all available adapter information using Output debug string
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIInstance::LogAdapters()
@@ -162,9 +183,13 @@ void RHIInstance::LogAdapters()
 *                     EnabledDebugLayer
 *************************************************************************//**
 *  @fn        void DirectX12::EnabledDebugLayer(void)
+* 
 *  @brief     Enabled CPU debug layer(debug mode only use)
+* 
 *  @param[in] void
+* 
 *  @return 　　void
+* 
 *  @details   it must be called before the D3D12 device is created.
 *****************************************************************************/
 void RHIInstance::EnabledDebugLayer()
@@ -178,13 +203,18 @@ void RHIInstance::EnabledDebugLayer()
 	/* Release Debugger pointer*/
 	debugController.Reset();
 }
+
 /****************************************************************************
 *                   EnabledShaderBasedValiation
 *************************************************************************//**
 *  @fn        void DirectX12::EnabledShaderBasedValidation(void)
+* 
 *  @brief     Enabled GPU debugger (fpsに大きな影響を与えます.)
+* 
 *  @param[in] void
+* 
 *  @return 　　void
+* 
 *  @details   GPU-based valiation helps to identify the following errors.@n
 *             1. Use of uninitialized or incompatible descriptors in a shader.@n
 *             2. Use of descriptors referencing deleted Resources in a shader.@n
@@ -198,6 +228,7 @@ void RHIInstance::EnabledShaderBasedValidation()
 	DebugComPtr debugController;
 	ComPtr<ID3D12Debug3> debug3;
 
+	// Get Debugger
 	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
 	ThrowIfFailed(debugController->QueryInterface(IID_PPV_ARGS(&debug3)));
 

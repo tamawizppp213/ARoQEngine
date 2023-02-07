@@ -11,7 +11,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Buffer.hpp"
+#include "../../Interface/Include/GBuffer.hpp"
+
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,53 +21,57 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace basepass
+namespace gc::basepass
 {
-	enum class GBufferType
-	{
-		Albedo,
-		CountOfGBufferType,
-	};
 	/****************************************************************************
 	*				  			GBuffer
 	*************************************************************************//**
 	*  @class     GBuffer
-	*  @brief     GBuffer
+	*  @brief     GBuffer (普段はDefaultTypeを使用するが, カスタマイズも可能にしている.)
 	*****************************************************************************/
-	class GBuffer
+	class GBuffer : public gc::rendering::GBuffer
 	{
-		using RenderTarget = ColorBuffer;
-		using SceneGPUAddress = UINT64;
 	public:
+		enum BufferType
+		{
+			Albedo,
+			Normal,
+			CountOf
+		};
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(int screenWidth, int screenHeight);
-		void OnResize(int newWidth, int newHeight);
-		void Draw(SceneGPUAddress scene);
-		void Finalize();
+		void OnResize(const std::uint32_t width, const std::uint32_t height) override;
+
+		void Draw(const GPUResourceViewPtr& scene) override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const ColorBuffer& GetGBuffer(GBufferType type) const { return _renderTargets[(int)type]; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GBuffer();
+		GBuffer() = default;
+		
+		GBuffer(const LowLevelGraphicsEnginePtr& engine,
+			const gc::rendering::GBufferDesc& desc = gc::rendering::GBufferDesc((std::uint64_t)BufferType::CountOf),
+			const std::wstring& addName = L"");
+
 		~GBuffer();
-		GBuffer(const GBuffer&)            = delete;
-		GBuffer& operator=(const GBuffer&) = delete;
-		GBuffer(GBuffer&&)                 = default;
-		GBuffer& operator=(GBuffer&&)      = default;
-	private:
+		
+	protected:
 		/****************************************************************************
-		**                Private Function
+		**                Protected Function
 		*****************************************************************************/
+		void PreparePipelineState(const std::wstring& name) override;
+
+		void PrepareFrameBuffers() override;
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Protected Member Variables
 		*****************************************************************************/
-		RenderTarget _renderTargets[(int)GBufferType::CountOfGBufferType];
+		
 	};
 }
 #endif

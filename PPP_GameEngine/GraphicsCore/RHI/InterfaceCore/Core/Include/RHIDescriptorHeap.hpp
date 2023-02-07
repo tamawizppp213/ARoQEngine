@@ -51,16 +51,19 @@ namespace rhi::core
 		*****************************************************************************/
 		/* @brief : Allocate view. Return descriptor index (only use resourceLayout in vulkan api : )*/
 		virtual DescriptorID Allocate(const DescriptorHeapType heapType, const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0;
+		
 		/* @brief : Resize max view count size heap*/
 		virtual void Resize(const DescriptorHeapType type, const size_t viewCount) = 0;
 		/* @brief : Resize max view count size heap*/
 		virtual void Resize(const std::map<DescriptorHeapType, MaxDescriptorSize>& heapInfo) = 0;
+		
 		/* @brief : Reset view offset*/
 		virtual void Reset(const ResetFlag flag = ResetFlag::OnlyOffset) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		size_t GetMaxCount (const DescriptorHeapType type) const noexcept { return _heapInfo.find(type) != _heapInfo.end() ? _heapInfo.at(type) : 0; }
+		
 		// @brief: Return descriptor heap type (cbv, rtv, dsv)
 		bool HasHeapType(const DescriptorHeapType desiredType) const noexcept { return _heapInfo.find(desiredType) != _heapInfo.end();; }
 		
@@ -73,6 +76,7 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		explicit RHIDescriptorHeap(const std::shared_ptr<RHIDevice>& device) : _device(device){};
+		
 		virtual ~RHIDescriptorHeap();
 
 		/****************************************************************************

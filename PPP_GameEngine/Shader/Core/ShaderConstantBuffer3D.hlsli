@@ -35,7 +35,23 @@ cbuffer SceneConstants : register(b0)
     float  DeltaTime;
 }
 
+cbuffer ObjectConstants : register(b1)
+{
+    matrix World;
+}
 
+cbuffer MaterialConstants : register(b2)
+{
+    float4 Diffuse;
+    float3 Specular;
+    float  SpecularIntensity;
+    float3 EmissiveColor;
+    float  EmissiveIntensity;
+    float3 Ambient;
+    float  Metalness;
+    float  Roughness;
+    float3 Padding;
+}
 //ConstantBuffer<SceneLights> SceneLightConstants : register(b3);
 
 #endif

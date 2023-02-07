@@ -64,6 +64,7 @@ namespace gc
 		*****************************************************************************/
 		/* @brief : Resize frame buffer (Not implement)*/
 		void OnResize(int newWidth, int newHeight);
+
 		/*@brief : Render to back buffer*/
 		void Draw();
 		/****************************************************************************
@@ -74,7 +75,9 @@ namespace gc
 		**                Constructor and Destructor
 		*****************************************************************************/
 		ColorChange();
+
 		~ColorChange();
+
 		ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName = L"");
 
 	protected:
@@ -82,8 +85,11 @@ namespace gc
 		**                Protected Function
 		*****************************************************************************/
 		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
+		
 		void PreparePipelineState(ColorChangeType type, const std::wstring& addName);
+		
 		void PrepareResourceView();
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

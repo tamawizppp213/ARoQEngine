@@ -42,17 +42,20 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		virtual void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) = 0;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		/* @brief: Return descriptor heap pointer. */
 		std::shared_ptr<core::RHIDescriptorHeap> GetHeap() const noexcept { return _heap; };
+		
 		/* @brief: Return resource view type*/
 		core::ResourceViewType GetResourceViewType() const noexcept { return _resourceViewType; }
 
 		std::uint32_t GetDescriptorID() const { return _descriptorID; }
 
 		std::shared_ptr<GPUTexture> GetTexture() const noexcept{ return _texture; }
+
 		std::shared_ptr<GPUBuffer> GetBuffer() const noexcept { return _buffer; }
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -63,7 +66,9 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUResourceView() = default;
+
 		virtual ~GPUResourceView() = default;
+
 		explicit GPUResourceView(const std::shared_ptr<RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) : _device(device), _resourceViewType(type), _heap(customHeap) {};
 		/****************************************************************************
 		**                Protected Function

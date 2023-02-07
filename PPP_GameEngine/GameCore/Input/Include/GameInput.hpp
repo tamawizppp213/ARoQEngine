@@ -14,6 +14,7 @@
 #include "GamePad.hpp"
 #include "Keyboard.hpp"
 #include "Mouse.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +30,9 @@
 *****************************************************************************/
 class GameInput
 {
+	using KeyboardPtr = std::shared_ptr<Keyboard>;
+	using MousePtr    = std::shared_ptr<Mouse>;
+	using GamePadPtr  = std::shared_ptr<GamePad>;
 public:
 	/****************************************************************************
 	**                Public Function
@@ -36,9 +40,9 @@ public:
 	bool Initialize(HINSTANCE hInstance, HWND hwnd);
 	void Update();
 	void Finalize();
-	Keyboard& GetKeyboard() { return this->_keyboard; }
-	Mouse&    GetMouse()    { return this->_mouse; }
-	GamePad&  GetGamePad()  { return this->_gamePad; }
+	KeyboardPtr GetKeyboard() { return this->_keyboard; }
+	MousePtr    GetMouse()    { return this->_mouse; }
+	GamePadPtr  GetGamePad()  { return this->_gamePad; }
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
@@ -69,9 +73,9 @@ private:
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
-	Keyboard _keyboard;
-	Mouse    _mouse;
-	GamePad _gamePad;
+	KeyboardPtr _keyboard = nullptr;
+	MousePtr    _mouse    = nullptr;
+	GamePadPtr  _gamePad   = nullptr;
 	LPDIRECTINPUT8 _dInput = nullptr;
 	
 

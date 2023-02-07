@@ -38,10 +38,13 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @ brief : Used to wait for another Command queue to complete execution. (in GPU)*/
+		/* @ brief : Used to wait for another Command queue to complete execution. (in GPU)
+		             他のコマンドキューとの実行順序を保証するために使用する.*/
 		void Wait  (const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
+		
 		/* @ brief : Update the fence value (value) when the submitted Command Queue execution completes.*/
 		void Signal(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
+		
 		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
 		void Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists) override;
 		/****************************************************************************
@@ -52,7 +55,9 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHICommandQueue() = default;
+		
 		~RHICommandQueue();
+		
 		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type);
 	protected:
 		/****************************************************************************

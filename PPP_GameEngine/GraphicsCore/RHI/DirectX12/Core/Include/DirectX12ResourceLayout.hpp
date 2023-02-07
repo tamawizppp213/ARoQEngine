@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayout.hpp"
 #include "DirectX12Core.hpp"
+#include <d3d12.h>
 #include <vector>
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +42,13 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		RootSignatureComPtr GetRootSignature() const noexcept { return _rootSignature; }
+
+		D3D12_GLOBAL_ROOT_SIGNATURE GetGlobalRootSignature() const { return D3D12_GLOBAL_ROOT_SIGNATURE(_rootSignature.Get()); }
+
+		D3D12_LOCAL_ROOT_SIGNATURE GetLocalRootSignature() const { return D3D12_LOCAL_ROOT_SIGNATURE(_rootSignature.Get()); }
+
 		size_t GetElementsCount() const noexcept { return _elementsCount; }
+
 		size_t GetConstant32BitsCount() const noexcept { return _constant32BitsCount; }
 		/****************************************************************************
 		**                Constructor and Destructor

@@ -42,16 +42,22 @@ namespace rhi::core
 		*****************************************************************************/
 		// Note : êVÇΩÇ…VertexÇGameCoreÇ≈íËã`Ç∑ÇÈèÍçáÇÕÇ±ÇÃä÷êîÇéÊÇËèúÇ´, à⁄ìÆÇ∑ÇÈ. 
 		static std::vector<InputLayoutElement> GetDefaultVertexElement() { return DEFAULT_VERTEX_ELEMENTS; }
+		static std::vector<InputLayoutElement> GetDefaultSkinVertexElement() { return DEFAULT_SKINVERTEX_ELEMENTS; }
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		size_t GetSlot() const noexcept { return _slotCount; }
+		
 		/* @brief return input layout element*/
 		const InputLayoutElement& GetElement(const size_t index) const { return _elements[index]; }
+		
 		/* @brief return input layout elements*/
 		const std::vector<InputLayoutElement>& GetElements() const { return _elements; }
+		
 		/* @brief return primitive topology*/
 		PrimitiveTopology GetPrimitiveTopology() const { return _primitiveTopology; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -61,7 +67,9 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUInputAssemblyState() = default;
+
 		~GPUInputAssemblyState() = default;
+
 		explicit GPUInputAssemblyState(
 			const std::shared_ptr<RHIDevice>& device,
 			const std::vector<InputLayoutElement>& elements,
@@ -87,6 +95,7 @@ namespace rhi::core
 		core::PrimitiveTopology _primitiveTopology = PrimitiveTopology::TriangleList;
 	private:
 		static const std::vector<InputLayoutElement> DEFAULT_VERTEX_ELEMENTS;
+		static const std::vector<InputLayoutElement> DEFAULT_SKINVERTEX_ELEMENTS;
 	};
 
 }

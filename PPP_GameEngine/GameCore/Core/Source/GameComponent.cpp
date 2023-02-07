@@ -24,7 +24,7 @@ Component::Component()
 	_updateOrder = DEFAULT_UPDATE_ORDER;
 }
 
-Component::Component(GameObject* gameObject, unsigned int updateOrder)
+Component::Component(gc::core::GameObject* gameObject, unsigned int updateOrder)
 {
 	_owner       = gameObject;
 	_updateOrder = updateOrder;

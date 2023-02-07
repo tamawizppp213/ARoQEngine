@@ -26,7 +26,7 @@ namespace rhi::core
 	class GPUResourceCache;
 	class GPUResourceView;
 }
-namespace ui
+namespace gc::ui
 {
 	class Image;
 	class UIRenderer;
@@ -42,15 +42,15 @@ namespace sample
 	*****************************************************************************/
 	class SampleTexture : public Scene
 	{
-		using UIRendererPtr = std::shared_ptr<ui::UIRenderer>;
-		using ImagePtr      = std::shared_ptr<ui::Image>;
+		using UIRendererPtr = std::shared_ptr<gc::ui::UIRenderer>;
+		using ImagePtr      = std::shared_ptr<gc::ui::Image>;
 		using GPUResourceCachePtr = std::shared_ptr<rhi::core::GPUResourceCache>;
 		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer) override;
+		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
 		void Update() override;
 		void Draw() override;
 		void Terminate() override;

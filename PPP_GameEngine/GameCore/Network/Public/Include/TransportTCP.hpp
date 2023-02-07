@@ -34,10 +34,23 @@ namespace gc
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Transmission processing on the communication thread side.*/
+		void SendPacket() override;
+
+		/* @brief : Transmission processing on the communication thread side.*/
+		void ReceivePacket() override;
+
 		/* @brief : Transport Connection (return true: Connection Success, false: Connection Fail)*/
-		bool Connect(const std::string& address, const std::uint32_t port) override;
+		bool Connect(const IPAddress& address, const std::uint32_t port) override;
+		
 		/* @brief : Transport Disconnection*/
 		void Disconnect() override;
+
+		/* @brief : Enqueue send packet queue*/
+		void PackSendQueue(const std::vector<std::uint8_t>& data, const std::uint64_t size);
+
+		/* @ brief : Dequeue receive packet queue*/
+		std::int32_t UnpackReceiveQueue(std::vector<std::uint8_t>& buffer, const std::uint64_t size);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -46,8 +59,10 @@ namespace gc
 		**                Constructor and Destructor
 		*****************************************************************************/
 		TransportTCP();
+
 		~TransportTCP();
-		TransportTCP(const SOCKET socket, const std::string& transportName);
+
+		TransportTCP(const SocketPtr& socket, const std::string& transportName);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -56,10 +71,6 @@ namespace gc
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		/* @brief: Connection Socket*/
-		SOCKET _socket = NULL;
-		/* @brief: Transport Name*/
-		std::string _transportName = "";
 	};
 }
 #endif

@@ -55,6 +55,17 @@ GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device,
 	---------------------------------------------------------------------*/
 	if (_texture) { CreateView(heap); }
 }
+
+GPUResourceView::~GPUResourceView()
+{
+	if (_hasCreated)
+	{
+		const auto heapType = _heapOffset.first;
+		const auto id       = _heapOffset.second;
+		const auto dxHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_heap);
+		dxHeap->Free(heapType, id);
+	}
+}
 #pragma endregion Constructor and Destructor
 #pragma region Bind Function
 void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
@@ -97,6 +108,7 @@ void GPUResourceView::CreateView(const std::shared_ptr<directX12::RHIDescriptorH
 			throw std::runtime_error("not support descriptor view. (directX12 api)");
 		}
 	}
+	_hasCreated = true;
 }
 /****************************************************************************
 *                     CreateSRV
@@ -592,9 +604,10 @@ void GPUResourceView::CreateCBV(const std::shared_ptr<directX12::RHIDescriptorHe
 		desc.BufferLocation = dxBuffer->GetResource()->GetGPUVirtualAddress();
 		desc.SizeInBytes    = static_cast<UINT>(_buffer->GetTotalByteSize());
 
+#if _DEBUG
 		// 256 alignment check
 		assert(desc.SizeInBytes % 256 == 0);
-
+#endif
 		// Set heap descriptor id.
 		_heapOffset.first = core::DescriptorHeapType::CBV;
 		_heapOffset.second = heap->Allocate(core::DescriptorHeapType::CBV);

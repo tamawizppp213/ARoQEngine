@@ -75,12 +75,13 @@ namespace gc
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 		using SceneConstantBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
 		using GPUResourceViewPtr        = std::shared_ptr<rhi::core::GPUResourceView>;
+		using GameTimerPtr              = std::shared_ptr<GameTimer>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Update view materix and scene constants buffer. Please call at a frame*/
-		void Update(GameTimer* gameTimer);
+		void Update(const GameTimerPtr& gameTimer);
 
 		// Define camera space via LookAt parameters
 		void LookAt(gm::Vector3 position, gm::Vector3 target, gm::Vector3 worldUp);
@@ -160,7 +161,7 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void UpdateSceneConstants(GameTimer* gameTimer);
+		void UpdateSceneConstants(const GameTimerPtr& gameTimer);
 		// After modifying camera position / orientation, call to rebuild the matrix.
 		void UpdateViewMatrix();
 		/****************************************************************************

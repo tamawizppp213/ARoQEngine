@@ -45,6 +45,7 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		BlobComPtr GetDxBlob() const noexcept { return _dxBlob; }
+
 		D3D12_SHADER_BYTECODE GetShader() const { return D3D12_SHADER_BYTECODE(_blobData.BufferPointer, _blobData.BufferSize); }
 		/****************************************************************************
 		**                Constructor and Destructor

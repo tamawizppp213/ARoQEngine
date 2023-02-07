@@ -639,6 +639,10 @@ namespace gm
 	INLINE bool InBounds(const Vector3& v, const Vector3& bounds) { return DirectX::XMVector3InBounds(v, bounds); }
 	INLINE bool InBounds(const Vector4& v, const Vector4& bounds) { return DirectX::XMVector4InBounds(v, bounds); }
 
+	INLINE bool IsFinite(const Vector2& v) { return !DirectX::XMVector2IsInfinite(v); }
+	INLINE bool IsFinite(const Vector3& v) { return !DirectX::XMVector3IsInfinite(v); }
+	INLINE bool IsFinite(const Vector4& v) { return !DirectX::XMVector4IsInfinite(v); }
+
 	INLINE bool IsInfinite(const Vector2& v) { return DirectX::XMVector2IsInfinite(v); }
 	INLINE bool IsInfinite(const Vector3& v) { return DirectX::XMVector3IsInfinite(v); }
 	INLINE bool IsInfinite(const Vector4& v) { return DirectX::XMVector4IsInfinite(v); }

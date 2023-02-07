@@ -29,11 +29,13 @@
 *****************************************************************************/
 class Scene
 {
+protected:
+	using GameTimerPtr = std::shared_ptr<GameTimer>;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	virtual void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer);
+	virtual void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer);
 	virtual void Update   ();
 	virtual void Draw     () = 0;
 	virtual void Terminate() = 0;
@@ -60,7 +62,7 @@ protected:
 	*****************************************************************************/
 	std::shared_ptr<LowLevelGraphicsEngine> _engine;
 	GameInput& _gameInput            = GameInput::Instance();
-	GameTimer* _gameTimer            = nullptr;
+	std::shared_ptr<GameTimer> _gameTimer  = nullptr;
 	bool _hasExecutedSceneTransition = false;
 	bool _hasExecutedBackScene       = false;
 

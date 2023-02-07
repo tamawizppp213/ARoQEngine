@@ -57,13 +57,17 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBlendState() = default;
+
 		virtual ~GPUBlendState();
+
 		explicit GPUBlendState(const std::shared_ptr<RHIDevice>& device, const std::vector<BlendProperty>& properties) : GPUState(device), _blendProperties(properties), _isIndependentBlendEnable(true) {};
+		
 		explicit GPUBlendState(const std::shared_ptr<RHIDevice>& device, const BlendProperty& blendProperty) : GPUState(device)
 		{
 			_blendProperties.push_back(blendProperty);
 			_isIndependentBlendEnable = false;
 		}
+
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -73,6 +77,7 @@ namespace rhi::core
 		*****************************************************************************/
 		/* @brief : Blend State Properties : (Render target ‚Å‹¤’Ê‚Ìê‡‚Íˆê‚Â‚¾‚¯g—p‚µ, isIndependentBlendEnable‚ğfalse‚Éİ’è)*/
 		std::vector<core::BlendProperty> _blendProperties;
+		
 		/* @brief : is all render target configuration the same?  */
 		bool _isIndependentBlendEnable = false;
 	};

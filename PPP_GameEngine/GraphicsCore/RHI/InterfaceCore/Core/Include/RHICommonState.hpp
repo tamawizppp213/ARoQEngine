@@ -27,6 +27,7 @@ namespace rhi::core
 	*				  			APIVersion
 	*************************************************************************//**
 	*  @enum      APIVersion
+	* 
 	*  @brief     Graphics api version (Add as needed.)
 	*****************************************************************************/
 	enum class APIVersion : std::uint8_t
@@ -77,6 +78,7 @@ namespace rhi::core
 		R32G32_FLOAT,       // 8  byte format
 		R32G32B32_FLOAT,    // 12 byte format
 		R32G32B32A32_FLOAT, // 16 byte format
+		R32G32B32A32_INT,   // 16 byte format
 	};
 	class InputFormatSizeOf
 	{
@@ -88,6 +90,7 @@ namespace rhi::core
 			{
 				case InputFormat::R32G32_FLOAT      : return 8;
 				case InputFormat::R32G32B32_FLOAT   : return 12;
+				case InputFormat::R32G32B32A32_INT  :
 				case InputFormat::R32G32B32A32_FLOAT: return 16;
 				case InputFormat::R32_FLOAT         : return 4;
 				default: return 0;
@@ -121,6 +124,7 @@ namespace rhi::core
 		R32G32B32A32_FLOAT,
 		R16G16B16A16_FLOAT,
 		D32_FLOAT,
+		R32_FLOAT,
 		D24_UNORM_S8_UINT,
 		R32G32B32_FLOAT,
 		B8G8R8A8_UNORM_SRGB,
@@ -225,6 +229,11 @@ namespace rhi::core
 		Geometry,         // geometry shader
 		Amplification,    // amplication shader
 		Mesh,             // mesh shader
+		RayGeneration,    // ray tracing ray generation shader
+		Intersection,     // ray tracing intersection shader
+		AnyHit,           // ray tracing any hit shader
+		ClosestHit,       // ray tracing closest hit shader
+		Miss              // ray tracing miss shader
 	};
 	
 	struct BlobData
@@ -753,6 +762,7 @@ namespace rhi::core
 		ResourceState  State         = ResourceState::GeneralRead; // resource layout
 		MemoryHeap     HeapType      = MemoryHeap::Default;         // memory heap type
 		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
+		void*          InitData      = nullptr; // Init Data
 
 		/****************************************************************************
 		**                Public Function
@@ -767,15 +777,15 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBufferMetaData() = default;
-		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState layout, MemoryHeap heapType, core::BufferType bufferType);
+		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState layout, MemoryHeap heapType, core::BufferType bufferType, void* initData = nullptr);
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
-		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count);
-		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count);
-		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common); // auto alignment 
-		static GPUBufferMetaData VertexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead);
-		static GPUBufferMetaData IndexBuffer   (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common);
+		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count, void* initData = nullptr);
+		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count, void* initData = nullptr);
+		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 
+		static GPUBufferMetaData VertexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead, void* initData = nullptr);
+		static GPUBufferMetaData IndexBuffer   (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common, void* initData = nullptr);
 	private:
 		size_t CalcConstantBufferByteSize(const size_t byteSize) { return (byteSize + 255) & ~255; }
 	};
@@ -899,6 +909,7 @@ namespace rhi::core
 		std::uint64_t BuildScratchDataSize      = 0;
 		std::uint64_t UpdateScratchDataSize    = 0;
 	};
+	
 #pragma endregion RayTracing
 #pragma endregion GPUResource
 #pragma region Render Pass
@@ -1052,11 +1063,14 @@ namespace rhi::core
 		size_t Height    = 0;       // window height
 		void*  Handle    = nullptr; // window handle pointer 
 		void*  HInstance = nullptr; // window instance for Windows API
+
 		WindowInfo()  = default;
+
 		WindowInfo(size_t width, size_t height, void* handle, void* hInstance = nullptr)
 		{
 			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
 		}
+
 	};
 #pragma endregion    Window Surface
 }

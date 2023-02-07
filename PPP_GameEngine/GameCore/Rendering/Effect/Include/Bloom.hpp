@@ -70,12 +70,12 @@ namespace gc
 		**                Protected Member Variables
 		*****************************************************************************/
 		enum {ViewCount = 4};
-		PipelineStatePtr _luminancePipeline  = nullptr;
-		PipelineStatePtr _finalBloomPipeline = nullptr;
-		GaussianBlurPtr  _gaussianBlur[4] = {};
+		PipelineStatePtr  _luminancePipeline  = nullptr;
+		PipelineStatePtr  _finalBloomPipeline = nullptr;
+		GaussianBlurPtr   _gaussianBlur[4] = {};
 		ResourceLayoutPtr _resourceLayout = nullptr;
-		ResourceViewPtr _shaderResourceViews   [ViewCount] = {};
-		ResourceViewPtr _unorderedResourceViews[ViewCount] = {};
+		ResourceViewPtr   _shaderResourceViews   [ViewCount] = {};
+		ResourceViewPtr   _unorderedResourceViews[ViewCount] = {};
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
 		float _explosion = 10.0f;

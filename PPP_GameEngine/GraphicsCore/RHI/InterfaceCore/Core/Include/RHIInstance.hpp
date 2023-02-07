@@ -42,10 +42,13 @@ namespace rhi::core
 		*****************************************************************************/
 		/* directX12 : (High) xGPU, dGPU iGPU (Low), vulkan : dGPU (not : first select gpu) */
 		virtual std::shared_ptr <RHIDisplayAdapter> SearchHighPerformanceAdapter() = 0;
+		
 		/* directX12 : (Low) iGPU, dGPU xGPU (High), vulkan : iGPU (not : first select gpu) */
 		virtual std::shared_ptr<RHIDisplayAdapter>  SearchMinimumPowerAdapter() = 0;
+		
 		/* return all available display adapter*/
 		virtual std::vector<std::shared_ptr<RHIDisplayAdapter>> EnumrateAdapters() = 0;
+		
 		/* OutputDebugString : adapter list*/
 		virtual void LogAdapters() = 0;
 		/****************************************************************************
@@ -61,11 +64,13 @@ namespace rhi::core
 		**                Protected Function
 		*****************************************************************************/
 		RHIInstance() = default;
+
 		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger) :
 			_enableCPUDebugger(enableCPUDebugger),
 			_enableGPUDebugger(enableGPUDebugger)
 		{
 		};
+
 		virtual ~RHIInstance() = default;
 
 		/****************************************************************************

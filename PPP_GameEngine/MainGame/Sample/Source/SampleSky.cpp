@@ -36,12 +36,12 @@ SampleSky::~SampleSky()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleSky::Initialize(GameTimer* gameTimer)
+*  @fn        void SampleSky::Initialize(const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in] GameTimer* gameTimer
 *  @return 　　void
 *****************************************************************************/
-void SampleSky::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleSky::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -70,6 +70,7 @@ void SampleSky::Update()
 void SampleSky::Draw()
 {
 	_engine->BeginDrawFrame();
+	_engine->BeginSwapchainRenderPass();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
@@ -148,14 +149,14 @@ void SampleSky::OnKeyboardInput()
 	/*-------------------------------------------------------------------
 	-           Keyboad Input W (Move Camera )
 	---------------------------------------------------------------------*/
-	if (_gameInput.GetKeyboard().IsPress(DIK_W))
+	if (_gameInput.GetKeyboard()->IsPress(DIK_W))
 	{
 		_camera->Walk(speed * deltaTime);
 	}
 	/*-------------------------------------------------------------------
 	-           Keyboad Input S (Move Camera)
 	---------------------------------------------------------------------*/
-	if (_gameInput.GetKeyboard().IsPress(DIK_S))
+	if (_gameInput.GetKeyboard()->IsPress(DIK_S))
 	{
 		_camera->Walk(-speed * deltaTime);
 	}
@@ -174,10 +175,10 @@ void SampleSky::OnMouseInput()
 	/*-------------------------------------------------------------------
 	-           Mouse Input Left Button
 	---------------------------------------------------------------------*/
-	if (_gameInput.GetMouse().IsPress(MouseButton::LEFT))
+	if (_gameInput.GetMouse()->IsPress(MouseButton::LEFT))
 	{
-		float dx = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse().GetMouseVelocity().x)); // 0.25f: 感度設定したい
-		float dy = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse().GetMouseVelocity().y));
+		float dx = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse()->GetMouseVelocity().x)); // 0.25f: 感度設定したい
+		float dy = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse()->GetMouseVelocity().y));
 
 		_camera->RotatePitch(dy);
 		_camera->RotateWorldY(dx);

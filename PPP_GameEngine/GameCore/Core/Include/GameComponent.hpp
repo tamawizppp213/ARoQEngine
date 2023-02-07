@@ -15,7 +15,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-class GameObject;
+namespace gc::core
+{
+	class GameObject;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                          Component
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,12 +40,12 @@ public:
 	*****************************************************************************/
 	inline unsigned int GetUpdateOrder() const { return _updateOrder; }
 	inline bool ExistsOwner() { return _owner != nullptr; }
-	inline void SetOwner(GameObject* gameObject) { _owner = gameObject; }
+	inline void SetOwner(gc::core::GameObject* gameObject) { _owner = gameObject; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
 	Component();
-	Component(GameObject* gameObject, unsigned int updateOrder = DEFAULT_UPDATE_ORDER);
+	Component(gc::core::GameObject* gameObject, unsigned int updateOrder = DEFAULT_UPDATE_ORDER);
 	virtual ~Component() {};
 	Component(const Component&) = default;
 	Component& operator=(const Component&) = default;
@@ -56,7 +59,7 @@ private:
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
-	GameObject* _owner          = nullptr;
+	gc::core::GameObject* _owner          = nullptr;
 	unsigned int _updateOrder   = DEFAULT_UPDATE_ORDER; // The smaller its value, the faster the update order.
 };
 #endif

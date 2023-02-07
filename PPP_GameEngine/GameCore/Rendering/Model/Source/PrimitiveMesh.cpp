@@ -13,13 +13,13 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-using namespace gc;
+using namespace gc::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                            Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-MeshData::~MeshData()
+PrimitiveMesh::~PrimitiveMesh()
 {
 	Vertices.clear(); Vertices.shrink_to_fit();
 	Indices.clear(); Indices.shrink_to_fit();
@@ -33,11 +33,11 @@ MeshData::~MeshData()
 *  @param[in]  float width
 *  @param[in]  float height
 *  @param[in]  float depth
-*  @return 　　 MeshData
+*  @return 　　 PrimitiveMesh
 *****************************************************************************/
-MeshData PrimitiveMeshGenerator::Rect(float width, float height, float depth, const gm::Float4& color)
+PrimitiveMesh PrimitiveMeshGenerator::Rect(float width, float height, float depth, const gm::Float4& color)
 {
-	MeshData meshData;
+	PrimitiveMesh meshData;
 
 	float w2 = width / 2;
 	float h2 = height / 2;
@@ -70,11 +70,11 @@ MeshData PrimitiveMeshGenerator::Rect(float width, float height, float depth, co
 *  @param[in]  float z
 *  @param[in]  float h
 *  @param[in]  float depth
-*  @return 　　 MeshData
+*  @return 　　 PrimitiveMesh
 *****************************************************************************/
-MeshData PrimitiveMeshGenerator::Quadrangle(float x, float y, float w, float h, float depth, const Float4& color)
+PrimitiveMesh PrimitiveMeshGenerator::Quadrangle(float x, float y, float w, float h, float depth, const Float4& color)
 {
-	MeshData meshData;
+	PrimitiveMesh meshData;
 
 	meshData.Vertices.resize(4);
 	meshData.Indices.resize(6);
@@ -105,9 +105,9 @@ MeshData PrimitiveMeshGenerator::Quadrangle(float x, float y, float w, float h, 
 *  @param[in]  float depth
 *  @param[in]  UINT32 numSubdivisions
 *  @param[in]  bool isInvertNormal
-*  @return 　　 MeshData
+*  @return 　　 PrimitiveMesh
 *****************************************************************************/
-MeshData PrimitiveMeshGenerator::Box(float width, float height, float depth, std::uint32_t numSubdivisions, bool isInvertNormal, const Float4& color)
+PrimitiveMesh PrimitiveMeshGenerator::Box(float width, float height, float depth, std::uint32_t numSubdivisions, bool isInvertNormal, const Float4& color)
 {
 	// set half width, height and depth
 	constexpr int faceCount = 6;
@@ -115,7 +115,7 @@ MeshData PrimitiveMeshGenerator::Box(float width, float height, float depth, std
 	float h2 = 0.5f * height;
 	float d2 = 0.5f * depth;
 
-	MeshData meshData;
+	PrimitiveMesh meshData;
 	Vertex   v[faceCount * 4];
 	/*-------------------------------------------------------------------
 	-					  Fill Vertex data
@@ -203,11 +203,11 @@ MeshData PrimitiveMeshGenerator::Box(float width, float height, float depth, std
 *  @param[in]  UINT32 sliceCount
 *  @param[in]  UINT32 stackCount
 *  @param[in]  bool isInvertNormal
-*  @return 　　 MeshData
+*  @return 　　 PrimitiveMesh
 *****************************************************************************/
-MeshData PrimitiveMeshGenerator::Sphere(float radius, std::uint32_t sliceCount, std::uint32_t stackCount, bool isInvertNormal, const Float4& color)
+PrimitiveMesh PrimitiveMeshGenerator::Sphere(float radius, std::uint32_t sliceCount, std::uint32_t stackCount, bool isInvertNormal, const Float4& color)
 {
-	MeshData meshData;
+	PrimitiveMesh meshData;
 
 	Vertex topVertex = Vertex(Float3(0.0f, +radius, 0.0f), Float3(0.0f, +1.0f, 0.0f), color, Float2(0.0f, 0.0f));
 	Vertex bottomVertex = Vertex(Float3(0.0f, -radius, 0.0f), Float3(0.0f, -1.0f, 0.0f), color, Float2(0.0f, 1.0f));
@@ -304,11 +304,11 @@ MeshData PrimitiveMeshGenerator::Sphere(float radius, std::uint32_t sliceCount, 
 *  @param[in]  float radius
 *  @param[in]  UINT32 numSubdivisions
 *  @param[in]  bool isInvertNormal
-*  @return 　　 MeshData
+*  @return 　　 PrimitiveMesh
 *****************************************************************************/
-MeshData PrimitiveMeshGenerator::GeoSphere(float radius, std::uint32_t numSubdivisions, bool isInvertNormal, const Float4& color)
+PrimitiveMesh PrimitiveMeshGenerator::GeoSphere(float radius, std::uint32_t numSubdivisions, bool isInvertNormal, const Float4& color)
 {
-	MeshData meshData;
+	PrimitiveMesh meshData;
 
 	numSubdivisions = std::min<std::uint16_t>(static_cast<std::uint16_t>(numSubdivisions), 6u);;
 
@@ -389,11 +389,11 @@ MeshData PrimitiveMeshGenerator::GeoSphere(float radius, std::uint32_t numSubdiv
 *  @param[in]  UINT32 sliceCount
 *  @param[in]  UINT32 stackCount
 *  @param[in]  bool isInvertNormal
-*  @return 　　 MeshData
+*  @return 　　 PrimitiveMesh
 *****************************************************************************/
-MeshData PrimitiveMeshGenerator::Cylinder(float bottomRadius, float topRadius, float height, std::uint32_t sliceCount, std::uint32_t stackCount, bool isInvertNormal, const Float4& color)
+PrimitiveMesh PrimitiveMeshGenerator::Cylinder(float bottomRadius, float topRadius, float height, std::uint32_t sliceCount, std::uint32_t stackCount, bool isInvertNormal, const Float4& color)
 {
-	MeshData meshData;
+	PrimitiveMesh meshData;
 
 	float stackHeight = height / stackCount;
 	float radiusStep = (topRadius - bottomRadius) / stackCount;
@@ -469,11 +469,11 @@ MeshData PrimitiveMeshGenerator::Cylinder(float bottomRadius, float topRadius, f
 *  @param[in]  UINT32 rows
 *  @param[in]  UINT32 columns
 *  @param[in]  bool isInvertNormal
-*  @return 　　 MeshData
+*  @return 　　 PrimitiveMesh
 *****************************************************************************/
-MeshData PrimitiveMeshGenerator::Grid(float width, float depth, std::uint32_t rows, std::uint32_t columns, bool isInvertNormal, const Float4& color)
+PrimitiveMesh PrimitiveMeshGenerator::Grid(float width, float depth, std::uint32_t rows, std::uint32_t columns, bool isInvertNormal, const Float4& color)
 {
-	MeshData meshData;
+	PrimitiveMesh meshData;
 
 	std::uint64_t vertexCount = (std::uint64_t)rows * columns;
 	std::uint64_t faceCount = ((std::uint64_t)rows - 1) * (std::uint64_t)(columns - 1) * 2;
@@ -542,12 +542,12 @@ MeshData PrimitiveMeshGenerator::Grid(float width, float depth, std::uint32_t ro
 /****************************************************************************
 *							IsInvertNormal
 *************************************************************************//**
-*  @fn         void PrimitiveMeshGenerator::IsInvertNormal(MeshData& meshData)
+*  @fn         void PrimitiveMeshGenerator::IsInvertNormal(PrimitiveMesh& meshData)
 *  @brief      Invert meshData normal vector
 *  @param[out] MeshData& meshData
 *  @return 　　 void
 *****************************************************************************/
-void PrimitiveMeshGenerator::IsInvertNormal(MeshData& meshData)
+void PrimitiveMeshGenerator::IsInvertNormal(PrimitiveMesh& meshData)
 {
 	for (auto it = meshData.Vertices.begin(); it != meshData.Vertices.end(); ++it)
 	{
@@ -562,15 +562,15 @@ void PrimitiveMeshGenerator::IsInvertNormal(MeshData& meshData)
 *************************************************************************//**
 *  @fn         void PrimitiveMeshGenerator::SubDivide(MeshData& meshData)
 *  @brief      Divide each mesh
-*  @param[out] MeshData& meshData
+*  @param[out] PrimitiveMesh& meshData
 *  @return 　　 void
 *****************************************************************************/
-void PrimitiveMeshGenerator::SubDivide(MeshData& meshData)
+void PrimitiveMeshGenerator::SubDivide(PrimitiveMesh& meshData)
 {
 	//using Vertex = VertexPositionNormalTexture;
 
 	// Save a copy of the input geometry
-	MeshData inputCopy = meshData;
+	PrimitiveMesh inputCopy = meshData;
 
 	meshData.Vertices.resize(0);
 	meshData.Indices.resize(0);
@@ -687,7 +687,7 @@ gm::Vertex PrimitiveMeshGenerator::MidPoint(const Vertex& v0, const Vertex& v1)
 *  @param[out] MeshData& meshData,
 *  @return 　　 void
 *****************************************************************************/
-void PrimitiveMeshGenerator::BuildCylinderTopCap(float topRadius, float height, std::uint32_t sliceCount, MeshData& meshData, const Float4& color)
+void PrimitiveMeshGenerator::BuildCylinderTopCap(float topRadius, float height, std::uint32_t sliceCount, PrimitiveMesh& meshData, const Float4& color)
 {
 	std::uint16_t baseIndex = (std::uint16_t)meshData.Vertices.size();
 
@@ -731,7 +731,7 @@ void PrimitiveMeshGenerator::BuildCylinderTopCap(float topRadius, float height, 
 *  @param[out] MeshData& meshData,
 *  @return 　　 void
 *****************************************************************************/
-void PrimitiveMeshGenerator::BuildCylinderBottomCap(float bottomRadius, float height, std::uint32_t sliceCount, MeshData& meshData, const Float4& color)
+void PrimitiveMeshGenerator::BuildCylinderBottomCap(float bottomRadius, float height, std::uint32_t sliceCount, PrimitiveMesh& meshData, const Float4& color)
 {
 	std::uint16_t baseIndex = (std::uint16_t)meshData.Vertices.size();
 

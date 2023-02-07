@@ -29,7 +29,7 @@ GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const std::wstring& 
 	---------------------------------------------------------------------*/
 	const auto name = filePath + L"_SRV";
 	size_t hashCode = std::hash<std::wstring>()(name);
-	if (_resourceViews.find(hashCode) != _resourceViews.end())
+	if (_resourceViews.contains(hashCode))
 	{
 		return _resourceViews.at(hashCode);
 	}
@@ -44,7 +44,7 @@ GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const std::wstring& 
 		/*-------------------------------------------------------------------
 		-           Load texture view
 		---------------------------------------------------------------------*/
-		const auto view = _device->CreateResourceView(core::ResourceViewType::Texture, texture, nullptr);
+		const auto view = _device->CreateResourceView(core::ResourceViewType::Texture, texture, _customHeap);
 		// regist resource view
 		_resourceViews[hashCode] = view;
 		return view;
@@ -52,3 +52,10 @@ GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const std::wstring& 
 
 }
 
+bool GPUResourceCache::Find(const std::wstring& filePath)
+{
+	const auto name = filePath + L"_SRV";
+	size_t hashCode = std::hash<std::wstring>()(name);
+	
+	return _resourceViews.contains(hashCode);
+}

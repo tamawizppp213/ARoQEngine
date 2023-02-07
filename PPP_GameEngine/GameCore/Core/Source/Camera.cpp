@@ -48,7 +48,7 @@ Camera::Camera(LowLevelGraphicsEnginePtr engine) : _engine(engine)
 	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer, nullptr);
 }
 
-void Camera::Update(GameTimer* gameTimer)
+void Camera::Update(const GameTimerPtr& gameTimer)
 {
 	UpdateViewMatrix();
 	UpdateSceneConstants(gameTimer);
@@ -502,7 +502,7 @@ Float4x4 Camera::GetProjectionMatrix4x4f() const
 #pragma endregion Property
 
 #pragma region Protected Function
-void Camera::UpdateSceneConstants(GameTimer* gameTimer)
+void Camera::UpdateSceneConstants(const GameTimerPtr& gameTimer)
 {
 	SceneConstants scene;
 

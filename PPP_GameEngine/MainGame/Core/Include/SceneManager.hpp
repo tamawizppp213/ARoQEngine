@@ -34,14 +34,15 @@ class SceneManager
 {
 	using SceneUniquePtr = std::unique_ptr<Scene>;
 	using ScenePtr       = Scene*;
+	using GameTimerPtr   = std::shared_ptr<GameTimer>;
 	using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void StartUp(LowLevelGraphicsEnginePtr engine, GameTimer* gameTimer);
-	void TransitScene(ScenePtr scene, GameTimer* gameTimer);
-	void CallSceneInitialize(GameTimer* gameTimer);
+	void StartUp(LowLevelGraphicsEnginePtr engine, const GameTimerPtr& gameTimer);
+	void TransitScene(ScenePtr scene, const GameTimerPtr& gameTimer);
+	void CallSceneInitialize(const GameTimerPtr& gameTimer);
 	void CallSceneUpdate();
 	void CallSceneDraw();
 	void CallSceneTerminate();
@@ -79,7 +80,7 @@ private:
 	**                Private Member Variables
 	*****************************************************************************/
 	std::stack<SceneUniquePtr> _currentScene;
-	GameTimer* _gameTimer = nullptr;
+	GameTimerPtr _gameTimer = nullptr;
 	std::shared_ptr<LowLevelGraphicsEngine> _engine;
 };
 

@@ -41,16 +41,24 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		DescriptorHeapComPtr GetRTVHeap() const noexcept;
+
 		DescriptorHeapComPtr GetDSVHeap() const noexcept;
+
 		size_t               GetRTVByteSize() const noexcept { return _rtvSize; }
+
 		size_t               GetDSVByteSize() const noexcept { return _dsvSize; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIFrameBuffer() = default;
+
 		~RHIFrameBuffer();
+
 		explicit RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass,  const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil);
+		
 		explicit RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>&renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil);
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function

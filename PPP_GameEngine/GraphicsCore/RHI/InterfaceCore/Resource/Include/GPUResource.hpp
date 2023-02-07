@@ -43,7 +43,9 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		std::wstring GetName() const noexcept { return _name; };
+
 		virtual void SetName(const std::wstring& name) = 0;
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -53,8 +55,11 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUResource() = default;
+
 		~GPUResource() = default;
+
 		explicit GPUResource(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
+		
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/

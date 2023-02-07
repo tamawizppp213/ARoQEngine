@@ -39,15 +39,22 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		
 		FrontFace   GetFrontFace  () const noexcept { return _frontFace; }
+
 		CullingMode GetCullingMode() const noexcept { return _cullingMode; }
+
 		FillMode    GetFillMode   () const noexcept { return _fillMode; }
+
 		bool        UseDepthClamp () const noexcept { return _useDepthClamp; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPURasterizerState() = default;
+
 		virtual ~GPURasterizerState() = default;
+
 		explicit GPURasterizerState(
 			const std::shared_ptr<rhi::core::RHIDevice>& device,
 			const FrontFace   frontFace   = FrontFace::Clockwise,
@@ -55,6 +62,7 @@ namespace rhi::core
 			const FillMode    fillMode    = FillMode::Solid,
 			const bool        depthClamp  = true) 
 			: GPUState(device), _frontFace(frontFace), _cullingMode(cullingMode), _fillMode(fillMode), _useDepthClamp(depthClamp) { };
+	
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

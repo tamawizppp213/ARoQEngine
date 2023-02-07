@@ -49,8 +49,11 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUState() = default;
+
 		virtual ~GPUState() = default;
+
 		explicit GPUState(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
+		
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/

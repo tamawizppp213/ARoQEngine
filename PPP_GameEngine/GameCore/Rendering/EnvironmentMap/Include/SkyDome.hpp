@@ -61,15 +61,20 @@ namespace gc
 		**                Constructor and Destructor
 		*****************************************************************************/
 		SkyDome();
+
 		~SkyDome();
+
 		SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cubeMapPath, const std::wstring& addName = L"");
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		void PrepareResourceView(const std::shared_ptr<rhi::core::GPUTexture>& texture);
+		
 		void PreparePipelineState(const std::wstring& addName);
+		
 		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
+		
 		void PrepareSkyObject(const std::wstring& addName);
 		/****************************************************************************
 		**                Protected Member Variables

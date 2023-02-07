@@ -47,13 +47,14 @@ public:
 	**                Static Configuration
 	*****************************************************************************/
 	static constexpr std::uint32_t FRAME_BUFFER_COUNT = 3;
-	static constexpr std::uint32_t VSYNC = 1; // 0: don't wait, 1:wait(60fps)
+	static constexpr std::uint32_t VSYNC = 0; // 0: don't wait, 1:wait(60fps)
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
 	void StartUp(rhi::core::APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance);
 	void BeginDrawFrame(); // call at begin draw frame
 	void EndDrawFrame();   // call at end draw frame
+	void BeginSwapchainRenderPass(); // back buffer render pass
 	void OnResize(const size_t newWidth, const size_t newHeight);
 	void ShutDown();
 
@@ -124,6 +125,7 @@ protected:
 		
 	// shutdown check
 	bool _hasCalledShutDown = false;
+
 	/****************************************************************************
 	**                Heap Config
 	*****************************************************************************/

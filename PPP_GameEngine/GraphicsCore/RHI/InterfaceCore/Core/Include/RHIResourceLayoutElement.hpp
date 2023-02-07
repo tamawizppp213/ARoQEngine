@@ -49,6 +49,7 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		ResourceLayoutElement() = default;
+
 		explicit ResourceLayoutElement(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = 0)
 			: Binding(binding), RegisterSpace(registerSpace), DescriptorType(type)
 		{
@@ -80,6 +81,7 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		SamplerLayoutElement() = default;
+
 		explicit SamplerLayoutElement(const std::shared_ptr<GPUSampler>& sampler, const size_t binding = 0, const size_t space = 0, const ShaderVisibility visibility = ShaderVisibility::All)
 			: Visibility(visibility), Binding(binding), RegisterSpace(space), Sampler(sampler)
 		{
@@ -109,7 +111,9 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		InputLayoutElement() = default;
+
 		~InputLayoutElement() = default;
+
 		explicit InputLayoutElement(const std::string& name, const InputFormat format, const size_t slot = 0) : Format(format), SemanticName(name), Slot(slot) {};
 	};
 
@@ -122,10 +126,14 @@ namespace rhi::core
 			float         Float;
 		};
 		Value32Bit() = default;
+
 		explicit Value32Bit(const std::uint32_t uint32) :UInt(uint32){};
+
 		explicit Value32Bit(const std::int32_t int32) : Int(int32){}
+
 		explicit Value32Bit(const float fValue) : Float(fValue) {};
 	};
+
 	/****************************************************************************
 	*				  			SamplerLayoutElement
 	*************************************************************************//**
@@ -151,6 +159,7 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		Constant32Bits() = default;
+
 		explicit Constant32Bits(const size_t count, const size_t binding = 0, const size_t space = 0, const ShaderVisibility visibility = ShaderVisibility::All)
 			: Visibility(visibility), Binding(binding), RegisterSpace(space), Count(count)
 		{

@@ -178,28 +178,48 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GameCore\Audio\Include\AudioClip.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\AudioMaster.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\AudioSource.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\AudioSource3D.hpp" />
-    <ClInclude Include="GameCore\Audio\Include\WavDecoder.hpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioSubmix.hpp" />
+    <ClInclude Include="GameCore\Audio\Effect\Include\AudioFader.hpp" />
+    <ClInclude Include="GameCore\Audio\Effect\Include\AudioIEffect.hpp" />
+    <ClInclude Include="GameCore\Audio\Effect\Source\AudioFader.cpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioClip.hpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioClipCache.hpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioMaster.hpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioSource.hpp" />
+    <ClInclude Include="GameCore\Audio\Core\Include\AudioSource3D.hpp" />
+    <ClInclude Include="GameCore\Audio\Private\Include\WavDecoder.hpp" />
     <ClInclude Include="GameCore\Core\Include\Camera.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameActor.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameComponent.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameObject.hpp" />
+    <ClInclude Include="GameCore\Core\Include\GameWorldInfo.hpp" />
     <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp" />
     <ClInclude Include="GameCore\Input\Include\GameInput.hpp" />
     <ClInclude Include="GameCore\Input\Include\GamePad.hpp" />
     <ClInclude Include="GameCore\Input\Include\Keyboard.hpp" />
     <ClInclude Include="GameCore\Input\Include\Mouse.hpp" />
+    <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\UniversalRenderPipeline.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelConverter.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIButton.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
+    <ClInclude Include="GameUtility\File\Include\BitConverter.hpp" />
+    <ClInclude Include="GameCore\Network\Public\Include\IPAddress.hpp" />
+    <ClInclude Include="GameCore\Network\Private\Include\MemoryStream.hpp" />
+    <ClInclude Include="GameCore\Network\Private\Include\NetworkDefine.hpp" />
     <ClInclude Include="GameCore\Network\Public\Include\ITransport.hpp" />
+    <ClInclude Include="GameCore\Network\Private\Include\Serializer.hpp" />
     <ClInclude Include="GameCore\Network\Public\Include\Socket.hpp" />
     <ClInclude Include="GameCore\Network\Public\Include\TransportTCP.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\NetworkErrorCode.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassGBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassLightCulling.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassZPrepass.hpp" />
-    <ClInclude Include="GameCore\Rendering\Core\Engine\Include\RenderingEngine.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\RenderPipeline.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Bloom.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Blur.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp" />
@@ -246,12 +266,11 @@
     <ClInclude Include="GameCore\Rendering\Model\Include\Material.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\MaterialType.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\Mesh.hpp" />
-    <ClInclude Include="GameCore\Rendering\Model\Include\Model.hpp" />
-    <ClInclude Include="GameCore\Rendering\Model\Include\ModelConverter.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\GameModel.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\GameModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveMesh.hpp" />
-    <ClInclude Include="GameCore\Rendering\Sprite\Include\Image.hpp" />
-    <ClInclude Include="GameCore\Rendering\Sprite\Include\Sprite.hpp" />
-    <ClInclude Include="GameCore\Rendering\Sprite\Include\UIRenderer.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIImage.hpp" />
+    <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIRenderer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\ClassUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
@@ -311,6 +330,7 @@
     <ClInclude Include="GameUtility\Math\Include\GMQueue.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMScalar.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMSearch.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMSimdMath.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMSort.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMTransform.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMTypeDef.hpp" />
@@ -320,7 +340,6 @@
     <ClInclude Include="GraphicsCore\Engine\Include\LowLevelGraphicsEngine.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Adapter.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12BaseStruct.hpp" />
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12BlendState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Buffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12CommandAllocator.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12CommandList.hpp" />
@@ -359,6 +378,7 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12RayTracingASInstance.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12RayTracingBLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12RayTracingGeometry.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12RayTracingShaderTable.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\RayTracing\Include\DirectX12RayTracingTLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUResourceView.hpp" />
@@ -379,7 +399,6 @@
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIGraphicsDevice.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIInstance.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIMemory.hpp" />
-    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIQueryInterface.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIRenderPass.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIResourceLayout.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIResourceLayoutElement.hpp" />
@@ -395,6 +414,7 @@
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingASInstance.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingBLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingGeometry.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingShaderTable.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingTLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUResource.hpp" />
@@ -427,6 +447,7 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\RayTracing\Include\VulkanRayTracingASInstance.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\RayTracing\Include\VulkanRayTracingBLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\RayTracing\Include\VulkanRayTracingGeometry.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\RayTracing\Include\VulkanRayTracingShaderTable.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\RayTracing\Include\VulkanRayTracingTLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Resource\Include\VulkanGPUBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Resource\Include\VulkanGPUResourceView.hpp" />
@@ -437,29 +458,57 @@
     <ClInclude Include="MainGame\Core\Include\Scene.hpp" />
     <ClInclude Include="MainGame\Core\Include\SceneManager.hpp" />
     <ClInclude Include="MainGame\Core\Include\TemplateText.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleAudio.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleColorChange.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleModel.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleRayTracingRectangle.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleRectangle.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleText.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleUI.hpp" />
+    <ClInclude Include="PhysicsCore\Core\Private\Include\PhysicsActor.hpp" />
+    <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsRigidBody.hpp" />
+    <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsScene.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Private\Include\GeometryType.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Private\Include\IGeometry.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryBox.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryCapsule.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryPlane.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometrySphere.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GameCore\Audio\Source\AudioClip.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\AudioMaster.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\AudioSource.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\AudioSource3D.cpp" />
-    <ClCompile Include="GameCore\Audio\Source\WavDecoder.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioClip.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioClipCache.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioMaster.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioSource.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioSource3D.cpp" />
+    <ClCompile Include="GameCore\Audio\Core\Source\AudioSubmix.cpp" />
+    <ClCompile Include="GameCore\Audio\Private\Source\WavDecoder.cpp" />
     <ClCompile Include="GameCore\Core\Source\Camera.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameActor.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameComponent.cpp" />
     <ClCompile Include="GameCore\Core\Source\GameObject.cpp" />
+    <ClCompile Include="GameCore\Core\Source\GameWorldInfo.cpp" />
     <ClCompile Include="GameCore\Core\Source\ResourceManager.cpp" />
     <ClCompile Include="GameCore\Input\Source\GameInput.cpp" />
     <ClCompile Include="GameCore\Input\Source\GamePad.cpp" />
     <ClCompile Include="GameCore\Input\Source\Keyboard.cpp" />
     <ClCompile Include="GameCore\Input\Source\Mouse.cpp" />
+    <ClCompile Include="GameCore\Network\Private\Source\PacketQueue.cpp" />
+    <ClCompile Include="GameCore\Network\Private\Source\Serializer.cpp" />
+    <ClCompile Include="GameCore\Rendering\Core\Interface\Source\GBuffer.cpp" />
+    <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\UniversalRenderPipeline.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UISlider.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIText.cpp" />
+    <ClCompile Include="GameUtility\File\Source\BitConverter.cpp" />
+    <ClCompile Include="GameCore\Network\Public\Source\IPAddress.cpp" />
+    <ClCompile Include="GameCore\Network\Private\Source\MemoryStream.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\NetworkErrorCode.cpp" />
     <ClCompile Include="GameCore\Network\Public\Source\ITransport.cpp" />
     <ClCompile Include="GameCore\Network\Public\Source\Socket.cpp" />
@@ -467,7 +516,7 @@
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassGBuffer.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassLightCulling.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassZPrepass.cpp" />
-    <ClCompile Include="GameCore\Rendering\Core\Engine\Source\RenderingEngine.cpp" />
+    <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\RenderingPipeline.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Bloom.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Blur.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\ColorChange.cpp" />
@@ -498,12 +547,11 @@
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJUtils.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\Material.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\Mesh.cpp" />
-    <ClCompile Include="GameCore\Rendering\Model\Source\Model.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\GameModel.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\ModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\PrimitiveMesh.cpp" />
-    <ClCompile Include="GameCore\Rendering\Sprite\Source\Image.cpp" />
-    <ClCompile Include="GameCore\Rendering\Sprite\Source\Sprite.cpp" />
-    <ClCompile Include="GameCore\Rendering\Sprite\Source\UIRenderer.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIImage.cpp" />
+    <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIRenderer.cpp" />
     <ClCompile Include="GameUtility\Base\Source\GameTimer.cpp" />
     <ClCompile Include="GameUtility\Base\Source\Screen.cpp" />
     <ClCompile Include="GameUtility\File\Source\Csv.cpp" />
@@ -513,7 +561,6 @@
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\LowLevelGraphicsEngine.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Adapter.cpp" />
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12BlendState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Buffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12CommandAllocator.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12CommandList.cpp" />
@@ -546,6 +593,7 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12RayTracingASInstance.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12RayTracingBLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12RayTracingGeometry.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12RayTracingShaderTable.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12RayTracingTLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\GraphicsCoreEngine.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Resource\Source\DirectX12GPUBuffer.cpp" />
@@ -562,6 +610,7 @@
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Source\GPUInputASssemblyState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Source\GPUShaderState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Source\RayTracingGeometry.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Source\RayTracingShaderTable.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Resource\Source\GPUBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Resource\Source\GPUResourceCache.cpp" />
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Resource\Source\GPUTexture.cpp" />
@@ -589,6 +638,7 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\RayTracing\Source\VulkanRayTracingBLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\RayTracing\Source\VulkanRayTracingASInstance.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\RayTracing\Source\VulkanRayTracingGeometry.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\RayTracing\Source\VulkanRayTracingShaderTable.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\RayTracing\Source\VulkanRayTracingTLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Resource\Source\VulkanGPUBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Resource\Source\VulkanGPUResourceView.cpp" />
@@ -599,12 +649,22 @@
     <ClCompile Include="MainGame\Core\Source\Main.cpp" />
     <ClCompile Include="MainGame\Core\Source\Scene.cpp" />
     <ClCompile Include="MainGame\Core\Source\SceneManager.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleAudio.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleEmpty.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleModel.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleRayTracingRectangle.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SamplerColorChange.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleRectangle.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleSky.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleText.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleUI.cpp" />
+    <ClCompile Include="PhysicsCore\Core\Private\Source\PhysicsActor.cpp" />
+    <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsRigidBody.cpp" />
+    <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsScene.cpp" />
+    <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryBox.cpp" />
+    <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCapsule.cpp" />
+    <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometrySphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />
@@ -660,10 +720,17 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.4</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SamplingLuminance</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SamplingLuminance</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Effect\ShaderTonemap.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\Lighting\ShaderGBuffer.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -681,15 +748,23 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">LightCulling</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">LightCulling</EntryPointName>
     </FxCompile>
+    <FxCompile Include="Shader\Lighting\ShaderZPrepass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="Shader\Sprite\ShaderRayTracingTest.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Library</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Library</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)%(Filename).cso</ObjectFileOutput>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Sprite\ShaderDefault2D.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

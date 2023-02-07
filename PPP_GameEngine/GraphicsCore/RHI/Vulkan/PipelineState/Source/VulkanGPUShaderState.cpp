@@ -58,7 +58,9 @@ GPUShaderState::~GPUShaderState()
 
 void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint, const float version, const std::vector<std::wstring>& includeDirectories)
 {
+#if __DEBUG
 	assert(0.0f < version && version <= NEWEST_VERSION);
+#endif
 	_shaderType = type; _version = version;
 
 	// Set target Name ex) vs_6.0, ps_6.1...

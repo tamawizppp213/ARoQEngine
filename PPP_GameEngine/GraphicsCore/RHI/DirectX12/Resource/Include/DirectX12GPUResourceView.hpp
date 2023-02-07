@@ -41,13 +41,18 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandler();
+
 		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandler();
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUResourceView() = default;
-		~GPUResourceView() = default;
+
+		~GPUResourceView();
+
 		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
+		
 		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
 	private:
 		/****************************************************************************
@@ -66,6 +71,7 @@ namespace rhi::directX12
 		**                Private Member Variables
 		*****************************************************************************/
 		std::pair<core::DescriptorHeapType, std::uint32_t> _heapOffset = {};
+		bool _hasCreated = false;
 	};
 }
 #endif

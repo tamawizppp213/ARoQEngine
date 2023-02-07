@@ -15,7 +15,7 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12PipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12StaticSampler.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Shader.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BlendState.hpp"
+
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12VertexTypes.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
 //////////////////////////////////////////////////////////////////////////////////

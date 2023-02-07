@@ -39,10 +39,10 @@ SampleRayTracingRectangle::~SampleRayTracingRectangle()
 *************************************************************************//**
 *  @fn        void SampleRayTracingRectangle::Initialize(GameTimer* gameTimer)
 *  @brief     Initialize scene
-*  @param[in] GameTimer* gameTimer
+*  @param[in]  const GameTimerPtr& gameTimer
 *  @return 　　void
 *****************************************************************************/
-void SampleRayTracingRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleRayTracingRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -194,7 +194,7 @@ void SampleRayTracingRectangle::ExecuteSceneTransition()
 void SampleRayTracingRectangle::BuildBuffer()
 {
 	// 頂点情報変えるならFrameCount分用意した方が良い.
-	gc::MeshData rectangle = gc::PrimitiveMeshGenerator::Rect
+	gc::core::PrimitiveMesh rectangle = gc::core::PrimitiveMeshGenerator::Rect
 	(1.0f, 1.0f, 1.0f, gm::Float4(1,1,0,1));
 	/*-------------------------------------------------------------------
 	-             Vertex Buffer

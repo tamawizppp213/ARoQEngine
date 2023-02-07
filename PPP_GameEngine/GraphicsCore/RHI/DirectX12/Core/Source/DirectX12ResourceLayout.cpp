@@ -123,7 +123,7 @@ void RHIResourceLayout::SetUp()
 	rootSignatureDesc.pParameters       = parameters.data();
 	rootSignatureDesc.pStaticSamplers   = staticSamplerArrays.data();
 	rootSignatureDesc.Flags             = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
+	
 	/*-------------------------------------------------------------------
 	-                   Create RootSignature
 	---------------------------------------------------------------------*/

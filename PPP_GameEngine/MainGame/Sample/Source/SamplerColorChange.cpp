@@ -39,12 +39,12 @@ SampleColorChange::~SampleColorChange()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleColorChange::Initialize(GameTimer* gameTimer)
+*  @fn        void SampleColorChange::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
-*  @param[in] GameTimer* gameTimer
+*  @param[in]  const GameTimerPtr& gameTimer
 *  @return 　　void
 *****************************************************************************/
-void SampleColorChange::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleColorChange::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -73,17 +73,24 @@ void SampleColorChange::Update()
 void SampleColorChange::Draw()
 {
 	_engine->BeginDrawFrame();
+	_engine->BeginSwapchainRenderPass();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
 	commandList->SetViewportAndScissor(
 		core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
 
 	_skybox->Draw(_camera->GetResourceView());
 	_colorChanges[_colorIndex]->Draw();
+	
+	if (_useBlur)
+	{
+		_gaussianBlur->Draw();
+	}
+
 	_engine->EndDrawFrame();
 }
 /****************************************************************************
@@ -136,6 +143,7 @@ void SampleColorChange::LoadMaterials()
 	{
 		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
 	}
+	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
@@ -161,20 +169,24 @@ void SampleColorChange::OnKeyboardInput()
 	/*-------------------------------------------------------------------
 	-           Keyboad Input W (Move Camera )
 	---------------------------------------------------------------------*/
-	if (_gameInput.GetKeyboard().IsPress(DIK_W))
+	if (_gameInput.GetKeyboard()->IsPress(DIK_W))
 	{
 		_camera->Walk(speed * deltaTime);
 	}
 	/*-------------------------------------------------------------------
 	-           Keyboad Input S (Move Camera)
 	---------------------------------------------------------------------*/
-	if (_gameInput.GetKeyboard().IsPress(DIK_S))
+	if (_gameInput.GetKeyboard()->IsPress(DIK_S))
 	{
 		_camera->Walk(-speed * deltaTime);
 	}
-	if (_gameInput.GetKeyboard().IsTrigger(DIK_P))
+	if (_gameInput.GetKeyboard()->IsTrigger(DIK_P))
 	{
 		_colorIndex = (_colorIndex + 1) % _colorChanges.size();
+	}
+	if (_gameInput.GetKeyboard()->IsTrigger(DIK_O))
+	{
+		_useBlur = _useBlur ? false : true;
 	}
 }
 /****************************************************************************
@@ -190,10 +202,10 @@ void SampleColorChange::OnMouseInput()
 	/*-------------------------------------------------------------------
 	-           Mouse Input Left Button
 	---------------------------------------------------------------------*/
-	if (_gameInput.GetMouse().IsPress(MouseButton::LEFT))
+	if (_gameInput.GetMouse()->IsPress(MouseButton::LEFT))
 	{
-		float dx = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse().GetMouseVelocity().x)); // 0.25f: 感度設定したい
-		float dy = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse().GetMouseVelocity().y));
+		float dx = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse()->GetMouseVelocity().x)); // 0.25f: 感度設定したい
+		float dy = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse()->GetMouseVelocity().y));
 
 		_camera->RotatePitch(dy);
 		_camera->RotateWorldY(dx);

@@ -10,23 +10,26 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Core/Include/GameObject.hpp"
 #include "GameCore/Core/Include/GameComponent.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 //////////////////////////////////////////////////////////////////////////////////
+using namespace gc::core;
 static constexpr int INVALID_VALUE = -1;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                   Implement
 //////////////////////////////////////////////////////////////////////////////////
-std::vector<GameObject*> GameObject::_gameObjects;
-std::vector<GameObject*> GameObject::_destroyGameObjects;
-std::vector<std::wstring> GameObject::_layerList;
-bool GameObject::_isUpdating = false;
-
-
-GameObject::GameObject()
+namespace gc::core
 {
-	_gameObjects.emplace_back(this);
+	std::vector<GameObject::GameObjectPtr> GameObject::GameObjects = {};
+	std::vector<std::wstring> GameObject::LayerList = {};
+}
+
+#pragma region Constructor and Destructor 
+GameObject::GameObject(const LowLevelGraphicsEnginePtr& engine) : _engine(engine)
+{
 	_tag     = L"";
 	_name    = L"";
 	_isActive = true;
@@ -36,20 +39,27 @@ GameObject::GameObject()
 
 GameObject::~GameObject()
 {
-	_components.clear(); _components.shrink_to_fit();
+	_children.clear();
+	_children.shrink_to_fit();
 }
 
+#pragma endregion Constructor and Destructor
+
+#pragma region Find Function 
 /****************************************************************************
 *                          Find
 *************************************************************************//**
 *  @fn        GameObject* GameObject::Find(const std::string& name)
+* 
 *  @brief     This function returns the gameObject with the same name as the assign name.
+* 
 *  @param[in] std::string name
+* 
 *  @return 　　GameObject*
 *****************************************************************************/
-GameObject* GameObject::Find(const std::wstring& name)
+GameObject::GameObjectPtr GameObject::Find(const std::wstring& name)
 {
-	for (auto it = _gameObjects.begin(); it != _gameObjects.end(); ++it)
+	for (auto it = GameObjects.begin(); it != GameObjects.end(); ++it)
 	{
 		if ((*it)->_name == name)
 		{
@@ -58,253 +68,210 @@ GameObject* GameObject::Find(const std::wstring& name)
 	}
 	return nullptr; // Failed to find
 }
+
 /****************************************************************************
 *                          GameObjectsWithTag
 *************************************************************************//**
 *  @fn        std::vector<GameObject*> GameObject::GameObjectsWithTag(const std::string& tag)
+* 
 *  @brief     This function returns the gameObject list with the same tag as the assign tag.
+* 
 *  @param[in] std::string tag
+* 
 *  @return 　　std::vector<GameObject*>
 *****************************************************************************/
-std::vector<GameObject*> GameObject::GameObjectsWithTag(const std::wstring& tag)
+std::vector<GameObject::GameObjectPtr> GameObject::GameObjectsWithTag(const std::wstring& tag)
 {
-	std::vector<GameObject*> gameObjects;
-	for (auto it = _gameObjects.begin(); it != _gameObjects.end(); ++it)
+	std::vector<GameObjectPtr> gameObjects = {};
+
+	for (auto it = GameObjects.begin(); it != GameObjects.end(); ++it)
 	{
 		if ((*it)->GetTag() == tag)
 		{
 			gameObjects.emplace_back((*it));
 		}
 	}
+
 	return gameObjects; // Return Value Optimization (C++17)
 }
+
+#pragma endregion Find Function
 
 #pragma region Destroy
 /****************************************************************************
 *                          Destroy
 *************************************************************************//**
 *  @fn        GameObject* GameObject::Destroy(GameObject* gameObject)
-*  @brief     This function return the gameObject with the same name as the assign name.
-*  @param[in] std::string name
-*  @return 　　GameObject*
+* 
+*  @brief     (Safe delete ) This function destroy the game object with the same assigned object
+* 
+*  @param[in,out] GameObjectPtr& gameObject -> set nullptr
+* 
+*  @return 　　bool (true: success destroy including the object to be destroyed after updating, false: failed to destroy)
 *****************************************************************************/
-bool GameObject::Destroy(GameObject* gameObject)
+bool GameObject::Destroy(GameObjectPtr& gameObject)
 {
 	if (gameObject == nullptr) { return false; }
 
-	if (_isUpdating)
-	{
-		_destroyGameObjects.emplace_back(gameObject);
-		gameObject->SetActive(false);
-	}
-	else
-	{
-		for (auto it = _gameObjects.begin(); it != _gameObjects.end(); ++it)
-		{
-			if ((*it) == gameObject)
-			{
-				std::swap(*it, _gameObjects.back());
-				_gameObjects.pop_back();
-				_gameObjects.shrink_to_fit();         // memory free
-				delete gameObject;                    // delete object
-				return true;
-			}
-		}
-	}
+	const auto foundCount = std::erase(GameObjects, gameObject);
+	if (foundCount == 0) { return false; }
+	gameObject.reset();
 
-	return false;
-}
-
-/****************************************************************************
-*                          DestroyImmediate
-*************************************************************************//**
-*  @fn        GameObject* GameObject::DestroyImmediate(GameObject* gameObject)
-*  @brief     This function return the gameObject with the same name as the assign name.
-*  @param[in] std::string name
-*  @return 　　GameObject*
-*****************************************************************************/
-bool GameObject::DestroyImmediate(GameObject* gameObject)
-{
-	if (gameObject == nullptr) { return false; }
-
-	for (auto it = _gameObjects.begin(); it != _gameObjects.end(); ++it)
-	{
-		if (*it == gameObject)
-		{
-			std::swap(*it, _gameObjects.back());
-			_gameObjects.pop_back();
-			_gameObjects.shrink_to_fit();         // memory free
-			delete gameObject;                    // delete object
-			return true;
-		}
-	}
-
-	return false;
+	return true;
 }
 
 /****************************************************************************
 *                          DestroyAllTagObject
 *************************************************************************//**
-*  @fn        GameObject* GameObject::DestroyAllTagObject(const std::string& tag)
+*  @fn        void GameObject::DestroyAllTagObject(const std::string& tag)
+* 
 *  @brief     This function destroys all objects with the tag
+* 
 *  @param[in] std::string tag
+* 
 *  @return 　　void
 *****************************************************************************/
 void GameObject::DestroyAllTagObjects(const std::wstring& tag)
 {
-
-	for (auto it = _gameObjects.begin(); it != _gameObjects.end(); ++it)
+	std::erase_if(GameObjects,[&](const GameObjectPtr& gameObject) 
 	{
-		if ((*it)->GetTag() == tag)
-		{
-			if (_isUpdating)
-			{
-				_destroyGameObjects.emplace_back(std::move(*it));
-				(*it)->SetActive(false);
-			}
-			else
-			{
-				_gameObjects.erase(it);
-				delete* it;
-			}
-		}
-	}
-	_gameObjects.shrink_to_fit();
+		return gameObject->GetTag() == tag; 
+	});
 }
 
 /****************************************************************************
 *                          DestroyWithChildren
 *************************************************************************//**
-*  @fn        void GameObject::DestroyWithChildren(GameObject* gameObject)
+*  @fn        void GameObject::DestroyWithChildren(GameObjectPtr& gameObject)
+* 
 *  @brief     This function destroys gameObjects including child objects.
-*  @param[in] GameObject* child
-*  @return 　　GameObject*
+* 
+*  @param[in] GameObjectPtr& child
+* 
+*  @return 　　void
 *****************************************************************************/
-void GameObject::DestroyWithChildren(GameObject* gameObject)
+void GameObject::DestroyWithChildren(GameObjectPtr& gameObject)
 {
 	if (gameObject == nullptr) { return; }
 	for (int i = gameObject->GetChildCount() - 1; i >= 0; --i)
 	{
-		GameObject* child = gameObject->GetChild(i);
+		GameObjectPtr child = gameObject->GetChild(i);
 		DestroyWithChildren(child);
 	}
 	Destroy(gameObject);
 }
-/****************************************************************************
-*                          ClearDestroyObjects
-*************************************************************************//**
-*  @fn        void GameObject::ClearDestroyObjects()
-*  @brief     Destroy all game objects.
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void GameObject::ClearDestroyObjects()
-{
-	for (auto it = _destroyGameObjects.begin(); it != _destroyGameObjects.end(); ++it)
-	{
-		Destroy(*it);
-	}
-	_destroyGameObjects.clear();
-	_destroyGameObjects.shrink_to_fit();
-}
-#pragma endregion Destroy
 
 /****************************************************************************
 *                          RemoveChild
 *************************************************************************//**
 *  @fn        bool GameObject::RemoveChild(GameObject* child)
+*
 *  @brief     This function removes child gameObject
-*  @param[in] GameObject* child
-*  @return 　　GameObject*
+*
+*  @param[in] GameObject* child -> set nullptr
+*
+*  @return 　　bool
 *****************************************************************************/
-bool GameObject::RemoveChild(GameObject* child)
+bool GameObject::RemoveChild(GameObjectPtr& child)
 {
 	for (auto it = _children.begin(); it != _children.end(); ++it)
 	{
 		if (*it == child)
 		{
 			_children.erase(it);
+			child = nullptr;
 			return true;
 		}
 	}
 	return false;
 }
+
 /****************************************************************************
 *                          ClearChildren
 *************************************************************************//**
 *  @fn        bool GameObject::ClearChildren()
+*
 *  @brief     This function clears children object.
+*
 *  @param[in] void
+*
 *  @return 　　void
 *****************************************************************************/
 void GameObject::ClearChildren()
 {
 	_children.clear();
-	std::vector<GameObject*>().swap(_children); // memory free
-
+	_children.shrink_to_fit();
 }
+
 /****************************************************************************
 *                          ClearAllGameObjects
 *************************************************************************//**
 *  @fn        bool GameObject::ClearAllGameObjects()
+*
 *  @brief     Clear all game objects.
+*
 *  @param[in] void
+*
 *  @return 　　bool
 *****************************************************************************/
-bool GameObject::ClearAllGameObjects()
+void GameObject::ClearAllGameObjects()
 {
-	_gameObjects.clear();
-	_gameObjects.shrink_to_fit();
-	return true;
+	GameObjects.clear();
+	GameObjects.shrink_to_fit();
 }
-/****************************************************************************
-*                          AddComponent
-*************************************************************************//**
-*  @fn        void GameObject::AddComponent(Component* component)
-*  @brief     Add GameComponent
-*  @param[in] Component* component
-*  @return 　　void
-*****************************************************************************/
-void GameObject::AddComponent(Component* component)
-{
-	/*-------------------------------------------------------------------
-	-        Find insert position in order to decide update order.
-	---------------------------------------------------------------------*/
-	unsigned int myOrder   = component->GetUpdateOrder();
-	auto iterator = _components.begin();
-	for (; iterator != _components.end(); ++iterator)
-	{
-		if (myOrder < (*iterator)->GetUpdateOrder()) { break; }
-	}
-	_components.insert(iterator, component);
-	/*-------------------------------------------------------------------
-	-              Regist gameobject to component
-	---------------------------------------------------------------------*/
-	if (!component->ExistsOwner()) { component->SetOwner(this); }
-}
-/****************************************************************************
-*                          RemoveComponent
-*************************************************************************//**
-*  @fn        void GameObject::RemoveComponent(Component* component)
-*  @brief     Remove GameComponent. (Erase same component )
-*  @param[in] Component* component
-*  @return 　　void
-*****************************************************************************/
-void GameObject::RemoveComponent(Component* component)
-{
-	auto iterator = std::find(_components.begin(), _components.end(), component);
-	if (iterator != _components.end()) 
-	{
-		_components.erase(iterator);
-	}
-}
+
+#pragma endregion Destroy Function
+
+#pragma region Component Function 
+///****************************************************************************
+//*                          AddComponent
+//*************************************************************************//**
+//*  @fn        void GameObject::AddComponent(Component* component)
+//*  @brief     Add GameComponent
+//*  @param[in] Component* component
+//*  @return 　　void
+//*****************************************************************************/
+//void gc::core::GameObject::AddComponent(Component* component)
+//{
+//	/*-------------------------------------------------------------------
+//	-        Find insert position in order to decide update order.
+//	---------------------------------------------------------------------*/
+//	unsigned int myOrder   = component->GetUpdateOrder();
+//	auto iterator = _components.begin();
+//	for (; iterator != _components.end(); ++iterator)
+//	{
+//		if (myOrder < (*iterator)->GetUpdateOrder()) { break; }
+//	}
+//	_components.insert(iterator, component);
+//	/*-------------------------------------------------------------------
+//	-              Regist gameobject to component
+//	---------------------------------------------------------------------*/
+//	if (!component->ExistsOwner()) { component->SetOwner(this); }
+//}
+///****************************************************************************
+//*                          RemoveComponent
+//*************************************************************************//**
+//*  @fn        void GameObject::RemoveComponent(Component* component)
+//*  @brief     Remove GameComponent. (Erase same component )
+//*  @param[in] Component* component
+//*  @return 　　void
+//*****************************************************************************/
+//void gc::core::GameObject::RemoveComponent(Component* component)
+//{
+//	auto iterator = std::find(_components.begin(), _components.end(), component);
+//	if (iterator != _components.end()) 
+//	{
+//		_components.erase(iterator);
+//	}
+//}
+#pragma endregion Component
 #pragma region Private Function
-int GameObject::GetLayerBit(const std::wstring& layer)
+int gc::core::GameObject::GetLayerBit(const std::wstring& layer)
 {
 	if (layer == L"") { return INVALID_VALUE; }
 	for (int i = 0; i < 31; ++i) // 4byte
 	{
-		if (_layerList[i] == layer)
+		if (LayerList[i] == layer)
 		{
 			return i;
 		}

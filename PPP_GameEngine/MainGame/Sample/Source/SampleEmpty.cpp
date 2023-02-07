@@ -29,12 +29,12 @@ SampleEmpty::~SampleEmpty()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleEmpty::Initialize(GameTimer* gameTimer)
+*  @fn        void SampleEmpty::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
-*  @param[in] GameTimer* gameTimer
+*  @param[in] const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleEmpty::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, GameTimer* gameTimer)
+void SampleEmpty::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -61,6 +61,7 @@ void SampleEmpty::Update()
 void SampleEmpty::Draw()
 {
 	_engine->BeginDrawFrame();
+	_engine->BeginSwapchainRenderPass();
 
 	_engine->EndDrawFrame();
 }

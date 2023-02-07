@@ -43,8 +43,10 @@ namespace rhi::core
 		*****************************************************************************/
 		/* @brief : Used to wait for another Command queue to complete execution. (in GPU)*/
 		virtual void Wait   (const std::shared_ptr<RHIFence>& fence, const std::uint64_t value) = 0;
+		
 		/* @brief : Update the fence value (value) when the Command Queue execution completes.*/
 		virtual void Signal (const std::shared_ptr<RHIFence>& fence, const std::uint64_t value) = 0;
+		
 		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
 		virtual void Execute(const std::vector<std::shared_ptr<RHICommandList>>& commandLists) = 0;
 		/****************************************************************************
@@ -59,7 +61,9 @@ namespace rhi::core
 		**                Protected Function
 		*****************************************************************************/
 		RHICommandQueue() = default;
+		
 		virtual ~RHICommandQueue() = default;
+		
 		explicit RHICommandQueue(const CommandListType type) :  _commandListType(type) {};
 		/****************************************************************************
 		**                Protected Member Variables
