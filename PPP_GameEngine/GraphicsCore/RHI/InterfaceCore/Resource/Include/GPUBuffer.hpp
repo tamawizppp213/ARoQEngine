@@ -29,7 +29,7 @@ namespace rhi::core
 	*  @class     GPUBuffer
 	*  @brief     Buffer
 	*****************************************************************************/
-	class GPUBuffer : public GPUResource
+	class GPUBuffer : public GPUResource, public std::enable_shared_from_this<GPUBuffer>
 	{
 	public:
 		/****************************************************************************
@@ -55,6 +55,11 @@ namespace rhi::core
 		// @brief : Unmap Function
 		virtual void CopyEnd() = 0;
 
+		
+		void TransitionResourceState(const core::ResourceState after) override
+		{
+			if (_metaData.State != after) { _metaData.State = after; }
+		}
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -71,7 +76,7 @@ namespace rhi::core
 		ResourceType  GetResourceType() const { return _metaData.ResourceType; }
 		
 		// @brief : Return GPU Resource State
-		ResourceState GetResourceState() const { return _metaData.State; }
+		ResourceState GetResourceState() const noexcept override { return _metaData.State; }
 		
 		// @brief : Return Buffer Usage Flag. (Vertex, Index, or Constant Buffer)
 		ResourceUsage GetUsage() const { return _metaData.ResourceUsage; }
@@ -90,7 +95,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUBuffer() = default;
+		GPUBuffer() { _isTexture = false; };
 
 		~GPUBuffer() = default;
 
@@ -104,6 +109,7 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::uint8_t*   _mappedData = nullptr;
+
 		GPUBufferMetaData _metaData = {};
 	};
 }

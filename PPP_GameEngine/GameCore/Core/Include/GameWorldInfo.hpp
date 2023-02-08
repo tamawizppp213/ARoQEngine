@@ -34,6 +34,9 @@ namespace gc::core
 	struct GameWorldConstant
 	{
 		hlsl::matrix World; // Scale * Rotation * Translation
+#ifdef _DEBUG
+		hlsl::float4 DebugColor = gm::Float4(1.0f,1.0f,1.0f,1.0f);
+#endif
 	};
 
 	/****************************************************************************

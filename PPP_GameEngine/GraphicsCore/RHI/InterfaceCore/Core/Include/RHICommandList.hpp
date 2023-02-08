@@ -31,6 +31,7 @@ namespace rhi::core
 	class RHIResourceLayout;
 	class GPUGraphicsPipelineState;
 	class GPUComputePipelineState;
+	class GPUResource;
 	class GPUTexture;
 	class GPUBuffer;
 	class RHIDescriptorHeap;
@@ -112,7 +113,6 @@ namespace rhi::core
 		/*-------------------------------------------------------------------
 		-                Transition layout
 		---------------------------------------------------------------------*/
-		
 		virtual void TransitionResourceState (const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after) = 0;
 		
 		virtual void TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters) = 0;

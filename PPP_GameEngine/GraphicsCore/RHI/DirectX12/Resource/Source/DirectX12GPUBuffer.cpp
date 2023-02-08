@@ -173,7 +173,7 @@ void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandLis
 		auto after = BARRIER::Transition(_resource.Get(),  D3D12_RESOURCE_STATE_COPY_DEST, beforeState);
 		dxCommandList->ResourceBarrier(1, &after);
 	}
-	else if (_metaData.HeapType == core::MemoryHeap::Upload)
+	else if (_metaData.HeapType == core::MemoryHeap::Upload || _metaData.HeapType == core::MemoryHeap::Readback)
 	{
 		Update(data, GetElementCount());
 	}

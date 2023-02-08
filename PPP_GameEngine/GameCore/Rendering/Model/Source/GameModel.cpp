@@ -131,7 +131,15 @@ void GameModel::Update(const float deltaTime, const bool enableUpdateChild)
 
     if (!_hasCustomGameWorld)
     {
-        _gameWorld->GetBuffer()->Update(&_transform.GetFloat4x4(), 1);
+        GameWorldConstant world = 
+        { 
+            .World = _transform.GetFloat4x4(),
+#ifdef _DEBUG
+            .DebugColor = _debugColor
+#endif
+        };
+
+        _gameWorld->GetBuffer()->Update(&world, 1);
     }
     GameActor::Update(deltaTime, enableUpdateChild);
 }

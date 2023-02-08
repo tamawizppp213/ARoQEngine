@@ -15,7 +15,6 @@
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassGBuffer.hpp"
-
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -84,8 +83,8 @@ void SampleModel::Draw()
 		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
 	
-	zprepass->Draw(_camera->GetResourceView());
-	gbuffer->Draw(_camera->GetResourceView());
+	/*zprepass->Draw(_camera->GetResourceView());
+	gbuffer->Draw(_camera->GetResourceView());*/
 	_engine->BeginSwapchainRenderPass();
 	_skybox->Draw(_camera->GetResourceView());
 	_engine->EndDrawFrame();
@@ -137,12 +136,13 @@ void SampleModel::LoadMaterials()
 	---------------------------------------------------------------------*/
 	_model = GameObject::Create<GameModel>(_engine);
 	_model->Load(L"Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx");
-	_model->SetPosition(0, 0, 20);
+	_model->SetDebugColor(gm::Float4(1, 0, 0, 1));
 
 	zprepass = std::make_shared<basepass::ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
 	zprepass->Add(_model);
 	gbuffer = std::make_shared<basepass::GBuffer>(_engine);
 	gbuffer->Add(_model);
+
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/
@@ -163,7 +163,7 @@ void SampleModel::LoadMaterials()
 void SampleModel::OnKeyboardInput()
 {
 	const float deltaTime = _gameTimer->DeltaTime();
-	const float speed = 0.25f;
+	const float speed = 15.0f;
 	/*-------------------------------------------------------------------
 	-           Keyboad Input W (Move Camera )
 	---------------------------------------------------------------------*/
@@ -177,6 +177,17 @@ void SampleModel::OnKeyboardInput()
 	if (_gameInput.GetKeyboard()->IsPress(DIK_S))
 	{
 		_camera->Walk(-speed * deltaTime);
+	}
+	if(_gameInput.GetKeyboard()->IsPress(DIK_D))
+	{
+		_camera->Strafe(speed * deltaTime);
+	}
+	/*-------------------------------------------------------------------
+	-           Keyboad Input S (Move Camera)
+	---------------------------------------------------------------------*/
+	if (_gameInput.GetKeyboard()->IsPress(DIK_A))
+	{
+		_camera->Strafe(-speed * deltaTime);
 	}
 
 }

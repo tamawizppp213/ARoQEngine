@@ -8,6 +8,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
@@ -209,6 +210,63 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 			static_cast<UINT>(image->slicePitch)));
 	}
 }
+
+void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)
+{
+#ifdef _DEBUG
+	assert(commandList->GetType() == core::CommandListType::Copy);
+#endif
+	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList);
+
+	const TexMetadata dxMetaData =
+	{
+		.width      = _metaData.Width,
+		.height     = _metaData.Height,
+		.depth      = 1,
+		.arraySize  = _metaData.DepthOrArraySize,
+		.mipLevels  = _metaData.MipLevels,
+		.miscFlags  = 0,
+		.miscFlags2 = 0,
+		.format     = _resource->GetDesc().Format,
+		.dimension  = TEX_DIMENSION_TEXTURE2D
+	};
+
+	DirectX::Image image =
+	{
+		.width      = _metaData.Width,
+		.height     = _metaData.Height,
+		.format     = _resource->GetDesc().Format
+	};
+
+	DirectX::ComputePitch(_resource->GetDesc().Format, _metaData.Width, _metaData.Height, image.rowPitch, image.slicePitch);
+	
+	const auto metaData = core::GPUBufferMetaData::UploadBuffer(core::PixelFormatSizeOf::Get(_metaData.PixelFormat), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
+	const auto buffer = _device->CreateBuffer(metaData);
+
+	std::wstring extension = file::FileSystem::GetExtension(filePath);
+	/*-------------------------------------------------------------------
+	-    Select the appropriate texture loading function for each extension
+	---------------------------------------------------------------------*/
+	if (extension == L"tga")
+	{
+		
+	}
+	else if (extension == L"dds")
+	{
+		
+	}
+	else if (extension == L"hdr")
+	{
+		
+	}
+	else
+	{
+		
+	}
+	
+	
+}
+
 #pragma endregion Public Function
 void GPUTexture::Pack(const std::shared_ptr<core::RHICommandList>& commandList)
 {

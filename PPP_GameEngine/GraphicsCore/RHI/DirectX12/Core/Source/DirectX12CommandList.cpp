@@ -348,6 +348,7 @@ void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUText
 	_commandList->ResourceBarrier(1, &barrier);
 	texture->TransitionResourceState(after);
 }
+
 void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
 {
 	std::vector<BARRIER> barriers = {};
@@ -360,21 +361,63 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 	}
 	_commandList->ResourceBarrier(numStates, barriers.data());
 }
+
+void RHICommandList::TransitionResourceStates(const std::vector<std::shared_ptr<core::GPUResource>>& resources, core::ResourceState* afters)
+{
+	std::vector<BARRIER> barriers(resources.size());
+	for (std::uint32_t i = 0; i < resources.size(); ++i)
+	{
+		if (resources[i]->IsTexture())
+		{
+			barriers[i] = BARRIER::Transition(std::static_pointer_cast<directX12::GPUTexture>(resources[i])->GetResource().Get(),
+				EnumConverter::Convert(resources[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
+			resources[i]->TransitionResourceState(afters[i]);
+		}
+		else
+		{
+			barriers[i] = BARRIER::Transition(std::static_pointer_cast<directX12::GPUBuffer>(resources[i])->GetResource().Get(),
+				EnumConverter::Convert(resources[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
+			resources[i]->TransitionResourceState(afters[i]);
+		}
+	}
+	_commandList->ResourceBarrier(barriers.size(), barriers.data());
+}
+
 #pragma endregion Transition Resource State
 #pragma region Copy 
 void RHICommandList::CopyResource(const std::shared_ptr<core::GPUTexture>& dest, const std::shared_ptr<core::GPUTexture>& source)
 {
+	CopyResource(std::static_pointer_cast<core::GPUResource>(dest), std::static_pointer_cast<core::GPUResource>(source));
+}
 
-	std::shared_ptr<core::GPUTexture> textures[] = {dest, source};
+void RHICommandList::CopyResource(const std::shared_ptr<core::GPUResource>& dest, const std::shared_ptr<core::GPUResource>& source)
+{
+	std::shared_ptr<core::GPUResource> resources[] = { dest, source };
 	rhi::core::ResourceState befores[] = { dest->GetResourceState()            , source->GetResourceState() };
-	rhi::core::ResourceState afters [] = { core::ResourceState::CopyDestination, core::ResourceState::CopySource };
-	TransitionResourceStates(2, textures, afters);
-	
-	_commandList->CopyResource(
-		std::static_pointer_cast<directX12::GPUTexture>(dest)->GetResource().Get(),
-		std::static_pointer_cast<directX12::GPUTexture>(source)->GetResource().Get());
+	rhi::core::ResourceState afters[] = { core::ResourceState::CopyDestination, core::ResourceState::CopySource };
 
-	TransitionResourceStates(2, textures, befores);
+	TransitionResourceStates({ dest, source }, afters);
+
+	if (dest->IsTexture() && source->IsTexture())
+	{
+		_commandList->CopyResource(
+			std::static_pointer_cast<directX12::GPUTexture>(dest)->GetResource().Get(),
+			std::static_pointer_cast<directX12::GPUTexture>(source)->GetResource().Get());
+	}
+	else if (dest->IsTexture() && !source->IsTexture())
+	{
+		_commandList->CopyResource(
+			std::static_pointer_cast<directX12::GPUTexture>(dest)->GetResource().Get(),
+			std::static_pointer_cast<directX12::GPUBuffer>(source)->GetResource().Get());
+	}
+	else
+	{
+		_commandList->CopyResource(
+			std::static_pointer_cast<directX12::GPUBuffer>(dest)->GetResource().Get(),
+			std::static_pointer_cast<directX12::GPUBuffer>(source)->GetResource().Get());
+	}
+
+	TransitionResourceStates({ dest, source }, befores);
 }
 #pragma endregion Copy
 #pragma endregion GPU Command

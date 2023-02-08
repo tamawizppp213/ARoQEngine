@@ -202,6 +202,8 @@
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\UniversalRenderPipeline.hpp" />
+    <ClInclude Include="GameCore\Rendering\Debugger\Include\DebugDrawer.hpp" />
+    <ClInclude Include="GameCore\Rendering\Debugger\Include\ScreenCapture.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIButton.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
@@ -501,6 +503,8 @@
     <ClCompile Include="GameCore\Network\Private\Source\Serializer.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\Interface\Source\GBuffer.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\UniversalRenderPipeline.cpp" />
+    <ClCompile Include="GameCore\Rendering\Debugger\Source\DebugDrawer.cpp" />
+    <ClCompile Include="GameCore\Rendering\Debugger\Source\ScreenCapture.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
@@ -680,6 +684,12 @@
     <ResourceCompile Include="MenuResource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Shader\Core\ShaderDebug.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="Shader\Effect\ShaderColorChange.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>

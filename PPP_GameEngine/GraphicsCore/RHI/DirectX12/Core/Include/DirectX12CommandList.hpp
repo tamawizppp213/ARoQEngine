@@ -74,11 +74,16 @@ namespace rhi::directX12
 		-                Transition layout
 		---------------------------------------------------------------------*/
 		void TransitionResourceState (const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after) override ;
+
 		void TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters) override ;
+
+		void TransitionResourceStates(const std::vector<std::shared_ptr<core::GPUResource>>& resources, core::ResourceState* afters);
 		/*-------------------------------------------------------------------
 		-                Copy
 		---------------------------------------------------------------------*/
 		void CopyResource(const std::shared_ptr<core::GPUTexture>& dest, const std::shared_ptr<core::GPUTexture>& source) override;
+		
+		void CopyResource(const std::shared_ptr<core::GPUResource>& dest, const std::shared_ptr<core::GPUResource>& source);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -87,7 +92,9 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHICommandList() = default;
+
 		~RHICommandList();
+
 		explicit RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator);
 	protected:
 		/****************************************************************************

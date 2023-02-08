@@ -38,7 +38,7 @@ RayTracingShaderTable::RayTracingShaderTable(const std::shared_ptr<rhi::core::RH
 	-         Prepare buffer meta data
 	---------------------------------------------------------------------*/
 	rhi::core::GPUBufferMetaData metaData = {};
-	metaData.UploadBuffer(totalByteSize, 1, nullptr);
+	metaData.UploadBuffer(totalByteSize, 1, rhi::core::MemoryHeap::Upload, nullptr);
 
 	/*-------------------------------------------------------------------
 	-         Build shader table

@@ -36,6 +36,9 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		void Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList) override;
+		
+		void Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)override;
+
 		void TransitionState(D3D12_RESOURCE_STATES after)
 		{
 			_usageState = _usageState == after ? _usageState : after;

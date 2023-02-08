@@ -1,82 +1,81 @@
-
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TemplateText.hpp
-///             @brief  TemplateText
+///             @file   ScreenCapture.hpp
+///             @brief  Texture saving. 
+///                     If you press the PrintScreen button, The texture is saved in the current time directory.
+///                     This class is used when executing in the debug mode 
 ///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @date   2023_02_07
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_GPU_RESOURCE_HPP
-#define DIRECTX12_GPU_RESOURCE_HPP
+#ifndef SCREEN_CAPTURE_HPP
+#define SCREEN_CAPTURE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResource.hpp"
-#include "DirectX12Core.hpp"
-#include <d3d12.h>
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <memory>
+#include <vector>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////////////////////////////////////////////
-//                              Class
-//////////////////////////////////////////////////////////////////////////////////
-namespace rhi::directX12
+class Keyboard;
+namespace rhi::core
 {
+	class RHIFrameBuffer;
+	class GPUTexture;
+}
+//////////////////////////////////////////////////////////////////////////////////
+//                               Class
+//////////////////////////////////////////////////////////////////////////////////
 
+namespace gc::rendering
+{
 	/****************************************************************************
-	*				  			GPUResource
+	*				  			    ScreenCapture
 	*************************************************************************//**
-	*  @class     GPUResource
-	*  @brief     GPUResource
+	*  @class     ScreenCapture
+	*  @brief     If you press the PrintScreen button, The texture is saved in the current time directory.
+	              This class is used when executing in the debug mode 
 	*****************************************************************************/
-	class GPUResource : public rhi::core::GPUResource
+	class ScreenCapture : public NonCopyable
 	{
+	protected:
+		using KeyboardPtr    = std::shared_ptr<Keyboard>;
+		using TexturePtr     = std::shared_ptr<rhi::core::GPUTexture>;
+		using FrameBufferPtr = std::shared_ptr<rhi::core::RHIFrameBuffer>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Destroy()
-		{
-			_resource.Reset();
-		}
-		virtual void TransitionState(D3D12_RESOURCE_STATES after)
-		{
-			if (_usageState != after) { _usageState = after; }
-		}
-		void TransitionResourceState(const core::ResourceState after) override {};
+		bool Capture(const TexturePtr& texture);
+
+		bool Capture(const std::vector<TexturePtr>& textures);
+
+		bool Capture(const FrameBufferPtr& frameBuffer);
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		Resource* GetResource() { return _resource.Get(); }
-		const Resource* GetResource() const { return _resource.Get(); }
-		Resource** GetAddressOf() { return _resource.GetAddressOf(); }
-		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return _resource->GetGPUVirtualAddress(); }
-		D3D12_RESOURCE_STATES GetUsageState() { return _usageState; }
-		core::ResourceState GetResourceState() const noexcept { return core::ResourceState::Common; }
 
-		void SetName(const std::wstring& name) override { _resource->SetName(name.c_str()); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUResource() :_usageState(D3D12_RESOURCE_STATE_COMMON) {};
-		GPUResource(Resource* resource, D3D12_RESOURCE_STATES currentState) : _usageState(currentState), _resource(resource) {};
-		~GPUResource() { Destroy(); }
+		ScreenCapture(const KeyboardPtr& keyboard) : _keyboard(keyboard){};
 
-		Resource* operator->() { return _resource.Get(); }
-		const Resource* operator->() const { return _resource.Get(); }
+		virtual ~ScreenCapture() = default;
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		std::wstring GetCurrentDataTime();
 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		ResourceComPtr            _resource = nullptr;
-		D3D12_RESOURCE_STATES     _usageState;
+		KeyboardPtr _keyboard = nullptr;
 	};
 }
 #endif

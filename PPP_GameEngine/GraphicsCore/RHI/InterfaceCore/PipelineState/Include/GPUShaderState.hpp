@@ -38,8 +38,11 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-		virtual void Compile   (const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}) = 0;
-		
+#ifdef _DEBUG
+		virtual void Compile   (const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}, const std::vector<std::wstring>& defines = {L"_DEBUG"}) = 0;
+#else
+		virtual void Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}, const std::vector<std::wstring>& defines = {}) = 0;
+#endif
 		// @brief : Offline Compile, already compiled fileName(filePath)
 		virtual void LoadBinary(const core::ShaderType type, const std::wstring& fileName) = 0;
 		

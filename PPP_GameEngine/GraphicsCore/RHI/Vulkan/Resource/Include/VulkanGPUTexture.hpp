@@ -35,6 +35,9 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		void Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList) override { printf("Non Function\n"); };
+
+		void Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList) override { printf("Non Function\n"); }
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

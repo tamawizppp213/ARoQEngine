@@ -38,6 +38,9 @@ cbuffer SceneConstants : register(b0)
 cbuffer ObjectConstants : register(b1)
 {
     matrix World;
+    #ifdef _DEBUG
+    float4 DebugColor;
+    #endif
 }
 
 cbuffer MaterialConstants : register(b2)

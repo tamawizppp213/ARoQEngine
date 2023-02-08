@@ -38,7 +38,7 @@ using namespace rhi::directX12;
 *  @param[in] float version (current newest version : 6.6f)
 *  @return Å@Å@void
 *****************************************************************************/
-void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint, const float version, const std::vector<std::wstring>& includeDirectories)
+void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint, const float version, const std::vector<std::wstring>& includeDirectories, const std::vector<std::wstring>& defines)
 {
 #if __DEBUG
 	assert(0.0f < version && version <= NEWEST_VERSION);
@@ -52,7 +52,7 @@ void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fi
 	---------------------------------------------------------------------*/
 	if (version >= 6.0f)
 	{
-		_dxBlob = DxCompile(fileName, entryPoint, target, includeDirectories);
+		_dxBlob = DxCompile(fileName, entryPoint, target, includeDirectories, defines);
 	}
 	else
 	{
@@ -102,7 +102,7 @@ void GPUShaderState::LoadBinary(const core::ShaderType type, const std::wstring&
 }
 
 #pragma region DxCompile
-BlobComPtr GPUShaderState::DxCompile(const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target, const std::vector<std::wstring>& includeDirectories)
+BlobComPtr GPUShaderState::DxCompile(const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target, const std::vector<std::wstring>& includeDirectories, const std::vector<std::wstring>& defines)
 {
 	/*-------------------------------------------------------------------
 	-            Create blob data from shader text file.
@@ -135,6 +135,12 @@ BlobComPtr GPUShaderState::DxCompile(const std::wstring& fileName, const std::ws
 		arguments.push_back(directory.c_str());
 	}
 
+	std::vector<DxcDefine> dxcDefines(defines.size());
+	for (size_t i = 0; i < defines.size(); ++i)
+	{
+		dxcDefines[i].Name = defines[i].c_str();
+	}
+	
 	ComPtr<IDxcOperationResult> result = nullptr;
 	HRESULT hresult = dxcCompiler->Compile(
 		sourceBlob.Get(),
@@ -142,7 +148,8 @@ BlobComPtr GPUShaderState::DxCompile(const std::wstring& fileName, const std::ws
 		entryPoint.c_str(),
 		target.c_str(),
 		arguments.data(), static_cast<std::uint32_t>(arguments.size()),
-		nullptr, 0,
+		dxcDefines.empty() ? nullptr : dxcDefines.data(),
+		dxcDefines.empty() ? 0 : dxcDefines.size(),
 		dxcIncludeHandler.Get(),
 		&result
 	);

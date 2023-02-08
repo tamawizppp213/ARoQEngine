@@ -915,6 +915,12 @@
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Debugger\Include\DebugDrawer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Debugger\Include\ScreenCapture.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1472,6 +1478,12 @@
     <ClCompile Include="GameCore\Rendering\Core\Interface\Source\GBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Debugger\Source\DebugDrawer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Debugger\Source\ScreenCapture.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -1505,5 +1517,6 @@
     <FxCompile Include="Shader\Sprite\ShaderRayTracingTest.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderZPrepass.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderGBuffer.hlsl" />
+    <FxCompile Include="Shader\Core\ShaderDebug.hlsl" />
   </ItemGroup>
 </Project>

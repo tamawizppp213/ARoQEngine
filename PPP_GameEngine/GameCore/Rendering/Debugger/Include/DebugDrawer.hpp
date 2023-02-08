@@ -1,82 +1,106 @@
-
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TemplateText.hpp
-///             @brief  TemplateText
+///             @file   DebugDrawer.hpp
+///             @brief  Wire frame drawing.
 ///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @date   2023_02_07
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef DIRECTX12_GPU_RESOURCE_HPP
-#define DIRECTX12_GPU_RESOURCE_HPP
+#ifndef DEBUG_DRAWER_HPP
+#define DEBUG_DRAWER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResource.hpp"
-#include "DirectX12Core.hpp"
-#include <d3d12.h>
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Math/Include/GMVector.hpp"
+#include <memory>
+#include <vector>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+class LowLevelGraphicsEngine;
 
-//////////////////////////////////////////////////////////////////////////////////
-//                              Class
-//////////////////////////////////////////////////////////////////////////////////
-namespace rhi::directX12
+namespace rhi::core
 {
+	class RHIResourceLayout;
+	class RHIFrameBuffer;
+	class RHIRenderPass;
+	class GPUResourceView;
+	class GPUGraphicsPipelineState;
+	class GPUTexture;
+	class GPUBuffer;
+}
 
+namespace gc::core
+{
+	class GameModel;
+}
+//////////////////////////////////////////////////////////////////////////////////
+//                               Class
+//////////////////////////////////////////////////////////////////////////////////
+
+namespace gc::rendering
+{
 	/****************************************************************************
-	*				  			GPUResource
+	*				  			    DebugDrawer
 	*************************************************************************//**
-	*  @class     GPUResource
-	*  @brief     GPUResource
+	*  @class     DebugDrawer
+	*  @brief     Wire frame renderer
 	*****************************************************************************/
-	class GPUResource : public rhi::core::GPUResource
+	class DebugDrawer : public NonCopyable
 	{
+	protected:
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using PipelineStatePtr   = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		using ResourceLayoutPtr  = std::shared_ptr<rhi::core::RHIResourceLayout>;
+		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
+		using TexturePtr         = std::shared_ptr<rhi::core::GPUTexture>;
+		using RenderPassPtr      = std::shared_ptr<rhi::core::RHIRenderPass>;
+		using GameModelPtr       = std::shared_ptr<gc::core::GameModel>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Destroy()
-		{
-			_resource.Reset();
-		}
-		virtual void TransitionState(D3D12_RESOURCE_STATES after)
-		{
-			if (_usageState != after) { _usageState = after; }
-		}
-		void TransitionResourceState(const core::ResourceState after) override {};
+		void Draw(const GPUResourceViewPtr& scene);
+
+		void Add(const GameModelPtr& gameModel);
+
+		void Clear();
+
+		void Clear(const GameModelPtr& gameModel);
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		Resource* GetResource() { return _resource.Get(); }
-		const Resource* GetResource() const { return _resource.Get(); }
-		Resource** GetAddressOf() { return _resource.GetAddressOf(); }
-		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return _resource->GetGPUVirtualAddress(); }
-		D3D12_RESOURCE_STATES GetUsageState() { return _usageState; }
-		core::ResourceState GetResourceState() const noexcept { return core::ResourceState::Common; }
 
-		void SetName(const std::wstring& name) override { _resource->SetName(name.c_str()); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUResource() :_usageState(D3D12_RESOURCE_STATE_COMMON) {};
-		GPUResource(Resource* resource, D3D12_RESOURCE_STATES currentState) : _usageState(currentState), _resource(resource) {};
-		~GPUResource() { Destroy(); }
+		DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName = L"");
 
-		Resource* operator->() { return _resource.Get(); }
-		const Resource* operator->() const { return _resource.Get(); }
+		~DebugDrawer();
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		
+		void PreparePipelineState(const std::wstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		ResourceComPtr            _resource = nullptr;
-		D3D12_RESOURCE_STATES     _usageState;
+		LowLevelGraphicsEnginePtr _engine = nullptr;
+
+		std::vector<GameModelPtr> _gameModels = {};
+
+		/*-------------------------------------------------------------------
+		-          Render Resource
+		---------------------------------------------------------------------*/
+		PipelineStatePtr _pipeline = nullptr;
+		
+		ResourceLayoutPtr _resourceLayout = nullptr;
 	};
 }
 #endif

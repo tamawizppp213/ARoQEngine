@@ -32,13 +32,14 @@ namespace rhi::core
 	*  @class     GPUResource 
 	*  @brief     Resource (å„Ç≈NoncopyableÇ…ïœçXÇ∑ÇÈ)
 	*****************************************************************************/
-	class GPUResource : public std::enable_shared_from_this<GPUResource>
+	class GPUResource 
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-	
+		virtual void TransitionResourceState(const core::ResourceState after) = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -46,6 +47,9 @@ namespace rhi::core
 
 		virtual void SetName(const std::wstring& name) = 0;
 
+		virtual core::ResourceState GetResourceState() const noexcept = 0;
+		
+		bool IsTexture() const { return _isTexture; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -68,7 +72,10 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice> _device = nullptr;
+
 		std::wstring _name = L"";
+
+		bool _isTexture = true;
 	}; 
 }
 

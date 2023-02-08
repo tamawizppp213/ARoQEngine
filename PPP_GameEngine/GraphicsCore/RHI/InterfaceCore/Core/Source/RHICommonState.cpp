@@ -82,13 +82,13 @@ GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::Resource
 	if (bufferType == BufferType::Constant) { Stride = CalcConstantBufferByteSize(stride); }
 	ByteSize = Stride * Count;
 }
-GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count, void* initData)
+GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, MemoryHeap::Upload, BufferType::Upload, initData);
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
 }
-GPUBufferMetaData GPUBufferMetaData::DefaultBuffer(const size_t stride, const size_t count, void* initData)
+GPUBufferMetaData GPUBufferMetaData::DefaultBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, MemoryHeap::Default, BufferType::Default, initData);
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Default, initData);
 }
 GPUBufferMetaData GPUBufferMetaData::ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state, void* initData)
 {

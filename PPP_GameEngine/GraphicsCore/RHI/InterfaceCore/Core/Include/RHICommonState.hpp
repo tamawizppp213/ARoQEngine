@@ -781,8 +781,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
-		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count, void* initData = nullptr);
-		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count, void* initData = nullptr);
+		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
+		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, void* initData = nullptr);
 		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 
 		static GPUBufferMetaData VertexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead, void* initData = nullptr);
 		static GPUBufferMetaData IndexBuffer   (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common, void* initData = nullptr);
