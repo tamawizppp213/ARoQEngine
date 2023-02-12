@@ -46,7 +46,10 @@ void RHIFrameBuffer::Prepare()
 	{
 		if (_renderTargets[i] == nullptr) { continue; }
 		if (_renderTargets[i]->GetDimension() != ResourceDimension::Dimension2D) { throw std::runtime_error("Wrong render target dimension"); }
-		if (_renderTargets[i]->GetUsage() != ResourceUsage::RenderTarget) { throw std::runtime_error("Wrong resource usage"); }
+		if (!core::EnumHas(_renderTargets[i]->GetUsage(), core::ResourceUsage::RenderTarget))
+		{ 
+			throw std::runtime_error("Wrong resource usage"); 
+		}
 	}
 
 	if (_depthStencil != nullptr)

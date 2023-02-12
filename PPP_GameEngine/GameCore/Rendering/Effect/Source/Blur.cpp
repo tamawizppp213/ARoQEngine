@@ -18,6 +18,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
 
 #include "GameUtility/Base/Include/Screen.hpp"
+#include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -97,12 +98,12 @@ void GaussianBlur::Draw()
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto commandList = _engine->GetCommandList(CommandListType::Compute, frameIndex);
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto frameBuffer         = _engine->GetFrameBuffer(frameIndex);
 	/*-------------------------------------------------------------------
 	-               Pause current render pass
 	---------------------------------------------------------------------*/
-	graphicsCommandList->EndRenderPass();
+	//graphicsCommandList->EndRenderPass();
 
-	graphicsCommandList->CopyResource(_shaderResourceViews[0]->GetTexture() , _engine->GetFrameBuffer(frameIndex)->GetRenderTarget(0));
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
 	---------------------------------------------------------------------*/
@@ -114,7 +115,8 @@ void GaussianBlur::Draw()
 	/*-------------------------------------------------------------------
 	-               Execute XBlur Command
 	---------------------------------------------------------------------*/
-	_shaderResourceViews   [0]->Bind(commandList, 2);
+	frameBuffer->GetRenderTargetSRV()->Bind(commandList, 2);
+	//_shaderResourceViews[0]->Bind(commandList, 2);
 	_unorderedResourceViews[0]->Bind(commandList, 3);
 	commandList->SetComputePipeline(_xBlurPipeline);
 	commandList->Dispatch( _textureSize.XBlurTexture[0] / THREAD, _textureSize.XBlurTexture[1] / THREAD, 1);
@@ -130,16 +132,15 @@ void GaussianBlur::Draw()
 	/*-------------------------------------------------------------------
 	-               Execute FinalBlur Command
 	---------------------------------------------------------------------*/
-	_shaderResourceViews   [2]->Bind(commandList, 2);
-	_unorderedResourceViews[2]->Bind(commandList, 3);
+	_shaderResourceViews[2]->Bind(commandList, 2);
+	frameBuffer->GetRenderTargetUAV()->Bind(commandList, 3);
 	commandList->SetComputePipeline(_finalBlurPipeline);
 	commandList->Dispatch(_textureSize.OriginalTexture[0] / THREAD, _textureSize.OriginalTexture[1] / THREAD, 1);
-	graphicsCommandList->CopyResource(_engine->GetFrameBuffer(frameIndex)->GetRenderTarget(0), _unorderedResourceViews[2]->GetTexture());
-	
+
 	/*-------------------------------------------------------------------
 	-               Restart current render pass
 	---------------------------------------------------------------------*/
-	graphicsCommandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), _engine->GetFrameBuffer(frameIndex));
+	//graphicsCommandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(),frameBuffer);
 }
 
 /****************************************************************************

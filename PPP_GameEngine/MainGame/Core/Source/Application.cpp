@@ -117,8 +117,8 @@ bool Application::CreateMainWindow()
 						Set Game screen window size
 	-----------------------------------------------------------------*/
 	RECT gameWindowRect = { 0,0, Screen::GetFullScreenWidth(), Screen::GetFullScreenHeight()};
-	Screen::SetScreenWidth (Screen::GetFullScreenWidth());
-	Screen::SetScreenHeight(Screen::GetFullScreenHeight());
+	Screen::SetScreenWidth (1920);
+	Screen::SetScreenHeight(1080);
 
 	/*---------------------------------------------------------------
 						CenteringWindow

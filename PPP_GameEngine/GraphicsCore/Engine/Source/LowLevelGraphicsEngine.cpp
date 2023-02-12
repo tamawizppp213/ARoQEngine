@@ -25,6 +25,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHISwapchain.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIRenderpass.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFence.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDescriptorHeap.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
@@ -174,17 +175,19 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	// close graphics command list
 	const auto& graphicsCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Graphics];
 	graphicsCommandList->EndRenderPass();
+
+	graphicsCommandList->CopyResource(_swapchain->GetBuffer(_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
 	graphicsCommandList->EndRecording();
 
 	/*-------------------------------------------------------------------
 	-          Execute GPU Command
 	---------------------------------------------------------------------*/
-	_commandQueues[core::CommandListType::Compute]->Execute({ computeCommandList });
-	_commandQueues[core::CommandListType::Compute]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
-
-	_commandQueues[core::CommandListType::Graphics]->Wait(_fence, _fenceValues[_currentFrameIndex]);
 	_commandQueues[core::CommandListType::Graphics]->Execute({graphicsCommandList});
 	_commandQueues[core::CommandListType::Graphics]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
+	_commandQueues[core::CommandListType::Graphics]->Wait(_fence, _fenceValues[_currentFrameIndex]);
+
+	_commandQueues[core::CommandListType::Compute]->Execute({ computeCommandList });
+	_commandQueues[core::CommandListType::Compute]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
 	
 	/*-------------------------------------------------------------------
 	-          Flip Screen
@@ -226,9 +229,13 @@ void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType 
 *                     OnResize
 *************************************************************************//**
 *  @fn        void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHeight)
+* 
 *  @brief     Resize swapchain
+* 
 *  @param[in] size_t newWidth
+* 
 *  @param[in] size_t newHeight
+* 
 *  @return @@void
 *****************************************************************************/
 void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHeight)
@@ -374,17 +381,19 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 		/*-------------------------------------------------------------------
 		-      Create Depth Texture
 		---------------------------------------------------------------------*/
-		auto depthInfo = core::GPUTextureMetaData::DepthStencil( Screen::GetScreenWidth(), Screen::GetScreenHeight(), 
+		auto renderInfo = core::GPUTextureMetaData::RenderTarget(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _pixelFormat, clearColor);
+		auto depthInfo  = core::GPUTextureMetaData::DepthStencil( Screen::GetScreenWidth(), Screen::GetScreenHeight(), 
 			_depthStencilFormat, clearDepthColor);
 
-		if (_apiVersion == APIVersion::Vulkan) { depthInfo.State = core::ResourceState::Common; }
+		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 
-		const auto depthTexture = _device->CreateTexture(depthInfo);
+		const auto renderTexture = _device->CreateTexture(renderInfo);
+		const auto depthTexture  = _device->CreateTexture(depthInfo);
 
 		/*-------------------------------------------------------------------
 		-      Create Frame Buffer
 		---------------------------------------------------------------------*/
-		_frameBuffers[i] = _device->CreateFrameBuffer(_renderPass, _swapchain->GetBuffer(i), depthTexture);
+		_frameBuffers[i] = _device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
 	}
 }
 

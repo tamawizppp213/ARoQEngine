@@ -104,7 +104,8 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(i), IID_PPV_ARGS(backBuffer.GetAddressOf())));
 
 		auto info = core::GPUTextureMetaData::Texture2D(
-			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
+			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, 
+			core::ResourceUsage::RenderTarget);
 		info.State = core::ResourceState::Common;
 
 		_backBuffers[i] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);

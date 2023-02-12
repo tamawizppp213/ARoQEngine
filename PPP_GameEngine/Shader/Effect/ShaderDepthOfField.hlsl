@@ -17,11 +17,13 @@ cbuffer BlurEffect : register(b0) // 0
 {
     float2 TextureSize;
     float  Radius;
+    float  Padding0;
 }
 cbuffer ClipSize : register(b1) // 1
 {
-    float NearClip;
-    float FarClip;
+    float  NearClip;
+    float  FarClip;
+    float2 Padding1;
 }
 // common
 RWTexture2D<float4> DestCommon  : register(u0); // 5

@@ -36,7 +36,6 @@ void GameManager::GameEnd()
 {
 	_sceneManager.CallSceneTerminate();
 	_sceneManager.ShutDown();
-	ResourceManager::Instance().ClearAllResources();
 	GameObject::ClearAllGameObjects();
 	_engine->ShutDown();
 }

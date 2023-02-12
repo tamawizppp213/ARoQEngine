@@ -83,7 +83,9 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		virtual ~GPUPipelineFactory() = default;
+		
 		explicit GPUPipelineFactory(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
+		
 		GPUPipelineFactory() = default;
 		/****************************************************************************
 		**                Protected Function

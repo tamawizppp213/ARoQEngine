@@ -78,10 +78,15 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice>  _device = nullptr;
+
 		std::shared_ptr<GPUBuffer>  _buffer = nullptr;
+
 		std::shared_ptr<GPUTexture> _texture = nullptr;
+
 		std::shared_ptr<RHIDescriptorHeap> _heap = nullptr;
+
 		core::ResourceViewType      _resourceViewType = core::ResourceViewType::Unknown;
+		
 		std::uint32_t _descriptorID = 0;
 	};
 }
