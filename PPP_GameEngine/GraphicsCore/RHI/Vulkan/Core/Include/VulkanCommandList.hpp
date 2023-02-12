@@ -40,7 +40,7 @@ namespace rhi::vulkan
 		void EndRecording () override;  // end call   at draw frame
 		void BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer) override;
 		void EndRenderPass() override;
-
+		void Reset() override {};
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/

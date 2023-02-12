@@ -102,13 +102,15 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	{
 		ResourceComPtr backBuffer = nullptr;
 		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(i), IID_PPV_ARGS(backBuffer.GetAddressOf())));
+		backBuffer->SetName(L"BackBuffer");
+
 
 		auto info = core::GPUTextureMetaData::Texture2D(
 			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, 
 			core::ResourceUsage::RenderTarget);
 		info.State = core::ResourceState::Common;
 
-		_backBuffers[i] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
+		_backBuffers[i] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
 	}
 }
 
@@ -141,6 +143,8 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	---------------------------------------------------------------------*/
 	if (_windowInfo.Width == 0 || _windowInfo.Height == 0) { throw std::runtime_error("Width or height is zero."); }
 
+	_windowInfo.Width  = width;
+	_windowInfo.Height = height;
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
@@ -167,7 +171,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 
 		info.State = core::ResourceState::Present;
 
-		_backBuffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
+		_backBuffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
 	}
 }
 /****************************************************************************

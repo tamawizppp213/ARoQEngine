@@ -42,8 +42,7 @@ Camera::Camera(LowLevelGraphicsEnginePtr engine) : _engine(engine)
 	SetLens(0.25f * GM_PI, Screen::GetAspectRatio(), 1.0f, 1000.0f);
 
 	GPUBufferMetaData metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SceneConstants), 1);
-	_sceneConstantBuffer = device->CreateBuffer(metaData);
-	_sceneConstantBuffer->SetName(L"SceneConstants");
+	_sceneConstantBuffer = device->CreateBuffer(metaData, L"SceneConstants");
 
 	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer, nullptr);
 }

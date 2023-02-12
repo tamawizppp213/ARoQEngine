@@ -48,6 +48,7 @@ namespace rhi::directX12
 
 		size_t               GetDSVByteSize() const noexcept { return _dsvSize; }
 
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

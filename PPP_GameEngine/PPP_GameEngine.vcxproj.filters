@@ -123,9 +123,6 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Shader.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GameCore\Core\Include\GameObject.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -172,12 +169,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Math\Include\GMHash.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12StaticSampler.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp">
@@ -944,9 +935,6 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Core.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Shader.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="GameCore\Core\Source\GameObject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -978,9 +966,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIImage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12StaticSampler.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="MainGame\Sample\Source\SampleSky.cpp">

@@ -22,8 +22,8 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData)
-	:core::GPUBuffer(device, metaData)
+GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
+	:core::GPUBuffer(device, metaData, name)
 {
 	/*-------------------------------------------------------------------
 	-           Set heap property
@@ -58,6 +58,11 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core:
 		EnumConverter::Convert(metaData.State),                                          // Generic Read
 		nullptr,
 		IID_PPV_ARGS(&_resource)));
+
+	if (_name != L"")
+	{
+		_resource->SetName(_name.c_str());
+	}
 }
 
 GPUBuffer::~GPUBuffer()

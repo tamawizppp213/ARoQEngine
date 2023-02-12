@@ -54,9 +54,9 @@ namespace rhi::vulkan
 		GPUTexture() = default;
 		~GPUTexture();
 		 
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device);
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData);
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image);
+		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const std::wstring& name = L"");
+		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"");
+		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const std::wstring& name = L"");
 
 	protected:
 		/****************************************************************************

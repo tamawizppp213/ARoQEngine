@@ -26,18 +26,18 @@ using namespace rhi::vulkan;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData)
-	: core::GPUTexture(device, metaData)
+GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name)
+	: core::GPUTexture(device, metaData, name)
 {
 	Prepare();
 }
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device)
-	: core::GPUTexture(device)
+GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const std::wstring& name)
+	: core::GPUTexture(device, name)
 {
 	_memory = nullptr;
 }
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image)
-	: core::GPUTexture(device, metaData), _image(image)
+GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const std::wstring& name)
+	: core::GPUTexture(device, metaData, name), _image(image)
 {
 	_memory = nullptr;
 }

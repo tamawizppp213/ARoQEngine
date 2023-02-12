@@ -358,8 +358,6 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12RenderPass.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12ResourceLayout.hpp" />
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Shader.hpp" />
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12StaticSampler.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Swapchain.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUBlendState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\PipelineState\Include\DirectX12GPUDepthStencilState.hpp" />
@@ -377,7 +375,6 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUResourceView.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUSampler.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUTexture.hpp" />
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIAdapter.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIDescriptorHeap.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHICommandAllocator.hpp" />
@@ -565,8 +562,6 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12FrameBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Instance.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12ResourceLayout.cpp" />
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Shader.cpp" />
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12StaticSampler.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Swapchain.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUBlendState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUDepthStencilState.cpp" />

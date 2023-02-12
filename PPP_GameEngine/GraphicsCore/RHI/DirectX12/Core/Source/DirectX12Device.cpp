@@ -295,14 +295,14 @@ std::shared_ptr<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerIn
 	return std::static_pointer_cast<core::GPUSampler>(std::make_shared<directX12::GPUSampler>(shared_from_this(), samplerInfo));
 }
 
-std::shared_ptr<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData)
+std::shared_ptr<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::GPUBuffer>(std::make_shared<directX12::GPUBuffer>(shared_from_this(), metaData));
+	return std::static_pointer_cast<core::GPUBuffer>(std::make_shared<directX12::GPUBuffer>(shared_from_this(), metaData, name));
 }
 
-std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData)
+std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this(), metaData));
+	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this(), metaData, name));
 }
 
 std::shared_ptr<core::GPUTexture> RHIDevice::CreateTextureEmpty()

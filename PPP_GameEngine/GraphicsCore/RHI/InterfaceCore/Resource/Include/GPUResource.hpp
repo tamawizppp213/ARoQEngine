@@ -62,7 +62,7 @@ namespace rhi::core
 
 		~GPUResource() = default;
 
-		explicit GPUResource(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
+		explicit GPUResource(const std::shared_ptr<RHIDevice>& device, const std::wstring& name = L"") : _device(device), _name(name) {};
 		
 		/****************************************************************************
 		**                Protected Function

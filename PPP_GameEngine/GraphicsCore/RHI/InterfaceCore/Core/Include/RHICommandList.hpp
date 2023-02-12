@@ -59,6 +59,8 @@ namespace rhi::core
 		
 		virtual void EndRenderPass() = 0;
 
+		virtual void Reset() = 0;
+
 		/*-------------------------------------------------------------------
 		-               Common command
 		---------------------------------------------------------------------*/
@@ -127,6 +129,7 @@ namespace rhi::core
 		/* @brief : Command list type (graphics, copy, or compute)*/
 		CommandListType GetType() const { return _commandListType; }
 		
+		bool IsOpen() const { return _isOpen; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -152,6 +155,7 @@ namespace rhi::core
 		std::shared_ptr<core::RHIRenderPass> _renderPass       = nullptr;
 		std::shared_ptr<core::RHIFrameBuffer>_frameBuffer      = nullptr;
 		core::CommandListType _commandListType = CommandListType::Unknown;
+		bool _isOpen = false;
 	};
 }
 #endif

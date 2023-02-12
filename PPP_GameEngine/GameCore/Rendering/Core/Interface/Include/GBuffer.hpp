@@ -95,7 +95,7 @@ namespace gc::rendering
 		*****************************************************************************/
 		virtual void PreparePipelineState(const std::wstring& name) = 0;
 
-		virtual void PrepareFrameBuffers() = 0;
+		virtual void PrepareFrameBuffers(const std::wstring& name) = 0;
 
 		/****************************************************************************
 		**                Protected Member Variables

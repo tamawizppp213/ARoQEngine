@@ -23,8 +23,8 @@ namespace
 	static inline std::uint32_t AlignmentValue(std::uint32_t size, std::uint32_t alignment) { return (size + alignment - (size % alignment)); }
 }
 
-GPUBuffer::GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBufferMetaData& metaData)
-	: GPUResource(device), _metaData(metaData)
+GPUBuffer::GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
+	: GPUResource(device, name), _metaData(metaData)
 {
 	/*-------------------------------------------------------------------
 	-           Constant Buffer Check (for 256 byte alignment )

@@ -80,9 +80,16 @@ namespace rhi::core
 		/* @brief : Return depth stencil view pointer (if not used : return nullptr)*/
 		ResourceViewPtr GetDepthStencilView() const noexcept { return _depthStencilView; }
 
+		void SetRenderTargets(const std::vector<TexturePtr>& textures);
+
+		void SetRenderTarget(const TexturePtr& texture, const size_t index = 0);
+
+		void SetDepthStencil(const TexturePtr& texture);
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+
+
 	protected:
 		/****************************************************************************
 		**                Protected Function

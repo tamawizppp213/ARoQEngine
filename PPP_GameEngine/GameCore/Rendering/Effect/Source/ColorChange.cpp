@@ -85,7 +85,7 @@ ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEngin
 *****************************************************************************/
 void ColorChange::OnResize(int newWidth, int newHeight)
 {
-	
+
 }
 /****************************************************************************
 *							Draw
@@ -225,6 +225,9 @@ void ColorChange::PrepareResourceView()
 	const auto frameCount = device->GetFrameCount();
 	const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _engine->GetBackBufferFormat());
 	
+	_width  = Screen::GetScreenWidth();
+	_height = Screen::GetScreenHeight();
+
 	_resourceViews.resize(frameCount);
 	for (std::uint32_t i = 0; i < static_cast<std::uint32_t>(_resourceViews.size()); ++i)
 	{

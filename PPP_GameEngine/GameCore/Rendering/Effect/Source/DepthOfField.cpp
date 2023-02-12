@@ -9,7 +9,6 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/DepthOfField.hpp"
-#include "GraphicsCore/Engine/Include/GraphicsCoreEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"

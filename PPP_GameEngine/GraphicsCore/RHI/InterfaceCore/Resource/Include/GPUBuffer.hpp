@@ -99,7 +99,7 @@ namespace rhi::core
 
 		~GPUBuffer() = default;
 
-		explicit GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBufferMetaData& metaData);
+		explicit GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name);
 		
 		/****************************************************************************
 		**                Protected Function

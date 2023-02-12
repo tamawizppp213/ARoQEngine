@@ -171,6 +171,20 @@ LRESULT Application::WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wPar
 		{
 			Screen::SetScreenWidth(LOWORD(lParam));
 			Screen::SetScreenHeight(HIWORD(lParam));
+
+			if (!_gameManager.GetGraphicsEngine()) { return 0; }
+			switch (wParam)
+			{
+				case SIZE_RESTORED:
+				{
+					_gameManager.GetGraphicsEngine()->OnResize(Screen::GetScreenWidth(), Screen::GetScreenHeight());
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
 			return 0;
 		}
 		/*-----------------------------------------------------------------

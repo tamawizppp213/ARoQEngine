@@ -93,7 +93,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	/*-------------------------------------------------------------------
 	-      Create fence
 	---------------------------------------------------------------------*/
-	_fence = _device->CreateFence();
+	SetUpFence();
 
 	/*-------------------------------------------------------------------
 	-      Set up swapchain
@@ -124,6 +124,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 		_commandLists[i][core::CommandListType::Copy]     = _device->CreateCommandList(_device->GetCommandAllocator(core::CommandListType::Copy    , i));
 	}
 
+	_hasInitialized = true;
 }
 
 /****************************************************************************
@@ -188,7 +189,8 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 
 	_commandQueues[core::CommandListType::Compute]->Execute({ computeCommandList });
 	_commandQueues[core::CommandListType::Compute]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
-	
+	_commandQueues[core::CommandListType::Compute]->Wait(_fence, _fenceValues[_currentFrameIndex]);
+
 	/*-------------------------------------------------------------------
 	-          Flip Screen
 	---------------------------------------------------------------------*/
@@ -199,7 +201,7 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	---------------------------------------------------------------------*/
 	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, ++_fenceValue);
 	_fence->Wait(_fenceValue);
-
+	SetUpFence();
 }
 
 /****************************************************************************
@@ -216,9 +218,7 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType type)
 {
 	// set command lists
-	std::vector<std::shared_ptr<rhi::core::RHICommandList>> commandLists;
 	const auto& commandList = _commandLists[_currentFrameIndex][type];
-	commandLists.push_back(commandList);
 
 	// execute command queue 
 	_commandQueues[type]->Execute({commandList});
@@ -240,7 +240,51 @@ void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType 
 *****************************************************************************/
 void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHeight)
 {
+	if (!(_width != newWidth || _height != newHeight)) { return; }
+
+	WaitForIdleGPU();
+
+	SetFrameBuffers(newWidth, newHeight);
+
 	_swapchain->Resize(newWidth, newHeight);
+
+	/*-------------------------------------------------------------------
+	-          Wait Graphics Queue
+	---------------------------------------------------------------------*/
+	const auto previousFrame    = _currentFrameIndex;
+	_fenceValues[previousFrame] = ++_fenceValue;
+	_commandQueues[CommandListType::Graphics]->Signal(_fence, _fenceValues[previousFrame]);
+	_fence->Wait(_fenceValues[previousFrame]);
+
+	/*-------------------------------------------------------------------
+	-          Flip Screen
+	---------------------------------------------------------------------*/
+	_swapchain->Present(_fence, _fenceValues[previousFrame]);
+
+	/*-------------------------------------------------------------------
+	-      GPU Command Wait
+	---------------------------------------------------------------------*/
+	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, _fenceValues[previousFrame] = ++_fenceValue);
+	_fence->Wait(_fenceValues[previousFrame]);
+}
+
+void LowLevelGraphicsEngine::WaitForIdleGPU()
+{
+	/*-------------------------------------------------------------------
+	-          Wait for all issued commands to complete
+	---------------------------------------------------------------------*/
+	const auto fence = _device->CreateFence();
+
+	for (std::uint32_t i = 1; i < (std::uint32_t)CommandListType::CountOfType; ++i)
+	{
+		const auto commandList = _commandLists[_currentFrameIndex][(CommandListType)i];
+
+		if (commandList->IsOpen()) { commandList->EndRecording(); }
+		_commandQueues[(CommandListType)i]->Execute({ commandList });
+		_commandQueues[(CommandListType)i]->Signal(fence, i);
+		fence->Wait(i);
+		_commandLists[_currentFrameIndex][(CommandListType)i]->Reset();
+	}
 }
 
 void LowLevelGraphicsEngine::BeginSwapchainRenderPass()
@@ -325,6 +369,15 @@ void LowLevelGraphicsEngine::SetUpHeap()
 
 }
 
+void LowLevelGraphicsEngine::SetUpFence()
+{
+	_fence = _device->CreateFence();
+	_fenceValue = 0;
+	for (std::uint32_t i = 0; i < FRAME_BUFFER_COUNT; ++i)
+	{
+		_fenceValues[i] = 0;
+	}
+}
 /****************************************************************************
 *                     SetUpRenderResource
 *************************************************************************//**
@@ -376,19 +429,26 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 	-      Create frame buffer
 	---------------------------------------------------------------------*/
 	_frameBuffers.resize(FRAME_BUFFER_COUNT);
+	SetFrameBuffers(Screen::GetScreenWidth(), Screen::GetScreenHeight(), clearColor, clearDepthColor);
+}
+
+void LowLevelGraphicsEngine::SetFrameBuffers(const int width, const int height, const core::ClearValue& clearColor, const core::ClearValue& clearDepthColor)
+{
+	_width = width;
+	_height = height;
 	for (size_t i = 0; i < _frameBuffers.size(); ++i)
 	{
 		/*-------------------------------------------------------------------
 		-      Create Depth Texture
 		---------------------------------------------------------------------*/
-		auto renderInfo = core::GPUTextureMetaData::RenderTarget(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _pixelFormat, clearColor);
-		auto depthInfo  = core::GPUTextureMetaData::DepthStencil( Screen::GetScreenWidth(), Screen::GetScreenHeight(), 
+		auto renderInfo = core::GPUTextureMetaData::RenderTarget(width, height, _pixelFormat, clearColor);
+		auto depthInfo  = core::GPUTextureMetaData::DepthStencil( width, height, 
 			_depthStencilFormat, clearDepthColor);
 
 		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 
-		const auto renderTexture = _device->CreateTexture(renderInfo);
-		const auto depthTexture  = _device->CreateTexture(depthInfo);
+		const auto renderTexture = _device->CreateTexture(renderInfo, L"FrameBuffer");
+		const auto depthTexture  = _device->CreateTexture(depthInfo , L"FrameBufferDepth");
 
 		/*-------------------------------------------------------------------
 		-      Create Frame Buffer
@@ -396,6 +456,5 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 		_frameBuffers[i] = _device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
 	}
 }
-
 #pragma endregion Set Up
 #pragma endregion Private Function

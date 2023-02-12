@@ -57,6 +57,11 @@ namespace rhi::core
 		std::shared_ptr<GPUTexture> GetTexture() const noexcept{ return _texture; }
 
 		std::shared_ptr<GPUBuffer> GetBuffer() const noexcept { return _buffer; }
+
+		void SetTexture(const std::shared_ptr<GPUTexture>& texture) { _texture = texture; }
+
+		void SetBuffer(const std::shared_ptr<GPUBuffer>& buffer) { _buffer = buffer; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

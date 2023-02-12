@@ -95,10 +95,18 @@ namespace gc
 		*****************************************************************************/
 		/* @brief : frame resources*/
 		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		
 		std::vector<IndexBufferPtr>  _indexBuffers = {};
+		
 		PipelineStatePtr  _pipeline       = nullptr;
+		
 		ResourceLayoutPtr _resourceLayout = nullptr;
+		
 		std::vector<ResourceViewPtr> _resourceViews = {};
+
+		std::int32_t _width  = 0;
+		std::int32_t _height = 0;
+
 		/* @brief : device and command list*/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 	};

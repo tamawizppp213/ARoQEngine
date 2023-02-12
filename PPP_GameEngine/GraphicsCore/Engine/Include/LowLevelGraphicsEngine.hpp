@@ -107,6 +107,11 @@ protected:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
+	void SetFrameBuffers(const int width, const int height, 
+		const rhi::core::ClearValue& clearColor = rhi::core::ClearValue(0.0f, 0.3f, 0.3f, 1.0f),
+		const rhi::core::ClearValue& clearDepthColor = rhi::core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f));
+
+	void WaitForIdleGPU();
 #pragma region SetUp
 
 #pragma endregion SetUp
@@ -150,6 +155,8 @@ protected:
 	/* @brief : Windows API*/
 	HWND      _hwnd      = nullptr;
 	HINSTANCE _hInstance = nullptr;
+	std::int32_t _width = 0;
+	std::int32_t _height = 0;
 
 	/* @brief : Rendering Configuration*/ // å„Ç≈configÉtÉ@ÉCÉãÇçÏê¨Ç∑ÇÈ.
 	bool _useHDR             = false;
@@ -159,6 +166,8 @@ protected:
 		
 	// shutdown check
 	bool _hasCalledShutDown = false;
+
+	bool _hasInitialized = false;
 
 	/****************************************************************************
 	**                Heap Config
@@ -173,6 +182,8 @@ protected:
 private:
 	void SetUpRenderResource();
 	void SetUpHeap();
+	void SetUpFence();
+
 };
 
 #endif

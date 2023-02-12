@@ -114,9 +114,9 @@ namespace rhi::core
 		
 		virtual std::shared_ptr<GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
 		
-		virtual std::shared_ptr<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData) = 0;
+		virtual std::shared_ptr<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData, const std::wstring& name = L"") = 0;
 		
-		virtual std::shared_ptr<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData) = 0;
+		virtual std::shared_ptr<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name = L"") = 0;
 		
 		virtual std::shared_ptr<GPUTexture>                 CreateTextureEmpty() = 0;
 		

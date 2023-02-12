@@ -56,13 +56,13 @@ namespace
 		}
 	}
 }
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device) : core::GPUTexture(device)
+GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const std::wstring& name) : core::GPUTexture(device, name)
 {
 	
 }
 
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData)
-	: core::GPUTexture(device, metaData)
+GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name)
+	: core::GPUTexture(device, metaData, name)
 {
 	
 	const auto dxDevice = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();
@@ -75,8 +75,8 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 	AllocateGPUTextureBuffer(resourceDesc, _device->IsDiscreteGPU());
 }
 
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData)
-	: core::GPUTexture(device, metaData), _resource(texture)
+GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const std::wstring& name)
+	: core::GPUTexture(device, metaData, name), _resource(texture)
 {
 	const auto dxDevice     = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();
 	const auto dxDesc       = texture->GetDesc();
@@ -112,6 +112,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	ScratchImage scratchImage = {};
 	bool isDXT                = false;
 	std::wstring extension    = file::FileSystem::GetExtension(filePath);
+	std::wstring fileName     = file::FileSystem::GetFileName(filePath, false);
 	
 	/*-------------------------------------------------------------------
 	-    Select the appropriate texture loading function for each extension
@@ -209,6 +210,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 			static_cast<UINT>(image->rowPitch), 
 			static_cast<UINT>(image->slicePitch)));
 	}
+	_resource->SetName(fileName.c_str());
 }
 
 void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)
@@ -328,6 +330,11 @@ void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDes
 	_physicalSize = static_cast<size_t>(allocateInfo.SizeInBytes);
 	_alignment    = static_cast<size_t>(allocateInfo.Alignment);
 	_hasAllocated = true;
+
+	if (_name != L"")
+	{
+		_resource->SetName(_name.c_str());
+	}
 }
 
 void GPUTexture::ConvertDxMetaData(D3D12_RESOURCE_DESC& resourceDesc)

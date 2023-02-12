@@ -26,8 +26,8 @@ using namespace rhi::vulkan;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData)
-	: core::GPUBuffer(device, metaData)
+GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
+	: core::GPUBuffer(device, metaData, name)
 {
 	Prepare();
 }

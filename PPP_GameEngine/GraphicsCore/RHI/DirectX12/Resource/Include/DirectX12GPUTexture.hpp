@@ -56,9 +56,9 @@ namespace rhi::directX12
 		*****************************************************************************/
 		GPUTexture() = default;
 		~GPUTexture() = default;
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device);
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData);
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData);
+		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const std::wstring& name = L"");
+		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"");
+		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"");
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

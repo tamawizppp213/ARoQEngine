@@ -42,9 +42,14 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		void BeginRecording() override;
+
 		void EndRecording  () override;
+
 		void BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer) override;
+		
 		void EndRenderPass() override;
+
+		void Reset() override;
 
 		/*-------------------------------------------------------------------
 		-               Common command

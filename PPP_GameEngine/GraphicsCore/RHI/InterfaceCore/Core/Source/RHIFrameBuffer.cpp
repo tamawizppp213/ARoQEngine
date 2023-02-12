@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
@@ -78,5 +79,29 @@ ScissorRect RHIFrameBuffer::GetFullScissorRect(const size_t index) const noexcep
 		(long)_renderTargets[index]->GetWidth(_renderTargets[index]->GetMipMapLevels()),
 		(long)_renderTargets[index]->GetHeight(_renderTargets[index]->GetMipMapLevels())
 	};
+}
+
+void RHIFrameBuffer::SetRenderTargets(const std::vector<TexturePtr>& textures)
+{
+	_renderTargets = textures;
+	for (size_t i = 0; i < _renderTargets.size(); ++i)
+	{
+		_renderTargetViews[i]->SetTexture(textures[i]);
+		_renderTargetSRVs[i]->SetTexture(textures[i]);
+		_renderTargetUAVs[i]->SetTexture(textures[i]);
+	}
+}
+
+void RHIFrameBuffer::SetRenderTarget(const TexturePtr& texture, const size_t index)
+{
+	_renderTargetViews[index]->SetTexture(texture);
+	_renderTargetSRVs[index]->SetTexture(texture);
+	_renderTargetUAVs[index]->SetTexture(texture);
+}
+
+void RHIFrameBuffer::SetDepthStencil(const TexturePtr& texture)
+{
+	_depthStencil = texture;
+	_depthStencilView->SetTexture(texture);
 }
 #pragma endregion Property

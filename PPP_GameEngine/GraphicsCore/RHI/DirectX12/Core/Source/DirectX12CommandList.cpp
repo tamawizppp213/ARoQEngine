@@ -68,6 +68,7 @@ RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& devi
 
 	ThrowIfFailed(_commandList->SetName(L"DirectX12::CommandList"));
 	ThrowIfFailed(_commandList->Close());
+	_isOpen = false;
 }
 
 #pragma endregion Constructor and Destructor
@@ -96,6 +97,18 @@ void RHICommandList::BeginRecording()
 	{
 		_commandList->ClearState(nullptr); // Œ³‚Ìó‘Ô‚É–ß‚é
 	}
+
+	_isOpen = true;
+}
+
+void RHICommandList::Reset()
+{
+	/*-------------------------------------------------------------------
+	-          Reset command list and allocator
+	---------------------------------------------------------------------*/
+	_commandAllocator->Reset();
+	//ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
+	_isOpen = false;
 }
 
 /****************************************************************************
@@ -111,7 +124,9 @@ void RHICommandList::BeginRecording()
 *****************************************************************************/
 void RHICommandList::EndRecording()
 {
+	if (!_isOpen) { return; }
 	ThrowIfFailed(_commandList->Close());
+	_isOpen = false;
 }
 
 /****************************************************************************

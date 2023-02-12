@@ -88,6 +88,7 @@ void RHIFence::Signal(const std::uint64_t value)
 *****************************************************************************/
 void RHIFence::Wait(const std::uint64_t value)
 {
+	const auto at = _fence->GetCompletedValue();
 	/*-------------------------------------------------------------------
 	-   Wait until the GPU has completed commands up to this fence point
 	    (GPUˆ—‚ªŠ®—¹‚µ‚Ä‚¢‚È‚¢ê‡, ‘Ò‚Â (command queue‚Æ•¹—p))
