@@ -37,6 +37,7 @@
 #include <set>
 #include <cassert>
 #include <map>
+#include <unordered_map>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -46,6 +47,11 @@ using namespace rhi;
 using namespace rhi::vulkan;
 #pragma comment(lib, "vulkan-1.lib")
 
+namespace
+{
+	std::unordered_map<core::CommandListType, std::vector<float>> queuePriorities;
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -54,12 +60,24 @@ RHIDevice::~RHIDevice()
 {
 	Destroy();
 }
+
 RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, const std::uint32_t frameCount) : 
 	core::RHIDevice(adapter, frameCount)
 {
 	CheckSupports();
 }
 
+/****************************************************************************
+*                     SetUp
+*************************************************************************//**
+*  @fn        void RHIDevice::SetUp()
+*
+*  @brief     Set up the logical device and the gpu command resources
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
 void RHIDevice::SetUp()
 {
 	SetUpCommandQueueInfo();
@@ -81,6 +99,11 @@ void RHIDevice::Destroy()
 
 	_commandQueueInfo.clear();
 	_commandQueues.clear();
+	for (auto& queuePriority : queuePriorities)
+	{
+		queuePriority.second.clear();
+	}
+	queuePriorities.clear();
 	if (_logicalDevice) 
 	{ 
 		vkDestroyDevice(_logicalDevice, nullptr); 
@@ -262,7 +285,11 @@ void RHIDevice::CheckSupports()
 *  @fn        void RHIDevice::SetUpCommandQueueInfo()
 *
 *  @brief     Set command queue information (QueueFamilyIndex + QueueCount)
-*
+*             QueueFamily      : 同じ能力を持っているキューをひとまとめにしたもの.
+* 　　　　　　　　　　　　　　　　　　　　　基本的には, 何でもOK + コンピュート + Copyの3種類が登録されている.
+*             QueueFamilyIndex : どのキューファミリーか. 
+*             QueueCount       : 対象キューファミリーに対するキューの個数 
+* 
 *  @param[in] void
 *
 *  @return 　　void
@@ -271,11 +298,13 @@ void RHIDevice::SetUpCommandQueueInfo()
 {
 	const auto vkAdapter = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(_adapter);
 	auto queueFamilies   = vkAdapter->GetQueueFamilyProperties();
+
 	/*-------------------------------------------------------------------
 	-               Bit check function
 	---------------------------------------------------------------------*/
 	auto HasAllBits = [](auto flags, auto bits) { return (flags & bits) == bits; };
 	auto HasAnyBits = [](auto flags, auto bits) { return flags & bits; };
+
 	/*-------------------------------------------------------------------
 	-     Get each queueFamilyIndex and queue count (Graphics, Compute, Copy)
 	---------------------------------------------------------------------*/
@@ -285,20 +314,43 @@ void RHIDevice::SetUpCommandQueueInfo()
 		// なんでもキューをGraphicsに設定する.
 		if (queue.queueCount > 0 && HasAllBits(queue.queueFlags, VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT | VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT | VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT))
 		{
+			// キューを多く持っているやつを使用する.
+			if (_commandQueueInfo.contains(core::CommandListType::Graphics)
+				&& _commandQueueInfo[core::CommandListType::Graphics].QueueCount > queue.queueCount)
+			{
+				continue;
+			}
+
 			_commandQueueInfo[core::CommandListType::Graphics].QueueFamilyIndex = static_cast<std::uint32_t>(i);
 			_commandQueueInfo[core::CommandListType::Graphics].QueueCount       = static_cast<std::uint32_t>(queue.queueCount);
 		}
 		// Compute と Copy まで許容するのをComputeCommandListに
 		else if (queue.queueCount > 0 && HasAllBits(queue.queueFlags, VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT | VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT) && (!HasAnyBits(queue.queueFlags, VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT)))
 		{
+			if (_commandQueueInfo.contains(core::CommandListType::Compute)
+				&& _commandQueueInfo[core::CommandListType::Compute].QueueCount > queue.queueCount)
+			{
+				continue;
+			}
+
 			_commandQueueInfo[core::CommandListType::Compute].QueueFamilyIndex = static_cast<std::uint32_t>(i);
 			_commandQueueInfo[core::CommandListType::Compute].QueueCount = static_cast<std::uint32_t>(queue.queueCount);
 		}
 		// Copy のみ
 		else if (queue.queueCount > 0 && HasAllBits(queue.queueFlags, VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT) && (!HasAnyBits(queue.queueFlags, VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT | VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT)))
 		{
+			if (_commandQueueInfo.contains(core::CommandListType::Copy)
+				&& _commandQueueInfo[core::CommandListType::Copy].QueueCount > queue.queueCount)
+			{
+				continue;
+			}
+
 			_commandQueueInfo[core::CommandListType::Copy].QueueFamilyIndex = static_cast<std::uint32_t>(i);
 			_commandQueueInfo[core::CommandListType::Copy].QueueCount       = static_cast<std::uint32_t>(queue.queueCount);
+		}
+		else
+		{
+			continue;
 		}
 	}
 }
@@ -320,8 +372,11 @@ void RHIDevice::SetUpCommandPool()
 *                     GetLogicalDevice
 *************************************************************************//**
 *  @fn        bool GraphicsDeviceVulkan::CreateLogicalDevice()
+* 
 *  @brief     Get Logical Device
+* 
 *  @param[in] bool useRaytracing
+* 
 *  @return 　　bool
 *****************************************************************************/
 void RHIDevice::CreateLogicalDevice()
@@ -337,6 +392,7 @@ void RHIDevice::CreateLogicalDevice()
 		extension.pNext      = deviceCreateInfoNext;
 		deviceCreateInfoNext = &extension;
 	};
+
 	/*-------------------------------------------------------------------
 	-               Get Extension name list
 	---------------------------------------------------------------------*/
@@ -487,15 +543,17 @@ void RHIDevice::CreateLogicalDevice()
 	/*-------------------------------------------------------------------
 	-               Set device queue create info
 	---------------------------------------------------------------------*/
-	const float queuePriority = 1.0f;
 	std::vector<VkDeviceQueueCreateInfo> deviceQueueCreateInfo = {};
+
 	for (const auto& queueInfo : _commandQueueInfo)
 	{
+		queuePriorities[queueInfo.first] = std::vector<float>(queueInfo.second.QueueCount, 1.0f);
+
 		VkDeviceQueueCreateInfo& createInfo = deviceQueueCreateInfo.emplace_back();
-		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;  // structure type
+		createInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;  // structure type
 		createInfo.queueFamilyIndex = queueInfo.second.QueueFamilyIndex;           // queue index
-		createInfo.queueCount = 1;                                           // queue count : 1
-		createInfo.pQueuePriorities = &queuePriority;                              // queue property : 1.0
+		createInfo.queueCount       = queueInfo.second.QueueCount;                 // queue count : 1
+		createInfo.pQueuePriorities = queuePriorities[queueInfo.first].data();      // queue property : 1.0
 	}
 
 	/*-------------------------------------------------------------------
@@ -516,6 +574,7 @@ void RHIDevice::CreateLogicalDevice()
 	VkResult result = vkCreateDevice(vkAdapter->GetPhysicalDevice(), &deviceCreateInfo, nullptr, &_logicalDevice);
 	if (result != VK_SUCCESS) { throw std::runtime_error("failed to create logical device"); return; }
 }
+
 
 std::uint64_t RHIDevice::GetDeviceAddress(VkBuffer buffer)
 {
