@@ -29,6 +29,7 @@ RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& i
 	_name     = prop.deviceName;
 	_venderID = prop.vendorID;
 	_deviceID = prop.deviceID;
+
 	/*-------------------------------------------------------------------
 	-                  Get property and memory infomation
 	---------------------------------------------------------------------*/
@@ -55,8 +56,11 @@ std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint
 *                     PrintInfo
 *************************************************************************//**
 *  @fn        void RHIAdapter::PrintInfo()
+* 
 *  @brief     Print physical device information and spec
+* 
 *  @param[in] void
+* 
 *  @return 　  void
 *****************************************************************************/
 void RHIDisplayAdapter::PrintInfo()
@@ -68,6 +72,7 @@ void RHIDisplayAdapter::PrintInfo()
 	vkGetPhysicalDeviceProperties(_physicalDevice, &prop);
 	VkPhysicalDeviceMemoryProperties memoryProperties;
 	vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memoryProperties);
+
 	/*-------------------------------------------------------------------
 	-                  Print Adapter Name
 	---------------------------------------------------------------------*/
@@ -89,8 +94,11 @@ void RHIDisplayAdapter::PrintInfo()
 *                     GetProperties
 *************************************************************************//**
 *  @fn        VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const 
+* 
 *  @brief     Return device properties struct
+* 
 *  @param[in] void
+* 
 *  @return 　 VkPhysicalDeviceProperties
 *****************************************************************************/
 VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const noexcept
@@ -104,8 +112,11 @@ VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const noexcept
 *                     GetSupport
 *************************************************************************//**
 *  @fn        VkPhysicalDeviceFeatures RHIDisplayAdapter::GetSupports() const noexcept
+* 
 *  @brief     Return physical device support contents
+* 
 *  @param[in] void
+* 
 *  @return 　 VkPhysicalDeviceFeatures
 *****************************************************************************/
 VkPhysicalDeviceFeatures RHIDisplayAdapter::GetSupports() const noexcept
@@ -118,8 +129,11 @@ VkPhysicalDeviceFeatures RHIDisplayAdapter::GetSupports() const noexcept
 *                     GetExtensionProperties
 *************************************************************************//**
 *  @fn        VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const
+* 
 *  @brief     Return extension name and spec version
+* 
 *  @param[in] void
+* 
 *  @return 　 std::vector<VkExtensionProperties>
 *****************************************************************************/
 std::vector<VkExtensionProperties> RHIDisplayAdapter::GetExtensionProperties() const noexcept
@@ -140,8 +154,11 @@ std::vector<VkExtensionProperties> RHIDisplayAdapter::GetExtensionProperties() c
 *                     GetExtensionNameList
 *************************************************************************//**
 *  @fn        std::vector<const char*> RHIDisplayAdapter::GetExtensionNameList() const noexcept
+* 
 *  @brief     Return all extension name list. 
+* 
 *  @param[in] void
+* 
 *  @return 　  std::vector<const char*>
 *****************************************************************************/
 std::vector<std::string> RHIDisplayAdapter::GetExtensionNameList() const noexcept
@@ -164,8 +181,11 @@ std::vector<std::string> RHIDisplayAdapter::GetExtensionNameList() const noexcep
 *                     GetExtensionProperties
 *************************************************************************//**
 *  @fn        VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const
+* 
 *  @brief     Return extension name and spec version
+* 
 *  @param[in] void
+* 
 *  @return 　 std::vector<VkExtensionProperties>
 *****************************************************************************/
 std::vector<VkQueueFamilyProperties> RHIDisplayAdapter::GetQueueFamilyProperties() const noexcept

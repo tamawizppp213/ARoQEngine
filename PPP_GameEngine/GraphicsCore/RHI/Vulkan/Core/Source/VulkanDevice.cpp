@@ -62,8 +62,7 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, co
 
 void RHIDevice::SetUp()
 {
-
-	SetUpCommandQueue();
+	SetUpCommandQueueInfo();
 	CreateLogicalDevice();
 	SetUpCommandPool();
 }
@@ -215,9 +214,12 @@ std::shared_ptr<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const s
 *                     CheckSupports
 *************************************************************************//**
 *  @fn        void RHIDevice::CheckSupports()
+* 
 *  @brief     Check all supports of the device and assign them to the member variable "bool". 
 *             Add extension name when needed.
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIDevice::CheckSupports()
@@ -254,7 +256,18 @@ void RHIDevice::CheckSupports()
 	_isSupportedTessellation   = supports.tessellationShader;
 }
 
-void RHIDevice::SetUpCommandQueue()
+/****************************************************************************
+*                     SetUpCommandQueueInfo
+*************************************************************************//**
+*  @fn        void RHIDevice::SetUpCommandQueueInfo()
+*
+*  @brief     Set command queue information (QueueFamilyIndex + QueueCount)
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::SetUpCommandQueueInfo()
 {
 	const auto vkAdapter = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(_adapter);
 	auto queueFamilies   = vkAdapter->GetQueueFamilyProperties();

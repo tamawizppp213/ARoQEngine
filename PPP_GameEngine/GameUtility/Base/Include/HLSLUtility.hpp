@@ -22,5 +22,6 @@ namespace hlsl
 	using float4 = gm::Float4;
 	using float3 = gm::Float3;
 	using float2 = gm::Float2;
+	using float1 = float;
 }
 #endif

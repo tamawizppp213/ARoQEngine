@@ -162,7 +162,7 @@
     <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\SkyDome.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Light\LightType.hpp">
+    <ClInclude Include="GameCore\Rendering\Light\Include\LightType.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIImage.hpp">

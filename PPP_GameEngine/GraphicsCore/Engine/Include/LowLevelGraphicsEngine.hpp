@@ -42,6 +42,12 @@ namespace rhi::core
 *****************************************************************************/
 class LowLevelGraphicsEngine final : public NonCopyable
 {
+protected:
+	using InstancePtr    = std::shared_ptr<rhi::core::RHIInstance>;
+	using AdapterPtr     = std::shared_ptr<rhi::core::RHIDisplayAdapter>;
+	using DevicePtr      = std::shared_ptr<rhi::core::RHIDevice>;
+	using CommandListPtr = std::shared_ptr<rhi::core::RHICommandList>;
+
 public:
 	/****************************************************************************
 	**                Static Configuration
@@ -77,7 +83,7 @@ public:
 	**                Public Member Variables
 	*****************************************************************************/
 	/* @brief : Device (Create GPU Resource Function List)*/
-	std::shared_ptr<rhi::core::RHIDevice> GetDevice() const noexcept { return _device; }
+	DevicePtr GetDevice() const noexcept { return _device; }
 
 	/* @brief : CommandList (Regist GPU Commands) */
 	std::shared_ptr<rhi::core::RHICommandList> GetCommandList(const rhi::core::CommandListType type, const std::uint32_t frameIndex) const noexcept { return _commandLists.at(frameIndex).at(type); }
@@ -122,19 +128,22 @@ protected:
 	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::Unknown;
 
 	/* @brief : graphics API instance (select graphics api)*/
-	std::shared_ptr<rhi::core::RHIInstance> _instance = nullptr;
+	InstancePtr _instance = nullptr;
 
 	/* @brief : gpu display adapter (basically discrete gpu adapter)*/
-	std::shared_ptr<rhi::core::RHIDisplayAdapter> _adapter = nullptr;
+	AdapterPtr _adapter = nullptr;
 
 	/* @brief : Logical Device*/
-	std::shared_ptr<rhi::core::RHIDevice>  _device = nullptr;
+	DevicePtr  _device = nullptr;
 
 	/* @ brief : Command queue (graphics, compute, transfer)*/
 	std::map<rhi::core::CommandListType, std::shared_ptr<rhi::core::RHICommandQueue>> _commandQueues;
 
 	/* @brief : Command List*/
-	std::vector<std::map<rhi::core::CommandListType, std::shared_ptr<rhi::core::RHICommandList>>> _commandLists;
+	std::vector<std::map<rhi::core::CommandListType, CommandListPtr>> _commandLists;
+	std::vector<CommandListPtr> _graphicsCommandLists = {  };
+	std::vector<CommandListPtr> _computeCommandLists  = {  };
+	std::vector<CommandListPtr> _copyCommandLists     = {  };
 
 	/* @ brief : CPU-GPU synchronization*/
 	std::shared_ptr<rhi::core::RHIFence> _fence = nullptr;

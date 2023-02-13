@@ -228,7 +228,7 @@
     <ClInclude Include="GameCore\Rendering\Effect\Include\DepthOfField.hpp" />
     <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\SkyDome.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProfiler.hpp" />
-    <ClInclude Include="GameCore\Rendering\Light\LightType.hpp" />
+    <ClInclude Include="GameCore\Rendering\Light\Include\LightType.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\GLTF\Private\Include\GLTFAnimationUtils.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\GLTF\Private\Include\GLTFBufferBuilder.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\GLTF\Private\Include\GLTFColor.hpp" />
