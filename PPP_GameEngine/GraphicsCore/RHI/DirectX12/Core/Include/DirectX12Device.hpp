@@ -36,8 +36,6 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void SetUp() override;
-
 		void Destroy() override;
 
 #pragma region Create Function
@@ -106,10 +104,6 @@ namespace rhi::directX12
 		DeviceComPtr  GetDevice () const noexcept { return _device; }
 
 		std::uint32_t GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
-
-		std::shared_ptr<core::RHICommandQueue>     GetCommandQueue    (const core::CommandListType commandListType) override ;
-
-		std::shared_ptr<core::RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t currentFrame = 0) override;
 		
 		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 
@@ -139,7 +133,7 @@ namespace rhi::directX12
 
 		~RHIDevice();
 
-		RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, const std::uint32_t frameCount);
+		RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter);
 
 	protected:
 		/****************************************************************************

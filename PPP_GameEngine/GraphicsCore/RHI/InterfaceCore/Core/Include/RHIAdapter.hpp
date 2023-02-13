@@ -41,7 +41,7 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		/* return logical device shared pointer. frame count is used for the command allocators*/
-		virtual std::shared_ptr<core::RHIDevice> CreateDevice(const std::uint32_t frameCount) = 0;
+		virtual std::shared_ptr<core::RHIDevice> CreateDevice() = 0;
 		
 		/* Describe physical device name and spec(future work) */
 		virtual void PrintInfo() = 0; // Todo : ¡Œã‚Í«”\‚È‚Ç‚à“ü‚ê‚Ä‚¨‚«‚½‚¢. 2022/09/07

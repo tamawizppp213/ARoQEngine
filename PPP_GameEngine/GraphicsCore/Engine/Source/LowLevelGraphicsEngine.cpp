@@ -81,14 +81,14 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	/*-------------------------------------------------------------------
 	-      Create logical device
 	---------------------------------------------------------------------*/
-	_device = _adapter->CreateDevice(FRAME_BUFFER_COUNT);
+	_device = _adapter->CreateDevice();
 
 	/*-------------------------------------------------------------------
 	-      Get command queue (Graphics, compute, copy command queue )
 	---------------------------------------------------------------------*/
-	_commandQueues[CommandListType::Graphics] = _device->GetCommandQueue(CommandListType::Graphics);
-	_commandQueues[CommandListType::Compute]  = _device->GetCommandQueue(CommandListType::Compute);
-	_commandQueues[CommandListType::Copy]     = _device->GetCommandQueue(CommandListType::Copy);
+	_commandQueues[CommandListType::Graphics] = _device->CreateCommandQueue(CommandListType::Graphics);
+	_commandQueues[CommandListType::Compute]  = _device->CreateCommandQueue(CommandListType::Compute);
+	_commandQueues[CommandListType::Copy]     = _device->CreateCommandQueue(CommandListType::Copy);
 
 	/*-------------------------------------------------------------------
 	-      Create fence
@@ -119,9 +119,9 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	_commandLists.resize(FRAME_BUFFER_COUNT);
 	for (std::uint32_t i = 0; i < FRAME_BUFFER_COUNT; ++i)
 	{
-		_commandLists[i][core::CommandListType::Graphics] = _device->CreateCommandList(_device->GetCommandAllocator(core::CommandListType::Graphics, i));
-		_commandLists[i][core::CommandListType::Compute]  = _device->CreateCommandList(_device->GetCommandAllocator(core::CommandListType::Compute , i));
-		_commandLists[i][core::CommandListType::Copy]     = _device->CreateCommandList(_device->GetCommandAllocator(core::CommandListType::Copy    , i));
+		_commandLists[i][core::CommandListType::Graphics] = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Graphics));
+		_commandLists[i][core::CommandListType::Compute]  = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Compute ));
+		_commandLists[i][core::CommandListType::Copy]     = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Copy    ));
 	}
 
 	_hasInitialized = true;

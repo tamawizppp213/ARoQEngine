@@ -65,9 +65,6 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		// Set up command queue
-		virtual void SetUp() = 0;
-
 		virtual void Destroy() = 0; // shared_ptrでデストラクタが呼ばれないため. 
 
 		/*-------------------------------------------------------------------
@@ -139,17 +136,11 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		virtual std::shared_ptr<RHIDescriptorHeap>   GetDefaultHeap     (const core::DescriptorHeapType heapType) = 0;
-
-		virtual std::shared_ptr<RHICommandQueue>     GetCommandQueue    (const core::CommandListType commandListType) = 0;
-
-		virtual std::shared_ptr<RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount = 0) = 0;
 		
 		virtual std::uint32_t GetShadingRateImageTileSize() const = 0;
 		
 		std::shared_ptr<RHIDisplayAdapter> GetDisplayAdapter() { return _adapter; }
 		
-		std::uint32_t GetFrameCount() const { return _frameCount; }
-
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check
@@ -177,12 +168,10 @@ namespace rhi::core
 		virtual ~RHIDevice()
 		{ 
 			_adapter.reset(); 
-			_commandQueues.clear();
-			_commandAllocators.clear(); _commandAllocators.shrink_to_fit(); 
 		}
 
-		RHIDevice(const std::shared_ptr<RHIDisplayAdapter>& adapter, const std::uint32_t frameCount) 
-			: _adapter(adapter), _frameCount(frameCount) {};
+		RHIDevice(const std::shared_ptr<RHIDisplayAdapter>& adapter) 
+			: _adapter(adapter) {};
 
 		/****************************************************************************
 		**                Protected Function
@@ -194,14 +183,6 @@ namespace rhi::core
 		/* @brief : Use Display Apapter (GPU)*/
 		std::shared_ptr<RHIDisplayAdapter> _adapter = nullptr;
 
-		/* @brief : Command Queue (Graphics, Compute, and Copy command queue)*/
-		std::map<CommandListType, std::shared_ptr<RHICommandQueue>> _commandQueues; // VulkanがDevice作成時にCommandQueueを作成する必要があるのでなくなく
-		
-		/* @brief : Command allocator*/
-		std::vector<std::map<CommandListType, std::shared_ptr<RHICommandAllocator>>> _commandAllocators;
-
-		/* @brief : Total frame buffer size*/
-		std::uint32_t _frameCount = 0;
 	};
 }
 #endif

@@ -44,8 +44,6 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void SetUp() override;
-
 		void Destroy() override;
 
 #pragma region Create Resource
@@ -69,24 +67,26 @@ namespace rhi::vulkan
 		
 		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
+		std::shared_ptr<core::RHIResourceLayout>       CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt) override;
+
+		std::shared_ptr<core::GPUPipelineFactory>      CreatePipelineFactory() override;
+
+		std::shared_ptr<core::GPUGraphicsPipelineState> CreateGraphicPipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;  // after action: setting pipeline
+
+		std::shared_ptr<core::GPUComputePipelineState> CreateComputePipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
+
 		std::shared_ptr<core::RHIRenderPass>           CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
 		
 		std::shared_ptr<core::RHIRenderPass>           CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
 		
-		std::shared_ptr<core::GPUGraphicsPipelineState> CreateGraphicPipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;  // after action: setting pipeline
-		
-		std::shared_ptr<core::GPUComputePipelineState> CreateComputePipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 		//std::shared_ptr<core::GPURayTracingPipelineState>CreateRayTracingPipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override { return nullptr; };
 		
-		std::shared_ptr<core::RHIResourceLayout>       CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt) override;
-		
-		std::shared_ptr<core::GPUPipelineFactory>      CreatePipelineFactory() override;
 		
 		std::shared_ptr<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
 		std::shared_ptr<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
-		std::shared_ptr<core::GPUSampler>              CreateSampler(const core::SamplerInfo& samplerInfo); // both
+		std::shared_ptr<core::GPUSampler>              CreateSampler(const core::SamplerInfo& samplerInfo) override; // both
 		
 		std::shared_ptr<core::GPUBuffer>               CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name = L"") override;
 		
@@ -107,6 +107,7 @@ namespace rhi::vulkan
 
 #pragma endregion Create Resource
 		size_t GetQueueFamilyIndex(const core::CommandListType type) { return _commandQueueInfo[type].QueueFamilyIndex; }
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -114,13 +115,9 @@ namespace rhi::vulkan
 		
 		//inline VkSurfaceKHR      GetSurface() { return _surface; }
 		
-		std::uint32_t            GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags);
+		std::uint32_t  GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags);
 		
 		std::uint32_t GetShadingRateImageTileSize() const { return 0; };
-		
-		std::shared_ptr<core::RHICommandQueue> GetCommandQueue(const core::CommandListType commandListType) override;
-		
-		std::shared_ptr<core::RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount = 0) override;
 		
 		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 		
@@ -142,7 +139,7 @@ namespace rhi::vulkan
 		
 		~RHIDevice();
 		
-		RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, const std::uint32_t frameCount);
+		RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -156,7 +153,8 @@ namespace rhi::vulkan
 
 		/* @brief : Command queue set up data*/
 		// base class : std::unordered_map<CommandListType, std::shared_ptr<core::RHICommandQueue>> _commandQueues;
-		std::map<core::CommandListType, QueueInfo>     _commandQueueInfo;
+		std::map<core::CommandListType, QueueInfo> _commandQueueInfo;
+		std::map<core::CommandListType, std::uint32_t> _newCreateCommandQueueIndex;
 
 		/* @brief : variable shading rate : 1, 2, 4, 8, 16, 32, 64*/
 		std::uint32_t _shadingRateImageTileSize = 0;
@@ -176,7 +174,6 @@ namespace rhi::vulkan
 		**                Private Function
 		*****************************************************************************/
 		void SetUpCommandQueueInfo();
-		void SetUpCommandPool();
 		void CheckSupports(); // Deviceのすべてのサポート内容を調べ, メンバ変数のboolに代入する.
 		void CreateLogicalDevice();
 

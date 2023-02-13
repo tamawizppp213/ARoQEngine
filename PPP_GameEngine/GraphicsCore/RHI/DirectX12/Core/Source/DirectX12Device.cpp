@@ -62,8 +62,8 @@ RHIDevice::~RHIDevice()
 	Destroy();
 }
 
-RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, const std::uint32_t frameCount) :
-	core::RHIDevice(adapter, frameCount)
+RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
+	core::RHIDevice(adapter)
 {
 	/*-------------------------------------------------------------------
 	-                   Create Logical Device
@@ -87,37 +87,6 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, co
 #pragma endregion Constructor and Destructor
 
 #pragma region Set up and Destroy
-/****************************************************************************
-*                     SetUp
-*************************************************************************//**
-*  @fn        void RHIDevice::SetUp()
-*
-*  @brief     Set up command queue and allocator
-*
-*  @param[in] void
-*
-*  @return    void
-*****************************************************************************/
-void RHIDevice::SetUp()
-{
-	/*-------------------------------------------------------------------
-	-                   Create command queue
-	---------------------------------------------------------------------*/
-	_commandQueues[core::CommandListType::Graphics] = CreateCommandQueue(core::CommandListType::Graphics);
-	_commandQueues[core::CommandListType::Compute]  = CreateCommandQueue(core::CommandListType::Compute);
-	_commandQueues[core::CommandListType::Copy]     = CreateCommandQueue(core::CommandListType::Copy);
-
-	/*-------------------------------------------------------------------
-	-                   Create command allocators
-	---------------------------------------------------------------------*/
-	_commandAllocators.resize(_frameCount);
-	for (std::uint32_t i = 0; i < _frameCount; ++i)
-	{
-		_commandAllocators[i][core::CommandListType::Graphics] = CreateCommandAllocator(core::CommandListType::Graphics);
-		_commandAllocators[i][core::CommandListType::Compute]  = CreateCommandAllocator(core::CommandListType::Compute);
-		_commandAllocators[i][core::CommandListType::Copy]     = CreateCommandAllocator(core::CommandListType::Copy);
-	}
-}
 
 /****************************************************************************
 *                     SetUpDefaultHeap
@@ -173,23 +142,7 @@ void RHIDevice::Destroy()
 	---------------------------------------------------------------------*/
 	_defaultHeap.clear();
 
-	/*-------------------------------------------------------------------
-	-              Clear command queue
-	---------------------------------------------------------------------*/
-	_commandQueues.clear();
-
-	/*-------------------------------------------------------------------
-	-              Clear command allocator
-	---------------------------------------------------------------------*/
-	if (!_commandAllocators.empty())
-	{
-		for (std::uint32_t i = 0; i < _frameCount; ++i)
-		{
-			_commandAllocators[i].clear();
-		}
-		_commandAllocators.clear(); _commandAllocators.shrink_to_fit();
-	}
-
+	
 	/*-------------------------------------------------------------------
 	-              Clear device
 	---------------------------------------------------------------------*/
@@ -525,39 +478,7 @@ void RHIDevice::CheckMeshShadingSupport()
 #pragma endregion  Device Support Function
 
 #pragma region Property
-/****************************************************************************
-*                     GetCommandQueue
-*************************************************************************//**
-*  @fn        std::shared_ptr<core::RHICommandQueue> RHIDevice::GetCommandQueue(const core::CommandListType commandListType)
-*
-*  @brief     Return command queue
-*
-*  @param[in] const core::CommandListType (graphics, compute, or copy)
-*
-*  @return    std::shared_ptr<core::RHICommandQueue>
-*****************************************************************************/
-std::shared_ptr<core::RHICommandQueue> RHIDevice::GetCommandQueue(const core::CommandListType commandListType)
-{
-	return _commandQueues.at(commandListType);
-}
 
-/****************************************************************************
-*                     GetCommandAllocator
-*************************************************************************//**
-*  @fn        std::shared_ptr<core::RHICommandAllocator> RHIDevice::GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount)
-*
-*  @brief     Return command allocator
-*
-*  @param[in] const core::CommandListType (graphics, compute, or copy)
-*  @param[in] const std::uint32_t frameCount
-*
-*  @return    std::shared_ptr<core::RHICommandAllocator>
-*****************************************************************************/
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t currentFrame)
-{
-	assert(currentFrame < _frameCount);
-	return _commandAllocators[currentFrame].at(commandListType);
-}
 
 /****************************************************************************
 *                     GetDefaultHeap

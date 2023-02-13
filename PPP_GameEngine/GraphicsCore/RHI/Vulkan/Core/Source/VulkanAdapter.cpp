@@ -45,11 +45,9 @@ RHIDisplayAdapter::~RHIDisplayAdapter()
 #pragma endregion Constructor and Destructor 
 
 #pragma region Public Function
-std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint32_t frameCount)
+std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice()
 {
-	std::shared_ptr<core::RHIDevice> device = std::make_shared<RHIDevice>(shared_from_this(), frameCount);
-	device->SetUp();
-	return device;
+	return std::make_shared<RHIDevice>(shared_from_this());
 }
 
 /****************************************************************************

@@ -61,44 +61,19 @@ RHIDevice::~RHIDevice()
 	Destroy();
 }
 
-RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, const std::uint32_t frameCount) : 
-	core::RHIDevice(adapter, frameCount)
+RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) : 
+	core::RHIDevice(adapter)
 {
 	CheckSupports();
-}
-
-/****************************************************************************
-*                     SetUp
-*************************************************************************//**
-*  @fn        void RHIDevice::SetUp()
-*
-*  @brief     Set up the logical device and the gpu command resources
-*
-*  @param[in] void
-*
-*  @return Å@Å@void
-*****************************************************************************/
-void RHIDevice::SetUp()
-{
 	SetUpCommandQueueInfo();
 	CreateLogicalDevice();
-	SetUpCommandPool();
 }
 
 void RHIDevice::Destroy()
 {
 	_defaultHeap.reset();
-	if (!_commandAllocators.empty())
-	{
-		for (std::uint32_t i = 0; i < _frameCount; ++i)
-		{
-			_commandAllocators[i].clear();
-		}
-		_commandAllocators.clear(); _commandAllocators.shrink_to_fit();
-	}
 
 	_commandQueueInfo.clear();
-	_commandQueues.clear();
 	for (auto& queuePriority : queuePriorities)
 	{
 		queuePriority.second.clear();
@@ -141,11 +116,14 @@ std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::sh
 }
 std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type)
 {
-	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<vulkan::RHICommandQueue>(shared_from_this(),type,0));
+	const auto index = _newCreateCommandQueueIndex[type];
+	if (index >= _commandQueueInfo[type].QueueCount) { OutputDebugStringA("Exceed to maxQueueCount"); return nullptr; }
+	_newCreateCommandQueueIndex[type]++;
+	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<vulkan::RHICommandQueue>(shared_from_this(),type,index));
 }
 std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type)
 {
-	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<vulkan::RHICommandAllocator>(shared_from_this(), type, 0));
+	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<vulkan::RHICommandAllocator>(shared_from_this(), type, _commandQueueInfo[type].QueueFamilyIndex));
 }
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
 {
@@ -355,19 +333,6 @@ void RHIDevice::SetUpCommandQueueInfo()
 	}
 }
 
-void RHIDevice::SetUpCommandPool()
-{
-	_commandAllocators.resize(_frameCount);
-	for (auto& queueInfo : _commandQueueInfo)
-	{
-		for (std::uint32_t i = 0; i < _frameCount; ++i)
-		{
-			_commandAllocators[i][queueInfo.first] = std::make_shared<RHICommandAllocator>(shared_from_this(), queueInfo.first,queueInfo.second.QueueFamilyIndex);
-		}
-		_commandQueues[queueInfo.first]     = std::make_shared<RHICommandQueue>(shared_from_this(), queueInfo.first, queueInfo.second.QueueFamilyIndex);
-	}
-}
-
 /****************************************************************************
 *                     GetLogicalDevice
 *************************************************************************//**
@@ -548,6 +513,7 @@ void RHIDevice::CreateLogicalDevice()
 	for (const auto& queueInfo : _commandQueueInfo)
 	{
 		queuePriorities[queueInfo.first] = std::vector<float>(queueInfo.second.QueueCount, 1.0f);
+		_newCreateCommandQueueIndex[queueInfo.first] = 0;
 
 		VkDeviceQueueCreateInfo& createInfo = deviceQueueCreateInfo.emplace_back();
 		createInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;  // structure type
@@ -605,15 +571,7 @@ std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemo
 }
 #pragma endregion          Set Up Function
 #pragma region Property
-std::shared_ptr<core::RHICommandQueue> RHIDevice::GetCommandQueue(const core::CommandListType commandListType)
-{
-	return _commandQueues.at(commandListType);
-}
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount)
-{
-	assert(frameCount < _frameCount);
-	return _commandAllocators[frameCount].at(commandListType);
-}
+
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
 {
 	switch (heapType)

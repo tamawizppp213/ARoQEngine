@@ -49,11 +49,12 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkQueue GetQueue() const noexcept { return _queue; }
 		std::uint32_t GetQueueFamilyIndex() const noexcept { return _queueFamilyIndex; }
+		std::uint32_t GetQueueIndex() const noexcept { return _queueIndex; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHICommandQueue() = default;
-		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex);
+		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex = 0);
 		~RHICommandQueue();
 	protected:
 		/****************************************************************************
@@ -65,6 +66,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkQueue       _queue = nullptr;
 		std::uint32_t _queueFamilyIndex = 0;
+		std::uint32_t _queueIndex = 0;
 	};
 }
 #endif

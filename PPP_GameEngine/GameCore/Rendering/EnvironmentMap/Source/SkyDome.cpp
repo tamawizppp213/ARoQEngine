@@ -110,7 +110,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/
-	const auto frameCount = device->GetFrameCount();
+	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
 	_vertexBuffers.resize(frameCount);
 	_indexBuffers .resize(frameCount);

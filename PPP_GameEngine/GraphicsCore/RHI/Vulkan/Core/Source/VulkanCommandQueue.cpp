@@ -27,11 +27,12 @@ RHICommandQueue::~RHICommandQueue()
 	
 }
 
-RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex) : rhi::core::RHICommandQueue(type)
+RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex) : rhi::core::RHICommandQueue(type)
 {
 	const auto vkDevice = std::static_pointer_cast<RHIDevice>(device);
 	_queueFamilyIndex = queueFamilyIndex;
-	vkGetDeviceQueue(vkDevice->GetDevice(), _queueFamilyIndex, 0, &_queue);
+	_queueIndex       = queueIndex;
+	vkGetDeviceQueue(vkDevice->GetDevice(), _queueFamilyIndex, _queueIndex, &_queue);
 }
 #pragma endregion Constructor and Destructor
 #pragma region Public Function

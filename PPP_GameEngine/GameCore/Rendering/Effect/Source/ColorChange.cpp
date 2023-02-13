@@ -135,7 +135,7 @@ void ColorChange::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/
-	const auto frameCount = device->GetFrameCount();
+	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
 	_vertexBuffers.resize(frameCount);
 	_indexBuffers .resize(frameCount);
@@ -222,7 +222,7 @@ void ColorChange::PreparePipelineState(ColorChangeType type, const std::wstring&
 void ColorChange::PrepareResourceView()
 {
 	const auto device     = _engine->GetDevice();
-	const auto frameCount = device->GetFrameCount();
+	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _engine->GetBackBufferFormat());
 	
 	_width  = Screen::GetScreenWidth();
