@@ -39,12 +39,16 @@ RHICommandAllocator::~RHICommandAllocator()
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	if (_commandPool) { vkDestroyCommandPool(vkDevice->GetDevice(), _commandPool, nullptr); }
 }
+
 /****************************************************************************
 *                     Reset
 *************************************************************************//**
 *  @fn        void RHICommandAllocator::Reset()
+* 
 *  @brief     Reset command pool
+* 
 *  @param[in] void
+* 
 *  @return Å@Å@void
 *****************************************************************************/
 void RHICommandAllocator::Reset()

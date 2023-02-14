@@ -59,22 +59,36 @@ namespace rhi::directX12
 		-                Graphics Command
 		---------------------------------------------------------------------*/
 		void SetPrimitiveTopology(core::PrimitiveTopology topology) override;
+
 		void SetViewport(const core::Viewport* viewport, std::uint32_t numViewport = 1) override;
+		
 		void SetScissor (const core::ScissorRect* rect, std::uint32_t numRect = 1) override;
+		
 		void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
+		
 		void SetResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;
+		
 		void SetGraphicsPipeline(const std::shared_ptr<core::GPUGraphicsPipelineState>& pipelineState) override;
+		
 		void SetVertexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer) override ;
+		
 		void SetVertexBuffers(const std::vector<std::shared_ptr<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
+		
 		void SetIndexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
+		
 		void DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0) override;
+		
 		void DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0, std::uint32_t startInstanceLocation = 0) override;
+		
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/
 		void SetComputeResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;
+		
 		void SetComputePipeline(const std::shared_ptr<core::GPUComputePipelineState>& pipeline) override;
+		
 		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override;
+		
 		/*-------------------------------------------------------------------
 		-                Transition layout
 		---------------------------------------------------------------------*/
@@ -110,9 +124,10 @@ namespace rhi::directX12
 		**                Protected Member Variables
 		*****************************************************************************/
 		CommandListComPtr _commandList = nullptr;
-
+		
 	private:
 		void BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer);
+		
 		void OMSetFrameBuffer   (const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer);
 	};
 }

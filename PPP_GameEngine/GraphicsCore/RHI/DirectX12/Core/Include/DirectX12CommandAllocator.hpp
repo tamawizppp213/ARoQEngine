@@ -53,6 +53,7 @@ namespace rhi::directX12
 		explicit RHICommandAllocator(
 			const std::shared_ptr<rhi::core::RHIDevice>& device, 
 			const core::CommandListType type);
+
 	protected:
 		/****************************************************************************
 		**                Protected Function

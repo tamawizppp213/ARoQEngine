@@ -34,15 +34,20 @@ RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& de
 	_queueIndex       = queueIndex;
 	vkGetDeviceQueue(vkDevice->GetDevice(), _queueFamilyIndex, _queueIndex, &_queue);
 }
+
 #pragma endregion Constructor and Destructor
 #pragma region Public Function
 /****************************************************************************
 *							Wait
 *************************************************************************//**
 *  @fn        void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
+* 
 *  @brief     Used to wait for another Command queue to complete execution. (in GPU)
+* 
 *  @param[in] const std::shared_ptr<core::RHIFence>& fence
+* 
 *  @param[in] std::uint64_t value
+* 
 *  @return Å@Å@void
 *****************************************************************************/
 void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value)
@@ -77,6 +82,7 @@ void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, const s
 	}
 
 }
+
 /****************************************************************************
 *							Signal
 *************************************************************************//**
@@ -160,4 +166,5 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 		throw std::runtime_error("failed to submit queue");
 	}
 }
+
 #pragma endregion Public Function

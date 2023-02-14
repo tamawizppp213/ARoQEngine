@@ -48,7 +48,7 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core:
 	resourceDesc.SampleDesc.Count   = 1;
 	resourceDesc.SampleDesc.Quality = 0;
 	resourceDesc.Layout             = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	resourceDesc.Flags              = D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_NONE;
+	resourceDesc.Flags              = EnumConverter::Convert(metaData.ResourceUsage);
 	/*-------------------------------------------------------------------
 	-           Create
 	---------------------------------------------------------------------*/

@@ -74,16 +74,19 @@ void RHIDevice::Destroy()
 	_defaultHeap.reset();
 
 	_commandQueueInfo.clear();
+
 	for (auto& queuePriority : queuePriorities)
 	{
 		queuePriority.second.clear();
 	}
 	queuePriorities.clear();
+
 	if (_logicalDevice) 
 	{ 
 		vkDestroyDevice(_logicalDevice, nullptr); 
 		_logicalDevice = nullptr;
 	} // destroy logical device
+
 	if (_adapter) { _adapter.reset(); }
 }
 #pragma endregion Constructor and Destructor
@@ -98,22 +101,27 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	_defaultHeap = std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this());
 	_defaultHeap->Resize(heapInfoList);
 }
+
 std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
 {
 	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<vulkan::RHIFrameBuffer>(shared_from_this(), renderPass, renderTargets, depthStencil));
 }
+
 std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil)
 {
 	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared <vulkan::RHIFrameBuffer>(shared_from_this(), renderPass, renderTarget, depthStencil));
 }
+
 std::shared_ptr<core::RHISwapchain>  RHIDevice::CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR)
 {
 	return std::static_pointer_cast<core::RHISwapchain>(std::make_shared<vulkan::RHISwapchain>(shared_from_this(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR));
 }
+
 std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
 {
 	return std::static_pointer_cast<core::RHICommandList>(std::make_shared<vulkan::RHICommandList>(shared_from_this(), commandAllocator));
 }
+
 std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type)
 {
 	const auto index = _newCreateCommandQueueIndex[type];
@@ -121,16 +129,19 @@ std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core:
 	_newCreateCommandQueueIndex[type]++;
 	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<vulkan::RHICommandQueue>(shared_from_this(),type,index));
 }
+
 std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type)
 {
 	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<vulkan::RHICommandAllocator>(shared_from_this(), type, _commandQueueInfo[type].QueueFamilyIndex));
 }
+
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
 {
 	auto heapPtr = std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this()));
 	heapPtr->Resize(heapType, maxDescriptorCount);
 	return heapPtr;
 }
+
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo)
 {
 	auto heapPtr = std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<vulkan::RHIDescriptorHeap>(shared_from_this()));
@@ -141,22 +152,27 @@ std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vec
 {
 	return std::static_pointer_cast<core::RHIRenderPass>(std::make_shared<vulkan::RHIRenderPass>(shared_from_this(), colors, depth));
 }
+
 std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth)
 {
 	return std::static_pointer_cast<core::RHIRenderPass>(std::make_shared<vulkan::RHIRenderPass>(shared_from_this(), color, depth));
 }
+
 std::shared_ptr<core::GPUGraphicsPipelineState> RHIDevice::CreateGraphicPipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
 {
 	return std::static_pointer_cast<core::GPUGraphicsPipelineState>(std::make_shared<vulkan::GPUGraphicsPipelineState>(shared_from_this(), renderPass, resourceLayout));
 }
+
 std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState( const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
 {
 	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<vulkan::GPUComputePipelineState>(shared_from_this(), resourceLayout));
 }
+
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {
 	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<vulkan::GPUPipelineFactory>(shared_from_this()));
 }
+
 std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
 {
 	return std::static_pointer_cast<core::RHIResourceLayout>(std::make_shared<vulkan::RHIResourceLayout>(shared_from_this(), elements, samplers, constant32Bits));
@@ -165,26 +181,32 @@ std::shared_ptr<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerIn
 {
 	return std::static_pointer_cast<core::GPUSampler>(std::make_shared<vulkan::GPUSampler>(shared_from_this(), samplerInfo));
 }
+
 std::shared_ptr<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
 {
 	return std::static_pointer_cast<core::GPUResourceView>(std::make_shared<vulkan::GPUResourceView>(shared_from_this(), viewType, texture, customHeap));
 }
+
 std::shared_ptr<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
 {
 	return std::static_pointer_cast<core::GPUResourceView>(std::make_shared<vulkan::GPUResourceView>(shared_from_this(), viewType, buffer, customHeap));
 }
+
 std::shared_ptr<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name)
 {
 	return std::static_pointer_cast<core::GPUBuffer>(std::make_shared<vulkan::GPUBuffer>(shared_from_this(), metaData));
 }
+
 std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name)
 {
 	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<vulkan::GPUTexture>(shared_from_this(), metaData));
 }
+
 std::shared_ptr<core::GPUTexture> RHIDevice::CreateTextureEmpty()
 {
 	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<vulkan::GPUTexture>(shared_from_this()));
 }
+
 std::shared_ptr<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fenceValue)
 {
 	return std::static_pointer_cast<core::RHIFence>(std::make_shared<vulkan::RHIFence>(shared_from_this(), fenceValue));
@@ -194,6 +216,7 @@ std::shared_ptr<core::RayTracingGeometry> RHIDevice::CreateRayTracingGeometry(co
 {
 	return std::static_pointer_cast<core::RayTracingGeometry>(std::make_shared<vulkan::RayTracingGeometry>(shared_from_this(), flags, vertexBuffer, indexBuffer));
 }
+
 std::shared_ptr<core::ASInstance> RHIDevice::CreateASInstance(
 	const std::shared_ptr<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform,
 	const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex,
@@ -201,14 +224,17 @@ std::shared_ptr<core::ASInstance> RHIDevice::CreateASInstance(
 {
 	return std::static_pointer_cast<core::ASInstance>(std::make_shared<vulkan::ASInstance>(shared_from_this(), blasBuffer, blasTransform, instanceID, instanceContributionToHitGroupIndex, instanceMask, flags));
 }
+
 std::shared_ptr<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const std::vector<std::shared_ptr<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
 {
 	return std::static_pointer_cast<core::BLASBuffer>(std::make_shared<vulkan::BLASBuffer>(shared_from_this(), geometryDesc, flags));
 }
+
 std::shared_ptr<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const std::vector<std::shared_ptr<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
 {
 	return std::static_pointer_cast<core::TLASBuffer>(std::make_shared<vulkan::TLASBuffer>(shared_from_this(), asInstances, flags));
 }
+
 #pragma endregion Create Resource Function
 #pragma region Set Up Function
 /****************************************************************************
@@ -550,6 +576,7 @@ std::uint64_t RHIDevice::GetDeviceAddress(VkBuffer buffer)
 	addressInfo.buffer = buffer;
 	return vkGetBufferDeviceAddress(_logicalDevice, &addressInfo);
 }
+
 std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags)
 {
 	const auto vkAdapter = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(_adapter);

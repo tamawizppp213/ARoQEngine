@@ -171,9 +171,13 @@ void ColorChange::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 *							PreparePipelineState
 *************************************************************************//**
 *  @fn        void ColorChange::PreparePipelineState(ColorChangeType type)
+* 
 *  @brief     Prepare PipelineState
+* 
 *  @param[in] ColorChangeType type
+* 
 *  @param[in] const std::wstring& addName
+* 
 *  @return Å@Å@void
 *****************************************************************************/
 void ColorChange::PreparePipelineState(ColorChangeType type, const std::wstring& addName)

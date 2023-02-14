@@ -124,12 +124,13 @@ namespace rhi::core
 		*****************************************************************************/
 		void SetDevice(std::shared_ptr<RHIDevice> device) { _device = device; }
 		
-		std::shared_ptr<RHICommandAllocator> GetCommandAllocator() const { return _commandAllocator; }
+		std::shared_ptr<RHICommandAllocator> GetCommandAllocator() const noexcept { return _commandAllocator; }
 		
 		/* @brief : Command list type (graphics, copy, or compute)*/
 		CommandListType GetType() const { return _commandListType; }
 		
 		bool IsOpen() const { return _isOpen; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

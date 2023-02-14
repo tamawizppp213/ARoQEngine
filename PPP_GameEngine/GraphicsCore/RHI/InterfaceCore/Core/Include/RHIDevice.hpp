@@ -135,11 +135,11 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		virtual std::shared_ptr<RHIDescriptorHeap>   GetDefaultHeap     (const core::DescriptorHeapType heapType) = 0;
+		virtual std::shared_ptr<RHIDescriptorHeap> GetDefaultHeap(const core::DescriptorHeapType heapType) = 0;
 		
 		virtual std::uint32_t GetShadingRateImageTileSize() const = 0;
 		
-		std::shared_ptr<RHIDisplayAdapter> GetDisplayAdapter() { return _adapter; }
+		std::shared_ptr<RHIDisplayAdapter> GetDisplayAdapter() const noexcept { return _adapter; }
 		
 
 		/*-------------------------------------------------------------------
