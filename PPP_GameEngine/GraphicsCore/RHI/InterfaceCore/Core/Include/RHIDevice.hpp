@@ -85,7 +85,7 @@ namespace rhi::core
 		
 		virtual std::shared_ptr<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type) = 0;
 		
-		virtual std::shared_ptr<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type) = 0;
+		virtual std::shared_ptr<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const std::wstring& name = L"CommandAllocator") = 0;
 		
 		virtual std::shared_ptr<RHISwapchain>               CreateSwapchain(const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) = 0;
 		
@@ -141,6 +141,7 @@ namespace rhi::core
 		
 		std::shared_ptr<RHIDisplayAdapter> GetDisplayAdapter() const noexcept { return _adapter; }
 		
+		virtual void SetName(const std::wstring& name) = 0;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check

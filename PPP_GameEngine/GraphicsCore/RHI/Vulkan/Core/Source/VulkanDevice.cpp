@@ -8,17 +8,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanAdapter.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFence.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandQueue.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandList.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandAllocator.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDescriptorHeap.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanRenderPass.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanSwapchain.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFrameBuffer.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanResourceLayout.hpp"
+#include "../Include/VulkanDevice.hpp"
+#include "../Include/VulkanAdapter.hpp"
+#include "../Include/VulkanInstance.hpp"
+#include "../Include/VulkanFence.hpp"
+#include "../Include/VulkanCommandQueue.hpp"
+#include "../Include/VulkanCommandList.hpp"
+#include "../Include/VulkanCommandAllocator.hpp"
+#include "../Include/VulkanDescriptorHeap.hpp"
+#include "../Include/VulkanRenderPass.hpp"
+#include "../Include/VulkanSwapchain.hpp"
+#include "../Include/VulkanFrameBuffer.hpp"
+#include "../Include/VulkanResourceLayout.hpp"
 #include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUPipelineState.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUResourceView.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
@@ -67,6 +68,10 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	CheckSupports();
 	SetUpCommandQueueInfo();
 	CreateLogicalDevice();
+	
+	const auto gpuName    = adapter->GetName();
+	const auto deviceName = L"Device::" + unicode::ToWString(gpuName);
+	SetName(deviceName);
 }
 
 void RHIDevice::Destroy()
@@ -130,9 +135,9 @@ std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core:
 	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<vulkan::RHICommandQueue>(shared_from_this(),type,index));
 }
 
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type)
+std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<vulkan::RHICommandAllocator>(shared_from_this(), type, _commandQueueInfo[type].QueueFamilyIndex));
+	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<vulkan::RHICommandAllocator>(shared_from_this(), type, _commandQueueInfo[type].QueueFamilyIndex, name));
 }
 
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
@@ -598,7 +603,76 @@ std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemo
 }
 #pragma endregion          Set Up Function
 #pragma region Property
+/****************************************************************************
+*                     SetName
+*************************************************************************//**
+*  @fn        void RHIDevice::SetName(const std::wstring& name)
+*
+*  @brief     Set Logical device name
+*
+*  @param[in] const std::wstring& name
+*
+*  @return    void
+*****************************************************************************/
+void RHIDevice::SetName(const std::wstring& name)
+{
+	SetVkResourceName(name, VK_OBJECT_TYPE_DEVICE, reinterpret_cast<std::uint64_t>(_logicalDevice));
+}
 
+/****************************************************************************
+*                     SetVkResourceName
+*************************************************************************//**
+*  @fn        void RHIDevice::SetVkResourceName(const std::wstring& name, const VkObjectType type, const std::uint64_t objectHandle)
+*
+*  @brief     Set Vulkan resource name. 
+*
+*  @param[in] const std::wstring& name for debug
+*  @param[in] const VkObjectType type 
+*  @param[in] const std::uint64_t objectPointer  
+* 
+*  @return    void
+*****************************************************************************/
+void RHIDevice::SetVkResourceName(const std::wstring& name, const VkObjectType type, const std::uint64_t objectHandle)
+{
+	std::string utf8Name = unicode::ToUtf8String(name);
+
+	/*-------------------------------------------------------------------
+	-          Set Object Name Info
+	---------------------------------------------------------------------*/
+	VkDebugUtilsObjectNameInfoEXT info = {};
+	info.sType        = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;  // structure type
+	info.pNext        = nullptr;                                             // no extension
+	info.objectType   = type;                                                // object type : buffer
+	info.objectHandle = objectHandle;                                        // vkBuffer to std::uint64_t
+	info.pObjectName  = utf8Name.c_str();      
+
+	/*-------------------------------------------------------------------
+	-          GetInstance
+	---------------------------------------------------------------------*/
+	const auto vkAdapter = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(GetDisplayAdapter());
+	const auto vkInstance = static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance())->GetVkInstance();
+
+	/*-------------------------------------------------------------------
+	-          SetName
+	---------------------------------------------------------------------*/
+	auto func = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetInstanceProcAddr( vkInstance, "vkSetDebugUtilsObjectNameEXT");
+	if (func(_logicalDevice, &info) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to set resource name");
+	}
+}
+
+/****************************************************************************
+*                     SetDefaultHeap
+*************************************************************************//**
+*  @fn        std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
+*
+*  @brief     Set Default descriptor heap
+*
+*  @param[in] const core::DescriptorHeapType
+*
+*  @return    void
+*****************************************************************************/
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
 {
 	switch (heapType)

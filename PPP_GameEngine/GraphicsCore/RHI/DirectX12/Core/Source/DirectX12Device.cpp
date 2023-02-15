@@ -8,17 +8,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Adapter.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandAllocator.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Swapchain.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12DescriptorHeap.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12ResourceLayout.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12FrameBuffer.hpp"
+#include "../Include/DirectX12Device.hpp"
+#include "../Include/DirectX12Adapter.hpp"
+#include "../Include/DirectX12CommandQueue.hpp"
+#include "../Include/DirectX12CommandAllocator.hpp"
+#include "../Include/DirectX12CommandList.hpp"
+#include "../Include/DirectX12Swapchain.hpp"
+#include "../Include/DirectX12Fence.hpp"
+#include "../Include/DirectX12DescriptorHeap.hpp"
+#include "../Include/DirectX12RenderPass.hpp"
+#include "../Include/DirectX12ResourceLayout.hpp"
+#include "../Include/DirectX12FrameBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
@@ -31,10 +31,12 @@
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingTLASBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingGeometry.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
+#include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <vector>
 #include <Windows.h>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +75,9 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 		D3D_FEATURE_LEVEL_12_0, // minimum feature level
 		IID_PPV_ARGS(&_device)));
 
-	_device->SetName(L"DirectX12::Device");
+	const auto gpuName    = adapter->GetName();
+	const auto deviceName = L"Device::" + unicode::ToWString(gpuName);
+	_device->SetName(deviceName.c_str());
 
 	/*-------------------------------------------------------------------
 	-                   Device Support Check
@@ -179,9 +183,9 @@ std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core:
 	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<directX12::RHICommandQueue>(shared_from_this(), type));
 }
 
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type)
+std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<directX12::RHICommandAllocator>(shared_from_this(), type));
+	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<directX12::RHICommandAllocator>(shared_from_this(), type, name));
 }
 
 std::shared_ptr<core::RHISwapchain> RHIDevice::CreateSwapchain(const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR )
@@ -478,7 +482,21 @@ void RHIDevice::CheckMeshShadingSupport()
 #pragma endregion  Device Support Function
 
 #pragma region Property
-
+/****************************************************************************
+*                     SetName
+*************************************************************************//**
+*  @fn        void RHIDevice::SetName(const std::wstring& name)
+*
+*  @brief     Set Logical device name
+*
+*  @param[in] const std::wstring& name
+*
+*  @return    void
+*****************************************************************************/
+void RHIDevice::SetName(const std::wstring& name)
+{
+	_device->SetName(name.c_str());
+}
 
 /****************************************************************************
 *                     GetDefaultHeap

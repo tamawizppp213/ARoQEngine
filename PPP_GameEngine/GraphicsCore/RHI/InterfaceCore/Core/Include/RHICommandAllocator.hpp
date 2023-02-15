@@ -1,6 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   RHICommandAllocator.hpp
 ///             @brief  CommandAllocator
+///                     This class is used to store the command list memory.
+///                     Every time a command list is reset, it will allocate a block of memory.
+///                     Even if a command list is reset, these memories aren't lost. 
+///                     When the Reset function in this class is called, these memories cleans up. 
+///                     To acieve the maximum frame rate, you should create each command list one by one.
 ///             @author Toide Yutaro
 ///             @date   2022_06_23
 //////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +43,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Reset command allocator*/
+		/* @brief : Reset command allocator (clear command list buffer)*/
 		virtual void Reset() = 0;
 
 		/****************************************************************************
@@ -46,9 +51,13 @@ namespace rhi::core
 		*****************************************************************************/
 		core::CommandListType GetCommandListType() const { return _commandListType; }
 
+		/* @brief : For Debugging */
+		virtual void SetName(const std::wstring& name) = 0;
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+
 	protected:
 		/****************************************************************************
 		**                Protected Function

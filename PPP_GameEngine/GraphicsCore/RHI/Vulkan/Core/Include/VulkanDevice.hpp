@@ -59,7 +59,7 @@ namespace rhi::vulkan
 		
 		std::shared_ptr<core::RHICommandQueue>         CreateCommandQueue(const core::CommandListType type) override;
 		
-		std::shared_ptr<core::RHICommandAllocator>     CreateCommandAllocator(const core::CommandListType type) override;
+		std::shared_ptr<core::RHICommandAllocator>     CreateCommandAllocator(const core::CommandListType type, const std::wstring& name) override;
 		
 		std::shared_ptr<core::RHISwapchain>            CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 3, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
 		
@@ -111,7 +111,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		inline VkDevice          GetDevice() { return _logicalDevice; }
+		inline VkDevice GetDevice() { return _logicalDevice; }
 		
 		//inline VkSurfaceKHR      GetSurface() { return _surface; }
 		
@@ -122,6 +122,12 @@ namespace rhi::vulkan
 		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 		
 		std::uint64_t GetDeviceAddress(VkBuffer buffer);
+
+		void SetName(const std::wstring& name) override;
+
+		// @note : !!! prohibit japanese name. To convert utf8f string!!!
+		void SetVkResourceName(const std::wstring& name, const VkObjectType type, const std::uint64_t objectHandle);
+
 		/*-------------------------------------------------------------------
 		-               Device Support Check
 		---------------------------------------------------------------------*/

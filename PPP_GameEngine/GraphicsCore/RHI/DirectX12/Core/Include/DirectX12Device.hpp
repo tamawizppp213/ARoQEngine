@@ -51,7 +51,7 @@ namespace rhi::directX12
 		
 		std::shared_ptr<core::RHICommandQueue>            CreateCommandQueue    (const core::CommandListType type) override;
 		
-		std::shared_ptr<core::RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type) override;
+		std::shared_ptr<core::RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const std::wstring& name) override;
 		
 		std::shared_ptr<core::RHISwapchain>               CreateSwapchain       (const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
 		
@@ -106,6 +106,8 @@ namespace rhi::directX12
 		std::uint32_t GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
 		
 		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
+
+		void SetName(const std::wstring& name) override;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check
