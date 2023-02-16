@@ -47,11 +47,14 @@ namespace rhi::core
 		/* @brief : Update the fence value (value) when the Command Queue execution completes.*/
 		virtual void Signal (const std::shared_ptr<RHIFence>& fence, const std::uint64_t value) = 0;
 		
-		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
+		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist
+		            All CommandLists to be assigned must be Closed.*/ 
 		virtual void Execute(const std::vector<std::shared_ptr<RHICommandList>>& commandLists) = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		virtual void SetName(const std::wstring& name) = 0;
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -64,11 +67,14 @@ namespace rhi::core
 		
 		virtual ~RHICommandQueue() = default;
 		
-		explicit RHICommandQueue(const CommandListType type) :  _commandListType(type) {};
+		explicit RHICommandQueue(const std::shared_ptr<RHIDevice>& device, const CommandListType type) :  _device(device), _commandListType(type) {};
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		CommandListType  _commandListType = CommandListType::Unknown;
+
+		std::shared_ptr<RHIDevice> _device = nullptr;
 	};
 }
 #endif

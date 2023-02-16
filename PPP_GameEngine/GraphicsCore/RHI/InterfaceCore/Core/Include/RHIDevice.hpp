@@ -83,7 +83,7 @@ namespace rhi::core
 		
 		virtual std::shared_ptr<RHICommandList>             CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator) = 0;
 		
-		virtual std::shared_ptr<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type) = 0;
+		virtual std::shared_ptr<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type, const std::wstring& name = L"CommandQueue") = 0;
 		
 		virtual std::shared_ptr<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const std::wstring& name = L"CommandAllocator") = 0;
 		

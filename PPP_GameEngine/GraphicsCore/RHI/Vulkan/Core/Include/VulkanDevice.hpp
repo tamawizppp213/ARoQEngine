@@ -57,7 +57,7 @@ namespace rhi::vulkan
 		
 		std::shared_ptr<core::RHICommandList>          CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& allocator) override;
 		
-		std::shared_ptr<core::RHICommandQueue>         CreateCommandQueue(const core::CommandListType type) override;
+		std::shared_ptr<core::RHICommandQueue>         CreateCommandQueue(const core::CommandListType type, const std::wstring& name) override;
 		
 		std::shared_ptr<core::RHICommandAllocator>     CreateCommandAllocator(const core::CommandListType type, const std::wstring& name) override;
 		

@@ -127,12 +127,13 @@ std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::sh
 	return std::static_pointer_cast<core::RHICommandList>(std::make_shared<vulkan::RHICommandList>(shared_from_this(), commandAllocator));
 }
 
-std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type)
+std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type, const std::wstring& name)
 {
-	const auto index = _newCreateCommandQueueIndex[type];
-	if (index >= _commandQueueInfo[type].QueueCount) { OutputDebugStringA("Exceed to maxQueueCount"); return nullptr; }
+	const auto queueFamilyIndex = _commandQueueInfo[type].QueueFamilyIndex;
+	const auto queueIndex = _newCreateCommandQueueIndex[type];
+	if (queueIndex >= _commandQueueInfo[type].QueueCount) { OutputDebugStringA("Exceed to maxQueueCount"); return nullptr; }
 	_newCreateCommandQueueIndex[type]++;
-	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<vulkan::RHICommandQueue>(shared_from_this(),type,index));
+	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<vulkan::RHICommandQueue>(shared_from_this(),type, queueFamilyIndex, queueIndex, name));
 }
 
 std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type, const std::wstring& name)

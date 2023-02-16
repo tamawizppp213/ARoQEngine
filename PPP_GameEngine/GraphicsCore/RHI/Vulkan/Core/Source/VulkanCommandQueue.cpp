@@ -27,12 +27,13 @@ RHICommandQueue::~RHICommandQueue()
 	
 }
 
-RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex) : rhi::core::RHICommandQueue(type)
+RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex, const std::wstring& name) : rhi::core::RHICommandQueue(device, type)
 {
 	const auto vkDevice = std::static_pointer_cast<RHIDevice>(device);
 	_queueFamilyIndex = queueFamilyIndex;
 	_queueIndex       = queueIndex;
 	vkGetDeviceQueue(vkDevice->GetDevice(), _queueFamilyIndex, _queueIndex, &_queue);
+	SetName(name);
 }
 
 #pragma endregion Constructor and Destructor
@@ -57,13 +58,15 @@ void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, const s
 	/*-------------------------------------------------------------------
 	-               Set up timeline submit info
 	---------------------------------------------------------------------*/
-	VkTimelineSemaphoreSubmitInfo timelineInfo = {};
-	timelineInfo.sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
-	timelineInfo.pNext                     = nullptr;
-	timelineInfo.pWaitSemaphoreValues      = &value;
-	timelineInfo.waitSemaphoreValueCount   = 1;
-	timelineInfo.signalSemaphoreValueCount = 0;
-	timelineInfo.pSignalSemaphoreValues    = nullptr;
+	VkTimelineSemaphoreSubmitInfo timelineInfo = 
+	{
+		.sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO,
+		.pNext                     = nullptr,
+		.waitSemaphoreValueCount   = 1,
+		.pWaitSemaphoreValues      = &value,
+		.signalSemaphoreValueCount = 0,
+		.pSignalSemaphoreValues    = nullptr
+	};
 
 	/*-------------------------------------------------------------------
 	-               Set up submit info
@@ -87,9 +90,14 @@ void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, const s
 *							Signal
 *************************************************************************//**
 *  @fn        void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
-*  @brief     Update the fence value (value) when the Command Queue execution completes.
+*
+*  @brief     Update value when the Command Queue execution completes.
+*             GPU内で処理が完結します.　
+*
 *  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*
 *  @param[in] std::uint64_t value
+*
 *  @return 　　void
 *****************************************************************************/
 void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value)
@@ -99,13 +107,15 @@ void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, const
 	/*-------------------------------------------------------------------
 	-               Set up timeline submit info
 	---------------------------------------------------------------------*/
-	VkTimelineSemaphoreSubmitInfo timelineInfo = {};
-	timelineInfo.sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
-	timelineInfo.pNext                     = nullptr;
-	timelineInfo.pWaitSemaphoreValues      = nullptr;
-	timelineInfo.waitSemaphoreValueCount   = 0;
-	timelineInfo.signalSemaphoreValueCount = 1;
-	timelineInfo.pSignalSemaphoreValues    = &value;
+	VkTimelineSemaphoreSubmitInfo timelineInfo = 
+	{
+		.sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO,
+		.pNext                     = nullptr,
+		.waitSemaphoreValueCount   = 0,
+		.pWaitSemaphoreValues      = nullptr,
+		.signalSemaphoreValueCount = 1,
+		.pSignalSemaphoreValues    = &value
+	};
 
 	/*-------------------------------------------------------------------
 	-               Set up submit info
@@ -123,11 +133,15 @@ void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, const
 }
 
 /****************************************************************************
-*                       Execute
+*							Execute
 *************************************************************************//**
 *  @fn        void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists)
-*  @brief     Execute Command queue (同期はしてないので注意)
+*
+*  @brief     Execute command list contents. normally set graphics, compute, transfer commandlist
+*             All CommandLists to be assigned must be Closed.
+*
 *  @param[in] const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists
+*
 *  @return 　　void
 *****************************************************************************/
 void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists)
@@ -143,6 +157,7 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 	{
 		vkLists.push_back(std::static_pointer_cast<rhi::vulkan::RHICommandList>(commandList)->GetCommandList());
 	}
+
 	/*-------------------------------------------------------------------
 	-                Set Up
 	---------------------------------------------------------------------*/
@@ -167,4 +182,9 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 	}
 }
 
+void RHICommandQueue::SetName(const std::wstring& name)
+{
+	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	device->SetVkResourceName(name, VK_OBJECT_TYPE_QUEUE, reinterpret_cast<std::uint64_t>(_queue));
+}
 #pragma endregion Public Function
