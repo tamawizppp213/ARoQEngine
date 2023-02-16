@@ -78,7 +78,7 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	const auto gpuName    = adapter->GetName();
 	const auto deviceName = L"Device::" + unicode::ToWString(gpuName);
 	_device->SetName(deviceName.c_str());
-
+	
 	/*-------------------------------------------------------------------
 	-                   Device Support Check
 	---------------------------------------------------------------------*/

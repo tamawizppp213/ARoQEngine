@@ -30,19 +30,23 @@ RHIFence::RHIFence(const std::shared_ptr<core::RHIDevice>& device, const std::ui
 	/*-------------------------------------------------------------------
 	-   Set up semaphore type create info (TimelineInfo)
 	---------------------------------------------------------------------*/
-	VkSemaphoreTypeCreateInfo timelineInfo = {};
-	timelineInfo.initialValue  = initialValue;
-	timelineInfo.sType         = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO;
-	timelineInfo.pNext         = nullptr;
-	timelineInfo.semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE;
+	VkSemaphoreTypeCreateInfo timelineInfo = 
+	{
+		.sType         = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
+		.pNext         = nullptr,
+		.semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE,
+		.initialValue  = initialValue
+	};
 
 	/*-------------------------------------------------------------------
 	-   Set up semaphore create info
 	---------------------------------------------------------------------*/
-	VkSemaphoreCreateInfo semaphoreInfo = {};
-	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-	semaphoreInfo.pNext = &timelineInfo;
-	semaphoreInfo.flags = 0;
+	VkSemaphoreCreateInfo semaphoreInfo = 
+	{
+		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+		.pNext = &timelineInfo,
+		.flags = 0
+	};
 
 	if (vkCreateSemaphore(vkDevice, &semaphoreInfo, nullptr, &_timelineSemaphore) != VK_SUCCESS)
 	{
@@ -91,13 +95,16 @@ void RHIFence::Wait(const std::uint64_t value)
 {
 	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
 
-	VkSemaphoreWaitInfo waitInfo = {};
-	waitInfo.sType          = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
-	waitInfo.semaphoreCount = 1;
-	waitInfo.pSemaphores    = &_timelineSemaphore;
-	waitInfo.pValues        = &value;
-	waitInfo.pNext          = nullptr;
-	waitInfo.flags          = 0;
+	VkSemaphoreWaitInfo waitInfo = 
+	{
+		.sType          = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO,
+		.pNext          = nullptr,
+		.flags          = 0,
+		.semaphoreCount = 1,
+		.pSemaphores    = &_timelineSemaphore,
+		.pValues        = &value
+	};
+
 	if (vkWaitSemaphores(vkDevice, &waitInfo, UINT64_MAX) < VK_SUCCESS) // error only acquire
 	{
 		throw std::runtime_error("couldn't wait semaphore");
@@ -116,11 +123,14 @@ void RHIFence::Signal(const std::uint64_t value)
 {
 	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
 
-	VkSemaphoreSignalInfo signalInfo = {};
-	signalInfo.sType     = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO;
-	signalInfo.value     = value;
-	signalInfo.pNext     = nullptr;
-	signalInfo.semaphore = _timelineSemaphore;
+	VkSemaphoreSignalInfo signalInfo = 
+	{
+		.sType     = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO,
+		.pNext     = nullptr,
+		.semaphore = _timelineSemaphore,
+		.value     = value
+	};
+
 	if (vkSignalSemaphore(vkDevice, &signalInfo) < VK_SUCCESS) // error only acquire
 	{
 		throw std::runtime_error("couldn't signal semaphore");

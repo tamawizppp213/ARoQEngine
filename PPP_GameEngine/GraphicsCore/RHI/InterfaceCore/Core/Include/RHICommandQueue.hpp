@@ -34,6 +34,9 @@ namespace rhi::core
 	*  @class     RHICommandQueue
 	*  @brief     Send drawing commands to the GPU, 
 	              provide methods for synchronous processing of drawing command execution
+                                             |
+                  set signal value (t=1)     | wait (t=1)-> execute gpu commands
+				  --------------------------------------> t
 	*****************************************************************************/
 	class RHICommandQueue : public NonCopyable
 	{

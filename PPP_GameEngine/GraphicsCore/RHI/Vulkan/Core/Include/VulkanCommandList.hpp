@@ -44,7 +44,8 @@ namespace rhi::vulkan
 		
 		void EndRenderPass() override;
 		
-		void Reset() override {};
+		/* @brief : Proceed to the record state.*/
+		void Reset(const std::shared_ptr<core::RHICommandAllocator>& changeAllocator) override {};
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/

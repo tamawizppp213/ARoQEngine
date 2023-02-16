@@ -90,24 +90,18 @@ void RHICommandList::BeginRecording()
 	/*-------------------------------------------------------------------
 	-          Reset command list and allocator
 	---------------------------------------------------------------------*/
-	_commandAllocator->Reset();
+	_commandAllocator->CleanUp(); // command buffer clear
 	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
-	
-	if (_commandAllocator->GetCommandListType() == core::CommandListType::Graphics)
-	{
-		_commandList->ClearState(nullptr); // Œ³‚Ìó‘Ô‚É–ß‚é
-	}
-
 	_isOpen = true;
 }
 
-void RHICommandList::Reset()
+void RHICommandList::Reset(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
 {
 	/*-------------------------------------------------------------------
 	-          Reset command list and allocator
 	---------------------------------------------------------------------*/
-	_commandAllocator->Reset();
-	//ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
+	if (commandAllocator) { _commandAllocator = commandAllocator; }
+	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
 	_isOpen = false;
 }
 

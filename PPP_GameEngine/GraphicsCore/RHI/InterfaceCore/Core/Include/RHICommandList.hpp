@@ -59,7 +59,7 @@ namespace rhi::core
 		
 		virtual void EndRenderPass() = 0;
 
-		virtual void Reset() = 0;
+		virtual void Reset(const std::shared_ptr<RHICommandAllocator>& changeAllocator = nullptr) = 0;
 
 		/*-------------------------------------------------------------------
 		-               Common command
@@ -152,9 +152,13 @@ namespace rhi::core
 		**                Private Member Variables
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice>           _device           = nullptr;
+
 		std::shared_ptr<RHICommandAllocator> _commandAllocator = nullptr;
+
 		std::shared_ptr<core::RHIRenderPass> _renderPass       = nullptr;
+
 		std::shared_ptr<core::RHIFrameBuffer>_frameBuffer      = nullptr;
+
 		core::CommandListType _commandListType = CommandListType::Unknown;
 		bool _isOpen = false;
 	};

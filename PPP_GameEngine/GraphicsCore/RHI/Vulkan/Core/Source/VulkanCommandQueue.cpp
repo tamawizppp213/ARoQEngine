@@ -37,6 +37,7 @@ RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& de
 }
 
 #pragma endregion Constructor and Destructor
+
 #pragma region Public Function
 /****************************************************************************
 *							Wait

@@ -40,8 +40,10 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Reset command allocator*/
-		void Reset() override;
+		/* @brief : Clean up the command pool. 
+		   @note : All binded command lists must be closed before calling this function.
+		           In addition, until command execution in GPU, this function mustn't be called.*/
+		void CleanUp() override;
 
 		/****************************************************************************
 		**                Public Member Variables

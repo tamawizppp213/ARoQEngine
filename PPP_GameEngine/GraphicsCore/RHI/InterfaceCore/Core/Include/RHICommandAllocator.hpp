@@ -44,7 +44,7 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Reset command allocator (clear command list buffer)*/
-		virtual void Reset() = 0;
+		virtual void CleanUp() = 0;
 
 		/****************************************************************************
 		**                Public Member Variables

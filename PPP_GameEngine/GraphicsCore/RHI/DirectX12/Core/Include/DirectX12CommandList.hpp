@@ -49,7 +49,8 @@ namespace rhi::directX12
 		
 		void EndRenderPass() override;
 
-		void Reset() override;
+		/* @brief : Proceed to the record state.*/
+		void Reset(const std::shared_ptr<core::RHICommandAllocator>& changeAllocator = nullptr) override;
 
 		/*-------------------------------------------------------------------
 		-               Common command

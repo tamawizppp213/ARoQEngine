@@ -43,7 +43,7 @@ RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<rhi::core::RHIDev
 	_commandAllocator->SetName(name.c_str());
 }
 
-void RHICommandAllocator::Reset()
+void RHICommandAllocator::CleanUp()
 {
 	ThrowIfFailed(_commandAllocator->Reset());
 }

@@ -94,6 +94,7 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 	-               Set clear values
 	---------------------------------------------------------------------*/
 	std::vector<VkClearValue> clearValues = vkRenderPass->GetVkClearValues();
+
 	/*-------------------------------------------------------------------
 	-               Set Up VkRenderPassBeginInfo
 	---------------------------------------------------------------------*/

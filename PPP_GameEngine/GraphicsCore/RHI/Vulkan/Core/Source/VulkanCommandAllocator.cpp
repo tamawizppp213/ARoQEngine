@@ -51,9 +51,9 @@ RHICommandAllocator::~RHICommandAllocator()
 }
 
 /****************************************************************************
-*                     Reset
+*                     CleanUp
 *************************************************************************//**
-*  @fn        void RHICommandAllocator::Reset()
+*  @fn        void RHICommandAllocator::CleanUp()
 * 
 *  @brief     Reset command pool
 * 
@@ -61,7 +61,7 @@ RHICommandAllocator::~RHICommandAllocator()
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-void RHICommandAllocator::Reset()
+void RHICommandAllocator::CleanUp()
 {
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	vkResetCommandPool(vkDevice->GetDevice(), _commandPool, VkCommandPoolResetFlagBits::VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
