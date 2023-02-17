@@ -70,8 +70,8 @@ void Dof::OnResize(float newWidth, float newHeight)
 void Dof::Draw(const GPUTexturePtr& renderTarget, const GPUTexturePtr& zPrepass)
 {
 	const auto frameIndex   = _engine->GetCurrentFrameIndex();
-	const auto computeList  = _engine->GetCommandList(CommandListType::Compute, frameIndex);
-	const auto graphicsList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto computeList  = _engine->GetCommandList(CommandListType::Compute);
+	const auto graphicsList = _engine->GetCommandList(CommandListType::Graphics);
 	const auto frameBuffer  = _engine->GetFrameBuffer(frameIndex);
 
 	/*-------------------------------------------------------------------

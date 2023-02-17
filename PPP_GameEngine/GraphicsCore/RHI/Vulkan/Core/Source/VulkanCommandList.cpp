@@ -29,7 +29,7 @@ using namespace rhi;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHICommandList::RHICommandList(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHICommandAllocator>& allocator): 
+RHICommandList::RHICommandList(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHICommandAllocator>& allocator, const std::wstring& name): 
 	core::RHICommandList(device, allocator)
 {
 	VkDevice      vkDevice    = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
@@ -47,6 +47,8 @@ RHICommandList::RHICommandList(const std::shared_ptr<core::RHIDevice>& device, c
 		throw std::runtime_error("failed to allocate command buffer (primary)");
 	}
 	_commandListType = _commandAllocator->GetCommandListType();
+	_isOpen          = false;
+	SetName(name);
 }
 
 RHICommandList::~RHICommandList()
@@ -59,8 +61,23 @@ RHICommandList::~RHICommandList()
 
 #pragma endregion Constructor and Destructor
 #pragma region SetUp Draw Frame
-void RHICommandList::BeginRecording()
+/****************************************************************************
+*                     BeginRecording
+*************************************************************************//**
+*  @fn        void RHICommandList::BeginRecording()
+*
+*  @brief     This function must be called at draw function initially (stillMidFrame = false
+*             If still mid frame is set false, this function clears the command allocator
+*
+*  @param[in] const bool stillMidFrame (default: false)
+*
+*  @return    void
+*****************************************************************************/
+void RHICommandList::BeginRecording(const bool stillMidFrame)
 {
+	// recorded command allocator clean up
+	if (!stillMidFrame) { _commandAllocator->CleanUp(); }
+
 	if (vkResetCommandBuffer(_commandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT) != VK_SUCCESS) { throw std::runtime_error("failed to reset command buffers\n"); };
 	/*-------------------------------------------------------------------
 	-               Set Up
@@ -72,12 +89,27 @@ void RHICommandList::BeginRecording()
 	---------------------------------------------------------------------*/
 	if (vkBeginCommandBuffer(_commandBuffer, &commandBeginInfo) != VK_SUCCESS) { throw std::runtime_error("failed to begin command buffers\n"); }
 
+	_isOpen = true;
 }
 
+/****************************************************************************
+*                     EndRecording
+*************************************************************************//**
+*  @fn        void RHICommandList::EndRecording()
+*
+*  @brief     Call at end draw frame. Close executed command list.
+*              The command list is closed, it transits the executable state.
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void RHICommandList::EndRecording()
 {
+	if (!_isOpen) { OutputDebugStringA("Already closed \n"); return; }
 	if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS) { throw std::runtime_error("failed to end command buffer\n"); };
-
+	_isOpen = false;
+	_beginRenderPass = false;
 }
 
 void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer)
@@ -113,10 +145,13 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 
 	_renderPass  = renderPass;
 	_frameBuffer = frameBuffer;
+	_beginRenderPass = true;
 }
 void RHICommandList::EndRenderPass()
 {
+	if (!_beginRenderPass) { return; }
 	vkCmdEndRenderPass(_commandBuffer);
+	_beginRenderPass = false;
 	/*-------------------------------------------------------------------
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
@@ -134,7 +169,7 @@ void RHICommandList::EndRenderPass()
 *  @param[in] std::uint32_t viewport count
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
+void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint32_t numViewport)
 {
 	std::vector<VkViewport> v(numViewport);
 	for (std::uint32_t i = 0; i < numViewport; ++i)
@@ -157,7 +192,7 @@ void RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t n
 *  @param[in] std::uint32_t numRect
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
+void RHICommandList::SetScissor(const core::ScissorRect* rect, const std::uint32_t numRect)
 {
 	std::vector<VkRect2D> r(numRect);
 	for (UINT i = 0; i < numRect; ++i)
@@ -199,6 +234,17 @@ void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const
 }
 
 #pragma region Graphics Command 
+/****************************************************************************
+*                       SetPrimitiveTopology
+*************************************************************************//**
+*  @fn        void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
+*
+*  @brief     Regist Primitive topology to command list
+*
+*  @param[in] const core::PrimitiveTopology
+*
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology)
 {
 	vkCmdSetPrimitiveTopology(_commandBuffer, EnumConverter::Convert(topology));
@@ -296,3 +342,11 @@ VkAccessFlags RHICommandList::SelectVkAccessFlag(const VkImageLayout imageLayout
 }
 #pragma endregion TransitionResourceLayout
 #pragma endregion GPU Command
+
+#pragma region Property
+void RHICommandList::SetName(const std::wstring& name)
+{
+	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	device->SetVkResourceName(name, VK_OBJECT_TYPE_COMMAND_BUFFER, reinterpret_cast<std::uint64_t>(_commandBuffer));
+}
+#pragma endregion Property

@@ -51,8 +51,12 @@ namespace rhi::core
 		/*-------------------------------------------------------------------
 		-               Draw Frame Function
 		---------------------------------------------------------------------*/
-		virtual void BeginRecording() = 0; // Call draw function at first
+		/* @brief : This function must be called at draw function initially (stillMidFrame = false). 
+		            If still mid frame is set false, this function clears the command allocator.*/
+		virtual void BeginRecording(const bool stillMidFrame = false) = 0;
 
+		/* @brief : This function must be called at draw function at end, 
+		            The command list is closed, it transits the executable state.*/
 		virtual void EndRecording  () = 0; // Call end function at end
 
 		virtual void BeginRenderPass(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<RHIFrameBuffer>& frameBuffer) = 0;
@@ -74,11 +78,11 @@ namespace rhi::core
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
-		virtual void SetPrimitiveTopology(PrimitiveTopology topology) = 0;
+		virtual void SetPrimitiveTopology(const PrimitiveTopology topology) = 0;
 
-		virtual void SetViewport          (const Viewport* viewport, std::uint32_t numViewport = 1) = 0;
+		virtual void SetViewport          (const Viewport* viewport, const std::uint32_t numViewport = 1) = 0;
 		
-		virtual void SetScissor           (const ScissorRect* rect , std::uint32_t numRect = 1)     = 0;
+		virtual void SetScissor           (const ScissorRect* rect , const std::uint32_t numRect = 1)     = 0;
 		
 		virtual void SetViewportAndScissor(const Viewport& viewport, const ScissorRect& rect)       = 0;
 		
@@ -122,14 +126,16 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void SetDevice(std::shared_ptr<RHIDevice> device) { _device = device; }
-		
 		std::shared_ptr<RHICommandAllocator> GetCommandAllocator() const noexcept { return _commandAllocator; }
 		
 		/* @brief : Command list type (graphics, copy, or compute)*/
 		CommandListType GetType() const { return _commandListType; }
 		
 		bool IsOpen() const { return _isOpen; }
+
+		void SetDevice(std::shared_ptr<RHIDevice> device) { _device = device; }
+
+		virtual void SetName(const std::wstring& name) = 0;
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -140,7 +146,7 @@ namespace rhi::core
 		
 		explicit RHICommandList(
 			const std::shared_ptr<RHIDevice>& device,
-			const std::shared_ptr<RHICommandAllocator>& commandAllocator) 
+			const std::shared_ptr<RHICommandAllocator>& commandAllocator)
 			: _device(device), _commandAllocator(commandAllocator) { };
 
 	protected:
@@ -161,6 +167,7 @@ namespace rhi::core
 
 		core::CommandListType _commandListType = CommandListType::Unknown;
 		bool _isOpen = false;
+		bool _beginRenderPass = false;
 	};
 }
 #endif

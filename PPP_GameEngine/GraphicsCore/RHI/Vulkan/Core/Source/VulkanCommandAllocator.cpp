@@ -64,7 +64,10 @@ RHICommandAllocator::~RHICommandAllocator()
 void RHICommandAllocator::CleanUp()
 {
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
-	vkResetCommandPool(vkDevice->GetDevice(), _commandPool, VkCommandPoolResetFlagBits::VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
+	if (vkResetCommandPool(vkDevice->GetDevice(), _commandPool, VkCommandPoolResetFlagBits::VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to reset command pool");
+	}
 }
 
 /****************************************************************************

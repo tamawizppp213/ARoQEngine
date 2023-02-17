@@ -86,9 +86,16 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	/*-------------------------------------------------------------------
 	-      Get command queue (Graphics, compute, copy command queue )
 	---------------------------------------------------------------------*/
-	_commandQueues[CommandListType::Graphics] = _device->CreateCommandQueue(CommandListType::Graphics);
-	_commandQueues[CommandListType::Compute]  = _device->CreateCommandQueue(CommandListType::Compute);
-	_commandQueues[CommandListType::Copy]     = _device->CreateCommandQueue(CommandListType::Copy);
+	_commandQueues[CommandListType::Graphics] = _device->CreateCommandQueue(CommandListType::Graphics, L"GraphicsQueue");
+	_commandQueues[CommandListType::Compute]  = _device->CreateCommandQueue(CommandListType::Compute , L"ComputeQueue");
+	_commandQueues[CommandListType::Copy]     = _device->CreateCommandQueue(CommandListType::Copy    , L"CopyQueue");
+
+	/*-------------------------------------------------------------------
+	-      Set up command list
+	---------------------------------------------------------------------*/
+	_commandLists[core::CommandListType::Graphics] = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Graphics, L"GraphicsAllocator"), L"GraphicsCommandList");
+	_commandLists[core::CommandListType::Compute]  = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Compute , L"ComputeAllocator") , L"ComputeCommandList");
+	_commandLists[core::CommandListType::Copy]     = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Copy    , L"CopyAllocator")    , L"CopyCommandList");
 
 	/*-------------------------------------------------------------------
 	-      Create fence
@@ -100,7 +107,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	---------------------------------------------------------------------*/
 	core::WindowInfo windowInfo = core::WindowInfo(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _hwnd, _hInstance);
 
-	_swapchain   = _device->CreateSwapchain( _commandQueues[CommandListType::Graphics], windowInfo, _pixelFormat,  FRAME_BUFFER_COUNT, VSYNC, false);
+	_swapchain   = _device   ->CreateSwapchain( _commandQueues[CommandListType::Graphics], windowInfo, _pixelFormat,  FRAME_BUFFER_COUNT, VSYNC, false);
 	_pixelFormat = _swapchain->GetPixelFormat(); // sdrの場合は修正する/
 
 	/*-------------------------------------------------------------------
@@ -113,16 +120,6 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	---------------------------------------------------------------------*/
 	SetUpRenderResource();
 
-	/*-------------------------------------------------------------------
-	-      Set up command list
-	---------------------------------------------------------------------*/
-	_commandLists.resize(FRAME_BUFFER_COUNT);
-	for (std::uint32_t i = 0; i < FRAME_BUFFER_COUNT; ++i)
-	{
-		_commandLists[i][core::CommandListType::Graphics] = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Graphics));
-		_commandLists[i][core::CommandListType::Compute]  = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Compute ));
-		_commandLists[i][core::CommandListType::Copy]     = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Copy    ));
-	}
 
 	_hasInitialized = true;
 }
@@ -143,14 +140,16 @@ void LowLevelGraphicsEngine::BeginDrawFrame()
 	/*-------------------------------------------------------------------
 	-      Get each command list
 	---------------------------------------------------------------------*/
-	const auto& graphicsCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Graphics];
-	const auto& computeCommandList  = _commandLists[_currentFrameIndex][core::CommandListType::Compute];
+	const auto& graphicsCommandList = _commandLists[core::CommandListType::Graphics];
+	const auto& computeCommandList  = _commandLists[core::CommandListType::Compute];
+	const auto& copyCommandList     = _commandLists[core::CommandListType::Copy];
 
 	/*-------------------------------------------------------------------
 	-      Start Recording Command List
 	---------------------------------------------------------------------*/
-	graphicsCommandList->BeginRecording();
-	computeCommandList->BeginRecording();
+	graphicsCommandList->BeginRecording(false);
+	computeCommandList ->BeginRecording(false);
+	copyCommandList    ->BeginRecording(false);
 }
 
 /****************************************************************************
@@ -169,12 +168,15 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	/*-------------------------------------------------------------------
 	-      Finish recording commands list
 	---------------------------------------------------------------------*/
+	const auto& copyCommandList = _commandLists[core::CommandListType::Copy];
+	copyCommandList->EndRecording();
+
 	// close compute command list
-	const auto& computeCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Compute];
+	const auto& computeCommandList = _commandLists[core::CommandListType::Compute];
 	computeCommandList->EndRecording();
 
 	// close graphics command list
-	const auto& graphicsCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Graphics];
+	const auto& graphicsCommandList = _commandLists[core::CommandListType::Graphics];
 	graphicsCommandList->EndRenderPass();
 
 	graphicsCommandList->CopyResource(_swapchain->GetBuffer(_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
@@ -183,25 +185,28 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	/*-------------------------------------------------------------------
 	-          Execute GPU Command
 	---------------------------------------------------------------------*/
-	_commandQueues[core::CommandListType::Graphics]->Execute({graphicsCommandList});
-	_commandQueues[core::CommandListType::Graphics]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
-	_commandQueues[core::CommandListType::Graphics]->Wait(_fence, _fenceValues[_currentFrameIndex]);
+	_commandQueues[core::CommandListType::Copy]->Execute({ copyCommandList });
+	_commandQueues[core::CommandListType::Copy]->Signal(_fence, ++_fenceValue);
+	_commandQueues[core::CommandListType::Compute]->Wait(_fence, _fenceValue);
 
 	_commandQueues[core::CommandListType::Compute]->Execute({ computeCommandList });
-	_commandQueues[core::CommandListType::Compute]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
-	_commandQueues[core::CommandListType::Compute]->Wait(_fence, _fenceValues[_currentFrameIndex]);
+	_commandQueues[core::CommandListType::Compute]->Signal(_fence, ++_fenceValue);
+
+	_commandQueues[core::CommandListType::Graphics]->Wait(_fence, _fenceValue);
+	_commandQueues[core::CommandListType::Graphics]->Execute({ graphicsCommandList });
+	_commandQueues[core::CommandListType::Graphics]->Signal(_fence, ++_fenceValue);
 
 	/*-------------------------------------------------------------------
 	-          Flip Screen
 	---------------------------------------------------------------------*/
-	_swapchain->Present(_fence, _fenceValues[_currentFrameIndex]);
+	_swapchain->Present(_fence, _fenceValue);
+	_fence->Wait(_fenceValue);
 
 	/*-------------------------------------------------------------------
 	-      GPU Command Wait
 	---------------------------------------------------------------------*/
 	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, ++_fenceValue);
-	_fence->Wait(_fenceValue);
-	SetUpFence();
+	SetUpFence(); // reset fence value for the next frame
 }
 
 /****************************************************************************
@@ -213,16 +218,51 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 *
 *  @param[in] const rhi::core::CommandListType type
 *
-*  @return 　　void
+*  @return 　　std::uint64_t
 *****************************************************************************/
-void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType type)
+std::uint64_t LowLevelGraphicsEngine::FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame)
 {
 	// set command lists
-	const auto& commandList = _commandLists[_currentFrameIndex][type];
+	const auto commandList = _commandLists[type];
+	
+	/*-------------------------------------------------------------------
+	-          Transit the recorded state into the executable state
+	---------------------------------------------------------------------*/
+	if (commandList->IsOpen())
+	{
+		if (commandList->GetType() == CommandListType::Graphics)
+		{
+			commandList->EndRenderPass();
+		}
+		commandList->EndRecording();
+	}
 
-	// execute command queue 
+	/*-------------------------------------------------------------------
+	-          Execute gpu commands
+	---------------------------------------------------------------------*/
 	_commandQueues[type]->Execute({commandList});
-	_commandQueues[type]->Signal(_fence, _fenceValues[_currentFrameIndex] = ++_fenceValue);
+	_commandQueues[type]->Signal(_fence, ++_fenceValue);
+
+	/*-------------------------------------------------------------------
+	-         Restart command list 
+	---------------------------------------------------------------------*/
+	if (stillMidFrame)
+	{
+		commandList->BeginRecording(stillMidFrame);
+		if (commandList->GetType() == CommandListType::Graphics)
+		{
+			commandList->BeginRenderPass(_drawContinueRenderPass, _frameBuffers[_currentFrameIndex]);
+		}
+	}
+	return _fenceValue;
+}
+
+void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU)
+{
+	const auto commandQueue = _commandQueues[type];
+
+	commandQueue->Wait(_fence, waitValue);    // gpu stop
+	if (stopCPU) { _fence->Wait(waitValue); } // cpu stop
 }
 
 /****************************************************************************
@@ -252,20 +292,20 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 	-          Wait Graphics Queue
 	---------------------------------------------------------------------*/
 	const auto previousFrame    = _currentFrameIndex;
-	_fenceValues[previousFrame] = ++_fenceValue;
-	_commandQueues[CommandListType::Graphics]->Signal(_fence, _fenceValues[previousFrame]);
-	_fence->Wait(_fenceValues[previousFrame]);
+	_commandQueues[CommandListType::Graphics]->Signal(_fence, ++_fenceValue);
+	_fence->Wait(_fenceValue);
 
 	/*-------------------------------------------------------------------
 	-          Flip Screen
 	---------------------------------------------------------------------*/
-	_swapchain->Present(_fence, _fenceValues[previousFrame]);
+	_swapchain->Present(_fence,_fenceValue);
 
 	/*-------------------------------------------------------------------
 	-      GPU Command Wait
 	---------------------------------------------------------------------*/
-	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, _fenceValues[previousFrame] = ++_fenceValue);
-	_fence->Wait(_fenceValues[previousFrame]);
+	_currentFrameIndex = _swapchain->PrepareNextImage(_fence,++_fenceValue);
+	_fence->Wait(_fenceValue);
+
 }
 
 void LowLevelGraphicsEngine::WaitForIdleGPU()
@@ -277,19 +317,19 @@ void LowLevelGraphicsEngine::WaitForIdleGPU()
 
 	for (std::uint32_t i = 1; i < (std::uint32_t)CommandListType::CountOfType; ++i)
 	{
-		const auto commandList = _commandLists[_currentFrameIndex][(CommandListType)i];
+		const auto commandList = _commandLists[(CommandListType)i];
 
 		if (commandList->IsOpen()) { commandList->EndRecording(); }
 		_commandQueues[(CommandListType)i]->Execute({ commandList });
 		_commandQueues[(CommandListType)i]->Signal(fence, i);
 		fence->Wait(i);
-		_commandLists[_currentFrameIndex][(CommandListType)i]->Reset();
+		_commandLists[(CommandListType)i]->Reset();
 	}
 }
 
 void LowLevelGraphicsEngine::BeginSwapchainRenderPass()
 {
-	const auto& graphicsCommandList = _commandLists[_currentFrameIndex][core::CommandListType::Graphics];
+	const auto& graphicsCommandList = _commandLists[core::CommandListType::Graphics];
 	graphicsCommandList->BeginRenderPass(_renderPass, _frameBuffers[_currentFrameIndex]);
 }
 
@@ -327,7 +367,6 @@ void LowLevelGraphicsEngine::ShutDown()
 	if (_fence) { _fence.reset(); }
 	
 	_commandLists.clear(); 
-	_commandLists.shrink_to_fit();
 
 	if (!_commandQueues.empty()) { _commandQueues.clear(); }
 
@@ -373,10 +412,6 @@ void LowLevelGraphicsEngine::SetUpFence()
 {
 	_fence = _device->CreateFence();
 	_fenceValue = 0;
-	for (std::uint32_t i = 0; i < FRAME_BUFFER_COUNT; ++i)
-	{
-		_fenceValues[i] = 0;
-	}
 }
 /****************************************************************************
 *                     SetUpRenderResource

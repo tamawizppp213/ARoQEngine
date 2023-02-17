@@ -99,7 +99,7 @@ void ColorChange::Draw()
 {
 	const auto frameIndex          = _engine->GetCurrentFrameIndex();
 	const auto device              = _engine->GetDevice();
-	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
@@ -127,7 +127,7 @@ void ColorChange::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 {
 	const auto frameIndex = _engine->GetCurrentFrameIndex();
 	const auto device     = _engine->GetDevice();
-	const auto commandList = _engine->GetCommandList(CommandListType::Copy, frameIndex);
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/

@@ -25,6 +25,8 @@ namespace gc
 	namespace basepass
 	{
 		class ZPrepass;
+		class LightCulling;
+		class GBuffer;
 	}
 }
 
@@ -41,8 +43,10 @@ namespace gc
 	*****************************************************************************/
 	class URP : public IRenderPipeline
 	{
-		using UIRendererPtr = std::shared_ptr<ui::UIRenderer>;
-		using ZPrepassPtr   = std::shared_ptr<basepass::ZPrepass>;
+		using UIRendererPtr   = std::shared_ptr<ui::UIRenderer>;
+		using ZPrepassPtr     = std::shared_ptr<basepass::ZPrepass>;
+		using LightCullingPtr = std::shared_ptr<basepass::LightCulling>;
+		using GBufferPtr      = std::shared_ptr<basepass::GBuffer>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -71,6 +75,10 @@ namespace gc
 		UIRendererPtr _uiRenderer = nullptr;
 
 		ZPrepassPtr _zPrepass = nullptr;
+
+		LightCullingPtr _lightCulling = nullptr;
+
+		GBufferPtr _gBuffer = nullptr;
 	};
 }
 #endif

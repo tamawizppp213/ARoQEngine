@@ -163,7 +163,7 @@ void UIRenderer::Draw()
 	if (_totalImageCount == 0) { return; }
 
 	const std::uint32_t currentFrame = _engine->GetCurrentFrameIndex();
-	const auto commandList  = _engine->GetCommandList(core::CommandListType::Graphics, currentFrame);
+	const auto commandList  = _engine->GetCommandList(core::CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------
 	-                 Draw command list
@@ -281,7 +281,7 @@ void UIRenderer::PrepareMaxImageBuffer(const std::wstring& name)
 			
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(name + L"IB");
-			_indexBuffers[i]->Pack(indices.data(), _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex()));
+			_indexBuffers[i]->Pack(indices.data(), _engine->GetCommandList(CommandListType::Copy));
 		}
 	}
 }

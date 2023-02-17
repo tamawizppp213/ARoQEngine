@@ -41,7 +41,7 @@ RHICommandList::~RHICommandList()
 	if (_commandList) { _commandList.Reset(); _commandList = nullptr; }
 }
 
-RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator) : 
+RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator, const std::wstring& name) : 
 	rhi::core::RHICommandList(device, commandAllocator)
 {
 	/*-------------------------------------------------------------------
@@ -66,7 +66,7 @@ RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& devi
 		nullptr,           // Initial PipeLine State Object
 		IID_PPV_ARGS(_commandList.GetAddressOf())));
 
-	ThrowIfFailed(_commandList->SetName(L"DirectX12::CommandList"));
+	ThrowIfFailed(_commandList->SetName(name.c_str()));
 	ThrowIfFailed(_commandList->Close());
 	_isOpen = false;
 }
@@ -79,20 +79,41 @@ RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& devi
 *************************************************************************//**
 *  @fn        void RHICommandList::BeginRecording()
 *
-*  @brief     Call at begin draw frame
+*  @brief     This function must be called at draw function initially (stillMidFrame = false
+*             If still mid frame is set false, this function clears the command allocator
 *
-*  @param[in] void
+*  @param[in] const bool stillMidFrame (default: false)
 *
 *  @return    void
 *****************************************************************************/
-void RHICommandList::BeginRecording()
+void RHICommandList::BeginRecording(const bool stillMidFrame)
 {
 	/*-------------------------------------------------------------------
 	-          Reset command list and allocator
 	---------------------------------------------------------------------*/
-	_commandAllocator->CleanUp(); // command buffer clear
+	if (!stillMidFrame) { _commandAllocator->CleanUp(); } // command buffer clear
 	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
 	_isOpen = true;
+}
+
+/****************************************************************************
+*                     EndRecording
+*************************************************************************//**
+*  @fn        void RHICommandList::EndRecording()
+*
+*  @brief     Call at end draw frame. Close executed command list.
+*              The command list is closed, it transits the executable state.
+* 
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
+void RHICommandList::EndRecording()
+{
+	if (!_isOpen) { OutputDebugStringA("Already closed. \n");  return; }
+	ThrowIfFailed(_commandList->Close());
+	_isOpen = false;
+	_beginRenderPass = false;
 }
 
 void RHICommandList::Reset(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
@@ -103,24 +124,7 @@ void RHICommandList::Reset(const std::shared_ptr<rhi::core::RHICommandAllocator>
 	if (commandAllocator) { _commandAllocator = commandAllocator; }
 	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
 	_isOpen = false;
-}
-
-/****************************************************************************
-*                     EndRecording
-*************************************************************************//**
-*  @fn        void RHICommandList::EndRecording()
-*
-*  @brief     Call at end draw frame. Close executed command list.
-*
-*  @param[in] void
-*
-*  @return    void
-*****************************************************************************/
-void RHICommandList::EndRecording()
-{
-	if (!_isOpen) { return; }
-	ThrowIfFailed(_commandList->Close());
-	_isOpen = false;
+	_beginRenderPass = false;
 }
 
 /****************************************************************************
@@ -151,6 +155,7 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 
 	_renderPass  = renderPass;
 	_frameBuffer = frameBuffer;
+	_beginRenderPass = true;
 }
 
 /****************************************************************************
@@ -166,6 +171,7 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 *****************************************************************************/
 void RHICommandList::EndRenderPass()
 {
+	if (!_beginRenderPass) { return; }
 	if (_device->IsSupportedRenderPass()) { _commandList->EndRenderPass(); }
 
 	/*-------------------------------------------------------------------
@@ -173,6 +179,7 @@ void RHICommandList::EndRenderPass()
 	---------------------------------------------------------------------*/
 	std::vector<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
 	TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
+	_beginRenderPass = false;
 }
 
 #pragma endregion Call Draw Frame
@@ -187,14 +194,18 @@ void RHICommandList::SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptor
 *                       SetPrimitiveTopology
 *************************************************************************//**
 *  @fn        void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
+* 
 *  @brief     Regist Primitive topology to command list
-*  @param[in] void
+* 
+*  @param[in] const core::PrimitiveTopology
+* 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
+void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology)
 {
 	_commandList->IASetPrimitiveTopology(EnumConverter::Convert(topology));
 }
+
 /****************************************************************************
 *                       SetViewport
 *************************************************************************//**
@@ -204,7 +215,7 @@ void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
 *  @param[in] std::uint32_t viewport count
 *  @return 　　void
 *****************************************************************************/
-void rhi::directX12::RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
+void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint32_t numViewport)
 {
 	std::vector<D3D12_VIEWPORT> v(numViewport);
 	for (UINT i = 0; i < numViewport; ++i)
@@ -227,7 +238,7 @@ void rhi::directX12::RHICommandList::SetViewport(const core::Viewport* viewport,
 *  @param[in] std::uint32_t numRect
 *  @return 　　void
 *****************************************************************************/
-void rhi::directX12::RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
+void RHICommandList::SetScissor(const core::ScissorRect* rect, const std::uint32_t numRect)
 {
 	std::vector<D3D12_RECT> r(numRect);
 	for (UINT i = 0; i < numRect; ++i)
@@ -430,6 +441,13 @@ void RHICommandList::CopyResource(const std::shared_ptr<core::GPUResource>& dest
 }
 #pragma endregion Copy
 #pragma endregion GPU Command
+#pragma region Property
+void RHICommandList::SetName(const std::wstring& name)
+{
+	_commandList->SetName(name.c_str());
+}
+
+#pragma endregion Property
 #pragma region Private Function
 /****************************************************************************
 *                     BeginRenderPassImpl

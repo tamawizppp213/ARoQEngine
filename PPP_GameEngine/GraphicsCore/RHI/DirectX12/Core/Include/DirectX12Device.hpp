@@ -47,7 +47,7 @@ namespace rhi::directX12
 		
 		std::shared_ptr<core::RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0) override;
 		
-		std::shared_ptr<core::RHICommandList>             CreateCommandList(const std::shared_ptr<core::RHICommandAllocator>& commandAllocator) override;
+		std::shared_ptr<core::RHICommandList>             CreateCommandList(const std::shared_ptr<core::RHICommandAllocator>& commandAllocator, const std::wstring& name) override;
 		
 		std::shared_ptr<core::RHICommandQueue>            CreateCommandQueue    (const core::CommandListType type, const std::wstring& name) override;
 		

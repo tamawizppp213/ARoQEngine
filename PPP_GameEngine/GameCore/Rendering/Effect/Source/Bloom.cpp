@@ -52,8 +52,8 @@ void Bloom::Draw()
 {
 	const auto device      = _engine->GetDevice();
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
-	const auto computeCommandList  = _engine->GetCommandList(CommandListType::Compute, frameIndex);
-	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto computeCommandList  = _engine->GetCommandList(CommandListType::Compute);
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------
 	-               Pause current render pass

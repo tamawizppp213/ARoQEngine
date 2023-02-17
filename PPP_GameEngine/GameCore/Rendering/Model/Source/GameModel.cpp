@@ -184,7 +184,7 @@ void GameModel::PrepareGameWorldBuffer()
 void GameModel::DrawWithMaterials(const std::uint32_t materialOffsetID)
 {
     const auto frameIndex = _engine->GetCurrentFrameIndex();
-    const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+    const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 
     /*-------------------------------------------------------------------
     -              Get texture ids Shift by 1 from the next to the materialID
@@ -216,7 +216,7 @@ void GameModel::DrawWithMaterials(const std::uint32_t materialOffsetID)
 void GameModel::DrawWithoutMaterial()
 {
     const auto frameIndex = _engine->GetCurrentFrameIndex();
-    const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+    const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
     _gameWorld->Bind(commandList, 1);
     _totalMesh->Draw(commandList, frameIndex);
 }

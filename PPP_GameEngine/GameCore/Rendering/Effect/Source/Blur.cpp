@@ -96,13 +96,14 @@ void GaussianBlur::Draw()
 {
 	const auto device      = _engine->GetDevice();
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
-	const auto commandList = _engine->GetCommandList(CommandListType::Compute, frameIndex);
-	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto commandList = _engine->GetCommandList(CommandListType::Compute);
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 	const auto frameBuffer         = _engine->GetFrameBuffer(frameIndex);
 	/*-------------------------------------------------------------------
 	-               Pause current render pass
 	---------------------------------------------------------------------*/
-	//graphicsCommandList->EndRenderPass();
+	auto waitValue = _engine->FlushGPUCommands(CommandListType::Graphics, true);
+	_engine->WaitExecutionGPUCommands(CommandListType::Compute, waitValue, false);
 
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
@@ -140,7 +141,8 @@ void GaussianBlur::Draw()
 	/*-------------------------------------------------------------------
 	-               Restart current render pass
 	---------------------------------------------------------------------*/
-	//graphicsCommandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(),frameBuffer);
+	waitValue = _engine->FlushGPUCommands(CommandListType::Compute, true);
+	_engine->WaitExecutionGPUCommands(CommandListType::Graphics, waitValue, false);
 }
 
 /****************************************************************************

@@ -53,7 +53,7 @@ SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cu
 	---------------------------------------------------------------------*/
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	const auto texture     = device->CreateTextureEmpty();
 	texture->Load(cubeMapPath, commandList);
 	texture->SetName(cubeMapPath);
@@ -70,7 +70,7 @@ SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cu
 void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView) 
 {
 	const auto currentFrame = _engine->GetCurrentFrameIndex();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, currentFrame);
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
@@ -102,7 +102,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 {
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
-	const auto commandList = _engine->GetCommandList(CommandListType::Copy, frameIndex); 
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy); 
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
@@ -155,7 +155,7 @@ void SkyDome::PrepareSkyObject(const std::wstring& addName)
 {
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
-	const auto commandList = _engine->GetCommandList(CommandListType::Copy, frameIndex);
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
 
 	/*-------------------------------------------------------------------
 	-			Set Skydata
@@ -221,7 +221,7 @@ void SkyDome::PrepareResourceView(const std::shared_ptr<GPUTexture>& texture)
 {
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	
 	/*-------------------------------------------------------------------
 	-           Prepare Resource View

@@ -36,7 +36,9 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void BeginRecording() override; // first call at draw frame 
+		/* @brief : This function must be called at draw function initially (stillMidFrame = false).
+					If still mid frame is set false, this function clears the command allocator.*/
+		void BeginRecording(const bool stillMidFrame) override; 
 		
 		void EndRecording () override;  // end call   at draw frame
 		
@@ -55,11 +57,11 @@ namespace rhi::vulkan
 		
 		void SetGraphicsPipeline(const std::shared_ptr<core::GPUGraphicsPipelineState>& pipeline);
 		
-		void SetPrimitiveTopology(core::PrimitiveTopology topology) override;
+		void SetPrimitiveTopology(const core::PrimitiveTopology topology) override;
 		
-		void SetViewport          (const core::Viewport* viewport, std::uint32_t numViewport = 1)override;
+		void SetViewport          (const core::Viewport* viewport, const std::uint32_t numViewport = 1)override;
 		
-		void SetScissor           (const core::ScissorRect* rect , std::uint32_t numRect = 1) override;
+		void SetScissor           (const core::ScissorRect* rect , const std::uint32_t numRect = 1) override;
 		
 		void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
 		/*-------------------------------------------------------------------
@@ -97,6 +99,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkCommandBuffer GetCommandList() { return _commandBuffer; }
 		
+		void SetName(const std::wstring& name);
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -106,7 +109,8 @@ namespace rhi::vulkan
 		
 		explicit RHICommandList(
 			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr<core::RHICommandAllocator>& allocator);
+			const std::shared_ptr<core::RHICommandAllocator>& allocator,
+			const std::wstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function

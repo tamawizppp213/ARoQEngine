@@ -28,7 +28,7 @@
 void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_ptr<GameTimer>& gameTimer)
 {
 	_engine = engine;
-	PushScene(new sample::SampleModel());
+	PushScene(new sample::SampleColorChange());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

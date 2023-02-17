@@ -173,9 +173,9 @@ std::shared_ptr<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fence
 	return std::static_pointer_cast<core::RHIFence>(std::make_shared<directX12::RHIFence>(shared_from_this(), fenceValue));
 }
 
-std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
+std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHICommandList>(std::make_shared<directX12::RHICommandList>(shared_from_this(),commandAllocator));
+	return std::static_pointer_cast<core::RHICommandList>(std::make_shared<directX12::RHICommandList>(shared_from_this(),commandAllocator, name));
 }
 
 std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type, const std::wstring& name)

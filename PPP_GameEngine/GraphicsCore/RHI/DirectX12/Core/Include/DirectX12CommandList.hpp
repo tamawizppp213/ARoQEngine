@@ -41,7 +41,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void BeginRecording() override;
+		/* @brief : This function must be called at draw function initially (stillMidFrame = false).
+					If still mid frame is set false, this function clears the command allocator.*/
+		void BeginRecording(const bool stillMidFrame) override;
 
 		void EndRecording  () override;
 
@@ -59,11 +61,11 @@ namespace rhi::directX12
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
-		void SetPrimitiveTopology(core::PrimitiveTopology topology) override;
+		void SetPrimitiveTopology(const core::PrimitiveTopology topology) override;
 
-		void SetViewport(const core::Viewport* viewport, std::uint32_t numViewport = 1) override;
+		void SetViewport(const core::Viewport* viewport, const std::uint32_t numViewport = 1) override;
 		
-		void SetScissor (const core::ScissorRect* rect, std::uint32_t numRect = 1) override;
+		void SetScissor (const core::ScissorRect* rect, const std::uint32_t numRect = 1) override;
 		
 		void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
 		
@@ -108,6 +110,8 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		CommandListComPtr GetCommandList() const noexcept { return _commandList; }
+
+		void SetName(const std::wstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -115,7 +119,8 @@ namespace rhi::directX12
 
 		~RHICommandList();
 
-		explicit RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator);
+		explicit RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator, 
+			const std::wstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function

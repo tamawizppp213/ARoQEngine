@@ -1,6 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   LowLevelGraphicsEngine.hpp
-///             @brief  Low level API grapchis engine
+///             @brief  Low level API grapchis engine. 
+///             How To: ‡@ Call StartUp function at first
+///                     ‡A Create Draw frame, call beginDrawFrame and EndDrawFrame() ...loop....
+///                     ‡B Finally, you should call shutdown when you wanna finish to render
 ///             @author Toide Yutaro
 ///             @date   2022_03_11
 //////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +57,7 @@ public:
 	*****************************************************************************/
 	static constexpr std::uint32_t FRAME_BUFFER_COUNT = 3;
 
-	static constexpr std::uint32_t VSYNC = 0; // 0: don't wait, 1:wait(60fps)
+	static constexpr std::uint32_t VSYNC = 1; // 0: don't wait, 1:wait(60fps)
 
 	/****************************************************************************
 	**                Public Function
@@ -63,7 +66,7 @@ public:
 	void StartUp(rhi::core::APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance);
 
 	/* @brief : The first call to the Draw function generates the back buffer image and executes the Default render pass. */
-	void BeginDrawFrame(); // call at begin draw frame
+	void BeginDrawFrame();
 
 	/* @brief : Draw back buffer render pass*/
 	void BeginSwapchainRenderPass();
@@ -77,8 +80,12 @@ public:
 	/* @brief : Release all render resources*/
 	void ShutDown();
 
-	/* @brief : Execute command queue */
-	void FlushCommandQueue(const rhi::core::CommandListType type);
+
+	/* @brief : Execute command queue. Return fence signal value */
+	std::uint64_t FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame = false);
+
+	/* @brief Wait command queue (in GPU), but if the stopCPU is set true, gpu and cpu wait.*/
+	void WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU);
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
@@ -86,7 +93,7 @@ public:
 	DevicePtr GetDevice() const noexcept { return _device; }
 
 	/* @brief : CommandList (Regist GPU Commands) */
-	std::shared_ptr<rhi::core::RHICommandList> GetCommandList(const rhi::core::CommandListType type, const std::uint32_t frameIndex) const noexcept { return _commandLists.at(frameIndex).at(type); }
+	CommandListPtr GetCommandList(const rhi::core::CommandListType type) const noexcept { return _commandLists.at(type); }
 	
 	/* @brief : Default RenderPass*/
 	std::shared_ptr<rhi::core::RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
@@ -140,15 +147,11 @@ protected:
 	std::map<rhi::core::CommandListType, std::shared_ptr<rhi::core::RHICommandQueue>> _commandQueues;
 
 	/* @brief : Command List*/
-	std::vector<std::map<rhi::core::CommandListType, CommandListPtr>> _commandLists;
-	std::vector<CommandListPtr> _graphicsCommandLists = {  };
-	std::vector<CommandListPtr> _computeCommandLists  = {  };
-	std::vector<CommandListPtr> _copyCommandLists     = {  };
+	std::map<rhi::core::CommandListType, CommandListPtr> _commandLists;
 
 	/* @ brief : CPU-GPU synchronization*/
 	std::shared_ptr<rhi::core::RHIFence> _fence = nullptr;
-	std::uint64_t _fenceValues[FRAME_BUFFER_COUNT] = {0}; // for swapchain fence value
-	std::uint64_t _fenceValue = 0;                        // current frame fence value
+	std::uint64_t _fenceValue = 0;  // current frame fence value
 	
 	/* @brief : Rendering swapchain*/
 	std::shared_ptr<rhi::core::RHISwapchain> _swapchain = nullptr;

@@ -126,7 +126,7 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const std::wstring& name)
 	const auto totalFrameSize  = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto currentFrame    = _engine->GetCurrentFrameIndex();
 	const auto device          = _engine->GetDevice();
-	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy, currentFrame);
+	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy);
 
 	/*-------------------------------------------------------------------
 	-             Vertex Buffer
@@ -177,7 +177,7 @@ void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData&
 	const auto totalFrameSize  = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto currentFrame    = _engine->GetCurrentFrameIndex();
 	const auto device          = _engine->GetDevice();
-	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy, currentFrame);
+	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy);
 
 	/*-------------------------------------------------------------------
 	-             Vertex Buffer

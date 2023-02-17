@@ -56,7 +56,7 @@ void GBuffer::OnResize(const std::uint32_t width, const std::uint32_t height)
 void GBuffer::Draw(const GPUResourceViewPtr& scene)
 {
 	const auto currentFrame = _engine->GetCurrentFrameIndex();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, currentFrame);
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------
 	-                 Change render target

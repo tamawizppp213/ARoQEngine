@@ -76,7 +76,7 @@ void SampleRectangle::Draw()
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	commandList->SetResourceLayout(_resourceLayout);
 	commandList->SetGraphicsPipeline(_pipelineState);
 	commandList->SetViewportAndScissor(
@@ -121,7 +121,7 @@ void SampleRectangle::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-             Open Copy CommandList
 	---------------------------------------------------------------------*/
-	const auto commandList = _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex());
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
 	commandList->BeginRecording();
 	/*-------------------------------------------------------------------
 	-             SetUp Resources
@@ -133,7 +133,7 @@ void SampleRectangle::LoadMaterials()
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/
 	commandList->EndRecording();
-	_engine->FlushCommandQueue(CommandListType::Copy);
+	_engine->FlushGPUCommands(CommandListType::Copy);
 }
 /****************************************************************************
 *                       OnKeyboardInput
@@ -221,7 +221,7 @@ void SampleRectangle::BuildBuffer()
 			rhi::core::ResourceState::Common);
 		_indexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
 		_indexBuffer->SetName(L"IndexBuffer");
-		_indexBuffer->Pack(rectangle.Indices.data(), _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex()));
+		_indexBuffer->Pack(rectangle.Indices.data(), _engine->GetCommandList(CommandListType::Copy));
 	
 	}
 }

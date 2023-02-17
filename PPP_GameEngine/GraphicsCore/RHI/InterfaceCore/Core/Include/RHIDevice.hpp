@@ -81,7 +81,7 @@ namespace rhi::core
 		
 		virtual std::shared_ptr<RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0) = 0;
 		
-		virtual std::shared_ptr<RHICommandList>             CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator) = 0;
+		virtual std::shared_ptr<RHICommandList>             CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator, const std::wstring& name = L"CommandList") = 0;
 		
 		virtual std::shared_ptr<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type, const std::wstring& name = L"CommandQueue") = 0;
 		
