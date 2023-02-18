@@ -37,6 +37,7 @@ namespace gc::basepass
 	{
 		PointLight,
 		SpotLight,
+		// ‘¼‚ÌCullingLight‚ğ’Ç‰Á‚·‚éê‡‚Í, ResourceLayout‚à’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢.
 		CountOf
 	};
 
@@ -73,7 +74,7 @@ namespace gc::basepass
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		BufferPtr GetLightIDList(const CullingLightType type) { return _lightIDLists[type]; }
+		ResourceViewPtr GetLightIDList(const CullingLightType type) { return _lightIDLists[type]; }
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -93,16 +94,19 @@ namespace gc::basepass
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		/* @brief : 0 -> PointLight, 1 -> SpotLight, ¡Œã’Ç‰Á‚³‚ê‚é‰Â”\«‚ ‚è*/
+		std::vector<ResourceViewPtr> _lightIDLists = {};
+
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
 		ZPrepassPtr _zprepass = nullptr;
 
-		/* @brief : 0 -> PointLight, 1 -> SpotLight, ¡Œã’Ç‰Á‚³‚ê‚é‰Â”\«‚ ‚è*/
-		std::vector<BufferPtr> _lightIDLists = {};
-
 		ResourceLayoutPtr _resourceLayout = nullptr;
 
 		PipelineStatePtr _pipeline = nullptr;
+
+		std::uint32_t _width  = 0;
+		std::uint32_t _height = 0;
 
 		static constexpr std::uint64_t TILE_WIDTH  = 16;
 		static constexpr std::uint64_t TILE_HEIGHT = 16;

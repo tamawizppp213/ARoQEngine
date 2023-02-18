@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 //////////////////////////////////////////////////////////////////////////////////
+static const uint Thread = 16;
 cbuffer BlurEffect : register(b0) // 0
 {
     float2 TextureSize;
@@ -41,7 +42,7 @@ SamplerState SamplerLinearWrap : register(s0);
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
-[numthreads(16, 16, 1)]
+[numthreads(Thread, Thread, 1)]
 void VerticalBlur(uint3 id : SV_DispatchThreadID)
 {
     float2 uv = float2((float2) (id.xy) / TextureSize);
@@ -81,7 +82,7 @@ void VerticalBlur(uint3 id : SV_DispatchThreadID)
     DestCommon2[id.xy] = outputTotal;
 }
 
-[numthreads(16,16,1)]
+[numthreads(Thread,Thread,1)]
 void RhomboidBlur(uint3 id : SV_DispatchThreadID)
 {
     float2 uv            = float2((float2) (id.xy) / TextureSize);
@@ -114,7 +115,7 @@ void RhomboidBlur(uint3 id : SV_DispatchThreadID)
     DestCommon[id.xy] = output;
 }
 
-[numthreads(16,16,1)]
+[numthreads(Thread, Thread,1)]
 void FinalRender(uint3 id : SV_DispatchThreadID)
 {
     float2 uv    = float2((float2) (id.xy) / TextureSize);

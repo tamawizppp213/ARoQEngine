@@ -138,6 +138,11 @@ ZPrepass::TexturePtr ZPrepass::GetRenderedTexture() const noexcept
 {
 	return _frameBuffers[_engine->GetCurrentFrameIndex()]->GetRenderTarget();
 }
+
+ZPrepass::GPUResourceViewPtr ZPrepass::GetRenderedTextureView() const noexcept
+{
+	return _frameBuffers[_engine->GetCurrentFrameIndex()]->GetRenderTargetSRV();
+}
 #pragma endregion Main Function
 
 #pragma region Setup Function

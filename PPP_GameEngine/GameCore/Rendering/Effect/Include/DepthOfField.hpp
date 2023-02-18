@@ -26,6 +26,7 @@ namespace rhi::core
 	class GPUResourceView;
 	class RHIResourceLayout;
 	class RHIRenderPass;
+	class RHIFrameBuffer;
 	class GPUComputePipelineState;
 }
 
@@ -62,6 +63,7 @@ namespace gc
 		using GPUBufferPtr              = std::shared_ptr<rhi::core::GPUBuffer>;
 		using GPUTexturePtr             = std::shared_ptr<rhi::core::GPUTexture>;
 		using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
+		using FrameBufferPtr            = std::shared_ptr<rhi::core::RHIFrameBuffer>;
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 		using PipelineStatePtr          = std::shared_ptr<rhi::core::GPUComputePipelineState>;
 		using RenderPassPtr             = std::shared_ptr<rhi::core::RHIRenderPass>;
@@ -73,7 +75,7 @@ namespace gc
 		*****************************************************************************/
 		void OnResize(const float newWidth, const float newHeight);
 
-		void Draw(const GPUTexturePtr& renderTarget, const GPUTexturePtr& zPrepass);
+		void Draw(const ResourceViewPtr& zPrepass);
 
 		/****************************************************************************
 		**                Public Member Variables

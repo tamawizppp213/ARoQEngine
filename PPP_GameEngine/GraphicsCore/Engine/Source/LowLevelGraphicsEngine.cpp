@@ -142,14 +142,12 @@ void LowLevelGraphicsEngine::BeginDrawFrame()
 	---------------------------------------------------------------------*/
 	const auto& graphicsCommandList = _commandLists[core::CommandListType::Graphics];
 	const auto& computeCommandList  = _commandLists[core::CommandListType::Compute];
-	const auto& copyCommandList     = _commandLists[core::CommandListType::Copy];
 
 	/*-------------------------------------------------------------------
 	-      Start Recording Command List
 	---------------------------------------------------------------------*/
 	graphicsCommandList->BeginRecording(false);
 	computeCommandList ->BeginRecording(false);
-	copyCommandList    ->BeginRecording(false);
 }
 
 /****************************************************************************
@@ -168,9 +166,6 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	/*-------------------------------------------------------------------
 	-      Finish recording commands list
 	---------------------------------------------------------------------*/
-	const auto& copyCommandList = _commandLists[core::CommandListType::Copy];
-	copyCommandList->EndRecording();
-
 	// close compute command list
 	const auto& computeCommandList = _commandLists[core::CommandListType::Compute];
 	computeCommandList->EndRecording();
@@ -178,17 +173,12 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	// close graphics command list
 	const auto& graphicsCommandList = _commandLists[core::CommandListType::Graphics];
 	graphicsCommandList->EndRenderPass();
-
 	graphicsCommandList->CopyResource(_swapchain->GetBuffer(_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
 	graphicsCommandList->EndRecording();
 
 	/*-------------------------------------------------------------------
 	-          Execute GPU Command
 	---------------------------------------------------------------------*/
-	_commandQueues[core::CommandListType::Copy]->Execute({ copyCommandList });
-	_commandQueues[core::CommandListType::Copy]->Signal(_fence, ++_fenceValue);
-	_commandQueues[core::CommandListType::Compute]->Wait(_fence, _fenceValue);
-
 	_commandQueues[core::CommandListType::Compute]->Execute({ computeCommandList });
 	_commandQueues[core::CommandListType::Compute]->Signal(_fence, ++_fenceValue);
 

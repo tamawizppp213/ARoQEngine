@@ -78,10 +78,6 @@ GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::u
 *****************************************************************************/
 void GaussianBlur::OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight)
 {
-	/*_colorBuffer[0].OnResize(newWidth, newHeight, 1);
-	_colorBuffer[1].OnResize(newWidth / 2, newHeight, 1);
-	_colorBuffer[2].OnResize(newWidth / 2, newHeight / 2, 1);
-	_colorBuffer[3].OnResize(newWidth, newHeight, 1);*/
 	PrepareTextureSizeBuffer(newWidth, newHeight, _addName);
 }
 /****************************************************************************
@@ -99,6 +95,7 @@ void GaussianBlur::Draw()
 	const auto commandList = _engine->GetCommandList(CommandListType::Compute);
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 	const auto frameBuffer         = _engine->GetFrameBuffer(frameIndex);
+
 	/*-------------------------------------------------------------------
 	-               Pause current render pass
 	---------------------------------------------------------------------*/
@@ -125,7 +122,7 @@ void GaussianBlur::Draw()
 	/*-------------------------------------------------------------------
 	-               Execute YBlur Command
 	---------------------------------------------------------------------*/
-	_shaderResourceViews   [1]->Bind(commandList, 2);
+	_shaderResourceViews   [0]->Bind(commandList, 2);
 	_unorderedResourceViews[1]->Bind(commandList, 3);
 	commandList->SetComputePipeline(_yBlurPipeline);
 	commandList->Dispatch( _textureSize.YBlurTexture[0] / THREAD, _textureSize.YBlurTexture[1] / THREAD, 1);
@@ -133,7 +130,7 @@ void GaussianBlur::Draw()
 	/*-------------------------------------------------------------------
 	-               Execute FinalBlur Command
 	---------------------------------------------------------------------*/
-	_shaderResourceViews[2]->Bind(commandList, 2);
+	_shaderResourceViews[1]->Bind(commandList, 2);
 	frameBuffer->GetRenderTargetUAV()->Bind(commandList, 3);
 	commandList->SetComputePipeline(_finalBlurPipeline);
 	commandList->Dispatch(_textureSize.OriginalTexture[0] / THREAD, _textureSize.OriginalTexture[1] / THREAD, 1);
@@ -308,16 +305,15 @@ void GaussianBlur::PrepareResourceView()
 		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess);
 		const auto srcTexture  = device->CreateTexture(srcData);
 		const auto destTexture = device->CreateTexture(dstData);
-		_shaderResourceViews   [0] = device->CreateResourceView(ResourceViewType::Texture  , srcTexture , nullptr); // original texture
 		_unorderedResourceViews[0] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr); // x half texture uav
-		_shaderResourceViews   [1] = device->CreateResourceView(ResourceViewType::Texture  , destTexture, nullptr); // x half texture srv
+		_shaderResourceViews   [0] = device->CreateResourceView(ResourceViewType::Texture  , destTexture, nullptr); // x half texture srv
 	}
 	// yblur
 	{
 		const auto dstData         = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight() / 2, format, 1, ResourceUsage::UnorderedAccess);
 		const auto destTexture     = device->CreateTexture(dstData);
 		_unorderedResourceViews[1] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr);
-		_shaderResourceViews[2]    = device->CreateResourceView(ResourceViewType::Texture  , destTexture, nullptr);
+		_shaderResourceViews[1]    = device->CreateResourceView(ResourceViewType::Texture  , destTexture, nullptr);
 	}
 	// finalblur
 	{

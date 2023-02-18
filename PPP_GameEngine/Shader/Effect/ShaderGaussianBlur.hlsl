@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 //////////////////////////////////////////////////////////////////////////////////
-static const int Thread = 16;
+static const uint Thread = 16;
 
 cbuffer WeightTable : register(b0)
 {
@@ -26,7 +26,7 @@ cbuffer TextureSize : register(b1)
     uint2 XBlurTexture;
     uint2 YBlurTexture;
 }
-Texture2D           inputImage : register(t0);
+Texture2D           inputImage  : register(t0);
 RWTexture2D<float4> outputImage : register(u0);
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement

@@ -16,7 +16,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
-
+#include "GameUtility/Base/Include/Screen.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -67,12 +67,20 @@ void Dof::OnResize(float newWidth, float newHeight)
 *  @param[in] GPUResource* zPrepass
 *  @return @@void
 *****************************************************************************/
-void Dof::Draw(const GPUTexturePtr& renderTarget, const GPUTexturePtr& zPrepass)
+void Dof::Draw(const ResourceViewPtr& zPrepass)
 {
 	const auto frameIndex   = _engine->GetCurrentFrameIndex();
 	const auto computeList  = _engine->GetCommandList(CommandListType::Compute);
 	const auto graphicsList = _engine->GetCommandList(CommandListType::Graphics);
 	const auto frameBuffer  = _engine->GetFrameBuffer(frameIndex);
+	const auto pixelWidth   = _blurParameter.TextureSize[0];
+	const auto pixelHeight  = _blurParameter.TextureSize[1];
+
+	/*-------------------------------------------------------------------
+	-               Pause current render pass
+	---------------------------------------------------------------------*/
+	auto waitValue = _engine->FlushGPUCommands(CommandListType::Graphics, true);
+	_engine->WaitExecutionGPUCommands(CommandListType::Compute, waitValue, false);
 
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
@@ -81,45 +89,43 @@ void Dof::Draw(const GPUTexturePtr& renderTarget, const GPUTexturePtr& zPrepass)
 	computeList->SetComputeResourceLayout(_resourceLayout);
 	_blurParameterView->Bind(computeList, 0);
 	_clipSizeView     ->Bind(computeList, 1);
-
-	/*-------------------------------------------------------------------
-	-               Execute XBlur Command
-	---------------------------------------------------------------------*/
-
-	//_colorBuffer[0].CopyFrom(context, renderTarget);
-	//_colorBuffer[1].CopyFrom(context, zPrepass);
 	
 	/*-------------------------------------------------------------------
 	-               Vertical Blur
 	---------------------------------------------------------------------*/
 	computeList->SetComputePipeline(_verticalPipeline);
-	//context->SetComputeRootDescriptorTable(2, _colorBuffer[0].GetGPUSRV());
-	//context->SetComputeRootDescriptorTable(5, _colorBuffer[2].GetGPUUAV()); // dest common
-	//context->SetComputeRootDescriptorTable(6, _colorBuffer[3].GetGPUUAV());
-	//context->Dispatch((UINT)_colorBuffer[0].GetColorBuffer().get()->PixelSize.x / 16, (UINT)_colorBuffer[0].GetColorBuffer().get()->PixelSize.y / 16, 1);
+	
+	frameBuffer->GetRenderTargetSRV()->Bind(computeList, 2);
+	_unorderedAccessViews[0]->Bind(computeList, 4);  // vertical blur texture 
+	_unorderedAccessViews[1]->Bind(computeList, 5);  // diagonal blur texture
+
+	computeList->Dispatch(pixelWidth / THREAD, pixelHeight / THREAD, 1);
+
 	///*-------------------------------------------------------------------
 	//-               Rhomboid Blur
 	//---------------------------------------------------------------------*/
 	computeList->SetComputePipeline(_rhomboidPipeline);
-	//context->SetComputeRootDescriptorTable(2, _colorBuffer[2].GetGPUSRV());
-	//context->SetComputeRootDescriptorTable(3, _colorBuffer[3].GetGPUSRV());
-	//context->SetComputeRootDescriptorTable(5, _colorBuffer[4].GetGPUUAV());
-	//context->Dispatch((UINT)_colorBuffer[0].GetColorBuffer().get()->PixelSize.x / 16, (UINT)_colorBuffer[0].GetColorBuffer().get()->PixelSize.y / 16, 1);
+	_shaderResourceViews [0]->Bind(computeList, 2); // vertical blur texture
+	_shaderResourceViews [1]->Bind(computeList, 3); // diagonal blur texture
+	_unorderedAccessViews[2]->Bind(computeList, 4); // rhomboid blur texture
+
+	computeList->Dispatch(pixelWidth / THREAD, pixelHeight / THREAD, 1);
+
 	///*-------------------------------------------------------------------
 	//-               FinalRender
 	//---------------------------------------------------------------------*/
 	computeList->SetComputePipeline(_finalRenderPipeline);
-	//context->SetComputeRootDescriptorTable(3, _colorBuffer[1].GetGPUSRV());
-	//context->SetComputeRootDescriptorTable(4, _colorBuffer[0].GetGPUSRV());
-	//context->SetComputeRootDescriptorTable(5, _colorBuffer[5].GetGPUUAV());
-	//context->Dispatch((UINT)_colorBuffer[0].GetColorBuffer().get()->PixelSize.x / 16, (UINT)_colorBuffer[0].GetColorBuffer().get()->PixelSize.y / 16, 1);
-	//context->CopyBuffer(renderTarget, &_colorBuffer[5].GetColorBuffer()->Resource);
+	zPrepass    ->Bind(computeList, 3);
+	_shaderResourceViews[0]->Bind(computeList, 2);
+	frameBuffer->GetRenderTargetUAV(0)->Bind(computeList, 4);
+
+	computeList->Dispatch(pixelWidth / THREAD, pixelHeight / THREAD, 1);
 
 	/*-------------------------------------------------------------------
 	-               Restart current render pass
 	---------------------------------------------------------------------*/
-	graphicsList->CopyResource(frameBuffer->GetRenderTarget(), nullptr);
-	graphicsList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), frameBuffer);
+	waitValue = _engine->FlushGPUCommands(CommandListType::Compute, true);
+	_engine->WaitExecutionGPUCommands(CommandListType::Graphics, waitValue, false);
 }
 
 /****************************************************************************
@@ -167,7 +173,13 @@ void Dof::SetUpClipSize(float nearClip, float farClip)
 #pragma region Protected Function
 void Dof::PrepareRenderBuffer()
 {
+	const auto device = _engine->GetDevice();
+	const auto format = _engine->GetBackBufferFormat();
 
+	_shaderResourceViews.resize(4);
+
+
+	_unorderedAccessViews.resize(4);
 }
 
 /****************************************************************************
@@ -264,7 +276,7 @@ void Dof::PreparePipelineState(const std::wstring& name)
 	const auto finalRenderCS = factory->CreateShaderState();
 	verticalCS   ->Compile(ShaderType::Compute, defaultPath, L"VerticalBlur", 6.4f, { L"Shader\\Core" });
 	rhomboidCS   ->Compile(ShaderType::Compute, defaultPath, L"RhomboidBlur", 6.4f, { L"Shader\\Core" });
-	finalRenderCS->Compile(ShaderType::Compute, defaultPath, L"FinalRender", 6.4f, { L"Shader\\Core" });
+	finalRenderCS->Compile(ShaderType::Compute, defaultPath, L"FinalRender" , 6.4f, { L"Shader\\Core" });
 	
 	/*-------------------------------------------------------------------
 	-			Load pipeline state

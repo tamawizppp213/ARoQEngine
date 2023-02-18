@@ -13,10 +13,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 //////////////////////////////////////////////////////////////////////////////////
-#define NUM_DIRECTIONAL_LIGHT 4
-#define NUM_POINT_LIGHT 100
-#define NUM_SPOT_LIGHT  20
-
 cbuffer SceneConstants : register(b0)
 {
     matrix View;
@@ -55,6 +51,7 @@ cbuffer MaterialConstants : register(b2)
     float  Roughness;
     float3 Padding;
 }
-//ConstantBuffer<SceneLights> SceneLightConstants : register(b3);
+
+
 
 #endif

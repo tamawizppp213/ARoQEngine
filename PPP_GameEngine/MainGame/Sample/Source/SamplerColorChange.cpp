@@ -143,7 +143,7 @@ void SampleColorChange::LoadMaterials()
 	{
 		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
 	}
-	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
+	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, 1920, 1080);
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

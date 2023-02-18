@@ -11,6 +11,7 @@
 #include "../Include/BasePassLightCulling.hpp"
 #include "../Include/BasePassZPrepass.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
@@ -70,9 +71,25 @@ void LightCulling::Execute(const ResourceViewPtr& scene, const ResourceViewPtr& 
 	if (light) { OutputDebugStringA("Please set light"); return; }
 #endif
 
+	const auto computeList = _engine->GetCommandList(CommandListType::Compute);
+
 	/*-------------------------------------------------------------------
-	-           Set heap property
+	-           Execute command list
 	---------------------------------------------------------------------*/
+	computeList->SetDescriptorHeap(scene->GetHeap());
+	computeList->SetResourceLayout(_resourceLayout);
+	computeList->SetComputePipeline(_pipeline);
+
+	// bind resource 
+	scene->Bind(computeList, 0);
+	light->Bind(computeList, 1);
+	_zprepass->GetRenderedTextureView()->Bind(computeList, 2);
+	for (int i = 0; i < CullingLightType::CountOf; ++i)
+	{
+		_lightIDLists[i]->Bind(computeList, i + 3); // 3 is resource layout offset
+	}
+
+	computeList->Dispatch(_width / TILE_WIDTH, _height / TILE_HEIGHT, 1);
 }
 
 #pragma endregion Main Function
@@ -105,8 +122,12 @@ void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 		auto bufferInfo          = GPUBufferMetaData::UploadBuffer(sizeof(int), desc.LightCounts[i] * tileCount);
 		bufferInfo.ResourceUsage = ResourceUsage::UnorderedAccess;
 
-		_lightIDLists[i] = device->CreateBuffer(bufferInfo, L"LightCulling::LightIDLists::" + std::to_wstring(i));
+		const auto buffer = device->CreateBuffer(bufferInfo, L"LightCulling::LightIDLists::" + std::to_wstring(i));
+		_lightIDLists[i] = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 	}
+
+	_width  = textureWidth;
+	_height = textureHeight;
 }
 
 /****************************************************************************
@@ -132,12 +153,12 @@ void LightCulling::PreparePipelineState()
 	_resourceLayout = device->CreateResourceLayout
 	(
 		{
-			ResourceLayoutElement(DescriptorHeapType::CBV, 0),
-			ResourceLayoutElement(DescriptorHeapType::CBV, 1),
-			ResourceLayoutElement(DescriptorHeapType::CBV, 3),
-			ResourceLayoutElement(DescriptorHeapType::SRV, 0),
-			ResourceLayoutElement(DescriptorHeapType::UAV, 0),
-			ResourceLayoutElement(DescriptorHeapType::UAV, 1)
+			ResourceLayoutElement(DescriptorHeapType::CBV, 0),  // scece constant
+			ResourceLayoutElement(DescriptorHeapType::CBV, 3),  // light constant
+			ResourceLayoutElement(DescriptorHeapType::SRV, 0),  // zprepass texture
+			ResourceLayoutElement(DescriptorHeapType::UAV, 0),  // point light list
+			ResourceLayoutElement(DescriptorHeapType::UAV, 1)   // spot light list 
+			                                                    // If you needs the other light list, you should add this layout.
 		},
 		{
 			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearClamp)), 0)

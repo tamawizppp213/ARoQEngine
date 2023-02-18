@@ -77,7 +77,9 @@ namespace gc::basepass
 		*****************************************************************************/
 		TexturePtr GetRenderedTexture() const noexcept;
 
-		/****************************************************************************
+		GPUResourceViewPtr GetRenderedTextureView() const noexcept;
+
+ 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		ZPrepass() = default;
