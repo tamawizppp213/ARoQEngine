@@ -48,12 +48,13 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		const VkSemaphore& GetFence() const noexcept { return _timelineSemaphore; }
 		
+		void SetName(const std::wstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIFence() = default;
 		
-		explicit RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint64_t initialValue = 0);
+		explicit RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint64_t initialValue = 0, const std::wstring& name = L"Fence");
 		
 		~RHIFence();
 	protected:

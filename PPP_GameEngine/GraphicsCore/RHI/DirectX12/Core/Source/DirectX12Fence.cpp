@@ -25,13 +25,13 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFence::RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint64_t initialValue)
+RHIFence::RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint64_t initialValue, const std::wstring& name)
 {
 	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(device.get())->GetDevice();
 	
 	ThrowIfFailed(dxDevice->CreateFence(initialValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
 	
-	_fence->SetName(L"directX12::Fence");
+	_fence->SetName(name.c_str());
 
 	_device = device;
 }
@@ -88,7 +88,6 @@ void RHIFence::Signal(const std::uint64_t value)
 *****************************************************************************/
 void RHIFence::Wait(const std::uint64_t value)
 {
-	const auto at = _fence->GetCompletedValue();
 	/*-------------------------------------------------------------------
 	-   Wait until the GPU has completed commands up to this fence point
 	    (GPUˆ—‚ªŠ®—¹‚µ‚Ä‚¢‚È‚¢ê‡, ‘Ò‚Â (command queue‚Æ•¹—p))
@@ -105,3 +104,11 @@ void RHIFence::Wait(const std::uint64_t value)
 	}
 }
 #pragma endregion Public Function
+
+#pragma region Property
+void RHIFence::SetName(const std::wstring& name)
+{
+	_fence->SetName(name.c_str());
+}
+
+#pragma endregion Property

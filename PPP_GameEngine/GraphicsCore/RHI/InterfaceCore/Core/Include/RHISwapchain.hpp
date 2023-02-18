@@ -28,6 +28,17 @@ namespace rhi::core
 	class RHICommandQueue;
 	class RHIFence;
 	class GPUTexture;
+
+	struct SwapchainDesc
+	{
+		std::shared_ptr<RHICommandQueue> CommandQueue = nullptr;
+		WindowInfo&   WindowInfo;
+		PixelFormat   PixelFormat; 
+		size_t        FrameBufferCount = 3;
+		std::uint32_t VSync      = 0;
+		bool          IsValidHDR = true;
+	};
+
 	/****************************************************************************
 	*				  			RHISwapchain
 	*************************************************************************//**
@@ -93,6 +104,13 @@ namespace rhi::core
 		explicit RHISwapchain(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, size_t frameBufferCount = 3, std::uint32_t vsync = 0, bool isValidHDR = true)
 		{
 			_device = device; _commandQueue = commandQueue; _windowInfo = windowInfo; _pixelFormat = pixelFormat; _vsync = vsync; _frameBufferCount = frameBufferCount; _isValidHDR = isValidHDR;
+		}
+
+		explicit RHISwapchain(const std::shared_ptr<RHIDevice>& device, const SwapchainDesc& desc):
+			_device(device), _commandQueue(desc.CommandQueue), _windowInfo(desc.WindowInfo), _pixelFormat(desc.PixelFormat), _vsync(desc.VSync), _frameBufferCount(desc.FrameBufferCount),
+			_isValidHDR(desc.IsValidHDR)
+		{
+			
 		}
 
 		/****************************************************************************

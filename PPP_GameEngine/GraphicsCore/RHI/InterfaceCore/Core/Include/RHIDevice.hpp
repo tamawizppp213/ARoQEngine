@@ -79,7 +79,7 @@ namespace rhi::core
 		
 		virtual std::shared_ptr<RHIFrameBuffer>             CreateFrameBuffer(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil = nullptr) = 0;
 		
-		virtual std::shared_ptr<RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0) = 0;
+		virtual std::shared_ptr<RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0, const std::wstring& name = L"Fence") = 0;
 		
 		virtual std::shared_ptr<RHICommandList>             CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator, const std::wstring& name = L"CommandList") = 0;
 		
