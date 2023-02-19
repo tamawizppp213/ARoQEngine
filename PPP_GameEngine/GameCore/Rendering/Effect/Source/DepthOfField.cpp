@@ -69,12 +69,14 @@ void Dof::OnResize(float newWidth, float newHeight)
 *****************************************************************************/
 void Dof::Draw(const ResourceViewPtr& zPrepass)
 {
-	const auto frameIndex   = _engine->GetCurrentFrameIndex();
-	const auto computeList  = _engine->GetCommandList(CommandListType::Compute);
-	const auto graphicsList = _engine->GetCommandList(CommandListType::Graphics);
-	const auto frameBuffer  = _engine->GetFrameBuffer(frameIndex);
-	const auto pixelWidth   = _blurParameter.TextureSize[0];
-	const auto pixelHeight  = _blurParameter.TextureSize[1];
+	const auto frameIndex    = _engine->GetCurrentFrameIndex();
+	const auto computeList   = _engine->GetCommandList(CommandListType::Compute);
+	const auto graphicsList  = _engine->GetCommandList(CommandListType::Graphics);
+	const auto frameBuffer   = _engine->GetFrameBuffer(frameIndex);
+	const auto pixelWidth    = _blurParameter.TextureSize[0];
+	const auto pixelHeight   = _blurParameter.TextureSize[1];
+	const auto roundUpWidth  = (std::uint32_t)((pixelWidth + THREAD - 1) / THREAD) * THREAD;
+	const auto roundUpHeight = (std::uint32_t)((pixelHeight + THREAD - 1) / THREAD) * THREAD;
 
 	/*-------------------------------------------------------------------
 	-               Pause current render pass
@@ -99,7 +101,7 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 	_unorderedAccessViews[0]->Bind(computeList, 5);  // vertical blur buffer 
 	_unorderedAccessViews[1]->Bind(computeList, 6);  // diagonal blur buffer
 
-	computeList->Dispatch(pixelWidth / THREAD, pixelHeight / THREAD, 1);
+	computeList->Dispatch(roundUpWidth / THREAD, roundUpHeight / THREAD, 1);
 
 	///*-------------------------------------------------------------------
 	//-               Rhomboid Blur
@@ -109,7 +111,7 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 	_shaderResourceViews [1]->Bind(computeList, 3); // diagonal blur texture
 	_unorderedAccessViews[2]->Bind(computeList, 5); // rhomboid blur buffer
 
-	computeList->Dispatch(pixelWidth / THREAD, pixelHeight / THREAD, 1);
+	computeList->Dispatch(roundUpWidth / THREAD, roundUpHeight / THREAD, 1);
 
 	///*-------------------------------------------------------------------
 	//-               FinalRender
@@ -120,7 +122,7 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 	_shaderResourceViews[2]->Bind(computeList, 3);           // rhomboid blur texture
 	_unorderedAccessViews[3]->Bind(computeList, 5);          // Final buffer 
 
-	computeList->Dispatch(pixelWidth / THREAD, pixelHeight / THREAD, 1);
+	computeList->Dispatch(roundUpWidth / THREAD, roundUpHeight / THREAD, 1);
 
 	/*-------------------------------------------------------------------
 	-               Restart current render pass

@@ -117,7 +117,7 @@ void GaussianBlur::Draw()
 	//_shaderResourceViews[0]->Bind(commandList, 2);
 	_unorderedResourceViews[0]->Bind(commandList, 3);
 	commandList->SetComputePipeline(_xBlurPipeline);
-	commandList->Dispatch( _textureSize.XBlurTexture[0] / THREAD + 1, _textureSize.XBlurTexture[1] / THREAD + 1, 1);
+	commandList->Dispatch( (_textureSize.XBlurTexture[0] + THREAD - 1) / THREAD, (_textureSize.XBlurTexture[1] + THREAD - 1) / THREAD, 1);
 	
 	/*-------------------------------------------------------------------
 	-               Execute YBlur Command
@@ -125,7 +125,7 @@ void GaussianBlur::Draw()
 	_shaderResourceViews   [0]->Bind(commandList, 2);
 	_unorderedResourceViews[1]->Bind(commandList, 3);
 	commandList->SetComputePipeline(_yBlurPipeline);
-	commandList->Dispatch( _textureSize.YBlurTexture[0] / THREAD + 1, _textureSize.YBlurTexture[1] / THREAD + 1, 1);
+	commandList->Dispatch((_textureSize.YBlurTexture[0] + THREAD - 1) / THREAD, (_textureSize.YBlurTexture[1] + THREAD - 1) / THREAD, 1);
 	
 	/*-------------------------------------------------------------------
 	-               Execute FinalBlur Command
@@ -133,7 +133,7 @@ void GaussianBlur::Draw()
 	_shaderResourceViews[1]->Bind(commandList, 2);
 	frameBuffer->GetRenderTargetUAV()->Bind(commandList, 3);
 	commandList->SetComputePipeline(_finalBlurPipeline);
-	commandList->Dispatch(_textureSize.OriginalTexture[0] / THREAD + 1, _textureSize.OriginalTexture[1] / THREAD + 1, 1);
+	commandList->Dispatch((_textureSize.OriginalTexture[0] + THREAD - 1) / THREAD, (_textureSize.OriginalTexture[1] + THREAD - 1) / THREAD, 1);
 
 	/*-------------------------------------------------------------------
 	-               Restart current render pass
