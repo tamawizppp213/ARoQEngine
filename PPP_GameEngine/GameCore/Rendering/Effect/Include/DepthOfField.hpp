@@ -80,7 +80,7 @@ namespace gc
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void SetUpBlurParameter(float width, float height, float radius = 8.0f);
+		void SetUpBlurParameter(float width, float height, float radius = 20.0f);
 
 		void SetUpClipSize(float nearClip = 0.2f, float farClip = 0.8f);
 
@@ -88,7 +88,7 @@ namespace gc
 		**                Constructor and Destructor
 		*****************************************************************************/
 		Dof(const LowLevelGraphicsEnginePtr& engine, 
-			const float width, const float height, const float radius = 4.0f, 
+			const float width, const float height, const float radius = 10.0f, 
 			const float nearClip = 0.2f, const float farClip = 0.8f, const std::wstring& addName = L"");
 
 		virtual ~Dof();
