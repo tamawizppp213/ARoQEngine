@@ -13,6 +13,7 @@
 #include "GameCore/Core/Include/Camera.hpp"
 #include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
 #include "GameCore/Rendering/Effect/Include/Blur.hpp"
+#include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 
@@ -143,7 +144,7 @@ void SampleColorChange::LoadMaterials()
 	{
 		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
 	}
-	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, 1920, 1080);
+	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

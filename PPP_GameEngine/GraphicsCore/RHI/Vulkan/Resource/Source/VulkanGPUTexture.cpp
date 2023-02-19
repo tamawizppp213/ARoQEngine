@@ -121,30 +121,7 @@ void GPUTexture::Prepare()
 *****************************************************************************/
 void GPUTexture::SetName(const std::wstring& name)
 {
-	std::string utf8Name = unicode::ToUtf8String(name);
-
-	VkDebugUtilsObjectNameInfoEXT info = {};
-	info.sType        = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;  // structure type
-	info.pNext        = nullptr;                                             // no extension
-	info.objectType   = VK_OBJECT_TYPE_IMAGE;                                // object type : image
-	info.objectHandle = reinterpret_cast<std::uint64_t>(_image);             // vkBuffer to std::uint64_t
-	info.pObjectName  = utf8Name.c_str();                                     
-	
-	/*-------------------------------------------------------------------
-	-          GetInstance
-	---------------------------------------------------------------------*/
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
-	const auto vkAdapter = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
-	const auto vkInstance = static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance())->GetVkInstance();
-
-	/*-------------------------------------------------------------------
-	-          SetName
-	---------------------------------------------------------------------*/
-	auto func = (PFN_vkSetDebugUtilsObjectNameEXT)vkGetInstanceProcAddr(vkInstance, "vkSetDebugUtilsObjectNameEXT");
-	if (func(vkDevice->GetDevice(), &info) != VK_SUCCESS)
-	{
-		throw std::runtime_error("failed to set buffer name");
-	}
-	_name = name;
+	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	device->SetVkResourceName(name, VK_OBJECT_TYPE_IMAGE, reinterpret_cast<std::uint64_t>(_image));
 }
 #pragma endregion Debug

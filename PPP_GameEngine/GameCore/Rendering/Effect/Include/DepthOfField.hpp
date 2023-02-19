@@ -96,7 +96,7 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareRenderBuffer();
+		void PrepareRenderBuffer(const size_t width , const size_t height);
 
 		void PrepareBlurParameterBuffer(const float width, const float height, const float radius, const std::wstring& name);
 
@@ -126,7 +126,6 @@ namespace gc
 
 		ResourceLayoutPtr _resourceLayout = nullptr;
 
-		RenderPassPtr _renderPass = nullptr;
 
 		/* @brief : Texture rendering setting*/
 		std::vector<ResourceViewPtr> _shaderResourceViews = {};

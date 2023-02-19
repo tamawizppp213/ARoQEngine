@@ -93,7 +93,7 @@ namespace rhi::core
 		
 		virtual std::shared_ptr<RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;
 		
-		virtual std::shared_ptr<RHIResourceLayout>          CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt) = 0;
+		virtual std::shared_ptr<RHIResourceLayout>          CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt, const std::wstring& name = L"ResourceLayout") = 0;
 		
 		virtual std::shared_ptr<GPUPipelineFactory>         CreatePipelineFactory() = 0;
 		

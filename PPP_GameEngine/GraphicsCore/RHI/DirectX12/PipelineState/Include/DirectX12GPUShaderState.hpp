@@ -55,7 +55,9 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUShaderState() = default;
+
 		~GPUShaderState() = default;
+
 		explicit GPUShaderState(
 			const std::shared_ptr<core::RHIDevice>& device) : rhi::core::GPUShaderState(device) {};
 	protected:

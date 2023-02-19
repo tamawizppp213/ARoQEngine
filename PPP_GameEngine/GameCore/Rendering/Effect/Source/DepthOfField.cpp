@@ -37,7 +37,7 @@ Dof::Dof(const LowLevelGraphicsEnginePtr& engine,
 	if (addName != L"") { name = addName; name += L"::"; }
 	name += L"Dof::";
 
-	PrepareRenderBuffer();
+	PrepareRenderBuffer(width, height);
 	PrepareBlurParameterBuffer(width, height, radius, name);
 	PrepareClipSizeBuffer(nearClip, farClip, name);
 	PreparePipelineState(name);
@@ -79,7 +79,7 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 	/*-------------------------------------------------------------------
 	-               Pause current render pass
 	---------------------------------------------------------------------*/
-	auto waitValue = _engine->FlushGPUCommands(CommandListType::Graphics, true);
+	auto waitValue = _engine->FlushGPUCommands(CommandListType::Graphics, false);
 	_engine->WaitExecutionGPUCommands(CommandListType::Compute, waitValue, false);
 
 	/*-------------------------------------------------------------------
@@ -96,8 +96,8 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 	computeList->SetComputePipeline(_verticalPipeline);
 	
 	frameBuffer->GetRenderTargetSRV()->Bind(computeList, 2);
-	_unorderedAccessViews[0]->Bind(computeList, 4);  // vertical blur texture 
-	_unorderedAccessViews[1]->Bind(computeList, 5);  // diagonal blur texture
+	_unorderedAccessViews[0]->Bind(computeList, 5);  // vertical blur buffer 
+	_unorderedAccessViews[1]->Bind(computeList, 6);  // diagonal blur buffer
 
 	computeList->Dispatch(pixelWidth / THREAD, pixelHeight / THREAD, 1);
 
@@ -107,7 +107,7 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 	computeList->SetComputePipeline(_rhomboidPipeline);
 	_shaderResourceViews [0]->Bind(computeList, 2); // vertical blur texture
 	_shaderResourceViews [1]->Bind(computeList, 3); // diagonal blur texture
-	_unorderedAccessViews[2]->Bind(computeList, 4); // rhomboid blur texture
+	_unorderedAccessViews[2]->Bind(computeList, 5); // rhomboid blur buffer
 
 	computeList->Dispatch(pixelWidth / THREAD, pixelHeight / THREAD, 1);
 
@@ -115,9 +115,10 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 	//-               FinalRender
 	//---------------------------------------------------------------------*/
 	computeList->SetComputePipeline(_finalRenderPipeline);
-	zPrepass    ->Bind(computeList, 3);
-	_shaderResourceViews[0]->Bind(computeList, 2);
-	frameBuffer->GetRenderTargetUAV(0)->Bind(computeList, 4);
+	frameBuffer->GetRenderTargetSRV()->Bind(computeList, 2); // original texture
+	zPrepass   ->Bind(computeList, 4);                       // depth texture
+	_shaderResourceViews[2]->Bind(computeList, 3);           // rhomboid blur texture
+	_unorderedAccessViews[3]->Bind(computeList, 5);          // Final buffer 
 
 	computeList->Dispatch(pixelWidth / THREAD, pixelHeight / THREAD, 1);
 
@@ -126,6 +127,10 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 	---------------------------------------------------------------------*/
 	waitValue = _engine->FlushGPUCommands(CommandListType::Compute, true);
 	_engine->WaitExecutionGPUCommands(CommandListType::Graphics, waitValue, false);
+
+	graphicsList->BeginRecording(true);
+	graphicsList->CopyResource(frameBuffer->GetRenderTarget(), _unorderedAccessViews[3]->GetTexture());
+	graphicsList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), frameBuffer);
 }
 
 /****************************************************************************
@@ -171,15 +176,25 @@ void Dof::SetUpClipSize(float nearClip, float farClip)
 }
 #pragma endregion Public Function
 #pragma region Protected Function
-void Dof::PrepareRenderBuffer()
+void Dof::PrepareRenderBuffer(const size_t width, const size_t height)
 {
 	const auto device = _engine->GetDevice();
 	const auto format = _engine->GetBackBufferFormat();
 
-	_shaderResourceViews.resize(4);
-
-
+	_shaderResourceViews.resize(3);
 	_unorderedAccessViews.resize(4);
+	for (size_t i = 0; i < _shaderResourceViews.size(); ++i)
+	{
+		const auto textureInfo   = GPUTextureMetaData::Texture2D(width, height, format, 1, ResourceUsage::UnorderedAccess);
+		const auto texture       = device->CreateTexture(textureInfo, L"Dof::RWTexture");
+		_unorderedAccessViews[i] = device->CreateResourceView(ResourceViewType::Texture, texture);
+		_shaderResourceViews[i]  = device->CreateResourceView(ResourceViewType::Texture, texture);
+	}
+	{
+		const auto textureInfo = GPUTextureMetaData::Texture2D(width, height, format, 1, ResourceUsage::UnorderedAccess);
+		const auto texture     = device->CreateTexture(textureInfo, L"Dof::FinalBuffer");
+		_unorderedAccessViews[3] = device->CreateResourceView(ResourceViewType::Texture, texture);
+	}
 }
 
 /****************************************************************************
@@ -205,8 +220,8 @@ void Dof::PrepareBlurParameterBuffer(const float width, const float height, cons
 	const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(BlurParameter), 1);
 	const auto buffer     = device->CreateBuffer(bufferInfo);
 	buffer->SetName(name + L"BlurParameter");
+	_blurParameterView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 	SetUpBlurParameter(width, height, radius);
-	device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 }
 
 /****************************************************************************
@@ -230,8 +245,8 @@ void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const std::wstrin
 	const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(ClipSize), 1);
 	const auto buffer     = device->CreateBuffer(bufferInfo);
 	buffer->SetName(name + L"ClipSize");
+	_clipSizeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 	SetUpClipSize(nearClip, farClip);
-	device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 }
 /****************************************************************************
 *							PreparePipelineState
@@ -257,7 +272,7 @@ void Dof::PreparePipelineState(const std::wstring& name)
 		{
 			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // blur parameter
 			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // clip size
-			ResourceLayoutElement(DescriptorHeapType::SRV, 0),
+			ResourceLayoutElement(DescriptorHeapType::SRV, 0), // original texture, verticalBlurTexture
 			ResourceLayoutElement(DescriptorHeapType::SRV, 1),
 			ResourceLayoutElement(DescriptorHeapType::SRV, 2),
 			ResourceLayoutElement(DescriptorHeapType::UAV, 0),

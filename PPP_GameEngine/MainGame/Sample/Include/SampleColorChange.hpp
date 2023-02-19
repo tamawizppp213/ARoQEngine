@@ -23,6 +23,7 @@ namespace gc
 	class Camera;
 	class ColorChange;
 	class GaussianBlur;
+	class Dof;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +44,7 @@ namespace sample
 		using CameraPtr  = std::shared_ptr<gc::Camera>;
 		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
 		using GaussianBlurPtr = std::shared_ptr<gc::GaussianBlur>;
-
+		
 	public:
 		/****************************************************************************
 		**                Public Function

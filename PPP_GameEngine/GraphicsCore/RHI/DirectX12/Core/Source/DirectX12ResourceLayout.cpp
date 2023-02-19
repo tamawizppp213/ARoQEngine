@@ -29,15 +29,17 @@ RHIResourceLayout::~RHIResourceLayout()
 {
 	if (_rootSignature) { _rootSignature.Reset(); }
 }
-RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
 	: core::RHIResourceLayout(device, elements, samplers, constant32Bits)
 {
 	SetUp();
+	SetName(name);
 }
-RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant32Bits)
+RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
 	: core::RHIResourceLayout(device, element, sampler, constant32Bits)
 {
 	SetUp();
+	SetName(name);
 }
 
 #pragma region SetUp Function
@@ -45,9 +47,12 @@ RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& dev
 *                     SetUp
 *************************************************************************//**
 *  @fn        void RHIResourceLayout::SetUp(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+* 
 *  @brief     Set up rootsignature
+* 
 *  @param[in] void
-*  @return @@void
+* 
+*  @return    void
 *****************************************************************************/
 void RHIResourceLayout::SetUp()
 {
@@ -147,5 +152,11 @@ void RHIResourceLayout::SetUp()
 	};
 
 	_rootSignature->SetName(L"RootSignature");
+	
+}
+
+void RHIResourceLayout::SetName(const std::wstring& name)
+{
+	_rootSignature->SetName(name.c_str());
 }
 #pragma endregion SetUp Function

@@ -227,9 +227,9 @@ std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineS
 	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<directX12::GPUComputePipelineState>(shared_from_this(), resourceLayout));
 }
 
-std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHIResourceLayout>(std::make_shared<directX12::RHIResourceLayout>(shared_from_this(), elements, samplers, constant32Bits));
+	return std::static_pointer_cast<core::RHIResourceLayout>(std::make_shared<directX12::RHIResourceLayout>(shared_from_this(), elements, samplers, constant32Bits, name));
 }
 
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()

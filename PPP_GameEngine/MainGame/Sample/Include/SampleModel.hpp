@@ -20,6 +20,7 @@ namespace gc
 {
 	class SkyDome;
 	class Camera;
+	class Dof;
 }
 namespace gc::core
 {
@@ -43,6 +44,7 @@ namespace sample
 		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
 		using CameraPtr = std::shared_ptr<gc::Camera>;
 		using ModelPtr = std::shared_ptr<gc::core::GameModel>;
+		using DofPtr   = std::shared_ptr<gc::Dof>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -74,6 +76,7 @@ namespace sample
 		SkyDomePtr _skybox = nullptr;
 		CameraPtr _camera = nullptr;
 		ModelPtr  _model = nullptr;
+		DofPtr _dof = nullptr;
 	};
 }
 #endif

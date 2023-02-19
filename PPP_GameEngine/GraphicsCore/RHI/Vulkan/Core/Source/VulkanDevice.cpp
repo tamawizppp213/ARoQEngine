@@ -179,9 +179,9 @@ std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<vulkan::GPUPipelineFactory>(shared_from_this()));
 }
 
-std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHIResourceLayout>(std::make_shared<vulkan::RHIResourceLayout>(shared_from_this(), elements, samplers, constant32Bits));
+	return std::static_pointer_cast<core::RHIResourceLayout>(std::make_shared<vulkan::RHIResourceLayout>(shared_from_this(), elements, samplers, constant32Bits, name));
 }
 std::shared_ptr<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerInfo& samplerInfo)
 {

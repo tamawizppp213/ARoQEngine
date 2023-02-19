@@ -67,7 +67,7 @@ namespace rhi::vulkan
 		
 		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
-		std::shared_ptr<core::RHIResourceLayout>       CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt) override;
+		std::shared_ptr<core::RHIResourceLayout>       CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const std::wstring& name=L"ResourceLayout") override;
 
 		std::shared_ptr<core::GPUPipelineFactory>      CreatePipelineFactory() override;
 

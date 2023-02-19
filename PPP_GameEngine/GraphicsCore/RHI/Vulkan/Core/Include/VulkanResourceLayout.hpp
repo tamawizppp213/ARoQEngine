@@ -24,10 +24,10 @@
 namespace rhi::vulkan
 {
 	/****************************************************************************
-	*				  			RHIRenderPass
+	*				  			RHIResourceLayout
 	*************************************************************************//**
-	*  @class     RHIRenderPass
-	*  @brief     RenderPass
+	*  @class     RHIResourceLayout
+	*  @brief     GPU resource root signature. shader binding setting.
 	*****************************************************************************/
 	class RHIResourceLayout : public  rhi::core::RHIResourceLayout
 	{
@@ -40,14 +40,21 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		VkPipelineLayout GetLayout() const noexcept { return _pipelineLayout; }
+		
 		std::vector<VkDescriptorSetLayout>& GetDescriptorSetLayouts() { return _descriptorSetLayouts; }
+		
+		void SetName(const std::wstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIResourceLayout() = default;
+		
 		~RHIResourceLayout();
-		explicit RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constants = std::nullopt);
-		explicit RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceLayoutElement& layout, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant = std::nullopt);
+		
+		explicit RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constants = std::nullopt, const std::wstring& name = L"ResourceLayout");
+		
+		explicit RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceLayoutElement& layout, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant = std::nullopt, const std::wstring& name = L"ResourceLayout");
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -57,7 +64,9 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkPipelineLayout _pipelineLayout = nullptr;
+
 		std::vector<VkDescriptorSetLayout> _descriptorSetLayouts = {};
+	
 	private:
 		void SetUp();
 	};
