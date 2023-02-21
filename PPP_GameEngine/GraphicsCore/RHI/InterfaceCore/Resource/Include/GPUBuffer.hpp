@@ -60,6 +60,7 @@ namespace rhi::core
 		{
 			if (_metaData.State != after) { _metaData.State = after; }
 		}
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -108,7 +109,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::uint8_t*   _mappedData = nullptr;
+		std::uint8_t* _mappedData = nullptr;
 
 		GPUBufferMetaData _metaData = {};
 	};

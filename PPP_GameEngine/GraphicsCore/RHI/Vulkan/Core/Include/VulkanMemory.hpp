@@ -1,83 +1,67 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIAdapter.hpp
-///             @brief  Physical Device (adapter), Describe gpu information 
+///             @file   VulkanMemory.hpp
+///             @brief  Heap memory
 ///             @author Toide Yutaro
-///             @date   2022_09_05
+///             @date   2023_02_21
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef VULKAN_ADAPTER_HPP
-#define VULKAN_ADAPTER_HPP
+#ifndef VULKAN_MEMORY_HPP
+#define VULKAN_MEMORY_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIAdapter.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIMemory.hpp"
 #include <vulkan/vulkan.h>
-#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                             Class
+//                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::vulkan
 {
 	/****************************************************************************
-	*				  			RHIAdapter
+	*				  			RHIMemory
 	*************************************************************************//**
-	*  @class     RHIAdapter
-	*  @brief     Physical Device (Adapter)  Describe gpu information
+	*  @class     RHIMemory
+	*  @brief     memory
 	*****************************************************************************/
-	class RHIDisplayAdapter : public rhi::core::RHIDisplayAdapter
+	class RHIMemory : public rhi::core::RHIMemory
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* return logical device shared pointer. frame count is used for the command allocators*/
-		std::shared_ptr<core::RHIDevice> CreateDevice() override;
-		
-		/* Describe physical device name and spec(future work) */
-		void PrintInfo() override; 
 		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const VkPhysicalDevice               GetPhysicalDevice       () const noexcept { return _physicalDevice; }
-		
-		/* return physical device characteristics (device id, vender id...)*/
-		VkPhysicalDeviceProperties           GetProperties           () const noexcept;
-		
-		/* return physical device support list (ex. can use geometry shader...?)*/
-		VkPhysicalDeviceFeatures             GetSupports             () const noexcept;
-		
-		VkPhysicalDeviceMemoryProperties     GetMemoryProperties() const noexcept;
-		/* return all available extension name list*/
-		std::vector<VkExtensionProperties>   GetExtensionProperties  () const noexcept;
-		std::vector<std::string>             GetExtensionNameList    () const noexcept;
-		
-		/* return queue family characteristics*/
-		std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties() const noexcept;
-		
+		VkDeviceMemory GetMemory() const noexcept { return _memory; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		RHIDisplayAdapter() = default;
-		
-		~RHIDisplayAdapter();
-		
-		RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const VkPhysicalDevice physicalDevice);
+		RHIMemory() = default;
+
+		~RHIMemory() = default;
+
+		explicit RHIMemory(
+			const std::shared_ptr<core::RHIDevice>& device, 
+			const core::MemoryHeap heapType,
+			const std::uint64_t size, 
+			std::uint32_t typeBits);
 	
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VkPhysicalDevice _physicalDevice = nullptr;
+		VkDeviceMemory _memory = nullptr;
 	};
 }
 #endif

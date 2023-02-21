@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFence.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandQueue.hpp"
+#include "../Include/VulkanFence.hpp"
+#include "../Include/VulkanDevice.hpp"
+#include "../Include/VulkanCommandQueue.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

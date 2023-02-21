@@ -41,20 +41,32 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		MemoryHeap GetMemoryType() const noexcept { return _memoryType; }
+
+		std::uint64_t GetMemorySize() const { return _memorySize; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		RHIMemory() = default;
+
 		virtual ~RHIMemory() = default;
-		explicit RHIMemory(const MemoryHeap memoryHeapType) : _memoryType(memoryHeapType) {};
+
+		explicit RHIMemory(const std::shared_ptr<RHIDevice>& device, const MemoryHeap memoryHeapType, const std::uint64_t memorySize) 
+			: _device(device), _memoryType(memoryHeapType), _memorySize(memorySize) {};
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		MemoryHeap _memoryType = MemoryHeap::Default; 
+
+		std::uint64_t _memorySize = 0;
+
+		std::shared_ptr<RHIDevice> _device = nullptr;
 	};
 }
 

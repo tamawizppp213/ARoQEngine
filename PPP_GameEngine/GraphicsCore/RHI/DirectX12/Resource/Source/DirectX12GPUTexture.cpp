@@ -73,6 +73,7 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 	D3D12_RESOURCE_DESC resourceDesc = {};
 	ConvertDxMetaData(resourceDesc);
 	AllocateGPUTextureBuffer(resourceDesc, _device->IsDiscreteGPU());
+	SetName(name);
 }
 
 GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const std::wstring& name)
@@ -92,7 +93,6 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const Res
 #pragma region Public Function
 void GPUTexture::SetName(const std::wstring& name)
 {
-	_name = name;
 	ThrowIfFailed(_resource->SetName(name.c_str()));
 }
 
@@ -330,11 +330,6 @@ void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDes
 	_physicalSize = static_cast<size_t>(allocateInfo.SizeInBytes);
 	_alignment    = static_cast<size_t>(allocateInfo.Alignment);
 	_hasAllocated = true;
-
-	if (_name != L"")
-	{
-		_resource->SetName(_name.c_str());
-	}
 }
 
 void GPUTexture::ConvertDxMetaData(D3D12_RESOURCE_DESC& resourceDesc)

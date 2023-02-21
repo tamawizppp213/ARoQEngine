@@ -8,11 +8,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12ResourceLayout.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
-#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUSampler.hpp"
+#include "../Include/DirectX12ResourceLayout.hpp"
+#include "../Include/DirectX12Device.hpp"
+#include "../Include/DirectX12Debug.hpp"
+#include "../Include/DirectX12EnumConverter.hpp"
+#include "../../Resource/Include/DirectX12GPUSampler.hpp"
 #include <d3d12.h>
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////

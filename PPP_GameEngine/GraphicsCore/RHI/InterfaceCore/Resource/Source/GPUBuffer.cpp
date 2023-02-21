@@ -24,7 +24,7 @@ namespace
 }
 
 GPUBuffer::GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
-	: GPUResource(device, name), _metaData(metaData)
+	: GPUResource(device), _metaData(metaData)
 {
 	/*-------------------------------------------------------------------
 	-           Constant Buffer Check (for 256 byte alignment )
@@ -33,6 +33,7 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<RHIDevice>& device, const core::GPUBu
 	/*-------------------------------------------------------------------
 	-          Set Stride and Element Count
 	---------------------------------------------------------------------*/
+	// If you select the constant buffer, 256 byte alignment is needed.
 	_metaData.Stride   = isConstantBuffer ? static_cast<size_t>(CalcConstantBufferByteSize((std::uint32_t)_metaData.Stride)) : _metaData.Stride;
 	_metaData.ByteSize = _metaData.Stride * _metaData.Count;
 	_isTexture = false;

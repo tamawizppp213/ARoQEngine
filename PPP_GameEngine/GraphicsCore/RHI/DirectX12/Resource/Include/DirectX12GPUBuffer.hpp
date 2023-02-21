@@ -70,7 +70,7 @@ namespace rhi::directX12
 		
 		~GPUBuffer();
 		
-		explicit GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name = L"");
+		explicit GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name = L"Buffer");
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

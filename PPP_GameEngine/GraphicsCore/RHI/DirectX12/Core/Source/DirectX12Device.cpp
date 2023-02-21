@@ -86,6 +86,7 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	CheckVRSSupport();
 	CheckMeshShadingSupport();
 	CheckHDRDisplaySupport(); // まだどのクラスに配置するか決めてないので未実装
+	
 }
 
 #pragma endregion Constructor and Destructor

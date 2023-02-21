@@ -52,6 +52,9 @@ namespace rhi::core
 		/* @brief : Discrete GPU (true : dGPU, xGPU, false: iGPU)*/
 		bool IsDiscreteGPU() const { return _isDiscreteGPU; }
 
+		/* @brief : Unified memory architecture (true: iGPU, false: dGPU, xGPU)*/
+		bool IsUnifiedGPU() const { return !_isDiscreteGPU; }
+
 		/* @brief : Return Physical Device Name (GPU name)*/
 		const std::string&  GetName    () const { return _name; };
 

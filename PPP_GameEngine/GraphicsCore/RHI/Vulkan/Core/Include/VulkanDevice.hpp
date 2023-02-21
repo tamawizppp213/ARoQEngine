@@ -88,9 +88,9 @@ namespace rhi::vulkan
 		
 		std::shared_ptr<core::GPUSampler>              CreateSampler(const core::SamplerInfo& samplerInfo) override; // both
 		
-		std::shared_ptr<core::GPUBuffer>               CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name = L"") override;
+		std::shared_ptr<core::GPUBuffer>               CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name = L"Buffer") override;
 		
-		std::shared_ptr<core::GPUTexture>              CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name = L"") override;
+		std::shared_ptr<core::GPUTexture>              CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name = L"Texture") override;
 		
 		std::shared_ptr<core::GPUTexture>              CreateTextureEmpty() override;
 		
@@ -115,6 +115,7 @@ namespace rhi::vulkan
 		
 		//inline VkSurfaceKHR      GetSurface() { return _surface; }
 		
+		/* @brief : g‚¢‚½‚¢ƒƒ‚ƒŠ‚Ìí—Ş‚ğ‚Á‚Ä‚¢‚émemoryIndex‚ğ•Ô‚·.*/
 		std::uint32_t  GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags);
 		
 		std::uint32_t GetShadingRateImageTileSize() const { return 0; };

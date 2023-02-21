@@ -39,12 +39,20 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		HeapComPtr GetHeap() const noexcept { return _heap; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIMemory() = default;
+
 		~RHIMemory() = default;
-		explicit RHIMemory(const std::shared_ptr<core::RHIDevice>& device, const core::MemoryHeap memoryHeapType, std::uint32_t memoryTypeBits);
+
+		explicit RHIMemory(
+			const std::shared_ptr<core::RHIDevice>& device, 
+			const core::MemoryHeap heapType,
+			const std::uint64_t size, 
+			std::uint32_t typeBits);
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function

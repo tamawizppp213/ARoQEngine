@@ -123,6 +123,13 @@ VkPhysicalDeviceFeatures RHIDisplayAdapter::GetSupports() const noexcept
 	vkGetPhysicalDeviceFeatures(_physicalDevice, &deviceFeatures);
 	return deviceFeatures;
 }
+
+VkPhysicalDeviceMemoryProperties RHIDisplayAdapter::GetMemoryProperties() const noexcept
+{
+	VkPhysicalDeviceMemoryProperties memoryProperties = {};
+	vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memoryProperties);
+	return memoryProperties;
+}
 /****************************************************************************
 *                     GetExtensionProperties
 *************************************************************************//**

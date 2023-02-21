@@ -646,7 +646,7 @@ namespace rhi::core
 	{
 		Default, // Memory area visible only from GPU  
 		Upload,  // Memory area visible to CPU and GPU (Read from GPU is used for one time.)
-		Readback,// for directX12
+		Readback,// 
 		Custom   // for directX12
 	};
 

@@ -583,21 +583,35 @@ std::uint64_t RHIDevice::GetDeviceAddress(VkBuffer buffer)
 	return vkGetBufferDeviceAddress(_logicalDevice, &addressInfo);
 }
 
-std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags)
+/****************************************************************************
+*                     GetMemoryTypeIndex
+*************************************************************************//**
+*  @fn        std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags)
+*
+*  @brief     égÇ¢ÇΩÇ¢ÉÅÉÇÉäÇÃéÌóﬁÇéùÇ¡ÇƒÇ¢ÇÈmemoryIndexÇï‘Ç∑.
+*
+*  @param[in] const std::uint32_t requiredTypeBits,
+*  @param[in] const VkMemoryPropertyFlags& flags
+* 
+*
+*  @return Å@Å@bool
+*****************************************************************************/
+std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t requiredTypeBits, const VkMemoryPropertyFlags& flags)
 {
-	const auto vkAdapter = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(_adapter);
+	const auto vkAdapter        = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(_adapter);
+	const auto memoryProperties = vkAdapter->GetMemoryProperties();
 
-	VkPhysicalDeviceMemoryProperties memoryProperties = {};
-	vkGetPhysicalDeviceMemoryProperties(vkAdapter->GetPhysicalDevice(), &memoryProperties);
 	for (size_t index = 0; index < memoryProperties.memoryTypeCount; ++index)
 	{
-		if ((typeBits & 1) == 1)
+		if ((requiredTypeBits & 1) == 1)
 		{
 			if ((memoryProperties.memoryTypes[index].propertyFlags & flags) == flags)
+			{
 				return static_cast<uint32_t>(index);
+			}
 		}
 
-		typeBits >>= 1;
+		requiredTypeBits >>= 1;
 	}
 
 	throw std::runtime_error("failed to get memory type index");

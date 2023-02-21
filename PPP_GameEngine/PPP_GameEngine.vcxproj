@@ -204,6 +204,7 @@
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\UniversalRenderPipeline.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\DebugDrawer.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\ScreenCapture.hpp" />
+    <ClInclude Include="GameCore\Rendering\Effect\Include\FullScreenEffector.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIButton.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
@@ -416,9 +417,11 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanDescriptorHeap.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanDevice.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanEnumConverter.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanErrorCode.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanFence.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanFrameBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanInstance.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanMemory.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanRenderPass.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanResourceAllocator.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanResourceLayout.hpp" />
@@ -489,6 +492,7 @@
     <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\UniversalRenderPipeline.cpp" />
     <ClCompile Include="GameCore\Rendering\Debugger\Source\DebugDrawer.cpp" />
     <ClCompile Include="GameCore\Rendering\Debugger\Source\ScreenCapture.cpp" />
+    <ClCompile Include="GameCore\Rendering\Effect\Source\FullScreenEffector.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
@@ -559,6 +563,7 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Fence.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12FrameBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Instance.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Memory.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12ResourceLayout.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Swapchain.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUBlendState.cpp" />
@@ -598,9 +603,11 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanDescriptorHeap.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanDevice.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanEnumConverter.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanErrorCode.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanFence.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanFrameBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanInstance.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanMemory.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanRenderPass.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanResourceLayout.cpp" />
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanSwapchain.cpp" />

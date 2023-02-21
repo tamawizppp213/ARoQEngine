@@ -43,13 +43,13 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		std::wstring GetName() const noexcept { return _name; };
-
 		virtual void SetName(const std::wstring& name) = 0;
 
 		virtual core::ResourceState GetResourceState() const noexcept = 0;
 		
 		bool IsTexture() const { return _isTexture; }
+
+		bool IsBuffer() const { return !_isTexture; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -62,7 +62,7 @@ namespace rhi::core
 
 		~GPUResource() = default;
 
-		explicit GPUResource(const std::shared_ptr<RHIDevice>& device, const std::wstring& name = L"") : _device(device), _name(name) {};
+		explicit GPUResource(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
 		
 		/****************************************************************************
 		**                Protected Function
@@ -72,8 +72,6 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::shared_ptr<RHIDevice> _device = nullptr;
-
-		std::wstring _name = L"";
 
 		bool _isTexture = true;
 	}; 

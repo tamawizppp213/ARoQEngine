@@ -344,7 +344,7 @@ EnumConverter::VulkanResourceUsage EnumConverter::Convert(const core::ResourceUs
 		}
 	}
 
-	result.first |= VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+	result.first  |= VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 	result.second |= VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 	result.second |= VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
 	return result;
@@ -453,6 +453,7 @@ VkMemoryPropertyFlags  EnumConverter::Convert(const rhi::core::MemoryHeap memory
 		case core::MemoryHeap::Default: return VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // not write in CPU
 		case core::MemoryHeap::Upload : return VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 			                                 | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+		case core::MemoryHeap::Readback: return VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 		default:
 			throw std::runtime_error("not support Memory Heap type (vulkan api)");
 	}
