@@ -25,6 +25,8 @@ namespace rhi::core
 {
 	class RHIDevice;
 	class RHICommandList;
+	class GPUBuffer;
+
 	/****************************************************************************
 	*				  			GPUTexture
 	*************************************************************************//**
@@ -81,10 +83,13 @@ namespace rhi::core
 		inline size_t GetMipMapLevels() const noexcept { return _metaData.MipLevels; }
 
 		/* @brief : Get Arrays*/
-		inline size_t GetArrayLength() const noexcept { return _metaData.Dimension == ResourceDimension::Dimension3D ? _metaData.DepthOrArraySize : 1; }
+		inline size_t GetArrayLength() const noexcept { return _metaData.Dimension == ResourceDimension::Dimension3D ?  1 : _metaData.DepthOrArraySize; }
 
 		/* @brief : Is Array*/
-		inline bool IsArray() const noexcept { return GetArrayLength() != 1; }
+		inline bool IsArray() const noexcept
+		{ 
+			return GetArrayLength() != 1;
+		}
 
 		/* @brief : texture pixel index*/
 		inline bool GetIndex(const size_t mipSlices = 0, const size_t arraySlice = 0) const noexcept { return arraySlice * GetMipMapLevels() + mipSlices; }

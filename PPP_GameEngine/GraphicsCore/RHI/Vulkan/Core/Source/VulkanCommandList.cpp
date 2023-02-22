@@ -288,6 +288,7 @@ void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUText
 {
 	TransitionResourceStates(1, &texture, &after);
 }
+
 void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
 {
 	if (numStates <= 0) { return; }
@@ -316,7 +317,9 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 		vkTexture->TransitionResourceState(afters[i]);
 	}
 
-	vkCmdPipelineBarrier(_commandBuffer, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+	vkCmdPipelineBarrier(_commandBuffer, 
+		VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 
+		VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
 		VkDependencyFlagBits::VK_DEPENDENCY_BY_REGION_BIT,
 		0, nullptr, // memory barrier
 		0, nullptr,  // buffer memory barrier

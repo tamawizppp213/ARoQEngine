@@ -35,6 +35,7 @@ VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 		case core::PixelFormat::D24_UNORM_S8_UINT : return VkFormat::VK_FORMAT_D24_UNORM_S8_UINT;
 		case core::PixelFormat::R10G10B10A2_UNORM : return VkFormat::VK_FORMAT_A2R10G10B10_UNORM_PACK32;
 		case core::PixelFormat::D32_FLOAT         : return VkFormat::VK_FORMAT_D32_SFLOAT;
+		case core::PixelFormat::BC1_UNORM         : return VkFormat::VK_FORMAT_BC1_RGBA_UNORM_BLOCK;
 		case core::PixelFormat::Unknown           : return VkFormat::VK_FORMAT_UNDEFINED;
 		default:
 			throw std::runtime_error("not supported Pixel Format type (vulkan api)");
@@ -339,8 +340,8 @@ EnumConverter::VulkanResourceUsage EnumConverter::Convert(const core::ResourceUs
 	{
 		if (core::EnumHas(usage, sourcePool[i]))
 		{
-			result.first |= targetPool[i].first;
-			result.second |= targetPool[i].second;
+			result.first |= targetPool[i].first;     // for buffer
+			result.second |= targetPool[i].second;   // for texture
 		}
 	}
 
@@ -430,13 +431,19 @@ VkImageViewType EnumConverter::Convert(const rhi::core::ResourceDimension dimens
 /*-------------------------------------------------------------------
 -                        Image Create Flags
 ---------------------------------------------------------------------*/
-VkImageCreateFlags EnumConverter::Convert(const size_t arrayLength)
+VkImageCreateFlags EnumConverter::Convert(const rhi::core::ResourceType type, const size_t arrayLength)
 {
-	auto result = VkImageCreateFlags(VkImageCreateFlagBits::VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT);
-	if (arrayLength > 1) { result |= VkImageCreateFlagBits::VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT; }
-	if (arrayLength > 5)
+	auto result = VkImageCreateFlags(VkImageCreateFlagBits::VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT);       // Different resource view is able to be created.
+	if (type == core::ResourceType::TextureCube || type == core::ResourceType::TextureCubeArray)
 	{
 		result |= VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+	}
+	else
+	{
+		if (arrayLength > 1)
+		{
+			result |= VkImageCreateFlagBits::VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT;
+		}
 	}
 	return result;
 }

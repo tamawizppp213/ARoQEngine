@@ -7,14 +7,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
-#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandAllocator.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
+#include "../Include/DirectX12GPUTexture.hpp"
+#include "../Include/DirectX12GPUBuffer.hpp"
+#include "../../Core/Include/DirectX12Debug.hpp"
+#include "../../Core/Include/DirectX12EnumConverter.hpp"
+#include "../../Core/Include/DirectX12Device.hpp"
+#include "../../Core/Include/DirectX12CommandList.hpp"
+#include "../../Core/Include/DirectX12CommandAllocator.hpp"
+#include "../../Core/Include/DirectX12BaseStruct.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <DirectXTex/DirectXTex.h>
@@ -41,21 +41,22 @@ namespace
 	{
 		switch (format)
 		{
-			case DXGI_FORMAT_R8G8B8A8_UNORM: return core::PixelFormat::R8G8B8A8_UNORM;
-			case DXGI_FORMAT_B8G8R8A8_UNORM: return core::PixelFormat::B8G8R8A8_UNORM;
+			case DXGI_FORMAT_R8G8B8A8_UNORM     : return core::PixelFormat::R8G8B8A8_UNORM;
+			case DXGI_FORMAT_B8G8R8A8_UNORM     : return core::PixelFormat::B8G8R8A8_UNORM;
 			case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB: return core::PixelFormat::B8G8R8A8_UNORM_SRGB;
-			case DXGI_FORMAT_R16G16B16A16_FLOAT: return core::PixelFormat::R16G16B16A16_FLOAT;
-			case DXGI_FORMAT_R32G32B32A32_FLOAT: return core::PixelFormat::R32G32B32A32_FLOAT;
-			case DXGI_FORMAT_R32G32B32_FLOAT: return core::PixelFormat::R32G32B32_FLOAT;
-			case DXGI_FORMAT_D24_UNORM_S8_UINT: return core::PixelFormat::D24_UNORM_S8_UINT;
-			case DXGI_FORMAT_R10G10B10A2_UNORM: return core::PixelFormat::R10G10B10A2_UNORM;
-			case DXGI_FORMAT_D32_FLOAT: return core::PixelFormat::D32_FLOAT;
-			case DXGI_FORMAT_BC1_UNORM: return core::PixelFormat::BC1_UNORM;
+			case DXGI_FORMAT_R16G16B16A16_FLOAT : return core::PixelFormat::R16G16B16A16_FLOAT;
+			case DXGI_FORMAT_R32G32B32A32_FLOAT : return core::PixelFormat::R32G32B32A32_FLOAT;
+			case DXGI_FORMAT_R32G32B32_FLOAT    : return core::PixelFormat::R32G32B32_FLOAT;
+			case DXGI_FORMAT_D24_UNORM_S8_UINT  : return core::PixelFormat::D24_UNORM_S8_UINT;
+			case DXGI_FORMAT_R10G10B10A2_UNORM  : return core::PixelFormat::R10G10B10A2_UNORM;
+			case DXGI_FORMAT_D32_FLOAT          : return core::PixelFormat::D32_FLOAT;
+			case DXGI_FORMAT_BC1_UNORM          : return core::PixelFormat::BC1_UNORM;
 			default:
 				throw std::runtime_error("not supported Format type");
 		}
 	}
 }
+
 GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const std::wstring& name) : core::GPUTexture(device, name)
 {
 	
@@ -96,26 +97,43 @@ void GPUTexture::SetName(const std::wstring& name)
 	ThrowIfFailed(_resource->SetName(name.c_str()));
 }
 
+/****************************************************************************
+*                     Load
+*************************************************************************//**
+*  @fn        void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)
+*
+*  @brief     Load texture 
+*
+*  @param[in] const std::wstring& filePath
+*  @param[in] const std::shared_ptr<core::RHICommandList> graphics type commandList
+*
+*  @return 　　void
+*****************************************************************************/
 void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)
 {
+
+#ifdef _DEBUG
+	assert(_device);
+	assert(commandList);
+	assert(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
+#endif
+
 	const auto dxDevice      = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();
 	const auto dxCommandList = static_cast<directX12::RHICommandList*>(commandList.get())->GetCommandList();
-	
-	/*-------------------------------------------------------------------
-	-               Copy command list check
-	---------------------------------------------------------------------*/
-	assert(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
+
 	/*-------------------------------------------------------------------
 	-                Choose Extension and Load Texture Data
 	---------------------------------------------------------------------*/
-	TexMetadata  dxMetaData     = {};
-	ScratchImage scratchImage = {};
-	bool isDXT                = false;
-	std::wstring extension    = file::FileSystem::GetExtension(filePath);
-	std::wstring fileName     = file::FileSystem::GetFileName(filePath, false);
+	const std::wstring extension    = file::FileSystem::GetExtension(filePath);
+	const std::wstring fileName     = file::FileSystem::GetFileName(filePath, false);
 	
+	TexMetadata  dxMetaData   = {};
+	ScratchImage scratchImage = {};
+	bool isDXT                = false; // 現時点では使っておりません.
+
 	/*-------------------------------------------------------------------
 	-    Select the appropriate texture loading function for each extension
+	     Load texture to the cpu memory
 	---------------------------------------------------------------------*/
 	if (extension == L"tga")
 	{
@@ -134,6 +152,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	{
 		ThrowIfFailed(LoadFromWICFile(filePath.c_str(), WIC_FLAGS_NONE, &dxMetaData, scratchImage));
 	}
+
 	auto image = scratchImage.GetImage(0, 0, 0);
 
 	/*-------------------------------------------------------------------
@@ -143,21 +162,26 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	{
 		_metaData = core::GPUTextureMetaData::CubeMap(image->width, image->height, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
 	}
+	else if (dxMetaData.IsVolumemap())
+	{
+		_metaData = core::GPUTextureMetaData::Texture3D(image->width, image->height, dxMetaData.depth, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+	}
 	else
 	{
 		_metaData = core::GPUTextureMetaData::Texture2DArray(image->width, image->height, dxMetaData.arraySize,
 			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
 	}
+
 	/*-------------------------------------------------------------------
 	-                 Create directX12 texture buffer
 	---------------------------------------------------------------------*/
-	D3D12_RESOURCE_DESC resourceDesc = {};
-	ConvertDxMetaData(resourceDesc);
-
 	if (!_hasAllocated)
 	{
+		D3D12_RESOURCE_DESC resourceDesc = {};
+		ConvertDxMetaData(resourceDesc);
 		AllocateGPUTextureBuffer(resourceDesc, _device->IsDiscreteGPU());
 	}
+
 	/*-------------------------------------------------------------------
 	-                 pack
 	---------------------------------------------------------------------*/
@@ -168,11 +192,13 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 		---------------------------------------------------------------------*/
 		std::vector<D3D12_SUBRESOURCE_DATA> subResources;
 		ThrowIfFailed(PrepareUpload(dxDevice.Get(), image, scratchImage.GetImageCount(), dxMetaData, subResources));
+
 		/*-------------------------------------------------------------------
 		-                 Calculate Upload Buffer Size
 		---------------------------------------------------------------------*/
 		const UINT64 uploadBufferSize = GetRequiredIntermediateSize(
 			_resource.Get(), 0, static_cast<UINT>(subResources.size()));
+
 		/*-------------------------------------------------------------------
 		-                 Create Upload Buffer
 		---------------------------------------------------------------------*/
@@ -185,7 +211,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 			&uploadDesc,
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			nullptr,
-			IID_PPV_ARGS(_intermediateBuffer.GetAddressOf())
+			IID_PPV_ARGS(_stagingBuffer.GetAddressOf())
 		);
 
 		/*-------------------------------------------------------------------
@@ -195,7 +221,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 		const auto before      = BARRIER::Transition(_resource.Get(), beforeState, D3D12_RESOURCE_STATE_COPY_DEST);
 
 		dxCommandList->ResourceBarrier(1, &before);
-		UpdateSubresources(dxCommandList.Get(), _resource.Get(), _intermediateBuffer.Get(),
+		UpdateSubresources(dxCommandList.Get(), _resource.Get(), _stagingBuffer.Get(),
 			0, 0, 
 			static_cast<unsigned int>(subResources.size()), subResources.data());
 
@@ -204,6 +230,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	}
 	else
 	{
+		// WriteToSubresourceは, DiscreteGPUの場合速度が低下することが報告されているため, DiscreteGPUは別処理. 
 		ThrowIfFailed(_resource->WriteToSubresource(
 			0, nullptr, 
 			image->pixels, 
@@ -274,6 +301,19 @@ void GPUTexture::Pack(const std::shared_ptr<core::RHICommandList>& commandList)
 {
 	
 }
+
+/****************************************************************************
+*                     AllocateGPUTextureBuffer
+*************************************************************************//**
+*  @fn        void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, bool isDiscreteGPU)
+*
+*  @brief     Allocate texture buffer in GPU memory
+*
+*  @param[in] const std::wstring& filePath
+*  @param[in] const std::shared_ptr<core::RHICommandList> graphics type commandList
+*
+*  @return 　　void
+*****************************************************************************/
 void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, bool isDiscreteGPU)
 {
 	const auto dxDevice = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();

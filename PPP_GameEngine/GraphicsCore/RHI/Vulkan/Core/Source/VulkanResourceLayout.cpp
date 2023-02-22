@@ -96,7 +96,7 @@ void RHIResourceLayout::SetUp()
 		binding.binding            = static_cast<std::uint32_t>(sampler.Binding);
 		binding.descriptorType     = VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
 		binding.descriptorCount    = 1;
-		binding.stageFlags         = EnumConverter::Convert(EnumConverter::Convert(sampler.Visibility));
+		binding.stageFlags         = EnumConverter::Convert(sampler.Visibility);
 		binding.pImmutableSamplers = &std::static_pointer_cast<vulkan::GPUSampler>(sampler.Sampler)->GetSampler();
 
 		bindings[sampler.RegisterSpace].push_back(binding);

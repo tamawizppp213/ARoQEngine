@@ -149,6 +149,7 @@ namespace rhi::core
 				return 8;
 			case PixelFormat::R8G8B8A8_UNORM:
 			case PixelFormat::B8G8R8A8_UNORM:
+			case PixelFormat::BC1_UNORM:
 			case PixelFormat::D32_FLOAT:
 				return 4;
 			case PixelFormat::R32G32B32A32_FLOAT:

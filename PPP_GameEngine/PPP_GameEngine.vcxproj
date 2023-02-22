@@ -178,6 +178,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\3Dゲーム教材(DirectX12)\stb\stb_image.h" />
     <ClInclude Include="GameCore\Audio\Core\Include\AudioSubmix.hpp" />
     <ClInclude Include="GameCore\Audio\Effect\Include\AudioFader.hpp" />
     <ClInclude Include="GameCore\Audio\Effect\Include\AudioIEffect.hpp" />
@@ -466,6 +467,8 @@
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryCapsule.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryPlane.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometrySphere.hpp" />
+    <ClInclude Include="Pluguins\DDSLoader\dds_loader.h" />
+    <ClInclude Include="Pluguins\stb_image.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -648,6 +651,7 @@
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryBox.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCapsule.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometrySphere.cpp" />
+    <ClCompile Include="Pluguins\DDSLoader\dds_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />

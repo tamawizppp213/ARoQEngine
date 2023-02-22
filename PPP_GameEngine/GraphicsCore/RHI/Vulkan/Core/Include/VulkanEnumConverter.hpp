@@ -74,7 +74,7 @@ namespace rhi::vulkan
 		static VkImageAspectFlags     Convert(const rhi::core::PixelFormat format, const rhi::core::ResourceUsage usage);
 		static VkImageViewType        Convert(const rhi::core::ResourceType type);
 		static VkImageViewType        Convert(const rhi::core::ResourceDimension dimension, const rhi::core::ResourceType usage, const size_t length);
-		static VkImageCreateFlags     Convert(const size_t arrayLength = 0);
+		static VkImageCreateFlags     Convert(const rhi::core::ResourceType type, const size_t arrayLength);
 #pragma endregion GPUTexture
 #pragma region GPUBuffer
 		static VkMemoryPropertyFlags  Convert(const rhi::core::MemoryHeap memoryHeap);

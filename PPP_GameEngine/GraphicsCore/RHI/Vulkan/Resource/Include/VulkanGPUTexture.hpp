@@ -22,6 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::vulkan
 {
+
 	/****************************************************************************
 	*				  			GPUBuffer
 	*************************************************************************//**
@@ -34,7 +35,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList) override { printf("Non Function\n"); };
+		void Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList) override;
 
 		void Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList) override { printf("Non Function\n"); }
 
@@ -42,7 +43,9 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		VkImage GetImage() const noexcept     { return _image; }
+		
 		VkImageViewCreateInfo& GetImageInfo() { return _imageViewDesc; }
+		
 		const VkImageViewCreateInfo& GetImageInfo() const noexcept { return _imageViewDesc; }
 		
 		void SetName(const std::wstring& name) override;
@@ -52,10 +55,13 @@ namespace rhi::vulkan
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUTexture() = default;
+		
 		~GPUTexture();
 		 
 		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const std::wstring& name = L"Texture");
+		
 		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"Texture");
+		
 		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const std::wstring& name = L"Texture");
 
 	protected:
@@ -67,14 +73,23 @@ namespace rhi::vulkan
 		**                Protected Function
 		*****************************************************************************/
 		void Pack(const std::shared_ptr<core::RHICommandList>& commandList) override{};
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkDeviceMemory _memory    = nullptr;
+
 		VkImage        _image     = nullptr;
+
 		VkImageViewCreateInfo  _imageViewDesc = {};
+
+		std::shared_ptr<core::GPUBuffer> _stagingBuffer = nullptr;
+
+		bool _hasAllocated = false;
+
 	private: 
 		void Prepare();
+
 	};
 
 

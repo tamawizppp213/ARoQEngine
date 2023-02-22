@@ -84,11 +84,11 @@ namespace rhi::vulkan
 		VkBuffer       _buffer = nullptr;
 
 		// GPUだけしかアクセスできないやつにコピー等を行うため中間バッファ
-		VkBuffer _intermediateBuffer = nullptr;
+		VkBuffer _stagingBuffer = nullptr;
 
-		VkDeviceMemory _intermediateMemory = nullptr;
+		VkDeviceMemory _stagingMemory = nullptr;
 
-		std::uint8_t* _intermediateMappedData = nullptr;
+		std::uint8_t* _stagingMappedData = nullptr;
 	
 	private:
 		void Prepare(VkBuffer& buffer, VkDeviceMemory& memory, VkMemoryPropertyFlags flags);

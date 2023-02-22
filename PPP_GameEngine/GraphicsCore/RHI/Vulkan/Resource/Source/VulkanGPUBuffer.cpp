@@ -40,9 +40,9 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core:
 GPUBuffer::~GPUBuffer()
 {
 	VkDevice vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
-	if (_intermediateMemory) { vkFreeMemory(vkDevice, _intermediateMemory, nullptr); }
+	if (_stagingMemory)      { vkFreeMemory(vkDevice, _stagingMemory, nullptr); }
 	if (_memory)             { vkFreeMemory(vkDevice, _memory, nullptr); }
-	if (_intermediateBuffer) { vkDestroyBuffer(vkDevice, _intermediateBuffer, nullptr); }
+	if (_stagingBuffer) { vkDestroyBuffer(vkDevice, _stagingBuffer, nullptr); }
 	if (_buffer) { vkDestroyBuffer(vkDevice, _buffer, nullptr); }
 }
 
@@ -64,23 +64,23 @@ void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandLis
 		/*-------------------------------------------------------------------
 		-           Reset intermediate buffer
 		---------------------------------------------------------------------*/
-		if (_intermediateMemory) { vkFreeMemory   (vkDevice, _intermediateMemory, nullptr); }
-		if (_intermediateBuffer) { vkDestroyBuffer(vkDevice, _intermediateBuffer, nullptr); }
+		if (_stagingMemory) { vkFreeMemory   (vkDevice, _stagingMemory, nullptr); }
+		if (_stagingBuffer) { vkDestroyBuffer(vkDevice, _stagingBuffer, nullptr); }
 
 		/*-------------------------------------------------------------------
 		-           Create intermediate buffer
 		---------------------------------------------------------------------*/
-		Prepare(_intermediateBuffer, _intermediateMemory, EnumConverter::Convert(core::MemoryHeap::Upload));
+		Prepare(_stagingBuffer, _stagingMemory, EnumConverter::Convert(core::MemoryHeap::Upload));
 
 		/*-------------------------------------------------------------------
 		-           Create intermediate buffer
 		---------------------------------------------------------------------*/
-		if (vkMapMemory(vkDevice, _intermediateMemory, 0, _metaData.ByteSize, 0, reinterpret_cast<void**>(&_intermediateMappedData)) != VK_SUCCESS)
+		if (vkMapMemory(vkDevice, _stagingMemory, 0, _metaData.ByteSize, 0, reinterpret_cast<void**>(&_stagingMappedData)) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to vk map memory.");
 		};
-		std::memcpy(_intermediateMappedData, data, _metaData.ByteSize);
-		vkUnmapMemory(vkDevice, _intermediateMemory);
+		std::memcpy(_stagingMappedData, data, _metaData.ByteSize);
+		vkUnmapMemory(vkDevice, _stagingMemory);
 
 		/*-------------------------------------------------------------------
 		-           Copy intermediate buffer to the main buffer
@@ -93,7 +93,7 @@ void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandLis
 		};
 
 		const auto vkCommandList = std::static_pointer_cast<vulkan::RHICommandList>(copyCommandList)->GetCommandList();
-		vkCmdCopyBuffer(vkCommandList, _intermediateBuffer, _buffer, 1, &copy);
+		vkCmdCopyBuffer(vkCommandList, _stagingBuffer, _buffer, 1, &copy);
 
 	}
 	/*-------------------------------------------------------------------
@@ -231,7 +231,7 @@ void GPUBuffer::Prepare(VkBuffer& buffer, VkDeviceMemory& memory, VkMemoryProper
 	/*-------------------------------------------------------------------
 	-           Create Buffer
 	---------------------------------------------------------------------*/
-	VkBufferCreateInfo bufferInfo = 
+	const VkBufferCreateInfo bufferInfo = 
 	{
 		.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 		.pNext                 = nullptr,
@@ -254,7 +254,7 @@ void GPUBuffer::Prepare(VkBuffer& buffer, VkDeviceMemory& memory, VkMemoryProper
 	VkMemoryRequirements memoryRequirement = {};
 	vkGetBufferMemoryRequirements(vkDevice, buffer, &memoryRequirement);
 
-	VkMemoryAllocateInfo memoryInfo = 
+	const VkMemoryAllocateInfo memoryInfo = 
 	{
 		.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 		.pNext           = nullptr,
