@@ -190,7 +190,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 		.bufferOffset      = 0,
 		.bufferRowLength   = 0, // buffer‚Í‚½‚¾‚½‚¾pixel‚ð’~‚¦‚Ä‚¢‚Ü‚·. 
 		.bufferImageHeight = 0,
-		.imageSubresource  = {VK_IMAGE_ASPECT_COLOR_BIT, 10, 0, (std::uint32_t)GetArrayLength()},
+		.imageSubresource  = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, (std::uint32_t)GetArrayLength()},
 		.imageOffset       = {0,0,0},
 		.imageExtent       = {(std::uint32_t)_metaData.Width, (std::uint32_t)_metaData.Height, (std::uint32_t)GetDepth()}
 	};

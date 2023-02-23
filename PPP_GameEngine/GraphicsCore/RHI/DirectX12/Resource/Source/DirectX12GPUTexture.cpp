@@ -189,6 +189,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	{
 		/*-------------------------------------------------------------------
 		-                 Prepare Upload Buffer Setting
+		                  All mipmap data
 		---------------------------------------------------------------------*/
 		std::vector<D3D12_SUBRESOURCE_DATA> subResources;
 		ThrowIfFailed(PrepareUpload(dxDevice.Get(), image, scratchImage.GetImageCount(), dxMetaData, subResources));
@@ -221,6 +222,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 		const auto before      = BARRIER::Transition(_resource.Get(), beforeState, D3D12_RESOURCE_STATE_COPY_DEST);
 
 		dxCommandList->ResourceBarrier(1, &before);
+		// write the staging buffer contents to the resource object.
 		UpdateSubresources(dxCommandList.Get(), _resource.Get(), _stagingBuffer.Get(),
 			0, 0, 
 			static_cast<unsigned int>(subResources.size()), subResources.data());

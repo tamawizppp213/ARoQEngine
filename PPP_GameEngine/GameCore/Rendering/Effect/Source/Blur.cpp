@@ -216,7 +216,7 @@ void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std
 	const auto device   = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(TextureSizeParameter), 1, MemoryHeap::Upload, ResourceState::Common);
 	
-	const auto textureSizeBuffer = _engine->GetDevice()->CreateBuffer(metaData);
+	const auto textureSizeBuffer = device->CreateBuffer(metaData);
 	textureSizeBuffer->SetName(name + L"TextureSize");
 	/*-------------------------------------------------------------------
 	-			Set Texture Size Parameter

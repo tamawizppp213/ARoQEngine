@@ -1,60 +1,51 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   SampleSky.hpp
-///             @brief  Skybox sample
+///             @file   Mosaic.hpp
+///             @brief  Mosaic post effect
 ///             @author Toide Yutaro
-///             @date   2022_04_23
+///             @date   2023_02_23
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SAMPLE_COLOR_CHANGE_HPP
-#define SAMPLE_COLOR_CHANGE_HPP
+#ifndef MOSAIC_HPP
+#define MOSAIC_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Core/Include/Scene.hpp"
-#include <memory>
-#include <vector>
+#include "FullScreenEffector.hpp"
+#include "GameUtility/Math/Include/GMVector.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
-{
-	class SkyDome;
-	class Camera;
-	class ColorChange;
-	class GaussianBlur;
-	class Dof;
-	class Mosaic;
-}
-
+// 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace sample
+namespace gc
 {
-
 	/****************************************************************************
-	*				  			SampleSky
+	*				  			ColorChange
 	*************************************************************************//**
-	*  @class     SampleSky
-	*  @brief     Skybox sample
+	*  @class     Color Change
+	*  @brief     color change post effect
 	*****************************************************************************/
-	class SampleColorChange : public Scene
+	class Mosaic : public IFullScreenEffector
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr  = std::shared_ptr<gc::Camera>;
-		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
-		using GaussianBlurPtr = std::shared_ptr<gc::GaussianBlur>;
-		using MosaicPtr = std::shared_ptr<gc::Mosaic>;
-		
+	protected:
+		struct MosaicInfo
+		{
+			gm::Float2 WindowSize = {0,0};
+			float BlockSize       = 0.0f;
+			float Padding         = 0.0f;
+		};
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
-		void Update() override;
+		/* @brief : Resize frame buffer (Not implement)*/
+		void OnResize(int newWidth, int newHeight) override;
+
+		/*@brief : Render to back buffer*/
 		void Draw() override;
-		void Terminate() override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -62,34 +53,26 @@ namespace sample
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SampleColorChange();
-		~SampleColorChange();
+		Mosaic();
+
+		~Mosaic();
+
+		Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize = 10.0f, const std::wstring& addName = L"");
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void LoadMaterials() override;
-		void OnKeyboardInput() override;
-		void OnMouseInput() override;
-		void OnGamePadInput() override;
+		void PrepareBuffer(const float blockSize, const std::wstring& addName);
+
+		void PreparePipelineState(const std::wstring& addName) override;
+		
+		void PrepareResourceView() override;
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		SkyDomePtr _skybox = nullptr;
-
-		CameraPtr _camera = nullptr;
-
-		std::vector<ColorChangePtr> _colorChanges = {};
-
-		GaussianBlurPtr _gaussianBlur = nullptr;
-
-		MosaicPtr _mosaic = nullptr;
-
-		bool _useBlur = false;
-		bool _useMosaic = false;
-
-
-		std::uint32_t _colorIndex = 0;
+		MosaicInfo _mosaicInfo = {};
 	};
 }
 #endif

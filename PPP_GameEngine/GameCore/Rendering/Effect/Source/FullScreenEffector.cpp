@@ -44,6 +44,9 @@ IFullScreenEffector::~IFullScreenEffector()
 IFullScreenEffector::IFullScreenEffector(const LowLevelGraphicsEnginePtr& engine) : _engine(engine)
 {
 	assert(engine);
+
+	_width  = Screen::GetScreenWidth();
+	_height = Screen::GetScreenHeight();
 }
 
 #pragma endregion Constructor and Destructor

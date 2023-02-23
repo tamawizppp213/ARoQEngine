@@ -14,6 +14,7 @@
 #include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
 #include "GameCore/Rendering/Effect/Include/Blur.hpp"
 #include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
+#include "GameCore/Rendering/Effect/Include/Mosaic.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 
@@ -87,10 +88,8 @@ void SampleColorChange::Draw()
 	_skybox->Draw(_camera->GetResourceView());
 	_colorChanges[_colorIndex]->Draw();
 	
-	if (_useBlur)
-	{
-		_gaussianBlur->Draw();
-	}
+	if (_useBlur)  { _gaussianBlur->Draw(); }
+	if (_useMosaic) { _mosaic->Draw(); }
 
 	_engine->EndDrawFrame();
 }
@@ -146,6 +145,8 @@ void SampleColorChange::LoadMaterials()
 	}
 	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
 
+	_mosaic = std::make_shared<Mosaic>(_engine, 20.0f);
+
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/
@@ -189,6 +190,10 @@ void SampleColorChange::OnKeyboardInput()
 	if (_gameInput.GetKeyboard()->IsTrigger(DIK_O))
 	{
 		_useBlur = _useBlur ? false : true;
+	}
+	if (_gameInput.GetKeyboard()->IsTrigger(DIK_I))
+	{
+		_useMosaic = _useMosaic ? false : true;
 	}
 }
 /****************************************************************************

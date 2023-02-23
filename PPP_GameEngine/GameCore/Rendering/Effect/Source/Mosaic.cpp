@@ -1,14 +1,14 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   ColorChange.cpp
-///             @brief  Color change post effect
+///             @file   Mosaic.hpp
+///             @brief  Mosaic post effect
 ///             @author Toide Yutaro
-///             @date   2022_04_30
+///             @date   2023_02_23
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
+#include "../Include/Mosaic.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
@@ -17,8 +17,8 @@
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
-#include "GameCore/Rendering/Model/Include/PrimitiveMesh.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,41 +26,28 @@ using namespace gm;
 using namespace gc;
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc::core;
 
-namespace
-{
-	std::wstring s_ShaderFunctionName[ColorChangeType::CountOfType] = 
-	{ 
-		L"None",
-		L"PSMonochrome",
-		L"PSSepia",
-		L"PSGrayScale",
-		L"PSBinary",
-		L"PSInvert",
-	};
-}
 
 //////////////////////////////////////////////////////////////////////////////////
-//                          Implement
+//                             Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-ColorChange::ColorChange()
+Mosaic::Mosaic()
 {
 
 }
-ColorChange::~ColorChange()
+
+Mosaic::~Mosaic()
 {
-	_pipeline.reset();
-	_resourceLayout.reset();
-	_resourceViews.clear(); _resourceViews.shrink_to_fit();
-	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
+
 }
-ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName) 
-	: IFullScreenEffector(engine), _colorType(type)
+
+Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, const std::wstring& addName)
+	: IFullScreenEffector(engine)
 {
-	assert(_colorType != ColorChangeType::None);
+#ifdef _DEBUG
+	assert(blockSize >= 0.0f);
+#endif
 
 	/*-------------------------------------------------------------------
 	-            Set debug name
@@ -71,41 +58,19 @@ ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEngin
 	-           Prepare Pipeline
 	---------------------------------------------------------------------*/
 	PrepareVertexAndIndexBuffer(name);
+	PrepareBuffer(blockSize, name);
 	PreparePipelineState(name);
 	PrepareResourceView();
 }
-
 #pragma endregion Constructor and Destructor
+
 #pragma region Main Function
-/****************************************************************************
-*							OnResize
-*************************************************************************//**
-*  @fn        void ColorChange::OnResize(int newWidth, int newHeight)
-* 
-*  @brief     OnResize
-* 
-*  @param[in] int newWidth
-* 
-*  @param[in] int newHeight
-* 
-*  @return    void
-*****************************************************************************/
-void ColorChange::OnResize(int newWidth, int newHeight)
+void Mosaic::OnResize(int newWidth, int newHeight)
 {
 
 }
-/****************************************************************************
-*							Draw
-*************************************************************************//**
-*  @fn        void ColorChange::Draw
-* 
-*  @brief     Render to Back Buffer
-* 
-*  @param[in] void
-* 
-*  @return    void
-*****************************************************************************/
-void ColorChange::Draw()
+
+void Mosaic::Draw()
 {
 	const auto frameIndex          = _engine->GetCurrentFrameIndex();
 	const auto device              = _engine->GetDevice();
@@ -118,28 +83,36 @@ void ColorChange::Draw()
 	graphicsCommandList->SetGraphicsPipeline(_pipeline);
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
 	graphicsCommandList->SetIndexBuffer (_indexBuffers[frameIndex]);
-	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 0);
+	_resourceViews[0]->Bind(graphicsCommandList, 0);
+	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 1);
 	graphicsCommandList->DrawIndexedInstanced(
 		static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
 }
 #pragma endregion Main Function
 
-#pragma region Protected Function
+#pragma region Set up function
 
-/****************************************************************************
-*							PreparePipelineState
-*************************************************************************//**
-*  @fn        void ColorChange::PreparePipelineState(ColorChangeType type)
-* 
-*  @brief     Prepare PipelineState
-* 
-*  @param[in] ColorChangeType type
-* 
-*  @param[in] const std::wstring& addName
-* 
-*  @return 　　void
-*****************************************************************************/
-void ColorChange::PreparePipelineState(const std::wstring& addName)
+void Mosaic::PrepareBuffer(const float blockSize, const std::wstring& name)
+{
+	const auto device = _engine->GetDevice();
+	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(MosaicInfo), 1);
+
+	const auto buffer = device->CreateBuffer(metaData);
+	buffer->SetName(name + L"MosaicInfo");
+
+	/*-------------------------------------------------------------------
+	-			Set Information
+	---------------------------------------------------------------------*/
+	_mosaicInfo.WindowSize = {(float)_width, (float)_height };
+	_mosaicInfo.BlockSize  = blockSize;
+	_mosaicInfo.Padding    = 0.0f;
+
+	buffer->Pack(&_mosaicInfo, nullptr);
+	_resourceViews.push_back(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
+}
+
+
+void Mosaic::PreparePipelineState(const std::wstring& addName)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -149,7 +122,10 @@ void ColorChange::PreparePipelineState(const std::wstring& addName)
 	---------------------------------------------------------------------*/
 	_resourceLayout = device->CreateResourceLayout
 	(
-		{ ResourceLayoutElement(DescriptorHeapType::SRV, 0)},
+		{
+			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // Mosaic info
+			ResourceLayoutElement(DescriptorHeapType::SRV, 0), // source texture
+		},
 		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearClamp)), 0) }
 	);
 
@@ -158,32 +134,25 @@ void ColorChange::PreparePipelineState(const std::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Effect\\ShaderColorChange.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel , L"Shader\\Effect\\ShaderColorChange.hlsl", s_ShaderFunctionName[(int)_colorType], 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, L"Shader\\Effect\\ShaderMosaic.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
+	ps->Compile(ShaderType::Pixel , L"Shader\\Effect\\ShaderMosaic.hlsl",L"PSMain", 6.4f, {L"Shader\\Core"});
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
 	---------------------------------------------------------------------*/
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
-	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::OverWrite()));
-	_pipeline->SetRasterizerState   (factory->CreateRasterizerState());
+	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
+	_pipeline->SetRasterizerState(factory->CreateRasterizerState());
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
-	_pipeline->SetDepthStencilState (factory->CreateDepthStencilState());
+	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());
 	_pipeline->SetVertexShader(vs);
-	_pipeline->SetPixelShader (ps);
+	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
 	_pipeline->SetName(addName + L"PSO");
 }
-/****************************************************************************
-*							PrepareResourceView
-*************************************************************************//**
-*  @fn        void ColorChange::PrepareResourceView()
-*  @brief     Prepare resource view and render texture (back buffer)
-*  @param[in] void
-*  @return 　　void
-*****************************************************************************/
-void ColorChange::PrepareResourceView()
+
+void Mosaic::PrepareResourceView()
 {
 	
 }
-#pragma endregion Protected Function
+#pragma endregion Set up function

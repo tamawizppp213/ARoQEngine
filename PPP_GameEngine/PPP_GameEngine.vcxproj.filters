@@ -891,6 +891,9 @@
     <ClInclude Include="Pluguins\DDSLoader\dds_loader.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\Mosaic.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1433,6 +1436,9 @@
     <ClCompile Include="Pluguins\DDSLoader\dds_loader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -1467,5 +1473,6 @@
     <FxCompile Include="Shader\Lighting\ShaderZPrepass.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderGBuffer.hlsl" />
     <FxCompile Include="Shader\Core\ShaderDebug.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderMosaic.hlsl" />
   </ItemGroup>
 </Project>
