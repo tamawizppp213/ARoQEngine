@@ -24,10 +24,10 @@ namespace rhi::core
 {
 	class RHIDevice;
 	/****************************************************************************
-	*				  			RHIPipelineState
+	*				  			GPUDepthStencilState
 	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	*  @class     GPUDepthStencilState
+	*  @brief     DepthStencilState
 	*****************************************************************************/
 	class GPUDepthStencilState : public GPUState
 	{

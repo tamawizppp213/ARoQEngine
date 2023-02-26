@@ -8,8 +8,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUBlendState.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
+#include "../Include/DirectX12GPUBlendState.hpp"
+#include "../../Core/Include/DirectX12EnumConverter.hpp"
+#include <cassert>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,7 +23,13 @@ using namespace rhi::directX12;
 GPUBlendState::GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties)
 : rhi::core::GPUBlendState(device, blendProperties)
 {
-	_blendState.AlphaToCoverageEnable  = false;
+#ifdef _DEBUG
+	assert(device);
+	assert(blendProperties.size() > 0);
+	assert(blendProperties.size() <= _countof(_blendState.RenderTarget));
+#endif
+	// Explain https://bgolus.medium.com/anti-aliased-alpha-test-the-esoteric-alpha-to-coverage-8b177335ae4f
+	_blendState.AlphaToCoverageEnable  = blendProperties[0].AlphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
 
 	for (size_t index = 0; index < _blendProperties.size(); index++)
@@ -41,10 +48,15 @@ GPUBlendState::GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device
 		_blendState.RenderTarget[index].RenderTargetWriteMask = static_cast<UINT8>(EnumConverter::Convert(blendProperty.ColorMask));
 	}
 }
+
 GPUBlendState::GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty)
 	: rhi::core::GPUBlendState(device, blendProperty)
 {
-	_blendState.AlphaToCoverageEnable = true;
+#ifdef _DEBUG
+	assert(device);
+#endif
+
+	_blendState.AlphaToCoverageEnable  = blendProperty.AlphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
 
 	for (size_t index = 0; index < _blendProperties.size(); index++)

@@ -82,6 +82,14 @@ GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::Resource
 	if (bufferType == BufferType::Constant) { Stride = CalcConstantBufferByteSize(stride); }
 	ByteSize = Stride * Count;
 }
+
+GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const InputFormat format, const size_t count, const MemoryHeap heap, void* initData)
+{
+	auto info = GPUBufferMetaData(InputFormatSizeOf::Get(format), count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
+	info.Format = format;
+	return info;
+}
+
 GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
 {
 	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
@@ -332,27 +340,27 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 }
 #pragma endregion GPUTexture
 #pragma region BlendProperty
-BlendProperty BlendProperty::NoColorWrite()
+BlendProperty BlendProperty::NoColorWrite(const bool useAlphaToCoverage)
 {
 	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
 		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
 		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::None, false);
+		ColorMask::None, useAlphaToCoverage, false);
 }
 
-BlendProperty BlendProperty::OverWrite()
+BlendProperty BlendProperty::OverWrite(const bool useAlphaToCoverage)
 {
 	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
 		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
 		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::All, false);
+		ColorMask::All, useAlphaToCoverage, false);
 }
 
-BlendProperty BlendProperty::AlphaBlend()
+BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
 {
 	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
 		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
 		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::All, true);
+		ColorMask::All, useAlphaToCoverage, true);
 }
 #pragma endregion BlendProperty

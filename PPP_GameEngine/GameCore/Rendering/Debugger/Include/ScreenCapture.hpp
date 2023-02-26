@@ -21,6 +21,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class Keyboard;
+class LowLevelGraphicsEngine;
 namespace rhi::core
 {
 	class RHIFrameBuffer;
@@ -45,6 +46,7 @@ namespace gc::rendering
 		using KeyboardPtr    = std::shared_ptr<Keyboard>;
 		using TexturePtr     = std::shared_ptr<rhi::core::GPUTexture>;
 		using FrameBufferPtr = std::shared_ptr<rhi::core::RHIFrameBuffer>;
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -62,7 +64,7 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		ScreenCapture(const KeyboardPtr& keyboard) : _keyboard(keyboard){};
+		ScreenCapture(const LowLevelGraphicsEnginePtr& engine, const KeyboardPtr& keyboard) : _engine(engine), _keyboard(keyboard){};
 
 		virtual ~ScreenCapture() = default;
 
@@ -70,11 +72,17 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		std::wstring CreateFileDirectoryAndPath(const size_t index = 0);
+
 		std::wstring GetCurrentDataTime();
+		
+		bool IsTriggerPrintScreenKey();
 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		LowLevelGraphicsEnginePtr _engine = nullptr;
+		
 		KeyboardPtr _keyboard = nullptr;
 	};
 }

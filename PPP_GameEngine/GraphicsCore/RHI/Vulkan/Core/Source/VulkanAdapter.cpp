@@ -107,6 +107,24 @@ VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const noexcept
 }
 
 /****************************************************************************
+*                     GetFormatProperties
+*************************************************************************//**
+*  @fn        VkFormatProperties RHIDisplayAdapter::GetFormatProperties(const VkFormat format) const noexcept
+*
+*  @brief     Return device format properties struct
+*
+*  @param[in] void
+*
+*  @return Å@ VkFormatProperties
+*****************************************************************************/
+VkFormatProperties RHIDisplayAdapter::GetFormatProperties(const VkFormat format) const noexcept
+{
+	VkFormatProperties formatProperty = {};
+	vkGetPhysicalDeviceFormatProperties(_physicalDevice, format, &formatProperty);
+	return formatProperty;
+}
+
+/****************************************************************************
 *                     GetSupport
 *************************************************************************//**
 *  @fn        VkPhysicalDeviceFeatures RHIDisplayAdapter::GetSupports() const noexcept

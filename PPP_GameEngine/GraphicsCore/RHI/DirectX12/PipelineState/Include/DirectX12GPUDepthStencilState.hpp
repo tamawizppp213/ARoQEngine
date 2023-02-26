@@ -24,10 +24,10 @@ namespace rhi::directX12
 {
 
 	/****************************************************************************
-	*				  			GPUBlendState
+	*				  			GPUDepthStencilState
 	*************************************************************************//**
-	*  @class     GPUBlendState
-	*  @brief     BlendState
+	*  @class     GPUDepthStencilState
+	*  @brief     DepthStencilState
 	*****************************************************************************/
 	class GPUDepthStencilState : public rhi::core::GPUDepthStencilState
 	{

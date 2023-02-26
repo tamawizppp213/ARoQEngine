@@ -41,6 +41,8 @@ namespace file
 		static std::wstring GetDirectory(const std::wstring& path);
 		static std::string  GetDirectory(const std::string& path);
 
+		static bool MakeDirectory(const std::wstring& path);
+
 		static std::wstring GetFileName(const std::wstring& path, bool useExtension = true);
 		static std::string  GetFileName(const std::string& path, bool useExtension = true);
 

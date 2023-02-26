@@ -41,13 +41,18 @@ namespace rhi::directX12
 		*****************************************************************************/
 		D3D12_BLEND_DESC&       GetBlendState()       { return _blendState; }
 		const D3D12_BLEND_DESC& GetBlendState() const { return _blendState; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBlendState() = default;
+		
 		~GPUBlendState() = default;
+		
 		explicit GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties);
+		
 		explicit GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty);
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function

@@ -361,6 +361,18 @@ void RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t thr
 }
 
 #pragma region Transition Resource State
+/****************************************************************************
+*                     TransitionResourceState
+*************************************************************************//**
+*  @fn        void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& textures, core::ResourceState afters)
+*
+*  @brief     Transition a single resource layout using barrier
+*
+*  @param[in] const std::shared_ptr<core::GPUTexture>& texture array,
+*  @param[in] core::ResourceState state array
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after)
 {
 	BARRIER barrier = BARRIER::Transition(std::static_pointer_cast<directX12::GPUTexture>(texture)->GetResource().Get(),
@@ -369,6 +381,19 @@ void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUText
 	texture->TransitionResourceState(after);
 }
 
+/****************************************************************************
+*                     TransitionResourceStates
+*************************************************************************//**
+*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
+*
+*  @brief     Transition resource layout using barrier
+*
+*  @param[in] const std::uint32_t numStates
+*  @param[in] const std::shared_ptr<core::GPUTexture>* texture array,
+*  @param[in] core::ResourceState* state array
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
 {
 	std::vector<BARRIER> barriers = {};

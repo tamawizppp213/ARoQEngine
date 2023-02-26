@@ -52,7 +52,11 @@ namespace rhi::vulkan
 		/* return physical device support list (ex. can use geometry shader...?)*/
 		VkPhysicalDeviceFeatures             GetSupports             () const noexcept;
 		
+		/* return format available properties*/
+		VkFormatProperties GetFormatProperties(const VkFormat format) const noexcept;
+
 		VkPhysicalDeviceMemoryProperties     GetMemoryProperties() const noexcept;
+		
 		/* return all available extension name list*/
 		std::vector<VkExtensionProperties>   GetExtensionProperties  () const noexcept;
 		std::vector<std::string>             GetExtensionNameList    () const noexcept;

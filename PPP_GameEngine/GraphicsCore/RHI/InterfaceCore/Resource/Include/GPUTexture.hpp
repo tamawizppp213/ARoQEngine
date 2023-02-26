@@ -25,6 +25,7 @@ namespace rhi::core
 {
 	class RHIDevice;
 	class RHICommandList;
+	class RHICommandQueue;
 	class GPUBuffer;
 
 	/****************************************************************************
@@ -41,7 +42,7 @@ namespace rhi::core
 		*****************************************************************************/
 		virtual void Load(const std::wstring& filePath, const std::shared_ptr<RHICommandList>& commandList) = 0;
 
-		virtual void Save(const std::wstring& filePath, const std::shared_ptr<RHICommandList>& commandList) = 0;
+		virtual void Save(const std::wstring& filePath, const std::shared_ptr<RHICommandList>& commandList, const std::shared_ptr<RHICommandQueue>& commandQueue) = 0;
 
 		void TransitionResourceState(const core::ResourceState after) override
 		{

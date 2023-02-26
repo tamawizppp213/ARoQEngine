@@ -57,6 +57,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		core::CommandListType GetType() const { return _commandListType; }
+		
 		virtual void SetName(const std::wstring& name) = 0;
 
 		/****************************************************************************

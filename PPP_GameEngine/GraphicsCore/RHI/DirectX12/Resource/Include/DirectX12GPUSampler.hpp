@@ -40,14 +40,18 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc(){ return _samplerDesc; }
+
 		const D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc() const noexcept { return _samplerDesc; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUSampler() = default;
+
 		~GPUSampler() = default;
+
 		explicit GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
+	
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

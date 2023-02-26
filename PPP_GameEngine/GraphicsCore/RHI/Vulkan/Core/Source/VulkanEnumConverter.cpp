@@ -92,8 +92,13 @@ VkShaderStageFlagBits EnumConverter::Convert(const rhi::core::ShaderVisibility v
 VkFilter EnumConverter::Convert(const rhi::core::FilterOption filter, const rhi::core::FilterMask mask)
 {
 	if (filter == core::FilterOption::Anisotropy) { return VkFilter::VK_FILTER_LINEAR; }
-	return (static_cast<std::uint8_t>(filter) & static_cast<std::uint8_t>(mask)) != 0 ? VkFilter::VK_FILTER_LINEAR : VkFilter::VK_FILTER_NEAREST;
+
+	// this equation indicates that the true value shows the filter has linear sampling option, 
+	// and the false value has point sampling option.  
+	return (static_cast<std::uint8_t>(filter) & static_cast<std::uint8_t>(mask)) != 0 
+		? VkFilter::VK_FILTER_LINEAR : VkFilter::VK_FILTER_NEAREST;
 }
+
 /*-------------------------------------------------------------------
 -                        Mipmap mode
 ---------------------------------------------------------------------*/
@@ -104,6 +109,7 @@ VkSamplerMipmapMode EnumConverter::Convert(const rhi::core::FilterOption filter)
 		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR:
 		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_NEAREST;
 }
+
 /*-------------------------------------------------------------------
 -                        Texture Addressing mode
 ---------------------------------------------------------------------*/
@@ -114,11 +120,12 @@ VkSamplerAddressMode EnumConverter::Convert(const rhi::core::SamplerAddressMode 
 		case core::SamplerAddressMode::Wrap   : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		case core::SamplerAddressMode::Mirror : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
 		case core::SamplerAddressMode::Clamp  : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-		case core::SamplerAddressMode::Border: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		case core::SamplerAddressMode::Border : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 		default:
 			throw std::runtime_error("Not support texture addressing mode (vulkan api)");
 	}
 }
+
 /*-------------------------------------------------------------------
 -                        Border color mode
 ---------------------------------------------------------------------*/
@@ -323,16 +330,18 @@ EnumConverter::VulkanResourceUsage EnumConverter::Convert(const core::ResourceUs
 		core::ResourceUsage::IndexBuffer,
 		core::ResourceUsage::ConstantBuffer,
 		core::ResourceUsage::RenderTarget,
-		core::ResourceUsage::DepthStencil
+		core::ResourceUsage::DepthStencil,
+		core::ResourceUsage::UnorderedAccess,
 	};
 
 	static std::vector<VulkanResourceUsage> targetPool = {
 		VulkanResourceUsage(0, 0) ,
 		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 0),
 		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 0),
-		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 0),
+		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0),
 		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT),
-		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
+		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT),
+		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 0)
 	};
 
 	auto result = VulkanResourceUsage(0, 0);

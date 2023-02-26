@@ -57,12 +57,17 @@ namespace rhi::vulkan
 		void CreateBufferView();
 
 		const std::shared_ptr<vulkan::RHIDescriptorHeap> SelectDescriptorHeap(const core::ResourceViewType type);
-		VkImageAspectFlags GetImageAspectFlags(VkFormat format);
+
+		VkImageAspectFlags GetImageAspectFlags(const VkFormat format);
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
 		VkImageView _imageView   = VK_NULL_HANDLE;
+
 		VkBufferView _bufferView = VK_NULL_HANDLE;
+
+		bool _calledCreateBufferView = false;
+
 		std::uint32_t _heapOffset = 0;
 		
 	};

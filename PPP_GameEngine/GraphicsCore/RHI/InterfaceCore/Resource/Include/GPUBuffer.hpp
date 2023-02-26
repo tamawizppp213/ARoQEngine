@@ -85,6 +85,8 @@ namespace rhi::core
 		// @brief : Return Buffer Type
 		BufferType GetBufferType() const { return _metaData.BufferType; }
 		
+		std::uint8_t* GetCPUMemory() { return _mappedData; }
+
 		GPUBufferMetaData& GetMetaData()                      { return _metaData; }
 		const GPUBufferMetaData& GetMetaData() const noexcept { return _metaData; }
 		

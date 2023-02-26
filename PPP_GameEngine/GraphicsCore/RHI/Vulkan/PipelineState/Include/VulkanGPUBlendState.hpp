@@ -41,13 +41,18 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		const VkPipelineColorBlendStateCreateInfo& GetBlendState() const { return _blendDesc; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBlendState() = default;
+		
 		~GPUBlendState();
+		
 		explicit GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties);
+		
 		explicit GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty);
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -57,7 +62,11 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::vector<VkPipelineColorBlendAttachmentState> _attachments = {};
+		
 		VkPipelineColorBlendStateCreateInfo _blendDesc = {};
+
+	private:
+		void Prepare();
 	};
 }
 #endif

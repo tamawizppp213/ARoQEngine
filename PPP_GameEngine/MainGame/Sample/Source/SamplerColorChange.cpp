@@ -17,6 +17,7 @@
 #include "GameCore/Rendering/Effect/Include/Mosaic.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include "GameCore/Rendering/Debugger/Include/ScreenCapture.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -29,6 +30,10 @@ using namespace gc;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+namespace
+{
+	std::shared_ptr<gc::rendering::ScreenCapture> _capture = nullptr;
+}
 SampleColorChange::SampleColorChange()
 {
 
@@ -87,6 +92,7 @@ void SampleColorChange::Draw()
 
 	_skybox->Draw(_camera->GetResourceView());
 	_colorChanges[_colorIndex]->Draw();
+	_capture->Capture(_engine->GetFrameBuffer(frameIndex)->GetRenderTarget());
 	
 	if (_useBlur)  { _gaussianBlur->Draw(); }
 	if (_useMosaic) { _mosaic->Draw(); }
@@ -146,6 +152,8 @@ void SampleColorChange::LoadMaterials()
 	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
 
 	_mosaic = std::make_shared<Mosaic>(_engine, 20.0f);
+
+	_capture = std::make_shared<gc::rendering::ScreenCapture>(_engine, _gameInput.GetKeyboard());
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

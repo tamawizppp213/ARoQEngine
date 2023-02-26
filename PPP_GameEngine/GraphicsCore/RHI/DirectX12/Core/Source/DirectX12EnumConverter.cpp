@@ -58,11 +58,17 @@ D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibility
 }
 #pragma endregion Shader
 #pragma region Sampler State
+/*-------------------------------------------------------------------
+-           Texture addresing mode
+---------------------------------------------------------------------*/
 D3D12_TEXTURE_ADDRESS_MODE  EnumConverter::Convert(const rhi::core::SamplerAddressMode addressingMode)
 {
 	return static_cast<D3D12_TEXTURE_ADDRESS_MODE>(addressingMode); // all the same
 }
 
+/*-------------------------------------------------------------------
+-               Border Color
+---------------------------------------------------------------------*/
 D3D12_STATIC_BORDER_COLOR EnumConverter::Convert(const rhi::core::BorderColor borderColor)
 {
 	switch (borderColor)
@@ -78,6 +84,9 @@ D3D12_STATIC_BORDER_COLOR EnumConverter::Convert(const rhi::core::BorderColor bo
 	}
 }
 
+/*-------------------------------------------------------------------
+-               Sampling filter mode when the image is enlarged or shirinked.
+---------------------------------------------------------------------*/
 D3D12_FILTER EnumConverter::Convert(const rhi::core::FilterOption filter)
 {
 	switch (filter)
@@ -346,9 +355,10 @@ D3D12_HEAP_TYPE  EnumConverter::Convert(const rhi::core::MemoryHeap memoryHeap)
 	using enum core::MemoryHeap;
 	switch (memoryHeap)
 	{
-		case Default: return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_DEFAULT;
-		case Upload : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_UPLOAD;
-		case Custom : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_CUSTOM;
+		case Default : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_DEFAULT;
+		case Upload  : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_UPLOAD;
+		case Readback: return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_READBACK;
+		case Custom   : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_CUSTOM;
 		default:
 			throw std::runtime_error("not supported heap type (directX12 api)");
 	}

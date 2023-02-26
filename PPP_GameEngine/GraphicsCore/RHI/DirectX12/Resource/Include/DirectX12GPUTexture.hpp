@@ -37,7 +37,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		void Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList) override;
 		
-		void Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)override;
+		void Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<core::RHICommandQueue>& commandQueue)override;
 
 		void TransitionState(D3D12_RESOURCE_STATES after)
 		{

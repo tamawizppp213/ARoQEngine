@@ -260,6 +260,7 @@ namespace rhi::core
 		Clamp   = 3, // cut over 1.0 and below 0.0
 		Border  = 4, // set border color 
 	};
+
 	/****************************************************************************
 	*				  			BorderColor
 	*************************************************************************//**
@@ -269,9 +270,10 @@ namespace rhi::core
 	enum class BorderColor : std::uint8_t
 	{
 		TransparentBlack, // Indicates black, with the alpha component as fully transparent
-		OpaqueBlack,      // Indicates black, with the alpha component as fully opaque
+		OpaqueBlack,      // Indicates black, with the alpha component as fully opaque(完全不透明)
 		OpaqueWhite       // Indicates white, with the alpha component as fully opaque
 	};
+
 	/****************************************************************************
 	*				  			FilterMask
 	*************************************************************************//**
@@ -284,11 +286,12 @@ namespace rhi::core
 		Mag = 0x2,
 		Min = 0x4
 	};
+
 	/****************************************************************************
 	*				  			FilterOption
 	*************************************************************************//**
 	*  @class     FilterOption
-	*  @brief     Sampling filter option
+	*  @brief     Sampling filter option. linear -> linear sampling, point -> point sampling
 	*****************************************************************************/
 	enum class FilterOption : std::uint8_t
 	{
@@ -302,6 +305,7 @@ namespace rhi::core
 		MinLinearMagLinearMipLinear = 7,
 		Anisotropy = 8
 	};
+
 	/****************************************************************************
 	*				  			Default Sampler Type
 	*************************************************************************//**
@@ -317,6 +321,7 @@ namespace rhi::core
 		SamplerAnisotropicWrap,   // Anisotropic + Wrap
 		SamplerAnisotropicClamp   // Anisotropic + Clamp
 	};
+
 	/****************************************************************************
 	*				  			SamplerInfo
 	*************************************************************************//**
@@ -329,15 +334,15 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		FilterOption        Filter        = FilterOption::MinPointMagPointMipPoint;
-		SamplerAddressMode  AddressModeU  = SamplerAddressMode::Wrap;
-		SamplerAddressMode  AddressModeV  = SamplerAddressMode::Wrap;
-		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;
-		BorderColor         Border        = BorderColor::TransparentBlack;
-		size_t              MaxAnisotropy = 1;
-		float               MipLODBias    = 0.0f;
-		float               MinLOD        = 0.0f;
-		float               MaxLOD        = FLT_MAX;
+		FilterOption        Filter        = FilterOption::MinPointMagPointMipPoint; // Specify sampling method for image enlargement/shirinkage*
+		SamplerAddressMode  AddressModeU  = SamplerAddressMode::Wrap;               // Texture addressing mode in the U direction
+		SamplerAddressMode  AddressModeV  = SamplerAddressMode::Wrap;               // Texture addressing mode in the V direction
+		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;               // Texture addressing mode in the W direction
+		BorderColor         Border        = BorderColor::TransparentBlack;          // Border color 
+		size_t              MaxAnisotropy = 1;                                      // Max anisotropy
+		float               MipLODBias    = 0.0f;                                   // Defined LOD = normalLOD + bias
+		float               MinLOD        = 0.0f;                                   // Min LOD size
+		float               MaxLOD        = FLT_MAX;                                // Max LOD size: FLT_MAX 上限を指定しない.
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -425,17 +430,19 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class ColorMask : std::uint8_t
 	{
-		None  = 0,
-		Red   = 0x1,
-		Green = 0x2,
-		Blue  = 0x4,
-		Alpha = 0x8,
-		All   = Red | Green | Blue | Alpha
+		None  = 0,   // All Disable 
+		Red   = 0x1, // Red WriteEnable
+		Green = 0x2, // Green WriteEnable
+		Blue  = 0x4, // Blue WriteEnable
+		Alpha = 0x8, // Alpha WriteEnable
+		All   = Red | Green | Blue | Alpha // AllEnable
 	};
+
 	inline ColorMask operator | (const ColorMask& left, const ColorMask& right)
 	{
 		return static_cast<ColorMask>( static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
 	}
+
 	/****************************************************************************
 	*				  			BlendProperty
 	*************************************************************************//**
@@ -451,18 +458,19 @@ namespace rhi::core
 		BlendFactor   SourceAlpha      = BlendFactor::One;
 		BlendFactor   Source           = BlendFactor::One;
 		ColorMask     ColorMask        = ColorMask::All;
+		bool AlphaToConverageEnable    = false;                // Multi sample時に使用する
 
 		bool Enable = false;
 		BlendProperty() = default;
 
 		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, BlendFactor destAlpha, BlendFactor dest,
-			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool enable = false) :
+			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool AlphaToConverageEnable = false, bool enable = false) :
 			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), Destination(dest), SourceAlpha(srcAlpha),
 			Source(src), ColorMask(colorMask), Enable(enable) { };
 		
-		static BlendProperty NoColorWrite();
-		static BlendProperty OverWrite();
-		static BlendProperty AlphaBlend();
+		static BlendProperty NoColorWrite(const bool useAlphaToCoverage = false);
+		static BlendProperty OverWrite(const bool useAlphaToCoverage = false);
+		static BlendProperty AlphaBlend(const bool useAlphaToCoverage = false);
 		
 	};
 #pragma endregion        Blend State
@@ -763,6 +771,7 @@ namespace rhi::core
 		ResourceState  State         = ResourceState::GeneralRead; // resource layout
 		MemoryHeap     HeapType      = MemoryHeap::Default;         // memory heap type
 		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
+		InputFormat    Format        = InputFormat::Unknown;        // 基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある
 		void*          InitData      = nullptr; // Init Data
 
 		/****************************************************************************
@@ -778,10 +787,12 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBufferMetaData() = default;
+
 		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState layout, MemoryHeap heapType, core::BufferType bufferType, void* initData = nullptr);
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
+		static GPUBufferMetaData UploadBuffer(const InputFormat format, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
 		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
 		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, void* initData = nullptr);
 		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 

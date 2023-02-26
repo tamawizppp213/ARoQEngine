@@ -14,10 +14,14 @@
 #include "../../Core/Include/DirectX12Device.hpp"
 #include "../../Core/Include/DirectX12CommandList.hpp"
 #include "../../Core/Include/DirectX12CommandAllocator.hpp"
+#include "../../Core/Include/DirectX12CommandQueue.hpp"
+#include "../../Core/Include/DirectX12Fence.hpp"
 #include "../../Core/Include/DirectX12BaseStruct.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <DirectXTex/DirectXTex.h>
+#include <wincodec.h>
+#include <wincodecsdk.h>
 #include <stdexcept>
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -242,12 +246,14 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	_resource->SetName(fileName.c_str());
 }
 
-void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)
+void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<core::RHICommandQueue>& commandQueue)
 {
 #ifdef _DEBUG
-	assert(commandList->GetType() == core::CommandListType::Copy);
+	assert(commandList->GetType() == core::CommandListType::Graphics);
+	assert(commandQueue->GetType() == core::CommandListType::Graphics);
 #endif
 	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList);
+	dxCommandList->EndRenderPass();
 
 	const TexMetadata dxMetaData =
 	{
@@ -271,8 +277,52 @@ void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::
 
 	DirectX::ComputePitch(_resource->GetDesc().Format, _metaData.Width, _metaData.Height, image.rowPitch, image.slicePitch);
 	
-	const auto metaData = core::GPUBufferMetaData::UploadBuffer(core::PixelFormatSizeOf::Get(_metaData.PixelFormat), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
-	const auto buffer = _device->CreateBuffer(metaData);
+	/*-------------------------------------------------------------------
+	-       Create read back buffer to read gpu memory to the cpu memory
+	---------------------------------------------------------------------*/
+	auto metaData       = core::GPUBufferMetaData::UploadBuffer(core::PixelFormatSizeOf::Get(_metaData.PixelFormat), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
+	metaData.State      = core::ResourceState::CopyDestination;
+	const auto buffer   = _device->CreateBuffer(metaData);
+	const auto dxBuffer = std::static_pointer_cast<GPUBuffer>(buffer);
+
+	//Transition the resource if necessary
+	const auto state = GetResourceState();
+	dxCommandList->TransitionResourceState(shared_from_this(), core::ResourceState::CopySource);
+
+	/*-------------------------------------------------------------------
+	-       Get the copy target location
+	---------------------------------------------------------------------*/
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT bufferFootprint;
+	bufferFootprint.Offset = 0;
+	bufferFootprint.Footprint.Width    = static_cast<UINT>(image.width);
+	bufferFootprint.Footprint.Height   = static_cast<UINT>(image.height);
+	bufferFootprint.Footprint.Depth    = 1;
+	bufferFootprint.Footprint.RowPitch = static_cast<UINT>(image.rowPitch);
+	bufferFootprint.Footprint.Format   = image.format;
+
+	const auto copyDestLocation = TEXTURE_COPY_LOCATION(dxBuffer->GetResourcePtr(), bufferFootprint);
+	const auto copySrcLocation  = TEXTURE_COPY_LOCATION(_resource.Get(), 0);
+
+	dxCommandList->GetCommandList()->CopyTextureRegion(&copyDestLocation, 0, 0, 0, &copySrcLocation, nullptr);
+	dxCommandList->TransitionResourceState(shared_from_this(), state);
+
+	/*-------------------------------------------------------------------
+	-       Execute and Wait GPU
+	---------------------------------------------------------------------*/
+	const auto fence = _device->CreateFence(0, L"SaveFence");
+
+	dxCommandList->EndRecording();
+	commandQueue->Execute({ commandList });
+	commandQueue->Signal(fence, 1);
+	fence->Wait(1);
+
+	/*-------------------------------------------------------------------
+	-       Buffer copy
+	---------------------------------------------------------------------*/
+	buffer->CopyStart();
+	image.pixels = buffer->GetCPUMemory();
+	buffer->CopyEnd();
+
 
 	std::wstring extension = file::FileSystem::GetExtension(filePath);
 	/*-------------------------------------------------------------------
@@ -280,19 +330,44 @@ void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::
 	---------------------------------------------------------------------*/
 	if (extension == L"tga")
 	{
-		
+		ThrowIfFailed(DirectX::SaveToTGAFile(image, filePath.c_str()));
 	}
 	else if (extension == L"dds")
 	{
-		
+		ThrowIfFailed(DirectX::SaveToDDSFile(image, DDS_FLAGS_NONE, filePath.c_str()));
 	}
 	else if (extension == L"hdr")
 	{
-		
+		ThrowIfFailed(DirectX::SaveToHDRFile(image, filePath.c_str()));
+	}
+	else if (extension == L"png")
+	{
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatPng, filePath.c_str()));
+	}
+	else if (extension == L"bmp")
+	{
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatBmp, filePath.c_str()));
+	}
+	else if (extension == L"jpeg" || extension == L"jpg")
+	{
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatJpeg, filePath.c_str()));
+	}
+	else if (extension == L"ico")
+	{
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatIco, filePath.c_str()));
+	}
+	else if (extension == L"tiff")
+	{
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatTiff, filePath.c_str()));
+	}
+	else if (extension == L"gif")
+	{
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatGif, filePath.c_str()));
 	}
 	else
 	{
-		
+		throw std::runtime_error("unknown extension");
+
 	}
 	
 	

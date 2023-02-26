@@ -33,7 +33,8 @@ namespace rhi::core
 	*				  			GPUResourceView
 	*************************************************************************//**
 	*  @class     GPUResourceView
-	*  @brief     Resource View(å„Ç≈NoncopyableÇ…ïœçXÇ∑ÇÈ)
+	*  @brief     Specify the access mode to resource. 
+	*             Use the bind function to bind resource layout array index to the command list. 
 	*****************************************************************************/
 	class GPUResourceView : public NonCopyable
 	{
@@ -41,6 +42,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Bind resource layout array index to the command list.
+		            index : resource layout array index*/
 		virtual void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) = 0;
 		
 		/****************************************************************************
@@ -52,14 +55,19 @@ namespace rhi::core
 		/* @brief: Return resource view type*/
 		core::ResourceViewType GetResourceViewType() const noexcept { return _resourceViewType; }
 
+		/* @brief: Return descriptorID in the descriptor heap. */
 		std::uint32_t GetDescriptorID() const { return _descriptorID; }
 
+		/* @brief: Return texture pointer or nullptr */
 		std::shared_ptr<GPUTexture> GetTexture() const noexcept{ return _texture; }
 
+		/* @brief : Return buffer pointer or nullptr*/
 		std::shared_ptr<GPUBuffer> GetBuffer() const noexcept { return _buffer; }
 
+		/* @brief : Set texture*/
 		void SetTexture(const std::shared_ptr<GPUTexture>& texture) { _texture = texture; }
 
+		/* @brief : Set buffer*/
 		void SetBuffer(const std::shared_ptr<GPUBuffer>& buffer) { _buffer = buffer; }
 
 		/****************************************************************************

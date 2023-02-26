@@ -284,11 +284,36 @@ void RHICommandList::SetIndexBuffer(const std::shared_ptr<core::GPUBuffer>& buff
 }
 #pragma endregion Graphics Command
 #pragma region TransitionResourceLayout
+/****************************************************************************
+*                     TransitionResourceStates
+*************************************************************************//**
+*  @fn        void RHICommandList::TransitionResourceStates(const std::shared_ptr<core::GPUTexture>& textures, core::ResourceState afters)
+*
+*  @brief     Transition a single resource layout using barrier
+*
+*  @param[in] const std::shared_ptr<core::GPUTexture>& texture array,
+*  @param[in] core::ResourceState state array
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after)
 {
 	TransitionResourceStates(1, &texture, &after);
 }
 
+/****************************************************************************
+*                     TransitionResourceStates
+*************************************************************************//**
+*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
+*
+*  @brief     Transition resource layout using barrier
+*
+*  @param[in] const std::uint32_t numStates
+*  @param[in] const std::shared_ptr<core::GPUTexture>* texture array,
+*  @param[in] core::ResourceState* state array
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
 {
 	if (numStates <= 0) { return; }
@@ -300,19 +325,19 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 
 		auto& imageMemoryBarrier               = imageMemoryBarriers[i];
 		imageMemoryBarrier.sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		imageMemoryBarrier.image               = vkTexture->GetImage();
+		imageMemoryBarrier.pNext               = nullptr;
+		imageMemoryBarrier.srcAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.oldLayout);
+		imageMemoryBarrier.dstAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.newLayout);
 		imageMemoryBarrier.oldLayout           = EnumConverter::Convert(vkTexture->GetResourceState());
 		imageMemoryBarrier.newLayout           = EnumConverter::Convert(afters[i]);
 		imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		imageMemoryBarrier.srcAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.oldLayout);
-		imageMemoryBarrier.dstAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.newLayout);
+		imageMemoryBarrier.image               = vkTexture->GetImage();
 		imageMemoryBarrier.subresourceRange.aspectMask     = EnumConverter::Convert(vkTexture->GetPixelFormat(), vkTexture->GetUsage());
 		imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
 		imageMemoryBarrier.subresourceRange.baseMipLevel   = 0;
 		imageMemoryBarrier.subresourceRange.layerCount     = static_cast<std::uint32_t>(vkTexture->GetArrayLength());
 		imageMemoryBarrier.subresourceRange.levelCount     = static_cast<std::uint32_t>(vkTexture->GetMipMapLevels());
-		imageMemoryBarrier.pNext = nullptr;
 
 		vkTexture->TransitionResourceState(afters[i]);
 	}

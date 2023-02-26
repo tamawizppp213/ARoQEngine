@@ -8,13 +8,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUResourceView.hpp"
-#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUBuffer.hpp"
-#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDescriptorHeap.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandList.hpp"
+#include "../Include/VulkanGPUResourceView.hpp"
+#include "../Include/VulkanGPUBuffer.hpp"
+#include "../Include/VulkanGPUTexture.hpp"
+#include "../../Core/Include/VulkanDescriptorHeap.hpp"
+#include "../../Core/Include/VulkanEnumConverter.hpp"
+#include "../../Core/Include/VulkanDevice.hpp"
+#include "../../Core/Include/VulkanAdapter.hpp"
+#include "../../Core/Include/VulkanCommandList.hpp"
 #include <stdexcept>
 #include <cassert>
 //////////////////////////////////////////////////////////////////////////////////
@@ -82,9 +83,21 @@ GPUResourceView::~GPUResourceView()
 }
 #pragma endregion Constructor and Destructor
 #pragma region Bind Function
+/****************************************************************************
+*                     Bind
+*************************************************************************//**
+*  @fn        void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
+*
+*  @brief     Bind resource layout array index to the command list.
+			  index : resource layout array index
+
+*  @param[in] const std::shared_ptr<core::RHICommandList>& commandList pointer
+*  @param[in] const std::uint32_t resource layout array index.
+*
+*  @return 　　void
+*****************************************************************************/
 void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
 {
-	//assert(commandList->GetType() == core::CommandListType::Graphics);
 
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	const auto vkHeap   = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_heap);
@@ -108,24 +121,28 @@ void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandL
 		/*-------------------------------------------------------------------
 		-               Set up Image info
 		---------------------------------------------------------------------*/
-		VkDescriptorImageInfo imageInfo = {};
-		imageInfo.imageView   = _imageView;
-		imageInfo.sampler     = nullptr; //必要になりそう
-		imageInfo.imageLayout = EnumConverter::Convert(vkTexture->GetResourceState());
+		const VkDescriptorImageInfo imageInfo = 
+		{
+			.sampler     = nullptr,
+			.imageView   = _imageView,
+			.imageLayout = EnumConverter::Convert(vkTexture->GetResourceState())
+		};
 		
 		writeDesc.pImageInfo     = &imageInfo;
 		writeDesc.descriptorType = EnumConverter::Convert(Convert(_resourceViewType));
 	}
-	else if (_bufferView)
+	else if (_calledCreateBufferView || _bufferView)
 	{
 		const auto vkBuffer = std::static_pointer_cast<vulkan::GPUBuffer>(_buffer);
 		/*-------------------------------------------------------------------
 		-               Set up Buffer info
 		---------------------------------------------------------------------*/
-		VkDescriptorBufferInfo bufferInfo = {};
-		bufferInfo.buffer = vkBuffer->GetBuffer();
-		bufferInfo.range  = vkBuffer->GetTotalByteSize();
-		bufferInfo.offset = 0;
+		const VkDescriptorBufferInfo bufferInfo = 
+		{
+			.buffer = vkBuffer->GetBuffer(),
+			.offset = 0,
+			.range  = vkBuffer->GetTotalByteSize()
+		};
 		
 		writeDesc.pBufferInfo = &bufferInfo;
 		writeDesc.descriptorType = EnumConverter::Convert(Convert(_resourceViewType)); // UAVもくるから分からん
@@ -141,6 +158,17 @@ void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandL
 }
 #pragma endregion Bind Function
 #pragma region Prepare View Function 
+/****************************************************************************
+*                     CreateView
+*************************************************************************//**
+*  @fn        void GPUResourceView::CreateView()
+*
+*  @brief     Create view
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
 void GPUResourceView::CreateView()
 {
 	switch (_resourceViewType)
@@ -172,49 +200,106 @@ void GPUResourceView::CreateView()
 		}
 	}
 }
+
+/****************************************************************************
+*                     CreateImageView
+*************************************************************************//**
+*  @fn        void GPUResourceView::CreateImageView()
+*
+*  @brief     Create image view
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
 void GPUResourceView::CreateImageView()
 {
 	const auto vkDevice = static_pointer_cast<vulkan::RHIDevice>(_device);
 	const auto vkImage  = static_pointer_cast<vulkan::GPUTexture>(_texture);
 
-	VkImageViewCreateInfo imageViewCreateInfo = {};
-	imageViewCreateInfo.sType      = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-	imageViewCreateInfo.format     = EnumConverter::Convert(vkImage->GetPixelFormat());
-	imageViewCreateInfo.viewType   = EnumConverter::Convert(vkImage->GetResourceType());
-	imageViewCreateInfo.image      = vkImage->GetImage();
-	imageViewCreateInfo.components = VkComponentMapping(VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_A);
-	imageViewCreateInfo.subresourceRange.baseMipLevel   = 0;
-	imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
-	imageViewCreateInfo.subresourceRange.layerCount     = static_cast<std::uint32_t>(vkImage->GetArrayLength());
-	imageViewCreateInfo.subresourceRange.levelCount     = static_cast<std::uint32_t>(vkImage->GetMipMapLevels());
-	imageViewCreateInfo.subresourceRange.aspectMask     = GetImageAspectFlags(imageViewCreateInfo.format);
+	const VkImageViewCreateInfo imageViewCreateInfo = 
+	{
+		.sType            = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+		.pNext            = nullptr,
+		.flags            = 0,
+		.image            = vkImage->GetImage(),
+		.viewType         = EnumConverter::Convert(vkImage->GetResourceType()),
+		.format           = EnumConverter::Convert(vkImage->GetPixelFormat()),
+		.components       = VkComponentMapping(VkComponentSwizzle::VK_COMPONENT_SWIZZLE_R, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_G, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_B, VkComponentSwizzle::VK_COMPONENT_SWIZZLE_A),
+		.subresourceRange = VkImageSubresourceRange
+		(
+			GetImageAspectFlags(imageViewCreateInfo.format),        // aspect mask
+			0,                                                      // base mip levels
+			static_cast<std::uint32_t>(vkImage->GetMipMapLevels()), // level count
+			0,                                                      // base array layer
+			static_cast<std::uint32_t>(vkImage->GetArrayLength())   // layer count
+		)
+	};
 
 	if (vkCreateImageView(vkDevice->GetDevice(), &imageViewCreateInfo, nullptr, &_imageView) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create buffer view (vulkan api)");
 	}
 }
+
+/****************************************************************************
+*                     CreateBufferView
+*************************************************************************//**
+*  @fn        void GPUResourceView::CreateBufferView()
+*
+*  @brief     Create buffer view
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
 void GPUResourceView::CreateBufferView()
 {
-	const auto vkDevice = static_pointer_cast<vulkan::RHIDevice>(_device);
-	const auto vkBuffer = static_pointer_cast<vulkan::GPUBuffer>(_buffer);
+#ifdef _DEBUG
+	assert(_buffer->IsBuffer());
+#endif
 
-	VkBufferViewCreateInfo bufferViewCreateInfo = {};
-	bufferViewCreateInfo.buffer = vkBuffer->GetBuffer();
-	bufferViewCreateInfo.sType  = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO;
-	bufferViewCreateInfo.pNext  = nullptr;
-	bufferViewCreateInfo.flags  = 0;
-	bufferViewCreateInfo.format = VK_FORMAT_UNDEFINED;
-	bufferViewCreateInfo.offset = 0;
-	bufferViewCreateInfo.range  = vkBuffer->GetTotalByteSize();
-
-	if (vkCreateBufferView(vkDevice->GetDevice(), &bufferViewCreateInfo, nullptr, &_bufferView) != VK_SUCCESS)
+	if (_buffer->GetMetaData().Format != core::InputFormat::Unknown)
 	{
-		throw std::runtime_error("failed to create buffer view (vulkan api)");
+		
+		const auto vkDevice = static_pointer_cast<vulkan::RHIDevice>(_device);
+		const auto vkBuffer = static_pointer_cast<vulkan::GPUBuffer>(_buffer);
+
+		const VkBufferViewCreateInfo bufferViewCreateInfo =
+		{
+			.sType  = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO,
+			.pNext  = nullptr,
+			.flags  = 0,
+			.buffer = vkBuffer->GetBuffer(),
+			.format = EnumConverter::Convert(_buffer->GetMetaData().Format),
+			.offset = 0,
+			.range  = vkBuffer->GetTotalByteSize()
+		};
+
+		if (vkCreateBufferView(vkDevice->GetDevice(), &bufferViewCreateInfo, nullptr, &_bufferView) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to create buffer view (vulkan api)");
+		}
+
+	}
+	else
+	{
+		_calledCreateBufferView = true;
 	}
 }
 
-VkImageAspectFlags GPUResourceView::GetImageAspectFlags(VkFormat format)
+/****************************************************************************
+*                     GetImageAspectFlags
+*************************************************************************//**
+*  @fn        VkImageAspectFlags GPUResourceView::GetImageAspectFlags(const VkFormat format)
+*
+*  @brief     Return the image aspect flags in accroding to the Vkformat.
+*
+*  @param[in] const VkFormat format
+*
+*  @return 　　VkImageAspectFlags
+*****************************************************************************/
+VkImageAspectFlags GPUResourceView::GetImageAspectFlags(const VkFormat format)
 {
 	switch (format)
 	{
@@ -238,8 +323,11 @@ VkImageAspectFlags GPUResourceView::GetImageAspectFlags(VkFormat format)
 *                     SelectDescriptorHeap
 *************************************************************************//**
 *  @fn        const std::shared_ptr<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
+* 
 *  @brief     Select DirectX12 Descriptor Heap. return custom heap or default heap
+* 
 *  @param[in] const core::DescriptorHeapType type
+* 
 *  @return 　　const std::shared_ptr<directX12::RHIDescriptorHeap>
 *****************************************************************************/
 const std::shared_ptr<vulkan::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
@@ -251,10 +339,10 @@ const std::shared_ptr<vulkan::RHIDescriptorHeap> GPUResourceView::SelectDescript
 	std::shared_ptr<vulkan::RHIDescriptorHeap> defaultHeap = nullptr;
 	switch (type)
 	{
-		case core::ResourceViewType::ConstantBuffer: { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::CBV)); break; }
+		case core::ResourceViewType::ConstantBuffer:        { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::CBV)); break; }
 		case core::ResourceViewType::Texture:
 		case core::ResourceViewType::Buffer:
-		case core::ResourceViewType::StructuredBuffer: { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::SRV)); break; }
+		case core::ResourceViewType::StructuredBuffer:      { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::SRV)); break; }
 		case core::ResourceViewType::RWBuffer:
 		case core::ResourceViewType::RWTexture:
 		case core::ResourceViewType::RWStructuredBuffer:    { defaultHeap = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::UAV)); break; }
@@ -266,8 +354,8 @@ const std::shared_ptr<vulkan::RHIDescriptorHeap> GPUResourceView::SelectDescript
 			throw std::runtime_error("not support descriptor view. (vulkan api)");
 		}
 	}
-	_heap = defaultHeap;
 
+	_heap = defaultHeap;
 	return defaultHeap;
 }
 #pragma endregion Prepare View Function

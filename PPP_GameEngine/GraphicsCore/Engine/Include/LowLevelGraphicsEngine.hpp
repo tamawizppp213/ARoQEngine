@@ -50,6 +50,7 @@ protected:
 	using AdapterPtr     = std::shared_ptr<rhi::core::RHIDisplayAdapter>;
 	using DevicePtr      = std::shared_ptr<rhi::core::RHIDevice>;
 	using CommandListPtr = std::shared_ptr<rhi::core::RHICommandList>;
+	using CommandQueuePtr = std::shared_ptr<rhi::core::RHICommandQueue>;
 
 public:
 	/****************************************************************************
@@ -95,6 +96,8 @@ public:
 	/* @brief : CommandList (Regist GPU Commands) */
 	CommandListPtr GetCommandList(const rhi::core::CommandListType type) const noexcept { return _commandLists.at(type); }
 	
+	CommandQueuePtr GetCommandQueue(const rhi::core::CommandListType type) const noexcept { return _commandQueues.at(type); }
+
 	/* @brief : Default RenderPass*/
 	std::shared_ptr<rhi::core::RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
 

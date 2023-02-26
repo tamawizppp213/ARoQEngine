@@ -11,6 +11,7 @@
 #include "GameUtility/File/Include/FileSystem.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <Windows.h>
+#include <sys/stat.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -73,6 +74,13 @@ std::string FileSystem::GetDirectory(const std::string& path)
 	UINT index = static_cast<UINT>(path.find_last_of(L'/'));
 	return path.substr(0, (UINT64)index + 1);
 }
+
+bool FileSystem::MakeDirectory(const std::wstring& path)
+{
+	return _wmkdir(path.c_str()) == 0;
+}
+
+
 /****************************************************************************
 *							GetFileName
 *************************************************************************//**
