@@ -40,6 +40,7 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		const D3D12_DEPTH_STENCIL_DESC& GetDepthStencilState() const noexcept { return _depthStencilDesc; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -52,7 +53,9 @@ namespace rhi::directX12
 			const core::StencilOperatorInfo& front    = core::StencilOperatorInfo(),
 			const core::StencilOperatorInfo& back     = core::StencilOperatorInfo()
 		);
+
 		~GPUDepthStencilState() = default;
+		
 		GPUDepthStencilState() = default;
 	protected:
 		/****************************************************************************

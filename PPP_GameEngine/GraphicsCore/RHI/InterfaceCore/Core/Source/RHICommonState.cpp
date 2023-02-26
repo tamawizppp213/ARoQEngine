@@ -364,3 +364,14 @@ BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
 		ColorMask::All, useAlphaToCoverage, true);
 }
 #pragma endregion BlendProperty
+#pragma region RasterizerProperty
+RasterizerProperty RasterizerProperty::Solid(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode)
+{
+	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample);
+}
+
+RasterizerProperty RasterizerProperty::WireFrame(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode)
+{
+	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample);
+}
+#pragma endregion RasterizerProperty

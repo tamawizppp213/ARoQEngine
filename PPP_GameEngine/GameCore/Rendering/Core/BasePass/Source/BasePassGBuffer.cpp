@@ -132,7 +132,7 @@ void GBuffer::PreparePipelineState(const std::wstring& name)
 	---------------------------------------------------------------------*/
 	_pipeline = device->CreateGraphicPipelineState(_renderPass, _resourceLayout);
 	_pipeline->SetBlendState        (factory->CreateBlendState(blends));
-	_pipeline->SetRasterizerState   (factory->CreateRasterizerState());
+	_pipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultSkinVertexElement()));
 	_pipeline->SetDepthStencilState (factory->CreateDepthStencilState());
 	_pipeline->SetVertexShader(vs);

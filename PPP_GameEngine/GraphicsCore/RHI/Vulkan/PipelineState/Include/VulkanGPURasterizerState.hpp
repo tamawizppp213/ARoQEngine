@@ -44,13 +44,13 @@ namespace rhi::vulkan
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPURasterizerState() = default;
+		
 		~GPURasterizerState() = default;
+		
 		explicit GPURasterizerState(
 			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const core::FrontFace   frontFace   = core::FrontFace::Clockwise,
-			const core::CullingMode cullingMode = core::CullingMode::None,
-			const core::FillMode    fillMode    = core::FillMode::Solid,
-			const bool useDepthClamp = true);
+			const rhi::core::RasterizerProperty& rasterizerProperty);
+
 	protected:
 		/****************************************************************************
 		**                Protected Function

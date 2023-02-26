@@ -149,7 +149,7 @@ void DebugDrawer::PreparePipelineState(const std::wstring& name)
 	---------------------------------------------------------------------*/
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::AlphaBlend()));
-	_pipeline->SetRasterizerState(factory->CreateRasterizerState(FrontFace::Clockwise, CullingMode::None, FillMode::WireFrame));
+	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::WireFrame()));
 	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultSkinVertexElement()));
 	_pipeline->SetVertexShader(vs);

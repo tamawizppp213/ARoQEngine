@@ -24,10 +24,10 @@ namespace rhi::directX12
 {
 
 	/****************************************************************************
-	*				  			GPUBlendState
+	*				  			GPURasterizerState
 	*************************************************************************//**
-	*  @class     GPUBlendState
-	*  @brief     BlendState
+	*  @class     GPURasterizerState
+	*  @brief     DirectX12 rasterizer state
 	*****************************************************************************/
 	class GPURasterizerState : public rhi::core::GPURasterizerState
 	{
@@ -40,17 +40,18 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		const D3D12_RASTERIZER_DESC& GetRasterizerState() const noexcept { return _rasterizerState; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPURasterizerState() = default;
+		
 		~GPURasterizerState() = default;
+		
 		explicit GPURasterizerState(
 			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const core::FrontFace   frontFace   = core::FrontFace::Clockwise,
-			const core::CullingMode cullingMode = core::CullingMode::None,
-			const core::FillMode    fillMode    = core::FillMode::Solid,
-			const bool useDepthClamp = true);
+			const rhi::core::RasterizerProperty& rasterizerProperty);
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function

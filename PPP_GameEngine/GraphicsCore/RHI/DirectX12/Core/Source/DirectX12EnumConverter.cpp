@@ -159,6 +159,9 @@ D3D12_COLOR_WRITE_ENABLE EnumConverter::Convert(const rhi::core::ColorMask color
 }
 #pragma endregion        BlendState
 #pragma region RasterizerState
+/*-------------------------------------------------------------------
+-               Polygon fill mode
+---------------------------------------------------------------------*/
 D3D12_FILL_MODE EnumConverter::Convert(const rhi::core::FillMode fillMode)
 {
 	switch (fillMode)
@@ -167,11 +170,15 @@ D3D12_FILL_MODE EnumConverter::Convert(const rhi::core::FillMode fillMode)
 
 		case Solid    : return D3D12_FILL_MODE_SOLID;
 		case WireFrame: return D3D12_FILL_MODE_WIREFRAME;
-
+		case Point    : throw  std::runtime_error("You must select the Vulkan API to use this mode.");
 		default:
 			throw std::runtime_error("not supported fill mode type (directX12 api)");
 	}
 }
+
+/*-------------------------------------------------------------------
+-               Polygon culling mode
+---------------------------------------------------------------------*/
 D3D12_CULL_MODE EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
 {
 	switch (cullingMode)
@@ -186,6 +193,10 @@ D3D12_CULL_MODE EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
 			throw std::runtime_error("not supported culling mode type (directX12 api)");
 	}
 }
+
+/*-------------------------------------------------------------------
+-               Front face mode
+---------------------------------------------------------------------*/
 bool EnumConverter::Convert(const rhi::core::FrontFace   frontFace)
 {
 	return frontFace == rhi::core::FrontFace::CounterClockwise;

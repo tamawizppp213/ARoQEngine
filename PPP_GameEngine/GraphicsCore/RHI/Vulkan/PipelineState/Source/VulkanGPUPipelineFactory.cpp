@@ -36,13 +36,10 @@ std::shared_ptr<core::GPUInputAssemblyState> GPUPipelineFactory::CreateInputAsse
 }
 
 std::shared_ptr<core::GPURasterizerState> GPUPipelineFactory::CreateRasterizerState(
-	const core::FrontFace   frontFace,
-	const core::CullingMode cullingMode,
-	const core::FillMode    fillMode,
-	const bool depthClamp)
+	const core::RasterizerProperty& rasterizerProperty)
 {
 	return std::static_pointer_cast<core::GPURasterizerState>(
-		std::make_shared<GPURasterizerState>(_device, frontFace, cullingMode, fillMode, depthClamp));
+		std::make_shared<GPURasterizerState>(_device, rasterizerProperty));
 }
 
 std::shared_ptr<core::GPUDepthStencilState> GPUPipelineFactory::CreateDepthStencilState(

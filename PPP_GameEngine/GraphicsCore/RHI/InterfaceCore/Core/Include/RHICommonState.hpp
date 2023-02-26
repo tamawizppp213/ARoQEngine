@@ -461,6 +461,7 @@ namespace rhi::core
 		bool AlphaToConverageEnable    = false;                // Multi sampleŽž‚ÉŽg—p‚·‚é
 
 		bool Enable = false;
+
 		BlendProperty() = default;
 
 		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, BlendFactor destAlpha, BlendFactor dest,
@@ -469,7 +470,7 @@ namespace rhi::core
 			Source(src), ColorMask(colorMask), Enable(enable) { };
 		
 		static BlendProperty NoColorWrite(const bool useAlphaToCoverage = false);
-		static BlendProperty OverWrite(const bool useAlphaToCoverage = false);
+		static BlendProperty OverWrite (const bool useAlphaToCoverage = false);
 		static BlendProperty AlphaBlend(const bool useAlphaToCoverage = false);
 		
 	};
@@ -491,12 +492,14 @@ namespace rhi::core
 		Count32 = 32,     // 32
 		Count64 = 64      // 64
 	};
+
 	class MultiSampleSizeOf
 	{
 	public: 
 		MultiSampleSizeOf() = default;
 		static size_t Get(const MultiSample sample) { return static_cast<size_t>(sample); }
 	};
+
 	/****************************************************************************
 	*				  			CullingMode
 	*************************************************************************//**
@@ -509,6 +512,7 @@ namespace rhi::core
 		Front, // front culling
 		Back   // back  culling
 	};
+
 	/****************************************************************************
 	*				  			FrontFace
 	*************************************************************************//**
@@ -520,6 +524,7 @@ namespace rhi::core
 		CounterClockwise, // for right hand coordinate
 		Clockwise,        // for left  hand coordinate
 	};
+
 	/****************************************************************************
 	*				  			FillMode
 	*************************************************************************//**
@@ -533,6 +538,29 @@ namespace rhi::core
 		Point,     // point cloud. (only vulkan API)
 	};
 
+	/****************************************************************************
+	*				  			RasterizerProperty
+	*************************************************************************//**
+	*  @class     RasterizerProperty
+	*  @brief     RasterizerProperty
+	*****************************************************************************/
+	struct RasterizerProperty
+	{
+		FrontFace   FaceType       = FrontFace::Clockwise;
+		CullingMode CullingType    = CullingMode::None;
+		FillMode    FillType       = FillMode::Solid;
+		bool        UseDepthClamp  = true;
+		bool        UseMultiSample = true;
+		bool        UseAntiAliasLine = false; // DirectX12 only use
+
+		RasterizerProperty() = default;
+
+		RasterizerProperty(const FrontFace frontFace, const CullingMode cullingMode, const FillMode fillMode, const bool useDepthClamp, const bool useMultiSample) :
+			FaceType(frontFace), CullingType(cullingMode), FillType(fillMode), UseDepthClamp(useDepthClamp), UseMultiSample(useMultiSample){};
+
+		static RasterizerProperty Solid(const bool useMultiSample = false, const FrontFace frontFace = FrontFace::Clockwise, const CullingMode cullingMode = CullingMode::None);
+		static RasterizerProperty WireFrame(const bool useMultiSample = false, const FrontFace frontFace = FrontFace::Clockwise, const CullingMode cullingMode = CullingMode::None);
+	};
 #pragma endregion   Rasterizer State
 #pragma region DepthStencilState
 	/****************************************************************************
@@ -552,6 +580,7 @@ namespace rhi::core
 		GreaterEqual,
 		Always
 	};
+
 	/****************************************************************************
 	*				  			StencilOperator
 	*************************************************************************//**
@@ -569,6 +598,7 @@ namespace rhi::core
 		IncrementAndWrap,
 		DecrementAndWrap
 	};
+
 	/****************************************************************************
 	*				  			StencilOperatorInfo
 	*************************************************************************//**
@@ -583,6 +613,7 @@ namespace rhi::core
 		StencilOperator DepthFailOperator = StencilOperator::Keep;
 		StencilOperatorInfo() = default;
 	};
+
 #pragma endregion  DepthStencilState
 #pragma region InputAssemblyState
 	enum class PrimitiveTopology : std::uint8_t

@@ -48,10 +48,7 @@ namespace rhi::core
 			const PrimitiveTopology primitiveTopology = PrimitiveTopology::TriangleList) = 0;
 
 		virtual std::shared_ptr<GPURasterizerState> CreateRasterizerState(
-			const FrontFace   frontFace   = FrontFace::Clockwise,
-			const CullingMode cullingMode = CullingMode::None,
-			const FillMode    fillMode    = FillMode::Solid,
-			const bool depthClamp = true) = 0;
+			const core::RasterizerProperty& rasterizerProperty) = 0;
 
 		virtual std::shared_ptr<GPUDepthStencilState> CreateDepthStencilState(
 			const bool                 depthEnable      = true,

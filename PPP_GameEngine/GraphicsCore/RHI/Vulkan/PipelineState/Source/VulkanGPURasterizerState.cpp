@@ -18,15 +18,15 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPURasterizerState::GPURasterizerState(const std::shared_ptr<core::RHIDevice>& device, const core::FrontFace frontFace, const core::CullingMode cullingMode, const core::FillMode fillMode, const bool useDepthClamp)
-	: rhi::core::GPURasterizerState(device, frontFace, cullingMode, fillMode, useDepthClamp)
+GPURasterizerState::GPURasterizerState(const std::shared_ptr<core::RHIDevice>& device, const rhi::core::RasterizerProperty& rasterizerProperty)
+	: rhi::core::GPURasterizerState(device, rasterizerProperty )
 {
 	_rasterizerState.pNext                   = nullptr;
 	_rasterizerState.sType                   = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	_rasterizerState.flags                   = 0;
-	_rasterizerState.polygonMode             = EnumConverter::Convert(_fillMode);
-	_rasterizerState.frontFace               = EnumConverter::Convert(_frontFace);
-	_rasterizerState.depthClampEnable        = _useDepthClamp;
+	_rasterizerState.polygonMode             = EnumConverter::Convert(_property.FillType);
+	_rasterizerState.frontFace               = EnumConverter::Convert(_property.FaceType);
+	_rasterizerState.depthClampEnable        = _property.UseDepthClamp;
 	_rasterizerState.rasterizerDiscardEnable = false;
 	_rasterizerState.depthBiasEnable         = false;
 	_rasterizerState.depthBiasConstantFactor = 0;

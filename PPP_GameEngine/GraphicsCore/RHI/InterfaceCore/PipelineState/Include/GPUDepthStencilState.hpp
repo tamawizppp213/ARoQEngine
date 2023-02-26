@@ -81,12 +81,17 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		core::CompareOperator     _depthOperator = core::CompareOperator::LessEqual;
+		
 		core::StencilOperatorInfo _frontFace     = core::StencilOperatorInfo();
+		
 		core::StencilOperatorInfo _backFace      = core::StencilOperatorInfo();
+		
 		/* @brief : depth buffer write*/
 		bool _depthWriteEnable = true;
+		
 		/* @brief : use depth test*/
 		bool _depthEnable      = true;
+		
 		/* @brief : use stencil*/
 		bool _stencilEnable    = false;
 	};
