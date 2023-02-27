@@ -363,7 +363,7 @@ BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
 		BlendFactor::One, BlendFactor::Source_Alpha,
 		ColorMask::All, useAlphaToCoverage, true);
 }
-#pragma endregion BlendProperty
+#pragma endregion      BlendProperty
 #pragma region RasterizerProperty
 RasterizerProperty RasterizerProperty::Solid(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode)
 {

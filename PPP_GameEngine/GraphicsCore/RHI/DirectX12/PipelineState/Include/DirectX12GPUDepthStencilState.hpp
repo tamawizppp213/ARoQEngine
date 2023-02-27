@@ -46,12 +46,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		explicit GPUDepthStencilState(
 			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const bool            depthEnable      = true,
-			const bool            depthWriteEnable = true,
-			const bool            stencilEnable    = false,
-			const core::CompareOperator depthOperator = core::CompareOperator::LessEqual,
-			const core::StencilOperatorInfo& front    = core::StencilOperatorInfo(),
-			const core::StencilOperatorInfo& back     = core::StencilOperatorInfo()
+			const core::DepthStencilProperty& depthStencilProperty
 		);
 
 		~GPUDepthStencilState() = default;

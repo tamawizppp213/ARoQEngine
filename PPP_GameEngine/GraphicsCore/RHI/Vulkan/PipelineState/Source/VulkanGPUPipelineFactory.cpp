@@ -43,15 +43,10 @@ std::shared_ptr<core::GPURasterizerState> GPUPipelineFactory::CreateRasterizerSt
 }
 
 std::shared_ptr<core::GPUDepthStencilState> GPUPipelineFactory::CreateDepthStencilState(
-	const bool                 depthEnable,
-	const bool                 depthWriteEnable,
-	const bool                 stencilEnable,
-	const core::CompareOperator      depthOperator,
-	const core::StencilOperatorInfo& front,
-	const core::StencilOperatorInfo& back)
+	const core::DepthStencilProperty& depthStencilProperty)
 {
 	return std::static_pointer_cast<core::GPUDepthStencilState>(
-		std::make_shared<GPUDepthStencilState>(_device, depthEnable, depthWriteEnable, stencilEnable, depthOperator, front, back));
+		std::make_shared<GPUDepthStencilState>(_device, depthStencilProperty));
 }
 
 std::shared_ptr<core::GPUShaderState> GPUPipelineFactory::CreateShaderState()

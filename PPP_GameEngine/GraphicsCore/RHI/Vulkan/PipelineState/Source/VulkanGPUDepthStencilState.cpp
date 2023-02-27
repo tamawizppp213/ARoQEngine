@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUDepthStencilState.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
+#include "../Include/VulkanGPUDepthStencilState.hpp"
+#include "../../Core/Include/VulkanEnumConverter.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -19,33 +19,36 @@ using namespace rhi::vulkan;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 GPUDepthStencilState::GPUDepthStencilState( const std::shared_ptr<rhi::core::RHIDevice>& device,
-	const bool  depthEnable, const bool depthWriteEnable,
-	const bool  stencilEnable,
-	const core::CompareOperator depthOperator,
-	const core::StencilOperatorInfo& front, const core::StencilOperatorInfo& back
+	const core::DepthStencilProperty& depthStencilProperty
 ):
-	core::GPUDepthStencilState(device, depthEnable, depthWriteEnable, stencilEnable, depthOperator, front, back)
+	core::GPUDepthStencilState(device, depthStencilProperty)
 {
-	_depthStencilDesc.pNext = nullptr;
-	_depthStencilDesc.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	_depthStencilDesc.flags = 0;
-	_depthStencilDesc.depthTestEnable       = _depthEnable;
-	_depthStencilDesc.depthWriteEnable      = _depthWriteEnable;
-	_depthStencilDesc.depthCompareOp        = EnumConverter::Convert(_depthOperator);
-	_depthStencilDesc.depthBoundsTestEnable = false;
-	_depthStencilDesc.minDepthBounds = 0.0f;
-	_depthStencilDesc.maxDepthBounds = 0.0f;
-	_depthStencilDesc.stencilTestEnable = _stencilEnable;
+	_depthStencilDesc.sType                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	_depthStencilDesc.pNext                 = nullptr;
+	_depthStencilDesc.flags                 = 0;
+	_depthStencilDesc.depthTestEnable       = _property.UseDepthTest;                           // Use depth test
+	_depthStencilDesc.depthWriteEnable      = _property.DepthWriteEnable;                       // Enable to write depth buffer
+	_depthStencilDesc.depthCompareOp        = EnumConverter::Convert(_property.DepthOperator);  // Depth compare operator : Depth compare test is used.
+	_depthStencilDesc.depthBoundsTestEnable = _property.UseDepthBoundsTest;                     // Use depth bounds test: situations (https://shikihuiku.wordpress.com/2012/06/27/depth-bounds-test1/
+	_depthStencilDesc.minDepthBounds        = 0.0f;                                             // Min depth bounds test region 
+	_depthStencilDesc.maxDepthBounds        = 0.0f;                                             // Max depth bounds test region
+	_depthStencilDesc.stencilTestEnable     = _property.StenciWriteEnable;                      // Use stencil test
 	_depthStencilDesc.front = VkStencilOpState(
-		EnumConverter::Convert(_frontFace.FailOperator),
-		EnumConverter::Convert(_frontFace.PassOperator),
-		EnumConverter::Convert(_frontFace.DepthFailOperator),
-		EnumConverter::Convert(_frontFace.CompareOperator)
+		EnumConverter::Convert(_property.Front.FailOperator),                                   // front stencil failed operator
+		EnumConverter::Convert(_property.Front.PassOperator),                                   // front stencil pass operator
+		EnumConverter::Convert(_property.Front.DepthFailOperator),                              // front stencil pass and depth test failed operator
+		EnumConverter::Convert(_property.Front.CompareOperator),                                // stencil compare operator
+		0,
+		0,
+		_property.Front.Reference
 	);
 	_depthStencilDesc.back = VkStencilOpState(
-		EnumConverter::Convert(_backFace.FailOperator),
-		EnumConverter::Convert(_backFace.PassOperator),
-		EnumConverter::Convert(_backFace.DepthFailOperator),
-		EnumConverter::Convert(_backFace.CompareOperator)
+		EnumConverter::Convert(_property.Back.FailOperator),
+		EnumConverter::Convert(_property.Back.PassOperator),
+		EnumConverter::Convert(_property.Back.DepthFailOperator),
+		EnumConverter::Convert(_property.Back.CompareOperator),
+		0,
+		0,
+		_property.Front.Reference
 	);
 }

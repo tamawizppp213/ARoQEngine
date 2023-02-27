@@ -41,12 +41,7 @@ namespace rhi::directX12
 			const core::RasterizerProperty& rasterizerProperty) override;
 
 		std::shared_ptr<core::GPUDepthStencilState> CreateDepthStencilState(
-			const bool                 depthEnable = true,
-			const bool                 depthWriteEnable = true,
-			const bool                 stencilEnable = false,
-			const core::CompareOperator      depthOperator = core::CompareOperator::LessEqual,
-			const core::StencilOperatorInfo& front = core::StencilOperatorInfo(),
-			const core::StencilOperatorInfo& back  = core::StencilOperatorInfo()) override;
+			const core::DepthStencilProperty& depthStencilProperty) override;
 
 		std::shared_ptr<core::GPUShaderState> CreateShaderState() override;
 

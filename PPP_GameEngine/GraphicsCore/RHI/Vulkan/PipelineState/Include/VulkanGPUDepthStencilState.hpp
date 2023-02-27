@@ -40,20 +40,18 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		const VkPipelineDepthStencilStateCreateInfo& GetDepthStencilState() const noexcept { return _depthStencilDesc; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		explicit GPUDepthStencilState(
 			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const bool            depthEnable      = true,
-			const bool            depthWriteEnable = true,
-			const bool            stencilEnable    = false,
-			const core::CompareOperator      depthOperator = core::CompareOperator::LessEqual,
-			const core::StencilOperatorInfo& front         = core::StencilOperatorInfo(),
-			const core::StencilOperatorInfo& back          = core::StencilOperatorInfo()
+			const core::DepthStencilProperty& depthStencilProperty
 		);
+
 		~GPUDepthStencilState() = default;
-		GPUDepthStencilState() = default;
+
+		GPUDepthStencilState()  = default;
 	protected:
 		/****************************************************************************
 		**                Protected Function

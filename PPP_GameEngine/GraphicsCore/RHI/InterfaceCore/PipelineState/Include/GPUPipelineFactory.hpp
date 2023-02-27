@@ -51,12 +51,7 @@ namespace rhi::core
 			const core::RasterizerProperty& rasterizerProperty) = 0;
 
 		virtual std::shared_ptr<GPUDepthStencilState> CreateDepthStencilState(
-			const bool                 depthEnable      = true,
-			const bool                 depthWriteEnable = true,
-			const bool                 stencilEnable    = false,
-			const CompareOperator      depthOperator    = CompareOperator::LessEqual,
-			const StencilOperatorInfo& front            = StencilOperatorInfo(),
-			const StencilOperatorInfo& back             = StencilOperatorInfo()) = 0;
+			const core::DepthStencilProperty& depthStencilProperty = core::DepthStencilProperty()) = 0;
 
 		virtual std::shared_ptr<GPUShaderState> CreateShaderState() = 0;
 
