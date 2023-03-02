@@ -304,6 +304,22 @@ VkPrimitiveTopology EnumConverter::Convert(const rhi::core::PrimitiveTopology pr
 			throw std::runtime_error("not supported primitive topology type (vulkan api) ");
 	}
 }
+
+/*-------------------------------------------------------------------
+-                        Input classification
+---------------------------------------------------------------------*/
+VkVertexInputRate EnumConverter::Convert(const rhi::core::InputClassification classification)
+{
+	using enum core::InputClassification;
+	switch (classification)
+	{
+		case PerVertex  : return VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX;
+		case PerInstance: return VkVertexInputRate::VK_VERTEX_INPUT_RATE_INSTANCE;
+		default:
+			throw std::runtime_error("not support input classification type");
+	}
+}
+
 VkFormat EnumConverter::Convert(const rhi::core::InputFormat inputFormat)
 {
 	switch (inputFormat)

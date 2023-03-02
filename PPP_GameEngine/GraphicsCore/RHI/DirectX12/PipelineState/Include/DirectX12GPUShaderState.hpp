@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-struct _D3D_SHADER_MACRO;
+
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,25 +32,23 @@ namespace rhi::directX12
 	*****************************************************************************/
 	class GPUShaderState : public rhi::core::GPUShaderState
 	{
-		using D3D_SHADER_MACRO = _D3D_SHADER_MACRO;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-#ifdef _DEBUG
-		void Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}, const std::vector<std::wstring>& defines = {L"_DEBUG"}) override;
-#else
-　　　　　void Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}, const std::vector<std::wstring>& defines = {}) override;
-#endif
+		void Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}, const std::vector<std::wstring>& defines = {}) override;
+
 		// @brief : Offline Compile, already compiled fileName(filePath)
 		void LoadBinary(const core::ShaderType type, const std::wstring& fileName) override ;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		BlobComPtr GetDxBlob() const noexcept { return _dxBlob; }
 
 		D3D12_SHADER_BYTECODE GetShader() const { return D3D12_SHADER_BYTECODE(_blobData.BufferPointer, _blobData.BufferSize); }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -60,12 +58,15 @@ namespace rhi::directX12
 
 		explicit GPUShaderState(
 			const std::shared_ptr<core::RHIDevice>& device) : rhi::core::GPUShaderState(device) {};
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		BlobComPtr DxCompile(const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target, const std::vector<std::wstring>& includeDirectories, const std::vector<std::wstring>& defines);
+		
 		BlobComPtr DxCompile(const std::wstring& fileName, const D3D_SHADER_MACRO* defines, const std::wstring& entryPoint, const std::wstring& target);
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

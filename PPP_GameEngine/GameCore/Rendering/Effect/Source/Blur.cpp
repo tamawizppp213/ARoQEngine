@@ -88,7 +88,7 @@ void GaussianBlur::OnResize(const std::uint32_t newWidth, const std::uint32_t ne
 *  @param[in,out] GPUResource* renderTarget
 *  @return @@void
 *****************************************************************************/
-void GaussianBlur::Draw()
+void GaussianBlur::Draw(const ResourceViewPtr& sourceSRV, const ResourceViewPtr& destUAV)
 {
 	const auto device      = _engine->GetDevice();
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
@@ -113,7 +113,7 @@ void GaussianBlur::Draw()
 	/*-------------------------------------------------------------------
 	-               Execute XBlur Command
 	---------------------------------------------------------------------*/
-	frameBuffer->GetRenderTargetSRV()->Bind(commandList, 2);
+	sourceSRV->Bind(commandList, 2);
 	//_shaderResourceViews[0]->Bind(commandList, 2);
 	_unorderedResourceViews[0]->Bind(commandList, 3);
 	commandList->SetComputePipeline(_xBlurPipeline);
@@ -131,7 +131,7 @@ void GaussianBlur::Draw()
 	-               Execute FinalBlur Command
 	---------------------------------------------------------------------*/
 	_shaderResourceViews[1]->Bind(commandList, 2);
-	frameBuffer->GetRenderTargetUAV()->Bind(commandList, 3);
+	destUAV->Bind(commandList, 3);
 	commandList->SetComputePipeline(_finalBlurPipeline);
 	commandList->Dispatch((_textureSize.OriginalTexture[0] + THREAD - 1) / THREAD, (_textureSize.OriginalTexture[1] + THREAD - 1) / THREAD, 1);
 

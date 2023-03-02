@@ -20,17 +20,17 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 const std::vector<InputLayoutElement> GPUInputAssemblyState::DEFAULT_VERTEX_ELEMENTS =
 {
-	InputLayoutElement("POSITION", InputFormat::R32G32B32_FLOAT, 0),
-	InputLayoutElement("NORMAL"  , InputFormat::R32G32B32_FLOAT, 0),
-	InputLayoutElement("COLOR"   , InputFormat::R32G32B32A32_FLOAT, 0),
-	InputLayoutElement("TEXCOORD", InputFormat::R32G32_FLOAT, 0)
+	InputLayoutElement("POSITION", InputFormat::R32G32B32_FLOAT   , InputClassification::PerVertex, 0),
+	InputLayoutElement("NORMAL"  , InputFormat::R32G32B32_FLOAT   , InputClassification::PerVertex, 0),
+	InputLayoutElement("COLOR"   , InputFormat::R32G32B32A32_FLOAT, InputClassification::PerVertex, 0),
+	InputLayoutElement("TEXCOORD", InputFormat::R32G32_FLOAT      , InputClassification::PerVertex, 0)
 };
 
 const std::vector<InputLayoutElement> GPUInputAssemblyState::DEFAULT_SKINVERTEX_ELEMENTS =
 {
-	InputLayoutElement("POSITION", InputFormat::R32G32B32_FLOAT, 0),
-	InputLayoutElement("NORMAL"  , InputFormat::R32G32B32_FLOAT, 0),
-	InputLayoutElement("TEXCOORD", InputFormat::R32G32_FLOAT, 0),
-	InputLayoutElement("BONE_NO" , InputFormat::R32G32B32A32_INT),
-	InputLayoutElement("WEIGHT"  , InputFormat::R32G32B32A32_FLOAT)
+	InputLayoutElement("POSITION", InputFormat::R32G32B32_FLOAT, InputClassification::PerVertex, 0),
+	InputLayoutElement("NORMAL"  , InputFormat::R32G32B32_FLOAT, InputClassification::PerVertex,0),
+	InputLayoutElement("TEXCOORD", InputFormat::R32G32_FLOAT   , InputClassification::PerVertex, 0),
+	InputLayoutElement("BONE_NO" , InputFormat::R32G32B32A32_INT, InputClassification::PerVertex),
+	InputLayoutElement("WEIGHT"  , InputFormat::R32G32B32A32_FLOAT,InputClassification::PerVertex)
 };

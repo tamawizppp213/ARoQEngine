@@ -36,25 +36,6 @@ GPUShaderState::~GPUShaderState()
 		vkDestroyShaderModule(vkDevice, _module, nullptr);
 	}
 }
-//GPUShaderState::GPUShaderState(
-//	const std::shared_ptr<core::RHIDevice>& device,
-//	const core::ShaderType shaderType,
-//	const std::string& fileName,
-//	const std::string& entryPoint,
-//	const std::string& shaderVersion
-//) : core::GPUShaderState(device, shaderType, fileName, entryPoint, shaderVersion)
-//{
-//	CompileShader(unicode::ToWString(fileName), unicode::ToWString(entryPoint), unicode::ToWString(GetShaderTypeName(shaderType) + "_" + shaderVersion));
-//	/*-------------------------------------------------------------------
-//	-                  Create shader module
-//	---------------------------------------------------------------------*/
-//	_stage.pNext               = nullptr;
-//	_stage.flags               = 0;
-//	_stage.module              = _module;
-//	_stage.pName               = _fileName.c_str();
-//	_stage.pSpecializationInfo = nullptr;
-//	_stage.stage               = EnumConverter::Convert(_shaderType);
-//}
 
 void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint, const float version, const std::vector<std::wstring>& includeDirectories, const std::vector<std::wstring>& defines)
 {
@@ -85,16 +66,19 @@ void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring&
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcLibrary> dxcLibrary = nullptr;
 	ThrowIfFailed(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&dxcLibrary)));
+
 	/*-------------------------------------------------------------------
 	-                  Create dxc compliler
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcCompiler3> dxcCompiler = nullptr;
 	ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler)));
+	
 	/*-------------------------------------------------------------------
 	-                  Create dxc utility
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcUtils> utils = nullptr;
 	ThrowIfFailed(DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&utils)));
+	
 	/*-------------------------------------------------------------------
 	-                  Create Blob data of the source code
 	---------------------------------------------------------------------*/
@@ -124,6 +108,7 @@ void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring&
 		L"-all-resources-bound",   // nVidia: This allows for the compiler to do a better job at optimizing texture accesses. We have seen frame rate improvements of > 1% when toggling this flag on.
 		L"-enable-16bit-types",    // VK_KHR_shader_float16_int8
 		L"-fvk-use-dx-layout",     // memory layout for resources
+		L"-D", L"VULKAN"
 		// useful extensions
 		//L"-fspv-extension=SPV_GOOGLE_hlsl_functionality1",
 		//L"-fspv-extension=SPV_GOOGLE_user_type",
@@ -135,6 +120,11 @@ void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring&
 		arguments.push_back(L"-I");
 		arguments.push_back(directory.c_str());
 	}
+
+#ifdef _DEBUG
+	arguments.push_back(L"-D");
+	arguments.push_back(L"_DEBUG");
+#endif
 
 	/*-------------------------------------------------------------------
 	-                Compile Shader
@@ -177,11 +167,15 @@ void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring&
 	-      Create a Vulkan shader module from the compilation result 
 	---------------------------------------------------------------------*/
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
-	VkShaderModuleCreateInfo shaderModuleInfo = {};
-	shaderModuleInfo.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	shaderModuleInfo.codeSize = byteCode->GetBufferSize();
-	shaderModuleInfo.pCode    = (std::uint32_t*)byteCode->GetBufferPointer();
-	shaderModuleInfo.pNext    = nullptr;
+	const VkShaderModuleCreateInfo shaderModuleInfo = 
+	{
+		.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+		.pNext    = nullptr,
+		.flags    = 0,
+		.codeSize = byteCode->GetBufferSize(),
+		.pCode    = (std::uint32_t*)byteCode->GetBufferPointer()
+	};
+
 	if (vkCreateShaderModule(vkDevice, &shaderModuleInfo, nullptr, &_module) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create vk shader module");

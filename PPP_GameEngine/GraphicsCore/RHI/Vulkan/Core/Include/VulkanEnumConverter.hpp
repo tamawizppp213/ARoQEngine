@@ -65,6 +65,7 @@ namespace rhi::vulkan
 #pragma endregion DepthStencilState
 #pragma region Input Layout
 		static VkPrimitiveTopology    Convert(const rhi::core::PrimitiveTopology primitiveTopology);
+		static VkVertexInputRate      Convert(const rhi::core::InputClassification classification);
 #pragma endregion Input Layout
 #pragma region GPUResource
 		static VkDescriptorType       Convert(const rhi::core::DescriptorHeapType heapType);

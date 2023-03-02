@@ -465,9 +465,9 @@ namespace rhi::core
 		BlendProperty() = default;
 
 		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, BlendFactor destAlpha, BlendFactor dest,
-			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool AlphaToConverageEnable = false, bool enable = false) :
+			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool alphaToConverageEnable = false, bool enable = false) :
 			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), Destination(dest), SourceAlpha(srcAlpha),
-			Source(src), ColorMask(colorMask), Enable(enable) { };
+			Source(src), ColorMask(colorMask), Enable(enable), AlphaToConverageEnable(alphaToConverageEnable) { };
 		
 		static BlendProperty NoColorWrite(const bool useAlphaToCoverage = false);
 		static BlendProperty OverWrite (const bool useAlphaToCoverage = false);
@@ -646,6 +646,12 @@ namespace rhi::core
 		TriangleList  = 4,
 		TriangleStrip = 5,
 		CountOfPrimitiveTopology
+	};
+
+	enum class InputClassification : std::uint8_t
+	{
+		PerVertex   = 0,
+		PerInstance = 1,
 	};
 
 	#pragma endregion InputAssemblyState

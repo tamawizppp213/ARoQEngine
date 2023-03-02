@@ -894,6 +894,9 @@
     <ClInclude Include="GameCore\Rendering\Effect\Include\Mosaic.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingPIpelineState.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1163,7 +1166,7 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUDepthStencilState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12InputAssemblyState.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUInputAssemblyState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUInputAssemblyState.cpp">

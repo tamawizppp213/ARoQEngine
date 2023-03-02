@@ -81,7 +81,7 @@ void RHIResourceLayout::SetUp()
 		binding.binding            = static_cast<std::uint32_t>(element.Binding);
 		binding.descriptorType     = EnumConverter::Convert(element.DescriptorType);
 		binding.descriptorCount    = 1;
-		binding.stageFlags         = VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
+		binding.stageFlags         = EnumConverter::Convert(element.Visibility);
 		binding.pImmutableSamplers = nullptr;
 
 		bindings[element.RegisterSpace].push_back(binding);

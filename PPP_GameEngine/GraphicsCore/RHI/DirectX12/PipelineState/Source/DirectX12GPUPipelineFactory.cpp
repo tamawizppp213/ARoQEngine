@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 //              @file   DirectX12GPUFactory.cpp
-///             @brief  DepthStencil State
+///             @brief  Pipeline each stage creator
 ///             @author Toide Yutaro
 ///             @date   2022_06_30
 //////////////////////////////////////////////////////////////////////////////////
@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineFactory.hpp"
-#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUBlendState.hpp"
-#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUDepthStencilState.hpp"
-#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUInputAssemblyState.hpp"
-#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPURasterizerState.hpp"
-#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUShaderState.hpp"
+#include "../Include/DirectX12GPUPipelineFactory.hpp"
+#include "../Include/DirectX12GPUBlendState.hpp"
+#include "../Include/DirectX12GPUDepthStencilState.hpp"
+#include "../Include/DirectX12GPUInputAssemblyState.hpp"
+#include "../Include/DirectX12GPURasterizerState.hpp"
+#include "../Include/DirectX12GPUShaderState.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -28,6 +28,7 @@ GPUPipelineFactory::GPUPipelineFactory(const std::shared_ptr<core::RHIDevice>& d
 {
 
 }
+
 std::shared_ptr<core::GPUInputAssemblyState> GPUPipelineFactory::CreateInputAssemblyState(
 	const std::vector<core::InputLayoutElement>& elements,
 	const core::PrimitiveTopology primitiveTopology)

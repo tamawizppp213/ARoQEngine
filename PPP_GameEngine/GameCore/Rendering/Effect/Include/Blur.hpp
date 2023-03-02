@@ -64,25 +64,39 @@ namespace gc
 		**                Public Function
 		*****************************************************************************/
 		void OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight);
-		void Draw();
+		
+		void Draw(const ResourceViewPtr& sourceSRV, const ResourceViewPtr& destUAV);
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		ResourceViewPtr GetHalfDownSampledSRV() const noexcept { return _shaderResourceViews[1]; }
+
+		ResourceViewPtr GetHalfDownSampledUAV() const noexcept { return _unorderedResourceViews[1]; }
+
 		void SetUpWeightTable(float sigma);
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GaussianBlur();
+		
 		~GaussianBlur();
+		
 		GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName = L"");
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		void PrepareBlurParameters(const std::wstring& name);
+		
 		void PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const std::wstring& name);
+		
 		void PreparePipelineState(const std::wstring& name);
+		
 		void PrepareResourceView();
+		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

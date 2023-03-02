@@ -36,21 +36,26 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		void CompleteSetting() override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkPipeline GetPipeline() const noexcept { return _pipeline; }
 
 		void SetName(const std::wstring& name)override {}
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUGraphicsPipelineState() = default;
+		
 		~GPUGraphicsPipelineState();
+		
 		explicit GPUGraphicsPipelineState(
 			const std::shared_ptr<core::RHIDevice>& device,
 			const std::shared_ptr<core::RHIRenderPass>& renderPass,
 			const std::shared_ptr<core::RHIResourceLayout>& layout);
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -82,14 +87,18 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		void SetName(const std::wstring& name) const override {};
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUComputePipelineState() = default;
+		
 		~GPUComputePipelineState() = default;
+		
 		explicit GPUComputePipelineState(
 			const std::shared_ptr<core::RHIDevice>& device,
 			const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) : core::GPUComputePipelineState(device, layout) {};
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function

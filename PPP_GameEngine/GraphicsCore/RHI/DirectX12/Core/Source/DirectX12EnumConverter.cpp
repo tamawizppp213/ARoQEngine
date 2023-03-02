@@ -261,6 +261,18 @@ D3D12_PRIMITIVE_TOPOLOGY_TYPE EnumConverter::Convert1(const rhi::core::Primitive
 			throw std::runtime_error("not supported primitive topology type (directX12 api)");
 	}
 }
+
+D3D12_INPUT_CLASSIFICATION EnumConverter::Convert(const rhi::core::InputClassification classification)
+{
+	using enum core::InputClassification;
+	switch (classification)
+	{
+		case PerVertex  : return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+		case PerInstance: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+		default:
+			throw std::runtime_error("not supported classication type.");
+	}
+}
 DXGI_FORMAT EnumConverter::Convert(const core::InputFormat inputFormat)
 {
 	using enum core::InputFormat;

@@ -66,6 +66,7 @@ namespace rhi::directX12
 #pragma region Input Layout
 		static D3D_PRIMITIVE_TOPOLOGY        Convert(const rhi::core::PrimitiveTopology primitiveTopology);
 		static D3D12_PRIMITIVE_TOPOLOGY_TYPE Convert1(const rhi::core::PrimitiveTopology primitiveTopology);
+		static D3D12_INPUT_CLASSIFICATION    Convert(const rhi::core::InputClassification classfication);
 #pragma endregion Input Layout 
 #pragma region GPUResource
 		static D3D12_DESCRIPTOR_HEAP_TYPE  Convert(const rhi::core::DescriptorHeapType heapType);

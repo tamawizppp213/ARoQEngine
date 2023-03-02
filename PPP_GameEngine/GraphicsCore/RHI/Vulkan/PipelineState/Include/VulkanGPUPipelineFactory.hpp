@@ -62,7 +62,9 @@ namespace rhi::vulkan
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUPipelineFactory() = default;
+
 		explicit GPUPipelineFactory(const std::shared_ptr<core::RHIDevice>& device);
+
 		~GPUPipelineFactory() = default;
 	protected:
 		/****************************************************************************

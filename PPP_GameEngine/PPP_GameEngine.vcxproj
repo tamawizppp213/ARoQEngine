@@ -404,6 +404,7 @@
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingASInstance.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingBLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingGeometry.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingPIpelineState.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingShaderTable.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingTLASBuffer.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUBuffer.hpp" />
@@ -577,7 +578,7 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUPipelineState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPURasterizerState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUShaderState.cpp" />
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12InputAssemblyState.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUInputAssemblyState.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12RayTracingASInstance.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12RayTracingBLASBuffer.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12RayTracingGeometry.cpp" />

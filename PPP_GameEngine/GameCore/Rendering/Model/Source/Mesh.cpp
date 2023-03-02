@@ -124,7 +124,6 @@ void Mesh::Draw(const std::shared_ptr<RHICommandList>& commandList, const std::u
 void Mesh::Prepare(const PrimitiveMesh& mesh, const std::wstring& name)
 {
 	const auto totalFrameSize  = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
-	const auto currentFrame    = _engine->GetCurrentFrameIndex();
 	const auto device          = _engine->GetDevice();
 	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy);
 
@@ -175,7 +174,6 @@ void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData&
 	if (indexInfo .BufferType != BufferType::Index)  { OutputDebugStringA("Please set index buffer\n "); return ;}
 
 	const auto totalFrameSize  = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
-	const auto currentFrame    = _engine->GetCurrentFrameIndex();
 	const auto device          = _engine->GetDevice();
 	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy);
 

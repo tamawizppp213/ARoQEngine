@@ -40,12 +40,16 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		const VkPipelineInputAssemblyStateCreateInfo& GetInputAssembly() const { return _inputAssembly; }
+		
 		const VkPipelineVertexInputStateCreateInfo&   GetVertexInput  () const { return _vertexInput; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUInputAssemblyState() = default;
+		
 		~GPUInputAssemblyState() = default;
+		
 		explicit GPUInputAssemblyState(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::vector<core::InputLayoutElement>& elements,
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList);
 
@@ -57,8 +61,12 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		/* @brief : Set the vertex attribute information contained in each vertex stream.*/
 		std::vector<VkVertexInputAttributeDescription> _vertexAttributes = {};
+
+		/* @brief : how each vertex stream is to be read*/
 		std::vector<VkVertexInputBindingDescription>   _vertexBinding    = {};
+
 		VkPipelineInputAssemblyStateCreateInfo         _inputAssembly    = {};
 		VkPipelineVertexInputStateCreateInfo           _vertexInput      = {};
 	};

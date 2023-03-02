@@ -46,14 +46,19 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		VkShaderModule GetModule() const noexcept { return _module; }
+		
 		const VkPipelineShaderStageCreateInfo& GetStage() const{ return _stage; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUShaderState() = default;
+		
 		~GPUShaderState();
+		
 		explicit GPUShaderState(
 			const std::shared_ptr<core::RHIDevice>& device) : core::GPUShaderState(device){};
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -63,8 +68,11 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkPipelineShaderStageCreateInfo _stage = {};
+
 		VkShaderModule _module     = nullptr;
+
 		std::wstring   _apiVersion = L"vulkan1.3";
+
 		std::string   _name = "";
 
 	private:

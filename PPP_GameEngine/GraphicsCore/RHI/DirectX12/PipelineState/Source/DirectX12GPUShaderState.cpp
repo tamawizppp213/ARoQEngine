@@ -23,6 +23,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::directX12;
+#pragma warning (disable: 6387)
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -31,11 +32,17 @@ using namespace rhi::directX12;
 *                           Compile
 *************************************************************************//**
 *  @fn        void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint, const float version)
+* 
 *  @brief     Online Compile 
+* 
 *  @param[in] core::ShaderType type
+* 
 *  @param[in] std::wstring& fileName : filePath
+* 
 *  @param[in] std::wstring& entryPoint (Main Shader Function Name)
+* 
 *  @param[in] float version (current newest version : 6.6f)
+* 
 *  @return 　　void
 *****************************************************************************/
 void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint, const float version, const std::vector<std::wstring>& includeDirectories, const std::vector<std::wstring>& defines)
@@ -56,7 +63,16 @@ void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fi
 	}
 	else
 	{
-		_dxBlob = DxCompile(fileName, nullptr, entryPoint, target);
+		std::vector<D3D_SHADER_MACRO> dxMacros(defines.size());
+		std::vector<std::string> nameList(defines.size()); //ダンぐリング対策
+		for (int i = 0; i < defines.size(); ++i)
+		{
+			nameList[i]            = unicode::ToUtf8String(defines[i]);
+			dxMacros[i].Name       = nameList[i].c_str();
+			dxMacros[i].Definition = nullptr; // 後々
+		}
+
+		_dxBlob = DxCompile(fileName,dxMacros.data(), entryPoint, target);
 	}
 
 	_blobData.BufferPointer = _dxBlob->GetBufferPointer();
@@ -66,9 +82,13 @@ void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fi
 *							LoadBinary
 *************************************************************************//**
 *  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const std::wstring& fileName)
+* 
 *  @brief     Load Binary Data (Offline Compile)
+* 
 *  @param[in] core::ShaderType type
+* 
 *  @param[in] std::wstring& fileName : filePath
+* 
 *  @return 　　void
 *****************************************************************************/
 void GPUShaderState::LoadBinary(const core::ShaderType type, const std::wstring& fileName)
@@ -79,17 +99,20 @@ void GPUShaderState::LoadBinary(const core::ShaderType type, const std::wstring&
 	-          Open file
 	---------------------------------------------------------------------*/
 	std::ifstream fin(fileName, std::ios::binary);
+
 	/*-------------------------------------------------------------------
 	-          Calculate buffer byte size
 	---------------------------------------------------------------------*/
 	fin.seekg(0, std::ios_base::end);
 	std::ifstream::pos_type size = (int)fin.tellg();
 	fin.seekg(0, std::ios_base::beg);
+
 	/*-------------------------------------------------------------------
 	-          Create blob (bytecode) data
 	---------------------------------------------------------------------*/
 	BlobComPtr blob;
 	ThrowIfFailed(D3DCreateBlob(size, blob.GetAddressOf()));
+
 	/*-------------------------------------------------------------------
 	-          Read and Close
 	---------------------------------------------------------------------*/
@@ -110,11 +133,13 @@ BlobComPtr GPUShaderState::DxCompile(const std::wstring& fileName, const std::ws
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcLibrary> dxcLibrary = nullptr;
 	ThrowIfFailed(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&dxcLibrary)));
+	
 	/*-------------------------------------------------------------------
 	-                  Create dxc compliler
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcCompiler> dxcCompiler = nullptr;
 	ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler)));
+
 	/*-------------------------------------------------------------------
 	-                  Create Blob data of the source code
 	---------------------------------------------------------------------*/
@@ -140,6 +165,10 @@ BlobComPtr GPUShaderState::DxCompile(const std::wstring& fileName, const std::ws
 	{
 		dxcDefines[i].Name = defines[i].c_str();
 	}
+	dxcDefines.push_back({ .Name = L"DIRECTX" }); // default setting
+#ifdef _DEBUG
+	dxcDefines.push_back({ .Name = L"_DEBUG" });  // debug
+#endif
 	
 	ComPtr<IDxcOperationResult> result = nullptr;
 	HRESULT hresult = dxcCompiler->Compile(

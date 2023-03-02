@@ -59,6 +59,7 @@ void RHIResourceLayout::SetUp()
 	DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
 
 	std::vector<D3D12_DESCRIPTOR_RANGE>    ranges(_elements.size());
+	std::vector<D3D12_SHADER_VISIBILITY>   visibilities(_elements.size());
 	std::vector<D3D12_STATIC_SAMPLER_DESC> staticSamplerArrays = {};
 	
 	/*-------------------------------------------------------------------
@@ -66,6 +67,7 @@ void RHIResourceLayout::SetUp()
 	---------------------------------------------------------------------*/
 	for (size_t i = 0; i < _elements.size(); ++i)
 	{
+		visibilities[i]                             = EnumConverter::Convert(_elements[i].Visibility);
 		ranges[i].RangeType                         = EnumConverter::Convert1(_elements[i].DescriptorType);
 		ranges[i].NumDescriptors                    = 1;
 		ranges[i].BaseShaderRegister                = static_cast<UINT>(_elements[i].Binding);
@@ -96,7 +98,7 @@ void RHIResourceLayout::SetUp()
 		{
 			D3D12_ROOT_PARAMETER parameter = {};
 			parameter.ParameterType                       = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-			parameter.ShaderVisibility                    = D3D12_SHADER_VISIBILITY_ALL;
+			parameter.ShaderVisibility                    = visibilities[i];
 			parameter.DescriptorTable.NumDescriptorRanges = 1;
 			parameter.DescriptorTable.pDescriptorRanges   = &ranges[i];
 			parameters.push_back(parameter);

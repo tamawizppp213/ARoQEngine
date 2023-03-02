@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
+#include "../../Core/Include/RHICommonState.hpp"
 #include "GPUState.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -39,17 +39,24 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		bool UseStencilTest() const noexcept { return _property.StenciWriteEnable; }
+
+		bool UseDepthTest() const noexcept { return _property.UseDepthTest; }
+
+		bool UseDepthBoundsTest() const noexcept { return _property.UseDepthBoundsTest; }
+
 		bool GetDepthWriteEnable() const noexcept { return _property.DepthWriteEnable; }
-
-		bool GetStencilEnable   () const noexcept { return _property.StenciWriteEnable; }
-
-		bool GetDepthEnable     () const noexcept { return _property.UseDepthTest; }
 
 		const CompareOperator& GetDepthOperator() const noexcept { return _property.DepthOperator; }
 		
 		const StencilOperatorInfo& GetFrontFace() const noexcept { return _property.Front; }
 		
 		const StencilOperatorInfo& GetBackFace () const noexcept { return _property.Back; }
+
+		float GetMinDepthBounds() const noexcept { return _property.MinDepthBounds; }
+
+		float GetMaxDepthBounds() const noexcept { return _property.MaxDepthBounds; }
+
 		
 		/****************************************************************************
 		**                Constructor and Destructor

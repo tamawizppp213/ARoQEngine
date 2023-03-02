@@ -41,8 +41,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		static void DestroyAll(){};
-		
+		//static void DestroyAll(){};
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -60,6 +59,7 @@ namespace rhi::core
 			: _device(device) ,_resourceLayout(layout) { };
 		
 		virtual ~GPUBasePipelineState() = default;
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -68,7 +68,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<rhi::core::RHIDevice>     _device        = nullptr;
+		std::shared_ptr<rhi::core::RHIDevice> _device = nullptr;
 
 		std::shared_ptr<rhi::core::RHIResourceLayout> _resourceLayout = nullptr;
 	};
@@ -86,6 +86,7 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		virtual void CompleteSetting() = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -155,7 +156,7 @@ namespace rhi::core
 		std::shared_ptr<GPUShaderState>        _hullShaderState     = nullptr;
 		std::shared_ptr<GPUShaderState>        _domainShaderState   = nullptr;
 		std::shared_ptr<GPUShaderState>        _geometryShaderState = nullptr;
-		std::shared_ptr<RHIRenderPass>          _renderPass = nullptr;
+		std::shared_ptr<RHIRenderPass>         _renderPass          = nullptr;
 	};
 
 	/****************************************************************************
@@ -171,6 +172,7 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		virtual void CompleteSetting() = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -212,6 +214,7 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		virtual void CompleteSetting() = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

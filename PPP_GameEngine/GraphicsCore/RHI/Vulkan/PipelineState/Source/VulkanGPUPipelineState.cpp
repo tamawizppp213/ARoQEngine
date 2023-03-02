@@ -8,16 +8,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUPipelineState.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanResourceLayout.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanRenderPass.hpp"
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUBlendState.hpp"
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUDepthStencilState.hpp"
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUInputAssemblyState.hpp"
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPURasterizerState.hpp"
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUShaderState.hpp"
+#include "../Include/VulkanGPUPipelineState.hpp"
+#include "../../Core/Include/VulkanDevice.hpp"
+#include "../../Core/Include/VulkanEnumConverter.hpp"
+#include "../../Core/Include/VulkanResourceLayout.hpp"
+#include "../../Core/Include/VulkanRenderPass.hpp"
+#include "../Include/VulkanGPUBlendState.hpp"
+#include "../Include/VulkanGPUDepthStencilState.hpp"
+#include "../Include/VulkanGPUInputAssemblyState.hpp"
+#include "../Include/VulkanGPURasterizerState.hpp"
+#include "../Include/VulkanGPUShaderState.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
