@@ -89,7 +89,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		PipelineStateComPtr GetPipeline() const noexcept { return _computePipeline; }
 		
-		void SetName(const std::wstring& name) const override;
+		void SetName(const std::wstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

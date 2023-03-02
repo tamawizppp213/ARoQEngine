@@ -89,7 +89,7 @@ void GPUComputePipelineState::CompleteSetting()
 
 }
 
-void GPUComputePipelineState::SetName(const std::wstring& name) const 
+void GPUComputePipelineState::SetName(const std::wstring& name)
 {
 	_computePipeline->SetName(name.c_str());
 }

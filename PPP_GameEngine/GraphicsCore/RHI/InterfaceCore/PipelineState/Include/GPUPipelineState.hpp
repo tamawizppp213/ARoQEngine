@@ -178,7 +178,7 @@ namespace rhi::core
 		*****************************************************************************/
 		void SetComputeShader(const std::shared_ptr<GPUShaderState>& shaderState) { _computeShaderState = shaderState; };
 		
-		virtual void SetName(const std::wstring& name) const = 0;
+		virtual void SetName(const std::wstring& name) = 0;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -187,7 +187,7 @@ namespace rhi::core
 		
 		GPUComputePipelineState() = default;
 		
-		explicit GPUComputePipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIResourceLayout>& layout = nullptr) : core::GPUBasePipelineState(device, layout){};
+		explicit GPUComputePipelineState(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHIResourceLayout>& layout) : core::GPUBasePipelineState(device, layout){};
 		
 		~GPUComputePipelineState() = default;
 		

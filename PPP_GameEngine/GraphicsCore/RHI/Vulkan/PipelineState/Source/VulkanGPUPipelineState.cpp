@@ -47,87 +47,101 @@ GPUGraphicsPipelineState::~GPUGraphicsPipelineState()
 
 void GPUGraphicsPipelineState::CompleteSetting()
 {
-	VkDevice vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
+	/*-------------------------------------------------------------------
+	-           Set vk resources 
+	---------------------------------------------------------------------*/
+	const auto vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
 
 	const auto vkInputAssemblyState = std::static_pointer_cast<vulkan::GPUInputAssemblyState>(_inputAssemblyState);
 	const auto vkRasterizerState    = std::static_pointer_cast<vulkan::GPURasterizerState>(_rasterizerState);
 	const auto vkDepthStencilState  = std::static_pointer_cast<vulkan::GPUDepthStencilState>(_depthStencilState);
 	const auto vkBlendState         = std::static_pointer_cast<vulkan::GPUBlendState>(_blendState);
 
-
 	/*-------------------------------------------------------------------
 	-           Add shader 
 	---------------------------------------------------------------------*/
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStates = {};
-	if (_vertexShaderState)   { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_vertexShaderState)->GetStage()); }
-	if (_pixelShaderState)    { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_pixelShaderState) ->GetStage()); }
+	if (_vertexShaderState)   { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_vertexShaderState)  ->GetStage()); }
+	if (_pixelShaderState)    { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_pixelShaderState)   ->GetStage()); }
 	if (_geometryShaderState) { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_geometryShaderState)->GetStage()); }
-	if (_hullShaderState)     { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_hullShaderState)->GetStage()); }
-	if (_domainShaderState)   { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_domainShaderState)->GetStage()); }
+	if (_hullShaderState)     { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_hullShaderState)    ->GetStage()); }
+	if (_domainShaderState)   { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_domainShaderState)  ->GetStage()); }
 	
 	/*-------------------------------------------------------------------
 	-           Set up Viewport
 	---------------------------------------------------------------------*/
-	VkPipelineViewportStateCreateInfo viewportInfo = {};
-	viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	viewportInfo.pNext = nullptr;
-	viewportInfo.flags = 0;
-	viewportInfo.viewportCount = 1;
-	viewportInfo.scissorCount  = 1;
-	viewportInfo.pViewports    = nullptr;
-	viewportInfo.pScissors     = nullptr;
+	const VkPipelineViewportStateCreateInfo viewportInfo = 
+	{
+		.sType         = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
+		.pNext         = nullptr,
+		.flags         = 0,
+		.viewportCount = 1,
+		.pViewports    = nullptr,
+		.scissorCount  = 1,
+		.pScissors     = nullptr
+	};
 
 	/*-------------------------------------------------------------------
 	-           Set up Viewport
 	---------------------------------------------------------------------*/
-	VkPipelineMultisampleStateCreateInfo multiSampleInfo = {};
-	multiSampleInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-	multiSampleInfo.pNext = nullptr;
-	multiSampleInfo.flags = 0;
-	multiSampleInfo.pSampleMask = nullptr;
-	multiSampleInfo.rasterizationSamples  = EnumConverter::Convert(_renderPass->GetMaxSample());
-	multiSampleInfo.sampleShadingEnable   = VK_FALSE;
-	multiSampleInfo.alphaToCoverageEnable = VK_FALSE;
-	multiSampleInfo.alphaToOneEnable      = VK_FALSE;
-	multiSampleInfo.minSampleShading      = 0.0f;
+	const VkPipelineMultisampleStateCreateInfo multiSampleInfo = 
+	{
+		.sType                 = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,
+		.pNext                 = nullptr,
+		.flags                 = 0,
+		.rasterizationSamples  = EnumConverter::Convert(_renderPass->GetMaxSample()),
+		.sampleShadingEnable   = VK_FALSE,
+		.minSampleShading      = 0.0f,
+		.pSampleMask           = nullptr,
+		.alphaToCoverageEnable = _blendState->UseAlphaToCoverage(),
+		.alphaToOneEnable      = VK_FALSE
+	};
 
-	_dynamicStates = std::vector<VkDynamicState>(3);
-	_dynamicStates[0] = VK_DYNAMIC_STATE_VIEWPORT;
-	_dynamicStates[1] = VK_DYNAMIC_STATE_SCISSOR;
-	_dynamicStates[2] = VK_DYNAMIC_STATE_BLEND_CONSTANTS;
+	_dynamicStates = 
+	{
+		VK_DYNAMIC_STATE_VIEWPORT,
+		VK_DYNAMIC_STATE_SCISSOR,
+		VK_DYNAMIC_STATE_BLEND_CONSTANTS
+	};
 
 	/*-------------------------------------------------------------------
 	-           Set up dynamic state info
 	---------------------------------------------------------------------*/
-	VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
-	dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamicStateInfo.pNext = nullptr;
-	dynamicStateInfo.flags = 0;
-	dynamicStateInfo.dynamicStateCount = static_cast<std::uint32_t>(_dynamicStates.size());
-	dynamicStateInfo.pDynamicStates    = _dynamicStates.data();
+	const VkPipelineDynamicStateCreateInfo dynamicStateInfo = 
+	{
+		.sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+		.pNext             = nullptr,
+		.flags             = 0,
+		.dynamicStateCount = static_cast<std::uint32_t>(_dynamicStates.size()),
+		.pDynamicStates    = _dynamicStates.data()
+	};
+
 	/*-------------------------------------------------------------------
 	-           Set up graphics pipeline create info
 	---------------------------------------------------------------------*/
-	VkGraphicsPipelineCreateInfo pipelineInfo = {};
-	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	pipelineInfo.flags = 0;
-	pipelineInfo.pNext = nullptr;
-	pipelineInfo.layout = std::static_pointer_cast<vulkan::RHIResourceLayout>(_resourceLayout)->GetLayout();
-	pipelineInfo.renderPass = std::static_pointer_cast<vulkan::RHIRenderPass>(_renderPass)->GetRenderPass();
-	pipelineInfo.basePipelineHandle  = nullptr;
-	pipelineInfo.basePipelineIndex   = 0;
-	pipelineInfo.pVertexInputState   = _inputAssemblyState ? &vkInputAssemblyState->GetVertexInput()       : nullptr;
-	pipelineInfo.pInputAssemblyState = _inputAssemblyState ? &vkInputAssemblyState->GetInputAssembly()     : nullptr;
-	pipelineInfo.pRasterizationState = _rasterizerState    ? &vkRasterizerState   ->GetRasterizerState()   : nullptr;
-	pipelineInfo.pDepthStencilState  = _depthStencilState  ? &vkDepthStencilState ->GetDepthStencilState() : nullptr;
-	pipelineInfo.pColorBlendState    = _blendState         ? &vkBlendState        ->GetBlendState()        : nullptr;
-	pipelineInfo.pTessellationState  = nullptr; // ‚à‚µ‚©‚µ‚½‚çŽg‚¤‚©‚à
-	pipelineInfo.pStages             = shaderStates.data();
-	pipelineInfo.stageCount          = static_cast<std::uint32_t>(shaderStates.size());
-	pipelineInfo.subpass             = 0;
-	pipelineInfo.pViewportState      = &viewportInfo;
-	pipelineInfo.pMultisampleState   = &multiSampleInfo;
-	pipelineInfo.pDynamicState       = &dynamicStateInfo;;
+	const VkGraphicsPipelineCreateInfo pipelineInfo = 
+	{
+		.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+		.pNext = nullptr,
+		.flags = 0,
+		.stageCount          = static_cast<std::uint32_t>(shaderStates.size()),
+		.pStages             = shaderStates.data(),
+		.pVertexInputState   = _inputAssemblyState ? &vkInputAssemblyState->GetVertexInput()       : nullptr,
+		.pInputAssemblyState = _inputAssemblyState ? &vkInputAssemblyState->GetInputAssembly()     : nullptr,
+		.pTessellationState  = nullptr,
+		.pViewportState      = &viewportInfo,
+		.pRasterizationState = _rasterizerState    ? &vkRasterizerState->GetRasterizerState()      : nullptr,
+		.pMultisampleState   = &multiSampleInfo,
+		.pDepthStencilState  = _depthStencilState  ? &vkDepthStencilState ->GetDepthStencilState() : nullptr,
+		.pColorBlendState    = _blendState         ? &vkBlendState        ->GetBlendState()        : nullptr,
+		.pDynamicState       = &dynamicStateInfo,
+		.layout              = std::static_pointer_cast<vulkan::RHIResourceLayout>(_resourceLayout)->GetLayout(),
+		.renderPass          = std::static_pointer_cast<vulkan::RHIRenderPass>(_renderPass)->GetRenderPass(),
+		.subpass             = 0,
+		.basePipelineHandle  = nullptr,
+		.basePipelineIndex   = 0
+	};
+
 	/*-------------------------------------------------------------------
 	-           Create graphics pipelines
 	---------------------------------------------------------------------*/
@@ -136,4 +150,48 @@ void GPUGraphicsPipelineState::CompleteSetting()
 		throw std::runtime_error("failed to create graphics pipeline (vulkan api)");
 	}
 }
+
+void GPUGraphicsPipelineState::SetName(const std::wstring& name)
+{
+	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	device->SetVkResourceName(name, VK_OBJECT_TYPE_PIPELINE, reinterpret_cast<std::uint64_t>(_pipeline));
+}
 #pragma endregion Graphcis Pipeline State
+
+#pragma region Compute Pipeline State
+void GPUComputePipelineState::CompleteSetting()
+{
+	if (!_computeShaderState) { OutputDebugStringA("compute shader state is set nullptr\n");  return; }
+
+	/*-------------------------------------------------------------------
+	-           Add shader
+	---------------------------------------------------------------------*/
+	const auto vkDevice    = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
+	const auto shaderState = std::static_pointer_cast<vulkan::GPUShaderState>(_computeShaderState)->GetStage();
+
+	/*-------------------------------------------------------------------
+	-           Create compute pipeline 
+	---------------------------------------------------------------------*/
+	const VkComputePipelineCreateInfo pipelineInfo =
+	{
+		.sType              = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
+		.pNext              = nullptr,
+		.flags              = 0,
+		.stage              = shaderState,
+		.layout             = std::static_pointer_cast<vulkan::RHIResourceLayout>(_resourceLayout)->GetLayout(),
+		.basePipelineHandle = nullptr,
+		.basePipelineIndex  = 0
+	};
+
+	if (vkCreateComputePipelines(vkDevice, {}, 1, &pipelineInfo, nullptr, &_pipeline) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to create compute pipeline (vulkan api)");
+	}
+}
+
+void GPUComputePipelineState::SetName(const std::wstring& name)
+{
+	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	device->SetVkResourceName(name, VK_OBJECT_TYPE_PIPELINE, reinterpret_cast<std::uint64_t>(_pipeline));
+}
+#pragma endregion Compute Pipeline State

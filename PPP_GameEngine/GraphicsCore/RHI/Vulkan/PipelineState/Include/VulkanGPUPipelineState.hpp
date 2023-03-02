@@ -42,7 +42,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkPipeline GetPipeline() const noexcept { return _pipeline; }
 
-		void SetName(const std::wstring& name)override {}
+		void SetName(const std::wstring& name)override;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -65,6 +65,7 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::vector<VkDynamicState> _dynamicStates = {};
+
 		VkPipeline _pipeline = nullptr;
 
 	};
@@ -81,12 +82,12 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void CompleteSetting() override{};
+		void CompleteSetting() override;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void SetName(const std::wstring& name) const override {};
+		void SetName(const std::wstring& name) override;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -97,7 +98,7 @@ namespace rhi::vulkan
 		
 		explicit GPUComputePipelineState(
 			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) : core::GPUComputePipelineState(device, layout) {};
+			const std::shared_ptr<core::RHIResourceLayout>& layout) : core::GPUComputePipelineState(device, layout) {};
 	
 	protected:
 		/****************************************************************************
@@ -107,6 +108,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		VkPipeline _pipeline = nullptr;
 	
 	};
 }
