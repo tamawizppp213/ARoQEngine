@@ -25,10 +25,10 @@ namespace rhi::directX12
 {
 	class RHIDescriptorHeap;
 	/****************************************************************************
-	*				  			RHIFence
+	*				  			RHIFrameBuffer
 	*************************************************************************//**
-	*  @class     RHIFence
-	*  @brief     CPU-GPU synchronization
+	*  @class     RHIFrameBuffer
+	*  @brief     Render and Depth Stencil Buffer
 	*****************************************************************************/
 	class RHIFrameBuffer : public rhi::core::RHIFrameBuffer
 	{
@@ -40,14 +40,17 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/* @brief : Return render target view descriptor directX12 heap*/
 		DescriptorHeapComPtr GetRTVHeap() const noexcept;
 
+		/* @brief: Return depth stencil view descriptor directX12 heap*/
 		DescriptorHeapComPtr GetDSVHeap() const noexcept;
 
+		/* @brief: Return render target descriptor view byte size*/
 		size_t               GetRTVByteSize() const noexcept { return _rtvSize; }
 
+		/* @brief: Return depth stencil descriptor view byte size*/
 		size_t               GetDSVByteSize() const noexcept { return _dsvSize; }
-
 
 		/****************************************************************************
 		**                Constructor and Destructor

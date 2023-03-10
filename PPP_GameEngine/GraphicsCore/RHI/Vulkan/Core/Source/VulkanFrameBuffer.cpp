@@ -44,13 +44,17 @@ RHIFrameBuffer::~RHIFrameBuffer()
 	vkDestroyFramebuffer(vkDevice, _frameBuffer, nullptr);
 }
 #pragma endregion Constructor and Destructor
+
 #pragma region Prepare
 /****************************************************************************
 *                       Prepare
 *************************************************************************//**
 *  @fn        void RHIFrameBuffer::Prepare()
+* 
 *  @brief     Prepare Frame Buffer 
+* 
 *  @param[in] void
+* 
 *  @return Å@Å@void
 *****************************************************************************/
 void RHIFrameBuffer::Prepare()
@@ -65,42 +69,48 @@ void RHIFrameBuffer::Prepare()
 	// Render Target
 	for (size_t index = 0; index < _renderTargets.size(); ++index)
 	{
+		// set up render target resource view
 		_renderTargetViews[index] = rhiDevice->CreateResourceView(core::ResourceViewType::RenderTarget, _renderTargets[index], nullptr);
+		_renderTargetSRVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _renderTargets[index], nullptr);
+		_renderTargetUAVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::RWTexture   , _renderTargets[index], nullptr);
 
-		const auto vkRenderTargetView = std::static_pointer_cast<vulkan::GPUResourceView>(_renderTargetViews[index]);
-		imageViews[index] = vkRenderTargetView->GetImageView();
+		imageViews[index] = std::static_pointer_cast<vulkan::GPUResourceView>(_renderTargetViews[index])->GetImageView();
 
 		// set rener target size
-		_width  = std::max(_width, _renderTargets[index]->GetWidth());
+		_width  = std::max(_width , _renderTargets[index]->GetWidth());
 		_height = std::max(_height, _renderTargets[index]->GetHeight());
 	}
+
 	// Depth Stencil
 	if (_depthStencil != nullptr)
 	{
+		// set up depth stencil resource view
 		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil, _depthStencil, nullptr);
 
 		const auto vkDepthStancilView = std::static_pointer_cast<vulkan::GPUResourceView>(_depthStencilView);
 		imageViews.push_back(vkDepthStancilView->GetImageView());
-
-		_width  = std::max(_width , _depthStencil->GetWidth());
-		_height = std::max(_height, _depthStencil->GetHeight());
 	}
 
-	_width  = std::max(_width, 1LLU);
+	// width, height must be set more than 0.
+	_width  = std::max(_width , 1LLU);
 	_height = std::max(_height, 1LLU);
+
 	/*-------------------------------------------------------------------
 	-               Create Frame Buffer Info
 	---------------------------------------------------------------------*/
-	VkFramebufferCreateInfo createInfo = {};
-	createInfo.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-	createInfo.flags           = 0;
-	createInfo.pNext           = nullptr;
-	createInfo.renderPass      = std::static_pointer_cast<vulkan::RHIRenderPass>(_renderPass)->GetRenderPass();
-	createInfo.attachmentCount = static_cast<std::uint32_t>(imageViews.size());
-	createInfo.pAttachments    = imageViews.data();
-	createInfo.width           = static_cast<std::uint32_t>(_width);
-	createInfo.height          = static_cast<std::uint32_t>(_height);
-	createInfo.layers          = 1;
+	const VkFramebufferCreateInfo createInfo = 
+	{
+		.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+		.pNext           = nullptr,
+		.flags           = 0,
+		.renderPass      = std::static_pointer_cast<vulkan::RHIRenderPass>(_renderPass)->GetRenderPass(),
+		.attachmentCount = static_cast<std::uint32_t>(imageViews.size()),
+		.pAttachments    = imageViews.data(),
+		.width           = static_cast<std::uint32_t>(_width),
+		.height          = static_cast<std::uint32_t>(_height),
+		.layers          = 1
+	};
+
 	/*-------------------------------------------------------------------
 	-               Create Frame Buffer
 	---------------------------------------------------------------------*/

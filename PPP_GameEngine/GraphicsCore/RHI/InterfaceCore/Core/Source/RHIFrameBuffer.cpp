@@ -25,23 +25,35 @@ using namespace rhi::core;
 RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil)
 	: _device(device), _renderPass(renderPass), _renderTargets(renderTargets), _depthStencil(depthStencil)
 {
-	Prepare();
+	CheckResourceFormat();
 }
+
 RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil)
 	: _device(device), _renderPass(renderPass), _renderTargets(std::vector<std::shared_ptr<GPUTexture>>{renderTarget}), _depthStencil(depthStencil)
 {
-	Prepare();
+	CheckResourceFormat();
 }
+
 RHIFrameBuffer::~RHIFrameBuffer()
 {
-	if (_depthStencilView) { _depthStencilView.reset(); }
+	if (_depthStencilView) 
+	{
+		_depthStencilView.reset(); 
+	}
+
 	_renderTargetViews.clear(); _renderTargetViews.shrink_to_fit();
-	if (_depthStencil) { _depthStencil.reset(); }
+	
+	if (_depthStencil) 
+	{ 
+		_depthStencil.reset(); 
+	}
+
 	_renderTargets.clear(); _renderTargets.shrink_to_fit();
 }
+
 #pragma endregion Constructor and Destructor
 #pragma region Prepare
-void RHIFrameBuffer::Prepare()
+void RHIFrameBuffer::CheckResourceFormat()
 {
 	for (int i = 0; i < _renderTargets.size(); ++i)
 	{
@@ -55,8 +67,8 @@ void RHIFrameBuffer::Prepare()
 
 	if (_depthStencil != nullptr)
 	{
-		if (_depthStencil->GetDimension() != ResourceDimension::Dimension2D) { throw std::runtime_error("Wrong depthStencil dimension"); }
-		if (_depthStencil->GetUsage() != ResourceUsage::DepthStencil) { throw std::runtime_error("Wrong resource usage"); }
+		if (_depthStencil->GetDimension() != ResourceDimension::Dimension2D ) { throw std::runtime_error("Wrong depthStencil dimension"); }
+		if (_depthStencil->GetUsage()     != ResourceUsage    ::DepthStencil) { throw std::runtime_error("Wrong resource usage"); }
 	}
 }
 #pragma endregion Prepare

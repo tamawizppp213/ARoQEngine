@@ -39,15 +39,22 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		VkFramebuffer GetFrameBuffer() const noexcept { return _frameBuffer; }
+		
 		VkExtent2D    GetExtent2D() const noexcept { return VkExtent2D(static_cast<std::uint32_t>(_width), static_cast<std::uint32_t>(_height)); }
+		
 		size_t GetWidth () const noexcept { return _width; }
+		
 		size_t GetHeight() const noexcept { return _height; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIFrameBuffer() = default;
+		
 		explicit RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass,  const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr);
+		
 		explicit RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>&renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr);
+		
 		~RHIFrameBuffer();
 	protected:
 		/****************************************************************************

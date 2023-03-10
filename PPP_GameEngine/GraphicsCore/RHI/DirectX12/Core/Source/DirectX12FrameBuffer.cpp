@@ -119,4 +119,5 @@ DescriptorHeapComPtr RHIFrameBuffer::GetDSVHeap() const noexcept
 {
 	return _depthStencilHeap->GetHeap();
 }
+
 #pragma endregion Property

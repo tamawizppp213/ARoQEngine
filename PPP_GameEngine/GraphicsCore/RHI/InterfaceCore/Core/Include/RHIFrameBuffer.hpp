@@ -85,6 +85,7 @@ namespace rhi::core
 		void SetRenderTarget(const TexturePtr& texture, const size_t index = 0);
 
 		void SetDepthStencil(const TexturePtr& texture);
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -117,7 +118,7 @@ namespace rhi::core
 		ResourceViewPtr _depthStencilView = nullptr;
 
 	private:
-		void Prepare();
+		void CheckResourceFormat();
 	};
 }
 #endif
