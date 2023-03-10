@@ -29,6 +29,7 @@ VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 	{
 		case core::PixelFormat::R8G8B8A8_UNORM    : return VkFormat::VK_FORMAT_R8G8B8A8_UNORM;
 		case core::PixelFormat::B8G8R8A8_UNORM    : return VkFormat::VK_FORMAT_B8G8R8A8_UNORM;
+		case core::PixelFormat::B8G8R8A8_UNORM_SRGB: return VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
 		case core::PixelFormat::R16G16B16A16_FLOAT: return VkFormat::VK_FORMAT_R16G16B16A16_SFLOAT;
 		case core::PixelFormat::R32G32B32A32_FLOAT: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
 		case core::PixelFormat::R32G32B32_FLOAT   : return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;

@@ -8,14 +8,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "MainGame/Sample/Include/SampleModel.hpp"
+#include "MainGame/Sample/Include/SampleURP.hpp"
 #include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
 #include "GameCore/Core/Include/Camera.hpp"
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-#include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
-#include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
-#include "GameCore/Rendering/Core/BasePass/Include/BasePassGBuffer.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "GameCore/Rendering/Core/Renderer/Include/UniversalRenderPipeline.hpp"
+#include "GameCore/Rendering/Light/External/Include/IESProfiler.hpp"
+#include "GameCore/Rendering/Light/Include/SceneLightBuffer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,17 +25,16 @@ using namespace rhi;
 using namespace rhi::core;
 using namespace gc;
 using namespace gc::core;
+using namespace gc::rendering;
 
-std::shared_ptr<basepass::ZPrepass> zprepass = nullptr;
-std::shared_ptr<basepass::GBuffer> gbuffer = nullptr;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-SampleModel::SampleModel()
+SampleURP::SampleURP()
 {
 
 }
-SampleModel::~SampleModel()
+SampleURP::~SampleURP()
 {
 
 }
@@ -42,38 +42,49 @@ SampleModel::~SampleModel()
 /****************************************************************************
 *                       Initialize
 *************************************************************************//**
-*  @fn        void SampleModel::Initialize(const GameTimerPtr& gameTimer)
+*  @fn        void SampleURP::Initialize(const GameTimerPtr& gameTimer)
+* 
 *  @brief     Initialize scene
+* 
 *  @param[in] GameTimer* gameTimer
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
-void SampleModel::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleURP::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
+
 /****************************************************************************
 *                       Update
 *************************************************************************//**
-*  @fn        void SampleModel::Update()
+*  @fn        void SampleURP::Update()
+* 
 *  @brief     Update Scene
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
-void SampleModel::Update()
+void SampleURP::Update()
 {
 	Scene::Update();
 	_camera->Update(_gameTimer);
 	_model->Update(_gameTimer->DeltaTime());
 }
+
 /****************************************************************************
 *                       Draw
 *************************************************************************//**
-*  @fn        void SampleModel::Draw()
+*  @fn        void SampleURP::Draw()
+* 
 *  @brief     Draw Scene
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
-void SampleModel::Draw()
+void SampleURP::Draw()
 {
 	_engine->BeginDrawFrame();
 	/*-------------------------------------------------------------------
@@ -83,25 +94,26 @@ void SampleModel::Draw()
 	commandList->SetViewportAndScissor(
 		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
-	
-	zprepass->Draw(_camera->GetResourceView());
-	gbuffer->Draw(_camera->GetResourceView());
-	_engine->BeginSwapchainRenderPass();
-	_skybox->Draw(_camera->GetResourceView());
-	_dof->Draw(zprepass->GetRenderedTextureView());
-	_engine->EndDrawFrame();
+
+	_renderer->Draw(_camera->GetResourceView());
+	_skybox  ->Draw(_camera->GetResourceView());
+	_engine  ->EndDrawFrame();
 }
+
 /****************************************************************************
 *                       Terminate
 *************************************************************************//**
-*  @fn        void SampleModel::Terminate()
+*  @fn        void SampleURP::Terminate()
+* 
 *  @brief     Terminate Scene
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
-void SampleModel::Terminate()
+void SampleURP::Terminate()
 {
-	
+
 }
 #pragma endregion Public Function
 
@@ -110,29 +122,35 @@ void SampleModel::Terminate()
 /****************************************************************************
 *                       LoadMaterials
 *************************************************************************//**
-*  @fn        void SampleModel::LoadMaterials(GameTimer* gameTimer)
+*  @fn        void SampleURP::LoadMaterials(GameTimer* gameTimer)
+* 
 *  @brief     Load Materials
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
-void SampleModel::LoadMaterials()
+void SampleURP::LoadMaterials()
 {
 	/*-------------------------------------------------------------------
 	-             Open Copy CommandList
 	---------------------------------------------------------------------*/
-	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy);
+	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy);
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 	copyCommandList->BeginRecording();
 	graphicsCommandList->BeginRecording();
+
 	/*-------------------------------------------------------------------
 	-           Camera
 	---------------------------------------------------------------------*/
 	_camera = std::make_shared<Camera>(_engine);
 	_camera->SetPosition(0.0f, 10.0f, -20.0f);
+
 	/*-------------------------------------------------------------------
 	-           Skybox
 	---------------------------------------------------------------------*/
 	_skybox = std::make_shared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
+	
 	/*-------------------------------------------------------------------
 	-           Model
 	---------------------------------------------------------------------*/
@@ -140,12 +158,15 @@ void SampleModel::LoadMaterials()
 	_model->Load(L"Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx");
 	_model->SetDebugColor(gm::Float4(1, 0, 0, 1));
 
-	zprepass = std::make_shared<basepass::ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
-	zprepass->Add(_model);
-	gbuffer = std::make_shared<basepass::GBuffer>(_engine);
-	gbuffer->Add(_model);
+	/*-------------------------------------------------------------------
+	-           Universal Rendering Pipeline
+	---------------------------------------------------------------------*/
+	_renderer = std::make_shared<gc::URP>(_engine);
+	_renderer->Add(Forward, _model);
 
-	_dof = std::make_shared<Dof>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
+	IESProfiler profiler;
+	profiler.Load(L"Resources/Test.IES");
+
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
@@ -159,12 +180,15 @@ void SampleModel::LoadMaterials()
 /****************************************************************************
 *                       OnKeyboardInput
 *************************************************************************//**
-*  @fn        void SampleModel::OnKeyboardInput()
+*  @fn        void SampleURP::OnKeyboardInput()
+* 
 *  @brief     KeyboardInput
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
-void SampleModel::OnKeyboardInput()
+void SampleURP::OnKeyboardInput()
 {
 	const float deltaTime = _gameTimer->DeltaTime();
 	const float speed = 15.0f;
@@ -182,7 +206,7 @@ void SampleModel::OnKeyboardInput()
 	{
 		_camera->Walk(-speed * deltaTime);
 	}
-	if(_gameInput.GetKeyboard()->IsPress(DIK_D))
+	if (_gameInput.GetKeyboard()->IsPress(DIK_D))
 	{
 		_camera->Strafe(speed * deltaTime);
 	}
@@ -198,12 +222,15 @@ void SampleModel::OnKeyboardInput()
 /****************************************************************************
 *                       OnMouseInput
 *************************************************************************//**
-*  @fn        void SampleModel::OnMouseInput()
+*  @fn        void SampleURP::OnMouseInput()
+* 
 *  @brief     MouseInput
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
-void SampleModel::OnMouseInput()
+void SampleURP::OnMouseInput()
 {
 	/*-------------------------------------------------------------------
 	-           Mouse Input Left Button
@@ -221,11 +248,14 @@ void SampleModel::OnMouseInput()
 *                       OnGamePadInput
 *************************************************************************//**
 *  @fn        void SampleModel::OnGamePadInput()
+* 
 *  @brief     GamePadInput
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
-void SampleModel::OnGamePadInput()
+void SampleURP::OnGamePadInput()
 {
 
 }

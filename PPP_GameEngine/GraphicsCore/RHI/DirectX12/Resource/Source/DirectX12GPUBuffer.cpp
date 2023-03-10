@@ -29,7 +29,7 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core:
 	/*-------------------------------------------------------------------
 	-           Set heap property
 	---------------------------------------------------------------------*/
-	D3D12_HEAP_PROPERTIES heapProp = 
+	D3D12_HEAP_PROPERTIES heapProp
 	{
 		.Type                 = EnumConverter::Convert(_metaData.HeapType), 
 		.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
@@ -37,11 +37,11 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core:
 		.CreationNodeMask     = 1,
 		.VisibleNodeMask      = 1
 	};
-	
+
 	/*-------------------------------------------------------------------
 	-           Set resource desc
 	---------------------------------------------------------------------*/
-	D3D12_RESOURCE_DESC resourceDesc = 
+	const D3D12_RESOURCE_DESC resourceDesc = 
 	{
 		.Dimension          = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment          = 0,

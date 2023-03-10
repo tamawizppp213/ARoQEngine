@@ -1,6 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   IESProfiler.hpp
 ///             @brief  IES Profile parser
+///                     https://ieslibrary.com/en/home (IES light library)
+///                     https://vdocuments.mx/ies-specification-lm-63-2002.html?page=3
 ///             @author Toide Yutaro
 ///             @date   2022_05_10
 //////////////////////////////////////////////////////////////////////////////////
@@ -11,6 +13,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "IESProperty.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <string>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -19,28 +24,53 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-enum class PlaneType
+namespace gc::rendering
 {
-	C = 1, // theta , phi coodinate
-	B = 2, // alpha , beta coodinate
-	A = 3, // xy coodinate
-};
-enum class UnitType
-{
-	Feet = 1,
-	Meter = 2,
-};
-struct Lamp
-{
-	float     Lumen;
-	float     Multiplier;
-	PlaneType PhotometricType;
-	UnitType  LampUnitType;
-	float     ShapeWidth;
-	float     ShapeLength;
-	float     ShapeHeight;
-	float     BallastFactor;
-	float     InputWatts;
 
-};
+	class IESProfiler : public NonCopyable
+	{
+	protected:
+		
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		/* @brief : Load lamp data + GPUTexture resources.*/
+		void Load(const std::wstring& filePath);
+
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		/* @brief : Return lamp structure*/
+		const Lamp& GetLamp() const { return _lamp; }
+
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		IESProfiler() = default;
+
+		~IESProfiler();
+
+	protected:
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+		void LoadLamp(const std::wstring& name);
+
+		void SetUpTexture();
+
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		Lamp _lamp = {};
+
+	private:
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+		/* @brief: Determine if the IES format identifier is correct. 
+		           Please add it when a new version is released. */
+		bool IsProperIESFormat(const std::string& formatName);
+	};
+}
 #endif

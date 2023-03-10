@@ -897,6 +897,15 @@
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingPIpelineState.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="MainGame\Sample\Include\SampleURP.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Light\Include\SceneLightBuffer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProperty.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1442,6 +1451,9 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="MainGame\Sample\Source\SampleURP.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -1477,5 +1489,6 @@
     <FxCompile Include="Shader\Lighting\ShaderGBuffer.hlsl" />
     <FxCompile Include="Shader\Core\ShaderDebug.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderMosaic.hlsl" />
+    <FxCompile Include="Shader\Model\ShaderURPForwardRendering.hlsl" />
   </ItemGroup>
 </Project>

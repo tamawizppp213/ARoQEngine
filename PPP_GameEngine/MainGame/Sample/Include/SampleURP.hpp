@@ -1,104 +1,90 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RenderingEngine.hpp
-///             @brief  RenderingEngine
+///             @file   SampleModel.hpp
+///             @brief  3DModel drawing sample
 ///             @author Toide Yutaro
-///             @date   2022_06_04
+///             @date   2023_02_02
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef UNIVERSAL_RENDER_PIPELINE_HPP
-#define UNIVERSAL_RENDER_PIPELINE_HPP
+#ifndef SAMPLE_URP_HPP
+#define SAMPLE_URP_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "RenderPipeline.hpp"
-#include <vector>
+#include "MainGame/Core/Include/Scene.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 namespace gc
 {
-	namespace ui
-	{
-		class UIRenderer;
-	}
-
-	namespace basepass
-	{
-		class ZPrepass;
-		class LightCulling;
-		class GBuffer;
-	}
+	class SkyDome;
+	class Camera;
+	class URP;
+}
+namespace gc::core
+{
+	class GameModel;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace sample
 {
-	enum URPDrawType
-	{
-		Differed = 0x01,
-		Forward  = 0x02,
-		Both     = Differed | Forward
-	};
-
 	/****************************************************************************
-	*				  			URP
+	*				  			SampleURP
 	*************************************************************************//**
-	*  @class     URP
-	*  @brief     Universal Rendering Pipeline
+	*  @class     SampleURP
+	*  @brief     Universal Rendering Pipeline sample
 	*****************************************************************************/
-	class URP : public IRenderPipeline
+	class SampleURP : public Scene
 	{
-		using UIRendererPtr   = std::shared_ptr<ui::UIRenderer>;
-		using ZPrepassPtr     = std::shared_ptr<basepass::ZPrepass>;
-		using LightCullingPtr = std::shared_ptr<basepass::LightCulling>;
-		using GBufferPtr      = std::shared_ptr<basepass::GBuffer>;
+		using RendererPtr = std::shared_ptr<gc::URP>;
+		using SkyDomePtr  = std::shared_ptr<gc::SkyDome>;
+		using CameraPtr   = std::shared_ptr<gc::Camera>;
+		using ModelPtr    = std::shared_ptr<gc::core::GameModel>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Draw(const ResourceViewPtr& scene) override;
-
-		void Add(const URPDrawType type, const GameModelPtr& gameModel);
-
+		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
+		
+		void Update() override;
+		
+		void Draw() override;
+	
+		void Terminate() override;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		UIRendererPtr GetUIRenderer() const noexcept { return _uiRenderer; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		URP(const LowLevelGraphicsEnginePtr& engine);
+		SampleURP();
 
-		~URP();
-
+		~SampleURP();
 	protected:
 		/****************************************************************************
-		**                Private Function
+		**                Protected Function
 		*****************************************************************************/
-		void PrepareModelPipeline();
-
+		void LoadMaterials() override;
+		
+		void OnKeyboardInput() override;
+		
+		void OnMouseInput() override;
+		
+		void OnGamePadInput() override;
+		
 		/****************************************************************************
-		**                Private Member Variables
+		**                Protected Member Variables
 		*****************************************************************************/
-		UIRendererPtr _uiRenderer = nullptr;
-
-		ZPrepassPtr _zPrepass = nullptr;
-
-		LightCullingPtr _lightCulling = nullptr;
-
-		GBufferPtr _gBuffer = nullptr;
-
-		ResourceLayoutPtr _resourceLayout = nullptr;
-
-		PipelineStatePtr _pipeline = nullptr;
-
-		std::vector<GameModelPtr> _forwardModels  = {};
-
-		static constexpr std::uint32_t MAX_UI_COUNT = 1024;
+		SkyDomePtr _skybox = nullptr;
+		CameraPtr  _camera = nullptr;
+		ModelPtr   _model  = nullptr;
+		RendererPtr _renderer = nullptr;
 	};
 }
 #endif

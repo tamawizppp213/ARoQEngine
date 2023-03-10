@@ -1058,8 +1058,8 @@ namespace rhi::core
 		*****************************************************************************/
 		PixelFormat     Format        = PixelFormat::Unknown;         // pixel format
 		MultiSample     SampleCount   = MultiSample::Count1;          // multi sample count (default: single sample count)
-		ResourceState   InitialLayout = ResourceState::Common;       // initial resource layout  
-		ResourceState  FinalLayout    = ResourceState::Present;      // final desired resource layout
+		ResourceState   InitialLayout = ResourceState::Common;        // initial resource layout  
+		ResourceState  FinalLayout    = ResourceState::Present;       // final desired resource layout
 		AttachmentLoad  LoadOp        = AttachmentLoad::Clear;        // at the beginning of a render path, erase already existing data with a specific value
 		AttachmentStore StoreOp       = AttachmentStore::Store;       // at the end of a render pass, save data on memory
 		AttachmentLoad  StencilLoad   = AttachmentLoad::DontCare;     // stencil; 

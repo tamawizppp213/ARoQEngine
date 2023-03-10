@@ -440,11 +440,8 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 		core::Attachment colorAttachment = core::Attachment::RenderTarget(_pixelFormat, core::ResourceState::RenderTarget,
 			core::ResourceState::Present, core::AttachmentLoad::Load);
 
-		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat, core::ResourceState::Common, 
+		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat, core::ResourceState::DepthStencil, 
 			core::ResourceState::DepthStencil,core::AttachmentLoad::Load);
-
-		// vulkan‚Ìê‡, ‰ŠúRenderTarget‚ÍUnlnown‚Å‚ ‚é•K—v‚ª‚ ‚é‚Æ‚Ì‚±‚Æ
-		if (_apiVersion == APIVersion::Vulkan) { colorAttachment.InitialLayout = core::ResourceState::Common; }
 
 		_drawContinueRenderPass = _device->CreateRenderPass(colorAttachment, depthAttachment);
 		_drawContinueRenderPass->SetClearValue(clearColor, clearDepthColor);

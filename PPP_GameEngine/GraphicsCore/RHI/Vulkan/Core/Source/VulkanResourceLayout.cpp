@@ -77,12 +77,14 @@ void RHIResourceLayout::SetUp()
 	---------------------------------------------------------------------*/
 	for (const auto& element : _elements)
 	{
-		VkDescriptorSetLayoutBinding binding = {};
-		binding.binding            = static_cast<std::uint32_t>(element.Binding);
-		binding.descriptorType     = EnumConverter::Convert(element.DescriptorType);
-		binding.descriptorCount    = 1;
-		binding.stageFlags         = EnumConverter::Convert(element.Visibility);
-		binding.pImmutableSamplers = nullptr;
+		const VkDescriptorSetLayoutBinding binding =
+		{
+			.binding            = static_cast<std::uint32_t>(element.Binding),
+			.descriptorType     = EnumConverter::Convert(element.DescriptorType),
+			.descriptorCount    = 1,
+			.stageFlags         = VkShaderStageFlags(EnumConverter::Convert(element.Visibility)),
+			.pImmutableSamplers = nullptr
+		};
 
 		bindings[element.RegisterSpace].push_back(binding);
 	}
@@ -92,12 +94,15 @@ void RHIResourceLayout::SetUp()
 	---------------------------------------------------------------------*/
 	for (const auto& sampler : _samplers)
 	{
-		VkDescriptorSetLayoutBinding binding = {};
-		binding.binding            = static_cast<std::uint32_t>(sampler.Binding);
-		binding.descriptorType     = VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER;
-		binding.descriptorCount    = 1;
-		binding.stageFlags         = EnumConverter::Convert(sampler.Visibility);
-		binding.pImmutableSamplers = &std::static_pointer_cast<vulkan::GPUSampler>(sampler.Sampler)->GetSampler();
+		const VkDescriptorSetLayoutBinding binding = 
+		{
+			.binding            = static_cast<std::uint32_t>(sampler.Binding),
+			.descriptorType     = VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER,
+			.descriptorCount    = 1,
+			.stageFlags         = VkShaderStageFlags(EnumConverter::Convert(sampler.Visibility)),
+			.pImmutableSamplers = &std::static_pointer_cast<vulkan::GPUSampler>(sampler.Sampler)->GetSampler()
+		};
+		
 
 		bindings[sampler.RegisterSpace].push_back(binding);
 	}
@@ -108,12 +113,15 @@ void RHIResourceLayout::SetUp()
 	_descriptorSetLayouts = std::vector<VkDescriptorSetLayout>(maxRegisterSpace);
 	for (int i = 0; i < _descriptorSetLayouts.size(); ++i)
 	{
-		VkDescriptorSetLayoutCreateInfo createInfo = {};
-		createInfo.sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		createInfo.pNext        = nullptr;
-		createInfo.flags        = 0;
-		createInfo.bindingCount = static_cast<std::uint32_t>(bindings[i].size());
-		createInfo.pBindings    = bindings[i].data();
+		const VkDescriptorSetLayoutCreateInfo createInfo = 
+		{
+			.sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+			.pNext        = nullptr,
+			.flags        = 0,
+			.bindingCount = static_cast<std::uint32_t>(bindings[i].size()),
+			.pBindings    = bindings[i].data()
+		};
+
 
 		if (vkCreateDescriptorSetLayout(vkDevice, &createInfo, nullptr, &_descriptorSetLayouts[i]) != VK_SUCCESS)
 		{

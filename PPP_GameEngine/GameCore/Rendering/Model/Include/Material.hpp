@@ -84,7 +84,9 @@ namespace gc::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Material(const LowLevelGraphicsEnginePtr& engine, const rhi::core::GPUBufferMetaData& bufferInfo, const std::wstring& addName = L"",
+		Material(const LowLevelGraphicsEnginePtr& engine, 
+			const rhi::core::GPUBufferMetaData& bufferInfo, 
+			const std::wstring& addName = L"",
 			const RHIDescriptorHeapPtr& customHeap = nullptr);
 
 		~Material();

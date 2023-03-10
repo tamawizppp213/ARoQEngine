@@ -18,7 +18,16 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
-
+namespace rhi::core
+{
+	class GPUResourceView;
+	class RHIResourceLayout;
+	class GPUGraphicsPipelineState;
+}
+namespace gc::core
+{
+	class GameModel;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,11 +43,16 @@ namespace gc
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
+		using ResourceLayoutPtr         = std::shared_ptr<rhi::core::RHIResourceLayout>;
+		using PipelineStatePtr          = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		using GameModelPtr              = std::shared_ptr<gc::core::GameModel>;
+	
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual bool Draw() = 0;
+		virtual bool Draw(const ResourceViewPtr& scene) = 0;
 
 		/****************************************************************************
 		**                Public Member Variables

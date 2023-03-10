@@ -39,14 +39,22 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		VkRenderPass GetRenderPass() const noexcept { return _renderPass; }
+
 		std::vector<VkClearValue> GetVkClearValues() const;
+
+		void SetName(const std::wstring& name) override;
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIRenderPass() = default;
+
 		~RHIRenderPass();
+		
 		explicit RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth = std::nullopt);
+		
 		explicit RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth = std::nullopt);
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -56,6 +64,7 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkRenderPass _renderPass = nullptr;
+	
 	private:
 		void Prepare();
 	};

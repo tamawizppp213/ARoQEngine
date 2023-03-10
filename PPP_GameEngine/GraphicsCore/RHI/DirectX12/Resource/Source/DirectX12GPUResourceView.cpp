@@ -396,6 +396,7 @@ void GPUResourceView::CreateUAV(const std::shared_ptr<directX12::RHIDescriptorHe
 		{
 			case core::ResourceType::Buffer:
 			{
+				resourceViewDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
 				resourceViewDesc.Format = DXGI_FORMAT_UNKNOWN;
 				resourceViewDesc.Buffer.CounterOffsetInBytes = 0;
 				resourceViewDesc.Buffer.FirstElement         = 0;
