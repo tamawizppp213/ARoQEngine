@@ -16,6 +16,7 @@
 #include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassGBuffer.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

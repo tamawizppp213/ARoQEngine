@@ -54,7 +54,7 @@ void IESProfiler::LoadLamp(const std::wstring& name)
 	---------------------------------------------------------------------*/
 	std::string format = "";
 	stream >> format;
-	if (IsProperIESFormat(format))
+	if (!IsProperIESFormat(format))
 	{
 		throw std::runtime_error("unknown IES format type");
 	}

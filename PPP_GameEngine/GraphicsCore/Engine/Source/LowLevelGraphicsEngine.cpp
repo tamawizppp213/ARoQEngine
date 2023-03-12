@@ -105,9 +105,19 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	/*-------------------------------------------------------------------
 	-      Set up swapchain
 	---------------------------------------------------------------------*/
-	core::WindowInfo windowInfo = core::WindowInfo(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _hwnd, _hInstance);
+	const core::WindowInfo    windowInfo = core::WindowInfo(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _hwnd, _hInstance);
+	const core::SwapchainDesc swapchainDesc = 
+	{
+		.CommandQueue     = _commandQueues[CommandListType::Graphics],
+		.WindowInfo       = windowInfo,
+		.PixelFormat      = _pixelFormat,
+		.FrameBufferCount = FRAME_BUFFER_COUNT,
+		.VSync            = VSYNC,
+		.IsValidHDR       = false,
+		.IsValidStereo    = false,
+	};
 
-	_swapchain   = _device   ->CreateSwapchain( _commandQueues[CommandListType::Graphics], windowInfo, _pixelFormat,  FRAME_BUFFER_COUNT, VSYNC, false);
+	_swapchain   = _device   ->CreateSwapchain(swapchainDesc);
 	_pixelFormat = _swapchain->GetPixelFormat(); // sdr‚Ìê‡‚ÍC³‚·‚é/
 
 	/*-------------------------------------------------------------------
@@ -272,8 +282,8 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 {
 	if (!(_width != newWidth || _height != newHeight)) { return; }
 
-	WaitForIdleGPU();
-
+	Screen::SetScreenWidth(newWidth);
+	Screen::SetScreenHeight(newHeight);
 	SetFrameBuffers(newWidth, newHeight);
 
 	_swapchain->Resize(newWidth, newHeight);
@@ -298,24 +308,6 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 
 }
 
-void LowLevelGraphicsEngine::WaitForIdleGPU()
-{
-	/*-------------------------------------------------------------------
-	-          Wait for all issued commands to complete
-	---------------------------------------------------------------------*/
-	const auto fence = _device->CreateFence();
-
-	for (std::uint32_t i = 1; i < (std::uint32_t)CommandListType::CountOfType; ++i)
-	{
-		const auto commandList = _commandLists[(CommandListType)i];
-
-		if (commandList->IsOpen()) { commandList->EndRecording(); }
-		_commandQueues[(CommandListType)i]->Execute({ commandList });
-		_commandQueues[(CommandListType)i]->Signal(fence, i);
-		fence->Wait(i);
-		_commandLists[(CommandListType)i]->Reset();
-	}
-}
 
 void LowLevelGraphicsEngine::BeginSwapchainRenderPass()
 {
@@ -466,8 +458,6 @@ void LowLevelGraphicsEngine::SetFrameBuffers(const int width, const int height, 
 		auto renderInfo = core::GPUTextureMetaData::RenderTarget(width, height, _pixelFormat, clearColor);
 		auto depthInfo  = core::GPUTextureMetaData::DepthStencil( width, height, 
 			_depthStencilFormat, clearDepthColor);
-
-		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 
 		const auto renderTexture = _device->CreateTexture(renderInfo, L"FrameBuffer");
 		const auto depthTexture  = _device->CreateTexture(depthInfo , L"FrameBufferDepth");

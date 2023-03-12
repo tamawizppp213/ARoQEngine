@@ -273,7 +273,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTarget(const size_t width, const si
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget;
+	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess; // for frame buffer
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
@@ -292,7 +292,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTargetMultiSample(const size_t widt
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget;
+	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;

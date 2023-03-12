@@ -62,7 +62,6 @@ IFullScreenEffector::IFullScreenEffector(const LowLevelGraphicsEnginePtr& engine
 *****************************************************************************/
 void IFullScreenEffector::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 {
-	const auto frameIndex = _engine->GetCurrentFrameIndex();
 	const auto device     = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
 	/*-------------------------------------------------------------------

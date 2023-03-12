@@ -52,6 +52,7 @@ namespace rhi::core
 	class BLASBuffer;
 	class TLASBuffer;
 	class ASInstance;
+	struct SwapchainDesc;
 
 	/****************************************************************************
 	*				  			RHIDevice
@@ -89,6 +90,8 @@ namespace rhi::core
 		
 		virtual std::shared_ptr<RHISwapchain>               CreateSwapchain(const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) = 0;
 		
+		virtual std::shared_ptr<RHISwapchain>               CreateSwapchain(const SwapchainDesc& desc) = 0;
+
 		virtual std::shared_ptr<RHIDescriptorHeap>          CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
 		
 		virtual std::shared_ptr<RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;

@@ -194,6 +194,11 @@ std::shared_ptr<core::RHISwapchain> RHIDevice::CreateSwapchain(const std::shared
 	return std::static_pointer_cast<core::RHISwapchain>(std::make_shared<directX12::RHISwapchain>(shared_from_this(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR));
 }
 
+std::shared_ptr<core::RHISwapchain>  RHIDevice::CreateSwapchain(const core::SwapchainDesc& desc)
+{
+	return std::static_pointer_cast<core::RHISwapchain>(std::make_shared<directX12::RHISwapchain>(shared_from_this(), desc));
+}
+
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
 {
 	auto heapPtr = std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this()));
@@ -394,7 +399,7 @@ void RHIDevice::CheckVRSSupport()
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-void RHIDevice::CheckMultiSampleQualityLevels()
+void RHIDevice::CheckMultiSampleQualityLevels(const core::PixelFormat format)
 {
 	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
 	msQualityLevels.Format           = DXGI_FORMAT_R16G16B16A16_FLOAT; // back buffer Ç…ÇµÇΩï˚Ç™Ç¢Ç¢Ç©Ç∆

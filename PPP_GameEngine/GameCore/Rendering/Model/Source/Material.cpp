@@ -56,7 +56,6 @@ Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaD
 	if (InstanceCount == 0)
 	{
 		const auto device      = _engine->GetDevice();
-		const auto frameIndex  = _engine->GetCurrentFrameIndex();
 		const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 		ResourceCache = std::make_shared<GPUResourceCache>(device, commandList);
 	}

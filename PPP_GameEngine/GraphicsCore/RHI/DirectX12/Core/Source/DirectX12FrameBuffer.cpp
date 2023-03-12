@@ -28,6 +28,7 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
 	: core::RHIFrameBuffer(device, renderPass, renderTargets, depthStencil)
 {
@@ -49,6 +50,9 @@ RHIFrameBuffer::~RHIFrameBuffer()
 	if (_renderTargetHeap) { _renderTargetHeap.reset(); }
 	if (_depthStencilHeap) { _depthStencilHeap.reset(); }
 }
+
+#pragma endregion Constructor and Destructor
+
 #pragma region Prepare
 /****************************************************************************
 *                      Prepare
@@ -106,6 +110,7 @@ void RHIFrameBuffer::Prepare()
 	if (_depthStencil != nullptr)
 	{
 		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil, _depthStencil, nullptr);
+		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _depthStencil,  nullptr);
 	}
 }
 #pragma endregion Prepare

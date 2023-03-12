@@ -89,7 +89,7 @@ void LightCulling::Execute(const ResourceViewPtr& scene, const ResourceViewPtr& 
 		_lightIDLists[i]->Bind(computeList, i + 3); // 3 is resource layout offset
 	}
 
-	computeList->Dispatch(_width / TILE_WIDTH, _height / TILE_HEIGHT, 1);
+	computeList->Dispatch(static_cast<std::uint32_t>(_width / TILE_WIDTH), static_cast<std::uint32_t>(_height / TILE_HEIGHT), 1);
 }
 
 #pragma endregion Main Function

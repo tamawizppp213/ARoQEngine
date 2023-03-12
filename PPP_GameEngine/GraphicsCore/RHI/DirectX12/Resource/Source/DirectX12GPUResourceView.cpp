@@ -155,6 +155,12 @@ void GPUResourceView::CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHe
 	if (_texture)
 	{
 		resourceViewDesc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
+		
+		// For depth stencil texture
+		if (_texture->GetPixelFormat() == core::PixelFormat::D32_FLOAT)
+		{
+			resourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		}
 
 		switch (_texture->GetResourceType())
 		{

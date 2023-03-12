@@ -63,6 +63,8 @@ namespace rhi::vulkan
 		
 		std::shared_ptr<core::RHISwapchain>            CreateSwapchain(const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 3, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
 		
+		std::shared_ptr<core::RHISwapchain>            CreateSwapchain(const core::SwapchainDesc& desc) override;
+
 		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		
 		std::shared_ptr<core::RHIDescriptorHeap>       CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;

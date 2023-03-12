@@ -17,6 +17,8 @@
 #include "GameCore/Rendering/Core/Renderer/Include/UniversalRenderPipeline.hpp"
 #include "GameCore/Rendering/Light/External/Include/IESProfiler.hpp"
 #include "GameCore/Rendering/Light/Include/SceneLightBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHISwapchain.hpp"
+#include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -188,6 +190,7 @@ void SampleURP::LoadMaterials()
 * 
 *  @return    void
 *****************************************************************************/
+bool isOn = false;
 void SampleURP::OnKeyboardInput()
 {
 	const float deltaTime = _gameTimer->DeltaTime();
@@ -218,6 +221,13 @@ void SampleURP::OnKeyboardInput()
 		_camera->Strafe(-speed * deltaTime);
 	}
 
+	if (_gameInput.GetKeyboard()->IsTrigger(DIK_Q))
+	{
+		isOn = !isOn;
+		if(isOn){ _engine->OnResize(2800, 1000); }
+		else{ _engine->OnResize(1920, 1080); }
+	}
+	std::cout << Screen::GetScreenWidth() << std::endl;
 }
 /****************************************************************************
 *                       OnMouseInput

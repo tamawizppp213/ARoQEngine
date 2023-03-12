@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFrameBuffer.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanRenderPass.hpp"
-#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
-#include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUResourceView.hpp"
+#include "../Include/VulkanFrameBuffer.hpp"
+#include "../Include/VulkanDevice.hpp"
+#include "../Include/VulkanRenderPass.hpp"
+#include "../../Resource/Include/VulkanGPUTexture.hpp"
+#include "../Include/VulkanEnumConverter.hpp"
+#include "../../Resource/Include/VulkanGPUResourceView.hpp"
 #include <stdexcept>
 #undef max
 #undef min
@@ -86,6 +86,7 @@ void RHIFrameBuffer::Prepare()
 	{
 		// set up depth stencil resource view
 		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil, _depthStencil, nullptr);
+		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _depthStencil, nullptr);
 
 		const auto vkDepthStancilView = std::static_pointer_cast<vulkan::GPUResourceView>(_depthStencilView);
 		imageViews.push_back(vkDepthStancilView->GetImageView());

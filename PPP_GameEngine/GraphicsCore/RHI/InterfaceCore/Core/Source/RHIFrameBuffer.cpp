@@ -115,5 +115,6 @@ void RHIFrameBuffer::SetDepthStencil(const TexturePtr& texture)
 {
 	_depthStencil = texture;
 	_depthStencilView->SetTexture(texture);
+	_depthStencilSRV ->SetTexture(texture);
 }
 #pragma endregion Property

@@ -1142,6 +1142,7 @@ namespace rhi::core
 		}
 
 	};
+
 #pragma endregion    Window Surface
 }
 #endif

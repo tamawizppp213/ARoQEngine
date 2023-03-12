@@ -105,8 +105,8 @@ namespace gc::basepass
 
 		PipelineStatePtr _pipeline = nullptr;
 
-		std::uint32_t _width  = 0;
-		std::uint32_t _height = 0;
+		std::uint64_t _width  = 0;
+		std::uint64_t _height = 0;
 
 		static constexpr std::uint64_t TILE_WIDTH  = 16;
 		static constexpr std::uint64_t TILE_HEIGHT = 16;

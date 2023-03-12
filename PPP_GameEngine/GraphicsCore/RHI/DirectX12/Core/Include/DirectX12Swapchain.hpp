@@ -47,6 +47,10 @@ namespace rhi::directX12
 		
 		/* @brief : Return current frame buffer*/
 		size_t GetCurrentBufferIndex() const override;
+
+		/* @brief : Switch between fullscreen mode and specified resolution screen mode.
+		            isOn = true : proceed fullscreen mode. false : specified resolution screen mode */
+		void SwitchFullScreenMode(const bool isOn) override;
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -66,11 +70,15 @@ namespace rhi::directX12
 			const size_t frameBufferCount = 3, const std::uint32_t vsync = 0,
 			const bool isValidHDR = true);
 
+		explicit RHISwapchain(
+			const std::shared_ptr<rhi::core::RHIDevice>& device,
+			const core::SwapchainDesc& desc);
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		
+		void SetUp();
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

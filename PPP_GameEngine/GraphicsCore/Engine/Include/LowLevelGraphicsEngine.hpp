@@ -58,7 +58,7 @@ public:
 	*****************************************************************************/
 	static constexpr std::uint32_t FRAME_BUFFER_COUNT = 3;
 
-	static constexpr std::uint32_t VSYNC = 0; // 0: don't wait, 1:wait(60fps)
+	static constexpr std::uint32_t VSYNC = 1; // 0: don't wait, 1:wait(60fps)
 
 	/****************************************************************************
 	**                Public Function
@@ -112,6 +112,7 @@ public:
 
 	rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
 
+	std::shared_ptr<rhi::core::RHISwapchain> GetSwapchain() const noexcept { return _swapchain; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -127,7 +128,6 @@ protected:
 		const rhi::core::ClearValue& clearColor = rhi::core::ClearValue(0.0f, 0.3f, 0.3f, 1.0f),
 		const rhi::core::ClearValue& clearDepthColor = rhi::core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f));
 
-	void WaitForIdleGPU();
 #pragma region SetUp
 
 #pragma endregion SetUp

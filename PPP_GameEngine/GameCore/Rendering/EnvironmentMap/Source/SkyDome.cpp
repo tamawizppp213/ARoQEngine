@@ -51,7 +51,6 @@ SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cu
 	/*-------------------------------------------------------------------
 	-           Load Texture
 	---------------------------------------------------------------------*/
-	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	const auto texture     = device->CreateTextureEmpty();
@@ -100,7 +99,6 @@ void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView)
 *****************************************************************************/
 void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 {
-	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy); 
 	/*-------------------------------------------------------------------
@@ -153,7 +151,6 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 *****************************************************************************/
 void SkyDome::PrepareSkyObject(const std::wstring& addName)
 {
-	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
 
@@ -219,7 +216,6 @@ void SkyDome::PreparePipelineState(const std::wstring& addName)
 
 void SkyDome::PrepareResourceView(const std::shared_ptr<GPUTexture>& texture)
 {
-	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	
