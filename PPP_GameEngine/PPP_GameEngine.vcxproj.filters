@@ -1480,7 +1480,7 @@
     <FxCompile Include="Shader\Effect\ShaderColorChange.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderGaussianBlur.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderDepthOfField.hlsl" />
-    <FxCompile Include="Shader\Lighting\ShaderLightCulling.hlsl" />
+    <FxCompile Include="Shader\Lighting\ShaderTileBasedLightCulling.hlsl" />
     <FxCompile Include="Shader\Sprite\ShaderTest.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderTonemap.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderBloom.hlsl" />

@@ -13,14 +13,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 //////////////////////////////////////////////////////////////////////////////////
-// 32 bytes
+// 48 bytes
 struct PointLight
 {
     float3 Position;
     float  Range;
     float3 Color;
     float  Brightness;
-    
+    int    IsUse;
+    float3 Dummy;
 };
 
 // 64 bytes
@@ -33,7 +34,8 @@ struct SpotLight
     float3 Direction;
     float  InnerConeAngle;
     float  OuterConeAngle;
-    float3 Dummy;
+    int    IsUse;
+    float2 Dummy;
 };
 
 // 32 bytes
@@ -45,14 +47,22 @@ struct DirectionalLight
     float  Padding;
 };
 
-#define NUM_DIRECTIONAL_LIGHT (4)
-#define NUM_POINT_LIGHT (100)
-#define NUM_SPOT_LIGHT  (20)
+#define MAX_DIRECTIONAL_LIGHT (4)
+#define MAX_POINT_LIGHT (1000)
+#define MAX_SPOT_LIGHT  (100)
 
-cbuffer SceneLights : register(b3)
+cbuffer ScenePointLight : register(b3)
 {
-    DirectionalLight DirectionalLights[NUM_DIRECTIONAL_LIGHT];
-    PointLight       PointLights      [NUM_POINT_LIGHT];
-    SpotLight        SpotLights       [NUM_SPOT_LIGHT];
+    PointLight PointLights [MAX_POINT_LIGHT];
+}
+
+cbuffer SceneSpotLight : register(b4)
+{
+    SpotLight SpotLights[MAX_SPOT_LIGHT];
+}
+
+cbuffer SceneDirectionalLight : register(b5)
+{
+    DirectionalLight DirectionalLights[MAX_DIRECTIONAL_LIGHT];
 }
 #endif

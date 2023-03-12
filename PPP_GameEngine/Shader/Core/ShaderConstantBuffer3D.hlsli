@@ -53,5 +53,4 @@ cbuffer MaterialConstants : register(b2)
 }
 
 
-
 #endif
