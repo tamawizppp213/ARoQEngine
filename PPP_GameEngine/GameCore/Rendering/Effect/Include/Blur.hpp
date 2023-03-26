@@ -104,9 +104,7 @@ namespace gc
 
 		TextureSizeParameter _textureSize;
 		ResourceLayoutPtr    _resourceLayout    = nullptr;
-		PipelineStatePtr     _xBlurPipeline     = nullptr;
-		PipelineStatePtr     _yBlurPipeline     = nullptr;
-		PipelineStatePtr     _finalBlurPipeline = nullptr;
+		PipelineStatePtr     _blurPipeline      = nullptr;
 		ResourceViewPtr      _shaderResourceViews[ViewCount];
 		ResourceViewPtr      _unorderedResourceViews[ViewCount];
 		ResourceViewPtr      _blurParameterView = nullptr;

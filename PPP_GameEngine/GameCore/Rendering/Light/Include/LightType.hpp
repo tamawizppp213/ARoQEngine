@@ -36,15 +36,17 @@ namespace gc::rendering
 		hlsl::float3 Direction  = hlsl::float3(0, 0, 0);
 		hlsl::float1 Brightness = 1.0f;
 		hlsl::float3 Color      = hlsl::float3(1, 1, 1);
-		hlsl::float1 Padding    = 1.0f;
+		hlsl::float1 Padding    = 0.0f;
 	};
 
 	struct PointLightData : public LightData
 	{
-		hlsl::float3 Position = hlsl::float3(0, 0, 0);
-		hlsl::float1 Range    = 1.0f;
+		hlsl::float3 Position   = hlsl::float3(0, 0, 0);
+		hlsl::float1 Range      = 1.0f;
 		hlsl::float3 Color      = hlsl::float3(1, 1, 1);
 		hlsl::float1 Brightness = 1.0f;
+		int          IsUse      = false;
+		hlsl::float3 Dummy      = hlsl::float3(0, 0, 0);
 	};
 
 	struct SpotLightData : public LightData
@@ -56,6 +58,8 @@ namespace gc::rendering
 		hlsl::float3 Direction      = hlsl::float3(0, 0, 0);
 		hlsl::float1 InnerConeAngle = gm::GM_PI / 6.0f;
 		hlsl::float1 OuterConeAngle = gm::GM_PI / 4.0f;
+		int          IsUse          = false;
+		hlsl::float2 Dummy          = hlsl::float2(0, 0);
 	};
 
 	struct RectLightData : public LightData

@@ -39,9 +39,7 @@ GaussianBlur::GaussianBlur()
 }
 GaussianBlur::~GaussianBlur()
 {
-	_finalBlurPipeline.reset();
-	_yBlurPipeline.reset();
-	_xBlurPipeline.reset();
+	_blurPipeline.reset();
 	for (auto& u : _unorderedResourceViews) { u.reset(); }
 	for (auto& s : _shaderResourceViews   ) { s.reset(); }
 	_textureSizeView.reset();
@@ -111,28 +109,14 @@ void GaussianBlur::Draw(const ResourceViewPtr& sourceSRV, const ResourceViewPtr&
 	_textureSizeView  ->Bind(commandList, 1);
 	
 	/*-------------------------------------------------------------------
-	-               Execute XBlur Command
+	-               Bind
 	---------------------------------------------------------------------*/
 	sourceSRV->Bind(commandList, 2);
-	//_shaderResourceViews[0]->Bind(commandList, 2);
-	_unorderedResourceViews[0]->Bind(commandList, 3);
-	commandList->SetComputePipeline(_xBlurPipeline);
-	commandList->Dispatch( (_textureSize.XBlurTexture[0] + THREAD - 1) / THREAD, (_textureSize.XBlurTexture[1] + THREAD - 1) / THREAD, 1);
-	
-	/*-------------------------------------------------------------------
-	-               Execute YBlur Command
-	---------------------------------------------------------------------*/
-	_shaderResourceViews   [0]->Bind(commandList, 2);
-	_unorderedResourceViews[1]->Bind(commandList, 3);
-	commandList->SetComputePipeline(_yBlurPipeline);
-	commandList->Dispatch((_textureSize.YBlurTexture[0] + THREAD - 1) / THREAD, (_textureSize.YBlurTexture[1] + THREAD - 1) / THREAD, 1);
-	
-	/*-------------------------------------------------------------------
-	-               Execute FinalBlur Command
-	---------------------------------------------------------------------*/
-	_shaderResourceViews[1]->Bind(commandList, 2);
-	destUAV->Bind(commandList, 3);
-	commandList->SetComputePipeline(_finalBlurPipeline);
+	destUAV  ->Bind(commandList,  3);
+	_unorderedResourceViews[0]->Bind(commandList, 4);
+	_unorderedResourceViews[1]->Bind(commandList, 5);
+
+	commandList->SetComputePipeline(_blurPipeline);
 	commandList->Dispatch((_textureSize.OriginalTexture[0] + THREAD - 1) / THREAD, (_textureSize.OriginalTexture[1] + THREAD - 1) / THREAD, 1);
 
 	/*-------------------------------------------------------------------
@@ -231,6 +215,7 @@ void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std
 	textureSizeBuffer->Pack(&_textureSize, nullptr);
 	_textureSizeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, textureSizeBuffer, nullptr);
 }
+
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
@@ -254,6 +239,8 @@ void GaussianBlur::PreparePipelineState(const std::wstring& name)
 			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // texture size
 			ResourceLayoutElement(DescriptorHeapType::SRV, 0), // source texture
 			ResourceLayoutElement(DescriptorHeapType::UAV, 0), // dest texture
+			ResourceLayoutElement(DescriptorHeapType::UAV, 1), // xblur texture
+			ResourceLayoutElement(DescriptorHeapType::UAV, 2), // xy blur texture
 		},
 		{ }
 	);
@@ -261,30 +248,16 @@ void GaussianBlur::PreparePipelineState(const std::wstring& name)
 	/*-------------------------------------------------------------------
 	-			Load Blob data
 	---------------------------------------------------------------------*/
-	const auto xBlurCS = factory->CreateShaderState(); 
-	const auto yBlurCS = factory->CreateShaderState();
-	const auto finalBlurCS = factory->CreateShaderState();;
-	xBlurCS    ->Compile(ShaderType::Compute, defaultPath, L"XBlur", 6.4f, { L"Shader\\Core" });
-	yBlurCS    ->Compile(ShaderType::Compute, defaultPath, L"YBlur", 6.4f, { L"Shader\\Core" });
-	finalBlurCS->Compile(ShaderType::Compute, defaultPath, L"FinalBlur", 6.4f, { L"Shader\\Core" });
+	const auto blurCS = factory->CreateShaderState();
+	blurCS->Compile(ShaderType::Compute, defaultPath, L"Blur", 6.4f, { L"Shader\\Core" });
+
 	/*-------------------------------------------------------------------
 	-			Set pipeline state
 	---------------------------------------------------------------------*/
-	_xBlurPipeline     = device->CreateComputePipelineState(_resourceLayout);
-	_yBlurPipeline     = device->CreateComputePipelineState(_resourceLayout);
-	_finalBlurPipeline = device->CreateComputePipelineState(_resourceLayout);
-
-	_xBlurPipeline    ->SetComputeShader(xBlurCS);
-	_yBlurPipeline    ->SetComputeShader(yBlurCS);
-	_finalBlurPipeline->SetComputeShader(finalBlurCS);
-	
-	_xBlurPipeline    ->CompleteSetting();
-	_yBlurPipeline    ->CompleteSetting();
-	_finalBlurPipeline->CompleteSetting();
-
-	_xBlurPipeline    ->SetName(name + L"XBlurPSO");
-	_yBlurPipeline    ->SetName(name + L"YBlurPSO");
-	_finalBlurPipeline->SetName(name + L"FinalBlurPSO");
+	_blurPipeline = device->CreateComputePipelineState(_resourceLayout);
+	_blurPipeline->SetComputeShader(blurCS);
+	_blurPipeline     ->CompleteSetting();
+	_blurPipeline->SetName(name + L"BlurPSO");
 }
 /****************************************************************************
 *							PrepareResourceView

@@ -143,7 +143,7 @@ void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 *****************************************************************************/
 void LightCulling::PreparePipelineState()
 {
-	const auto defaultPath = L"Shader\\Lighting\\ShaderLightCulling.hlsl";
+	const auto defaultPath = L"Shader\\Lighting\\ShaderTileBasedLightCulling.hlsl";
 	const auto device      = _engine->GetDevice();
 	const auto factory     = device->CreatePipelineFactory();
 
