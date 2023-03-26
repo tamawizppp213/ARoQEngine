@@ -4,13 +4,15 @@
 //             Author:  Toide Yutaro
 //             Create:  2023_03_03
 //////////////////////////////////////////////////////////////////////////////////
-#ifndef SHADER_MODEL_RENDERER_HLSL
-#define SHADER_MODEL_RENDERER_HLSL
+#ifndef SHADER_URP_FORWARD_RENDERING_HLSL
+#define SHADER_URP_FORWARD_RENDERING_HLSL
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Core/ShaderVertexType.hlsli"
 #include "../Core/ShaderConstantBuffer3D.hlsli"
+#include "../Lighting/ShaderBRDF.hlsli"
+#include "../Lighting/ShaderLightType.hlsli"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
@@ -52,10 +54,26 @@ float4 PSMain(PSInput input) : SV_TARGET
 	/*-------------------------------------------------------------------
 	-        Set texture config
 	---------------------------------------------------------------------*/
-    const float4 albedo = DiffuseMap.Sample(SamplerLinearWrap, input.UV);
+    const float4 albedo   = DiffuseMap.Sample(SamplerLinearWrap, input.UV);
 	
-
-	return albedo;
+	/*-------------------------------------------------------------------
+	-        Set BRDF Surface Config
+	---------------------------------------------------------------------*/
+	BRDFSurface surface;
+	surface.Diffuse           = albedo;
+	surface.Specular          = Specular;
+	surface.EmissiveColor     = EmissiveColor;
+	surface.EmissiveIntensity = EmissiveIntensity;
+	surface.Roughness         = Roughness;
+	surface.Metalness         = Metalness;
+	surface.Normal            = input.WorldNormal.xyz;
+	
+	float3 result = surface.EmissiveColor * surface.EmissiveIntensity / 100.0f;
+    for (int i = 0; i < MAX_DIRECTIONAL_LIGHT; ++i)
+    {
+		
+    }
+	return albedo; 
 }
 
 #endif

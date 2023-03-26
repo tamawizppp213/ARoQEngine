@@ -1490,5 +1490,6 @@
     <FxCompile Include="Shader\Core\ShaderDebug.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderMosaic.hlsl" />
     <FxCompile Include="Shader\Model\ShaderURPForwardRendering.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderSobel.hlsl" />
   </ItemGroup>
 </Project>
