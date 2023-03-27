@@ -14,6 +14,12 @@
 //                             Define
 /////////////////////////////////////////////////////////////////////////////////
 static const uint THREAD = 16;
+
+cbuffer OutlineColor : register(b0)
+{
+    float4 Color;
+}
+
 Texture2D           inputImage  : register(t0);
 RWTexture2D<float4> outputImage : register(u0);
 
@@ -48,8 +54,9 @@ void ExecuteSobel(const uint3 dispatchThreadID : SV_DispatchThreadID) // threadI
     /*-------------------------------------------------------------------
 	-        Display pixel
 	---------------------------------------------------------------------*/
-    const bool   isRender = sqrt(sobelVertical * sobelVertical + sobelHorizontal * sobelHorizontal) > 0; // 0‚Íè‡’l‚É‚µ‚Ä‚à‚¢‚¢‚©‚à
-    const float4 color    = isRender ? float4(1,1,1,1) : float4(0,0,0,0);
+    const float3 result = sqrt(sobelVertical * sobelVertical + sobelHorizontal * sobelHorizontal);
+    //const bool   isRender = sqrt(sobelVertical * sobelVertical + sobelHorizontal * sobelHorizontal) > 0.5; // 0‚Íè‡’l‚É‚µ‚Ä‚à‚¢‚¢‚©‚à
+    const float4 color = float4(result, 1);
     outputImage[dispatchThreadID.xy] = color;
 }
 #endif

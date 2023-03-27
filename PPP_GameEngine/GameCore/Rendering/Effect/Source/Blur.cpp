@@ -249,14 +249,14 @@ void GaussianBlur::PreparePipelineState(const std::wstring& name)
 	-			Load Blob data
 	---------------------------------------------------------------------*/
 	const auto blurCS = factory->CreateShaderState();
-	blurCS->Compile(ShaderType::Compute, defaultPath, L"Blur", 6.4f, { L"Shader\\Core" });
+	blurCS->Compile(ShaderType::Compute, defaultPath, L"ExecuteBlur", 6.4f, { L"Shader\\Core" });
 
 	/*-------------------------------------------------------------------
 	-			Set pipeline state
 	---------------------------------------------------------------------*/
 	_blurPipeline = device->CreateComputePipelineState(_resourceLayout);
 	_blurPipeline->SetComputeShader(blurCS);
-	_blurPipeline     ->CompleteSetting();
+	_blurPipeline->CompleteSetting();
 	_blurPipeline->SetName(name + L"BlurPSO");
 }
 /****************************************************************************

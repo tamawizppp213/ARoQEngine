@@ -47,9 +47,17 @@ struct DirectionalLight
     float  Padding;
 };
 
+#ifndef MAX_DIRECTIONAL_LIGHT // default count
 #define MAX_DIRECTIONAL_LIGHT (4)
+#endif
+
+#ifndef MAX_POINT_LIGHT // default count
 #define MAX_POINT_LIGHT (1000)
+#endif
+
+#ifndef MAX_SPOT_LIGHT // default count
 #define MAX_SPOT_LIGHT  (100)
+#endif
 
 cbuffer ScenePointLight : register(b3)
 {

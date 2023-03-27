@@ -4,8 +4,8 @@
 //             Author:  Toide Yutaro
 //             Create:  2022_05_01
 //////////////////////////////////////////////////////////////////////////////////
-#ifndef SHADER_BLUR_HPP
-#define SHADER_BLUR_HPP
+#ifndef SHADER_GAUSSIAN_BLUR_HLSL
+#define SHADER_GAUSSIAN_BLUR_HLSL
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ float4 GetPixelColor(int x, int y)
 }
 
 [numthreads(Thread, Thread, 1)]
-void Blur(uint3 id : SV_DispatchThreadID)
+void ExecuteBlur(uint3 id : SV_DispatchThreadID)
 {
     uint2 basePosition = uint2(id.x * 2, id.y);
     float4 color = GetPixelColor(basePosition.x, basePosition.y) * Weights[0].x;

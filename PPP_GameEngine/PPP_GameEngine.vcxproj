@@ -207,6 +207,7 @@
     <ClInclude Include="GameCore\Rendering\Debugger\Include\ScreenCapture.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\FullScreenEffector.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Mosaic.hpp" />
+    <ClInclude Include="GameCore\Rendering\Effect\Include\Sobel.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProperty.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\SceneLightBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelConverter.hpp" />
@@ -502,6 +503,7 @@
     <ClCompile Include="GameCore\Rendering\Debugger\Source\ScreenCapture.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\FullScreenEffector.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp" />
+    <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
@@ -709,8 +711,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.4</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Blur</EntryPointName>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">XBlur</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExecuteBlur</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExecuteBlur</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Effect\ShaderBloom.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
@@ -736,10 +738,11 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExecuteSobel</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExecuteSobel</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Effect\ShaderTonemap.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
