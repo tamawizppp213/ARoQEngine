@@ -180,7 +180,7 @@ namespace gc::rendering
 #endif
 
 		_lights   [index] = light;
-		_updateIDs[index] = index;
+		_updateIDs.push_back(index);
 		_usingMaxCount = (std::max)(index, _usingMaxCount);
 		_needUpdate       = true;
 		

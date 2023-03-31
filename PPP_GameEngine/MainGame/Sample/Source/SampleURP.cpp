@@ -73,6 +73,15 @@ void SampleURP::Update()
 	Scene::Update();
 	_camera->Update(_gameTimer);
 	_model->Update(_gameTimer->DeltaTime());
+
+	const DirectionalLightData directionalLight = 
+	{
+		.Direction = gm::Float3(cos(_gameTimer->TotalTime()), -1.4f, sin(_gameTimer->TotalTime())),
+		.Brightness = 2.5f,
+		.Color      = gm::Float3(1,1,1),
+		.IsUse      = true
+	};
+	_renderer->SetLight<DirectionalLightData>(LightType::Directional, 0, directionalLight);
 }
 
 /****************************************************************************

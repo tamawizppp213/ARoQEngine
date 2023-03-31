@@ -25,6 +25,10 @@ using namespace gc;
 using namespace gc::basepass;
 using namespace rhi::core;
 
+namespace
+{
+	const size_t MAX_DIRECTIONAL_LIGHT = 4;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +40,8 @@ URP::URP(const LowLevelGraphicsEnginePtr& engine) : IRenderPipeline(engine)
 	_gBuffer = std::make_shared<GBuffer>(engine, gc::rendering::GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
 
 	_uiRenderer = std::make_shared<ui::UIRenderer>(engine, L"URP", MAX_UI_COUNT);
+
+	_directionalLights = std::make_shared<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
 
 	PrepareModelPipeline();
 }
@@ -70,13 +76,14 @@ bool URP::Draw(const ResourceViewPtr& scene)
 	_engine->BeginSwapchainRenderPass();
 	commandList->SetResourceLayout(_resourceLayout);
 	commandList->SetGraphicsPipeline(_pipeline);
+	_directionalLights->BindLightData(commandList, 2);
 	for (const auto& model : _forwardModels)
 	{
 		// model active check
 		if (!model->IsActive()) { continue; }
 
 		// forward rendering with each materials
-		model->Draw(true);
+		model->Draw(true, 3);
 	}
 	return true;
 }
@@ -115,6 +122,7 @@ void URP::PrepareModelPipeline()
 		{
 			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // Scene constant 
 			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // object world position information
+			ResourceLayoutElement(DescriptorHeapType::CBV, 5), // directional light buffer
 			ResourceLayoutElement(DescriptorHeapType::CBV, 2), // material constants
 			ResourceLayoutElement(DescriptorHeapType::SRV, 0), // Diffuse map
 			ResourceLayoutElement(DescriptorHeapType::SRV, 1), // Specular map

@@ -165,10 +165,10 @@ float3 DiffuseBRDF_Gotanda(const float normalDotEye, const float normalDotLight,
 //                            Specular
 //                     鏡面反射のBRDF計算に使用します.
 //            SpecularBRDF_各使用モデル名の関数が並んでいます. 
-//            Default: F (Fresnel_Schlick), G (Schlich), D(GGX)
+//            Default: F (Fresnel_Schlick), G (SmithJointApproximate), D(GGX)
 //            MacroOption: 
 //            F: None
-//            G: Neumann, Kelmen, Sclick, Smith, SmithJoinApproximante, SmithJoint
+//            G: Neumann, Kelmen, Sclick, Smith, SmithJointApproximante, SmithJoint, Schlick
 //            D: Beckmann
 //            Explain: 
 //            F: 表面から反射してみる光の量が視野角に依存する. 
@@ -250,17 +250,29 @@ float3 SpecularBRDF_F_Schlick(const float3 toEye, const float3 halfVector, const
 *************************************************************************//**
 *  @fn        SpecularBRDF_F_None()
 
-*  @brief     Calcurate Reflectance
+*  @brief     Return (1.1.1)
 
 *  @param[in] void
 
-*  @return    float3
+*  @return    float3 (1,1,1) 
 *****************************************************************************/
 float3 SpecularBRDF_F_None()
 {
     return float3(1,1,1);
 }
 
+/****************************************************************************
+*				  			SpecularBRDF_V_Neumann
+*************************************************************************//**
+*  @fn        float SpecularBRDF_V_Neumann(const float normalDotEye, const float normalDotLight)
+
+*  @brief     Calculate neumann model
+
+*  @param[in] const float normalDotEye (saturate + normalized)
+*  @param[in] const float normalDotLight (saturate + normalized)
+
+*  @return    float
+*****************************************************************************/
 float SpecularBRDF_V_Neumann(const float normalDotEye, const float normalDotLight)
 {
     return 1.0f / (4 * max(normalDotLight, normalDotEye));
@@ -426,12 +438,12 @@ DirectLight AccumulateSurfaceEnergy(in BRDFSurface surface, float3 light, float3
     const float V = SpecularBRDF_V_Kelemen(eyeDotHalf);
 #elif  USE_SPECULAR_V_SMITH
     const float V = SpecularBRDF_V_Smith(roughness, normalDotToEye, normalDotLight);
-#elif  USE_SPECULAR_V_SMITHJOINT_APPROXIMATE
-    const float V = SpecularBRDF_V_SmithJointApproximate(roughness, normalDotToEye, normalDotLight);
-#elif  !USE_SPECULAR_V_SMITHJOINT
+#elif  USE_SPECULAR_V_SCHLICK
+    const float V = SpecularBRDF_V_Schlick(roughness, normalDotToEye, normalDotLight);
+#elif  USE_SPECULAR_V_SMITHJOINT
     const float V = SpecularBRDF_V_SmithJoint(roughness, normalDotToEye, normalDotLight);
 #else
-    const float V = SpecularBRDF_V_Schlick(roughness, normalDotToEye, normalDotLight);
+    const float V = SpecularBRDF_V_SmithJointApproximate(roughness, normalDotToEye, normalDotLight);
 #endif
     
     // D term

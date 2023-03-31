@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "RenderPipeline.hpp"
+#include "GameCore/Rendering/Light/Include/SceneLightBuffer.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -54,7 +55,8 @@ namespace gc
 		using UIRendererPtr   = std::shared_ptr<ui::UIRenderer>;
 		using ZPrepassPtr     = std::shared_ptr<basepass::ZPrepass>;
 		using LightCullingPtr = std::shared_ptr<basepass::LightCulling>;
-		using GBufferPtr      = std::shared_ptr<basepass::GBuffer>;
+		using GBufferPtr      = std::shared_ptr<basepass::GBuffer>; 
+		using DirectionalLightPtr = std::shared_ptr<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -67,6 +69,9 @@ namespace gc
 		**                Public Member Variables
 		*****************************************************************************/
 		UIRendererPtr GetUIRenderer() const noexcept { return _uiRenderer; }
+
+		template<class TLight> requires std::is_base_of_v<gc::rendering::LightData, TLight> 
+		void SetLight(const gc::rendering::LightType type, const std::uint32_t index, const TLight& light);
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -90,6 +95,8 @@ namespace gc
 
 		LightCullingPtr _lightCulling = nullptr;
 
+		DirectionalLightPtr _directionalLights = nullptr;
+
 		GBufferPtr _gBuffer = nullptr;
 
 		ResourceLayoutPtr _resourceLayout = nullptr;
@@ -100,5 +107,23 @@ namespace gc
 
 		static constexpr std::uint32_t MAX_UI_COUNT = 1024;
 	};
+
+	template<class TLight> requires std::is_base_of_v<gc::rendering::LightData, TLight>
+	void URP::SetLight(const gc::rendering::LightType type, const std::uint32_t index, const TLight& light)
+	{
+		using namespace gc::rendering;
+
+		switch (type)
+		{
+			case LightType::Directional: 
+			{
+#ifdef _DEBUG
+				assert(typeid(light) == typeid(DirectionalLightData));
+#endif
+				_directionalLights->SetLight(index, light);
+				break;
+			}
+		}
+	}
 }
 #endif

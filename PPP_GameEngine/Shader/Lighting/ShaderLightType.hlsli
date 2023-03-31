@@ -44,7 +44,7 @@ struct DirectionalLight
     float3 Direction;
     float  Brightness;
     float3 Color;
-    float  Padding;
+    int    IsUse;
 };
 
 #ifndef MAX_DIRECTIONAL_LIGHT // default count

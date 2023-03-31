@@ -72,15 +72,11 @@ float4 PSMain(PSInput input) : SV_TARGET
 	surface.Normal            = input.WorldNormal.xyz;
 	
 	float3 result = surface.EmissiveColor * surface.EmissiveIntensity / 100.0f;
-    for (int i = 0; i < 1; ++i)
+    for (int i = 0; i < MAX_DIRECTIONAL_LIGHT; ++i)
     {
-		DirectionalLight light;
-        light.Direction = float3(cos(TotalTime), -1.4, sin(TotalTime));
-		light.Color     = float3(1, 1 ,1);
-		light.Brightness = 2.0f;
-		light.Padding    = 0.0f;
+		if(!DirectionalLights[i].IsUse){ continue; }
 		
-		result += Calculate_Directional_Light_Illumination(light, surface, toEye);
+		result += Calculate_Directional_Light_Illumination(DirectionalLights[i], surface, toEye);
     }
 	
     result += albedo.rgb * Ambient;
