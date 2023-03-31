@@ -33,6 +33,8 @@ struct PSInput
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 /////////////////////////////////////////////////////////////////////////////////
+float3 Calculate_Directional_Light_Illumination(in const DirectionalLight light, in BRDFSurface surface, const in float3 toEye);
+
 PSInput VSMain( VSInputSkinVertex vertexIn)
 {
 	PSInput result;
@@ -51,29 +53,58 @@ PSInput VSMain( VSInputSkinVertex vertexIn)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
+    const float3 toEye = normalize(EyePosition - input.Position.xyz);
+	
 	/*-------------------------------------------------------------------
 	-        Set texture config
 	---------------------------------------------------------------------*/
-    const float4 albedo   = DiffuseMap.Sample(SamplerLinearWrap, input.UV);
+    float4 albedo   = DiffuseMap.Sample(SamplerLinearWrap, input.UV);
 	
 	/*-------------------------------------------------------------------
 	-        Set BRDF Surface Config
 	---------------------------------------------------------------------*/
 	BRDFSurface surface;
-	surface.Diffuse           = albedo;
-	surface.Specular          = Specular;
+	surface.BaseColor         = albedo.rgb;
 	surface.EmissiveColor     = EmissiveColor;
 	surface.EmissiveIntensity = EmissiveIntensity;
 	surface.Roughness         = Roughness;
-	surface.Metalness         = Metalness;
+    surface.Metalness         = Metalness;
 	surface.Normal            = input.WorldNormal.xyz;
 	
 	float3 result = surface.EmissiveColor * surface.EmissiveIntensity / 100.0f;
-    for (int i = 0; i < MAX_DIRECTIONAL_LIGHT; ++i)
+    for (int i = 0; i < 1; ++i)
     {
+		DirectionalLight light;
+        light.Direction = float3(cos(TotalTime), -1.4, sin(TotalTime));
+		light.Color     = float3(1, 1 ,1);
+		light.Brightness = 2.0f;
+		light.Padding    = 0.0f;
 		
+		result += Calculate_Directional_Light_Illumination(light, surface, toEye);
     }
-	return albedo; 
+	
+    result += albedo.rgb * Ambient;
+    return float4(result, albedo.a);
 }
 
+/****************************************************************************
+*				  		Calculate_Directional_Light_Illumination
+*************************************************************************//**
+*  @class     float3 Calculate_Directional_Light_Illumination(in const PointLight light, in BRDFSurface surface, const in float3 surfacePosition, const in float3 toEye )
+*  @brief     Calculate directional light illumination
+*  @param[in] in const Directional;Light light
+*  @param[in] in BRDFSurface surface
+*  @param[in] const in float3 surfacePosition 
+*  @param[in] const in float3 toEye
+*****************************************************************************/
+float3 Calculate_Directional_Light_Illumination(in const DirectionalLight light, in BRDFSurface surface, const in float3 toEye)
+{
+    const float3 toLight       = normalize(-light.Direction); // light vector‚Í•\–Ê‚©‚ç—£‚ê‚é•ûŒü‚Å‚ ‚é‚±‚Æ‚É’ˆÓ‚·‚é.
+    const float3 radiance      = light.Brightness;
+    const float normalDotLight = saturate(dot(surface.Normal, toLight));
+	
+    DirectLight directLight = AccumulateSurfaceEnergy(surface, toLight, toEye);
+    float3 result = (directLight.Diffuse + directLight.Specular) * radiance * light.Color;
+    return result;
+}
 #endif

@@ -172,10 +172,10 @@ Material::GPUResourceViewPtr Material::LoadTexture(const std::wstring& filePath,
 *****************************************************************************/
 void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const std::wstring& name)
 {
-	if (bufferInfo.BufferType != BufferType::Constant) 
+	if (bufferInfo.BufferType != BufferType::Constant)
 	{
-		OutputDebugStringA("SetUpBuffer: Unavailable buffer type"); 
-		return; 
+		OutputDebugStringA("SetUpBuffer: Unavailable buffer type");
+		return;
 	}
 
 	const auto device = _engine->GetDevice();
@@ -185,6 +185,10 @@ void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const std::wstri
 	---------------------------------------------------------------------*/
 	const auto materialBuffer = device->CreateBuffer(bufferInfo);
 	materialBuffer->SetName(name + L"CB");
+	if (bufferInfo.InitData)
+	{
+		materialBuffer->Update(bufferInfo.InitData, 1);
+	}
 
 	_materialBufferView = device->CreateResourceView(
 		ResourceViewType::ConstantBuffer, materialBuffer, _customHeap);

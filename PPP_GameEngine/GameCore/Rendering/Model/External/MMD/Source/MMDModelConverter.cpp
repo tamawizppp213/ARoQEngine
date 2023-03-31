@@ -164,6 +164,10 @@ void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFil
 		{
 			material->LoadTexture(unicode::ToWString(file.TexturePathList[file.Materials[i].TextureIndex]), UsageTexture::Diffuse);
 		}
+		if (file.Materials[i].SphereMapTextureIndex != INVALID_ID)
+		{
+			material->LoadTexture(unicode::ToWString(file.TexturePathList[file.Materials[i].SphereMapTextureIndex]), UsageTexture::Specular);
+		}
 
 		/*-------------------------------------------------------------------
 		-            Create mesh

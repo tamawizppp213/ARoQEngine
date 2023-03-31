@@ -626,7 +626,7 @@ namespace rhi::core
 	{
 		bool                UseDepthTest       = true;                       // Use depth test
 		bool                DepthWriteEnable   = true;                       // Enable to write depth
-		bool                StenciWriteEnable  = true;                       // Enable to write Stencil (stencil test: 描画マスクみたいなやつ)  
+		bool                StenciWriteEnable  = false;                       // Enable to write Stencil (stencil test: 描画マスクみたいなやつ)  
 		bool                UseDepthBoundsTest = false;                      // Use depth bounds test (vulkan api only)https://shikihuiku.wordpress.com/2012/06/27/depth-bounds-test1/
 		float               MinDepthBounds     = 0.0f;                       // Min depth bounds test region
 		float               MaxDepthBounds     = 0.0f;                       // Max depth bounds test region
