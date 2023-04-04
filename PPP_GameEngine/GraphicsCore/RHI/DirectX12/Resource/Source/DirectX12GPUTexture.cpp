@@ -12,11 +12,13 @@
 #include "../../Core/Include/DirectX12Debug.hpp"
 #include "../../Core/Include/DirectX12EnumConverter.hpp"
 #include "../../Core/Include/DirectX12Device.hpp"
+#include "../../Core/Include/DirectX12Adapter.hpp"
 #include "../../Core/Include/DirectX12CommandList.hpp"
 #include "../../Core/Include/DirectX12CommandAllocator.hpp"
 #include "../../Core/Include/DirectX12CommandQueue.hpp"
 #include "../../Core/Include/DirectX12Fence.hpp"
 #include "../../Core/Include/DirectX12BaseStruct.hpp"
+#include "GameUtility/Math/Include/GMColor.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <DirectXTex/DirectXTex.h>
@@ -246,6 +248,106 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	_resource->SetName(fileName.c_str());
 }
 
+void GPUTexture::Write(const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<gm::RGBA>& pixel)
+{
+#ifdef _DEBUG
+	assert(commandList->GetType() == core::CommandListType::Graphics);
+	assert(_resource->GetDesc().Format == DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+#endif
+
+	/*-------------------------------------------------------------------
+	-       Acquire directX12 resource.
+	---------------------------------------------------------------------*/
+	const auto dxDevice      = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();
+	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList);
+
+	/*-------------------------------------------------------------------
+	-       Acquire the already set texture information, and convert directX12 resource data.
+	---------------------------------------------------------------------*/
+	D3D12_RESOURCE_DESC resourceDesc = {};
+	ConvertDxMetaData(resourceDesc);
+
+	const TexMetadata dxMetaData =
+	{
+		.width      = _metaData.Width,
+		.height     = _metaData.Height,
+		.depth      = 1,
+		.arraySize  = _metaData.DepthOrArraySize,
+		.mipLevels  = _metaData.MipLevels,
+		.miscFlags  = 0,
+		.miscFlags2 = 0,
+		.format     = _resource->GetDesc().Format,
+		.dimension  = TEX_DIMENSION_TEXTURE2D
+	};
+
+	DirectX::Image image =
+	{
+		.width      = _metaData.Width,
+		.height     = _metaData.Height,
+		.format     = _resource->GetDesc().Format
+	};
+
+	DirectX::ScratchImage scratchImage;
+	scratchImage.Initialize(dxMetaData);
+
+	DirectX::ComputePitch(_resource->GetDesc().Format, _metaData.Width, _metaData.Height, image.rowPitch, image.slicePitch);
+	image.pixels = reinterpret_cast<std::uint8_t*>(&pixel->R);
+
+	// Acquire heap property
+	const D3D12_HEAP_PROPERTIES heapProperty = HEAP_PROPERTY(D3D12_HEAP_TYPE_DEFAULT);
+
+	// Create Heap + Allocate gpu resource
+	ThrowIfFailed(dxDevice->CreateCommittedResource(
+		&heapProperty, D3D12_HEAP_FLAG_NONE, &resourceDesc, EnumConverter::Convert(_metaData.State),
+		nullptr,
+		IID_PPV_ARGS(_resource.GetAddressOf())));
+
+	/*-------------------------------------------------------------------
+	-      To copy cpu memory data into our default buffer, we need to create an intermediate upload heap
+	---------------------------------------------------------------------*/
+	std::vector<D3D12_SUBRESOURCE_DATA> subResources = {};
+	ThrowIfFailed(PrepareUpload(dxDevice.Get(), &image, scratchImage.GetImageCount(), dxMetaData, subResources));
+
+	const auto uploadBufferSize  = GetRequiredIntermediateSize(_resource.Get(), 0, static_cast<UINT>(subResources.size()));
+	const D3D12_HEAP_PROPERTIES intermediateHeapProperty = 
+	{
+		.Type                 = EnumConverter::Convert(_metaData.HeapType),
+		.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+		.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+		.CreationNodeMask     = 1,
+		.VisibleNodeMask      = 1
+	};
+
+	// Create Heap + Allocate gpu resource
+	ResourceComPtr uploadBuffer = nullptr;
+	ThrowIfFailed(dxDevice->CreateCommittedResource
+	(
+		&heapProperty, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
+		IID_PPV_ARGS(uploadBuffer.GetAddressOf()))
+	);
+
+	/*-------------------------------------------------------------------
+	-                 Copy Texture Data
+	---------------------------------------------------------------------*/
+	const auto state = GetResourceState();
+	dxCommandList->TransitionResourceState(shared_from_this(), core::ResourceState::CopySource);
+	UpdateSubresources(dxCommandList->GetCommandList().Get(), _resource.Get(), uploadBuffer.Get(), 0, 0, static_cast<UINT>(subResources.size()), subResources.data());
+	dxCommandList->TransitionResourceState(shared_from_this(), state);
+}
+
+/****************************************************************************
+*                     Save
+*************************************************************************//**
+*  @fn        void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<core::RHICommandQueue>& commandQueue)
+*
+*  @brief     Save the texture already stored in the GPU and record it to the specified file.
+*
+*  @param[in] const std::wstring& filePath
+*  @param[in] const std::shared_ptr<core::RHICommandList> graphics type commandList
+*  @param[in] const std::shared_ptr<core::RHICommandQueue> graphics type command queue
+*
+*  @return Å@Å@void
+*****************************************************************************/
 void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<core::RHICommandQueue>& commandQueue)
 {
 #ifdef _DEBUG

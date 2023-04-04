@@ -20,6 +20,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+namespace gm
+{
+	class RGBA;
+}
 
 namespace rhi::core
 {
@@ -43,6 +47,8 @@ namespace rhi::core
 		virtual void Load(const std::wstring& filePath, const std::shared_ptr<RHICommandList>& commandList) = 0;
 
 		virtual void Save(const std::wstring& filePath, const std::shared_ptr<RHICommandList>& commandList, const std::shared_ptr<RHICommandQueue>& commandQueue) = 0;
+
+		virtual void Write(const std::shared_ptr<RHICommandList>& commandList, const std::shared_ptr<gm::RGBA>& pixel) = 0;
 
 		void TransitionResourceState(const core::ResourceState after) override
 		{

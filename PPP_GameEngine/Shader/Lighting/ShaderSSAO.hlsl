@@ -1,4 +1,4 @@
-Ôªø//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //             Title:  ShaderSSAO.hlsl
 //             Content:  ssao (compute shader)
 //             Author:  Reference : Frack D Luna
@@ -10,6 +10,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Core/ShaderConstantBuffer3D.hlsli"
+#include "../Core/ShaderVertexType.hlsli"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
@@ -24,6 +25,9 @@
 //  ------|------|-----------|-------------|---------|--> zv
 //        0     Eps          z0            z1        
 //
+#ifndef SAMPLE_COUNT
+    #define SAMPLE_COUNT (14)
+#endif
 
 cbuffer SSAOSetting : register(b3)
 {
@@ -34,9 +38,9 @@ cbuffer SSAOSetting : register(b3)
     float  FadeStart;      // view space
     float  FadeEnd;        // view space
     float  SurfaceEpsilon; // view space
-    int    SampleCount;
+    int    PaddingSSAO;
     
-    float4 OffsetVectors[14];
+    float4 OffsetVectors[SAMPLE_COUNT];
 }
 
 cbuffer BlurMode : register(b4)
@@ -67,14 +71,6 @@ static const float2 RectUVs[6] =
     float2(0.0f, 1.0f),
     float2(1.0f, 0.0f),
     float2(1.0f, 1.0f)
-};
-
-static const float4x4 T =
-{
-    0.5f, 0.0f, 0.0f, 0.5f,
-    0.0f, -0.5f, 0.0f, 0.5f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f
 };
 
 struct VertexOut
@@ -133,24 +129,32 @@ float4 GetBlurWeightedPixelColor(const float weight, const float2 uv)
     return weight * InputTexture.Sample(SamplerPointClamp, uv);
 }
 
-VertexOut VSMain( const uint vid : SV_VertexID)
+VertexOut VSMain( const VSInputVertex vertexIn)
 {
-    VertexOut vertex;
+    VertexOut result;
     
     // based on the vertex id, you select the rect UV value. 
     // vertex data must be set rectangle polygon. 
-    vertex.UV = RectUVs[vid];
+    result.UV = vertexIn.UV;
     
     // Rectangle covering screen in NDC space
-    vertex.Position = float4(2.0f * vertex.UV.x - 1.0f, 1.0f - 2.0f * vertex.UV.y, 0.0f, 1.0f);
+    result.Position = vertexIn.Position;
     
     // Transform rectangle corners to view space near plane
-    const float4 position = mul(InverseProjection, vertex.Position);
-    vertex.NearPlaneViewPosition   = position.xyz / position.w;
+    const float4 position = mul(InverseProjection, vertexIn.Position);
+    result.NearPlaneViewPosition   = position.xyz / position.w;
 
+    float4x4 T =
+    {
+        0.5f, 0.0f, 0.0f, 0.5f,
+        0.0f, -0.5f, 0.0f, 0.5f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+    
     // Rect uv value in projection space.
-    vertex.ProjectionTexture = mul(T, Projection);
-    return vertex;
+    result.ProjectionTexture = mul(T, Projection);
+    return result;
 }
 
 float4 ExecuteSSAO(VertexOut input) : SV_Target
@@ -159,17 +163,17 @@ float4 ExecuteSSAO(VertexOut input) : SV_Target
 	-        Get ssao variables
 	---------------------------------------------------------------------*/
     // Acquire z-coord of this pixel in NDC space from depth map
-    const float ndcDepth  = DepthTexture.Sample(SamplerDepth, input.UV).r; // LOD„Çí‰Ωø„Çè„Å™„ÅÑ„Åì„Å®„ÅåÂàÜ„Åã„Çã„Å™„ÇâSampleLevel
+    const float ndcDepth  = DepthTexture.Sample(SamplerDepth, input.UV).r; // LODÇégÇÌÇ»Ç¢Ç±Ç∆Ç™ï™Ç©ÇÈÇ»ÇÁSampleLevel
     const float viewDepth = NDCDepthToViewDepth(ndcDepth);
     
     // Reconstruct the view space position of the point with depth pz.
     const float  distanceRatio = (viewDepth / input.NearPlaneViewPosition.z);
-    const float3 viewPosition  = distanceRatio * input.NearPlaneViewPosition; // NearPlane„ÅØÂçò‰Ωç„Éô„ÇØ„Éà„É´ÁöÑ„Å™Êâ±„ÅÑ.
+    const float3 viewPosition  = distanceRatio * input.NearPlaneViewPosition; // NearPlaneÇÕíPà ÉxÉNÉgÉãìIÇ»àµÇ¢.
     
-    // Acquire world normal: the normal value range is converted 0ÔΩû1 into -1 ÔΩû 1.
+    // Acquire world normal: the normal value range is converted 0Å`1 into -1 Å` 1.
     const float3 normal = normalize((NormalTexture.Sample(SamplerPointClamp, input.UV).xyz * 2) - 1);
     
-    // Acquire random value : the random value range is converted 0ÔΩû1 into Ôºç1 ÔΩû 1.
+    // Acquire random value : the random value range is converted 0Å`1 into Å|1 Å` 1.
     const float3 random = normalize(2.0f * RandomTexture.Sample(SamplerLinearWrap, 4.0f * input.UV, 0).xyz - 1);
     
     float occlusionSum = 0.0f;
@@ -178,7 +182,7 @@ float4 ExecuteSSAO(VertexOut input) : SV_Target
     /*-------------------------------------------------------------------
 	-        Execute SSAO
 	---------------------------------------------------------------------*/
-    for(int i = 0; i < SampleCount; ++i)
+    for(int i = 0; i < SAMPLE_COUNT; ++i)
     {
         // Offset vectors are fixed and uniformly distributed.
         // If we reflect them about a random vector then we get a random uniform distribution of offset vectors.
@@ -208,7 +212,7 @@ float4 ExecuteSSAO(VertexOut input) : SV_Target
         const float occlusion = dp * CalculateOcclusion(distZ);
         occlusionSum += occlusion;
     }
-    occlusionSum /= SampleCount;
+    occlusionSum /= (float) (SAMPLE_COUNT);
     
     const float4 result = saturate(pow(1.0f - occlusionSum, Sharpness));
     return result;
@@ -234,7 +238,7 @@ float4 ExecuteSSAOBlur(const VertexOut input) : SV_Target
     else            {uvOffset = float2(0.0f, InverseRenderTargetSize.y);}
     
     // center position normal and depth 
-    const float3 centerNormal = NormalTexture.Sample(SamplerPointClamp, input.UV);
+    const float3 centerNormal = NormalTexture.Sample(SamplerPointClamp, input.UV).xyz;
     const float  centerDepth  = DepthTexture .Sample(SamplerDepth, input.UV);
     
     /*-------------------------------------------------------------------
@@ -252,7 +256,7 @@ float4 ExecuteSSAOBlur(const VertexOut input) : SV_Target
         for (int j = 0; j < 2; ++j)
         {
             const float2 uv             = input.UV + (float)moveDirection[j] * uvOffset * (float)i;
-            const float3 neighborNormal = NormalTexture.Sample(SamplerPointClamp, uv);
+            const float3 neighborNormal = NormalTexture.Sample(SamplerPointClamp, uv).xyz;
             const float  neighborDepth  = DepthTexture .Sample(SamplerDepth, uv);
             
             // if the cventer value and neighbor values differ too much (either depth or normal), 

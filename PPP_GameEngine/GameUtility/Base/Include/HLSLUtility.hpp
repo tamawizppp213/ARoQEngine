@@ -23,5 +23,7 @@ namespace hlsl
 	using float3 = gm::Float3;
 	using float2 = gm::Float2;
 	using float1 = float;
+	using int1   = int;
+	using int2   = int[2];
 }
 #endif

@@ -19,6 +19,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace gc
 {
+	class SSAO;
+
 	namespace ui
 	{
 		class UIRenderer;
@@ -30,6 +32,7 @@ namespace gc
 		class LightCulling;
 		class GBuffer;
 	}
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +59,7 @@ namespace gc
 		using ZPrepassPtr     = std::shared_ptr<basepass::ZPrepass>;
 		using LightCullingPtr = std::shared_ptr<basepass::LightCulling>;
 		using GBufferPtr      = std::shared_ptr<basepass::GBuffer>; 
+		using SSAOPtr         = std::shared_ptr<SSAO>;
 		using DirectionalLightPtr = std::shared_ptr<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>;
 	public:
 		/****************************************************************************
@@ -98,6 +102,8 @@ namespace gc
 		DirectionalLightPtr _directionalLights = nullptr;
 
 		GBufferPtr _gBuffer = nullptr;
+
+		SSAOPtr _ssao = nullptr;
 
 		ResourceLayoutPtr _resourceLayout = nullptr;
 

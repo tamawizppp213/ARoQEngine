@@ -78,6 +78,7 @@ namespace gc::rendering
 		*****************************************************************************/
 		TexturePtr GetRenderedTexture(const std::uint32_t index) const noexcept;
 
+		GPUResourceViewPtr GetRenderedTextureView(const std::uint32_t index) const noexcept;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

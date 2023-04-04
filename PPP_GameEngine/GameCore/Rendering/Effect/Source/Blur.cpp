@@ -29,10 +29,14 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
-float GaussianDistribution(float r, float sigma)
+namespace
 {
-	return expf(-0.5f * (float)(r * r) / (sigma * sigma));
+	float GaussianDistribution(float r, float sigma)
+	{
+		return expf(-0.5f * (float)(r * r) / (sigma * sigma));
+	}
 }
+
 GaussianBlur::GaussianBlur()
 {
 
@@ -140,7 +144,7 @@ void GaussianBlur::SetUpWeightTable(float sigma)
 	float total = 0.0f;
 	for (std::uint32_t i = 0; i < WEIGHT_TABLE_SIZE; ++i)
 	{
-		weights[i] = GaussianDistribution((float)i, sigma);
+		weights[i] = ::GaussianDistribution((float)i, sigma);
 		if (i == 0) { total +=        weights[i]; }
 		else        { total += 2.0f * weights[i]; }
 	}

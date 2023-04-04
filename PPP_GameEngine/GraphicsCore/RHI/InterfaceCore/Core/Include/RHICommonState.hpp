@@ -318,6 +318,7 @@ namespace rhi::core
 		SamplerPointClamp,        // Point  + Clamp
 		SamplerLinearWrap,        // Linear + Wrap
 		SamplerLinearClamp,       // Linear + Clamp
+		SamplerLinearBorder,      /// Linear + Border
 		SamplerAnisotropicWrap,   // Anisotropic + Wrap
 		SamplerAnisotropicClamp   // Anisotropic + Clamp
 	};

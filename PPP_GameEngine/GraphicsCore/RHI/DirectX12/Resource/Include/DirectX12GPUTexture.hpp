@@ -39,6 +39,8 @@ namespace rhi::directX12
 		
 		void Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<core::RHICommandQueue>& commandQueue)override;
 
+		void Write(const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<gm::RGBA>& pixel) override;
+
 		void TransitionState(D3D12_RESOURCE_STATES after)
 		{
 			_usageState = _usageState == after ? _usageState : after;

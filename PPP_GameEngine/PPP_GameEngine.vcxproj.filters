@@ -909,6 +909,9 @@
     <ClInclude Include="GameCore\Rendering\Effect\Include\Sobel.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\SSAO.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1458,6 +1461,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

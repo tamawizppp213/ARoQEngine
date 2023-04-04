@@ -55,6 +55,13 @@ SamplerInfo SamplerInfo::GetDefaultSampler(DefaultSamplerType type)
 		samplerDesc.AddressModeW = SamplerAddressMode::Clamp;
 		break;
 	}
+	case DefaultSamplerType::SamplerLinearBorder:
+	{
+		samplerDesc.Filter       = FilterOption::MinLinearMagLinearMipLinear;
+		samplerDesc.AddressModeU = SamplerAddressMode::Border;
+		samplerDesc.AddressModeV = SamplerAddressMode::Border;
+		samplerDesc.AddressModeW = SamplerAddressMode::Border;
+	}
 	case DefaultSamplerType::SamplerAnisotropicWrap:
 	{
 		samplerDesc.Filter       = FilterOption::Anisotropy;

@@ -208,6 +208,7 @@
     <ClInclude Include="GameCore\Rendering\Effect\Include\FullScreenEffector.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Mosaic.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Sobel.hpp" />
+    <ClInclude Include="GameCore\Rendering\Effect\Include\SSAO.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProperty.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\SceneLightBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelConverter.hpp" />
@@ -504,6 +505,7 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\FullScreenEffector.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp" />
+    <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
@@ -757,10 +759,10 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Shader\Lighting\ShaderSSAO.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shader\Lighting\ShaderTileBasedLightCulling.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>

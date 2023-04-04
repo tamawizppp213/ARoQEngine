@@ -12,6 +12,7 @@
 #include "../../BasePass/Include/BasePassZPrepass.hpp"
 #include "../../BasePass/Include/BasePassGBuffer.hpp"
 #include "../../BasePass/Include/BasePassLightCulling.hpp"
+#include "GameCore/Rendering/Effect/Include/SSAO.hpp"
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameCore/Rendering/UI/Public/Include/UIRenderer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
@@ -39,6 +40,8 @@ URP::URP(const LowLevelGraphicsEnginePtr& engine) : IRenderPipeline(engine)
 
 	_gBuffer = std::make_shared<GBuffer>(engine, gc::rendering::GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
 
+	//_ssao = std::make_shared<SSAO>(engine, _gBuffer->GetRenderedTextureView(1), _zPrepass->GetRenderedTextureView());
+	
 	_uiRenderer = std::make_shared<ui::UIRenderer>(engine, L"URP", MAX_UI_COUNT);
 
 	_directionalLights = std::make_shared<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
@@ -69,6 +72,7 @@ bool URP::Draw(const ResourceViewPtr& scene)
 	---------------------------------------------------------------------*/
 	_zPrepass->Draw(scene);
 	_gBuffer ->Draw(scene);
+	//_ssao->Draw(scene);
 
 	/*-------------------------------------------------------------------
 	-         Rendering

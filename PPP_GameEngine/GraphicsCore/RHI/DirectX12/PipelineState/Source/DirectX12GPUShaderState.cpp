@@ -184,7 +184,10 @@ BlobComPtr GPUShaderState::DxCompile(const std::wstring& fileName, const std::ws
 	);
 
 	BlobComPtr byteCode = nullptr;
-	if (SUCCEEDED(hresult)) { result->GetStatus(&hresult); }
+	if (SUCCEEDED(hresult))
+	{
+		result->GetStatus(&hresult);
+	}
 	if (FAILED(hresult))
 	{
 		if (result)
