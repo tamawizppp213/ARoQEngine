@@ -274,17 +274,19 @@ void SSAO::PrepareRandomTexture(const std::wstring& name)
 	const auto device   = _engine->GetDevice();
 	const auto metaData = GPUTextureMetaData::Texture2D(256, 256, PixelFormat::R8G8B8A8_UNORM);
 	const auto texture  = device->CreateTexture(metaData, L"Random");
-	const auto pixel    = std::shared_ptr<RGBA>(new RGBA[256 * 256], std::default_delete<RGBA[]>());
+	const auto pixel    = new RGBA[256 * 256];
 	Random<float> random;
 	random.SetRange(0.0f, 1.0f);
 	for (int i = 0; i < 256 * 256; ++i)
 	{
-		pixel.get()[i] = RGBA(random.GetRandomValue(), random.GetRandomValue(), random.GetRandomValue(), 0.0f);
+		pixel[i] = RGBA(random.GetRandomValue(), random.GetRandomValue(), random.GetRandomValue(), 0.0f);
 	}
 
 	texture->Write(_engine->GetCommandList(CommandListType::Graphics), pixel);
 
 	_randomMap = device->CreateResourceView(ResourceViewType::Texture, texture, nullptr);
+
+	delete[] pixel;
 
 }
 void SSAO::PreparePipelineState(const std::wstring& name)

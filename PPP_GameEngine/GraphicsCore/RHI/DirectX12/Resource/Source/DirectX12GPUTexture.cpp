@@ -248,7 +248,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	_resource->SetName(fileName.c_str());
 }
 
-void GPUTexture::Write(const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<gm::RGBA>& pixel)
+void GPUTexture::Write(const std::shared_ptr<core::RHICommandList>& commandList, const gm::RGBA* pixel)
 {
 #ifdef _DEBUG
 	assert(commandList->GetType() == core::CommandListType::Graphics);
@@ -291,7 +291,7 @@ void GPUTexture::Write(const std::shared_ptr<core::RHICommandList>& commandList,
 	scratchImage.Initialize(dxMetaData);
 
 	DirectX::ComputePitch(_resource->GetDesc().Format, _metaData.Width, _metaData.Height, image.rowPitch, image.slicePitch);
-	image.pixels = reinterpret_cast<std::uint8_t*>(&pixel->R);
+	image.pixels = (std::uint8_t*)pixel;
 
 	// Acquire heap property
 	const D3D12_HEAP_PROPERTIES heapProperty = HEAP_PROPERTY(D3D12_HEAP_TYPE_DEFAULT);

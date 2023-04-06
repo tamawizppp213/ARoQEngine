@@ -48,7 +48,7 @@ namespace rhi::core
 
 		virtual void Save(const std::wstring& filePath, const std::shared_ptr<RHICommandList>& commandList, const std::shared_ptr<RHICommandQueue>& commandQueue) = 0;
 
-		virtual void Write(const std::shared_ptr<RHICommandList>& commandList, const std::shared_ptr<gm::RGBA>& pixel) = 0;
+		virtual void Write(const std::shared_ptr<RHICommandList>& commandList, const gm::RGBA* pixel) = 0;
 
 		void TransitionResourceState(const core::ResourceState after) override
 		{

@@ -202,11 +202,14 @@
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
+    <ClInclude Include="GameCore\Rendering\Core\Interface\Include\Shadow.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\UniversalRenderPipeline.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\DebugDrawer.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\ScreenCapture.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\FullScreenEffector.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Mosaic.hpp" />
+    <ClInclude Include="GameCore\Rendering\Effect\Include\ParticleEffect.hpp" />
+    <ClInclude Include="GameCore\Rendering\Effect\Include\ParticleEffectStruct.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Sobel.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\SSAO.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProperty.hpp" />
@@ -504,6 +507,7 @@
     <ClCompile Include="GameCore\Rendering\Debugger\Source\ScreenCapture.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\FullScreenEffector.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp" />
+    <ClCompile Include="GameCore\Rendering\Effect\Source\ParticleEffect.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
@@ -752,6 +756,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
+    <FxCompile Include="Shader\Lighting\ShaderShadow.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PSReceiveMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PSReceiveMain</EntryPointName>
+    </FxCompile>
     <FxCompile Include="Shader\Lighting\ShaderGBuffer.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
@@ -762,7 +774,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Shader\Lighting\ShaderTileBasedLightCulling.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>

@@ -108,4 +108,8 @@ void ExecuteBlur(uint3 id : SV_DispatchThreadID)
     
     outputImage[id.xy] = color;
 }
+
+#ifndef USE_PS
+
+#endif
 #endif

@@ -1,39 +1,46 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TemplateText.hpp
-///             @brief  TemplateText
+///             @file   CascadeShadow.hpp
+///             @brief  CascadeShadow
 ///             @author Toide Yutaro
-///             @date   2022_07_19
+///             @date   2023_04_06
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef PARTICLE_EFFECT_HPP
-#define PARTICLE_EFFECT_HPP
+#ifndef CASCADE_SHADOW_HPP
+#define CASCADE_SHADOW_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <memory>
+#include <string>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+class LowLevelGraphicsEngine;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace gc::rendering
 {
-
 	/****************************************************************************
 	*				  			    Class
 	*************************************************************************//**
 	*  @class     Class
 	*  @brief     temp
 	*****************************************************************************/
-	class ParticleEffect
+	class CascadeShadow : public NonCopyable
 	{
+	protected:
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		void Draw();
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -42,6 +49,10 @@ namespace gc
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		CascadeShadow(const LowLevelGraphicsEnginePtr& engine);
+
+		~CascadeShadow();
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -51,6 +62,5 @@ namespace gc
 		**                Protected Member Variables
 		*****************************************************************************/
 	};
-
 }
 #endif

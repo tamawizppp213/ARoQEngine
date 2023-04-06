@@ -912,6 +912,15 @@
     <ClInclude Include="GameCore\Rendering\Effect\Include\SSAO.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\ParticleEffect.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\ParticleEffectStruct.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Core\Interface\Include\Shadow.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1466,6 +1475,9 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\ParticleEffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -1504,5 +1516,6 @@
     <FxCompile Include="Shader\Model\ShaderURPForwardRendering.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderSobel.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderSSAO.hlsl" />
+    <FxCompile Include="Shader\Lighting\ShaderShadow.hlsl" />
   </ItemGroup>
 </Project>

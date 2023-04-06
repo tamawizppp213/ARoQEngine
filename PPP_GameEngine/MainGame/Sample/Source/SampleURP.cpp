@@ -236,7 +236,7 @@ void SampleURP::OnKeyboardInput()
 		if(isOn){ _engine->OnResize(2800, 1000); }
 		else{ _engine->OnResize(1920, 1080); }
 	}
-	std::cout << Screen::GetScreenWidth() << std::endl;
+	//std::cout << Screen::GetScreenWidth() << std::endl;
 }
 /****************************************************************************
 *                       OnMouseInput

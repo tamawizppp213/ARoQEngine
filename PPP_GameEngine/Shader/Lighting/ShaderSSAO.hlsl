@@ -77,7 +77,7 @@ struct VertexOut
 {
     float4   Position          : SV_Position; // NDC space
     float3   NearPlaneViewPosition : POSITION;     
-    float2   UV                : TEXCOORD0;
+    float2   UV                    : TEXCOORD0;
     float4x4 ProjectionTexture : PROJECTION;
 };
 
