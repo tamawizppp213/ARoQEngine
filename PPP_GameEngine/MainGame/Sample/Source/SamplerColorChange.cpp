@@ -100,7 +100,7 @@ void SampleColorChange::Draw()
 	_colorChanges[_colorIndex]->Draw();
 	_capture->Capture(_engine->GetFrameBuffer(frameIndex)->GetRenderTarget());
 	
-	if (_useBlur)  { _gaussianBlur->Draw(frameBuffer->GetRenderTargetSRV(), frameBuffer->GetRenderTargetUAV()); }
+	if (_useBlur)  { _gaussianBlur->DrawCS(frameBuffer->GetRenderTargetSRV(), frameBuffer->GetRenderTargetUAV()); }
 	if (_useMosaic) { _mosaic->Draw(); }
 
 	_engine->EndDrawFrame();

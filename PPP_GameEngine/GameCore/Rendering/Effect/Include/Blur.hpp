@@ -25,6 +25,9 @@ namespace rhi::core
 	class GPUResourceView;
 	class RHIResourceLayout;
 	class GPUComputePipelineState;
+	class GPUGraphicsPipelineState;
+	class RHIFrameBuffer;
+	class RHIRenderPass;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
@@ -41,11 +44,13 @@ namespace gc
 
 	class GaussianBlur : public NonCopyable
 	{
-		using BlurParameterPtr     = std::shared_ptr<rhi::core::GPUBuffer>;
-		using TextureSizeBufferPtr = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ResourceLayoutPtr    = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using ResourceViewPtr      = std::shared_ptr<rhi::core::GPUResourceView>;
-		using PipelineStatePtr     = std::shared_ptr<rhi::core::GPUComputePipelineState>;
+		using BlurParameterPtr        = std::shared_ptr<rhi::core::GPUBuffer>;
+		using TextureSizeBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
+		using ResourceLayoutPtr       = std::shared_ptr<rhi::core::RHIResourceLayout>;
+		using ResourceViewPtr         = std::shared_ptr<rhi::core::GPUResourceView>;
+		using ComputePipelineStatePtr = std::shared_ptr<rhi::core::GPUComputePipelineState>;
+		using GraphicsPipelineStatePtr = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		using FrameBufferPtr          = std::shared_ptr<rhi::core::RHIFrameBuffer>;
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 
 	protected:
@@ -65,7 +70,9 @@ namespace gc
 		*****************************************************************************/
 		void OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight);
 		
-		void Draw(const ResourceViewPtr& sourceSRV, const ResourceViewPtr& destUAV);
+		void Draw(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex = 0);
+
+		void DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPtr& destUAV);
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -102,20 +109,50 @@ namespace gc
 		*****************************************************************************/
 		enum { ViewCount = 3 };
 
-		TextureSizeParameter _textureSize;
-		ResourceLayoutPtr    _resourceLayout    = nullptr;
-		PipelineStatePtr     _blurPipeline      = nullptr;
-		ResourceViewPtr      _shaderResourceViews[ViewCount];
-		ResourceViewPtr      _unorderedResourceViews[ViewCount];
-		ResourceViewPtr      _blurParameterView = nullptr;
-		ResourceViewPtr      _textureSizeView = nullptr;
-		std::wstring _addName = L"";
+		/*-------------------------------------------------------------------
+		-               Compute and Pixel Shader Common Variables
+		---------------------------------------------------------------------*/
+		// graphics engine.
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
+		// original + xBlur + yBlur texture size
+		TextureSizeParameter _textureSize;
+		ResourceViewPtr      _textureSizeView = nullptr;
+
+		// gaussian blur weight parameters [in total 8 count]
+		ResourceViewPtr      _blurParameterView = nullptr;
+
+		// pipeline state resources
+		ResourceLayoutPtr _resourceLayout = nullptr;
+
+		bool _useCS = true;
+
+		std::wstring _addName = L"";
+
+		/*-------------------------------------------------------------------
+		-               Compute Shader Variables
+		---------------------------------------------------------------------*/
+		ComputePipelineStatePtr _computePipeline = nullptr;
+
+		/*-------------------------------------------------------------------
+		-               Vertex and Pixel Shader Variables
+		---------------------------------------------------------------------*/
+		GraphicsPipelineStatePtr _xBlurPipeline = nullptr;
+		GraphicsPipelineStatePtr _yBlurPipeline = nullptr;
+
+
+		ResourceViewPtr _shaderResourceViews[ViewCount];
+		ResourceViewPtr _unorderedResourceViews[ViewCount];
+
+
+		/*-------------------------------------------------------------------
+		-               Const value
+		---------------------------------------------------------------------*/
 		static constexpr std::uint32_t WEIGHT_TABLE_SIZE = 8;
 		static constexpr float         DEFAULT_BLUR_SIGMA = 8.0f;
 		static constexpr std::uint32_t THREAD = 16;
 
+	private:
 	};
 }
 #endif

@@ -87,12 +87,12 @@ void Bloom::Draw()
 	/*-------------------------------------------------------------------
 	-               Execute Blur
 	---------------------------------------------------------------------*/
-	_gaussianBlur[0]->Draw(_luminanceSRV, _luminanceUAV);
-	_gaussianBlur[1]->Draw(_shaderResourceViews[0], _unorderedResourceViews[0]);
+	_gaussianBlur[0]->DrawCS(_luminanceSRV, _luminanceUAV);
+	_gaussianBlur[1]->DrawCS(_shaderResourceViews[0], _unorderedResourceViews[0]);
 
 	for (int i = 1; i <= ViewCount; ++i)
 	{
-		_gaussianBlur[i]->Draw(_shaderResourceViews[i - 1], _unorderedResourceViews[i - 1]); // luminance 1/4
+		_gaussianBlur[i]->DrawCS(_shaderResourceViews[i - 1], _unorderedResourceViews[i - 1]); // luminance 1/4
 	}
 	
 	/*-------------------------------------------------------------------

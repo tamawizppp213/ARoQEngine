@@ -35,6 +35,7 @@ namespace
 	{
 		return expf(-0.5f * (float)(r * r) / (sigma * sigma));
 	}
+
 }
 
 GaussianBlur::GaussianBlur()
@@ -43,7 +44,9 @@ GaussianBlur::GaussianBlur()
 }
 GaussianBlur::~GaussianBlur()
 {
-	_blurPipeline.reset();
+	_computePipeline.reset();
+	_xBlurPipeline.reset();
+	_yBlurPipeline.reset();
 	for (auto& u : _unorderedResourceViews) { u.reset(); }
 	for (auto& s : _shaderResourceViews   ) { s.reset(); }
 	_textureSizeView.reset();
@@ -90,13 +93,11 @@ void GaussianBlur::OnResize(const std::uint32_t newWidth, const std::uint32_t ne
 *  @param[in,out] GPUResource* renderTarget
 *  @return @@void
 *****************************************************************************/
-void GaussianBlur::Draw(const ResourceViewPtr& sourceSRV, const ResourceViewPtr& destUAV)
+void GaussianBlur::DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPtr& destUAV)
 {
 	const auto device      = _engine->GetDevice();
-	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto commandList = _engine->GetCommandList(CommandListType::Compute);
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
-	const auto frameBuffer         = _engine->GetFrameBuffer(frameIndex);
 
 	/*-------------------------------------------------------------------
 	-               Pause current render pass
@@ -109,18 +110,18 @@ void GaussianBlur::Draw(const ResourceViewPtr& sourceSRV, const ResourceViewPtr&
 	---------------------------------------------------------------------*/
 	commandList->SetDescriptorHeap(_blurParameterView->GetHeap());
 	commandList->SetComputeResourceLayout(_resourceLayout);
-	_blurParameterView->Bind(commandList, 0);
-	_textureSizeView  ->Bind(commandList, 1);
 	
 	/*-------------------------------------------------------------------
 	-               Bind
 	---------------------------------------------------------------------*/
+	_blurParameterView->Bind(commandList, 0);
+	_textureSizeView  ->Bind(commandList, 1);
 	sourceSRV->Bind(commandList, 2);
 	destUAV  ->Bind(commandList,  3);
 	_unorderedResourceViews[0]->Bind(commandList, 4);
 	_unorderedResourceViews[1]->Bind(commandList, 5);
 
-	commandList->SetComputePipeline(_blurPipeline);
+	commandList->SetComputePipeline(_computePipeline);
 	commandList->Dispatch((_textureSize.OriginalTexture[0] + THREAD - 1) / THREAD, (_textureSize.OriginalTexture[1] + THREAD - 1) / THREAD, 1);
 
 	/*-------------------------------------------------------------------
@@ -128,6 +129,44 @@ void GaussianBlur::Draw(const ResourceViewPtr& sourceSRV, const ResourceViewPtr&
 	---------------------------------------------------------------------*/
 	waitValue = _engine->FlushGPUCommands(CommandListType::Compute, true);
 	_engine->WaitExecutionGPUCommands(CommandListType::Graphics, waitValue, false);
+}
+
+void GaussianBlur::Draw(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex)
+{
+	// compute shader draw function
+	if (_useCS)
+	{
+		const auto inputImage = frameBuffer->GetRenderTargetSRV(renderTargetIndex);
+		const auto outputImage = frameBuffer->GetRenderTargetUAV(renderTargetIndex);
+		DrawCS(inputImage, outputImage);
+		return;
+	}
+	// the following pixel shader 
+	else
+	{
+		const auto device = _engine->GetDevice();
+		const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
+
+		/*-------------------------------------------------------------------
+		-               Change render resource
+		---------------------------------------------------------------------*/
+		commandList->EndRenderPass();
+		
+
+		/*-------------------------------------------------------------------
+		-               Set graphics pipeline
+		---------------------------------------------------------------------*/
+		commandList->SetDescriptorHeap(_blurParameterView->GetHeap());
+		commandList->SetResourceLayout(_resourceLayout);
+		commandList->SetGraphicsPipeline(_xBlurPipeline);
+		
+		/*-------------------------------------------------------------------
+		-               Bind gpu resources
+		---------------------------------------------------------------------*/
+		_blurParameterView->Bind(commandList, 0);
+		_textureSizeView->Bind(commandList, 1);
+
+	}
 }
 
 /****************************************************************************
@@ -246,22 +285,37 @@ void GaussianBlur::PreparePipelineState(const std::wstring& name)
 			ResourceLayoutElement(DescriptorHeapType::UAV, 1), // xblur texture
 			ResourceLayoutElement(DescriptorHeapType::UAV, 2), // xy blur texture
 		},
-		{ }
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)), 0) }
 	);
 
 	/*-------------------------------------------------------------------
 	-			Load Blob data
 	---------------------------------------------------------------------*/
-	const auto blurCS = factory->CreateShaderState();
-	blurCS->Compile(ShaderType::Compute, defaultPath, L"ExecuteBlur", 6.4f, { L"Shader\\Core" });
+	if (_useCS)
+	{
+		const auto blurCS = factory->CreateShaderState();
+		blurCS->Compile(ShaderType::Compute, defaultPath, L"ExecuteBlur", 6.4f, { L"Shader\\Core" });
 
-	/*-------------------------------------------------------------------
-	-			Set pipeline state
-	---------------------------------------------------------------------*/
-	_blurPipeline = device->CreateComputePipelineState(_resourceLayout);
-	_blurPipeline->SetComputeShader(blurCS);
-	_blurPipeline->CompleteSetting();
-	_blurPipeline->SetName(name + L"BlurPSO");
+		_computePipeline = device->CreateComputePipelineState(_resourceLayout);
+		_computePipeline->SetComputeShader(blurCS);
+		_computePipeline->CompleteSetting();
+		_computePipeline->SetName(name + L"BlurPSO");
+	}
+	else
+	{
+		// render pass
+		
+
+		const auto blurVS_X = factory->CreateShaderState();
+		const auto blurVS_Y = factory->CreateShaderState();
+		const auto blurPS   = factory->CreateShaderState();
+		blurVS_X->Compile(ShaderType::Vertex, defaultPath, L"VS_XBlur", 6.4f, { L"Shader\\Core" });
+		blurVS_Y->Compile(ShaderType::Vertex, defaultPath, L"VS_YBlur", 6.4f, { L"Shader\\Core" });
+		blurPS  ->Compile(ShaderType::Pixel, defaultPath, L"PSBlur", 6.4f, { L"Shader\\Core" });
+
+		//_xBlurPipeline = device->CreateGraphicPipelineState(_resourceLayout)
+	}
+	
 }
 /****************************************************************************
 *							PrepareResourceView

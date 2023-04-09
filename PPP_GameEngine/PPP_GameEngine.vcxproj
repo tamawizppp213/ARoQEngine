@@ -202,7 +202,7 @@
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
-    <ClInclude Include="GameCore\Rendering\Core\Interface\Include\Shadow.hpp" />
+    <ClInclude Include="GameCore\Rendering\Light\Include\CascadeShadow.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\UniversalRenderPipeline.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\DebugDrawer.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\ScreenCapture.hpp" />
@@ -350,6 +350,7 @@
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVertex.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\LowLevelGraphicsEngine.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHITypeCore.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Adapter.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12BaseStruct.hpp" />
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12CommandAllocator.hpp" />
@@ -510,6 +511,7 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\ParticleEffect.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp" />
+    <ClCompile Include="GameCore\Rendering\Light\Source\CascadeShadow.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />

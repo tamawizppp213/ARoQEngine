@@ -9,18 +9,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-
+#include "../Core/ShaderVertexType.hlsli"
+#include "../Core/ShaderConstantBuffer3D.hlsli"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 //////////////////////////////////////////////////////////////////////////////////
 static const uint Thread = 16;
 
-cbuffer WeightTable : register(b0)
+cbuffer WeightTable : register(b1)
 {
     float4 Weights[2];
 }
-cbuffer TextureSize : register(b1)
+cbuffer TextureSize : register(b2)
 {
     uint2 OriginalTexture;
     uint2 XBlurTexture;
@@ -30,6 +31,21 @@ Texture2D           inputImage  : register(t0);
 RWTexture2D<float4> outputImage : register(u0);
 RWTexture2D<float4> xHalfImage  : register(u1); // 1 / 2
 RWTexture2D<float4> xyHalfImage : register(u2); // 1 / 4
+
+struct PSBlurInput
+{
+    float4 Position : SV_POSITION;
+    float4 UV0      : TEXCOORD0;
+    float4 UV1      : TEXCOORD1;
+    float4 UV2      : TEXCOORD2;
+    float4 UV3      : TEXCOORD3;
+    float4 UV4      : TEXCOORD4;
+    float4 UV5      : TEXCOORD5;
+    float4 UV6      : TEXCOORD6;
+    float4 UV7      : TEXCOORD7;
+};
+
+SamplerState SamplerLinearWrap : register(s0); // pixel shader
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +56,7 @@ RWTexture2D<float4> xyHalfImage : register(u2); // 1 / 4
 *  @brief     Convert RGBA32 to float4 format
 *  @param[in] int x
 *  @param[in] int y
-*  @param[in] int2 textureSize
+*  @param[in] int2 textureSizefloat4 UV0      : TEXCOORD0;
 *****************************************************************************/
 float4 GetPixelColor(int x, int y)
 {
@@ -109,7 +125,133 @@ void ExecuteBlur(uint3 id : SV_DispatchThreadID)
     outputImage[id.xy] = color;
 }
 
-#ifndef USE_PS
+PSBlurInput VS_XBlur(VSInputVertex input)
+{
+    PSBlurInput result;
+    
+    /*-------------------------------------------------------------------
+	-        transform to world space 
+	---------------------------------------------------------------------*/
+	float4 positionWorld = mul(World, input.Position);
+	result.Position      = mul(ProjectionView, positionWorld);
+    
+    /*-------------------------------------------------------------------
+	-        Acquire the texture size
+	---------------------------------------------------------------------*/
+    float2 textureSize;
+    float  level;
+    inputImage.GetDimensions(0, textureSize.x, textureSize.y, level);
+    
+    /*-------------------------------------------------------------------
+	-        Set blur uv
+	---------------------------------------------------------------------*/
+    const float2 baseUV = input.UV;
+    
+    result.UV0.xy = float2(0.0f, 1.0f  / textureSize.y);
+    result.UV1.xy = float2(0.0f, 3.0f  / textureSize.y);
+    result.UV2.xy = float2(0.0f, 5.0f  / textureSize.y);
+    result.UV3.xy = float2(0.0f, 7.0f  / textureSize.y);
+    result.UV4.xy = float2(0.0f, 9.0f  / textureSize.y);
+    result.UV5.xy = float2(0.0f, 11.0f / textureSize.y);
+    result.UV6.xy = float2(0.0f, 13.0f / textureSize.y);
+    result.UV7.xy = float2(0.0f, 15.0f / textureSize.y);
+    
+    result.UV0.zw = result.UV0.xy * (-1.0f);
+    result.UV1.zw = result.UV1.xy * (-1.0f);
+    result.UV2.zw = result.UV2.xy * (-1.0f);
+    result.UV3.zw = result.UV3.xy * (-1.0f);
+    result.UV4.zw = result.UV4.xy * (-1.0f);
+    result.UV5.zw = result.UV5.xy * (-1.0f);
+    result.UV6.zw = result.UV6.xy * (-1.0f);
+    result.UV7.zw = result.UV7.xy * (-1.0f);
+    
+    // Add offset
+    result.UV0 += float4(baseUV, baseUV);
+    result.UV1 += float4(baseUV, baseUV);
+    result.UV2 += float4(baseUV, baseUV);
+    result.UV3 += float4(baseUV, baseUV);
+    result.UV4 += float4(baseUV, baseUV);
+    result.UV5 += float4(baseUV, baseUV);
+    result.UV6 += float4(baseUV, baseUV);
+    result.UV0 += float4(baseUV, baseUV);
+    return result;
+}
 
-#endif
+PSBlurInput VS_YBlur(VSInputVertex input)
+{
+    PSBlurInput result;
+    
+    /*-------------------------------------------------------------------
+	-        transform to world space 
+	---------------------------------------------------------------------*/
+	float4 positionWorld = mul(World, input.Position);
+	result.Position      = mul(ProjectionView, positionWorld);
+    
+    /*-------------------------------------------------------------------
+	-        Acquire the texture size
+	---------------------------------------------------------------------*/
+    float2 textureSize;
+    float  level;
+    inputImage.GetDimensions(0, textureSize.x, textureSize.y, level);
+    
+    /*-------------------------------------------------------------------
+	-        Set blur uv
+	---------------------------------------------------------------------*/
+    const float2 baseUV = input.UV;
+    
+    result.UV0.xy = float2(0.0f, 1.0f  / textureSize.y);
+    result.UV1.xy = float2(0.0f, 3.0f  / textureSize.y);
+    result.UV2.xy = float2(0.0f, 5.0f  / textureSize.y);
+    result.UV3.xy = float2(0.0f, 7.0f  / textureSize.y);
+    result.UV4.xy = float2(0.0f, 9.0f  / textureSize.y);
+    result.UV5.xy = float2(0.0f, 11.0f / textureSize.y);
+    result.UV6.xy = float2(0.0f, 13.0f / textureSize.y);
+    result.UV7.xy = float2(0.0f, 15.0f / textureSize.y);
+    
+    result.UV0.zw = result.UV0.xy * (-1.0f);
+    result.UV1.zw = result.UV1.xy * (-1.0f);
+    result.UV2.zw = result.UV2.xy * (-1.0f);
+    result.UV3.zw = result.UV3.xy * (-1.0f);
+    result.UV4.zw = result.UV4.xy * (-1.0f);
+    result.UV5.zw = result.UV5.xy * (-1.0f);
+    result.UV6.zw = result.UV6.xy * (-1.0f);
+    result.UV7.zw = result.UV7.xy * (-1.0f);
+    
+    // Add offset
+    result.UV0 += float4(baseUV, baseUV);
+    result.UV1 += float4(baseUV, baseUV);
+    result.UV2 += float4(baseUV, baseUV);
+    result.UV3 += float4(baseUV, baseUV);
+    result.UV4 += float4(baseUV, baseUV);
+    result.UV5 += float4(baseUV, baseUV);
+    result.UV6 += float4(baseUV, baseUV);
+    result.UV0 += float4(baseUV, baseUV);
+    return result;
+}
+
+float4 PSBlur(const PSBlurInput input) : SV_Target0
+{
+    float4 color;
+    
+    color  = Weights[0].x * inputImage.Sample(SamplerLinearWrap, input.UV0.xy);
+    color += Weights[0].y * inputImage.Sample(SamplerLinearWrap, input.UV1.xy);
+    color += Weights[0].z * inputImage.Sample(SamplerLinearWrap, input.UV2.xy);
+    color += Weights[0].w * inputImage.Sample(SamplerLinearWrap, input.UV3.xy);
+    color += Weights[1].x * inputImage.Sample(SamplerLinearWrap, input.UV4.xy);
+    color += Weights[1].y * inputImage.Sample(SamplerLinearWrap, input.UV5.xy);
+    color += Weights[1].z * inputImage.Sample(SamplerLinearWrap, input.UV6.xy);
+    color += Weights[1].w * inputImage.Sample(SamplerLinearWrap, input.UV7.xy);
+    
+    color += Weights[0].x * inputImage.Sample(SamplerLinearWrap, input.UV0.zw);
+    color += Weights[0].y * inputImage.Sample(SamplerLinearWrap, input.UV1.zw);
+    color += Weights[0].z * inputImage.Sample(SamplerLinearWrap, input.UV2.zw);
+    color += Weights[0].w * inputImage.Sample(SamplerLinearWrap, input.UV3.zw);
+    color += Weights[1].x * inputImage.Sample(SamplerLinearWrap, input.UV4.zw);
+    color += Weights[1].y * inputImage.Sample(SamplerLinearWrap, input.UV5.zw);
+    color += Weights[1].z * inputImage.Sample(SamplerLinearWrap, input.UV6.zw);
+    color += Weights[1].w * inputImage.Sample(SamplerLinearWrap, input.UV7.zw);
+    
+    return color;
+}
+
 #endif
