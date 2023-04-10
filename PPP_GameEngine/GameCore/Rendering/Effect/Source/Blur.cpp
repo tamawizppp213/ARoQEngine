@@ -11,12 +11,14 @@
 #include "GameCore/Rendering/Effect/Include/Blur.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIRenderPass.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
-
+#include "GameCore/Rendering/Model/Include/PrimitiveMesh.hpp"
+#include "GameUtility/Math/Include/GMVertex.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
@@ -44,16 +46,18 @@ GaussianBlur::GaussianBlur()
 }
 GaussianBlur::~GaussianBlur()
 {
+	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
+	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
 	_computePipeline.reset();
-	_xBlurPipeline.reset();
-	_yBlurPipeline.reset();
+	_xBlur.Pipeline.reset();
+	_yBlur.Pipeline.reset();
 	for (auto& u : _unorderedResourceViews) { u.reset(); }
 	for (auto& s : _shaderResourceViews   ) { s.reset(); }
 	_textureSizeView.reset();
 	_blurParameterView.reset();
 }
-GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName)
-	: _engine(engine)
+GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS, const std::wstring& addName)
+	: _engine(engine), _useCS(useCS)
 {
 	/*-------------------------------------------------------------------
 	-            Set debug name
@@ -65,6 +69,7 @@ GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::u
 	-            Prepare resource
 	---------------------------------------------------------------------*/
 	PrepareBlurParameters(name);
+	PrepareVertexAndIndexBuffer(name);
 	PrepareTextureSizeBuffer(width, height, name);
 	PreparePipelineState(name);
 	PrepareResourceView();
@@ -144,27 +149,60 @@ void GaussianBlur::Draw(const FrameBufferPtr& frameBuffer, const std::uint32_t r
 	// the following pixel shader 
 	else
 	{
-		const auto device = _engine->GetDevice();
+		const auto device      = _engine->GetDevice();
 		const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
+		const auto currentFrame = _engine->GetCurrentFrameIndex();
+		const auto inputImage  = frameBuffer->GetRenderTargetSRV(renderTargetIndex);
 
 		/*-------------------------------------------------------------------
 		-               Change render resource
 		---------------------------------------------------------------------*/
 		commandList->EndRenderPass();
-		
 
 		/*-------------------------------------------------------------------
 		-               Set graphics pipeline
 		---------------------------------------------------------------------*/
 		commandList->SetDescriptorHeap(_blurParameterView->GetHeap());
+		commandList->SetGraphicsPipeline(_xBlur.Pipeline);
 		commandList->SetResourceLayout(_resourceLayout);
-		commandList->SetGraphicsPipeline(_xBlurPipeline);
 		
 		/*-------------------------------------------------------------------
 		-               Bind gpu resources
 		---------------------------------------------------------------------*/
 		_blurParameterView->Bind(commandList, 0);
-		_textureSizeView->Bind(commandList, 1);
+		_textureSizeView  ->Bind(commandList, 1);
+
+		/*-------------------------------------------------------------------
+		-               XBlur
+		---------------------------------------------------------------------*/
+		commandList->BeginRenderPass(_xBlur.RenderPass, _xBlur.FrameBuffer);
+		inputImage->Bind(commandList, 2);
+		commandList->SetVertexBuffer(_xBlur.VB[currentFrame]);
+		commandList->SetIndexBuffer(_xBlur.IB[currentFrame]);
+		commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+		commandList->EndRenderPass();
+		
+
+		/*-------------------------------------------------------------------
+		-               YBlur
+		---------------------------------------------------------------------*/
+		commandList->SetGraphicsPipeline(_yBlur.Pipeline);
+		_shaderResourceViews[0]->Bind(commandList, 2);
+		commandList->BeginRenderPass(_yBlur.RenderPass, _yBlur.FrameBuffer);
+		commandList->SetVertexBuffer(_yBlur.VB[currentFrame]);
+		commandList->SetIndexBuffer(_yBlur.IB[currentFrame]);
+		commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+		commandList->EndRenderPass();
+
+		/*-------------------------------------------------------------------
+		-               Default Path
+		---------------------------------------------------------------------*/
+		commandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), frameBuffer);
+		_shaderResourceViews[1]->Bind(commandList, 2);
+		commandList->SetGraphicsPipeline(_graphicsPipeline);
+		commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
+		commandList->SetIndexBuffer(_indexBuffers[currentFrame]);
+		commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
 	}
 }
@@ -278,8 +316,8 @@ void GaussianBlur::PreparePipelineState(const std::wstring& name)
 	_resourceLayout = device->CreateResourceLayout
 	(
 		{
-			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // weight table 
-			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // texture size
+			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // weight table 
+			ResourceLayoutElement(DescriptorHeapType::CBV, 2), // texture size
 			ResourceLayoutElement(DescriptorHeapType::SRV, 0), // source texture
 			ResourceLayoutElement(DescriptorHeapType::UAV, 0), // dest texture
 			ResourceLayoutElement(DescriptorHeapType::UAV, 1), // xblur texture
@@ -304,16 +342,51 @@ void GaussianBlur::PreparePipelineState(const std::wstring& name)
 	else
 	{
 		// render pass
-		
+		const auto colorAttachment = Attachment::RenderTarget(_engine->GetBackBufferFormat(), ResourceState::RenderTarget, ResourceState::Present, AttachmentLoad::Load);
+		_xBlur.RenderPass = device->CreateRenderPass(colorAttachment, std::nullopt);
+		_yBlur.RenderPass = device->CreateRenderPass(colorAttachment, std::nullopt);
 
 		const auto blurVS_X = factory->CreateShaderState();
 		const auto blurVS_Y = factory->CreateShaderState();
 		const auto blurPS   = factory->CreateShaderState();
+		const auto mainPS   = factory->CreateShaderState();
+		const auto mainVS   = factory->CreateShaderState();
 		blurVS_X->Compile(ShaderType::Vertex, defaultPath, L"VS_XBlur", 6.4f, { L"Shader\\Core" });
 		blurVS_Y->Compile(ShaderType::Vertex, defaultPath, L"VS_YBlur", 6.4f, { L"Shader\\Core" });
-		blurPS  ->Compile(ShaderType::Pixel, defaultPath, L"PSBlur", 6.4f, { L"Shader\\Core" });
+		blurPS  ->Compile(ShaderType::Pixel, defaultPath,  L"PSBlur"  , 6.4f, { L"Shader\\Core" });
+		mainVS->Compile(ShaderType::Vertex, defaultPath, L"VSFinal", 6.4f, { L"Shader\\Core" });
+		mainPS  ->Compile(ShaderType::Pixel, defaultPath, L"PSFinal", 6.4f, {L"Shader\\Core"});
 
-		//_xBlurPipeline = device->CreateGraphicPipelineState(_resourceLayout)
+		_xBlur.Pipeline = device->CreateGraphicPipelineState(_xBlur.RenderPass, _resourceLayout);
+		_yBlur.Pipeline = device->CreateGraphicPipelineState(_yBlur.RenderPass, _resourceLayout);
+		_graphicsPipeline = device->CreateGraphicPipelineState(_engine->GetDrawContinueRenderPass(), _resourceLayout);
+		
+		_xBlur.Pipeline->SetVertexShader(blurVS_X);
+		_yBlur.Pipeline->SetVertexShader(blurVS_Y);
+		_xBlur.Pipeline->SetPixelShader(blurPS);
+		_yBlur.Pipeline->SetPixelShader(blurPS);
+		_graphicsPipeline->SetVertexShader(mainVS);
+		_graphicsPipeline->SetPixelShader(mainPS);
+
+		_xBlur.Pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
+		_xBlur.Pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
+		_xBlur.Pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
+		
+		_yBlur.Pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
+		_yBlur.Pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
+		_yBlur.Pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
+		
+		_graphicsPipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
+		_graphicsPipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
+		_graphicsPipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
+
+		_xBlur.Pipeline->CompleteSetting();
+		_yBlur.Pipeline->CompleteSetting();
+		_graphicsPipeline->CompleteSetting();
+
+		_xBlur.Pipeline->SetName(name + L"XBlurPipeline");
+		_yBlur.Pipeline->SetName(name + L"YBlurPipeline");
+		_graphicsPipeline->SetName(name + L"MainPS");
 	}
 	
 }
@@ -332,25 +405,96 @@ void GaussianBlur::PrepareResourceView()
 
 	//  xblur
 	{
-		const auto srcData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth()    , Screen::GetScreenHeight(), format);
-		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess);
-		const auto srcTexture  = device->CreateTexture(srcData);
+		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 		const auto destTexture = device->CreateTexture(dstData);
+		
 		_unorderedResourceViews[0] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr); // x half texture uav
 		_shaderResourceViews   [0] = device->CreateResourceView(ResourceViewType::Texture  , destTexture, nullptr); // x half texture srv
+		if (!_useCS)
+		{
+			_renderTargetResourceViews[0] = device->CreateResourceView(ResourceViewType::RenderTarget, destTexture, nullptr);
+			_xBlur.FrameBuffer            = device->CreateFrameBuffer(_xBlur.RenderPass, destTexture, nullptr);
+		}
 	}
 	// yblur
 	{
-		const auto dstData         = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight() / 2, format, 1, ResourceUsage::UnorderedAccess);
+		const auto dstData         = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight() / 2, format, 1, ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 		const auto destTexture     = device->CreateTexture(dstData);
 		_unorderedResourceViews[1] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr);
 		_shaderResourceViews[1]    = device->CreateResourceView(ResourceViewType::Texture  , destTexture, nullptr);
+		if (!_useCS)
+		{
+			_renderTargetResourceViews[1] = device->CreateResourceView(ResourceViewType::RenderTarget, destTexture);
+			_yBlur.FrameBuffer            = device->CreateFrameBuffer(_yBlur.RenderPass, destTexture, nullptr);
+		}
 	}
 	// finalblur
 	{
-		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth()    , Screen::GetScreenHeight()    , format, 1, ResourceUsage::UnorderedAccess);
+		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth()    , Screen::GetScreenHeight()    , format, 1, ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 		const auto destTexture = device->CreateTexture(dstData);
 		_unorderedResourceViews[2] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr);
+
+	}
+}
+
+void GaussianBlur::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+{
+	if (_useCS) { return; }
+
+	const auto device     = _engine->GetDevice();
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
+	/*-------------------------------------------------------------------
+	-            Create Sphere Mesh
+	---------------------------------------------------------------------*/
+	gc::core::PrimitiveMesh rectMesh = gc::core::PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
+	/*-------------------------------------------------------------------
+	-            Create Mesh Buffer
+	---------------------------------------------------------------------*/
+	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
+	// prepare frame count buffer
+	_vertexBuffers.resize(frameCount);
+	_indexBuffers .resize(frameCount);
+	_xBlur.VB.resize(frameCount);
+	_xBlur.IB.resize(frameCount);
+	_yBlur.VB.resize(frameCount);
+	_yBlur.IB.resize(frameCount);
+	for (std::uint32_t i = 0; i < frameCount; ++i)
+	{
+		/*-------------------------------------------------------------------
+		-            Set up
+		---------------------------------------------------------------------*/
+		auto vertexByteSize = sizeof(gm::Vertex);
+		auto indexByteSize  = sizeof(std::uint32_t);
+		auto vertexCount    = rectMesh.Vertices.size();
+		auto indexCount     = rectMesh.Indices.size();
+
+		/*-------------------------------------------------------------------
+		-            Set Vertex Buffer 
+		---------------------------------------------------------------------*/
+		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
+		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
+		_vertexBuffers[i]->SetName(addName + L"FinalVB");
+		_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
+		_xBlur.VB[i] = device->CreateBuffer(vbMetaData);
+		_yBlur.VB[i] = device->CreateBuffer(vbMetaData);
+		_xBlur.VB[i]->Pack(rectMesh.Vertices.data()); // Map
+		_yBlur.VB[i]->Pack(rectMesh.Vertices.data()); // Map
+
+		/*-------------------------------------------------------------------
+		-            Set Index Buffer
+		---------------------------------------------------------------------*/
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
+		_indexBuffers[i]->SetName(addName + L"FinalIB");
+		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
+		_xBlur.IB[i] = device->CreateBuffer(vbMetaData);
+		_yBlur.IB[i] = device->CreateBuffer(vbMetaData);
+		_xBlur.IB[i]->Pack(rectMesh.Indices.data(), commandList);
+		_yBlur.IB[i]->Pack(rectMesh.Indices.data(), commandList);
+		_xBlur.VB[i]->SetName(addName + L"XVB");
+		_yBlur.VB[i]->SetName(addName + L"YVB");
+		_xBlur.IB[i]->SetName(addName + L"XIB");
+		_yBlur.IB[i]->SetName(addName + L"YVB");
 	}
 }
 #pragma endregion Protected Function

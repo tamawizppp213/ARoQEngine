@@ -100,7 +100,7 @@ void SampleColorChange::Draw()
 	_colorChanges[_colorIndex]->Draw();
 	_capture->Capture(_engine->GetFrameBuffer(frameIndex)->GetRenderTarget());
 	
-	if (_useBlur)  { _gaussianBlur->DrawCS(frameBuffer->GetRenderTargetSRV(), frameBuffer->GetRenderTargetUAV()); }
+	if (_useBlur)  { _gaussianBlur->Draw(frameBuffer); }
 	if (_useMosaic) { _mosaic->Draw(); }
 
 	_engine->EndDrawFrame();
@@ -155,7 +155,7 @@ void SampleColorChange::LoadMaterials()
 	{
 		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
 	}
-	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
+	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), true);
 
 	_mosaic = std::make_shared<Mosaic>(_engine, 20.0f);
 

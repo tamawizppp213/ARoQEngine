@@ -129,32 +129,27 @@ PSBlurInput VS_XBlur(VSInputVertex input)
 {
     PSBlurInput result;
     
-    /*-------------------------------------------------------------------
-	-        transform to world space 
-	---------------------------------------------------------------------*/
-	float4 positionWorld = mul(World, input.Position);
-	result.Position      = mul(ProjectionView, positionWorld);
+	result.Position = input.Position;
     
     /*-------------------------------------------------------------------
 	-        Acquire the texture size
 	---------------------------------------------------------------------*/
-    float2 textureSize;
-    float  level;
-    inputImage.GetDimensions(0, textureSize.x, textureSize.y, level);
+    float2 textureSize = OriginalTexture;
     
     /*-------------------------------------------------------------------
 	-        Set blur uv
 	---------------------------------------------------------------------*/
-    const float2 baseUV = input.UV;
+    const float2 baseUV = float2(input.UV.x * 4, input.UV.y); 
+    // Ç»Ç∫4î{Ç≈è„éËÇ≠Ç¢Ç≠ÇÃÇ©ï™Ç©ÇÁÇ»Ç¢... å„ÇŸÇ«óvåèìô
     
-    result.UV0.xy = float2(0.0f, 1.0f  / textureSize.y);
-    result.UV1.xy = float2(0.0f, 3.0f  / textureSize.y);
-    result.UV2.xy = float2(0.0f, 5.0f  / textureSize.y);
-    result.UV3.xy = float2(0.0f, 7.0f  / textureSize.y);
-    result.UV4.xy = float2(0.0f, 9.0f  / textureSize.y);
-    result.UV5.xy = float2(0.0f, 11.0f / textureSize.y);
-    result.UV6.xy = float2(0.0f, 13.0f / textureSize.y);
-    result.UV7.xy = float2(0.0f, 15.0f / textureSize.y);
+    result.UV0.xy = float2(1.0f  / textureSize.x, 0.0f);
+    result.UV1.xy = float2(3.0f  / textureSize.x, 0.0f);
+    result.UV2.xy = float2(5.0f  / textureSize.x, 0.0f);
+    result.UV3.xy = float2(7.0f  / textureSize.x, 0.0f);
+    result.UV4.xy = float2(9.0f  / textureSize.x, 0.0f);
+    result.UV5.xy = float2(11.0f / textureSize.x, 0.0f);
+    result.UV6.xy = float2(13.0f / textureSize.x, 0.0f);
+    result.UV7.xy = float2(15.0f / textureSize.x, 0.0f);
     
     result.UV0.zw = result.UV0.xy * (-1.0f);
     result.UV1.zw = result.UV1.xy * (-1.0f);
@@ -173,7 +168,7 @@ PSBlurInput VS_XBlur(VSInputVertex input)
     result.UV4 += float4(baseUV, baseUV);
     result.UV5 += float4(baseUV, baseUV);
     result.UV6 += float4(baseUV, baseUV);
-    result.UV0 += float4(baseUV, baseUV);
+    result.UV7 += float4(baseUV, baseUV);
     return result;
 }
 
@@ -184,20 +179,17 @@ PSBlurInput VS_YBlur(VSInputVertex input)
     /*-------------------------------------------------------------------
 	-        transform to world space 
 	---------------------------------------------------------------------*/
-	float4 positionWorld = mul(World, input.Position);
-	result.Position      = mul(ProjectionView, positionWorld);
+    result.Position = input.Position;
     
     /*-------------------------------------------------------------------
 	-        Acquire the texture size
 	---------------------------------------------------------------------*/
-    float2 textureSize;
-    float  level;
-    inputImage.GetDimensions(0, textureSize.x, textureSize.y, level);
+    float2 textureSize = XBlurTexture;
     
     /*-------------------------------------------------------------------
 	-        Set blur uv
 	---------------------------------------------------------------------*/
-    const float2 baseUV = input.UV;
+    const float2 baseUV = float2(input.UV.x, input.UV.y * 2);
     
     result.UV0.xy = float2(0.0f, 1.0f  / textureSize.y);
     result.UV1.xy = float2(0.0f, 3.0f  / textureSize.y);
@@ -225,7 +217,7 @@ PSBlurInput VS_YBlur(VSInputVertex input)
     result.UV4 += float4(baseUV, baseUV);
     result.UV5 += float4(baseUV, baseUV);
     result.UV6 += float4(baseUV, baseUV);
-    result.UV0 += float4(baseUV, baseUV);
+    result.UV7 += float4(baseUV, baseUV);
     return result;
 }
 
@@ -254,4 +246,19 @@ float4 PSBlur(const PSBlurInput input) : SV_Target0
     return color;
 }
 
+VSOutputVertex VSFinal(VSInputVertex vertexIn)
+{
+    VSOutputVertex result;
+    result.Position = vertexIn.Position;
+    result.UV       = vertexIn.UV;
+    result.Normal   = vertexIn.Normal;
+    result.Color    = vertexIn.Color;
+    
+    return result;
+}
+
+float4 PSFinal(VSOutputVertex input) : SV_Target0
+{
+    return float4(inputImage.Sample(SamplerLinearWrap, float2(input.UV.x, input.UV.y)));
+}
 #endif

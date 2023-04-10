@@ -137,12 +137,13 @@ void Bloom::UpdateBloomPower(const float power)
 #pragma region Set up Function
 void Bloom::PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t height, const std::wstring& name)
 {
-	_gaussianBlur[0] = std::make_shared<GaussianBlur>(_engine, width, height, name + L"GaussianBlur");
+	_gaussianBlur[0] = std::make_shared<GaussianBlur>(_engine, width, height, true, name + L"GaussianBlur");
 	for (std::uint32_t i = 1; i < _countof(_gaussianBlur); ++i)
 	{
 		_gaussianBlur[i] = std::make_shared<GaussianBlur>(_engine, 
 			width / pow(2, i),
 			height / pow(2, i),
+			true,
 			name + L"GaussianBlur");
 	}
 }

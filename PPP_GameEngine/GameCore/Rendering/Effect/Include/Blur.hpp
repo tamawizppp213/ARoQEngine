@@ -11,24 +11,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
-#include <memory>
 #include <string>
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
-namespace rhi::core
-{
-	class GPUBuffer;
-	class GPUResourceView;
-	class RHIResourceLayout;
-	class GPUComputePipelineState;
-	class GPUGraphicsPipelineState;
-	class RHIFrameBuffer;
-	class RHIRenderPass;
-}
+
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -46,11 +38,6 @@ namespace gc
 	{
 		using BlurParameterPtr        = std::shared_ptr<rhi::core::GPUBuffer>;
 		using TextureSizeBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ResourceLayoutPtr       = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using ResourceViewPtr         = std::shared_ptr<rhi::core::GPUResourceView>;
-		using ComputePipelineStatePtr = std::shared_ptr<rhi::core::GPUComputePipelineState>;
-		using GraphicsPipelineStatePtr = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using FrameBufferPtr          = std::shared_ptr<rhi::core::RHIFrameBuffer>;
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 
 	protected:
@@ -58,12 +45,24 @@ namespace gc
 		{
 			gm::Float4 Weights[2];
 		};
+
 		struct TextureSizeParameter
 		{
 			std::uint32_t OriginalTexture[2];
 			std::uint32_t XBlurTexture[2];
 			std::uint32_t YBlurTexture[2];
 		};
+
+		struct PSResource
+		{
+			GraphicsPipelinePtr Pipeline    = nullptr;
+			RenderPassPtr       RenderPass  = nullptr;
+			FrameBufferPtr      FrameBuffer = nullptr;
+			std::vector<BufferPtr> VB = {};
+			std::vector<BufferPtr> IB = {};
+			~PSResource() { VB.clear(); IB.clear(); VB.shrink_to_fit(); IB.shrink_to_fit(); }
+		};
+
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -90,7 +89,7 @@ namespace gc
 		
 		~GaussianBlur();
 		
-		GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName = L"");
+		GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS = true, const std::wstring& addName = L"");
 	
 	protected:
 		/****************************************************************************
@@ -103,6 +102,8 @@ namespace gc
 		void PreparePipelineState(const std::wstring& name);
 		
 		void PrepareResourceView();
+
+		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
 		
 		/****************************************************************************
 		**                Protected Member Variables
@@ -132,18 +133,21 @@ namespace gc
 		/*-------------------------------------------------------------------
 		-               Compute Shader Variables
 		---------------------------------------------------------------------*/
-		ComputePipelineStatePtr _computePipeline = nullptr;
+		ComputePipelinePtr _computePipeline = nullptr;
 
 		/*-------------------------------------------------------------------
 		-               Vertex and Pixel Shader Variables
 		---------------------------------------------------------------------*/
-		GraphicsPipelineStatePtr _xBlurPipeline = nullptr;
-		GraphicsPipelineStatePtr _yBlurPipeline = nullptr;
+		PSResource _xBlur;
+		PSResource _yBlur;
+		GraphicsPipelinePtr _graphicsPipeline = nullptr;
 
+		std::vector<BufferPtr> _vertexBuffers = {};
+		std::vector<BufferPtr> _indexBuffers  = {};
 
 		ResourceViewPtr _shaderResourceViews[ViewCount];
 		ResourceViewPtr _unorderedResourceViews[ViewCount];
-
+		ResourceViewPtr _renderTargetResourceViews[ViewCount];
 
 		/*-------------------------------------------------------------------
 		-               Const value
