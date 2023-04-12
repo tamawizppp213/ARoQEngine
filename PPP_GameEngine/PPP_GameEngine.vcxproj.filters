@@ -1529,5 +1529,6 @@
     <FxCompile Include="Shader\Effect\ShaderSobel.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderSSAO.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderShadow.hlsl" />
+    <FxCompile Include="Shader\Lighting\ShaderShadowMap.hlsl" />
   </ItemGroup>
 </Project>
