@@ -214,6 +214,7 @@
     <ClInclude Include="GameCore\Rendering\Effect\Include\SSAO.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProperty.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\SceneLightBuffer.hpp" />
+    <ClInclude Include="GameCore\Rendering\Light\Include\ShadowMap.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIButton.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
@@ -512,6 +513,7 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\Source\CascadeShadow.cpp" />
+    <ClCompile Include="GameCore\Rendering\Light\Source\ShadowMap.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIButton.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />

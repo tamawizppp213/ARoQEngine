@@ -104,6 +104,8 @@ void GaussianBlur::DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPt
 	const auto commandList = _engine->GetCommandList(CommandListType::Compute);
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 
+	assert(_useCS);
+
 	/*-------------------------------------------------------------------
 	-               Pause current render pass
 	---------------------------------------------------------------------*/
@@ -136,6 +138,66 @@ void GaussianBlur::DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPt
 	_engine->WaitExecutionGPUCommands(CommandListType::Graphics, waitValue, false);
 }
 
+void GaussianBlur::DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex)
+{
+	assert(!_useCS);
+
+	const auto device       = _engine->GetDevice();
+	const auto commandList  = _engine->GetCommandList(CommandListType::Graphics);
+	const auto currentFrame = _engine->GetCurrentFrameIndex();
+	const auto inputImage   = frameBuffer->GetRenderTargetSRV(renderTargetIndex);
+
+	/*-------------------------------------------------------------------
+	-               Change render resource
+	---------------------------------------------------------------------*/
+	commandList->EndRenderPass();
+
+	/*-------------------------------------------------------------------
+	-               Set graphics pipeline
+	---------------------------------------------------------------------*/
+	commandList->SetDescriptorHeap(_blurParameterView->GetHeap());
+	commandList->SetGraphicsPipeline(_xBlur.Pipeline);
+	commandList->SetResourceLayout(_resourceLayout);
+		
+	/*-------------------------------------------------------------------
+	-               Bind gpu resources
+	---------------------------------------------------------------------*/
+	_blurParameterView->Bind(commandList, 0);
+	_textureSizeView  ->Bind(commandList, 1);
+
+	/*-------------------------------------------------------------------
+	-               XBlur
+	---------------------------------------------------------------------*/
+	commandList->BeginRenderPass(_xBlur.RenderPass, _xBlur.FrameBuffer);
+	inputImage->Bind(commandList, 2);
+	commandList->SetVertexBuffer(_xBlur.VB[currentFrame]);
+	commandList->SetIndexBuffer(_xBlur.IB[currentFrame]);
+	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	commandList->EndRenderPass();
+		
+
+	/*-------------------------------------------------------------------
+	-               YBlur
+	---------------------------------------------------------------------*/
+	commandList->SetGraphicsPipeline(_yBlur.Pipeline);
+	_shaderResourceViews[0]->Bind(commandList, 2);
+	commandList->BeginRenderPass(_yBlur.RenderPass, _yBlur.FrameBuffer);
+	commandList->SetVertexBuffer(_yBlur.VB[currentFrame]);
+	commandList->SetIndexBuffer(_yBlur.IB[currentFrame]);
+	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	commandList->EndRenderPass();
+
+	/*-------------------------------------------------------------------
+	-               Default Path
+	---------------------------------------------------------------------*/
+	commandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), frameBuffer);
+	_shaderResourceViews[1]->Bind(commandList, 2);
+	commandList->SetGraphicsPipeline(_graphicsPipeline);
+	commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
+	commandList->SetIndexBuffer(_indexBuffers[currentFrame]);
+	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+}
+
 void GaussianBlur::Draw(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex)
 {
 	// compute shader draw function
@@ -149,61 +211,7 @@ void GaussianBlur::Draw(const FrameBufferPtr& frameBuffer, const std::uint32_t r
 	// the following pixel shader 
 	else
 	{
-		const auto device      = _engine->GetDevice();
-		const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
-		const auto currentFrame = _engine->GetCurrentFrameIndex();
-		const auto inputImage  = frameBuffer->GetRenderTargetSRV(renderTargetIndex);
-
-		/*-------------------------------------------------------------------
-		-               Change render resource
-		---------------------------------------------------------------------*/
-		commandList->EndRenderPass();
-
-		/*-------------------------------------------------------------------
-		-               Set graphics pipeline
-		---------------------------------------------------------------------*/
-		commandList->SetDescriptorHeap(_blurParameterView->GetHeap());
-		commandList->SetGraphicsPipeline(_xBlur.Pipeline);
-		commandList->SetResourceLayout(_resourceLayout);
-		
-		/*-------------------------------------------------------------------
-		-               Bind gpu resources
-		---------------------------------------------------------------------*/
-		_blurParameterView->Bind(commandList, 0);
-		_textureSizeView  ->Bind(commandList, 1);
-
-		/*-------------------------------------------------------------------
-		-               XBlur
-		---------------------------------------------------------------------*/
-		commandList->BeginRenderPass(_xBlur.RenderPass, _xBlur.FrameBuffer);
-		inputImage->Bind(commandList, 2);
-		commandList->SetVertexBuffer(_xBlur.VB[currentFrame]);
-		commandList->SetIndexBuffer(_xBlur.IB[currentFrame]);
-		commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-		commandList->EndRenderPass();
-		
-
-		/*-------------------------------------------------------------------
-		-               YBlur
-		---------------------------------------------------------------------*/
-		commandList->SetGraphicsPipeline(_yBlur.Pipeline);
-		_shaderResourceViews[0]->Bind(commandList, 2);
-		commandList->BeginRenderPass(_yBlur.RenderPass, _yBlur.FrameBuffer);
-		commandList->SetVertexBuffer(_yBlur.VB[currentFrame]);
-		commandList->SetIndexBuffer(_yBlur.IB[currentFrame]);
-		commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-		commandList->EndRenderPass();
-
-		/*-------------------------------------------------------------------
-		-               Default Path
-		---------------------------------------------------------------------*/
-		commandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), frameBuffer);
-		_shaderResourceViews[1]->Bind(commandList, 2);
-		commandList->SetGraphicsPipeline(_graphicsPipeline);
-		commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
-		commandList->SetIndexBuffer(_indexBuffers[currentFrame]);
-		commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-
+		DrawPS(frameBuffer, renderTargetIndex);
 	}
 }
 
@@ -301,8 +309,11 @@ void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std
 *							PreparePipelineState
 *************************************************************************//**
 *  @fn        void GaussianBlur::PreparePipelineState()
+* 
 *  @brief     Prepare xblur, yblur, and finalblur PSO
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void GaussianBlur::PreparePipelineState(const std::wstring& name)
@@ -346,6 +357,7 @@ void GaussianBlur::PreparePipelineState(const std::wstring& name)
 		_xBlur.RenderPass = device->CreateRenderPass(colorAttachment, std::nullopt);
 		_yBlur.RenderPass = device->CreateRenderPass(colorAttachment, std::nullopt);
 
+		// load blob data
 		const auto blurVS_X = factory->CreateShaderState();
 		const auto blurVS_Y = factory->CreateShaderState();
 		const auto blurPS   = factory->CreateShaderState();
@@ -354,48 +366,51 @@ void GaussianBlur::PreparePipelineState(const std::wstring& name)
 		blurVS_X->Compile(ShaderType::Vertex, defaultPath, L"VS_XBlur", 6.4f, { L"Shader\\Core" });
 		blurVS_Y->Compile(ShaderType::Vertex, defaultPath, L"VS_YBlur", 6.4f, { L"Shader\\Core" });
 		blurPS  ->Compile(ShaderType::Pixel, defaultPath,  L"PSBlur"  , 6.4f, { L"Shader\\Core" });
-		mainVS->Compile(ShaderType::Vertex, defaultPath, L"VSFinal", 6.4f, { L"Shader\\Core" });
+		mainVS  ->Compile(ShaderType::Vertex, defaultPath, L"VSFinal", 6.4f, { L"Shader\\Core" });
 		mainPS  ->Compile(ShaderType::Pixel, defaultPath, L"PSFinal", 6.4f, {L"Shader\\Core"});
 
+		// XBlur
 		_xBlur.Pipeline = device->CreateGraphicPipelineState(_xBlur.RenderPass, _resourceLayout);
-		_yBlur.Pipeline = device->CreateGraphicPipelineState(_yBlur.RenderPass, _resourceLayout);
-		_graphicsPipeline = device->CreateGraphicPipelineState(_engine->GetDrawContinueRenderPass(), _resourceLayout);
-		
 		_xBlur.Pipeline->SetVertexShader(blurVS_X);
-		_yBlur.Pipeline->SetVertexShader(blurVS_Y);
 		_xBlur.Pipeline->SetPixelShader(blurPS);
-		_yBlur.Pipeline->SetPixelShader(blurPS);
-		_graphicsPipeline->SetVertexShader(mainVS);
-		_graphicsPipeline->SetPixelShader(mainPS);
-
 		_xBlur.Pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
 		_xBlur.Pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
 		_xBlur.Pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
-		
+		_xBlur.Pipeline->CompleteSetting();
+		_xBlur.Pipeline->SetName(name + L"XBlurPipeline");
+
+		// YBlur
+		_yBlur.Pipeline = device->CreateGraphicPipelineState(_yBlur.RenderPass, _resourceLayout);
 		_yBlur.Pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
 		_yBlur.Pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
 		_yBlur.Pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
-		
-		_graphicsPipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
-		_graphicsPipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
-		_graphicsPipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
-
-		_xBlur.Pipeline->CompleteSetting();
+		_yBlur.Pipeline->SetVertexShader(blurVS_Y);
+		_yBlur.Pipeline->SetPixelShader(blurPS);
 		_yBlur.Pipeline->CompleteSetting();
-		_graphicsPipeline->CompleteSetting();
-
-		_xBlur.Pipeline->SetName(name + L"XBlurPipeline");
 		_yBlur.Pipeline->SetName(name + L"YBlurPipeline");
+
+		// Final Blur
+		_graphicsPipeline = device->CreateGraphicPipelineState(_engine->GetDrawContinueRenderPass(), _resourceLayout);
+		_graphicsPipeline->SetVertexShader(mainVS);
+		_graphicsPipeline->SetPixelShader(mainPS);
+		_graphicsPipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::OverWrite()));
+		_graphicsPipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
+		_graphicsPipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
+		_graphicsPipeline->CompleteSetting();
 		_graphicsPipeline->SetName(name + L"MainPS");
 	}
 	
 }
+
 /****************************************************************************
 *							PrepareResourceView
 *************************************************************************//**
 *  @fn        void GaussianBlur::PrepareResourceView()
+* 
 *  @brief     Prepare xblur, yblur, and finalblur resource views
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void GaussianBlur::PrepareResourceView()

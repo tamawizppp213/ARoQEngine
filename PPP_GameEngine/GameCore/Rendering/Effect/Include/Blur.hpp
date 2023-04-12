@@ -73,6 +73,7 @@ namespace gc
 
 		void DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPtr& destUAV);
 		
+		void DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex = 0);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
