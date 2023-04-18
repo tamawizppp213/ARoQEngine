@@ -104,7 +104,9 @@ void GaussianBlur::DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPt
 	const auto commandList = _engine->GetCommandList(CommandListType::Compute);
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 
+#ifdef _DEBUG
 	assert(_useCS);
+#endif
 
 	/*-------------------------------------------------------------------
 	-               Pause current render pass
@@ -179,9 +181,9 @@ void GaussianBlur::DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t
 	/*-------------------------------------------------------------------
 	-               YBlur
 	---------------------------------------------------------------------*/
+	commandList->BeginRenderPass(_yBlur.RenderPass, _yBlur.FrameBuffer);
 	commandList->SetGraphicsPipeline(_yBlur.Pipeline);
 	_shaderResourceViews[0]->Bind(commandList, 2);
-	commandList->BeginRenderPass(_yBlur.RenderPass, _yBlur.FrameBuffer);
 	commandList->SetVertexBuffer(_yBlur.VB[currentFrame]);
 	commandList->SetIndexBuffer(_yBlur.IB[currentFrame]);
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -191,11 +193,12 @@ void GaussianBlur::DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t
 	-               Default Path
 	---------------------------------------------------------------------*/
 	commandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), frameBuffer);
-	_shaderResourceViews[1]->Bind(commandList, 2);
 	commandList->SetGraphicsPipeline(_graphicsPipeline);
+	_shaderResourceViews[1]->Bind(commandList, 2);
 	commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
 	commandList->SetIndexBuffer(_indexBuffers[currentFrame]);
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+	commandList->EndRenderPass();
 }
 
 void GaussianBlur::Draw(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex)

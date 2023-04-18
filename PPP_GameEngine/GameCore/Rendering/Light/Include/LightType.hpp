@@ -33,7 +33,7 @@ namespace gc::rendering
 
 	struct DirectionalLightData : public LightData
 	{
-		hlsl::float3 Direction  = hlsl::float3(0, 0, 0);
+		hlsl::float3 Direction  = hlsl::float3(1, 1, 1);
 		hlsl::float1 Brightness = 1.0f;
 		hlsl::float3 Color      = hlsl::float3(1, 1, 1);
 		int          IsUse      = 0.0f;

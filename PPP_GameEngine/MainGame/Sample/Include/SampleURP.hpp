@@ -84,6 +84,7 @@ namespace sample
 		SkyDomePtr _skybox = nullptr;
 		CameraPtr  _camera = nullptr;
 		ModelPtr   _model  = nullptr;
+		ModelPtr   _floor  = nullptr;
 		RendererPtr _renderer = nullptr;
 	};
 }

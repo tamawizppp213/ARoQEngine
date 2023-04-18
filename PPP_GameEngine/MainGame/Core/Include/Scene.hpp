@@ -62,7 +62,7 @@ protected:
 	*****************************************************************************/
 	std::shared_ptr<LowLevelGraphicsEngine> _engine;
 	GameInput& _gameInput            = GameInput::Instance();
-	std::shared_ptr<GameTimer> _gameTimer  = nullptr;
+	GameTimerPtr _gameTimer  = nullptr;
 	bool _hasExecutedSceneTransition = false;
 	bool _hasExecutedBackScene       = false;
 

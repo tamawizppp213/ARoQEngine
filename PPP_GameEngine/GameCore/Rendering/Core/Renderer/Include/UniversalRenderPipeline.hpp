@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+class GameTimer;
 namespace gc
 {
 	class SSAO;
@@ -33,6 +34,10 @@ namespace gc
 		class GBuffer;
 	}
 
+	namespace rendering
+	{
+		class CascadeShadow;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -60,6 +65,7 @@ namespace gc
 		using LightCullingPtr = std::shared_ptr<basepass::LightCulling>;
 		using GBufferPtr      = std::shared_ptr<basepass::GBuffer>; 
 		using SSAOPtr         = std::shared_ptr<SSAO>;
+		using ShadowMapPtr    = std::shared_ptr<rendering::CascadeShadow>;
 		using DirectionalLightPtr = std::shared_ptr<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>;
 	public:
 		/****************************************************************************
@@ -80,7 +86,7 @@ namespace gc
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		URP(const LowLevelGraphicsEnginePtr& engine);
+		URP(const LowLevelGraphicsEnginePtr& engine, const std::shared_ptr<GameTimer>& gameTimer);
 
 		~URP();
 
@@ -105,9 +111,13 @@ namespace gc
 
 		SSAOPtr _ssao = nullptr;
 
+		ShadowMapPtr _cascadeShadowMap = nullptr;
+
 		ResourceLayoutPtr _resourceLayout = nullptr;
 
 		PipelineStatePtr _pipeline = nullptr;
+
+		std::shared_ptr<GameTimer> _gameTimer = nullptr;
 
 		std::vector<GameModelPtr> _forwardModels  = {};
 

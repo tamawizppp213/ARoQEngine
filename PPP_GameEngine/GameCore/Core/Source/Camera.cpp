@@ -242,9 +242,9 @@ void Camera::SetZRange(float nearZ, float farZ)
 *****************************************************************************/
 void Camera::LookAt(Vector3 position, Vector3 target, Vector3 worldUp)
 {
-	Vector3 look = Normalize(target - position); // diff
+	Vector3 look  = Normalize(target - position); // diff
 	Vector3 right = Normalize(Cross(worldUp, look));
-	Vector3 up = Cross(look, right);
+	Vector3 up    = Cross(look, right);
 
 	_position = position.ToFloat3();
 	_look     = look.ToFloat3();

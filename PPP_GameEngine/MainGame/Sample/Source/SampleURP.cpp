@@ -18,6 +18,8 @@
 #include "GameCore/Rendering/Light/External/Include/IESProfiler.hpp"
 #include "GameCore/Rendering/Light/Include/SceneLightBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHISwapchain.hpp"
+#include "GameCore/Rendering/Model/Include/MaterialType.hpp"
+#include "GameCore/Rendering/Model/Include/Material.hpp"
 #include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -73,6 +75,7 @@ void SampleURP::Update()
 	Scene::Update();
 	_camera->Update(_gameTimer);
 	_model->Update(_gameTimer->DeltaTime());
+	_floor->Update(_gameTimer->DeltaTime());
 
 	const DirectionalLightData directionalLight = 
 	{
@@ -169,11 +172,22 @@ void SampleURP::LoadMaterials()
 	_model->Load(L"Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx");
 	_model->SetDebugColor(gm::Float4(1, 0, 0, 1));
 
+	PBRMaterial pbrMaterial = {};
+	pbrMaterial.Diffuse = gm::Float4(1.0f, 1.0f, 1.0f, 1);
+	pbrMaterial.Roughness = 1.0f;
+	const auto material = std::make_shared<Material>(_engine, GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1));
+	material->PackMaterial(&pbrMaterial);
+
+	_floor = GameObject::Create<GameModel>(_engine);
+	_floor->Load(PrimitiveMeshType::Grid, material);
+	_floor->SetScale(100.0f, 100.0f, 100.0f);
+
 	/*-------------------------------------------------------------------
 	-           Universal Rendering Pipeline
 	---------------------------------------------------------------------*/
-	_renderer = std::make_shared<gc::URP>(_engine);
+	_renderer = std::make_shared<gc::URP>(_engine, _gameTimer);
 	_renderer->Add(Forward, _model);
+	_renderer->Add(Forward, _floor);
 
 	IESProfiler profiler;
 	profiler.Load(L"Resources/Test.IES");

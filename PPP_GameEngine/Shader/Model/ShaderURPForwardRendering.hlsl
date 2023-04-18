@@ -13,14 +13,14 @@
 #include "../Core/ShaderConstantBuffer3D.hlsli"
 #include "../Lighting/ShaderBRDF.hlsli"
 #include "../Lighting/ShaderLightType.hlsli"
+#include "../Lighting/ShaderShadow.hlsli"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 /////////////////////////////////////////////////////////////////////////////////
-SamplerState SamplerLinearWrap : register(s0);
 Texture2D    DiffuseMap        : register(t0);
 Texture2D    SpecularMap       : register(t1);
-Texture2D    NormalMap         : register(t2);
+Texture2D    NormalMap         : register(t2); 
 
 struct PSInput
 {
@@ -28,6 +28,7 @@ struct PSInput
     float4 WorldNormal : NORMAL0;
 	float4 ViewNormal  : NORMAL1;
     float2 UV          : TEXCOORD;
+    //float4 PositionInLVP[SHADOW_MAP_COUNT] : TEXCOORD1; // pixel position in the light view screen space.
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +49,14 @@ PSInput VSMain( VSInputSkinVertex vertexIn)
 	result.ViewNormal    = mul(View, result.WorldNormal);
 	result.UV            = vertexIn.UV;
 	
+	/*-------------------------------------------------------------------
+	-        Calculate light view screen space
+	---------------------------------------------------------------------*/
+    //for (int i = 0; i < SHADOW_MAP_COUNT; ++i)
+    //{
+    //    result.PositionInLVP[i] = mul(LVPC[i], positionWorld);
+    //}
+	
 	return result;
 }
 
@@ -64,7 +73,7 @@ float4 PSMain(PSInput input) : SV_TARGET
 	-        Set BRDF Surface Config
 	---------------------------------------------------------------------*/
 	BRDFSurface surface;
-	surface.BaseColor         = albedo.rgb;
+	surface.BaseColor         = albedo.rgb * Diffuse.rgb;
 	surface.EmissiveColor     = EmissiveColor;
 	surface.EmissiveIntensity = EmissiveIntensity;
 	surface.Roughness         = Roughness;
@@ -79,7 +88,7 @@ float4 PSMain(PSInput input) : SV_TARGET
 		result += Calculate_Directional_Light_Illumination(DirectionalLights[i], surface, toEye);
     }
 	
-    result += albedo.rgb * Ambient;
+    result += Diffuse.rgb * albedo.rgb * Ambient;
     return float4(result, albedo.a);
 }
 

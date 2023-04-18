@@ -19,9 +19,14 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
-namespace gc::core
+namespace gc
 {
-	class GameModel;
+	class GaussianBlur;
+
+	namespace core
+	{
+		class GameModel;
+	}
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
@@ -39,6 +44,7 @@ namespace gc::rendering
 	protected:
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 		using GameModelPtr              = std::shared_ptr<gc::core::GameModel>;
+		using GaussianBlurPtr           = std::shared_ptr<gc::GaussianBlur>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -51,6 +57,8 @@ namespace gc::rendering
 		**                Public Member Variables
 		*****************************************************************************/
 		FrameBufferPtr GetFrameBuffer() const noexcept { return _frameBuffer; }
+
+		ResourceViewPtr GetHalfDownSampledSRV() const noexcept;
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -69,6 +77,7 @@ namespace gc::rendering
 		**                Protected Function
 		*****************************************************************************/
 		void PrepareVertexAndIndexBuffer(const std::wstring& name);
+		void PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const std::wstring& name);
 		void PreparePipelineState(const std::wstring& name);
 
 		/****************************************************************************
@@ -88,6 +97,9 @@ namespace gc::rendering
 
 		// registered game models.
 		std::vector<GameModelPtr> _gameModels = {};
+
+		// gaussian blur for the VSM method.
+		GaussianBlurPtr _gaussianBlur = nullptr;
 	};
 }
 #endif

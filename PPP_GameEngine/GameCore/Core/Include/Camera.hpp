@@ -41,7 +41,7 @@ namespace gc
 		float NearZ;
 		float FarZ;
 		float Aspect;
-		float FovVertical;
+		float FovVertical; // angle
 		float NearWindowHeight;
 		float FarWindowHeight;
 	};
@@ -124,6 +124,7 @@ namespace gc
 		/*-------------------------------------------------------------------
 		-   Get frustum properties
 		---------------------------------------------------------------------*/
+		Frustum GetFrustum() const { return frustum; }
 		float GetNearZ()         const;
 		float GetFarZ()          const;
 		float GetAspect()        const;

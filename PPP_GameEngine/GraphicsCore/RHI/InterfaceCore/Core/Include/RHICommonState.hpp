@@ -127,6 +127,7 @@ namespace rhi::core
 		R32_FLOAT,
 		D24_UNORM_S8_UINT,
 		R32G32B32_FLOAT,
+		R32G32_FLOAT,
 		B8G8R8A8_UNORM_SRGB,
 		BC1_UNORM,
 		CountOfPixelFormat

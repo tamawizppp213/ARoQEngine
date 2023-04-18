@@ -52,5 +52,5 @@ cbuffer MaterialConstants : register(b2)
     float3 Padding;
 }
 
-
+SamplerState SamplerLinearWrap : register(s0);
 #endif

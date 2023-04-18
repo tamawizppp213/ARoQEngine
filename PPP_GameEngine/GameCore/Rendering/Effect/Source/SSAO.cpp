@@ -316,9 +316,9 @@ void SSAO::PreparePipelineState(const std::wstring& name)
 			ResourceLayoutElement(DescriptorHeapType::SRV, 3), // input  texture
 		},
 		{
-			SamplerLayoutElement(device->CreateSampler(depthSampler), 0),
+			SamplerLayoutElement(device->CreateSampler(depthSampler), 2),
 			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerPointClamp)), 1),
-			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerPointClamp)), 2)
+			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerPointClamp)), 0)
 		}
 	);
 

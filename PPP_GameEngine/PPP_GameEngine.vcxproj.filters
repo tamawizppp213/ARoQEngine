@@ -1504,6 +1504,7 @@
     <None Include="Shader\Lighting\ShaderBRDF.hlsli" />
     <None Include="Shader\Lighting\ShaderLightType.hlsli" />
     <None Include="Shader\Effect\ShaderTonemapType.hlsli" />
+    <None Include="Shader\Lighting\ShaderShadow.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc">
@@ -1528,7 +1529,6 @@
     <FxCompile Include="Shader\Model\ShaderURPForwardRendering.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderSobel.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderSSAO.hlsl" />
-    <FxCompile Include="Shader\Lighting\ShaderShadow.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderShadowMap.hlsl" />
   </ItemGroup>
 </Project>

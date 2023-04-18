@@ -13,6 +13,7 @@
 #include "../../BasePass/Include/BasePassGBuffer.hpp"
 #include "../../BasePass/Include/BasePassLightCulling.hpp"
 #include "GameCore/Rendering/Effect/Include/SSAO.hpp"
+#include "GameCore/Rendering/Light/Include/CascadeShadow.hpp"
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameCore/Rendering/UI/Public/Include/UIRenderer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
@@ -34,7 +35,8 @@ namespace
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
-URP::URP(const LowLevelGraphicsEnginePtr& engine) : IRenderPipeline(engine)
+URP::URP(const LowLevelGraphicsEnginePtr& engine, const std::shared_ptr<GameTimer>& gameTimer) : IRenderPipeline(engine),
+_gameTimer(gameTimer)
 {
 	_zPrepass = std::make_shared<ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), L"URP");
 
@@ -42,6 +44,9 @@ URP::URP(const LowLevelGraphicsEnginePtr& engine) : IRenderPipeline(engine)
 
 	//_ssao = std::make_shared<SSAO>(engine, _gBuffer->GetRenderedTextureView(1), _zPrepass->GetRenderedTextureView());
 	
+	const auto shadowDesc = gc::rendering::CascadeShadowDesc();
+	_cascadeShadowMap = std::make_shared<rendering::CascadeShadow>(_engine, shadowDesc, L"URP");
+
 	_uiRenderer = std::make_shared<ui::UIRenderer>(engine, L"URP", MAX_UI_COUNT);
 
 	_directionalLights = std::make_shared<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
@@ -73,6 +78,7 @@ bool URP::Draw(const ResourceViewPtr& scene)
 	_zPrepass->Draw(scene);
 	_gBuffer ->Draw(scene);
 	//_ssao->Draw(scene);
+	_cascadeShadowMap->Draw(_gameTimer, _directionalLights->GetLight(0).Direction);
 
 	/*-------------------------------------------------------------------
 	-         Rendering
@@ -80,15 +86,18 @@ bool URP::Draw(const ResourceViewPtr& scene)
 	_engine->BeginSwapchainRenderPass();
 	commandList->SetResourceLayout(_resourceLayout);
 	commandList->SetGraphicsPipeline(_pipeline);
+	scene->Bind(commandList, 0);
 	_directionalLights->BindLightData(commandList, 2);
+	_cascadeShadowMap->GetShadowInfoView()->Bind(commandList, 3);
 	for (const auto& model : _forwardModels)
 	{
 		// model active check
 		if (!model->IsActive()) { continue; }
 
 		// forward rendering with each materials
-		model->Draw(true, 3);
+		model->Draw(true, 4);
 	}
+	
 	return true;
 }
 
@@ -98,6 +107,7 @@ void URP::Add(const URPDrawType type, const GameModelPtr& gameModel)
 	assert(gameModel);
 #endif
 
+	_cascadeShadowMap->Add(gameModel);
 	_zPrepass->Add(gameModel);
 	_gBuffer ->Add(gameModel);
 
@@ -127,6 +137,7 @@ void URP::PrepareModelPipeline()
 			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // Scene constant 
 			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // object world position information
 			ResourceLayoutElement(DescriptorHeapType::CBV, 5), // directional light buffer
+			ResourceLayoutElement(DescriptorHeapType::CBV, 10), // ShadowInfo
 			ResourceLayoutElement(DescriptorHeapType::CBV, 2), // material constants
 			ResourceLayoutElement(DescriptorHeapType::SRV, 0), // Diffuse map
 			ResourceLayoutElement(DescriptorHeapType::SRV, 1), // Specular map

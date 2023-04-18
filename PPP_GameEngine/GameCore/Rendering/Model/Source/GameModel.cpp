@@ -83,7 +83,7 @@ void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
         case Box:       {primitiveMesh = PrimitiveMeshGenerator::Box      (1.0f, 1.0f, 1.0f, 0, false); break;  }
         case Sphere:    {primitiveMesh = PrimitiveMeshGenerator::Sphere   (1.0f, 20  , 20,      false); break; }
         case GeoSphere: {primitiveMesh = PrimitiveMeshGenerator::GeoSphere(1.0f, 20  ,          false); break; }
-        case Grid:      {primitiveMesh = PrimitiveMeshGenerator::Grid     (1.0f, 1.0f, 1, 1,    false); break; }
+        case Grid:      {primitiveMesh = PrimitiveMeshGenerator::Grid     (1.0f, 1.0f, 2, 2,    false); break; }
         case Rect:      {primitiveMesh = PrimitiveMeshGenerator::Rect(1.0f, 1.0f, 1.0f); break; }
         default:
         {
@@ -94,6 +94,13 @@ void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
     const auto mesh = std::make_shared<Mesh>(_engine, primitiveMesh, material);
     _meshes.push_back(mesh);
     _totalMesh = mesh;
+    
+    if (material) 
+    {
+        _materialCount = 1; 
+        _materials.push_back(material);
+    }
+    
 }
 
 /****************************************************************************

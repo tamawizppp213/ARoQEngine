@@ -58,9 +58,8 @@ Texture2D<float4>   InputTexture    : register(t3);
 RWTexture2D<float4> OutputTexture   : register(u0);
 
 // Sampler
-SamplerState SamplerDepth      : register(s0);
 SamplerState SamplerPointClamp : register(s1);
-SamplerState SamplerLinearWrap : register(s2);
+SamplerState SamplerDepth      : register(s2);
 
 // Variables
 static const float2 RectUVs[6] =

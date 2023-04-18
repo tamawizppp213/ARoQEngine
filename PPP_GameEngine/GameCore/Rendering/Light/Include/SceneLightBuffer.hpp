@@ -76,6 +76,7 @@ namespace gc::rendering
 		/* @brief : return the light data*/
 		void SetLight(const std::uint32_t index, const TLight& light);
 
+		TLight& GetLight(const std::uint32_t index) { return _lights.at(index); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

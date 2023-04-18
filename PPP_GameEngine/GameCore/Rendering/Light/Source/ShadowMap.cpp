@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/ShadowMap.hpp"
 #include "../../Model/Include/GameModel.hpp"
+#include "../../Effect/Include/Blur.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
@@ -28,8 +29,18 @@ using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
 ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName)
+	: _engine(engine)
 {
+	/*-------------------------------------------------------------------
+	-            Set debug name
+	---------------------------------------------------------------------*/
+	std::wstring name = L""; if (name != L"") { name += addName; name += L"::"; }
+	name += L"ShadowMap::";
+	PrepareVertexAndIndexBuffer(name);
+	PrepareRenderResource(width, height, name);
+	PreparePipelineState(name);
 
+	_gaussianBlur = std::make_shared<gc::GaussianBlur>(_engine, width, height, false);
 }
 
 ShadowMap::~ShadowMap()
@@ -46,7 +57,8 @@ ShadowMap::~ShadowMap()
 *************************************************************************//**
 *  @fn        void ShadowMap::Draw(const ResourceViewPtr& scene)
 *
-*  @brief     Draw the shadow map to the frame buffer
+*  @brief     Draw the shadow map to the frame buffer. 
+*             In addition, we apply the gaussian blur for the VSM method.
 *
 *  @param[in] const ResourceViewPtr& scene resource view of the light camera.
 *
@@ -79,6 +91,11 @@ void ShadowMap::Draw(const ResourceViewPtr& scene)
 	{
 		_gameModels[i]->Draw(false);
 	}
+
+	/*-------------------------------------------------------------------
+	-         Apply the gaussian blur for the VSM method.
+	---------------------------------------------------------------------*/
+	_gaussianBlur->DrawPS(_frameBuffer, 0);
 }
 
 /****************************************************************************
@@ -157,6 +174,45 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const std::wstring& name)
 }
 
 /****************************************************************************
+*                     PrepareRenderResource
+*************************************************************************//**
+*  @fn        void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const std::wstring& name)
+*
+*  @brief     Prepare the renderPass and frame buffer
+*
+*  @param[in] const std::uint32_t textureWidth
+*  @param[in] const std::uint32_t textureHeight
+*  @param[in] const std::wstring& debug name
+*
+*  @return @@void
+*****************************************************************************/
+void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const std::wstring& name)
+{
+	const auto device = _engine->GetDevice();
+
+	/*-------------------------------------------------------------------
+	-             Prepare render pass
+	---------------------------------------------------------------------*/
+	const auto clearColor = ClearValue(1.0f, 1.0f, 1.0f, 1.0f); // white
+	const auto clearDepth = ClearValue(0.0f, 0.0f, 0.0f, 1.0f); // black
+	const auto colorAttachment = Attachment::RenderTarget(PixelFormat::R8G8B8A8_UNORM);
+	const auto depthAttachment = Attachment::DepthStencil(PixelFormat::D32_FLOAT);
+
+	_renderPass = device->CreateRenderPass(colorAttachment, depthAttachment);
+	_renderPass->SetClearValue(clearColor, clearDepth);
+
+	/*-------------------------------------------------------------------
+	-             Prepare frame buffer
+	---------------------------------------------------------------------*/
+	const auto renderInfo    = GPUTextureMetaData::RenderTarget(width, height, PixelFormat::R8G8B8A8_UNORM, clearColor);
+	const auto depthInfo     = GPUTextureMetaData::DepthStencil(width, height, PixelFormat::D32_FLOAT     , clearDepth);
+	const auto renderTexture = device->CreateTexture(renderInfo, name + L"FrameBuffer");
+	const auto depthTexture  = device->CreateTexture(depthInfo , name + L"FrameBufferDepth");
+	_frameBuffer = device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
+
+}
+
+/****************************************************************************
 *                     PreparePipelineState
 *************************************************************************//**
 *  @fn        void ShadowMap::PreparePipelineState(const std::wstring& name)
@@ -172,12 +228,15 @@ void ShadowMap::PreparePipelineState(const std::wstring& name)
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 
+
 	/*-------------------------------------------------------------------
 	-             Setup resource layout elements
 	---------------------------------------------------------------------*/
 	_resourceLayout = device->CreateResourceLayout
 	(
-		{ ResourceLayoutElement(DescriptorHeapType::CBV, 0) }, // light camera,
+		{ ResourceLayoutElement(DescriptorHeapType::CBV, 0),
+		  ResourceLayoutElement(DescriptorHeapType::CBV, 1),
+		}, // light camera,
 		{}
 	);
 
