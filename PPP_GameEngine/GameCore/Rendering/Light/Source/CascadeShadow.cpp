@@ -20,6 +20,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +35,15 @@ using namespace gm;
 CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const std::wstring& addName)
 	: _engine(engine), _shadowDesc(desc)
 {
+	/*-------------------------------------------------------------------
+	-            Error log
+	---------------------------------------------------------------------*/
+	assert(("engine is nullptr", _engine));
+	assert(("Near must not be less than 0"  , desc.Near   >= 0.0f));
+	assert(("Medium must not be less than 0", desc.Medium >= 0.0f));
+	assert(("Far must not be less than 0"   , desc.Far    >= 0.0f));
+	assert(("The further away you go, the greater the value.", desc.Near < desc.Medium && desc.Medium < desc.Far));
+
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/

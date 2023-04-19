@@ -409,7 +409,7 @@ void LowLevelGraphicsEngine::SetUpFence()
 void LowLevelGraphicsEngine::SetUpRenderResource()
 {
 	const auto clearColor      = core::ClearValue(0.0f, 0.3f, 0.3f, 1.0f);
-	const auto clearDepthColor = core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f);
+	const auto clearDepthColor = core::ClearValue(1.0f, 0);
 
 	/*-------------------------------------------------------------------
 	-      Set render pass

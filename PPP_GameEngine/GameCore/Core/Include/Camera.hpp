@@ -156,7 +156,9 @@ namespace gc
 		**                Constructor and Destructor
 		*****************************************************************************/
 		Camera();
-		Camera(const LowLevelGraphicsEnginePtr engine);
+
+		explicit Camera(const LowLevelGraphicsEnginePtr engine);
+		
 		~Camera();
 	protected:
 		/****************************************************************************

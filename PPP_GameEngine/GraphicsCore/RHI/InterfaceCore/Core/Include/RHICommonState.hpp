@@ -177,12 +177,13 @@ namespace rhi::core
 	*				  			ClearValue
 	*************************************************************************//**
 	*  @class     ClearValue
-	*  @brief     Clear value
+	*  @brief     Clear value 
+	*             Pixel—p‚ÆDepth, Stencil—p‚Í•K‚¸•ª‚¯‚ÄClearValue‚ğì¬‚µ‚Ä‚­‚¾‚³‚¢. 
 	*****************************************************************************/
 	struct ClearValue
 	{
 		enum ColorType { Red, Green, Blue, Alpha };
-		float        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
 		float        Depth    = 1.0f;
 		std::uint8_t Stencil  = 0;
 
@@ -191,7 +192,8 @@ namespace rhi::core
 		{
 			Color[0] = red; Color[1] = green; Color[2] = blue; Color[3] = alpha;
 		};
-		ClearValue(float depth, std::uint8_t stencil)
+		
+		explicit ClearValue(float depth, std::uint8_t stencil = 0)
 		{
 			Depth = depth; Stencil = stencil;
 		}

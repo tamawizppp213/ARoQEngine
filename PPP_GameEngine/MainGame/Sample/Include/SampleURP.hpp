@@ -86,6 +86,7 @@ namespace sample
 		ModelPtr   _model  = nullptr;
 		ModelPtr   _floor  = nullptr;
 		RendererPtr _renderer = nullptr;
+		bool _transitScene = false;
 	};
 }
 #endif

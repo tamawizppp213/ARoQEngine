@@ -12,6 +12,7 @@
 #include "../../Model/Include/GameModel.hpp"
 #include "../../Effect/Include/Blur.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
@@ -32,10 +33,21 @@ ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_
 	: _engine(engine)
 {
 	/*-------------------------------------------------------------------
+	-            Error log
+	---------------------------------------------------------------------*/
+	assert(("engine is nullptr", _engine));
+	assert(("width is non zero" , width > 0));
+	assert(("height is non zero", height > 0));
+
+	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
 	std::wstring name = L""; if (name != L"") { name += addName; name += L"::"; }
 	name += L"ShadowMap::";
+
+	/*-------------------------------------------------------------------
+	-            Prepare render resource
+	---------------------------------------------------------------------*/
 	PrepareVertexAndIndexBuffer(name);
 	PrepareRenderResource(width, height, name);
 	PreparePipelineState(name);
@@ -193,10 +205,12 @@ void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint
 	/*-------------------------------------------------------------------
 	-             Prepare render pass
 	---------------------------------------------------------------------*/
-	const auto clearColor = ClearValue(1.0f, 1.0f, 1.0f, 1.0f); // white
-	const auto clearDepth = ClearValue(0.0f, 0.0f, 0.0f, 1.0f); // black
-	const auto colorAttachment = Attachment::RenderTarget(PixelFormat::R8G8B8A8_UNORM);
-	const auto depthAttachment = Attachment::DepthStencil(PixelFormat::D32_FLOAT);
+	const auto renderFormat    = PixelFormat::R8G8B8A8_UNORM;
+	const auto depthFormat     = PixelFormat::D32_FLOAT;
+	const auto clearColor      = ClearValue(1.0f, 1.0f, 1.0f, 1.0f); // white
+	const auto clearDepth      = ClearValue(1.0f, 0); // black
+	const auto colorAttachment = Attachment::RenderTarget(renderFormat);
+	const auto depthAttachment = Attachment::DepthStencil(depthFormat);
 
 	_renderPass = device->CreateRenderPass(colorAttachment, depthAttachment);
 	_renderPass->SetClearValue(clearColor, clearDepth);
@@ -204,12 +218,11 @@ void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint
 	/*-------------------------------------------------------------------
 	-             Prepare frame buffer
 	---------------------------------------------------------------------*/
-	const auto renderInfo    = GPUTextureMetaData::RenderTarget(width, height, PixelFormat::R8G8B8A8_UNORM, clearColor);
-	const auto depthInfo     = GPUTextureMetaData::DepthStencil(width, height, PixelFormat::D32_FLOAT     , clearDepth);
+	const auto renderInfo    = GPUTextureMetaData::RenderTarget(width, height, renderFormat, clearColor);
+	const auto depthInfo     = GPUTextureMetaData::DepthStencil(width, height, depthFormat , clearDepth);
 	const auto renderTexture = device->CreateTexture(renderInfo, name + L"FrameBuffer");
 	const auto depthTexture  = device->CreateTexture(depthInfo , name + L"FrameBufferDepth");
 	_frameBuffer = device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
-
 }
 
 /****************************************************************************

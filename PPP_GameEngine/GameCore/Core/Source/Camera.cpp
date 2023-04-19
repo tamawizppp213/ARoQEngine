@@ -37,9 +37,12 @@ Camera::~Camera()
 
 Camera::Camera(LowLevelGraphicsEnginePtr engine) : _engine(engine)
 {
+	assert(("engine is nullptr", _engine));
+
 	const auto device = engine->GetDevice();
 
 	SetLens(0.25f * GM_PI, Screen::GetAspectRatio(), 1.0f, 1000.0f);
+	//SetOrthoLens(Screen::GetScreenWidth(), Screen::GetScreenHeight(), 1.0f, 1000.0f);
 
 	GPUBufferMetaData metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SceneConstants), 1);
 	_sceneConstantBuffer = device->CreateBuffer(metaData, L"SceneConstants");

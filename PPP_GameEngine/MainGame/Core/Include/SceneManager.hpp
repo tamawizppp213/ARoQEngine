@@ -41,7 +41,7 @@ public:
 	**                Public Function
 	*****************************************************************************/
 	void StartUp(LowLevelGraphicsEnginePtr engine, const GameTimerPtr& gameTimer);
-	void TransitScene(ScenePtr scene, const GameTimerPtr& gameTimer);
+	void TransitScene(ScenePtr scene);
 	void CallSceneInitialize(const GameTimerPtr& gameTimer);
 	void CallSceneUpdate();
 	void CallSceneDraw();

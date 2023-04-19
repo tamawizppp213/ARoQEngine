@@ -40,7 +40,8 @@ float4 PSMain(VertexOut input) : SV_Target
 {
     // input.Position.z == directional light depth
     // input.Position ^2 is used by the VSM.
-    return float4(input.Position.z, input.Position.z * input.Position.z, 0.0f, 1.0f);
+    return float4(0.5f, 0.5f, 0.5f, 1.0f);
+    //return float4(input.Position.z, input.Position.z * input.Position.z, 0.0f, 1.0f);
 }
 
 #endif

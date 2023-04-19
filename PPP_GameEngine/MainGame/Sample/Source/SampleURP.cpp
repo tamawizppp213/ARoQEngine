@@ -20,6 +20,8 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHISwapchain.hpp"
 #include "GameCore/Rendering/Model/Include/MaterialType.hpp"
 #include "GameCore/Rendering/Model/Include/Material.hpp"
+#include "MainGame/Sample/Include/SampleColorChange.hpp"
+#include "MainGame/Core/Include/SceneManager.hpp"
 #include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -79,12 +81,14 @@ void SampleURP::Update()
 
 	const DirectionalLightData directionalLight = 
 	{
-		.Direction = gm::Float3(cos(_gameTimer->TotalTime()), -1.4f, sin(_gameTimer->TotalTime())),
+		.Direction = gm::Float3(1.0f, 1.0f, 1.0f),
 		.Brightness = 2.5f,
 		.Color      = gm::Float3(1,1,1),
 		.IsUse      = true
 	};
 	_renderer->SetLight<DirectionalLightData>(LightType::Directional, 0, directionalLight);
+
+	if(_transitScene){ SceneManager::Instance().TransitScene(new SampleColorChange()); }
 }
 
 /****************************************************************************
@@ -92,7 +96,7 @@ void SampleURP::Update()
 *************************************************************************//**
 *  @fn        void SampleURP::Draw()
 * 
-*  @brief     Draw Scene
+*  @brief     Draw Scene]]
 * 
 *  @param[in] void
 * 
@@ -275,6 +279,10 @@ void SampleURP::OnMouseInput()
 
 		_camera->RotatePitch(dy);
 		_camera->RotateWorldY(dx);
+	}
+	if (_gameInput.GetMouse()->IsTrigger(MouseButton::RIGHT))
+	{
+		_transitScene = true;
 	}
 }
 /****************************************************************************
