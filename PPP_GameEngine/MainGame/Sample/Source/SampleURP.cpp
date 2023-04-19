@@ -87,8 +87,6 @@ void SampleURP::Update()
 		.IsUse      = true
 	};
 	_renderer->SetLight<DirectionalLightData>(LightType::Directional, 0, directionalLight);
-
-	if(_transitScene){ SceneManager::Instance().TransitScene(new SampleColorChange()); }
 }
 
 /****************************************************************************

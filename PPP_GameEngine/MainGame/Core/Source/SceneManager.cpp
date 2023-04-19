@@ -28,6 +28,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_ptr<GameTimer>& gameTimer)
 {
+	// debug log
+	assert(("engine is nullptr."   , engine));
+	assert(("gameTimer is nullptr.", gameTimer));
+
 	_engine = engine;
 	_gameTimer = gameTimer;
 	PushScene(new sample::SampleURP());
@@ -44,6 +48,8 @@ void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_p
 *****************************************************************************/
 void SceneManager::TransitScene(ScenePtr scene)
 {
+	if (!scene) { return; }
+
 	CallSceneTerminate();
 	_currentScene.pop();
 	_currentScene.emplace(std::move(scene));

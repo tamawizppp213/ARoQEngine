@@ -61,8 +61,14 @@ protected:
 	**                Protected Member Variables
 	*****************************************************************************/
 	std::shared_ptr<LowLevelGraphicsEngine> _engine;
-	GameInput& _gameInput            = GameInput::Instance();
+
+	// @brief: keyboard + mouse + gamePad manager
+	GameInput& _gameInput = GameInput::Instance();
+
+	/* @brief: Game timer : Calculate the deltaTime and total time*/
 	GameTimerPtr _gameTimer  = nullptr;
+
+	// !note! these variables must be called at the place of the end of update function.
 	bool _hasExecutedSceneTransition = false;
 	bool _hasExecutedBackScene       = false;
 
