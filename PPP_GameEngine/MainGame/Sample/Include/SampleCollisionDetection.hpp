@@ -1,67 +1,71 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GeometryBox.hpp
-///             @brief  Geometry box interface. 
+///             @file   SampleSky.hpp
+///             @brief  Skybox sample
 ///             @author Toide Yutaro
-///             @date   2023_01_09
+///             @date   2022_04_23
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef PHYSICS_BOX_GEOMETRY_HPP
-#define PHYSICS_BOX_GEOMETRY_HPP
+#ifndef SAMPLE_COLLISION_DETECTION_HPP
+#define SAMPLE_COLLISION_DETECTION_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../../Private/Include/IGeometry.hpp"
-#include "GameUtility/Math/Include/GMVector.hpp"
+#include "MainGame/Core/Include/Scene.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                               Class
+//                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace physics::geometry
+namespace sample
 {
+
 	/****************************************************************************
-	*				  			  GeometryBox
+	*				  			SampleEmpty
 	*************************************************************************//**
-	*  @class     GeometryBox
-	*  @brief     Geometry interface
+	*  @class     SampleEmpty
+	*  @brief     Empty sample
 	*****************************************************************************/
-	class GeometryBox : public IGeometry
+	class SampleCollisionDetection : public Scene
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool IsValid() const override;
-
+		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
+		
+		void Update() override;
+		
+		void Draw() override;
+		
+		void Terminate() override;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		// @brief: half of the width, height, and depth of the box.
-		gm::Float3 HalfExtents = { 0.0f, 0.0f, 0.0f };
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GeometryBox(const gm::Float3& halfExtents) : IGeometry(GeometryType::Box), HalfExtents(halfExtents) {};
-
-		GeometryBox(const float hx = 0.0f, const float hy = 0.0f, const float hz = 0.0f)
-			: IGeometry(GeometryType::Box), HalfExtents({ hx, hy, hz }) 
-		{
-			assert(IsValid());
-		};
+		SampleCollisionDetection();
+		
+		~SampleCollisionDetection();
 
 	protected:
 		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		
-		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		
+		void LoadMaterials() override;
+
+		void OnKeyboardInput() override;
+
+		void OnMouseInput() override;
+
+		void OnGamePadInput() override;
+
+		void ExecuteSceneTransition() override;
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

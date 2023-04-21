@@ -46,7 +46,10 @@ namespace physics::geometry
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GeometryCapsule(const float radius = 0.0f, const float halfHeight = 0.0f) :
-			IGeometry(GeometryType::Capsule), Radius(radius), HalfHeight(halfHeight){ }
+			IGeometry(GeometryType::Capsule), Radius(radius), HalfHeight(halfHeight)
+		{
+			assert(IsValid());
+		}
 	
 	protected:
 		/****************************************************************************

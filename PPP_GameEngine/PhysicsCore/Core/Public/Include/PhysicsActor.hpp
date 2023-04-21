@@ -21,9 +21,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
+namespace physics::geometry
+{
+	class IGeometry;
+}
+
 namespace physics::core
 {
-	
+
 	enum class ActorFlags
 	{
 		None             = 0x0000,
@@ -60,6 +65,14 @@ namespace physics::core
 		/* @brief : Retrieves the actors world space transform*/
 		gm::Transform GetGlobalPose() const { return gm::Transform(_orientation, _position); }
 
+		/* @brief : Return the rigid body (static or dynamic), or return the */
+		ActorType   GetActorType() const { return _actorType; };
+
+		/* @brief : Return world position*/
+		gm::Vector3 GetPosition() const { return _position; }
+
+		std::shared_ptr<IGeometry> GetGeometry() const noexcept { return _geometry; }
+
 		/* @brief : Set the actors world space transform.
 		   Holds the world position as the Vector3 and orientation as the quaternion.*/
 		void SetGrobalPose(const gm::Transform& globalPose)
@@ -68,16 +81,11 @@ namespace physics::core
 			_orientation = globalPose.LocalRotation;
 		}
 
-		/* @brief : Return the rigid body (static or dynamic), or return the */
-		ActorType GetActorType() const { return _actorType; };
-
 		/* @brief : Return the actor flags*/
 		void SetActorFlags(const ActorFlags actorFlags) { _actorFlags = actorFlags; }
-
-		/* @brief : Return world position*/
-		gm::Vector3 GetPosition() const { return _position; }
 		
 		void SetPosition(const gm::Vector3& position) { _position = position; }
+
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -106,6 +114,9 @@ namespace physics::core
 		ActorType _actorType = ActorType::Primitive;
 
 		ActorFlags _actorFlags = ActorFlags::None;
+
+		/* Holds the geometry (don't have the positition.)*/
+		std::shared_ptr<IGeometry> _geometry = nullptr;
 	};
 }
 #endif

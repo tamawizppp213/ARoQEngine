@@ -470,6 +470,7 @@
     <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleUI.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleURP.hpp" />
+    <ClInclude Include="PhysicsCore\Collision\Simple\Include\SimpleCollisionDetector.hpp" />
     <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsActor.hpp" />
     <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsRigidBody.hpp" />
     <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsScene.hpp" />
@@ -664,6 +665,7 @@
     <ClCompile Include="MainGame\Sample\Source\SampleTexture.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleUI.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleURP.cpp" />
+    <ClCompile Include="PhysicsCore\Collision\Simple\Source\SimpleCollisionDetector.cpp" />
     <ClCompile Include="PhysicsCore\Core\Private\Source\PhysicsActor.cpp" />
     <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsRigidBody.cpp" />
     <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsScene.cpp" />

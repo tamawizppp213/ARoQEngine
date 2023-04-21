@@ -18,6 +18,7 @@
 #include "MainGame/Sample/Include/SampleModel.hpp"
 #include "MainGame/Sample/Include/SampleURP.hpp"
 #include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
+#include "MainGame/Sample/Include/SampleCollisionDetection.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +35,7 @@ void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_p
 
 	_engine = engine;
 	_gameTimer = gameTimer;
-	PushScene(new sample::SampleURP());
+	PushScene(new sample::SampleCollisionDetection());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

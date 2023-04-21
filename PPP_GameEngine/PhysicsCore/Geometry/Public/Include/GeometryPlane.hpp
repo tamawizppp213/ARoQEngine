@@ -46,7 +46,7 @@ namespace physics::geometry
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GeometryPlane() : IGeometry(GeometryType::Plane) {}
+		GeometryPlane() : IGeometry(GeometryType::Plane) { assert(IsValid()); }
 
 	protected:
 		/****************************************************************************
