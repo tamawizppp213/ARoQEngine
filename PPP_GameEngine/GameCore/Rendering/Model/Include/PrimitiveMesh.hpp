@@ -44,6 +44,7 @@ namespace gc::core
 		GeoSphere,
 		Cylinder,
 		Grid,
+		Torus
 	};
 
 	/****************************************************************************
@@ -65,6 +66,7 @@ namespace gc::core
 		static PrimitiveMesh GeoSphere(float radius, std::uint32_t numSubdivisions, bool isInvertNormal, const gm::Float4& color = gm::Float4(1, 1, 1, 1));
 		static PrimitiveMesh Cylinder(float bottomRadius, float topRadius, float height, std::uint32_t sliceCount, std::uint32_t stackCount, bool isInvertNormal, const gm::Float4& color = gm::Float4(1, 1, 1, 1));
 		static PrimitiveMesh Grid(float width, float depth, std::uint32_t rows, std::uint32_t columns, bool isInvertNormal, const gm::Float4& color = gm::Float4(1, 1, 1, 1));
+		static PrimitiveMesh Torus(float majorRadius, float minorRadius, std::uint32_t numMajor, std::uint32_t numMinor, const gm::Float4& color = gm::Float4(1,1,1,1));
 
 		/****************************************************************************
 		**                Public Member Variables

@@ -834,7 +834,7 @@
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryPlane.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsCore\Core\Private\Include\PhysicsActor.hpp">
+    <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsActor.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsRigidBody.hpp">

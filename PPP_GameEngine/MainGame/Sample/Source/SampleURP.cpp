@@ -278,10 +278,7 @@ void SampleURP::OnMouseInput()
 		_camera->RotatePitch(dy);
 		_camera->RotateWorldY(dx);
 	}
-	if (_gameInput.GetMouse()->IsTrigger(MouseButton::RIGHT))
-	{
-		_transitScene = true;
-	}
+
 }
 /****************************************************************************
 *                       OnGamePadInput

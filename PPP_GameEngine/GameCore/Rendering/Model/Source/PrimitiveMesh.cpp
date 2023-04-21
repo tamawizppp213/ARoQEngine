@@ -538,6 +538,70 @@ PrimitiveMesh PrimitiveMeshGenerator::Grid(float width, float depth, std::uint32
 	return meshData;
 }
 
+PrimitiveMesh PrimitiveMeshGenerator::Torus(float majorRadius, float minorRadius, std::uint32_t numMajor, std::uint32_t numMinor, const Float4& color)
+{
+	if (majorRadius < minorRadius)
+	{
+		std::swap(majorRadius, minorRadius);
+	}
+
+	PrimitiveMesh meshData;
+
+	const float majorStep = 2.0f * GM_PI / numMajor;
+	const float minorStep = 2.0f * GM_PI / numMinor;
+	float majorPosition = 0.0f;
+
+	for (std::uint32_t i = 0; i < numMajor; ++i)
+	{
+		const float cosMajor = Cos(majorPosition);
+        const float sinMajor = Sin(majorPosition);
+        float minorPosition = 0.0f;
+
+        for (int j = 0; j < numMinor; ++j) {
+            float cosMinor = Cos(minorPosition);
+            float sinMinor = Sin(minorPosition);
+
+			const Float3 position = 
+			{
+				(majorRadius + minorRadius * cosMinor) * cosMajor,
+				(majorRadius + minorRadius * cosMinor) * sinMajor,
+				minorRadius * sinMinor
+			};
+
+			const Float3 normal = { cosMinor * cosMajor, cosMinor * sinMajor, sinMinor };
+			const Float2 uv     = { (float)i / numMajor , (float)j / numMinor };
+	
+			meshData.Vertices.push_back(Vertex(position, normal, color, uv));
+
+            minorPosition += minorStep;
+        }
+
+        majorPosition += majorStep; 
+	}
+
+	for (std::uint32_t i = 0; i < numMajor; ++i)
+	{
+		const auto i1 = i * numMinor;
+		const auto i2 = (i + 1) % numMajor * numMinor;
+
+		for (std::uint32_t j = 0; j < numMinor; ++j)
+		{
+			const auto j1 = j;
+			const auto j2 = (j + 1) % numMinor;
+
+			meshData.Indices.push_back(i1 + j1);
+			meshData.Indices.push_back(i2 + j1);
+			meshData.Indices.push_back(i1 + j2);
+
+			meshData.Indices.push_back(i1 + j2);
+			meshData.Indices.push_back(i2 + j1);
+			meshData.Indices.push_back(i2 + j2);
+		}
+	}
+
+	return meshData;
+}
+
 #pragma region Private Function
 /****************************************************************************
 *							IsInvertNormal
@@ -567,7 +631,7 @@ void PrimitiveMeshGenerator::IsInvertNormal(PrimitiveMesh& meshData)
 *****************************************************************************/
 void PrimitiveMeshGenerator::SubDivide(PrimitiveMesh& meshData)
 {
-	//using Vertex = VertexPositionNormalTexture;
+	//using Vertex = VertexPositionNormalTexture; 
 
 	// Save a copy of the input geometry
 	PrimitiveMesh inputCopy = meshData;

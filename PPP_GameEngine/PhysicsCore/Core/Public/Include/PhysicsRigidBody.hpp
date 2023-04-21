@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Math/Include/GMTransform.hpp"
+#include "PhysicsActor.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -33,7 +33,7 @@ namespace physics::core
 	*  @class     IGeometry
 	*  @brief     Geometry interface
 	*****************************************************************************/
-	class RigidBody
+	class RigidBody : public PhysicsActor
 	{
 		struct Limit
 		{
@@ -78,6 +78,7 @@ namespace physics::core
 		/*-------------------------------------------------------------------
 		-                   Velocity
 		---------------------------------------------------------------------*/
+
 		gm::Vector3 GetLinearVelocity () const { return _linearVelocity; }
 
 		gm::Vector3 GetAngularVelocity() const { return _angularVelocity; }
@@ -98,7 +99,8 @@ namespace physics::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RigidBody() = default;
-
+		
+		virtual ~RigidBody() = default;
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -116,12 +118,6 @@ namespace physics::core
 		gm::Vector3 _accumulateTorque = {};
 
 		gm::Matrix3 _inverseInertiaTensor = gm::Matrix3();
-
-		// Holds the linear position of the rigid body in world space.
-		gm::Vector3    _position = {};
-
-		// HOlds the angular orientation of the rigid body in world space.
-		gm::Quaternion _orientation = {};
 
 		// Holds the linear velocity the rigid body in world space. (unit: m/s)
 		gm::Vector3    _linearVelocity = {};

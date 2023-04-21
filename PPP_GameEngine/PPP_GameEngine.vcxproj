@@ -470,7 +470,7 @@
     <ClInclude Include="MainGame\Sample\Include\SampleTexture.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleUI.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleURP.hpp" />
-    <ClInclude Include="PhysicsCore\Core\Private\Include\PhysicsActor.hpp" />
+    <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsActor.hpp" />
     <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsRigidBody.hpp" />
     <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsScene.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Private\Include\GeometryType.hpp" />

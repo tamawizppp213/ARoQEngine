@@ -85,6 +85,7 @@ void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
         case GeoSphere: {primitiveMesh = PrimitiveMeshGenerator::GeoSphere(1.0f, 20  ,          false); break; }
         case Grid:      {primitiveMesh = PrimitiveMeshGenerator::Grid     (1.0f, 1.0f, 2, 2,    false); break; }
         case Rect:      {primitiveMesh = PrimitiveMeshGenerator::Rect(1.0f, 1.0f, 1.0f); break; }
+        case Torus:     {primitiveMesh = PrimitiveMeshGenerator::Torus(1.0f, 0.5f, 10, 20); break;}
         default:
         {
             throw std::runtime_error("not support primitive mesh type");
