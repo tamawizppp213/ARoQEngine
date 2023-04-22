@@ -71,7 +71,7 @@ namespace physics::core
 		/* @brief : Return world position*/
 		gm::Vector3 GetPosition() const { return _position; }
 
-		std::shared_ptr<IGeometry> GetGeometry() const noexcept { return _geometry; }
+		std::shared_ptr<physics::geometry::IGeometry> GetGeometry() const noexcept { return _geometry; }
 
 		/* @brief : Set the actors world space transform.
 		   Holds the world position as the Vector3 and orientation as the quaternion.*/
@@ -86,11 +86,17 @@ namespace physics::core
 		
 		void SetPosition(const gm::Vector3& position) { _position = position; }
 
+		void SetGeometry(const std::shared_ptr<physics::geometry::IGeometry>& geometry) { _geometry = geometry; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		explicit PhysicsActor(const ActorFlags flags) : _actorType(ActorType::Primitive), _actorFlags(flags) {};
+
+		PhysicsActor(const std::shared_ptr<physics::geometry::IGeometry>& geometry,
+			const gm::Vector3& worldPosition,
+			const gm::Quaternion& rotation = gm::Quaternion(),
+			const ActorFlags flags = ActorFlags::None);
 
 	protected:
 		explicit PhysicsActor(const ActorType type) : _actorType(type) {};
@@ -116,7 +122,7 @@ namespace physics::core
 		ActorFlags _actorFlags = ActorFlags::None;
 
 		/* Holds the geometry (don't have the positition.)*/
-		std::shared_ptr<IGeometry> _geometry = nullptr;
+		std::shared_ptr<physics::geometry::IGeometry> _geometry = nullptr;
 	};
 }
 #endif

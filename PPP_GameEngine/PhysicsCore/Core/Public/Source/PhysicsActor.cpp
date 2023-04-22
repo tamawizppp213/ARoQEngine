@@ -1,36 +1,27 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   IGeometry.hpp
-///             @brief  Geometry interface. 
+//              @file   PhysicsScene.cpp
+///             @brief  Management physics object
 ///             @author Toide Yutaro
 ///             @date   2023_01_09
 //////////////////////////////////////////////////////////////////////////////////
-#pragma once
-#ifndef PHYSICS_GEOMETRY_TYPE_HPP
-#define PHYSICS_GEOMETRY_TYPE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-
+#include "../Include/PhysicsActor.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+using namespace physics::core;
 
 //////////////////////////////////////////////////////////////////////////////////
-//                               Class
+//                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-namespace physics::geometry
+#pragma region Constructor and Destructor
+PhysicsActor::PhysicsActor(const std::shared_ptr<physics::geometry::IGeometry>& geometry,
+	const gm::Vector3& worldPosition, const gm::Quaternion& rotation, const ActorFlags flags)
+	: _geometry(geometry), _position(worldPosition), _orientation(rotation), _actorFlags(flags)
 {
-	enum class GeometryType
-	{
-		Sphere,
-		Plane,
-		Capsule,
-		AABB,
-		OBB,
 
-		CountOf,
-		Invalid = -1
-	};
 }
-#endif
+#pragma endregion Constructor and Destructor

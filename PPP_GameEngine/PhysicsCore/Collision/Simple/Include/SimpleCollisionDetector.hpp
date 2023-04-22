@@ -38,7 +38,7 @@ namespace physics::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Intersects(const PhysicsActorPtr& first, const PhysicsActorPtr& second) const;
+		bool Intersects(const PhysicsActorPtr& first, const PhysicsActorPtr& second, const bool useExtrusion = false) const;
 
 		/****************************************************************************
 		**                Public Member Variables

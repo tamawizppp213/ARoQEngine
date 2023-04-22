@@ -460,6 +460,7 @@
     <ClInclude Include="MainGame\Core\Include\SceneManager.hpp" />
     <ClInclude Include="MainGame\Core\Include\TemplateText.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleAudio.hpp" />
+    <ClInclude Include="MainGame\Sample\Include\SampleCollisionDetection.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleColorChange.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleEmpty.hpp" />
     <ClInclude Include="MainGame\Sample\Include\SampleModel.hpp" />
@@ -478,6 +479,7 @@
     <ClInclude Include="PhysicsCore\Geometry\Private\Include\IGeometry.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryBox.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryCapsule.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryList.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryPlane.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometrySphere.hpp" />
     <ClInclude Include="Pluguins\DDSLoader\dds_loader.h" />
@@ -655,6 +657,7 @@
     <ClCompile Include="MainGame\Core\Source\Scene.cpp" />
     <ClCompile Include="MainGame\Core\Source\SceneManager.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleAudio.cpp" />
+    <ClCompile Include="MainGame\Sample\Source\SampleCollisionDetection.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleEmpty.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleModel.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleRayTracingRectangle.cpp" />
@@ -666,7 +669,7 @@
     <ClCompile Include="MainGame\Sample\Source\SampleUI.cpp" />
     <ClCompile Include="MainGame\Sample\Source\SampleURP.cpp" />
     <ClCompile Include="PhysicsCore\Collision\Simple\Source\SimpleCollisionDetector.cpp" />
-    <ClCompile Include="PhysicsCore\Core\Private\Source\PhysicsActor.cpp" />
+    <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsActor.cpp" />
     <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsRigidBody.cpp" />
     <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsScene.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryBox.cpp" />

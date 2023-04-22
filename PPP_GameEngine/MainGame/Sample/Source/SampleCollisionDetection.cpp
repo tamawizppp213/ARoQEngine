@@ -9,10 +9,18 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Sample/Include/SampleCollisionDetection.hpp"
+#include "PhysicsCore/Collision/Simple/Include/SimpleCollisionDetector.hpp"
+#include "PhysicsCore/Core/Public/Include/PhysicsActor.hpp"
+#include "PhysicsCore/Geometry/Public/Include/GeometryList.hpp"
+#include "GameUtility/Math/Include/GMMatrix.hpp"
+#include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace sample;
+using namespace gm;
+using namespace physics::core;
+using namespace physics::geometry;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -47,7 +55,21 @@ void SampleCollisionDetection::Initialize(const std::shared_ptr<LowLevelGraphics
 *  @return @@void
 *****************************************************************************/
 void SampleCollisionDetection::Update()
-{
+{ 
+	SimpleCollisionDetector detector;
+	
+	// Sphere
+	{
+		const auto geometryA = std::make_shared<GeometrySphere>(0.5f);
+		const auto sphereA   = std::make_shared<PhysicsActor>(geometryA, Vector3(0,0,0));
+		const auto geometryB = std::make_shared<GeometrySphere>(0.5f);
+		const auto sphereB   = std::make_shared<PhysicsActor>(geometryB, Vector3(0.5f, 0.0f, 0.0f));
+		if (detector.Intersects(sphereA, sphereB))
+		{
+			std::cout << "Hit" << std::endl;
+		}
+	}
+
 	Scene::Update();
 }
 /****************************************************************************

@@ -28,7 +28,7 @@ namespace physics::geometry
 	*  @class     GeometryBox
 	*  @brief     Geometry interface
 	*****************************************************************************/
-	class GeometryBox : public IGeometry
+	class GeometryAABB : public IGeometry
 	{
 	public:
 		/****************************************************************************
@@ -45,10 +45,10 @@ namespace physics::geometry
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GeometryBox(const gm::Float3& halfExtents) : IGeometry(GeometryType::Box), HalfExtents(halfExtents) {};
+		GeometryAABB(const gm::Float3& halfExtents) : IGeometry(GeometryType::AABB), HalfExtents(halfExtents) {};
 
-		GeometryBox(const float hx = 0.0f, const float hy = 0.0f, const float hz = 0.0f)
-			: IGeometry(GeometryType::Box), HalfExtents({ hx, hy, hz }) 
+		GeometryAABB(const float hx = 0.0f, const float hy = 0.0f, const float hz = 0.0f)
+			: IGeometry(GeometryType::AABB), HalfExtents({ hx, hy, hz }) 
 		{
 			assert(IsValid());
 		};

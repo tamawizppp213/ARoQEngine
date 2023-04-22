@@ -17,9 +17,9 @@ using namespace physics::geometry;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-bool GeometryBox::IsValid() const
+bool GeometryAABB::IsValid() const
 {
-	if (_geometryType != GeometryType::Box) { return false; }
+	if (_geometryType != GeometryType::AABB) { return false; }
 	if ((!isfinite(HalfExtents.x)) || (!isfinite(HalfExtents.y)) || (!isfinite(HalfExtents.z)))
 	{
 		return false;

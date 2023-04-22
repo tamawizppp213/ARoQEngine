@@ -930,6 +930,12 @@
     <ClInclude Include="PhysicsCore\Collision\Simple\Include\SimpleCollisionDetector.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="MainGame\Sample\Include\SampleCollisionDetection.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryList.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1421,9 +1427,6 @@
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometrySphere.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsCore\Core\Private\Source\PhysicsActor.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsRigidBody.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -1494,6 +1497,12 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsCore\Collision\Simple\Source\SimpleCollisionDetector.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGame\Sample\Source\SampleCollisionDetection.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsActor.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
