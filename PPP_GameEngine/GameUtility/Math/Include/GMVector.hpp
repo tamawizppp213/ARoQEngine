@@ -463,6 +463,7 @@ namespace gm
 		INLINE bool operator >= (const Vector4& V) const noexcept { return DirectX::XMVector4GreaterOrEqual(*this, V); }
 		INLINE bool operator <  (const Vector4& V) const noexcept { return DirectX::XMVector4Less(*this, V); }
 		INLINE bool operator <= (const Vector4& V) const noexcept { return DirectX::XMVector4LessOrEqual(*this, V); }
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -567,37 +568,44 @@ namespace gm
 	INLINE bool IsZero(const Vector3& v) { return (v.GetX() == 0.0f) && (v.GetY() == 0.0f) && (v.GetZ() == 0.0f); }
 	INLINE bool IsZero(const Vector4& v) { return (v.GetX() == 0.0f) && (v.GetY() == 0.0f) && (v.GetZ() == 0.0f) && (v.GetW() == 0.0f); }
 
+	// Greater : Return each element bool 0xFFFFFFFF (true), 0: false
+	// GreaterR : This function is called to use the anyTrue.... functions. 
 	INLINE Vector2 Greater(const Vector2& v1, const Vector2& v2) { return Vector2(DirectX::XMVectorGreater(v1, v2)); }
 	INLINE Vector3 Greater(const Vector3& v1, const Vector3& v2) { return Vector3(DirectX::XMVectorGreater(v1, v2)); }
 	INLINE Vector4 Greater(const Vector4& v1, const Vector4& v2) { return Vector4(DirectX::XMVectorGreater(v1, v2)); }
+	INLINE unsigned int GreaterR(const Vector2& v1, const Vector2& v2) { return DirectX::XMVector2GreaterR(v1, v2); }
+	INLINE unsigned int GreaterR(const Vector3& v1, const Vector3& v2) { return DirectX::XMVector3GreaterR(v1, v2); }
+	INLINE unsigned int GreaterR(const Vector4& v1, const Vector4& v2) { return DirectX::XMVector4GreaterR(v1, v2); }
 
 	INLINE Vector2 GreaterOrEqual(const Vector2& v1, const Vector2& v2) { return Vector2(DirectX::XMVectorGreaterOrEqual(v1, v2)); }
 	INLINE Vector3 GreaterOrEqual(const Vector3& v1, const Vector3& v2) { return Vector3(DirectX::XMVectorGreaterOrEqual(v1, v2)); }
 	INLINE Vector4 GreaterOrEqual(const Vector4& v1, const Vector4& v2) { return Vector4(DirectX::XMVectorGreaterOrEqual(v1, v2)); }
+	INLINE unsigned int GreaterOrEqualR(const Vector2& v1, const Vector2& v2) { return DirectX::XMVector2GreaterOrEqualR(v1, v2); }
+	INLINE unsigned int GreaterOrEqualR(const Vector3& v1, const Vector3& v2) { return DirectX::XMVector3GreaterOrEqualR(v1, v2); }
+	INLINE unsigned int GreaterOrEqualR(const Vector4& v1, const Vector4& v2) { return DirectX::XMVector4GreaterOrEqualR(v1, v2); }
 
 	INLINE Vector2 Less(const Vector2& v1, const Vector2& v2) { return Vector2(DirectX::XMVectorLess(v1, v2)); }
 	INLINE Vector3 Less(const Vector3& v1, const Vector3& v2) { return Vector3(DirectX::XMVectorLess(v1, v2)); }
 	INLINE Vector4 Less(const Vector4& v1, const Vector4& v2) { return Vector4(DirectX::XMVectorLess(v1, v2)); }
+	INLINE unsigned int LessR(const Vector2& v1, const Vector2& v2) { return DirectX::XMVector2GreaterR(v2, v1); }
+	INLINE unsigned int LessR(const Vector3& v1, const Vector3& v2) { return DirectX::XMVector3GreaterR(v2, v1); }
+	INLINE unsigned int LessR(const Vector4& v1, const Vector4& v2) { return DirectX::XMVector4GreaterR(v2, v1); }
 
 	INLINE Vector2 LessOrEqual(const Vector2& v1, const Vector2& v2) { return Vector2(DirectX::XMVectorLessOrEqual(v1, v2)); }
 	INLINE Vector3 LessOrEqual(const Vector3& v1, const Vector3& v2) { return Vector3(DirectX::XMVectorLessOrEqual(v1, v2)); }
-	INLINE Vector4 LessOrEqual(const Vector4& v1, const Vector4& v2) { return Vector4(DirectX::XMVectorLessOrEqual(v1, v2)); DirectX::XMVector3EqualInt}
+	INLINE Vector4 LessOrEqual(const Vector4& v1, const Vector4& v2) { return Vector4(DirectX::XMVectorLessOrEqual(v1, v2));}
+	INLINE unsigned int LessOrEqualR(const Vector2& v1, const Vector2& v2) { return DirectX::XMVector2GreaterOrEqualR(v2, v1); }
+	INLINE unsigned int LessOrEqualR(const Vector3& v1, const Vector3& v2) { return DirectX::XMVector3GreaterOrEqual(v2, v1); }
+	INLINE unsigned int LessOrEqualR(const Vector4& v1, const Vector4& v2) { return DirectX::XMVector4GreaterOrEqual(v2, v1); }
 
-	INLINE bool AnyTrue(const Vector2& v1, const Vector2& v2) { return DirectX::XMComparisonAnyTrue(DirectX::XMVector2EqualIntR(v1, v2)); }
-	INLINE bool AnyTrue(const Vector3& v1, const Vector3& v2) { return DirectX::XMComparisonAnyTrue(DirectX::XMVector3EqualIntR(v1, v2)); }
-	INLINE bool AnyTrue(const Vector4& v1, const Vector4& v2) { return DirectX::XMComparisonAnyTrue(DirectX::XMVector4EqualIntR(v1, v2)); }
+	INLINE unsigned int EqualR(const Vector2& v1, const Vector2& v2) { return DirectX::XMVector2EqualR(v1, v2); }
+	INLINE unsigned int EqualR(const Vector3& v1, const Vector3& v2) { return DirectX::XMVector3EqualR(v1, v2); }
+	INLINE unsigned int EqualR(const Vector4& v1, const Vector4& v2) { return DirectX::XMVector4EqualR(v1, v2); }
 
-	INLINE bool AllTrue(const Vector2& v1, const Vector2& v2) { return DirectX::XMComparisonAllTrue(DirectX::XMVector2EqualIntR(v1, v2)); }
-	INLINE bool AllTrue(const Vector3& v1, const Vector3& v2) { return DirectX::XMComparisonAllTrue(DirectX::XMVector3EqualIntR(v1, v2)); }
-	INLINE bool AllTrue(const Vector4& v1, const Vector4& v2) { return DirectX::XMComparisonAllTrue(DirectX::XMVector4EqualIntR(v1, v2)); }
-
-	INLINE bool AnyFalse(const Vector2& v1, const Vector2& v2) { return DirectX::XMComparisonAnyFalse(DirectX::XMVector2EqualIntR(v1, v2)); }
-	INLINE bool AnyFalse(const Vector3& v1, const Vector3& v2) { return DirectX::XMComparisonAnyFalse(DirectX::XMVector3EqualIntR(v1, v2)); }
-	INLINE bool AnyFalse(const Vector4& v1, const Vector4& v2) { return DirectX::XMComparisonAnyFalse(DirectX::XMVector4EqualIntR(v1, v2)); }
-
-	INLINE bool AllFalse(const Vector2& v1, const Vector2& v2) { return DirectX::XMComparisonAllFalse(DirectX::XMVector2EqualIntR(v1, v2)); }
-	INLINE bool AllFalse(const Vector3& v1, const Vector3& v2) { return DirectX::XMComparisonAllFalse(DirectX::XMVector3EqualIntR(v1, v2)); }
-	INLINE bool AllFalse(const Vector4& v1, const Vector4& v2) { return DirectX::XMComparisonAllFalse(DirectX::XMVector4EqualIntR(v1, v2)); }
+	INLINE bool AnyTrue(const unsigned int compare) { return DirectX::XMComparisonAnyTrue(compare); }
+	INLINE bool AllTrue(const unsigned int compare) { return DirectX::XMComparisonAllTrue(compare); }
+	INLINE bool AnyFalse(const unsigned int compare) { return DirectX::XMComparisonAnyFalse(compare); }
+	INLINE bool AllFalse(const unsigned int compare) { return DirectX::XMComparisonAllFalse(compare); }
 
 	INLINE Vector2 ReplicateVector2(float value) { return Vector2(DirectX::XMVectorReplicate(value)); }
 	INLINE Vector3 ReplicateVector3(float value) { return Vector3(DirectX::XMVectorReplicate(value)); }

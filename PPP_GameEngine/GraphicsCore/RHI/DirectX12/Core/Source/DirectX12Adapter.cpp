@@ -26,6 +26,8 @@ using namespace rhi::directX12;
 #pragma region Constructor and Destructor
 RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const AdapterComPtr& adapter) : core::RHIDisplayAdapter(instance),_adapter(adapter)
 {
+	assert(("adapter is nullptr.\n", _adapter));
+
 	DXGI_ADAPTER_DESC desc = {}; adapter->GetDesc(&desc);
 	_name     = unicode::ToUtf8String(desc.Description);
 	_venderID = desc.VendorId;

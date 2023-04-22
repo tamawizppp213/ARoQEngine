@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   GeometryBox.cpp
+//              @file   GeometryCapsule.cpp
 ///             @brief  SampleSky
 ///             @author Toide Yutaro
 ///             @date   2022_04_23
@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/GeometryBox.hpp"
+#include "../Include/GeometrySphere.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -17,32 +17,3 @@ using namespace physics::geometry;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-bool GeometryAABB::IsValid() const
-{
-	if (_geometryType != GeometryType::AABB) { return false; }
-	if ((!isfinite(HalfExtents.x)) || (!isfinite(HalfExtents.y)) || (!isfinite(HalfExtents.z)))
-	{
-		return false;
-	}
-	if (HalfExtents.x <= 0.0f || HalfExtents.y <= 0.0f || HalfExtents.z <= 0.0f)
-	{
-		return false;
-	}
-
-	return true;
-}
-
-bool GeometryOBB::IsValid() const
-{
-	if (_geometryType != GeometryType::OBB) { return false; }
-	if ((!isfinite(HalfExtents.x)) || (!isfinite(HalfExtents.y)) || (!isfinite(HalfExtents.z)))
-	{
-		return false;
-	}
-	if (HalfExtents.x <= 0.0f || HalfExtents.y <= 0.0f || HalfExtents.z <= 0.0f)
-	{
-		return false;
-	}
-
-	return true;
-}

@@ -1,83 +1,67 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHICommandAllocator.hpp
-///             @brief  CommandAllocator
-///                     This class is used to store the command list memory.
-///                     Every time a command list is reset, it will allocate a block of memory.
-///                     Even if a command list is reset, these memories aren't lost. 
-///                     When the Reset function in this class is called, these memories cleans up. 
-///                     To acieve the maximum frame rate, you should create each command list one by one.
+///             @file   IGeometry.hpp
+///             @brief  Geometry interface. 
 ///             @author Toide Yutaro
-///             @date   2022_06_23
+///             @date   2023_01_09
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef RHI_COMMAND_ALLOCATOR_HPP
-#define RHI_COMMAND_ALLOCATOR_HPP
+#ifndef PHYSICS_CIRCLE_GEOMETRY_HPP
+#define PHYSICS_CIRCLE_GEOMETRY_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
-#include <cassert>
+#include "../../Private/Include/IGeometry.hpp"
+#include "GameUtility/Math/Include/GMVector.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Allocator class
+//                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
+namespace physics::geometry
 {
-	class RHICommandList;
-	class RHIDevice;
 	/****************************************************************************
-	*				  			RHICommandAllocator
+	*				  			  IGeometry
 	*************************************************************************//**
-	*  @class     RHICommandAllocator
-	*  @brief     Allocation of memory used by command list
+	*  @class     IGeometry
+	*  @brief     Geometry interface
 	*****************************************************************************/
-	class RHICommandAllocator : public NonCopyable
+	class GeometryCircle : public IGeometry
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Reset command allocator (clear command list buffer)*/
-		virtual void CleanUp() = 0;
+		bool IsValid() const override;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		core::CommandListType GetCommandListType() const { return _commandListType; }
-
-		/* @brief : For Debugging */
-		virtual void SetName(const std::wstring& name) = 0;
+		float Radius = 0.0f; // @brief: the radius of the capsule
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		GeometryCircle(const float radius = 1.0f) :
+			IGeometry(GeometryType::Sphere), Radius(radius)
+		{
+			assert(IsValid());
+		}
 
 	protected:
 		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+
+		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		RHICommandAllocator () = default;
 
-		virtual ~RHICommandAllocator() = default;
-
-		explicit RHICommandAllocator(const std::shared_ptr<RHIDevice>& device, const core::CommandListType commandListType) 
-			: _device(device),  _commandListType(commandListType) 
-		{
-			assert(("device is nullptr.\n", _device));
-		};
-		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
-
-		CommandListType   _commandListType = core::CommandListType::Unknown;
 	};
 }
 #endif

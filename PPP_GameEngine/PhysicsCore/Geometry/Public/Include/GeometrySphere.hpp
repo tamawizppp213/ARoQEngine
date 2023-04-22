@@ -44,7 +44,7 @@ namespace physics::geometry
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GeometrySphere(const float radius = 0.0f) :
+		GeometrySphere(const float radius = 1.0f) :
 			IGeometry(GeometryType::Sphere), Radius(radius)
 		{
 			assert(IsValid());

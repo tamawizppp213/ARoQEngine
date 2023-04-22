@@ -23,13 +23,14 @@ namespace physics::geometry
 {
 	enum class GeometryType
 	{
-		Sphere,
-		Plane,
-		Capsule,
-		AABB,
-		OBB,
+		// 3D Geometry
+		Sphere  = 0,
+		AABB    = 1,
+		OBB     = 2,
+		Plane   = 3,
+		Capsule = 4,
+		CountOf = 5,
 
-		CountOf,
 		Invalid = -1
 	};
 }

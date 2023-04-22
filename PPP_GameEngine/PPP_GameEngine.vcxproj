@@ -478,7 +478,9 @@
     <ClInclude Include="PhysicsCore\Geometry\Private\Include\GeometryType.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Private\Include\IGeometry.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryBox.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryBox2D.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryCapsule.hpp" />
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryCircle.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryList.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryPlane.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometrySphere.hpp" />
@@ -674,6 +676,7 @@
     <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsScene.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryBox.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCapsule.cpp" />
+    <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCircle.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometrySphere.cpp" />
     <ClCompile Include="Pluguins\DDSLoader\dds_loader.cpp" />
   </ItemGroup>

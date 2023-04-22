@@ -15,6 +15,7 @@
 #include "RHICommonState.hpp"
 #include <memory>
 #include <string>
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -73,7 +74,11 @@ namespace rhi::core
 
 		virtual ~RHIDisplayAdapter() { if (_instance) { _instance.reset(); } }
 
-		RHIDisplayAdapter(const std::shared_ptr<RHIInstance>& instance) : _instance(instance){}; 
+		RHIDisplayAdapter(const std::shared_ptr<RHIInstance>& instance) : _instance(instance)
+		{
+			assert(_instance);
+		}; 
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
