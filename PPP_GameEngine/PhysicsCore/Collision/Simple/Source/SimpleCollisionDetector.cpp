@@ -108,7 +108,7 @@ namespace
 
 	bool AABB_vs_AABB_Intersects(const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion)
 	{
-		assert(first->GetGeometry()->GetGeometryType() == GeometryType::AABB);
+		assert(first ->GetGeometry()->GetGeometryType() == GeometryType::AABB);
 		assert(second->GetGeometry()->GetGeometryType() == GeometryType::AABB);
 		return true;
 	}
