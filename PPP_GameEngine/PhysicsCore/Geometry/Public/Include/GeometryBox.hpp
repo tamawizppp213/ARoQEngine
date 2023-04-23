@@ -93,7 +93,7 @@ namespace physics::geometry
 		GeometryOBB(const gm::Float3& halfExtents) : IGeometry(GeometryType::OBB), HalfExtents(halfExtents) {};
 
 		GeometryOBB(const float hx = 0.0f, const float hy = 0.0f, const float hz = 0.0f)
-			: IGeometry(GeometryType::AABB), HalfExtents({ hx, hy, hz })
+			: IGeometry(GeometryType::OBB), HalfExtents({ hx, hy, hz })
 		{
 			assert(IsValid());
 		};

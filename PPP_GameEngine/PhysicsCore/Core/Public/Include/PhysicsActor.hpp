@@ -71,6 +71,8 @@ namespace physics::core
 		/* @brief : Return world position*/
 		gm::Vector3 GetPosition() const { return _position; }
 
+		gm::Quaternion GetRotation() const { return _orientation; }
+
 		std::shared_ptr<physics::geometry::IGeometry> GetGeometry() const noexcept { return _geometry; }
 
 		/* @brief : Set the actors world space transform.

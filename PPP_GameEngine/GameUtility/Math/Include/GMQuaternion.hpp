@@ -73,7 +73,7 @@ namespace gm
 		**                Constructor and Destructor
 		*****************************************************************************/
 		INLINE Quaternion()                                                 { _vector = DirectX::XMQuaternionIdentity(); }
-		INLINE Quaternion(const Vector3& axis, const Scalar& angle)         { _vector = DirectX::XMQuaternionRotationAxis(axis, angle); }
+		INLINE Quaternion(const Vector3& axis, const Scalar& radian)         { _vector = DirectX::XMQuaternionRotationAxis(axis, radian); }
 		INLINE Quaternion(float pitch, float yaw, float roll)               { _vector = DirectX::XMQuaternionRotationRollPitchYaw(pitch, yaw, roll); }
 		INLINE Quaternion(const Vector3& PitchYawRoll)                      { _vector = DirectX::XMQuaternionRotationRollPitchYawFromVector(PitchYawRoll); }
 		INLINE Quaternion(const Vector4& vector)                            { _vector = vector; }

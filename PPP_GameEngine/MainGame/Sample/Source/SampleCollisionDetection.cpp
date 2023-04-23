@@ -94,7 +94,29 @@ void SampleCollisionDetection::Update()
 		}
 	}
 
+	// OBB_vs_Sphere
+	{
+		const auto geometryA = std::make_shared<GeometrySphere>(0.5f);
+		const auto actorA    = std::make_shared<PhysicsActor>(geometryA, Vector3(0.0f, 0.0f, 2.0f));
+		const auto geometryB = std::make_shared<GeometryOBB>(1.0f, 0.5f, 1.5f);
+		const auto actorB    = std::make_shared<PhysicsActor>(geometryB, Vector3(0.0f, 0.0f, 0.0f), Quaternion(Vector3(0,1,0.0f), GM_PI / 2.0f));
+		if (detector.Intersects(actorA, actorB))
+		{
+			std::cout << "Sphere_vs_OBB:" << "Hit" << std::endl;
+		}
+	}
 
+	// OBB_vs_OBB
+	{
+		const auto geometryA = std::make_shared<GeometryOBB>(0.5f, 0.5f, 0.5f);
+		const auto actorA    = std::make_shared<PhysicsActor>(geometryA, Vector3(0, 0, 0));
+		const auto geometryB = std::make_shared<GeometryOBB>(0.5f, 0.5f, 0.5f);
+		const auto actorB    = std::make_shared<PhysicsActor>(geometryB, Vector3(1.0f, 0.0f, 0.0f));
+		if (detector.Intersects(actorA, actorB))
+		{
+			std::cout << "OBB_vs_OBB:" << "Hit" << std::endl;
+		}
+	}
 
 	Scene::Update();
 }
