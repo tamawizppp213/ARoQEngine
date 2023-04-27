@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
+#include "../../Core/Include/RHICommonState.hpp"
 #include "GPUState.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -24,10 +24,10 @@ namespace rhi::core
 {
 	class RHIDevice;
 	/****************************************************************************
-	*				  			RHIPipelineState
+	*				  			GPUDepthStencilState
 	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	*  @class     GPUDepthStencilState
+	*  @brief     DepthStencilState
 	*****************************************************************************/
 	class GPUDepthStencilState : public GPUState
 	{
@@ -39,17 +39,24 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		bool GetDepthWriteEnable() const noexcept { return _depthWriteEnable; }
+		bool UseStencilTest() const noexcept { return _property.StenciWriteEnable; }
 
-		bool GetStencilEnable   () const noexcept { return _stencilEnable; }
+		bool UseDepthTest() const noexcept { return _property.UseDepthTest; }
 
-		bool GetDepthEnable     () const noexcept { return _depthEnable; }
+		bool UseDepthBoundsTest() const noexcept { return _property.UseDepthBoundsTest; }
 
-		const CompareOperator& GetDepthOperator() const noexcept { return _depthOperator; }
+		bool GetDepthWriteEnable() const noexcept { return _property.DepthWriteEnable; }
+
+		const CompareOperator& GetDepthOperator() const noexcept { return _property.DepthOperator; }
 		
-		const StencilOperatorInfo& GetFrontFace() const noexcept { return _frontFace; }
+		const StencilOperatorInfo& GetFrontFace() const noexcept { return _property.Front; }
 		
-		const StencilOperatorInfo& GetBackFace () const noexcept { return _backFace; }
+		const StencilOperatorInfo& GetBackFace () const noexcept { return _property.Back; }
+
+		float GetMinDepthBounds() const noexcept { return _property.MinDepthBounds; }
+
+		float GetMaxDepthBounds() const noexcept { return _property.MaxDepthBounds; }
+
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -65,13 +72,8 @@ namespace rhi::core
 
 		explicit GPUDepthStencilState(
 			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const bool            depthEnable      = true,
-			const bool            depthWriteEnable = true,
-			const bool            stencilEnable    = false,
-			const CompareOperator depthOperator    = CompareOperator::LessEqual,
-			const StencilOperatorInfo& front       = StencilOperatorInfo(),
-			const StencilOperatorInfo& back        = StencilOperatorInfo()
-		) : GPUState(device), _depthWriteEnable(depthWriteEnable), _stencilEnable(stencilEnable), _depthEnable(depthEnable), _depthOperator(depthOperator), _frontFace(front), _backFace(back) { }
+			const DepthStencilProperty& depthStencilProperty
+		) : GPUState(device), _property(depthStencilProperty){ };
 		
 		/****************************************************************************
 		**                Protected Function
@@ -80,15 +82,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		core::CompareOperator     _depthOperator = core::CompareOperator::LessEqual;
-		core::StencilOperatorInfo _frontFace     = core::StencilOperatorInfo();
-		core::StencilOperatorInfo _backFace      = core::StencilOperatorInfo();
-		/* @brief : depth buffer write*/
-		bool _depthWriteEnable = true;
-		/* @brief : use depth test*/
-		bool _depthEnable      = true;
-		/* @brief : use stencil*/
-		bool _stencilEnable    = false;
+		DepthStencilProperty _property = DepthStencilProperty();
 	};
 }
 #endif

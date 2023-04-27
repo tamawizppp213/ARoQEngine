@@ -52,6 +52,7 @@ namespace rhi::core
 	class BLASBuffer;
 	class TLASBuffer;
 	class ASInstance;
+	struct SwapchainDesc;
 
 	/****************************************************************************
 	*				  			RHIDevice
@@ -65,9 +66,6 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		// Set up command queue
-		virtual void SetUp() = 0;
-
 		virtual void Destroy() = 0; // shared_ptrでデストラクタが呼ばれないため. 
 
 		/*-------------------------------------------------------------------
@@ -82,21 +80,23 @@ namespace rhi::core
 		
 		virtual std::shared_ptr<RHIFrameBuffer>             CreateFrameBuffer(const std::shared_ptr<RHIRenderPass>& renderPass, const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil = nullptr) = 0;
 		
-		virtual std::shared_ptr<RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0) = 0;
+		virtual std::shared_ptr<RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0, const std::wstring& name = L"Fence") = 0;
 		
-		virtual std::shared_ptr<RHICommandList>             CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator) = 0;
+		virtual std::shared_ptr<RHICommandList>             CreateCommandList(const std::shared_ptr<RHICommandAllocator>& commandAllocator, const std::wstring& name = L"CommandList") = 0;
 		
-		virtual std::shared_ptr<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type) = 0;
+		virtual std::shared_ptr<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type, const std::wstring& name = L"CommandQueue") = 0;
 		
-		virtual std::shared_ptr<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type) = 0;
+		virtual std::shared_ptr<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const std::wstring& name = L"CommandAllocator") = 0;
 		
 		virtual std::shared_ptr<RHISwapchain>               CreateSwapchain(const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) = 0;
 		
+		virtual std::shared_ptr<RHISwapchain>               CreateSwapchain(const SwapchainDesc& desc) = 0;
+
 		virtual std::shared_ptr<RHIDescriptorHeap>          CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
 		
 		virtual std::shared_ptr<RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;
 		
-		virtual std::shared_ptr<RHIResourceLayout>          CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt) = 0;
+		virtual std::shared_ptr<RHIResourceLayout>          CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt, const std::wstring& name = L"ResourceLayout") = 0;
 		
 		virtual std::shared_ptr<GPUPipelineFactory>         CreatePipelineFactory() = 0;
 		
@@ -114,9 +114,9 @@ namespace rhi::core
 		
 		virtual std::shared_ptr<GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
 		
-		virtual std::shared_ptr<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData) = 0;
+		virtual std::shared_ptr<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData, const std::wstring& name = L"") = 0;
 		
-		virtual std::shared_ptr<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData) = 0;
+		virtual std::shared_ptr<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name = L"") = 0;
 		
 		virtual std::shared_ptr<GPUTexture>                 CreateTextureEmpty() = 0;
 		
@@ -138,18 +138,13 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		virtual std::shared_ptr<RHIDescriptorHeap>   GetDefaultHeap     (const core::DescriptorHeapType heapType) = 0;
-
-		virtual std::shared_ptr<RHICommandQueue>     GetCommandQueue    (const core::CommandListType commandListType) = 0;
-
-		virtual std::shared_ptr<RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount = 0) = 0;
+		virtual std::shared_ptr<RHIDescriptorHeap> GetDefaultHeap(const core::DescriptorHeapType heapType) = 0;
 		
 		virtual std::uint32_t GetShadingRateImageTileSize() const = 0;
 		
-		std::shared_ptr<RHIDisplayAdapter> GetDisplayAdapter() { return _adapter; }
+		std::shared_ptr<RHIDisplayAdapter> GetDisplayAdapter() const noexcept { return _adapter; }
 		
-		std::uint32_t GetFrameCount() const { return _frameCount; }
-
+		virtual void SetName(const std::wstring& name) = 0;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check
@@ -177,12 +172,10 @@ namespace rhi::core
 		virtual ~RHIDevice()
 		{ 
 			_adapter.reset(); 
-			_commandQueues.clear();
-			_commandAllocators.clear(); _commandAllocators.shrink_to_fit(); 
 		}
 
-		RHIDevice(const std::shared_ptr<RHIDisplayAdapter>& adapter, const std::uint32_t frameCount) 
-			: _adapter(adapter), _frameCount(frameCount) {};
+		RHIDevice(const std::shared_ptr<RHIDisplayAdapter>& adapter) 
+			: _adapter(adapter) {};
 
 		/****************************************************************************
 		**                Protected Function
@@ -194,14 +187,6 @@ namespace rhi::core
 		/* @brief : Use Display Apapter (GPU)*/
 		std::shared_ptr<RHIDisplayAdapter> _adapter = nullptr;
 
-		/* @brief : Command Queue (Graphics, Compute, and Copy command queue)*/
-		std::map<CommandListType, std::shared_ptr<RHICommandQueue>> _commandQueues; // VulkanがDevice作成時にCommandQueueを作成する必要があるのでなくなく
-		
-		/* @brief : Command allocator*/
-		std::vector<std::map<CommandListType, std::shared_ptr<RHICommandAllocator>>> _commandAllocators;
-
-		/* @brief : Total frame buffer size*/
-		std::uint32_t _frameCount = 0;
 	};
 }
 #endif

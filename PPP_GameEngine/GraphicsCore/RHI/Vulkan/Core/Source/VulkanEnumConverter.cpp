@@ -29,12 +29,14 @@ VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 	{
 		case core::PixelFormat::R8G8B8A8_UNORM    : return VkFormat::VK_FORMAT_R8G8B8A8_UNORM;
 		case core::PixelFormat::B8G8R8A8_UNORM    : return VkFormat::VK_FORMAT_B8G8R8A8_UNORM;
+		case core::PixelFormat::B8G8R8A8_UNORM_SRGB: return VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
 		case core::PixelFormat::R16G16B16A16_FLOAT: return VkFormat::VK_FORMAT_R16G16B16A16_SFLOAT;
 		case core::PixelFormat::R32G32B32A32_FLOAT: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
 		case core::PixelFormat::R32G32B32_FLOAT   : return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
 		case core::PixelFormat::D24_UNORM_S8_UINT : return VkFormat::VK_FORMAT_D24_UNORM_S8_UINT;
 		case core::PixelFormat::R10G10B10A2_UNORM : return VkFormat::VK_FORMAT_A2R10G10B10_UNORM_PACK32;
 		case core::PixelFormat::D32_FLOAT         : return VkFormat::VK_FORMAT_D32_SFLOAT;
+		case core::PixelFormat::BC1_UNORM         : return VkFormat::VK_FORMAT_BC1_RGBA_UNORM_BLOCK;
 		case core::PixelFormat::Unknown           : return VkFormat::VK_FORMAT_UNDEFINED;
 		default:
 			throw std::runtime_error("not supported Pixel Format type (vulkan api)");
@@ -91,8 +93,13 @@ VkShaderStageFlagBits EnumConverter::Convert(const rhi::core::ShaderVisibility v
 VkFilter EnumConverter::Convert(const rhi::core::FilterOption filter, const rhi::core::FilterMask mask)
 {
 	if (filter == core::FilterOption::Anisotropy) { return VkFilter::VK_FILTER_LINEAR; }
-	return (static_cast<std::uint8_t>(filter) & static_cast<std::uint8_t>(mask)) != 0 ? VkFilter::VK_FILTER_LINEAR : VkFilter::VK_FILTER_NEAREST;
+
+	// this equation indicates that the true value shows the filter has linear sampling option, 
+	// and the false value has point sampling option.  
+	return (static_cast<std::uint8_t>(filter) & static_cast<std::uint8_t>(mask)) != 0 
+		? VkFilter::VK_FILTER_LINEAR : VkFilter::VK_FILTER_NEAREST;
 }
+
 /*-------------------------------------------------------------------
 -                        Mipmap mode
 ---------------------------------------------------------------------*/
@@ -103,6 +110,7 @@ VkSamplerMipmapMode EnumConverter::Convert(const rhi::core::FilterOption filter)
 		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR:
 		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_NEAREST;
 }
+
 /*-------------------------------------------------------------------
 -                        Texture Addressing mode
 ---------------------------------------------------------------------*/
@@ -113,11 +121,12 @@ VkSamplerAddressMode EnumConverter::Convert(const rhi::core::SamplerAddressMode 
 		case core::SamplerAddressMode::Wrap   : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		case core::SamplerAddressMode::Mirror : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
 		case core::SamplerAddressMode::Clamp  : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-		case core::SamplerAddressMode::Border: return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+		case core::SamplerAddressMode::Border : return VkSamplerAddressMode::VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 		default:
 			throw std::runtime_error("Not support texture addressing mode (vulkan api)");
 	}
 }
+
 /*-------------------------------------------------------------------
 -                        Border color mode
 ---------------------------------------------------------------------*/
@@ -296,6 +305,22 @@ VkPrimitiveTopology EnumConverter::Convert(const rhi::core::PrimitiveTopology pr
 			throw std::runtime_error("not supported primitive topology type (vulkan api) ");
 	}
 }
+
+/*-------------------------------------------------------------------
+-                        Input classification
+---------------------------------------------------------------------*/
+VkVertexInputRate EnumConverter::Convert(const rhi::core::InputClassification classification)
+{
+	using enum core::InputClassification;
+	switch (classification)
+	{
+		case PerVertex  : return VkVertexInputRate::VK_VERTEX_INPUT_RATE_VERTEX;
+		case PerInstance: return VkVertexInputRate::VK_VERTEX_INPUT_RATE_INSTANCE;
+		default:
+			throw std::runtime_error("not support input classification type");
+	}
+}
+
 VkFormat EnumConverter::Convert(const rhi::core::InputFormat inputFormat)
 {
 	switch (inputFormat)
@@ -322,16 +347,18 @@ EnumConverter::VulkanResourceUsage EnumConverter::Convert(const core::ResourceUs
 		core::ResourceUsage::IndexBuffer,
 		core::ResourceUsage::ConstantBuffer,
 		core::ResourceUsage::RenderTarget,
-		core::ResourceUsage::DepthStencil
+		core::ResourceUsage::DepthStencil,
+		core::ResourceUsage::UnorderedAccess,
 	};
 
 	static std::vector<VulkanResourceUsage> targetPool = {
 		VulkanResourceUsage(0, 0) ,
 		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 0),
 		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 0),
-		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 0),
+		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0),
 		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT),
-		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
+		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT),
+		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 0)
 	};
 
 	auto result = VulkanResourceUsage(0, 0);
@@ -339,12 +366,12 @@ EnumConverter::VulkanResourceUsage EnumConverter::Convert(const core::ResourceUs
 	{
 		if (core::EnumHas(usage, sourcePool[i]))
 		{
-			result.first |= targetPool[i].first;
-			result.second |= targetPool[i].second;
+			result.first |= targetPool[i].first;     // for buffer
+			result.second |= targetPool[i].second;   // for texture
 		}
 	}
 
-	result.first |= VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+	result.first  |= VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_DST_BIT | VkBufferUsageFlagBits::VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 	result.second |= VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_DST_BIT | VkImageUsageFlagBits::VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
 	result.second |= VkImageUsageFlagBits::VK_IMAGE_USAGE_SAMPLED_BIT;
 	return result;
@@ -430,13 +457,19 @@ VkImageViewType EnumConverter::Convert(const rhi::core::ResourceDimension dimens
 /*-------------------------------------------------------------------
 -                        Image Create Flags
 ---------------------------------------------------------------------*/
-VkImageCreateFlags EnumConverter::Convert(const size_t arrayLength)
+VkImageCreateFlags EnumConverter::Convert(const rhi::core::ResourceType type, const size_t arrayLength)
 {
-	auto result = VkImageCreateFlags(VkImageCreateFlagBits::VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT);
-	if (arrayLength > 1) { result |= VkImageCreateFlagBits::VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT; }
-	if (arrayLength > 5)
+	auto result = VkImageCreateFlags(VkImageCreateFlagBits::VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT);       // Different resource view is able to be created.
+	if (type == core::ResourceType::TextureCube || type == core::ResourceType::TextureCubeArray)
 	{
 		result |= VkImageCreateFlagBits::VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+	}
+	else
+	{
+		if (arrayLength > 1)
+		{
+			result |= VkImageCreateFlagBits::VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT;
+		}
 	}
 	return result;
 }
@@ -453,6 +486,7 @@ VkMemoryPropertyFlags  EnumConverter::Convert(const rhi::core::MemoryHeap memory
 		case core::MemoryHeap::Default: return VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // not write in CPU
 		case core::MemoryHeap::Upload : return VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 			                                 | VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+		case core::MemoryHeap::Readback: return VkMemoryPropertyFlagBits::VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
 		default:
 			throw std::runtime_error("not support Memory Heap type (vulkan api)");
 	}

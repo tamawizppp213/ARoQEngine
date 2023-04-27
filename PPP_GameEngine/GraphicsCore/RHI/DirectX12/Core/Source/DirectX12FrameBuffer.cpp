@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12FrameBuffer.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12DescriptorHeap.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
+#include "../Include/DirectX12FrameBuffer.hpp"
+#include "../Include/DirectX12CommandQueue.hpp"
+#include "../Include/DirectX12Device.hpp"
+#include "../Include/DirectX12DescriptorHeap.hpp"
+#include "../Include/DirectX12Debug.hpp"
+#include "../Include/DirectX12EnumConverter.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUResourceView.hpp"
 #include <d3d12.h>
@@ -28,6 +28,7 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
 	: core::RHIFrameBuffer(device, renderPass, renderTargets, depthStencil)
 {
@@ -43,10 +44,15 @@ RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, c
 RHIFrameBuffer::~RHIFrameBuffer()
 {
 	_renderTargetViews.clear(); _renderTargetViews.shrink_to_fit();
+	_renderTargetSRVs.clear(); _renderTargetSRVs.shrink_to_fit();
+	_renderTargetUAVs.clear(); _renderTargetUAVs.shrink_to_fit();
 	_renderTargets    .clear(); _renderTargets    .shrink_to_fit();
 	if (_renderTargetHeap) { _renderTargetHeap.reset(); }
 	if (_depthStencilHeap) { _depthStencilHeap.reset(); }
 }
+
+#pragma endregion Constructor and Destructor
+
 #pragma region Prepare
 /****************************************************************************
 *                      Prepare
@@ -88,9 +94,14 @@ void RHIFrameBuffer::Prepare()
 	-                Create Render Target View
 	---------------------------------------------------------------------*/
 	_renderTargetViews.resize(_renderTargets.size());
+	_renderTargetSRVs.resize(_renderTargets.size());
+	_renderTargetUAVs.resize(_renderTargets.size());
+
 	for (size_t i = 0; i < _renderTargets.size(); ++i)
 	{
 		_renderTargetViews[i] = rhiDevice->CreateResourceView(core::ResourceViewType::RenderTarget, _renderTargets[i], nullptr);
+		_renderTargetSRVs[i]  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _renderTargets[i], nullptr);
+		_renderTargetUAVs[i]  = rhiDevice->CreateResourceView(core::ResourceViewType::RWTexture   , _renderTargets[i], nullptr);
 	}
 
 	/*-------------------------------------------------------------------
@@ -99,6 +110,7 @@ void RHIFrameBuffer::Prepare()
 	if (_depthStencil != nullptr)
 	{
 		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil, _depthStencil, nullptr);
+		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _depthStencil,  nullptr);
 	}
 }
 #pragma endregion Prepare
@@ -112,4 +124,5 @@ DescriptorHeapComPtr RHIFrameBuffer::GetDSVHeap() const noexcept
 {
 	return _depthStencilHeap->GetHeap();
 }
+
 #pragma endregion Property

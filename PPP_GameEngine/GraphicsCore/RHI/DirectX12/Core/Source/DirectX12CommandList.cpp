@@ -41,7 +41,7 @@ RHICommandList::~RHICommandList()
 	if (_commandList) { _commandList.Reset(); _commandList = nullptr; }
 }
 
-RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator) : 
+RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator, const std::wstring& name) : 
 	rhi::core::RHICommandList(device, commandAllocator)
 {
 	/*-------------------------------------------------------------------
@@ -66,8 +66,9 @@ RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& devi
 		nullptr,           // Initial PipeLine State Object
 		IID_PPV_ARGS(_commandList.GetAddressOf())));
 
-	ThrowIfFailed(_commandList->SetName(L"DirectX12::CommandList"));
+	ThrowIfFailed(_commandList->SetName(name.c_str()));
 	ThrowIfFailed(_commandList->Close());
+	_isOpen = false;
 }
 
 #pragma endregion Constructor and Destructor
@@ -78,24 +79,21 @@ RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& devi
 *************************************************************************//**
 *  @fn        void RHICommandList::BeginRecording()
 *
-*  @brief     Call at begin draw frame
+*  @brief     This function must be called at draw function initially (stillMidFrame = false
+*             If still mid frame is set false, this function clears the command allocator
 *
-*  @param[in] void
+*  @param[in] const bool stillMidFrame (default: false)
 *
 *  @return    void
 *****************************************************************************/
-void RHICommandList::BeginRecording()
+void RHICommandList::BeginRecording(const bool stillMidFrame)
 {
 	/*-------------------------------------------------------------------
 	-          Reset command list and allocator
 	---------------------------------------------------------------------*/
-	_commandAllocator->Reset();
+	if (!stillMidFrame) { _commandAllocator->CleanUp(); } // command buffer clear
 	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
-	
-	if (_commandAllocator->GetCommandListType() == core::CommandListType::Graphics)
-	{
-		_commandList->ClearState(nullptr); // 元の状態に戻る
-	}
+	_isOpen = true;
 }
 
 /****************************************************************************
@@ -104,14 +102,29 @@ void RHICommandList::BeginRecording()
 *  @fn        void RHICommandList::EndRecording()
 *
 *  @brief     Call at end draw frame. Close executed command list.
-*
+*              The command list is closed, it transits the executable state.
+* 
 *  @param[in] void
 *
 *  @return    void
 *****************************************************************************/
 void RHICommandList::EndRecording()
 {
+	if (!_isOpen) { OutputDebugStringA("Already closed. \n");  return; }
 	ThrowIfFailed(_commandList->Close());
+	_isOpen = false;
+	_beginRenderPass = false;
+}
+
+void RHICommandList::Reset(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
+{
+	/*-------------------------------------------------------------------
+	-          Reset command list and allocator
+	---------------------------------------------------------------------*/
+	if (commandAllocator) { _commandAllocator = commandAllocator; }
+	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
+	_isOpen = false;
+	_beginRenderPass = false;
 }
 
 /****************************************************************************
@@ -142,6 +155,7 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 
 	_renderPass  = renderPass;
 	_frameBuffer = frameBuffer;
+	_beginRenderPass = true;
 }
 
 /****************************************************************************
@@ -157,6 +171,7 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 *****************************************************************************/
 void RHICommandList::EndRenderPass()
 {
+	if (!_beginRenderPass) { return; }
 	if (_device->IsSupportedRenderPass()) { _commandList->EndRenderPass(); }
 
 	/*-------------------------------------------------------------------
@@ -164,6 +179,7 @@ void RHICommandList::EndRenderPass()
 	---------------------------------------------------------------------*/
 	std::vector<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
 	TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
+	_beginRenderPass = false;
 }
 
 #pragma endregion Call Draw Frame
@@ -178,14 +194,18 @@ void RHICommandList::SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptor
 *                       SetPrimitiveTopology
 *************************************************************************//**
 *  @fn        void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
+* 
 *  @brief     Regist Primitive topology to command list
-*  @param[in] void
+* 
+*  @param[in] const core::PrimitiveTopology
+* 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
+void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology)
 {
 	_commandList->IASetPrimitiveTopology(EnumConverter::Convert(topology));
 }
+
 /****************************************************************************
 *                       SetViewport
 *************************************************************************//**
@@ -195,7 +215,7 @@ void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
 *  @param[in] std::uint32_t viewport count
 *  @return 　　void
 *****************************************************************************/
-void rhi::directX12::RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
+void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint32_t numViewport)
 {
 	std::vector<D3D12_VIEWPORT> v(numViewport);
 	for (UINT i = 0; i < numViewport; ++i)
@@ -218,7 +238,7 @@ void rhi::directX12::RHICommandList::SetViewport(const core::Viewport* viewport,
 *  @param[in] std::uint32_t numRect
 *  @return 　　void
 *****************************************************************************/
-void rhi::directX12::RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
+void RHICommandList::SetScissor(const core::ScissorRect* rect, const std::uint32_t numRect)
 {
 	std::vector<D3D12_RECT> r(numRect);
 	for (UINT i = 0; i < numRect; ++i)
@@ -341,6 +361,18 @@ void RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t thr
 }
 
 #pragma region Transition Resource State
+/****************************************************************************
+*                     TransitionResourceState
+*************************************************************************//**
+*  @fn        void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& textures, core::ResourceState afters)
+*
+*  @brief     Transition a single resource layout using barrier
+*
+*  @param[in] const std::shared_ptr<core::GPUTexture>& texture array,
+*  @param[in] core::ResourceState state array
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after)
 {
 	BARRIER barrier = BARRIER::Transition(std::static_pointer_cast<directX12::GPUTexture>(texture)->GetResource().Get(),
@@ -348,6 +380,20 @@ void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUText
 	_commandList->ResourceBarrier(1, &barrier);
 	texture->TransitionResourceState(after);
 }
+
+/****************************************************************************
+*                     TransitionResourceStates
+*************************************************************************//**
+*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
+*
+*  @brief     Transition resource layout using barrier
+*
+*  @param[in] const std::uint32_t numStates
+*  @param[in] const std::shared_ptr<core::GPUTexture>* texture array,
+*  @param[in] core::ResourceState* state array
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
 {
 	std::vector<BARRIER> barriers = {};
@@ -360,24 +406,73 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 	}
 	_commandList->ResourceBarrier(numStates, barriers.data());
 }
+
+void RHICommandList::TransitionResourceStates(const std::vector<std::shared_ptr<core::GPUResource>>& resources, core::ResourceState* afters)
+{
+	std::vector<BARRIER> barriers(resources.size());
+	for (std::uint32_t i = 0; i < resources.size(); ++i)
+	{
+		if (resources[i]->IsTexture())
+		{
+			barriers[i] = BARRIER::Transition(std::static_pointer_cast<directX12::GPUTexture>(resources[i])->GetResource().Get(),
+				EnumConverter::Convert(resources[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
+			resources[i]->TransitionResourceState(afters[i]);
+		}
+		else
+		{
+			barriers[i] = BARRIER::Transition(std::static_pointer_cast<directX12::GPUBuffer>(resources[i])->GetResource().Get(),
+				EnumConverter::Convert(resources[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
+			resources[i]->TransitionResourceState(afters[i]);
+		}
+	}
+	_commandList->ResourceBarrier(barriers.size(), barriers.data());
+}
+
 #pragma endregion Transition Resource State
 #pragma region Copy 
 void RHICommandList::CopyResource(const std::shared_ptr<core::GPUTexture>& dest, const std::shared_ptr<core::GPUTexture>& source)
 {
+	CopyResource(std::static_pointer_cast<core::GPUResource>(dest), std::static_pointer_cast<core::GPUResource>(source));
+}
 
-	std::shared_ptr<core::GPUTexture> textures[] = {dest, source};
+void RHICommandList::CopyResource(const std::shared_ptr<core::GPUResource>& dest, const std::shared_ptr<core::GPUResource>& source)
+{
+	std::shared_ptr<core::GPUResource> resources[] = { dest, source };
 	rhi::core::ResourceState befores[] = { dest->GetResourceState()            , source->GetResourceState() };
-	rhi::core::ResourceState afters [] = { core::ResourceState::CopyDestination, core::ResourceState::CopySource };
-	TransitionResourceStates(2, textures, afters);
-	
-	_commandList->CopyResource(
-		std::static_pointer_cast<directX12::GPUTexture>(dest)->GetResource().Get(),
-		std::static_pointer_cast<directX12::GPUTexture>(source)->GetResource().Get());
+	rhi::core::ResourceState afters[] = { core::ResourceState::CopyDestination, core::ResourceState::CopySource };
 
-	TransitionResourceStates(2, textures, befores);
+	TransitionResourceStates({ dest, source }, afters);
+
+	if (dest->IsTexture() && source->IsTexture())
+	{
+		_commandList->CopyResource(
+			std::static_pointer_cast<directX12::GPUTexture>(dest)->GetResource().Get(),
+			std::static_pointer_cast<directX12::GPUTexture>(source)->GetResource().Get());
+	}
+	else if (dest->IsTexture() && !source->IsTexture())
+	{
+		_commandList->CopyResource(
+			std::static_pointer_cast<directX12::GPUTexture>(dest)->GetResource().Get(),
+			std::static_pointer_cast<directX12::GPUBuffer>(source)->GetResource().Get());
+	}
+	else
+	{
+		_commandList->CopyResource(
+			std::static_pointer_cast<directX12::GPUBuffer>(dest)->GetResource().Get(),
+			std::static_pointer_cast<directX12::GPUBuffer>(source)->GetResource().Get());
+	}
+
+	TransitionResourceStates({ dest, source }, befores);
 }
 #pragma endregion Copy
 #pragma endregion GPU Command
+#pragma region Property
+void RHICommandList::SetName(const std::wstring& name)
+{
+	_commandList->SetName(name.c_str());
+}
+
+#pragma endregion Property
 #pragma region Private Function
 /****************************************************************************
 *                     BeginRenderPassImpl

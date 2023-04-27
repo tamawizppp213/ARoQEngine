@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUBlendState.hpp
-///             @brief  Blend State
+///             @file   GPUInputAssemblyState.hpp
+///             @brief  InputAssembly State
 ///             @author Toide Yutaro
 ///             @date   2022_06_28
 //////////////////////////////////////////////////////////////////////////////////
@@ -11,8 +11,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
+#include "../../Core/Include/RHICommonState.hpp"
+#include "../../Core/Include/RHIResourceLayoutElement.hpp"
 #include "GPUState.hpp"
 #include <vector>
 #include <algorithm>
@@ -29,10 +29,10 @@ namespace rhi::core
 {
 	class RHIDevice;
 	/****************************************************************************
-	*				  			RHIPipelineState
+	*				  			RHIInputAssemblyState
 	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	*  @class     RHIInputAssemblyState
+	*  @brief     Set vertex information
 	*****************************************************************************/
 	class GPUInputAssemblyState : public GPUState
 	{
@@ -41,7 +41,7 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		// Note : êVÇΩÇ…VertexÇGameCoreÇ≈íËã`Ç∑ÇÈèÍçáÇÕÇ±ÇÃä÷êîÇéÊÇËèúÇ´, à⁄ìÆÇ∑ÇÈ. 
-		static std::vector<InputLayoutElement> GetDefaultVertexElement() { return DEFAULT_VERTEX_ELEMENTS; }
+		static std::vector<InputLayoutElement> GetDefaultVertexElement()     { return DEFAULT_VERTEX_ELEMENTS; }
 		static std::vector<InputLayoutElement> GetDefaultSkinVertexElement() { return DEFAULT_SKINVERTEX_ELEMENTS; }
 		
 		/****************************************************************************
@@ -91,8 +91,11 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::vector<InputLayoutElement> _elements = {};
+
 		size_t                          _slotCount = 1;
+
 		core::PrimitiveTopology _primitiveTopology = PrimitiveTopology::TriangleList;
+
 	private:
 		static const std::vector<InputLayoutElement> DEFAULT_VERTEX_ELEMENTS;
 		static const std::vector<InputLayoutElement> DEFAULT_SKINVERTEX_ELEMENTS;

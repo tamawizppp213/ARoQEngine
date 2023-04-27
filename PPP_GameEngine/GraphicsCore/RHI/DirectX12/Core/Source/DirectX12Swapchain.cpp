@@ -7,15 +7,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Swapchain.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Adapter.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Instance.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
-#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
+#include "../Include/DirectX12Swapchain.hpp"
+#include "../Include/DirectX12CommandQueue.hpp"
+#include "../Include/DirectX12Adapter.hpp"
+#include "../Include/DirectX12Instance.hpp"
+#include "../Include/DirectX12Fence.hpp"
+#include "../Include/DirectX12Device.hpp"
+#include "../Include/DirectX12Debug.hpp"
+#include "../Include/DirectX12EnumConverter.hpp"
+#include "../../Resource/Include/DirectX12GPUTexture.hpp"
 #include <d3d12.h>
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,87 +30,17 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
 RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
-	const rhi::core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR) 
-	: rhi::core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
+	const core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR) 
+	: core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
 
 {
-	const auto rhiDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get());
-	const auto dxDevice  = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
-	const auto dxQueue   = static_cast<rhi::directX12::RHICommandQueue*>(_commandQueue.get())->GetCommandQueue();
-
-	/*-------------------------------------------------------------------
-	-        SwapChain Flag
-	---------------------------------------------------------------------*/
-	int flag = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	if (rhiDevice->IsSupportedTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
-	_swapchainFlag = static_cast<DXGI_SWAP_CHAIN_FLAG>(flag);
-
-	/*-------------------------------------------------------------------
-	-        BackBuffer format
-	---------------------------------------------------------------------*/
-	_backBufferFormat = EnumConverter::Convert(_pixelFormat);
-
-	/*-------------------------------------------------------------------
-	-                   Create Swapchain Descriptor
-	---------------------------------------------------------------------*/
-	DXGI_SWAP_CHAIN_DESC1 sd={};
-	sd.BufferCount = static_cast<UINT>(frameBufferCount);  // Current: Triple Buffer
-	sd.Width       = static_cast<UINT>(windowInfo.Width);  // Window Size Width
-	sd.Height      = static_cast<UINT>(windowInfo.Height); // Window Size Height 
-	sd.Format      = _backBufferFormat;                    // Back Buffer Format 
-	sd.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED;          // Alpha Mode => transparency behavior is not specified
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;      // Use the surface or resource as an output render target
-	sd.Flags       = _swapchainFlag;                        // Allow Resize Window
-	sd.Scaling     = DXGI_SCALING_STRETCH;                 // scaling: stretch
-	sd.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD;        // bit-block transfer model
-	sd.Stereo      = false;
-	sd.SampleDesc.Count   = 1;                             // MSAA: Anti-Alias
-	sd.SampleDesc.Quality = 0;                             // MSAA: Anti-Alias
-	
-	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
-	fullScreenDesc.RefreshRate.Denominator = 60;
-	fullScreenDesc.RefreshRate.Numerator   = 1;
-	fullScreenDesc.Scaling                 = DXGI_MODE_SCALING_STRETCHED;
-	fullScreenDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	fullScreenDesc.Windowed                = FALSE;
-
-	/*-------------------------------------------------------------------
-	-                   Create Swapchain for hwnd
-	---------------------------------------------------------------------*/
-	ThrowIfFailed(static_cast<directX12::RHIInstance*>(device->GetDisplayAdapter()->GetInstance())->GetFactory()->
-	CreateSwapChainForHwnd
-	(
-		dxQueue.Get(),
-		(HWND)windowInfo.Handle,
-		&sd,
-		nullptr, // full screen desc
-		nullptr, // main monitor display
-		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
-	));
-
-	if (rhiDevice->IsSupportedHDR() && _isValidHDR)
-	{
-		EnsureSwapChainColorSpace();
-		SetHDRMetaData();
-	}
-
-	/*-------------------------------------------------------------------
-	-                   Set Back Buffer
-	---------------------------------------------------------------------*/
-	_backBuffers.resize(frameBufferCount);
-	for (size_t i = 0; i < frameBufferCount; ++i)
-	{
-		ResourceComPtr backBuffer = nullptr;
-		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(i), IID_PPV_ARGS(backBuffer.GetAddressOf())));
-
-		auto info = core::GPUTextureMetaData::Texture2D(
-			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
-		info.State = core::ResourceState::Common;
-
-		_backBuffers[i] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
-	}
+	SetUp();
 }
 
+RHISwapchain::RHISwapchain(const std::shared_ptr<core::RHIDevice>& device, const core::SwapchainDesc& desc) : rhi::core::RHISwapchain(device, desc)
+{
+	SetUp();
+}
 
 RHISwapchain::~RHISwapchain()
 {
@@ -133,21 +63,23 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-          If the size is not change, we do nothing
 	---------------------------------------------------------------------*/
-	if (_windowInfo.Width == width && _windowInfo.Height == height) { return; }
+	if (_desc.WindowInfo.Width == width && _desc.WindowInfo.Height == height) { return; }
 
 	/*-------------------------------------------------------------------
 	-         window size check
 	---------------------------------------------------------------------*/
-	if (_windowInfo.Width == 0 || _windowInfo.Height == 0) { throw std::runtime_error("Width or height is zero."); }
+	if (_desc.WindowInfo.Width == 0 || _desc.WindowInfo.Height == 0) { throw std::runtime_error("Width or height is zero."); }
 
+	_desc.WindowInfo.Width  = width;
+	_desc.WindowInfo.Height = height;
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
 	for (auto& buffer : _backBuffers) { buffer.reset(); }
 	ThrowIfFailed(_swapchain->ResizeBuffers(
-		static_cast<UINT>(_frameBufferCount),
-		static_cast<UINT>(_windowInfo.Width),
-		static_cast<UINT>(_windowInfo.Height),
+		static_cast<UINT>(_desc.FrameBufferCount),
+		static_cast<UINT>(_desc.WindowInfo.Width),
+		static_cast<UINT>(_desc.WindowInfo.Height),
 		_backBufferFormat,
 		_swapchainFlag));
 
@@ -160,14 +92,15 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(index), IID_PPV_ARGS(backBuffer.GetAddressOf())));
 
 		auto info = core::GPUTextureMetaData::Texture2D(
-			static_cast<size_t>(_windowInfo.Width),
-			static_cast<size_t>(_windowInfo.Height), 
-			_pixelFormat, 1, core::ResourceUsage::RenderTarget);
+			static_cast<size_t>(_desc.WindowInfo.Width),
+			static_cast<size_t>(_desc.WindowInfo.Height), 
+			_desc.PixelFormat, 1, core::ResourceUsage::RenderTarget);
 
 		info.State = core::ResourceState::Present;
 
-		_backBuffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info);
+		_backBuffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
 	}
+	
 }
 /****************************************************************************
 *							PrepareNextImage
@@ -181,7 +114,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
 {
 	std::uint32_t frameIndex = _swapchain->GetCurrentBackBufferIndex();
-	_commandQueue->Signal(fence, signalValue);
+	_desc.CommandQueue->Signal(fence, signalValue);
 	return frameIndex;
 }
 /****************************************************************************
@@ -196,9 +129,9 @@ std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFenc
 void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue)
 {
 	/*synchronization between command queue */
-	_commandQueue->Wait(fence, waitValue);
+	_desc.CommandQueue->Wait(fence, waitValue);
 	/* present front buffer*/
-	ThrowIfFailed(_swapchain->Present(_vsync, 0));
+	ThrowIfFailed(_swapchain->Present(_desc.VSync, 0));
 }
 /****************************************************************************
 *							GetCurrentBufferIndex
@@ -211,6 +144,115 @@ void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, std::ui
 size_t RHISwapchain::GetCurrentBufferIndex() const
 {
 	return static_cast<size_t>(_swapchain->GetCurrentBackBufferIndex());
+}
+
+void RHISwapchain::SwitchFullScreenMode(const bool isOn)
+{
+	// 現在のモードが同じときは特に何もしない. 
+	if (_isFullScreen == isOn) { return; } 
+
+	if (FAILED(_swapchain->SetFullscreenState(isOn, nullptr)))
+	{
+		OutputDebugStringA("failed to switch swapchain mode");
+		return;
+	}
+	_isFullScreen = isOn;
+}
+
+/****************************************************************************
+*                      SetUp
+*************************************************************************//**
+*  @fn        void RHISwapchain::SetUp()
+*
+*  @brief     Set up
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
+void RHISwapchain::SetUp()
+{
+	const auto rhiDevice = std::static_pointer_cast<RHIDevice>(_device);
+	const auto dxDevice  = rhiDevice->GetDevice();
+	const auto dxQueue   = std::static_pointer_cast<RHICommandQueue>(_desc.CommandQueue)->GetCommandQueue();
+
+	/*-------------------------------------------------------------------
+	-        SwapChain Flag
+	---------------------------------------------------------------------*/
+	int flag = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	if (rhiDevice->IsSupportedTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
+	_swapchainFlag = static_cast<DXGI_SWAP_CHAIN_FLAG>(flag);
+
+	/*-------------------------------------------------------------------
+	-        BackBuffer format
+	---------------------------------------------------------------------*/
+	_backBufferFormat = EnumConverter::Convert(_desc.PixelFormat);
+
+	/*-------------------------------------------------------------------
+	-                   Create Swapchain Descriptor
+	---------------------------------------------------------------------*/
+	const DXGI_SWAP_CHAIN_DESC1 sd =
+	{
+		.Width       = static_cast<UINT>(_desc.WindowInfo.Width),  // Window Size Pixel Width
+		.Height      = static_cast<UINT>(_desc.WindowInfo.Height), // Window Size Pixel Height 
+		.Format      = _backBufferFormat,                          // Back Buffer Format 
+		.Stereo      = _desc.IsValidStereo,                        // Use stereoscopic rendering
+		.SampleDesc  = {1, 0},                                     // Count + quality (Not support multi sampling.)
+		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,            // Use the surface or resource as an output render target
+		.BufferCount = static_cast<UINT>(_desc.FrameBufferCount),  // Current: Triple Buffer
+		.Scaling     = DXGI_SCALING_STRETCH,                       // scaling: stretch
+		.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD,              // bit-block transfer model
+		.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED,                // Alpha Mode => transparency behavior is not specified
+		.Flags       = (UINT)_swapchainFlag,                       // Allow Resize Window
+	};
+
+	// 起動時にフルスクリーンにする場合は使用するが, 現状は使用しないことにする. (フレームレートを固定する必要があるため.)
+	/*DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
+	fullScreenDesc.RefreshRate.Denominator = 60;
+	fullScreenDesc.RefreshRate.Numerator   = 1;
+	fullScreenDesc.Scaling                 = DXGI_MODE_SCALING_STRETCHED;
+	fullScreenDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	fullScreenDesc.Windowed                = FALSE;*/
+
+	/*-------------------------------------------------------------------
+	-                   Create Swapchain for hwnd
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance())->GetFactory()->
+	CreateSwapChainForHwnd
+	(
+		dxQueue.Get(),
+		(HWND)_desc.WindowInfo.Handle,
+		&sd,
+		nullptr, // full screen desc
+		nullptr, // main monitor display
+		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
+	));
+
+	if (rhiDevice->IsSupportedHDR() && _desc.IsValidHDR)
+	{
+		EnsureSwapChainColorSpace();
+		SetHDRMetaData();
+	}
+
+	/*-------------------------------------------------------------------
+	-                   Set Back Buffer
+	---------------------------------------------------------------------*/
+	_backBuffers.resize(_desc.FrameBufferCount);
+	for (size_t i = 0; i < _desc.FrameBufferCount; ++i)
+	{
+		ResourceComPtr backBuffer = nullptr;
+		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(i), IID_PPV_ARGS(backBuffer.GetAddressOf())));
+		backBuffer->SetName(L"BackBuffer");
+
+
+		auto info = core::GPUTextureMetaData::Texture2D(
+			static_cast<size_t>(_desc.WindowInfo.Width), static_cast<size_t>(_desc.WindowInfo.Height), _desc.PixelFormat, 1, 
+			core::ResourceUsage::RenderTarget);
+		info.State = core::ResourceState::Common;
+
+		_backBuffers[i] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
+	}
+
 }
 #pragma endregion Main Function
 
@@ -267,7 +309,7 @@ void RHISwapchain::SetHDRMetaData()
 	/*-------------------------------------------------------------------
 	-          In case False (isHDRSupport)
 	---------------------------------------------------------------------*/
-	if (!_isValidHDR)
+	if (!_desc.IsValidHDR)
 	{
 		// not supported
 		ThrowIfFailed(_swapchain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_NONE, 0, nullptr));

@@ -56,6 +56,8 @@ namespace rhi::core
 		
 		/* @brief : Return all sampler state shader binding elements*/
 		const std::vector<SamplerLayoutElement>&  GetSamplerElements () const{ return _samplers; }
+		
+		virtual void SetName(const std::wstring& name) = 0;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

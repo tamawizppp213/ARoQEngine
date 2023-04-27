@@ -36,7 +36,10 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Bind resource layout array index to the command list.
+					index : resource layout array index*/
 		void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) override;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -54,6 +57,7 @@ namespace rhi::directX12
 		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
 		
 		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
+	
 	private:
 		/****************************************************************************
 		**                Private Function
@@ -67,6 +71,7 @@ namespace rhi::directX12
 		void CreateCBV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // constant buffer view
 
 		const std::shared_ptr<directX12::RHIDescriptorHeap> SelectDescriptorHeap(const core::ResourceViewType type);
+		
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/

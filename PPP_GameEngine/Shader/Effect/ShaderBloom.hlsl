@@ -20,13 +20,15 @@ Texture2D<float4> BlurTexture2 : register(t3);
 Texture2D<float4> BlurTexture3 : register(t4);
 
 RWTexture2D<float4> OutputImage : register(u0);
+
+static const int THREAD = 16;
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
-[numthreads(16, 16, 1)]
+[numthreads(THREAD, THREAD, 1)]
 void SamplingLuminance(uint3 id : SV_DispatchThreadID)
 {
-    uint2   pixelID = int2(id.x, id.y);
+    uint2  pixelID = int2(id.x, id.y);
     float4 color   = MainTexture[pixelID];
     float  t       = dot(color.xyz, float3(0.2125f, 0.7154f, 0.0721f));
 
@@ -38,7 +40,7 @@ void SamplingLuminance(uint3 id : SV_DispatchThreadID)
 
 }
 
-[numthreads(16, 16, 1)]
+[numthreads(THREAD, THREAD, 1)]
 void FinalBloom(uint3 id : SV_DispatchThreadID)
 {
     const uint2 pixelID = uint2(id.x, id.y);
@@ -50,7 +52,8 @@ void FinalBloom(uint3 id : SV_DispatchThreadID)
     color /= 4.0f;
     
     color.a = 1.0f;
-    OutputImage[pixelID] = color + MainTexture[pixelID];
+    OutputImage[pixelID].xyz = color.xyz + MainTexture[pixelID].xyz;
+    OutputImage[pixelID].w   = MainTexture[pixelID].w;
 }
 
 #endif

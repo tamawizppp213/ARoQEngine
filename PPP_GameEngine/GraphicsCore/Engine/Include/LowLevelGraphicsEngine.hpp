@@ -1,6 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   LowLevelGraphicsEngine.hpp
-///             @brief  Low level API grapchis engine
+///             @brief  Low level API grapchis engine. 
+///             How To: á@ Call StartUp function at first
+///                     áA Create Draw frame, call beginDrawFrame and EndDrawFrame() ...loop....
+///                     áB Finally, you should call shutdown when you wanna finish to render
 ///             @author Toide Yutaro
 ///             @date   2022_03_11
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,46 +45,89 @@ namespace rhi::core
 *****************************************************************************/
 class LowLevelGraphicsEngine final : public NonCopyable
 {
+protected:
+	using InstancePtr    = std::shared_ptr<rhi::core::RHIInstance>;
+	using AdapterPtr     = std::shared_ptr<rhi::core::RHIDisplayAdapter>;
+	using DevicePtr      = std::shared_ptr<rhi::core::RHIDevice>;
+	using CommandListPtr = std::shared_ptr<rhi::core::RHICommandList>;
+	using CommandQueuePtr = std::shared_ptr<rhi::core::RHICommandQueue>;
+
 public:
 	/****************************************************************************
 	**                Static Configuration
 	*****************************************************************************/
 	static constexpr std::uint32_t FRAME_BUFFER_COUNT = 3;
+
 	static constexpr std::uint32_t VSYNC = 0; // 0: don't wait, 1:wait(60fps)
+
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
+	/* @brief : Rendering engine start function.*/
 	void StartUp(rhi::core::APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance);
-	void BeginDrawFrame(); // call at begin draw frame
+
+	/* @brief : The first call to the Draw function generates the back buffer image and executes the Default render pass. */
+	void BeginDrawFrame();
+
+	/* @brief : Draw back buffer render pass*/
+	void BeginSwapchainRenderPass();
+	
+	/* @brief : Call at the end of the Draw function to execute the command list and Flip the Swapchain. */
 	void EndDrawFrame();   // call at end draw frame
-	void BeginSwapchainRenderPass(); // back buffer render pass
+	
+	/* @brief : Resize swapchain*/
 	void OnResize(const size_t newWidth, const size_t newHeight);
+	
+	/* @brief : Release all render resources*/
 	void ShutDown();
 
-	void FlushCommandQueue(const rhi::core::CommandListType type);
+
+	/* @brief : Execute command queue. Return fence signal value */
+	std::uint64_t FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame = false);
+
+	/* @brief Wait command queue (in GPU), but if the stopCPU is set true, gpu and cpu wait.*/
+	void WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU);
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
 	/* @brief : Device (Create GPU Resource Function List)*/
-	std::shared_ptr<rhi::core::RHIDevice> GetDevice() const noexcept { return _device; }
+	DevicePtr GetDevice() const noexcept { return _device; }
+
 	/* @brief : CommandList (Regist GPU Commands) */
-	std::shared_ptr<rhi::core::RHICommandList> GetCommandList(const rhi::core::CommandListType type, const std::uint32_t frameIndex) const noexcept { return _commandLists.at(frameIndex).at(type); }
+	CommandListPtr GetCommandList(const rhi::core::CommandListType type) const noexcept { return _commandLists.at(type); }
+	
+	CommandQueuePtr GetCommandQueue(const rhi::core::CommandListType type) const noexcept { return _commandQueues.at(type); }
+
 	/* @brief : Default RenderPass*/
 	std::shared_ptr<rhi::core::RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
+
+	/* @brief : Non clear render pass*/
 	std::shared_ptr<rhi::core::RHIRenderPass> GetDrawContinueRenderPass() const noexcept { return _drawContinueRenderPass; }
+
+	/* @brief : Frame buffer*/
 	std::shared_ptr<rhi::core::RHIFrameBuffer> GetFrameBuffer(const std::uint32_t frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
+
 	/* @brief : Return Current Frame Index*/
 	std::uint32_t   GetCurrentFrameIndex() const { return _currentFrameIndex; }
+
 	rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
+
+	std::shared_ptr<rhi::core::RHISwapchain> GetSwapchain() const noexcept { return _swapchain; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
 	LowLevelGraphicsEngine() = default;
+
 	~LowLevelGraphicsEngine();
+
 protected:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
+	void SetFrameBuffers(const int width, const int height, 
+		const rhi::core::ClearValue& clearColor = rhi::core::ClearValue(0.0f, 0.3f, 0.3f, 1.0f),
+		const rhi::core::ClearValue& clearDepthColor = rhi::core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f));
+
 #pragma region SetUp
 
 #pragma endregion SetUp
@@ -90,32 +136,42 @@ protected:
 	*****************************************************************************/
 	/* @brief : Graphics API version. (DirectX12 or Vulkan)*/
 	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::Unknown;
+
 	/* @brief : graphics API instance (select graphics api)*/
-	std::shared_ptr<rhi::core::RHIInstance> _instance = nullptr;
+	InstancePtr _instance = nullptr;
+
 	/* @brief : gpu display adapter (basically discrete gpu adapter)*/
-	std::shared_ptr<rhi::core::RHIDisplayAdapter> _adapter = nullptr;
+	AdapterPtr _adapter = nullptr;
+
 	/* @brief : Logical Device*/
-	std::shared_ptr<rhi::core::RHIDevice>  _device = nullptr;
+	DevicePtr  _device = nullptr;
+
 	/* @ brief : Command queue (graphics, compute, transfer)*/
 	std::map<rhi::core::CommandListType, std::shared_ptr<rhi::core::RHICommandQueue>> _commandQueues;
+
 	/* @brief : Command List*/
-	std::vector<std::map<rhi::core::CommandListType, std::shared_ptr<rhi::core::RHICommandList>>> _commandLists;
+	std::map<rhi::core::CommandListType, CommandListPtr> _commandLists;
 
 	/* @ brief : CPU-GPU synchronization*/
 	std::shared_ptr<rhi::core::RHIFence> _fence = nullptr;
-	std::uint64_t _fenceValues[FRAME_BUFFER_COUNT] = {0}; // for swapchain fence value
-	std::uint64_t _fenceValue = 0;                        // current frame fence value
+	std::uint64_t _fenceValue = 0;  // current frame fence value
+	
 	/* @brief : Rendering swapchain*/
 	std::shared_ptr<rhi::core::RHISwapchain> _swapchain = nullptr;
+	
 	/* @brief : Default rendering pass*/
 	std::shared_ptr<rhi::core::RHIRenderPass> _renderPass = { nullptr }; 
 	std::shared_ptr<rhi::core::RHIRenderPass> _drawContinueRenderPass = nullptr;
 	std::vector<std::shared_ptr<rhi::core::RHIFrameBuffer>> _frameBuffers = { nullptr };
+	
 	/* @brief : current frame index*/
 	std::uint32_t _currentFrameIndex = 0;
+	
 	/* @brief : Windows API*/
 	HWND      _hwnd      = nullptr;
 	HINSTANCE _hInstance = nullptr;
+	std::int32_t _width = 0;
+	std::int32_t _height = 0;
 
 	/* @brief : Rendering Configuration*/ // å„Ç≈configÉtÉ@ÉCÉãÇçÏê¨Ç∑ÇÈ.
 	bool _useHDR             = false;
@@ -125,6 +181,8 @@ protected:
 		
 	// shutdown check
 	bool _hasCalledShutDown = false;
+
+	bool _hasInitialized = false;
 
 	/****************************************************************************
 	**                Heap Config
@@ -139,6 +197,8 @@ protected:
 private:
 	void SetUpRenderResource();
 	void SetUpHeap();
+	void SetUpFence();
+
 };
 
 #endif

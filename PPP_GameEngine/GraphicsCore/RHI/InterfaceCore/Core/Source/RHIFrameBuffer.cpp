@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,35 +25,50 @@ using namespace rhi::core;
 RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil)
 	: _device(device), _renderPass(renderPass), _renderTargets(renderTargets), _depthStencil(depthStencil)
 {
-	Prepare();
+	CheckResourceFormat();
 }
+
 RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil)
 	: _device(device), _renderPass(renderPass), _renderTargets(std::vector<std::shared_ptr<GPUTexture>>{renderTarget}), _depthStencil(depthStencil)
 {
-	Prepare();
+	CheckResourceFormat();
 }
+
 RHIFrameBuffer::~RHIFrameBuffer()
 {
-	if (_depthStencilView) { _depthStencilView.reset(); }
+	if (_depthStencilView) 
+	{
+		_depthStencilView.reset(); 
+	}
+
 	_renderTargetViews.clear(); _renderTargetViews.shrink_to_fit();
-	if (_depthStencil) { _depthStencil.reset(); }
+	
+	if (_depthStencil) 
+	{ 
+		_depthStencil.reset(); 
+	}
+
 	_renderTargets.clear(); _renderTargets.shrink_to_fit();
 }
+
 #pragma endregion Constructor and Destructor
 #pragma region Prepare
-void RHIFrameBuffer::Prepare()
+void RHIFrameBuffer::CheckResourceFormat()
 {
 	for (int i = 0; i < _renderTargets.size(); ++i)
 	{
 		if (_renderTargets[i] == nullptr) { continue; }
 		if (_renderTargets[i]->GetDimension() != ResourceDimension::Dimension2D) { throw std::runtime_error("Wrong render target dimension"); }
-		if (_renderTargets[i]->GetUsage() != ResourceUsage::RenderTarget) { throw std::runtime_error("Wrong resource usage"); }
+		if (!core::EnumHas(_renderTargets[i]->GetUsage(), core::ResourceUsage::RenderTarget))
+		{ 
+			throw std::runtime_error("Wrong resource usage"); 
+		}
 	}
 
 	if (_depthStencil != nullptr)
 	{
-		if (_depthStencil->GetDimension() != ResourceDimension::Dimension2D) { throw std::runtime_error("Wrong depthStencil dimension"); }
-		if (_depthStencil->GetUsage() != ResourceUsage::DepthStencil) { throw std::runtime_error("Wrong resource usage"); }
+		if (_depthStencil->GetDimension() != ResourceDimension::Dimension2D ) { throw std::runtime_error("Wrong depthStencil dimension"); }
+		if (_depthStencil->GetUsage()     != ResourceUsage    ::DepthStencil) { throw std::runtime_error("Wrong resource usage"); }
 	}
 }
 #pragma endregion Prepare
@@ -75,5 +91,30 @@ ScissorRect RHIFrameBuffer::GetFullScissorRect(const size_t index) const noexcep
 		(long)_renderTargets[index]->GetWidth(_renderTargets[index]->GetMipMapLevels()),
 		(long)_renderTargets[index]->GetHeight(_renderTargets[index]->GetMipMapLevels())
 	};
+}
+
+void RHIFrameBuffer::SetRenderTargets(const std::vector<TexturePtr>& textures)
+{
+	_renderTargets = textures;
+	for (size_t i = 0; i < _renderTargets.size(); ++i)
+	{
+		_renderTargetViews[i]->SetTexture(textures[i]);
+		_renderTargetSRVs[i]->SetTexture(textures[i]);
+		_renderTargetUAVs[i]->SetTexture(textures[i]);
+	}
+}
+
+void RHIFrameBuffer::SetRenderTarget(const TexturePtr& texture, const size_t index)
+{
+	_renderTargetViews[index]->SetTexture(texture);
+	_renderTargetSRVs[index]->SetTexture(texture);
+	_renderTargetUAVs[index]->SetTexture(texture);
+}
+
+void RHIFrameBuffer::SetDepthStencil(const TexturePtr& texture)
+{
+	_depthStencil = texture;
+	_depthStencilView->SetTexture(texture);
+	_depthStencilSRV ->SetTexture(texture);
 }
 #pragma endregion Property

@@ -117,8 +117,8 @@ bool Application::CreateMainWindow()
 						Set Game screen window size
 	-----------------------------------------------------------------*/
 	RECT gameWindowRect = { 0,0, Screen::GetFullScreenWidth(), Screen::GetFullScreenHeight()};
-	Screen::SetScreenWidth (Screen::GetFullScreenWidth());
-	Screen::SetScreenHeight(Screen::GetFullScreenHeight());
+	Screen::SetScreenWidth (1920);
+	Screen::SetScreenHeight(1080);
 
 	/*---------------------------------------------------------------
 						CenteringWindow
@@ -171,6 +171,20 @@ LRESULT Application::WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wPar
 		{
 			Screen::SetScreenWidth(LOWORD(lParam));
 			Screen::SetScreenHeight(HIWORD(lParam));
+
+			if (!_gameManager.GetGraphicsEngine()) { return 0; }
+			switch (wParam)
+			{
+				case SIZE_RESTORED:
+				{
+					_gameManager.GetGraphicsEngine()->OnResize(Screen::GetScreenWidth(), Screen::GetScreenHeight());
+					break;
+				}
+				default:
+				{
+					break;
+				}
+			}
 			return 0;
 		}
 		/*-----------------------------------------------------------------
@@ -203,8 +217,8 @@ LRESULT Application::WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wPar
 		--------------------------------------------------------------------*/
 		case WM_DISPLAYCHANGE:
 		{
-			_gameManager.GameEnd();
-			_gameManager.GameStart(_apiVersion, _gameTimer, _mainWindow, _appInstance);
+			/*_gameManager.GameEnd();
+			_gameManager.GameStart(_apiVersion, _gameTimer, _mainWindow, _appInstance);*/
 			return 0;
 		}
 	}

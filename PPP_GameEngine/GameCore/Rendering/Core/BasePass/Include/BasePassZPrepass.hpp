@@ -77,7 +77,9 @@ namespace gc::basepass
 		*****************************************************************************/
 		TexturePtr GetRenderedTexture() const noexcept;
 
-		/****************************************************************************
+		GPUResourceViewPtr GetRenderedTextureView() const noexcept;
+
+ 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		ZPrepass() = default;
@@ -92,7 +94,7 @@ namespace gc::basepass
 		*****************************************************************************/
 		void PreparePipelineState(const std::wstring& name);
 		
-		void PrepareFrameBuffers();
+		void PrepareFrameBuffers(const std::wstring& name);
 		
 		/****************************************************************************
 		**                Protected Member Variables

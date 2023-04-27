@@ -58,11 +58,17 @@ D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibility
 }
 #pragma endregion Shader
 #pragma region Sampler State
+/*-------------------------------------------------------------------
+-           Texture addresing mode
+---------------------------------------------------------------------*/
 D3D12_TEXTURE_ADDRESS_MODE  EnumConverter::Convert(const rhi::core::SamplerAddressMode addressingMode)
 {
 	return static_cast<D3D12_TEXTURE_ADDRESS_MODE>(addressingMode); // all the same
 }
 
+/*-------------------------------------------------------------------
+-               Border Color
+---------------------------------------------------------------------*/
 D3D12_STATIC_BORDER_COLOR EnumConverter::Convert(const rhi::core::BorderColor borderColor)
 {
 	switch (borderColor)
@@ -78,6 +84,9 @@ D3D12_STATIC_BORDER_COLOR EnumConverter::Convert(const rhi::core::BorderColor bo
 	}
 }
 
+/*-------------------------------------------------------------------
+-               Sampling filter mode when the image is enlarged or shirinked.
+---------------------------------------------------------------------*/
 D3D12_FILTER EnumConverter::Convert(const rhi::core::FilterOption filter)
 {
 	switch (filter)
@@ -109,6 +118,7 @@ DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 		case B8G8R8A8_UNORM     : return DXGI_FORMAT_B8G8R8A8_UNORM;
 		case R16G16B16A16_FLOAT : return DXGI_FORMAT_R16G16B16A16_FLOAT;
 		case R32G32B32A32_FLOAT : return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		case R32G32_FLOAT       : return DXGI_FORMAT_R32G32_FLOAT;
 		case R32G32B32_FLOAT    : return DXGI_FORMAT_R32G32B32_FLOAT;
 		case D24_UNORM_S8_UINT  : return DXGI_FORMAT_D24_UNORM_S8_UINT;
 		case R10G10B10A2_UNORM  : return DXGI_FORMAT_R10G10B10A2_UNORM;
@@ -150,6 +160,9 @@ D3D12_COLOR_WRITE_ENABLE EnumConverter::Convert(const rhi::core::ColorMask color
 }
 #pragma endregion        BlendState
 #pragma region RasterizerState
+/*-------------------------------------------------------------------
+-               Polygon fill mode
+---------------------------------------------------------------------*/
 D3D12_FILL_MODE EnumConverter::Convert(const rhi::core::FillMode fillMode)
 {
 	switch (fillMode)
@@ -158,11 +171,15 @@ D3D12_FILL_MODE EnumConverter::Convert(const rhi::core::FillMode fillMode)
 
 		case Solid    : return D3D12_FILL_MODE_SOLID;
 		case WireFrame: return D3D12_FILL_MODE_WIREFRAME;
-
+		case Point    : throw  std::runtime_error("You must select the Vulkan API to use this mode.");
 		default:
 			throw std::runtime_error("not supported fill mode type (directX12 api)");
 	}
 }
+
+/*-------------------------------------------------------------------
+-               Polygon culling mode
+---------------------------------------------------------------------*/
 D3D12_CULL_MODE EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
 {
 	switch (cullingMode)
@@ -177,6 +194,10 @@ D3D12_CULL_MODE EnumConverter::Convert(const rhi::core::CullingMode cullingMode)
 			throw std::runtime_error("not supported culling mode type (directX12 api)");
 	}
 }
+
+/*-------------------------------------------------------------------
+-               Front face mode
+---------------------------------------------------------------------*/
 bool EnumConverter::Convert(const rhi::core::FrontFace   frontFace)
 {
 	return frontFace == rhi::core::FrontFace::CounterClockwise;
@@ -239,6 +260,18 @@ D3D12_PRIMITIVE_TOPOLOGY_TYPE EnumConverter::Convert1(const rhi::core::Primitive
 		case TriangleStrip: return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 		default:
 			throw std::runtime_error("not supported primitive topology type (directX12 api)");
+	}
+}
+
+D3D12_INPUT_CLASSIFICATION EnumConverter::Convert(const rhi::core::InputClassification classification)
+{
+	using enum core::InputClassification;
+	switch (classification)
+	{
+		case PerVertex  : return D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+		case PerInstance: return D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+		default:
+			throw std::runtime_error("not supported classication type.");
 	}
 }
 DXGI_FORMAT EnumConverter::Convert(const core::InputFormat inputFormat)
@@ -346,9 +379,10 @@ D3D12_HEAP_TYPE  EnumConverter::Convert(const rhi::core::MemoryHeap memoryHeap)
 	using enum core::MemoryHeap;
 	switch (memoryHeap)
 	{
-		case Default: return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_DEFAULT;
-		case Upload : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_UPLOAD;
-		case Custom : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_CUSTOM;
+		case Default : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_DEFAULT;
+		case Upload  : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_UPLOAD;
+		case Readback: return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_READBACK;
+		case Custom   : return D3D12_HEAP_TYPE::D3D12_HEAP_TYPE_CUSTOM;
 		default:
 			throw std::runtime_error("not supported heap type (directX12 api)");
 	}

@@ -49,7 +49,7 @@ namespace rhi::core
 			{
 				_colorClearValues[index] = color.value();
 			}
-			_depthClearValue     = depth;
+			_depthClearValue     = depth; // optional
 		}
 
 		void SetClearValue(const std::vector<ClearValue>& colors, const std::optional<ClearValue>& depth = std::nullopt)
@@ -77,6 +77,8 @@ namespace rhi::core
 		
 		/* @brief : Return color attachment size*/
 		size_t GetColorAttachmentSize() const noexcept { return _colorAttachments.size(); }
+
+		virtual void SetName(const std::wstring& name) = 0;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

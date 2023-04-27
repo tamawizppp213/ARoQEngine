@@ -35,15 +35,19 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		const D3D12_INPUT_LAYOUT_DESC& GetLayout() const noexcept { return _inputLayout; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUInputAssemblyState() = default;
+		
 		~GPUInputAssemblyState() = default;
+		
 		explicit GPUInputAssemblyState(
 			const std::shared_ptr<rhi::core::RHIDevice>& device, 
 			const std::vector<core::InputLayoutElement>& elements, 
@@ -58,6 +62,7 @@ namespace rhi::directX12
 		**                Protected Member Variables
 		*****************************************************************************/
 		D3D12_INPUT_LAYOUT_DESC _inputLayout = {nullptr, 0};
+
 		std::vector<D3D12_INPUT_ELEMENT_DESC> _inputLayoutElements = {};
 	};
 }

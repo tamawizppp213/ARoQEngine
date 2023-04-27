@@ -23,10 +23,10 @@
 namespace rhi::vulkan
 {
 	/****************************************************************************
-	*				  			GPUBuffer
+	*				  			GPUSampler
 	*************************************************************************//**
-	*  @class     GPUBuffer
-	*  @brief     Buffer
+	*  @class     GPUSampler
+	*  @brief     Sampler state
 	*****************************************************************************/
 	class GPUSampler : public core::GPUSampler
 	{
@@ -39,12 +39,16 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		const VkSampler& GetSampler() const noexcept { return _sampler; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUSampler() = default;
+
 		~GPUSampler();
+
 		explicit GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
+	
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

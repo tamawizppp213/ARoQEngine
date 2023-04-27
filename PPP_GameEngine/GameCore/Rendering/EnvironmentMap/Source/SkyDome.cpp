@@ -51,9 +51,8 @@ SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cu
 	/*-------------------------------------------------------------------
 	-           Load Texture
 	---------------------------------------------------------------------*/
-	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	const auto texture     = device->CreateTextureEmpty();
 	texture->Load(cubeMapPath, commandList);
 	texture->SetName(cubeMapPath);
@@ -70,7 +69,7 @@ SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cu
 void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView) 
 {
 	const auto currentFrame = _engine->GetCurrentFrameIndex();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, currentFrame);
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
@@ -100,9 +99,8 @@ void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView)
 *****************************************************************************/
 void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 {
-	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
-	const auto commandList = _engine->GetCommandList(CommandListType::Copy, frameIndex); 
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy); 
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
@@ -110,7 +108,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/
-	const auto frameCount = device->GetFrameCount();
+	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
 	_vertexBuffers.resize(frameCount);
 	_indexBuffers .resize(frameCount);
@@ -153,9 +151,8 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 *****************************************************************************/
 void SkyDome::PrepareSkyObject(const std::wstring& addName)
 {
-	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
-	const auto commandList = _engine->GetCommandList(CommandListType::Copy, frameIndex);
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
 
 	/*-------------------------------------------------------------------
 	-			Set Skydata
@@ -208,7 +205,7 @@ void SkyDome::PreparePipelineState(const std::wstring& addName)
 
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::AlphaBlend()));
-	_pipeline->SetRasterizerState   (factory->CreateRasterizerState());
+	_pipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
 	_pipeline->SetDepthStencilState (factory->CreateDepthStencilState());
 	_pipeline->SetVertexShader(vs);
@@ -219,9 +216,8 @@ void SkyDome::PreparePipelineState(const std::wstring& addName)
 
 void SkyDome::PrepareResourceView(const std::shared_ptr<GPUTexture>& texture)
 {
-	const auto frameIndex  = _engine->GetCurrentFrameIndex();
 	const auto device      = _engine->GetDevice();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	
 	/*-------------------------------------------------------------------
 	-           Prepare Resource View

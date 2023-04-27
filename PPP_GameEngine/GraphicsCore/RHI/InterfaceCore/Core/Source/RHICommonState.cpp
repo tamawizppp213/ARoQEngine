@@ -55,6 +55,13 @@ SamplerInfo SamplerInfo::GetDefaultSampler(DefaultSamplerType type)
 		samplerDesc.AddressModeW = SamplerAddressMode::Clamp;
 		break;
 	}
+	case DefaultSamplerType::SamplerLinearBorder:
+	{
+		samplerDesc.Filter       = FilterOption::MinLinearMagLinearMipLinear;
+		samplerDesc.AddressModeU = SamplerAddressMode::Border;
+		samplerDesc.AddressModeV = SamplerAddressMode::Border;
+		samplerDesc.AddressModeW = SamplerAddressMode::Border;
+	}
 	case DefaultSamplerType::SamplerAnisotropicWrap:
 	{
 		samplerDesc.Filter       = FilterOption::Anisotropy;
@@ -82,13 +89,21 @@ GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::Resource
 	if (bufferType == BufferType::Constant) { Stride = CalcConstantBufferByteSize(stride); }
 	ByteSize = Stride * Count;
 }
-GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count, void* initData)
+
+GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const InputFormat format, const size_t count, const MemoryHeap heap, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, MemoryHeap::Upload, BufferType::Upload, initData);
+	auto info = GPUBufferMetaData(InputFormatSizeOf::Get(format), count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
+	info.Format = format;
+	return info;
 }
-GPUBufferMetaData GPUBufferMetaData::DefaultBuffer(const size_t stride, const size_t count, void* initData)
+
+GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, MemoryHeap::Default, BufferType::Default, initData);
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
+}
+GPUBufferMetaData GPUBufferMetaData::DefaultBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
+{
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::Common, heap, BufferType::Default, initData);
 }
 GPUBufferMetaData GPUBufferMetaData::ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state, void* initData)
 {
@@ -265,7 +280,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTarget(const size_t width, const si
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget;
+	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess; // for frame buffer
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
@@ -284,7 +299,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTargetMultiSample(const size_t widt
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget;
+	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
@@ -332,27 +347,38 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 }
 #pragma endregion GPUTexture
 #pragma region BlendProperty
-BlendProperty BlendProperty::NoColorWrite()
+BlendProperty BlendProperty::NoColorWrite(const bool useAlphaToCoverage)
 {
 	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
 		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
 		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::None, false);
+		ColorMask::None, useAlphaToCoverage, false);
 }
 
-BlendProperty BlendProperty::OverWrite()
+BlendProperty BlendProperty::OverWrite(const bool useAlphaToCoverage)
 {
 	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
 		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
 		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::All, false);
+		ColorMask::All, useAlphaToCoverage, false);
 }
 
-BlendProperty BlendProperty::AlphaBlend()
+BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
 {
 	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
 		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
 		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::All, true);
+		ColorMask::All, useAlphaToCoverage, true);
 }
-#pragma endregion BlendProperty
+#pragma endregion      BlendProperty
+#pragma region RasterizerProperty
+RasterizerProperty RasterizerProperty::Solid(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode)
+{
+	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample);
+}
+
+RasterizerProperty RasterizerProperty::WireFrame(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode)
+{
+	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample);
+}
+#pragma endregion RasterizerProperty

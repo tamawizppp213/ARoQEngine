@@ -12,21 +12,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Math/Include/GMVertex.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
-#include <memory>
 #include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
-namespace rhi::core
-{
-	class  RHICommandList;
-	struct GPUBufferMetaData;
-	class  GPUBuffer;
-}
+
 //////////////////////////////////////////////////////////////////////////////////
 //                         Mesh Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -43,8 +38,8 @@ namespace gc::core
 	class Mesh : public NonCopyable
 	{
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using VertexBufferPtr  = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
+		using VertexBufferPtr  = BufferPtr;
+		using IndexBufferPtr   = BufferPtr;
 		using MaterialPtr      = std::shared_ptr<Material>;
 	public:
 		/****************************************************************************

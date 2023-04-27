@@ -10,12 +10,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "../Include/DirectX12CommandQueue.hpp"
+#include "../Include/DirectX12CommandList.hpp"
+#include "../Include/DirectX12EnumConverter.hpp"
+#include "../Include/DirectX12Fence.hpp"
+#include "../Include/DirectX12Device.hpp"
+#include "../Include/DirectX12Debug.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <memory>
@@ -30,8 +30,13 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, core::CommandListType type) : rhi::core::RHICommandQueue(type)
+RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, core::CommandListType type, const std::wstring& name) : rhi::core::RHICommandQueue(device, type)
 {
+#ifdef _DEBUG
+	assert(device);
+	assert(type != core::CommandListType::Unknown);
+#endif
+
 	const auto dxDevice = static_cast<RHIDevice*>(device.get())->GetDevice();
 
 	D3D12_COMMAND_LIST_TYPE dxCommandListType = EnumConverter::Convert(_commandListType);
@@ -51,7 +56,7 @@ RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& de
 	-                   Create command queue
 	---------------------------------------------------------------------*/
 	ThrowIfFailed(dxDevice->CreateCommandQueue(&cmdQDesc, IID_PPV_ARGS(&_commandQueue)));
-	_commandQueue->SetName(L"DirectX12::CommandQueue");
+	_commandQueue->SetName(name.c_str());
 }
 
 RHICommandQueue::~RHICommandQueue()
@@ -67,9 +72,9 @@ RHICommandQueue::~RHICommandQueue()
 *  @fn        void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
 * 
 *  @brief     Used to wait for another Command queue to complete execution. (in GPU)
+*             FenceのWaitはCPU側も処理が止まりますが, CommandQueueのWaitは, 指定したValue以上の値になるまで, GPU内のみで処理を止めることになります. 
 * 
 *  @param[in] const std::shared_ptr<core::RHIFence>& fence
-* 
 *  @param[in] std::uint64_t value
 * 
 *  @return 　　void
@@ -85,7 +90,8 @@ void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, std::ui
 *************************************************************************//**
 *  @fn        void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
 * 
-*  @brief     Update the fence value (value) when the Command Queue execution completes.
+*  @brief     Update value when the Command Queue execution completes.
+*             GPU内で処理が完結します.　
 * 
 *  @param[in] const std::shared_ptr<core::RHIFence>& fence
 * 
@@ -129,4 +135,13 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 	if (dxCommandLists.empty()) { return; }
 	_commandQueue->ExecuteCommandLists(static_cast<UINT>(dxCommandLists.size()), dxCommandLists.data());
 }
+
 #pragma endregion Execute
+
+#pragma region Property
+void RHICommandQueue::SetName(const std::wstring& name)
+{
+	_commandQueue->SetName(name.c_str());
+}
+
+#pragma endregion Property

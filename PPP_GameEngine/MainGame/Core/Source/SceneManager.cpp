@@ -16,7 +16,9 @@
 #include "MainGame/Sample/Include/SampleText.hpp"
 #include "MainGame/Sample/Include/SampleUI.hpp"
 #include "MainGame/Sample/Include/SampleModel.hpp"
+#include "MainGame/Sample/Include/SampleURP.hpp"
 #include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
+#include "MainGame/Sample/Include/SampleCollisionDetection.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -27,8 +29,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_ptr<GameTimer>& gameTimer)
 {
+	// debug log
+	assert(("engine is nullptr."   , engine));
+	assert(("gameTimer is nullptr.", gameTimer));
+
 	_engine = engine;
-	PushScene(new sample::SampleModel());
+	_gameTimer = gameTimer;
+	PushScene(new sample::SampleCollisionDetection());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************
@@ -40,12 +47,14 @@ void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_p
 *  @param[in] GameTimer& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SceneManager::TransitScene(ScenePtr scene, const GameTimerPtr& gameTimer)
+void SceneManager::TransitScene(ScenePtr scene)
 {
+	if (!scene) { return; }
+
 	CallSceneTerminate();
 	_currentScene.pop();
 	_currentScene.emplace(std::move(scene));
-	CallSceneInitialize(gameTimer);
+	CallSceneInitialize(_gameTimer);
 }
 
 void SceneManager::CallSceneInitialize( const GameTimerPtr& gameTimer)

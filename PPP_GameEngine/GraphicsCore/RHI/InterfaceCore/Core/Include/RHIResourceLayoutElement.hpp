@@ -40,18 +40,19 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		//ShaderVisibility   Visibility     = ShaderVisibility::All;
-		DescriptorHeapType DescriptorType = DescriptorHeapType::CBV;
-		size_t             Binding        = 0; // or shader resister
-		size_t             RegisterSpace  = 0;
+		ShaderVisibility   Visibility     = ShaderVisibility::All;    // Specify the shaders that can access the contents of the root signature slot.
+		DescriptorHeapType DescriptorType = DescriptorHeapType::CBV;  // Descriptor type
+		size_t             Binding        = 0;                        // binding or shader resister. In case of srv, 3 is mapped in register(t3) of HLSL.   
+		size_t             RegisterSpace  = 0;                        // register space. normally this value is set 0. Multiple descriptor arrays of unknown size can be prevented from overlapping
+		                                                              // register space how to: https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/resource-binding-in-hlsl
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		ResourceLayoutElement() = default;
 
-		explicit ResourceLayoutElement(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = 0)
-			: Binding(binding), RegisterSpace(registerSpace), DescriptorType(type)
+		explicit ResourceLayoutElement(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = 0, const ShaderVisibility visibility = ShaderVisibility::All)
+			: Binding(binding), RegisterSpace(registerSpace), DescriptorType(type), Visibility(visibility)
 		{
 		};
 	};
@@ -104,9 +105,11 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		InputFormat Format       = InputFormat::Unknown;
-		std::string SemanticName = "";
-		size_t      Slot         = 0;
+		InputFormat         Format         = InputFormat::Unknown;
+		InputClassification Classification = InputClassification::PerVertex;
+		size_t              Slot           = 0;
+		std::string         SemanticName   = "";
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -114,7 +117,7 @@ namespace rhi::core
 
 		~InputLayoutElement() = default;
 
-		explicit InputLayoutElement(const std::string& name, const InputFormat format, const size_t slot = 0) : Format(format), SemanticName(name), Slot(slot) {};
+		explicit InputLayoutElement(const std::string& name, const InputFormat format, const InputClassification classification = InputClassification::PerVertex,  const size_t slot = 0) : Format(format), SemanticName(name), Classification(classification), Slot(slot) {};
 	};
 
 	struct Value32Bit

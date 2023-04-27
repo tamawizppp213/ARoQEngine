@@ -24,10 +24,10 @@ namespace rhi::directX12
 {
 
 	/****************************************************************************
-	*				  			GPUBlendState
+	*				  			GPUDepthStencilState
 	*************************************************************************//**
-	*  @class     GPUBlendState
-	*  @brief     BlendState
+	*  @class     GPUDepthStencilState
+	*  @brief     DepthStencilState
 	*****************************************************************************/
 	class GPUDepthStencilState : public rhi::core::GPUDepthStencilState
 	{
@@ -40,19 +40,17 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		const D3D12_DEPTH_STENCIL_DESC& GetDepthStencilState() const noexcept { return _depthStencilDesc; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		explicit GPUDepthStencilState(
 			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const bool            depthEnable      = true,
-			const bool            depthWriteEnable = true,
-			const bool            stencilEnable    = false,
-			const core::CompareOperator depthOperator = core::CompareOperator::LessEqual,
-			const core::StencilOperatorInfo& front    = core::StencilOperatorInfo(),
-			const core::StencilOperatorInfo& back     = core::StencilOperatorInfo()
+			const core::DepthStencilProperty& depthStencilProperty
 		);
+
 		~GPUDepthStencilState() = default;
+		
 		GPUDepthStencilState() = default;
 	protected:
 		/****************************************************************************

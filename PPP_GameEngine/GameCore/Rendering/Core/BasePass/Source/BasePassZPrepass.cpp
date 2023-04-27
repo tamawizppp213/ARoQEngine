@@ -15,6 +15,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayout.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
@@ -40,7 +41,7 @@ ZPrepass::ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t 
 	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"ZPrepass::";
 
-	PrepareFrameBuffers();
+	PrepareFrameBuffers(name);
 	PreparePipelineState(name);
 }
 
@@ -70,7 +71,7 @@ void ZPrepass::OnResize(const std::uint32_t width, const std::uint32_t height)
 void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 {
 	const auto currentFrame = _engine->GetCurrentFrameIndex();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, currentFrame);
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------
 	-                 Change render target
@@ -137,6 +138,11 @@ ZPrepass::TexturePtr ZPrepass::GetRenderedTexture() const noexcept
 {
 	return _frameBuffers[_engine->GetCurrentFrameIndex()]->GetRenderTarget();
 }
+
+ZPrepass::GPUResourceViewPtr ZPrepass::GetRenderedTextureView() const noexcept
+{
+	return _frameBuffers[_engine->GetCurrentFrameIndex()]->GetRenderTargetSRV();
+}
 #pragma endregion Main Function
 
 #pragma region Setup Function
@@ -180,7 +186,7 @@ void ZPrepass::PreparePipelineState(const std::wstring& name)
 	---------------------------------------------------------------------*/
 	_pipeline = device->CreateGraphicPipelineState(_renderPass, _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::AlphaBlend()));
-	_pipeline->SetRasterizerState   (factory->CreateRasterizerState());
+	_pipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultSkinVertexElement()));
 	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());
 	_pipeline->SetVertexShader(vs);
@@ -196,11 +202,11 @@ void ZPrepass::PreparePipelineState(const std::wstring& name)
 *
 *  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
 *
-*  @param[in] void
+*  @param[in] const std::wstring& name
 *
 *  @return @@void
 *****************************************************************************/
-void ZPrepass::PrepareFrameBuffers()
+void ZPrepass::PrepareFrameBuffers(const std::wstring& name)
 {
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto device     = _engine->GetDevice();
@@ -224,10 +230,13 @@ void ZPrepass::PrepareFrameBuffers()
 	_frameBuffers.resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
-		const auto renderInfo    = GPUTextureMetaData::RenderTarget(_width, _height, PixelFormat::R32_FLOAT, clearColor);
-		const auto depthInfo     = GPUTextureMetaData::DepthStencil(_width, _height, PixelFormat::D32_FLOAT, clearDepthColor);
-		const auto renderTexture = device->CreateTexture(renderInfo);
-		const auto depthTexture  = device->CreateTexture(depthInfo);
+		auto renderInfo    = GPUTextureMetaData::RenderTarget(_width, _height, PixelFormat::R32_FLOAT, clearColor);
+		auto depthInfo     = GPUTextureMetaData::DepthStencil(_width, _height, PixelFormat::D32_FLOAT, clearDepthColor);
+
+		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
+
+		const auto renderTexture = device->CreateTexture(renderInfo, name + L"RenderTarget");
+		const auto depthTexture  = device->CreateTexture(depthInfo, name + L"DepthStencil");
 		
 		_frameBuffers[i] = device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
 	}

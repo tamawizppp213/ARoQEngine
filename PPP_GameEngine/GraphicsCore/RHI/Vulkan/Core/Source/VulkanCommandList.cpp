@@ -29,7 +29,7 @@ using namespace rhi;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHICommandList::RHICommandList(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHICommandAllocator>& allocator): 
+RHICommandList::RHICommandList(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHICommandAllocator>& allocator, const std::wstring& name): 
 	core::RHICommandList(device, allocator)
 {
 	VkDevice      vkDevice    = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
@@ -47,6 +47,8 @@ RHICommandList::RHICommandList(const std::shared_ptr<core::RHIDevice>& device, c
 		throw std::runtime_error("failed to allocate command buffer (primary)");
 	}
 	_commandListType = _commandAllocator->GetCommandListType();
+	_isOpen          = false;
+	SetName(name);
 }
 
 RHICommandList::~RHICommandList()
@@ -59,8 +61,23 @@ RHICommandList::~RHICommandList()
 
 #pragma endregion Constructor and Destructor
 #pragma region SetUp Draw Frame
-void RHICommandList::BeginRecording()
+/****************************************************************************
+*                     BeginRecording
+*************************************************************************//**
+*  @fn        void RHICommandList::BeginRecording()
+*
+*  @brief     This function must be called at draw function initially (stillMidFrame = false
+*             If still mid frame is set false, this function clears the command allocator
+*
+*  @param[in] const bool stillMidFrame (default: false)
+*
+*  @return    void
+*****************************************************************************/
+void RHICommandList::BeginRecording(const bool stillMidFrame)
 {
+	// recorded command allocator clean up
+	if (!stillMidFrame) { _commandAllocator->CleanUp(); }
+
 	if (vkResetCommandBuffer(_commandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT) != VK_SUCCESS) { throw std::runtime_error("failed to reset command buffers\n"); };
 	/*-------------------------------------------------------------------
 	-               Set Up
@@ -72,12 +89,27 @@ void RHICommandList::BeginRecording()
 	---------------------------------------------------------------------*/
 	if (vkBeginCommandBuffer(_commandBuffer, &commandBeginInfo) != VK_SUCCESS) { throw std::runtime_error("failed to begin command buffers\n"); }
 
+	_isOpen = true;
 }
 
+/****************************************************************************
+*                     EndRecording
+*************************************************************************//**
+*  @fn        void RHICommandList::EndRecording()
+*
+*  @brief     Call at end draw frame. Close executed command list.
+*              The command list is closed, it transits the executable state.
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void RHICommandList::EndRecording()
 {
+	if (!_isOpen) { OutputDebugStringA("Already closed \n"); return; }
 	if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS) { throw std::runtime_error("failed to end command buffer\n"); };
-
+	_isOpen = false;
+	_beginRenderPass = false;
 }
 
 void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer)
@@ -94,6 +126,7 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 	-               Set clear values
 	---------------------------------------------------------------------*/
 	std::vector<VkClearValue> clearValues = vkRenderPass->GetVkClearValues();
+
 	/*-------------------------------------------------------------------
 	-               Set Up VkRenderPassBeginInfo
 	---------------------------------------------------------------------*/
@@ -112,10 +145,13 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 
 	_renderPass  = renderPass;
 	_frameBuffer = frameBuffer;
+	_beginRenderPass = true;
 }
 void RHICommandList::EndRenderPass()
 {
+	if (!_beginRenderPass) { return; }
 	vkCmdEndRenderPass(_commandBuffer);
+	_beginRenderPass = false;
 	/*-------------------------------------------------------------------
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
@@ -133,7 +169,7 @@ void RHICommandList::EndRenderPass()
 *  @param[in] std::uint32_t viewport count
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
+void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint32_t numViewport)
 {
 	std::vector<VkViewport> v(numViewport);
 	for (std::uint32_t i = 0; i < numViewport; ++i)
@@ -156,7 +192,7 @@ void RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t n
 *  @param[in] std::uint32_t numRect
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
+void RHICommandList::SetScissor(const core::ScissorRect* rect, const std::uint32_t numRect)
 {
 	std::vector<VkRect2D> r(numRect);
 	for (UINT i = 0; i < numRect; ++i)
@@ -198,6 +234,17 @@ void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const
 }
 
 #pragma region Graphics Command 
+/****************************************************************************
+*                       SetPrimitiveTopology
+*************************************************************************//**
+*  @fn        void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
+*
+*  @brief     Regist Primitive topology to command list
+*
+*  @param[in] const core::PrimitiveTopology
+*
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology)
 {
 	vkCmdSetPrimitiveTopology(_commandBuffer, EnumConverter::Convert(topology));
@@ -237,10 +284,36 @@ void RHICommandList::SetIndexBuffer(const std::shared_ptr<core::GPUBuffer>& buff
 }
 #pragma endregion Graphics Command
 #pragma region TransitionResourceLayout
+/****************************************************************************
+*                     TransitionResourceStates
+*************************************************************************//**
+*  @fn        void RHICommandList::TransitionResourceStates(const std::shared_ptr<core::GPUTexture>& textures, core::ResourceState afters)
+*
+*  @brief     Transition a single resource layout using barrier
+*
+*  @param[in] const std::shared_ptr<core::GPUTexture>& texture array,
+*  @param[in] core::ResourceState state array
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after)
 {
 	TransitionResourceStates(1, &texture, &after);
 }
+
+/****************************************************************************
+*                     TransitionResourceStates
+*************************************************************************//**
+*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
+*
+*  @brief     Transition resource layout using barrier
+*
+*  @param[in] const std::uint32_t numStates
+*  @param[in] const std::shared_ptr<core::GPUTexture>* texture array,
+*  @param[in] core::ResourceState* state array
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
 {
 	if (numStates <= 0) { return; }
@@ -252,24 +325,26 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 
 		auto& imageMemoryBarrier               = imageMemoryBarriers[i];
 		imageMemoryBarrier.sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		imageMemoryBarrier.image               = vkTexture->GetImage();
+		imageMemoryBarrier.pNext               = nullptr;
+		imageMemoryBarrier.srcAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.oldLayout);
+		imageMemoryBarrier.dstAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.newLayout);
 		imageMemoryBarrier.oldLayout           = EnumConverter::Convert(vkTexture->GetResourceState());
 		imageMemoryBarrier.newLayout           = EnumConverter::Convert(afters[i]);
 		imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		imageMemoryBarrier.srcAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.oldLayout);
-		imageMemoryBarrier.dstAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.newLayout);
+		imageMemoryBarrier.image               = vkTexture->GetImage();
 		imageMemoryBarrier.subresourceRange.aspectMask     = EnumConverter::Convert(vkTexture->GetPixelFormat(), vkTexture->GetUsage());
 		imageMemoryBarrier.subresourceRange.baseArrayLayer = 0;
 		imageMemoryBarrier.subresourceRange.baseMipLevel   = 0;
 		imageMemoryBarrier.subresourceRange.layerCount     = static_cast<std::uint32_t>(vkTexture->GetArrayLength());
 		imageMemoryBarrier.subresourceRange.levelCount     = static_cast<std::uint32_t>(vkTexture->GetMipMapLevels());
-		imageMemoryBarrier.pNext = nullptr;
 
 		vkTexture->TransitionResourceState(afters[i]);
 	}
 
-	vkCmdPipelineBarrier(_commandBuffer, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+	vkCmdPipelineBarrier(_commandBuffer, 
+		VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 
+		VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
 		VkDependencyFlagBits::VK_DEPENDENCY_BY_REGION_BIT,
 		0, nullptr, // memory barrier
 		0, nullptr,  // buffer memory barrier
@@ -295,3 +370,11 @@ VkAccessFlags RHICommandList::SelectVkAccessFlag(const VkImageLayout imageLayout
 }
 #pragma endregion TransitionResourceLayout
 #pragma endregion GPU Command
+
+#pragma region Property
+void RHICommandList::SetName(const std::wstring& name)
+{
+	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	device->SetVkResourceName(name, VK_OBJECT_TYPE_COMMAND_BUFFER, reinterpret_cast<std::uint64_t>(_commandBuffer));
+}
+#pragma endregion Property

@@ -28,7 +28,7 @@ namespace physics::geometry
 	*  @class     GeometryBox
 	*  @brief     Geometry interface
 	*****************************************************************************/
-	class GeometryBox : public IGeometry
+	class GeometryAABB : public IGeometry
 	{
 	public:
 		/****************************************************************************
@@ -45,10 +45,13 @@ namespace physics::geometry
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GeometryBox(const gm::Float3& halfExtents) : IGeometry(GeometryType::Box), HalfExtents(halfExtents) {};
+		GeometryAABB(const gm::Float3& halfExtents) : IGeometry(GeometryType::AABB), HalfExtents(halfExtents) {};
 
-		GeometryBox(const float hx = 0.0f, const float hy = 0.0f, const float hz = 0.0f)
-			: IGeometry(GeometryType::Box), HalfExtents({ hx, hy, hz }) { };
+		GeometryAABB(const float hx = 0.0f, const float hy = 0.0f, const float hz = 0.0f)
+			: IGeometry(GeometryType::AABB), HalfExtents({ hx, hy, hz }) 
+		{
+			assert(IsValid());
+		};
 
 	protected:
 		/****************************************************************************
@@ -59,6 +62,51 @@ namespace physics::geometry
 		**                Protected Function
 		*****************************************************************************/
 		
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+	};
+
+	/****************************************************************************
+	*				  			  GeometryBox
+	*************************************************************************//**
+	*  @class     GeometryBox
+	*  @brief     Geometry interface
+	*****************************************************************************/
+	class GeometryOBB : public IGeometry
+	{
+	public:
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+		bool IsValid() const override;
+
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		// @brief: half of the width, height, and depth of the box.
+		gm::Float3 HalfExtents = { 0.0f, 0.0f, 0.0f };
+
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		GeometryOBB(const gm::Float3& halfExtents) : IGeometry(GeometryType::OBB), HalfExtents(halfExtents) {};
+
+		GeometryOBB(const float hx = 0.0f, const float hy = 0.0f, const float hz = 0.0f)
+			: IGeometry(GeometryType::OBB), HalfExtents({ hx, hy, hz })
+		{
+			assert(IsValid());
+		};
+
+	protected:
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

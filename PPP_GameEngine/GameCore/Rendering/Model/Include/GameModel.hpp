@@ -65,7 +65,11 @@ namespace gc::core
 
 		size_t GetMaterialCount() const { return _materialCount; }
 
+		gm::Float4 GetDebugColor() const { return _debugColor; }
+
 		bool HasSkin() const { return _hasSkin; }
+
+		void SetDebugColor(const gm::Float4& color) { _debugColor = color; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -81,6 +85,7 @@ namespace gc::core
 		**                Protected Function
 		*****************************************************************************/
 		virtual void DrawWithMaterials(const std::uint32_t materialOffsetID);
+
 		virtual void DrawWithoutMaterial();
 
 		/****************************************************************************
@@ -108,6 +113,7 @@ namespace gc::core
 		/* @brief : Material count*/
 		size_t  _materialCount = 0;
 
+		gm::Float4 _debugColor = gm::Float4(1.0f, 1.0f, 1.0f, 1.0f);
 		/*-------------------------------------------------------------------
 		-            Bone
 		---------------------------------------------------------------------*/

@@ -37,13 +37,15 @@ Camera::~Camera()
 
 Camera::Camera(LowLevelGraphicsEnginePtr engine) : _engine(engine)
 {
+	assert(("engine is nullptr", _engine));
+
 	const auto device = engine->GetDevice();
 
 	SetLens(0.25f * GM_PI, Screen::GetAspectRatio(), 1.0f, 1000.0f);
+	//SetOrthoLens(50.0f * Screen::GetAspectRatio(), 50.0f, 1.0f, 1000.0f);
 
 	GPUBufferMetaData metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SceneConstants), 1);
-	_sceneConstantBuffer = device->CreateBuffer(metaData);
-	_sceneConstantBuffer->SetName(L"SceneConstants");
+	_sceneConstantBuffer = device->CreateBuffer(metaData, L"SceneConstants");
 
 	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer, nullptr);
 }
@@ -243,9 +245,9 @@ void Camera::SetZRange(float nearZ, float farZ)
 *****************************************************************************/
 void Camera::LookAt(Vector3 position, Vector3 target, Vector3 worldUp)
 {
-	Vector3 look = Normalize(target - position); // diff
+	Vector3 look  = Normalize(target - position); // diff
 	Vector3 right = Normalize(Cross(worldUp, look));
-	Vector3 up = Cross(look, right);
+	Vector3 up    = Cross(look, right);
 
 	_position = position.ToFloat3();
 	_look     = look.ToFloat3();

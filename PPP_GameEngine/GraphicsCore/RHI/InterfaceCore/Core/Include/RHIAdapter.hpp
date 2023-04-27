@@ -15,6 +15,7 @@
 #include "RHICommonState.hpp"
 #include <memory>
 #include <string>
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -41,7 +42,7 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		/* return logical device shared pointer. frame count is used for the command allocators*/
-		virtual std::shared_ptr<core::RHIDevice> CreateDevice(const std::uint32_t frameCount) = 0;
+		virtual std::shared_ptr<core::RHIDevice> CreateDevice() = 0;
 		
 		/* Describe physical device name and spec(future work) */
 		virtual void PrintInfo() = 0; // Todo : ç°å„ÇÕê´î\Ç»Ç«Ç‡ì¸ÇÍÇƒÇ®Ç´ÇΩÇ¢. 2022/09/07
@@ -51,6 +52,9 @@ namespace rhi::core
 		*****************************************************************************/
 		/* @brief : Discrete GPU (true : dGPU, xGPU, false: iGPU)*/
 		bool IsDiscreteGPU() const { return _isDiscreteGPU; }
+
+		/* @brief : Unified memory architecture (true: iGPU, false: dGPU, xGPU)*/
+		bool IsUnifiedGPU() const { return !_isDiscreteGPU; }
 
 		/* @brief : Return Physical Device Name (GPU name)*/
 		const std::string&  GetName    () const { return _name; };
@@ -70,7 +74,11 @@ namespace rhi::core
 
 		virtual ~RHIDisplayAdapter() { if (_instance) { _instance.reset(); } }
 
-		RHIDisplayAdapter(const std::shared_ptr<RHIInstance>& instance) : _instance(instance){}; 
+		RHIDisplayAdapter(const std::shared_ptr<RHIInstance>& instance) : _instance(instance)
+		{
+			assert(_instance);
+		}; 
+
 	protected:
 		/****************************************************************************
 		**                Protected Function

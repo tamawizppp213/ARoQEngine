@@ -7,12 +7,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
+#include "../Include/DirectX12GPUBuffer.hpp"
+#include "../../Core/Include/DirectX12Debug.hpp"
+#include "../../Core/Include/DirectX12EnumConverter.hpp"
+#include "../../Core/Include/DirectX12Device.hpp"
+#include "../../Core/Include/DirectX12CommandList.hpp"
+#include "../../Core/Include/DirectX12BaseStruct.hpp"
+#include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,33 +23,38 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData)
-	:core::GPUBuffer(device, metaData)
+GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
+	:core::GPUBuffer(device, metaData, name)
 {
 	/*-------------------------------------------------------------------
 	-           Set heap property
 	---------------------------------------------------------------------*/
-	D3D12_HEAP_PROPERTIES heapProp = {};
-	heapProp.Type = EnumConverter::Convert(_metaData.HeapType);
-	heapProp.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-	heapProp.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-	heapProp.CreationNodeMask     = 1;
-	heapProp.VisibleNodeMask      = 1;
+	D3D12_HEAP_PROPERTIES heapProp
+	{
+		.Type                 = EnumConverter::Convert(_metaData.HeapType), 
+		.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+		.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+		.CreationNodeMask     = 1,
+		.VisibleNodeMask      = 1
+	};
+
 	/*-------------------------------------------------------------------
 	-           Set resource desc
 	---------------------------------------------------------------------*/
-	D3D12_RESOURCE_DESC resourceDesc = {};
-	resourceDesc.Dimension          = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc.Alignment          = 0;
-	resourceDesc.Width              = static_cast<UINT64>(GetTotalByteSize());
-	resourceDesc.Height             = 1; // For 1D buffer
-	resourceDesc.DepthOrArraySize   = 1; // For 1D buffer
-	resourceDesc.MipLevels          = 1; 
-	resourceDesc.Format             = DXGI_FORMAT_UNKNOWN;
-	resourceDesc.SampleDesc.Count   = 1;
-	resourceDesc.SampleDesc.Quality = 0;
-	resourceDesc.Layout             = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	resourceDesc.Flags              = D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_NONE;
+	const D3D12_RESOURCE_DESC resourceDesc = 
+	{
+		.Dimension          = D3D12_RESOURCE_DIMENSION_BUFFER,
+		.Alignment          = 0,
+		.Width              = static_cast<UINT64>(GetTotalByteSize()),
+		.Height             = 1, // For 1D buffer
+		.DepthOrArraySize   = 1, // For 1D buffer
+		.MipLevels          = 1,
+		.Format             = DXGI_FORMAT_UNKNOWN,
+		.SampleDesc         = {1, 0},
+		.Layout             = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+		.Flags              = EnumConverter::Convert(metaData.ResourceUsage)
+	};
+
 	/*-------------------------------------------------------------------
 	-           Create
 	---------------------------------------------------------------------*/
@@ -58,6 +64,8 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core:
 		EnumConverter::Convert(metaData.State),                                          // Generic Read
 		nullptr,
 		IID_PPV_ARGS(&_resource)));
+
+	_resource->SetName(name.c_str());
 }
 
 GPUBuffer::~GPUBuffer()
@@ -70,35 +78,53 @@ GPUBuffer::~GPUBuffer()
 *                     CopyStart
 *************************************************************************//**
 *  @fn        void GPUBuffer::CopyStart()
+* 
 *  @brief     Call Map Function
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void GPUBuffer::CopyStart()
 {
+#if _DEBUG
+	assert(_metaData.IsCPUAccessible());
+#endif
 	ThrowIfFailed(_resource->Map(0, nullptr, reinterpret_cast<void**>(&_mappedData)));
 }
 /****************************************************************************
 *                     CopyData
 *************************************************************************//**
 *  @fn        void GPUBuffer::CopyData()
+* 
 *  @brief     GPU copy to one element
+* 
 *  @param[in] const void* dataPtr
+* 
 *  @param[in] const size_t elementIndex
+* 
 *  @return 　　void
 *****************************************************************************/
 void GPUBuffer::CopyData(const void* data, const size_t elementIndex)
 {
+#ifdef _DEBUG
+	assert(elementIndex <= _metaData.Count);
+#endif
 	std::memcpy(&_mappedData[elementIndex * _metaData.Stride], data, _metaData.Stride);
 }
 /****************************************************************************
 *                     CopyTotalData
 *************************************************************************//**
 *  @fn        void GPUBuffer::CopyData()
+* 
 *  @brief     GPU copy the specified range
+* 
 *  @param[in] void*  dataPtr
+* 
 *  @param[in] size_t dataLength
+* 
 *  @param[in] size_t indexOffset (default 0)
+* 
 *  @return 　　void
 *****************************************************************************/
 void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset)
@@ -112,8 +138,11 @@ void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const s
 *                     CopyEnd
 *************************************************************************//**
 *  @fn        void GPUBuffer::CopyEnd()
+* 
 *  @brief     Call UnMap Function
+* 
 *  @param[in] void
+* 
 *  @return 　　void
 *****************************************************************************/
 void GPUBuffer::CopyEnd()
@@ -123,7 +152,6 @@ void GPUBuffer::CopyEnd()
 
 void GPUBuffer::SetName(const std::wstring& name)
 {
-	_name = name;
 	ThrowIfFailed(_resource->SetName(name.c_str()));
 }
 
@@ -143,6 +171,7 @@ void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandLis
 		---------------------------------------------------------------------*/
 		auto uploadHeapProp   = HEAP_PROPERTY(D3D12_HEAP_TYPE_UPLOAD);
 		auto uploadTempBuffer = RESOURCE_DESC::Buffer(GetTotalByteSize());
+		// CreateCommittedResource -> Heap確保 + 実際にGPUにメモリを書き込むを両方やってくれる.
 		ThrowIfFailed(dxDevice->CreateCommittedResource(
 			&uploadHeapProp,
 			D3D12_HEAP_FLAG_NONE,
@@ -173,9 +202,13 @@ void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandLis
 		auto after = BARRIER::Transition(_resource.Get(),  D3D12_RESOURCE_STATE_COPY_DEST, beforeState);
 		dxCommandList->ResourceBarrier(1, &after);
 	}
-	else if (_metaData.HeapType == core::MemoryHeap::Upload)
+	else if (_metaData.HeapType == core::MemoryHeap::Upload || _metaData.HeapType == core::MemoryHeap::Readback)
 	{
 		Update(data, GetElementCount());
+	}
+	else
+	{
+		throw std::runtime_error("Unknown memory heap type");
 	}
 }
 #pragma endregion Public Function

@@ -8,17 +8,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Adapter.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandAllocator.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Swapchain.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12DescriptorHeap.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12ResourceLayout.hpp"
-#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12FrameBuffer.hpp"
+#include "../Include/DirectX12Device.hpp"
+#include "../Include/DirectX12Adapter.hpp"
+#include "../Include/DirectX12CommandQueue.hpp"
+#include "../Include/DirectX12CommandAllocator.hpp"
+#include "../Include/DirectX12CommandList.hpp"
+#include "../Include/DirectX12Swapchain.hpp"
+#include "../Include/DirectX12Fence.hpp"
+#include "../Include/DirectX12DescriptorHeap.hpp"
+#include "../Include/DirectX12RenderPass.hpp"
+#include "../Include/DirectX12ResourceLayout.hpp"
+#include "../Include/DirectX12FrameBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
@@ -31,10 +31,12 @@
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingTLASBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingGeometry.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
+#include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <vector>
 #include <Windows.h>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -62,8 +64,8 @@ RHIDevice::~RHIDevice()
 	Destroy();
 }
 
-RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, const std::uint32_t frameCount) :
-	core::RHIDevice(adapter, frameCount)
+RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
+	core::RHIDevice(adapter)
 {
 	/*-------------------------------------------------------------------
 	-                   Create Logical Device
@@ -73,8 +75,10 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, co
 		D3D_FEATURE_LEVEL_12_0, // minimum feature level
 		IID_PPV_ARGS(&_device)));
 
-	_device->SetName(L"DirectX12::Device");
-
+	const auto gpuName    = adapter->GetName();
+	const auto deviceName = L"Device::" + unicode::ToWString(gpuName);
+	_device->SetName(deviceName.c_str());
+	
 	/*-------------------------------------------------------------------
 	-                   Device Support Check
 	---------------------------------------------------------------------*/
@@ -82,42 +86,12 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, co
 	CheckVRSSupport();
 	CheckMeshShadingSupport();
 	CheckHDRDisplaySupport(); // まだどのクラスに配置するか決めてないので未実装
+	
 }
 
 #pragma endregion Constructor and Destructor
 
 #pragma region Set up and Destroy
-/****************************************************************************
-*                     SetUp
-*************************************************************************//**
-*  @fn        void RHIDevice::SetUp()
-*
-*  @brief     Set up command queue and allocator
-*
-*  @param[in] void
-*
-*  @return    void
-*****************************************************************************/
-void RHIDevice::SetUp()
-{
-	/*-------------------------------------------------------------------
-	-                   Create command queue
-	---------------------------------------------------------------------*/
-	_commandQueues[core::CommandListType::Graphics] = CreateCommandQueue(core::CommandListType::Graphics);
-	_commandQueues[core::CommandListType::Compute]  = CreateCommandQueue(core::CommandListType::Compute);
-	_commandQueues[core::CommandListType::Copy]     = CreateCommandQueue(core::CommandListType::Copy);
-
-	/*-------------------------------------------------------------------
-	-                   Create command allocators
-	---------------------------------------------------------------------*/
-	_commandAllocators.resize(_frameCount);
-	for (std::uint32_t i = 0; i < _frameCount; ++i)
-	{
-		_commandAllocators[i][core::CommandListType::Graphics] = CreateCommandAllocator(core::CommandListType::Graphics);
-		_commandAllocators[i][core::CommandListType::Compute]  = CreateCommandAllocator(core::CommandListType::Compute);
-		_commandAllocators[i][core::CommandListType::Copy]     = CreateCommandAllocator(core::CommandListType::Copy);
-	}
-}
 
 /****************************************************************************
 *                     SetUpDefaultHeap
@@ -173,22 +147,6 @@ void RHIDevice::Destroy()
 	---------------------------------------------------------------------*/
 	_defaultHeap.clear();
 
-	/*-------------------------------------------------------------------
-	-              Clear command queue
-	---------------------------------------------------------------------*/
-	_commandQueues.clear();
-
-	/*-------------------------------------------------------------------
-	-              Clear command allocator
-	---------------------------------------------------------------------*/
-	if (!_commandAllocators.empty())
-	{
-		for (std::uint32_t i = 0; i < _frameCount; ++i)
-		{
-			_commandAllocators[i].clear();
-		}
-		_commandAllocators.clear(); _commandAllocators.shrink_to_fit();
-	}
 
 	/*-------------------------------------------------------------------
 	-              Clear device
@@ -210,30 +168,35 @@ std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::sh
 	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<directX12::RHIFrameBuffer>(shared_from_this(), renderPass, renderTarget, depthStencil));
 }
 
-std::shared_ptr<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fenceValue)
+std::shared_ptr<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fenceValue, const std::wstring& name)
 {
 	// https://suzulang.com/stdshared_ptr%E3%81%A7this%E3%82%92%E4%BD%BF%E3%81%84%E3%81%9F%E3%81%84%E6%99%82%E3%81%AB%E6%B3%A8%E6%84%8F%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8/
-	return std::static_pointer_cast<core::RHIFence>(std::make_shared<directX12::RHIFence>(shared_from_this(), fenceValue));
+	return std::static_pointer_cast<core::RHIFence>(std::make_shared<directX12::RHIFence>(shared_from_this(), fenceValue, name));
 }
 
-std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
+std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHICommandList>(std::make_shared<directX12::RHICommandList>(shared_from_this(),commandAllocator));
+	return std::static_pointer_cast<core::RHICommandList>(std::make_shared<directX12::RHICommandList>(shared_from_this(),commandAllocator, name));
 }
 
-std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type)
+std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<directX12::RHICommandQueue>(shared_from_this(), type));
+	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<directX12::RHICommandQueue>(shared_from_this(), type, name));
 }
 
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type)
+std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<directX12::RHICommandAllocator>(shared_from_this(), type));
+	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<directX12::RHICommandAllocator>(shared_from_this(), type, name));
 }
 
 std::shared_ptr<core::RHISwapchain> RHIDevice::CreateSwapchain(const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR )
 {
 	return std::static_pointer_cast<core::RHISwapchain>(std::make_shared<directX12::RHISwapchain>(shared_from_this(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR));
+}
+
+std::shared_ptr<core::RHISwapchain>  RHIDevice::CreateSwapchain(const core::SwapchainDesc& desc)
+{
+	return std::static_pointer_cast<core::RHISwapchain>(std::make_shared<directX12::RHISwapchain>(shared_from_this(), desc));
 }
 
 std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
@@ -270,9 +233,9 @@ std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineS
 	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<directX12::GPUComputePipelineState>(shared_from_this(), resourceLayout));
 }
 
-std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHIResourceLayout>(std::make_shared<directX12::RHIResourceLayout>(shared_from_this(), elements, samplers, constant32Bits));
+	return std::static_pointer_cast<core::RHIResourceLayout>(std::make_shared<directX12::RHIResourceLayout>(shared_from_this(), elements, samplers, constant32Bits, name));
 }
 
 std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
@@ -295,14 +258,14 @@ std::shared_ptr<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerIn
 	return std::static_pointer_cast<core::GPUSampler>(std::make_shared<directX12::GPUSampler>(shared_from_this(), samplerInfo));
 }
 
-std::shared_ptr<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData)
+std::shared_ptr<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::GPUBuffer>(std::make_shared<directX12::GPUBuffer>(shared_from_this(), metaData));
+	return std::static_pointer_cast<core::GPUBuffer>(std::make_shared<directX12::GPUBuffer>(shared_from_this(), metaData, name));
 }
 
-std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData)
+std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this(), metaData));
+	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this(), metaData, name));
 }
 
 std::shared_ptr<core::GPUTexture> RHIDevice::CreateTextureEmpty()
@@ -436,7 +399,7 @@ void RHIDevice::CheckVRSSupport()
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHIDevice::CheckMultiSampleQualityLevels()
+void RHIDevice::CheckMultiSampleQualityLevels(const core::PixelFormat format)
 {
 	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
 	msQualityLevels.Format           = DXGI_FORMAT_R16G16B16A16_FLOAT; // back buffer にした方がいいかと
@@ -526,37 +489,19 @@ void RHIDevice::CheckMeshShadingSupport()
 
 #pragma region Property
 /****************************************************************************
-*                     GetCommandQueue
+*                     SetName
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHICommandQueue> RHIDevice::GetCommandQueue(const core::CommandListType commandListType)
+*  @fn        void RHIDevice::SetName(const std::wstring& name)
 *
-*  @brief     Return command queue
+*  @brief     Set Logical device name
 *
-*  @param[in] const core::CommandListType (graphics, compute, or copy)
+*  @param[in] const std::wstring& name
 *
-*  @return    std::shared_ptr<core::RHICommandQueue>
+*  @return    void
 *****************************************************************************/
-std::shared_ptr<core::RHICommandQueue> RHIDevice::GetCommandQueue(const core::CommandListType commandListType)
+void RHIDevice::SetName(const std::wstring& name)
 {
-	return _commandQueues.at(commandListType);
-}
-
-/****************************************************************************
-*                     GetCommandAllocator
-*************************************************************************//**
-*  @fn        std::shared_ptr<core::RHICommandAllocator> RHIDevice::GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t frameCount)
-*
-*  @brief     Return command allocator
-*
-*  @param[in] const core::CommandListType (graphics, compute, or copy)
-*  @param[in] const std::uint32_t frameCount
-*
-*  @return    std::shared_ptr<core::RHICommandAllocator>
-*****************************************************************************/
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t currentFrame)
-{
-	assert(currentFrame < _frameCount);
-	return _commandAllocators[currentFrame].at(commandListType);
+	_device->SetName(name.c_str());
 }
 
 /****************************************************************************

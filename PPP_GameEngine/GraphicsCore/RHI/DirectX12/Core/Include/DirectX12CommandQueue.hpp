@@ -47,10 +47,14 @@ namespace rhi::directX12
 		
 		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
 		void Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists) override;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		CommandQueueComPtr GetCommandQueue() { return _commandQueue; }
+
+		void SetName(const std::wstring& name) override;
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -58,7 +62,7 @@ namespace rhi::directX12
 		
 		~RHICommandQueue();
 		
-		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type);
+		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::wstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function

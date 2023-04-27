@@ -79,34 +79,12 @@ namespace
 RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat,
 	const size_t frameBufferCount, std::uint32_t vsync, bool isValidHDR) : rhi::core::RHISwapchain(device, commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
 {
-	const auto vkDevice   = std::static_pointer_cast<vulkan::RHIDevice>(_device);
-	const auto vkAdapter  = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
-	const auto vkInstance = static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance());
-	
-	/*-------------------------------------------------------------------
-	-          Acquire surface (現状ではWindowsのみ対応) // 必要になり次第macroで管理する.
-	---------------------------------------------------------------------*/
-#ifdef _WIN32
-	{
-		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};                            // Window32 Surface. (! not cross platform)
-		surfaceInfo.hinstance = (HINSTANCE)windowInfo.HInstance;                 // hInstance
-		surfaceInfo.hwnd      = (HWND)windowInfo.Handle;                         // hwnd 
-		surfaceInfo.sType     = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR; // Structure type
-		VkResult result       = vkCreateWin32SurfaceKHR(vkInstance->GetVkInstance(), &surfaceInfo, nullptr, &_surface);
-		if (result != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to prepare surface.");
-		}
-	}
-#endif
-	/*-------------------------------------------------------------------
-	-         null check
-	---------------------------------------------------------------------*/
-	if (_surface == nullptr) { throw std::runtime_error("failed to prepare surface"); }
-	/*-------------------------------------------------------------------
-	-          Set Swapchain
-	---------------------------------------------------------------------*/
-	InitializeSwapchain();
+	SetUp();
+}
+
+RHISwapchain::RHISwapchain(const std::shared_ptr<core::RHIDevice>& device, const core::SwapchainDesc& desc)
+{
+	SetUp();
 }
 RHISwapchain::~RHISwapchain()
 {
@@ -136,6 +114,38 @@ RHISwapchain::~RHISwapchain()
 }
 #pragma endregion Constructor and Destructor
 #pragma region Render Function
+void RHISwapchain::SetUp()
+{
+	const auto vkDevice   = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkAdapter  = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
+	const auto vkInstance = static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance());
+	
+	/*-------------------------------------------------------------------
+	-          Acquire surface (現状ではWindowsのみ対応) // 必要になり次第macroで管理する.
+	---------------------------------------------------------------------*/
+#ifdef _WIN32
+	{
+		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};                            // Window32 Surface. (! not cross platform)
+		surfaceInfo.hinstance = (HINSTANCE)_desc.WindowInfo.HInstance;                 // hInstance
+		surfaceInfo.hwnd      = (HWND)_desc.WindowInfo.Handle;                         // hwnd 
+		surfaceInfo.sType     = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR; // Structure type
+		VkResult result       = vkCreateWin32SurfaceKHR(vkInstance->GetVkInstance(), &surfaceInfo, nullptr, &_surface);
+		if (result != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to prepare surface.");
+		}
+	}
+#endif
+	/*-------------------------------------------------------------------
+	-         null check
+	---------------------------------------------------------------------*/
+	if (_surface == nullptr) { throw std::runtime_error("failed to prepare surface"); }
+	/*-------------------------------------------------------------------
+	-          Set Swapchain
+	---------------------------------------------------------------------*/
+	InitializeSwapchain();
+}
+
 /****************************************************************************
 *							PrepareNextImage
 *************************************************************************//**
@@ -148,7 +158,7 @@ RHISwapchain::~RHISwapchain()
 std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
 {
 	const auto vkFence  = std::static_pointer_cast<vulkan::RHIFence>(fence);
-	const auto vkQueue  = std::static_pointer_cast<vulkan::RHICommandQueue>(_commandQueue);
+	const auto vkQueue  = std::static_pointer_cast<vulkan::RHICommandQueue>(_desc.CommandQueue);
 	UpdateCurrentFrameIndex();
 
 	/*-------------------------------------------------------------------
@@ -198,7 +208,7 @@ std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFenc
 void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t waitValue)
 {
 	const auto vkFence = std::static_pointer_cast<vulkan::RHIFence>(fence);
-	const auto vkQueue = std::static_pointer_cast<vulkan::RHICommandQueue>(_commandQueue);
+	const auto vkQueue = std::static_pointer_cast<vulkan::RHICommandQueue>(_desc.CommandQueue);
 
 	/*-------------------------------------------------------------------
 	-          Set up timeline semaphore submit info
@@ -269,16 +279,16 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-          If the size is not change, we do nothing
 	---------------------------------------------------------------------*/
-	if (_windowInfo.Width == width && _windowInfo.Height) { return; }
+	if (_desc.WindowInfo.Width == width && _desc.WindowInfo.Height) { return; }
 	/*-------------------------------------------------------------------
 	-         Window size check
 	---------------------------------------------------------------------*/
-	if (_windowInfo.Width == 0 || _windowInfo.Height == 0) { throw std::runtime_error("Width or height is zero."); }
+	if (_desc.WindowInfo.Width == 0 || _desc.WindowInfo.Height == 0) { throw std::runtime_error("Width or height is zero."); }
 	/*-------------------------------------------------------------------
 	-         Set window size 
 	---------------------------------------------------------------------*/
-	_windowInfo.Width  = width;
-	_windowInfo.Height = height;
+	_desc.WindowInfo.Width  = width;
+	_desc.WindowInfo.Height = height;
 	/*-------------------------------------------------------------------
 	-         Destroy swapchain and present semaphore
 	---------------------------------------------------------------------*/
@@ -321,15 +331,15 @@ void RHISwapchain::InitializeSwapchain()
 	/*-------------------------------------------------------------------
 	-               Acquire Surface infomation
 	---------------------------------------------------------------------*/
-	SwapchainSupportDetails details       = SwapchainSupportDetails::Query(vkAdapter->GetPhysicalDevice(), _surface);
-	VkSurfaceFormatKHR      surfaceFormat = SelectSwapchainFormat(details.Formats);
-	VkPresentModeKHR        presentMode   = SelectSwapchainPresentMode(details.PresentModes);
-	VkExtent2D              extent        = SelectSwapExtent(details.Capabilities);
+	const auto details       = SwapchainSupportDetails::Query(vkAdapter->GetPhysicalDevice(), _surface);
+	const auto surfaceFormat = SelectSwapchainFormat(details.Formats);
+	const auto presentMode   = SelectSwapchainPresentMode(details.PresentModes);
+	const auto extent        = SelectSwapExtent(details.Capabilities);
 	
 	/*-------------------------------------------------------------------
 	-               Acquire Swapchain frame buffer count
 	---------------------------------------------------------------------*/
-	UINT32 imageCount = static_cast<UINT32>(_frameBufferCount);
+	UINT32 imageCount = static_cast<UINT32>(_desc.FrameBufferCount);
 	if (details.Capabilities.minImageCount > 0 && imageCount < details.Capabilities.minImageCount)
 	{
 		imageCount = details.Capabilities.minImageCount;
@@ -388,7 +398,7 @@ void RHISwapchain::InitializeSwapchain()
 	/*-------------------------------------------------------------------
 	-               Set HDR metadata
 	---------------------------------------------------------------------*/
-	if (vkDevice->IsSupportedHDR() && _isValidHDR)
+	if (vkDevice->IsSupportedHDR() && _desc.IsValidHDR)
 	{
 		VkHdrMetadataEXT hdrMetadata = {};
 		hdrMetadata.sType = VK_STRUCTURE_TYPE_HDR_METADATA_EXT;
@@ -420,7 +430,7 @@ void RHISwapchain::InitializeSwapchain()
 	for (size_t index = 0; index < _images.size(); ++index)
 	{
 		auto info = core::GPUTextureMetaData::Texture2D(
-			static_cast<size_t>(_windowInfo.Width), static_cast<size_t>(_windowInfo.Height), _pixelFormat, 1, core::ResourceUsage::RenderTarget);
+			static_cast<size_t>(_desc.WindowInfo.Width), static_cast<size_t>(_desc.WindowInfo.Height), _desc.PixelFormat, 1, core::ResourceUsage::RenderTarget);
 		info.State = core::ResourceState::Common;
 		_backBuffers[index] = std::make_shared<vulkan::GPUTexture>(_device, info, _images[index]);
 	}
@@ -477,7 +487,7 @@ VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfa
 		/*-------------------------------------------------------------------
 		-               Find HDR Format
 		---------------------------------------------------------------------*/
-		if (vkDevice->IsSupportedHDR() && _isValidHDR)
+		if (vkDevice->IsSupportedHDR() && _desc.IsValidHDR)
 		{
 			if ((format.format == VK_FORMAT_R16G16B16A16_SFLOAT) ||
 				(format.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32))
@@ -504,7 +514,7 @@ VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfa
 				(format.format == VK_FORMAT_B8G8R8A8_SRGB))
 			{
 				OutputDebugStringA("change sdr format : B8G8R8A8_UNORM\n");
-				_pixelFormat = core::PixelFormat::B8G8R8A8_UNORM;
+				_desc.PixelFormat = core::PixelFormat::B8G8R8A8_UNORM;
 			}
 			else { continue; }
 
@@ -528,9 +538,9 @@ VkPresentModeKHR RHISwapchain::SelectSwapchainPresentMode(const std::vector<VkPr
 {
 	for (const auto& presentMode : presentModes)
 	{
-		if (_vsync == 0 && presentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) { return presentMode; } // immediate flip screen
-		if (_vsync > 0  && presentMode == VK_PRESENT_MODE_MAILBOX_KHR)   { return presentMode; } // wait vsync time
-		if (_vsync > 0  && presentMode == VK_PRESENT_MODE_FIFO_KHR)      { return presentMode; }
+		if (_desc.VSync == 0 && presentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) { return presentMode; } // immediate flip screen
+		if (_desc.VSync > 0  && presentMode == VK_PRESENT_MODE_MAILBOX_KHR)   { return presentMode; } // wait vsync time
+		if (_desc.VSync > 0  && presentMode == VK_PRESENT_MODE_FIFO_KHR)      { return presentMode; }
 	}
 	return VK_PRESENT_MODE_FIFO_KHR; // wait vsync time
 }

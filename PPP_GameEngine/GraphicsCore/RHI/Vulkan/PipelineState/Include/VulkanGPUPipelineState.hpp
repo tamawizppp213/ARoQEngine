@@ -36,21 +36,26 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		void CompleteSetting() override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkPipeline GetPipeline() const noexcept { return _pipeline; }
 
-		void SetName(const std::wstring& name)override {}
+		void SetName(const std::wstring& name)override;
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUGraphicsPipelineState() = default;
+		
 		~GPUGraphicsPipelineState();
+		
 		explicit GPUGraphicsPipelineState(
 			const std::shared_ptr<core::RHIDevice>& device,
 			const std::shared_ptr<core::RHIRenderPass>& renderPass,
 			const std::shared_ptr<core::RHIResourceLayout>& layout);
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -60,6 +65,7 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::vector<VkDynamicState> _dynamicStates = {};
+
 		VkPipeline _pipeline = nullptr;
 
 	};
@@ -76,20 +82,24 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void CompleteSetting() override{};
+		void CompleteSetting() override;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void SetName(const std::wstring& name) const override {};
+		void SetName(const std::wstring& name) override;
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUComputePipelineState() = default;
+		
 		~GPUComputePipelineState() = default;
+		
 		explicit GPUComputePipelineState(
 			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) : core::GPUComputePipelineState(device, layout) {};
+			const std::shared_ptr<core::RHIResourceLayout>& layout) : core::GPUComputePipelineState(device, layout) {};
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -98,6 +108,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		VkPipeline _pipeline = nullptr;
 	
 	};
 }

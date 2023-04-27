@@ -1,6 +1,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   DirectX12CommandAllocator.hpp
 ///             @brief  DirectX12CommandAllocator
+///                     This class is used to store the command list memory.
+///                     Every time a command list is reset, it will allocate a block of memory.
+///                     Even if a command list is reset, these memories aren't lost. 
+///                     When the Reset function in this class is called, these memories cleans up. 
+///                     To acieve the maximum frame rate, you should create each command list one by one.
 ///             @author Toide Yutaro
 ///             @date   2022_06_24
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,14 +40,17 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Reset command allocator*/
-		void Reset() override;
+		/* @brief : Clean up the command pool. 
+		   @note : All binded command lists must be closed before calling this function.
+		           In addition, until command execution in GPU, this function mustn't be called.*/
+		void CleanUp() override;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		CommandAllocatorComPtr GetAllocator() { return _commandAllocator; }
 
+		void SetName(const std::wstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -52,7 +60,9 @@ namespace rhi::directX12
 
 		explicit RHICommandAllocator(
 			const std::shared_ptr<rhi::core::RHIDevice>& device, 
-			const core::CommandListType type);
+			const core::CommandListType type,
+			const std::wstring& name);
+
 	protected:
 		/****************************************************************************
 		**                Protected Function

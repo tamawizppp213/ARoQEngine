@@ -28,7 +28,10 @@ using namespace gc;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-Bloom::Bloom(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const float power, const std::wstring& addName)
+Bloom::Bloom(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const float power, 
+	const ResourceViewPtr& customLuminanceSRV,
+	const ResourceViewPtr& customLuminanceUAV,
+	const std::wstring& addName)
 	:_engine(engine), _explosion(power)
 {
 	/*-------------------------------------------------------------------
@@ -37,6 +40,15 @@ Bloom::Bloom(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width,
 	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"GaussianBlur::";
 	
+	if (customLuminanceSRV && customLuminanceUAV) 
+	{ 
+#ifdef _DEBUG
+		assert(customLuminanceSRV->GetResourceViewType() == ResourceViewType::Texture);
+		assert(customLuminanceUAV->GetResourceViewType() == ResourceViewType::RWTexture);
+#endif
+		_luminanceSRV = customLuminanceSRV;
+		_luminanceUAV = customLuminanceUAV;
+	}
 	PrepareGaussianBlurs(width, height, name);
 	PreparePipelineState(name);
 }
@@ -52,36 +64,54 @@ void Bloom::Draw()
 {
 	const auto device      = _engine->GetDevice();
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
-	const auto computeCommandList  = _engine->GetCommandList(CommandListType::Compute, frameIndex);
-	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto computeCommandList  = _engine->GetCommandList(CommandListType::Compute);
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
+	const auto frameBuffer         = _engine->GetFrameBuffer(frameIndex);
 
 	/*-------------------------------------------------------------------
 	-               Pause current render pass
 	---------------------------------------------------------------------*/
-	graphicsCommandList->EndRenderPass();
-	graphicsCommandList->CopyResource(_shaderResourceViews[0]->GetTexture(), _engine->GetFrameBuffer(frameIndex)->GetRenderTarget(0));
+	auto waitValue = _engine->FlushGPUCommands(CommandListType::Graphics, true);
+	_engine->WaitExecutionGPUCommands(CommandListType::Compute, waitValue, false);
 
 	/*-------------------------------------------------------------------
 	-               Execute Luminance commandlist
 	---------------------------------------------------------------------*/
+	computeCommandList->SetDescriptorHeap(frameBuffer->GetRenderTargetSRV()->GetHeap());
 	computeCommandList->SetResourceLayout(_resourceLayout);
 	computeCommandList->SetComputePipeline(_luminancePipeline);
-	_shaderResourceViews   [0]->Bind(computeCommandList, 0);
-	_unorderedResourceViews[0]->Bind(computeCommandList, 5);
+	frameBuffer->GetRenderTargetSRV()->Bind(computeCommandList, 0);
+	_luminanceUAV->Bind(computeCommandList, 5);
 	computeCommandList->Dispatch(Screen::GetScreenWidth() / THREAD, Screen::GetScreenHeight() / THREAD, 1);
 
 	/*-------------------------------------------------------------------
 	-               Execute Blur
 	---------------------------------------------------------------------*/
+	_gaussianBlur[0]->DrawCS(_luminanceSRV, _luminanceUAV);
+	_gaussianBlur[1]->DrawCS(_shaderResourceViews[0], _unorderedResourceViews[0]);
+
+	for (int i = 1; i <= ViewCount; ++i)
+	{
+		_gaussianBlur[i]->DrawCS(_shaderResourceViews[i - 1], _unorderedResourceViews[i - 1]); // luminance 1/4
+	}
 	
 	/*-------------------------------------------------------------------
 	-               Execute Luminance commandlist
 	---------------------------------------------------------------------*/
 	computeCommandList->SetComputePipeline(_finalBloomPipeline);
-	// set descriptor table
+	_luminanceSRV->Bind(computeCommandList, 1);
+	for (int i = 0; i < ViewCount; ++i)
+	{
+		_shaderResourceViews[i]->Bind(computeCommandList, i + 2);
+	}
+	frameBuffer->GetRenderTargetUAV()->Bind(computeCommandList, 5);
 	computeCommandList->Dispatch(Screen::GetScreenWidth() / THREAD, Screen::GetScreenHeight() / THREAD, 1);
 
-	// copy
+	/*-------------------------------------------------------------------
+	-               Restart current render pass
+	---------------------------------------------------------------------*/
+	waitValue = _engine->FlushGPUCommands(CommandListType::Compute, true);
+	_engine->WaitExecutionGPUCommands(CommandListType::Graphics, waitValue, false);
 }
 void Bloom::OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight)
 {
@@ -107,11 +137,13 @@ void Bloom::UpdateBloomPower(const float power)
 #pragma region Set up Function
 void Bloom::PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t height, const std::wstring& name)
 {
-	for (std::uint32_t i = 0; i < _countof(_gaussianBlur); ++i)
+	_gaussianBlur[0] = std::make_shared<GaussianBlur>(_engine, width, height, true, name + L"GaussianBlur");
+	for (std::uint32_t i = 1; i < _countof(_gaussianBlur); ++i)
 	{
 		_gaussianBlur[i] = std::make_shared<GaussianBlur>(_engine, 
 			width / pow(2, i),
 			height / pow(2, i),
+			true,
 			name + L"GaussianBlur");
 	}
 }
@@ -157,6 +189,18 @@ void Bloom::PrepareResourceView(const std::wstring& name)
 	const auto device = _engine->GetDevice();
 	const auto format = _engine->GetBackBufferFormat();
 
+	for (int i = 0; i < _countof(_shaderResourceViews); ++i)
+	{
+		_shaderResourceViews[i]    = _gaussianBlur[i]->GetHalfDownSampledSRV();
+		_unorderedResourceViews[i] = _gaussianBlur[i]->GetHalfDownSampledUAV();
+	}
 
+	if (!_luminanceSRV || !_luminanceUAV)
+	{
+		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess);
+		const auto texture = device->CreateTexture(metaData);
+		_luminanceSRV = device->CreateResourceView(ResourceViewType::Texture  , texture, nullptr);
+		_luminanceUAV = device->CreateResourceView(ResourceViewType::RWTexture, texture, nullptr);
+	}
 }
 #pragma endregion Set up Function

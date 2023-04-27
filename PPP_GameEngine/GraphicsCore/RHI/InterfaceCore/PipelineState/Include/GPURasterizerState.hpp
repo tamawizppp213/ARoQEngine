@@ -24,10 +24,10 @@ namespace rhi::core
 {
 	class RHIDevice;
 	/****************************************************************************
-	*				  			RHIPipelineState
+	*				  			RHIRasterizerState
 	*************************************************************************//**
-	*  @class     RHIPipelineState
-	*  @brief     PipelineState
+	*  @class     RHIRasterizerState
+	*  @brief     RasterizerState
 	*****************************************************************************/
 	class GPURasterizerState : public GPUState
 	{
@@ -39,14 +39,19 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		
-		FrontFace   GetFrontFace  () const noexcept { return _frontFace; }
+		const RasterizerProperty& GetProperty() const { return _property; }
 
-		CullingMode GetCullingMode() const noexcept { return _cullingMode; }
+		/* @brief: Return polygon front face. Clockwise -> for left hand coordinate, CounterClockwise-> for right hand coordinate*/
+		FrontFace   GetFrontFace  () const noexcept { return _property.FaceType; }
 
-		FillMode    GetFillMode   () const noexcept { return _fillMode; }
+		/* @brief : Drawing culling mode. default use none.*/
+		CullingMode GetCullingMode() const noexcept { return _property.CullingType; }
 
-		bool        UseDepthClamp () const noexcept { return _useDepthClamp; }
+		/* @brief : Polygon fillmode. You can select the wireframe, solid, (only vulkan) point filling modes.*/
+		FillMode    GetFillMode   () const noexcept { return _property.FillType; }
+
+		/* @brief : Return use depth clamp.*/
+		bool        UseDepthClamp () const noexcept { return _property.UseDepthClamp; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -56,12 +61,9 @@ namespace rhi::core
 		virtual ~GPURasterizerState() = default;
 
 		explicit GPURasterizerState(
-			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const FrontFace   frontFace   = FrontFace::Clockwise,
-			const CullingMode cullingMode = CullingMode::None,
-			const FillMode    fillMode    = FillMode::Solid,
-			const bool        depthClamp  = true) 
-			: GPUState(device), _frontFace(frontFace), _cullingMode(cullingMode), _fillMode(fillMode), _useDepthClamp(depthClamp) { };
+			const std::shared_ptr<RHIDevice>& device,
+			const RasterizerProperty& rasterizerProperty) 
+			: GPUState(device), _property(rasterizerProperty) { };
 	
 	protected:
 		/****************************************************************************
@@ -75,10 +77,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		FrontFace   _frontFace   = FrontFace::Clockwise;
-		CullingMode _cullingMode = CullingMode::None;
-		FillMode    _fillMode    = FillMode::Solid;
-		bool _useDepthClamp = true;
+		RasterizerProperty _property = RasterizerProperty();
+
 	};
 
 }

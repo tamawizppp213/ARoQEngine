@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   DirectX12GPUFactory.cpp
-///             @brief  DepthStencil State
+//              @file   GPUPipelineFactory.cpp
+///             @brief  Pipeline each stage creator
 ///             @author Toide Yutaro
 ///             @date   2022_06_30
 //////////////////////////////////////////////////////////////////////////////////
@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUPipelineFactory.hpp"
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUBlendState.hpp"
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUDepthStencilState.hpp"
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUInputAssemblyState.hpp"
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPURasterizerState.hpp"
-#include "GraphicsCore/RHI/Vulkan/PipelineState/Include/VulkanGPUShaderState.hpp"
+#include "../Include/VulkanGPUPipelineFactory.hpp"
+#include "../Include/VulkanGPUBlendState.hpp"
+#include "../Include/VulkanGPUDepthStencilState.hpp"
+#include "../Include/VulkanGPUInputAssemblyState.hpp"
+#include "../Include/VulkanGPURasterizerState.hpp"
+#include "../Include/VulkanGPUShaderState.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,25 +36,17 @@ std::shared_ptr<core::GPUInputAssemblyState> GPUPipelineFactory::CreateInputAsse
 }
 
 std::shared_ptr<core::GPURasterizerState> GPUPipelineFactory::CreateRasterizerState(
-	const core::FrontFace   frontFace,
-	const core::CullingMode cullingMode,
-	const core::FillMode    fillMode,
-	const bool depthClamp)
+	const core::RasterizerProperty& rasterizerProperty)
 {
 	return std::static_pointer_cast<core::GPURasterizerState>(
-		std::make_shared<GPURasterizerState>(_device, frontFace, cullingMode, fillMode, depthClamp));
+		std::make_shared<GPURasterizerState>(_device, rasterizerProperty));
 }
 
 std::shared_ptr<core::GPUDepthStencilState> GPUPipelineFactory::CreateDepthStencilState(
-	const bool                 depthEnable,
-	const bool                 depthWriteEnable,
-	const bool                 stencilEnable,
-	const core::CompareOperator      depthOperator,
-	const core::StencilOperatorInfo& front,
-	const core::StencilOperatorInfo& back)
+	const core::DepthStencilProperty& depthStencilProperty)
 {
 	return std::static_pointer_cast<core::GPUDepthStencilState>(
-		std::make_shared<GPUDepthStencilState>(_device, depthEnable, depthWriteEnable, stencilEnable, depthOperator, front, back));
+		std::make_shared<GPUDepthStencilState>(_device, depthStencilProperty));
 }
 
 std::shared_ptr<core::GPUShaderState> GPUPipelineFactory::CreateShaderState()

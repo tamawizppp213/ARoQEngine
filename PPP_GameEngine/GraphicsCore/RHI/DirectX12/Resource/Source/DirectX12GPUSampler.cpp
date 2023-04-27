@@ -24,13 +24,13 @@ using namespace rhi::directX12;
 GPUSampler::GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo)
 	: core::GPUSampler(device, samplerInfo)
 {
-	_samplerDesc.Filter         = EnumConverter::Convert(samplerInfo.Filter);
-	_samplerDesc.AddressU       = EnumConverter::Convert(samplerInfo.AddressModeU);
-	_samplerDesc.AddressV       = EnumConverter::Convert(samplerInfo.AddressModeV);
-	_samplerDesc.AddressW       = EnumConverter::Convert(samplerInfo.AddressModeW);
-	_samplerDesc.BorderColor    = EnumConverter::Convert(samplerInfo.Border);
-	_samplerDesc.MipLODBias     = samplerInfo.MipLODBias;
-	_samplerDesc.MaxAnisotropy  = static_cast<UINT>(samplerInfo.MaxAnisotropy);
+	_samplerDesc.Filter         = EnumConverter::Convert(samplerInfo.Filter);        // Sampling mode at magnification or shirinking of texture image.  
+	_samplerDesc.AddressU       = EnumConverter::Convert(samplerInfo.AddressModeU);  // Texture addressing mode in the U direction
+	_samplerDesc.AddressV       = EnumConverter::Convert(samplerInfo.AddressModeV);  // Texture addressing mode in the V direction
+	_samplerDesc.AddressW       = EnumConverter::Convert(samplerInfo.AddressModeW);  // Texture addressing mode in the W direction
+	_samplerDesc.BorderColor    = EnumConverter::Convert(samplerInfo.Border);        // Texture border color
+	_samplerDesc.MipLODBias     = samplerInfo.MipLODBias;                            // LOD bias (本来出したいLODよりもシャープに, ボケて見せれる)   
+	_samplerDesc.MaxAnisotropy  = static_cast<UINT>(samplerInfo.MaxAnisotropy);      //  Use anisotropy filtering
 	_samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL;
 	_samplerDesc.MinLOD         = samplerInfo.MinLOD;
 	_samplerDesc.MaxLOD         = samplerInfo.MaxLOD;

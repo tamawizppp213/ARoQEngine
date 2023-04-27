@@ -83,8 +83,9 @@ void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
         case Box:       {primitiveMesh = PrimitiveMeshGenerator::Box      (1.0f, 1.0f, 1.0f, 0, false); break;  }
         case Sphere:    {primitiveMesh = PrimitiveMeshGenerator::Sphere   (1.0f, 20  , 20,      false); break; }
         case GeoSphere: {primitiveMesh = PrimitiveMeshGenerator::GeoSphere(1.0f, 20  ,          false); break; }
-        case Grid:      {primitiveMesh = PrimitiveMeshGenerator::Grid     (1.0f, 1.0f, 1, 1,    false); break; }
+        case Grid:      {primitiveMesh = PrimitiveMeshGenerator::Grid     (1.0f, 1.0f, 2, 2,    false); break; }
         case Rect:      {primitiveMesh = PrimitiveMeshGenerator::Rect(1.0f, 1.0f, 1.0f); break; }
+        case Torus:     {primitiveMesh = PrimitiveMeshGenerator::Torus(1.0f, 0.5f, 10, 20); break;}
         default:
         {
             throw std::runtime_error("not support primitive mesh type");
@@ -94,6 +95,13 @@ void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
     const auto mesh = std::make_shared<Mesh>(_engine, primitiveMesh, material);
     _meshes.push_back(mesh);
     _totalMesh = mesh;
+    
+    if (material) 
+    {
+        _materialCount = 1; 
+        _materials.push_back(material);
+    }
+    
 }
 
 /****************************************************************************
@@ -131,8 +139,17 @@ void GameModel::Update(const float deltaTime, const bool enableUpdateChild)
 
     if (!_hasCustomGameWorld)
     {
-        _gameWorld->GetBuffer()->Update(&_transform.GetFloat4x4(), 1);
+        GameWorldConstant world = 
+        { 
+            .World = _transform.GetFloat4x4(),
+#ifdef _DEBUG
+            .DebugColor = _debugColor
+#endif
+        };
+
+        _gameWorld->GetBuffer()->Update(&world, 1);
     }
+
     GameActor::Update(deltaTime, enableUpdateChild);
 }
 
@@ -176,7 +193,7 @@ void GameModel::PrepareGameWorldBuffer()
 void GameModel::DrawWithMaterials(const std::uint32_t materialOffsetID)
 {
     const auto frameIndex = _engine->GetCurrentFrameIndex();
-    const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+    const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 
     /*-------------------------------------------------------------------
     -              Get texture ids Shift by 1 from the next to the materialID
@@ -208,7 +225,7 @@ void GameModel::DrawWithMaterials(const std::uint32_t materialOffsetID)
 void GameModel::DrawWithoutMaterial()
 {
     const auto frameIndex = _engine->GetCurrentFrameIndex();
-    const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+    const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
     _gameWorld->Bind(commandList, 1);
     _totalMesh->Draw(commandList, frameIndex);
 }

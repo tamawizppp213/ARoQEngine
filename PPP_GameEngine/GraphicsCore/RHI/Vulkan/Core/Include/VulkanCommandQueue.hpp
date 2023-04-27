@@ -15,6 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandQueue.hpp"
 #include <vulkan/vulkan.h>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -40,20 +41,33 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		/* @ brief : Used to wait for another Command queue to complete execution. (in GPU)*/
 		void Wait(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
+		
 		/* @ brief : Update the fence value (value) when the Command Queue execution completes.*/
 		void Signal(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
+		
 		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
 		void Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists) override;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/* @brief : Return VkQueue.*/
 		VkQueue GetQueue() const noexcept { return _queue; }
+		
+		/* @brief : Return the index which specifies the queue type.*/
 		std::uint32_t GetQueueFamilyIndex() const noexcept { return _queueFamilyIndex; }
+		
+		/* @brief : Return the queue array index in the queue family.*/
+		std::uint32_t GetQueueIndex() const noexcept { return _queueIndex; }
+		
+		void SetName(const std::wstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHICommandQueue() = default;
-		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex);
+		
+		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex = 0, const std::wstring& name = L"");
+		
 		~RHICommandQueue();
 	protected:
 		/****************************************************************************
@@ -63,8 +77,9 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		VkQueue       _queue = nullptr;
-		std::uint32_t _queueFamilyIndex = 0;
+		VkQueue       _queue            = nullptr;
+		std::uint32_t _queueFamilyIndex = 0; // CommandQueueÇÃéÌóﬁÇ≤Ç∆Ç…êUÇÁÇÍÇÈGroupID
+		std::uint32_t _queueIndex       = 0; // QueueFamilyíÜ, CommandQueueÇÃîzóÒIndex
 	};
 }
 #endif

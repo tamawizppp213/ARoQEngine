@@ -36,28 +36,43 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		/* return logical device shared pointer. frame count is used for the command allocators*/
-		std::shared_ptr<core::RHIDevice> CreateDevice(const std::uint32_t frameCount) override;
+		std::shared_ptr<core::RHIDevice> CreateDevice() override;
+		
 		/* Describe physical device name and spec(future work) */
 		void PrintInfo() override; 
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		const VkPhysicalDevice               GetPhysicalDevice       () const noexcept { return _physicalDevice; }
+		
 		/* return physical device characteristics (device id, vender id...)*/
 		VkPhysicalDeviceProperties           GetProperties           () const noexcept;
+		
 		/* return physical device support list (ex. can use geometry shader...?)*/
 		VkPhysicalDeviceFeatures             GetSupports             () const noexcept;
+		
+		/* return format available properties*/
+		VkFormatProperties GetFormatProperties(const VkFormat format) const noexcept;
+
+		VkPhysicalDeviceMemoryProperties     GetMemoryProperties() const noexcept;
+		
 		/* return all available extension name list*/
 		std::vector<VkExtensionProperties>   GetExtensionProperties  () const noexcept;
 		std::vector<std::string>             GetExtensionNameList    () const noexcept;
+		
 		/* return queue family characteristics*/
 		std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties() const noexcept;
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIDisplayAdapter() = default;
+		
 		~RHIDisplayAdapter();
+		
 		RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const VkPhysicalDevice physicalDevice);
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function

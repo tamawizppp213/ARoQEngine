@@ -66,7 +66,7 @@ namespace gc::basepass
 		*****************************************************************************/
 		void PreparePipelineState(const std::wstring& name) override;
 
-		void PrepareFrameBuffers() override;
+		void PrepareFrameBuffers(const std::wstring& name) override;
 
 		/****************************************************************************
 		**                Protected Member Variables

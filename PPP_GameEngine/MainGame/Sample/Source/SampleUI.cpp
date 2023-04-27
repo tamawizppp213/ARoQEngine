@@ -84,7 +84,7 @@ void SampleUI::Draw()
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	commandList->SetViewportAndScissor(
 		core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
@@ -122,8 +122,8 @@ void SampleUI::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-             Open Copy CommandList
 	---------------------------------------------------------------------*/
-	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex());
-	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy);
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 	copyCommandList    ->BeginRecording();
 	graphicsCommandList->BeginRecording();
 
@@ -160,8 +160,8 @@ void SampleUI::LoadMaterials()
 	graphicsCommandList->EndRecording();
 	copyCommandList    ->EndRecording();
 
-	_engine->FlushCommandQueue(CommandListType::Graphics);
-	_engine->FlushCommandQueue(CommandListType::Copy);
+	_engine->FlushGPUCommands(CommandListType::Graphics);
+	_engine->FlushGPUCommands(CommandListType::Copy);
 }
 /****************************************************************************
 *                       OnKeyboardInput

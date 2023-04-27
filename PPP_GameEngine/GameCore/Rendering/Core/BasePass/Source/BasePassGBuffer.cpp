@@ -37,7 +37,7 @@ GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const gc::rendering::G
 	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"GBuffer::";
 
-	PrepareFrameBuffers();
+	PrepareFrameBuffers(name);
 	PreparePipelineState(name);
 }
 
@@ -56,7 +56,7 @@ void GBuffer::OnResize(const std::uint32_t width, const std::uint32_t height)
 void GBuffer::Draw(const GPUResourceViewPtr& scene)
 {
 	const auto currentFrame = _engine->GetCurrentFrameIndex();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, currentFrame);
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------
 	-                 Change render target
@@ -132,7 +132,7 @@ void GBuffer::PreparePipelineState(const std::wstring& name)
 	---------------------------------------------------------------------*/
 	_pipeline = device->CreateGraphicPipelineState(_renderPass, _resourceLayout);
 	_pipeline->SetBlendState        (factory->CreateBlendState(blends));
-	_pipeline->SetRasterizerState   (factory->CreateRasterizerState());
+	_pipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultSkinVertexElement()));
 	_pipeline->SetDepthStencilState (factory->CreateDepthStencilState());
 	_pipeline->SetVertexShader(vs);
@@ -148,11 +148,11 @@ void GBuffer::PreparePipelineState(const std::wstring& name)
 *
 *  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
 *
-*  @param[in] void
+*  @param[in] const std::wstring& name
 *
 *  @return @@void
 *****************************************************************************/
-void GBuffer::PrepareFrameBuffers()
+void GBuffer::PrepareFrameBuffers(const std::wstring& name)
 {
 	const auto frameCount      = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto device          = _engine->GetDevice();
@@ -176,14 +176,15 @@ void GBuffer::PrepareFrameBuffers()
 	_frameBuffers.resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
-		const auto renderInfo = GPUTextureMetaData::RenderTarget(_desc.Width, _desc.Height, PixelFormat::R32G32B32A32_FLOAT, clearColor);
-		const auto depthInfo  = GPUTextureMetaData::DepthStencil(_desc.Width, _desc.Height, PixelFormat::D32_FLOAT, depthClearColor);
+		auto renderInfo = GPUTextureMetaData::RenderTarget(_desc.Width, _desc.Height, PixelFormat::R32G32B32A32_FLOAT, clearColor);
+		auto depthInfo  = GPUTextureMetaData::DepthStencil(_desc.Width, _desc.Height, PixelFormat::D32_FLOAT, depthClearColor);
+		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 		std::vector<TexturePtr> renderTexture(_desc.BufferCount);
 		for (size_t i = 0; i < _desc.BufferCount; ++i)
 		{
-			renderTexture[i] = device->CreateTexture(renderInfo);
+			renderTexture[i] = device->CreateTexture(renderInfo, name + L"RenderTarget");
 		}
-		const auto depthTexture = device->CreateTexture(depthInfo);
+		const auto depthTexture = device->CreateTexture(depthInfo, name + L"DepthStencil");
 
 		_frameBuffers[i] = device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
 	}

@@ -39,7 +39,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		
+		/* @brief : set debugging name. */
+		void SetName(const std::wstring& name) { _name = name; };
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -52,6 +54,7 @@ namespace rhi::directX12
 
 		explicit RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth = std::nullopt) :
 			core::RHIRenderPass(device, color, depth){};
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -60,6 +63,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		std::wstring _name = L"";
 	};
 }
 #endif

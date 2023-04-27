@@ -36,6 +36,11 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		void Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList) override;
+		
+		void Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<core::RHICommandQueue>& commandQueue)override;
+
+		void Write(const std::shared_ptr<core::RHICommandList>& commandList, const gm::RGBA* pixel) override;
+
 		void TransitionState(D3D12_RESOURCE_STATES after)
 		{
 			_usageState = _usageState == after ? _usageState : after;
@@ -44,6 +49,7 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		ResourceComPtr            GetResource         () { return _resource; }
+		
 		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return _resource->GetGPUVirtualAddress(); }
 		
 		void SetName(const std::wstring& name) override;
@@ -52,10 +58,15 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUTexture() = default;
+
 		~GPUTexture() = default;
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device);
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData);
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData);
+		
+		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const std::wstring& name = L"");
+		
+		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"");
+		
+		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"");
+	
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -65,18 +76,23 @@ namespace rhi::directX12
 		**                Protected Function
 		*****************************************************************************/
 		void Pack(const std::shared_ptr<core::RHICommandList>& commandList) override;
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		ResourceComPtr        _resource = nullptr;
-		ResourceComPtr        _intermediateBuffer = nullptr; // 必要なくなったタイミングで捨てたい
+
+		ResourceComPtr        _stagingBuffer = nullptr; // 必要なくなったタイミングで捨てたい
+		
 		D3D12_RESOURCE_STATES _usageState = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
+		
 		bool _hasAllocated = false;
 	private:
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
 		void AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, bool isDiscreteGPU );
+
 		void ConvertDxMetaData       (D3D12_RESOURCE_DESC& resourceDesc);
 		
 	};

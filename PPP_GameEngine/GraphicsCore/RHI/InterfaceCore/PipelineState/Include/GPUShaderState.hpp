@@ -38,8 +38,8 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-		virtual void Compile   (const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}) = 0;
-		
+		virtual void Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = NEWEST_VERSION, const std::vector<std::wstring>& includeDirectories = {}, const std::vector<std::wstring>& defines = {}) = 0;
+
 		// @brief : Offline Compile, already compiled fileName(filePath)
 		virtual void LoadBinary(const core::ShaderType type, const std::wstring& fileName) = 0;
 		
@@ -83,7 +83,9 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		ShaderType  _shaderType = ShaderType::Vertex;
+
 		float       _version = 6.0f;
+
 		BlobData    _blobData;
 
 		static constexpr float NEWEST_VERSION = 6.6f;

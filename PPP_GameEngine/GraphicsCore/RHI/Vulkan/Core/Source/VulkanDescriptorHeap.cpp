@@ -38,9 +38,13 @@ RHIDescriptorHeap::~RHIDescriptorHeap()
 *                     Allocate
 *************************************************************************//**
 *  @fn        RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+* 
 *  @brief     Allocate view. Return descriptor index
+* 
 *  @param[in] const core::DescriptorHeapType type
+* 
 *  @param[in] const std::shared_ptr<core::RHIResourceLayout>& resourceLayout
+* 
 *  @return 　　DescriptorID (std::uint32_t)
 *****************************************************************************/
 RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
@@ -82,9 +86,13 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 *                     Resize
 *************************************************************************//**
 *  @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
+* 
 *  @brief     Resize max view count size heap
+* 
 *  @param[in] const core::DescriptorHeapType type
+* 
 *  @param[in] const size_t viewCount
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIDescriptorHeap::Resize(const core::DescriptorHeapType heapType, const size_t viewCount)
@@ -97,8 +105,11 @@ void RHIDescriptorHeap::Resize(const core::DescriptorHeapType heapType, const si
 *                     Resize
 *************************************************************************//**
 *  @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
+* 
 *  @brief     Resize max view count size heap
+* 
 *  @param[in] const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
@@ -123,6 +134,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	-               Max descriptor size check
 	---------------------------------------------------------------------*/
 	if (_totalHeapCount > totalHeapCount) { return; }
+
 	/*-------------------------------------------------------------------
 	-               Get descriptor heap create info
 	---------------------------------------------------------------------*/

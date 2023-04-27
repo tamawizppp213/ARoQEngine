@@ -75,7 +75,7 @@ void SampleRayTracingRectangle::Draw()
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	commandList->SetResourceLayout(_resourceLayout);
 	commandList->SetGraphicsPipeline(_pipelineState);
 	commandList->SetViewportAndScissor(
@@ -119,7 +119,7 @@ void SampleRayTracingRectangle::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-             Open Copy CommandList
 	---------------------------------------------------------------------*/
-	const auto commandList = _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex());
+	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
 	commandList->BeginRecording();
 	/*-------------------------------------------------------------------
 	-             SetUp Resources
@@ -131,7 +131,7 @@ void SampleRayTracingRectangle::LoadMaterials()
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/
 	commandList->EndRecording();
-	_engine->FlushCommandQueue(CommandListType::Copy);
+	_engine->FlushGPUCommands(CommandListType::Copy);
 }
 /****************************************************************************
 *                       OnKeyboardInput
@@ -219,7 +219,7 @@ void SampleRayTracingRectangle::BuildBuffer()
 			rhi::core::ResourceState::Common);
 		_indexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
 		_indexBuffer->SetName(L"IndexBuffer");
-		_indexBuffer->Pack(rectangle.Indices.data(), _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex()));
+		_indexBuffer->Pack(rectangle.Indices.data(), _engine->GetCommandList(CommandListType::Copy));
 	
 	}
 }
@@ -253,7 +253,7 @@ void SampleRayTracingRectangle::BuildPipelineState()
 	---------------------------------------------------------------------*/
 	_pipelineState = rhiDevice->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
 	_pipelineState->SetBlendState(factory->CreateBlendState());
-	_pipelineState->SetRasterizerState(factory->CreateRasterizerState());
+	_pipelineState->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipelineState->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
 	_pipelineState->SetDepthStencilState(factory->CreateDepthStencilState());
 	_pipelineState->SetVertexShader(vertexShader);

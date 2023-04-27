@@ -13,6 +13,7 @@
 #include "GameCore/Core/Include/Camera.hpp"
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassGBuffer.hpp"
 
@@ -79,7 +80,7 @@ void SampleModel::Draw()
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	commandList->SetViewportAndScissor(
 		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
@@ -88,6 +89,7 @@ void SampleModel::Draw()
 	gbuffer->Draw(_camera->GetResourceView());
 	_engine->BeginSwapchainRenderPass();
 	_skybox->Draw(_camera->GetResourceView());
+	_dof->Draw(zprepass->GetRenderedTextureView());
 	_engine->EndDrawFrame();
 }
 /****************************************************************************
@@ -119,8 +121,8 @@ void SampleModel::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-             Open Copy CommandList
 	---------------------------------------------------------------------*/
-	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy, _engine->GetCurrentFrameIndex());
-	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	const auto copyCommandList = _engine->GetCommandList(CommandListType::Copy);
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 	copyCommandList->BeginRecording();
 	graphicsCommandList->BeginRecording();
 	/*-------------------------------------------------------------------
@@ -137,20 +139,23 @@ void SampleModel::LoadMaterials()
 	---------------------------------------------------------------------*/
 	_model = GameObject::Create<GameModel>(_engine);
 	_model->Load(L"Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx");
-	_model->SetPosition(0, 0, 20);
+	_model->SetDebugColor(gm::Float4(1, 0, 0, 1));
 
 	zprepass = std::make_shared<basepass::ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
 	zprepass->Add(_model);
 	gbuffer = std::make_shared<basepass::GBuffer>(_engine);
 	gbuffer->Add(_model);
+
+	_dof = std::make_shared<Dof>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
+
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/
 	graphicsCommandList->EndRecording();
 	copyCommandList->EndRecording();
 
-	_engine->FlushCommandQueue(CommandListType::Graphics);
-	_engine->FlushCommandQueue(CommandListType::Copy);
+	_engine->FlushGPUCommands(CommandListType::Graphics);
+	_engine->FlushGPUCommands(CommandListType::Copy);
 }
 /****************************************************************************
 *                       OnKeyboardInput
@@ -163,7 +168,7 @@ void SampleModel::LoadMaterials()
 void SampleModel::OnKeyboardInput()
 {
 	const float deltaTime = _gameTimer->DeltaTime();
-	const float speed = 0.25f;
+	const float speed = 15.0f;
 	/*-------------------------------------------------------------------
 	-           Keyboad Input W (Move Camera )
 	---------------------------------------------------------------------*/
@@ -177,6 +182,17 @@ void SampleModel::OnKeyboardInput()
 	if (_gameInput.GetKeyboard()->IsPress(DIK_S))
 	{
 		_camera->Walk(-speed * deltaTime);
+	}
+	if(_gameInput.GetKeyboard()->IsPress(DIK_D))
+	{
+		_camera->Strafe(speed * deltaTime);
+	}
+	/*-------------------------------------------------------------------
+	-           Keyboad Input S (Move Camera)
+	---------------------------------------------------------------------*/
+	if (_gameInput.GetKeyboard()->IsPress(DIK_A))
+	{
+		_camera->Strafe(-speed * deltaTime);
 	}
 
 }

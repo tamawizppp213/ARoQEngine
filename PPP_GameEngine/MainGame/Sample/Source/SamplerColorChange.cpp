@@ -13,8 +13,11 @@
 #include "GameCore/Core/Include/Camera.hpp"
 #include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
 #include "GameCore/Rendering/Effect/Include/Blur.hpp"
+#include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
+#include "GameCore/Rendering/Effect/Include/Mosaic.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include "GameCore/Rendering/Debugger/Include/ScreenCapture.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -27,6 +30,10 @@ using namespace gc;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+namespace
+{
+	std::shared_ptr<gc::rendering::ScreenCapture> _capture = nullptr;
+}
 SampleColorChange::SampleColorChange()
 {
 
@@ -78,18 +85,23 @@ void SampleColorChange::Draw()
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
 	const auto frameIndex  = _engine->GetCurrentFrameIndex();
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
+	const auto frameBuffer = _engine->GetFrameBuffer(frameIndex);
+
 	commandList->SetViewportAndScissor(
 		core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
 
 	_skybox->Draw(_camera->GetResourceView());
+
+	/*-------------------------------------------------------------------
+	-             Use effects
+	---------------------------------------------------------------------*/
 	_colorChanges[_colorIndex]->Draw();
+	_capture->Capture(_engine->GetFrameBuffer(frameIndex)->GetRenderTarget());
 	
-	if (_useBlur)
-	{
-		_gaussianBlur->Draw();
-	}
+	if (_useBlur)  { _gaussianBlur->Draw(frameBuffer); }
+	if (_useMosaic) { _mosaic->Draw(); }
 
 	_engine->EndDrawFrame();
 }
@@ -122,8 +134,8 @@ void SampleColorChange::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-             Open Copy CommandList
 	---------------------------------------------------------------------*/
-	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy    , _engine->GetCurrentFrameIndex());
-	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, _engine->GetCurrentFrameIndex());
+	const auto copyCommandList     = _engine->GetCommandList(CommandListType::Copy);
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 	copyCommandList->BeginRecording();
 	graphicsCommandList->BeginRecording();
 	/*-------------------------------------------------------------------
@@ -143,7 +155,11 @@ void SampleColorChange::LoadMaterials()
 	{
 		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
 	}
-	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
+	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), true);
+
+	_mosaic = std::make_shared<Mosaic>(_engine, 20.0f);
+
+	_capture = std::make_shared<gc::rendering::ScreenCapture>(_engine, _gameInput.GetKeyboard());
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
@@ -151,8 +167,9 @@ void SampleColorChange::LoadMaterials()
 	graphicsCommandList->EndRecording();
 	copyCommandList->EndRecording();
 
-	_engine->FlushCommandQueue(CommandListType::Graphics);
-	_engine->FlushCommandQueue(CommandListType::Copy);
+	_engine->FlushGPUCommands(CommandListType::Copy);
+	_engine->FlushGPUCommands(CommandListType::Graphics);
+	
 }
 /****************************************************************************
 *                       OnKeyboardInput
@@ -187,6 +204,10 @@ void SampleColorChange::OnKeyboardInput()
 	if (_gameInput.GetKeyboard()->IsTrigger(DIK_O))
 	{
 		_useBlur = _useBlur ? false : true;
+	}
+	if (_gameInput.GetKeyboard()->IsTrigger(DIK_I))
+	{
+		_useMosaic = _useMosaic ? false : true;
 	}
 }
 /****************************************************************************

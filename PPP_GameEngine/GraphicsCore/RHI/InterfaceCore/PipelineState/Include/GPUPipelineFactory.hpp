@@ -11,8 +11,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
+#include "../../Core/Include/RHICommonState.hpp"
+#include "../../Core/Include/RHIResourceLayoutElement.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
 #include <vector>
@@ -43,33 +43,32 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Create and return input assembly state pointer*/
 		virtual std::shared_ptr<GPUInputAssemblyState> CreateInputAssemblyState(
 			const std::vector<InputLayoutElement>& elements,
 			const PrimitiveTopology primitiveTopology = PrimitiveTopology::TriangleList) = 0;
 
+		/* @brief : Create and return rasterizer state pointer*/
 		virtual std::shared_ptr<GPURasterizerState> CreateRasterizerState(
-			const FrontFace   frontFace   = FrontFace::Clockwise,
-			const CullingMode cullingMode = CullingMode::None,
-			const FillMode    fillMode    = FillMode::Solid,
-			const bool depthClamp = true) = 0;
+			const core::RasterizerProperty& rasterizerProperty) = 0;
 
+		/* @brief : Create and return depth stencil state pointer*/
 		virtual std::shared_ptr<GPUDepthStencilState> CreateDepthStencilState(
-			const bool                 depthEnable      = true,
-			const bool                 depthWriteEnable = true,
-			const bool                 stencilEnable    = false,
-			const CompareOperator      depthOperator    = CompareOperator::LessEqual,
-			const StencilOperatorInfo& front            = StencilOperatorInfo(),
-			const StencilOperatorInfo& back             = StencilOperatorInfo()) = 0;
+			const core::DepthStencilProperty& depthStencilProperty = core::DepthStencilProperty()) = 0;
 
+		/* @brief : Create and return shader state pointer*/
 		virtual std::shared_ptr<GPUShaderState> CreateShaderState() = 0;
 
+		/* @brief : Create and return multiple blend states pointer. */
 		virtual std::shared_ptr<GPUBlendState> CreateBlendState(
 			const std::vector<BlendProperty>& properties = { BlendProperty() }) = 0;
 
+		/* @brief : Create and return blend state pointer*/
 		virtual std::shared_ptr<GPUBlendState> CreateSingleBlendState(
 			const BlendProperty& blendProperty = BlendProperty()
 		) = 0;
 
+		/* @brief : Create and return input assembly state pointer*/
 		virtual std::shared_ptr<GPUBlendState> CreateBlendState(const size_t numRenderTargets) = 0;
 		/****************************************************************************
 		**                Public Member Variables
@@ -83,7 +82,9 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		virtual ~GPUPipelineFactory() = default;
+		
 		explicit GPUPipelineFactory(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
+		
 		GPUPipelineFactory() = default;
 		/****************************************************************************
 		**                Protected Function

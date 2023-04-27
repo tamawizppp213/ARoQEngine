@@ -37,21 +37,28 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-		void Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}) override;
+		void Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}, const std::vector<std::wstring>& defines = {}) override;
+		
 		// @brief : Offline Compile, already compiled fileName(filePath)
 		void LoadBinary(const core::ShaderType type, const std::wstring& fileName) override;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkShaderModule GetModule() const noexcept { return _module; }
+		
 		const VkPipelineShaderStageCreateInfo& GetStage() const{ return _stage; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUShaderState() = default;
+		
 		~GPUShaderState();
+		
 		explicit GPUShaderState(
 			const std::shared_ptr<core::RHIDevice>& device) : core::GPUShaderState(device){};
+	
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -61,8 +68,11 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkPipelineShaderStageCreateInfo _stage = {};
+
 		VkShaderModule _module     = nullptr;
+
 		std::wstring   _apiVersion = L"vulkan1.3";
+
 		std::string   _name = "";
 
 	private:

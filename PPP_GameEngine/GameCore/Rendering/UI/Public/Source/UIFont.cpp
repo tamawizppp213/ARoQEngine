@@ -62,9 +62,8 @@ bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const std::wstring& ima
 	/*-------------------------------------------------------------------
 	-             Set up
 	---------------------------------------------------------------------*/
-	const auto currentFrame  = _engine->GetCurrentFrameIndex();
 	const auto device        = engine->GetDevice();
-	const auto commandList   = engine->GetCommandList(CommandListType::Graphics, currentFrame);
+	const auto commandList   = engine->GetCommandList(CommandListType::Graphics);
 	const auto resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), commandList);
 
 	/*-------------------------------------------------------------------

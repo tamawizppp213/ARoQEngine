@@ -52,6 +52,8 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		const core::BlendProperty& GetProperty(const size_t index = 0) { return _blendProperties[index]; }
+
+		bool UseAlphaToCoverage() const { return _blendProperties[0].AlphaToConverageEnable; }
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

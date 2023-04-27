@@ -127,6 +127,7 @@ namespace rhi::core
 		R32_FLOAT,
 		D24_UNORM_S8_UINT,
 		R32G32B32_FLOAT,
+		R32G32_FLOAT,
 		B8G8R8A8_UNORM_SRGB,
 		BC1_UNORM,
 		CountOfPixelFormat
@@ -149,6 +150,7 @@ namespace rhi::core
 				return 8;
 			case PixelFormat::R8G8B8A8_UNORM:
 			case PixelFormat::B8G8R8A8_UNORM:
+			case PixelFormat::BC1_UNORM:
 			case PixelFormat::D32_FLOAT:
 				return 4;
 			case PixelFormat::R32G32B32A32_FLOAT:
@@ -175,12 +177,13 @@ namespace rhi::core
 	*				  			ClearValue
 	*************************************************************************//**
 	*  @class     ClearValue
-	*  @brief     Clear value
+	*  @brief     Clear value 
+	*             Pixel用とDepth, Stencil用は必ず分けてClearValueを作成してください. 
 	*****************************************************************************/
 	struct ClearValue
 	{
 		enum ColorType { Red, Green, Blue, Alpha };
-		float        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		float        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
 		float        Depth    = 1.0f;
 		std::uint8_t Stencil  = 0;
 
@@ -189,7 +192,8 @@ namespace rhi::core
 		{
 			Color[0] = red; Color[1] = green; Color[2] = blue; Color[3] = alpha;
 		};
-		ClearValue(float depth, std::uint8_t stencil)
+		
+		explicit ClearValue(float depth, std::uint8_t stencil = 0)
 		{
 			Depth = depth; Stencil = stencil;
 		}
@@ -259,6 +263,7 @@ namespace rhi::core
 		Clamp   = 3, // cut over 1.0 and below 0.0
 		Border  = 4, // set border color 
 	};
+
 	/****************************************************************************
 	*				  			BorderColor
 	*************************************************************************//**
@@ -268,9 +273,10 @@ namespace rhi::core
 	enum class BorderColor : std::uint8_t
 	{
 		TransparentBlack, // Indicates black, with the alpha component as fully transparent
-		OpaqueBlack,      // Indicates black, with the alpha component as fully opaque
+		OpaqueBlack,      // Indicates black, with the alpha component as fully opaque(完全不透明)
 		OpaqueWhite       // Indicates white, with the alpha component as fully opaque
 	};
+
 	/****************************************************************************
 	*				  			FilterMask
 	*************************************************************************//**
@@ -283,11 +289,12 @@ namespace rhi::core
 		Mag = 0x2,
 		Min = 0x4
 	};
+
 	/****************************************************************************
 	*				  			FilterOption
 	*************************************************************************//**
 	*  @class     FilterOption
-	*  @brief     Sampling filter option
+	*  @brief     Sampling filter option. linear -> linear sampling, point -> point sampling
 	*****************************************************************************/
 	enum class FilterOption : std::uint8_t
 	{
@@ -301,6 +308,7 @@ namespace rhi::core
 		MinLinearMagLinearMipLinear = 7,
 		Anisotropy = 8
 	};
+
 	/****************************************************************************
 	*				  			Default Sampler Type
 	*************************************************************************//**
@@ -313,9 +321,11 @@ namespace rhi::core
 		SamplerPointClamp,        // Point  + Clamp
 		SamplerLinearWrap,        // Linear + Wrap
 		SamplerLinearClamp,       // Linear + Clamp
+		SamplerLinearBorder,      /// Linear + Border
 		SamplerAnisotropicWrap,   // Anisotropic + Wrap
 		SamplerAnisotropicClamp   // Anisotropic + Clamp
 	};
+
 	/****************************************************************************
 	*				  			SamplerInfo
 	*************************************************************************//**
@@ -328,15 +338,15 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		FilterOption        Filter        = FilterOption::MinPointMagPointMipPoint;
-		SamplerAddressMode  AddressModeU  = SamplerAddressMode::Wrap;
-		SamplerAddressMode  AddressModeV  = SamplerAddressMode::Wrap;
-		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;
-		BorderColor         Border        = BorderColor::TransparentBlack;
-		size_t              MaxAnisotropy = 1;
-		float               MipLODBias    = 0.0f;
-		float               MinLOD        = 0.0f;
-		float               MaxLOD        = FLT_MAX;
+		FilterOption        Filter        = FilterOption::MinPointMagPointMipPoint; // Specify sampling method for image enlargement/shirinkage*
+		SamplerAddressMode  AddressModeU  = SamplerAddressMode::Wrap;               // Texture addressing mode in the U direction
+		SamplerAddressMode  AddressModeV  = SamplerAddressMode::Wrap;               // Texture addressing mode in the V direction
+		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;               // Texture addressing mode in the W direction
+		BorderColor         Border        = BorderColor::TransparentBlack;          // Border color 
+		size_t              MaxAnisotropy = 1;                                      // Max anisotropy
+		float               MipLODBias    = 0.0f;                                   // Defined LOD = normalLOD + bias
+		float               MinLOD        = 0.0f;                                   // Min LOD size
+		float               MaxLOD        = FLT_MAX;                                // Max LOD size: FLT_MAX 上限を指定しない.
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -424,17 +434,19 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class ColorMask : std::uint8_t
 	{
-		None  = 0,
-		Red   = 0x1,
-		Green = 0x2,
-		Blue  = 0x4,
-		Alpha = 0x8,
-		All   = Red | Green | Blue | Alpha
+		None  = 0,   // All Disable 
+		Red   = 0x1, // Red WriteEnable
+		Green = 0x2, // Green WriteEnable
+		Blue  = 0x4, // Blue WriteEnable
+		Alpha = 0x8, // Alpha WriteEnable
+		All   = Red | Green | Blue | Alpha // AllEnable
 	};
+
 	inline ColorMask operator | (const ColorMask& left, const ColorMask& right)
 	{
 		return static_cast<ColorMask>( static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
 	}
+
 	/****************************************************************************
 	*				  			BlendProperty
 	*************************************************************************//**
@@ -450,18 +462,20 @@ namespace rhi::core
 		BlendFactor   SourceAlpha      = BlendFactor::One;
 		BlendFactor   Source           = BlendFactor::One;
 		ColorMask     ColorMask        = ColorMask::All;
+		bool AlphaToConverageEnable    = false;                // Multi sample時に使用する
 
 		bool Enable = false;
+
 		BlendProperty() = default;
 
 		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, BlendFactor destAlpha, BlendFactor dest,
-			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool enable = false) :
+			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool alphaToConverageEnable = false, bool enable = false) :
 			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), Destination(dest), SourceAlpha(srcAlpha),
-			Source(src), ColorMask(colorMask), Enable(enable) { };
+			Source(src), ColorMask(colorMask), Enable(enable), AlphaToConverageEnable(alphaToConverageEnable) { };
 		
-		static BlendProperty NoColorWrite();
-		static BlendProperty OverWrite();
-		static BlendProperty AlphaBlend();
+		static BlendProperty NoColorWrite(const bool useAlphaToCoverage = false);
+		static BlendProperty OverWrite (const bool useAlphaToCoverage = false);
+		static BlendProperty AlphaBlend(const bool useAlphaToCoverage = false);
 		
 	};
 #pragma endregion        Blend State
@@ -482,12 +496,14 @@ namespace rhi::core
 		Count32 = 32,     // 32
 		Count64 = 64      // 64
 	};
+
 	class MultiSampleSizeOf
 	{
 	public: 
 		MultiSampleSizeOf() = default;
 		static size_t Get(const MultiSample sample) { return static_cast<size_t>(sample); }
 	};
+
 	/****************************************************************************
 	*				  			CullingMode
 	*************************************************************************//**
@@ -500,6 +516,7 @@ namespace rhi::core
 		Front, // front culling
 		Back   // back  culling
 	};
+
 	/****************************************************************************
 	*				  			FrontFace
 	*************************************************************************//**
@@ -511,6 +528,7 @@ namespace rhi::core
 		CounterClockwise, // for right hand coordinate
 		Clockwise,        // for left  hand coordinate
 	};
+
 	/****************************************************************************
 	*				  			FillMode
 	*************************************************************************//**
@@ -524,6 +542,29 @@ namespace rhi::core
 		Point,     // point cloud. (only vulkan API)
 	};
 
+	/****************************************************************************
+	*				  			RasterizerProperty
+	*************************************************************************//**
+	*  @class     RasterizerProperty
+	*  @brief     RasterizerProperty
+	*****************************************************************************/
+	struct RasterizerProperty
+	{
+		FrontFace   FaceType       = FrontFace::Clockwise;
+		CullingMode CullingType    = CullingMode::None;
+		FillMode    FillType       = FillMode::Solid;
+		bool        UseDepthClamp  = true;
+		bool        UseMultiSample = true;
+		bool        UseAntiAliasLine = false; // DirectX12 only use
+
+		RasterizerProperty() = default;
+
+		RasterizerProperty(const FrontFace frontFace, const CullingMode cullingMode, const FillMode fillMode, const bool useDepthClamp, const bool useMultiSample) :
+			FaceType(frontFace), CullingType(cullingMode), FillType(fillMode), UseDepthClamp(useDepthClamp), UseMultiSample(useMultiSample){};
+
+		static RasterizerProperty Solid(const bool useMultiSample = false, const FrontFace frontFace = FrontFace::Clockwise, const CullingMode cullingMode = CullingMode::None);
+		static RasterizerProperty WireFrame(const bool useMultiSample = false, const FrontFace frontFace = FrontFace::Clockwise, const CullingMode cullingMode = CullingMode::None);
+	};
 #pragma endregion   Rasterizer State
 #pragma region DepthStencilState
 	/****************************************************************************
@@ -534,37 +575,40 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class CompareOperator : std::uint8_t
 	{
-		Never,
-		Less,
-		Equal,
-		LessEqual,
-		Greater,
-		NotEqual,
-		GreaterEqual,
-		Always
+		Never,          // Always false
+		Less,           // reference < test
+		Equal,          // reference = test
+		LessEqual,      // reference <= test
+		Greater,        // reference > test
+		NotEqual,       // reference not equal test
+		GreaterEqual,   // reference >= test
+		Always          // Always true
 	};
+
 	/****************************************************************************
 	*				  			StencilOperator
 	*************************************************************************//**
 	*  @class     StencilOperator
-	*  @brief     Stencil operator
+	*  @brief     Stencil operator (設定したテストが失敗, または成功した場合に格納されたステンシル値に何が起こるかを指定する) 
+	*             良い感じの説明: https://www.asawicki.info/news_1654_stencil_test_explained_using_code
 	*****************************************************************************/
 	enum class StencilOperator : std::uint8_t
 	{
-		Keep,
-		Zero,
-		Replace,
-		IncrementAndClamp,
-		DecrementAndClamp,
-		Invert,
-		IncrementAndWrap,
-		DecrementAndWrap
+		Keep,                 // keep the current value
+		Zero,                 // set the value to 0
+		Replace,              // sets the value to reference value.
+		IncrementAndClamp,    // increments the current value and clamps to the maximum representable unsigned value
+		DecrementAndClamp,    // decrement the current value and clamps to 0
+		Invert,               // bitwise-inverts the current value
+		IncrementAndWrap,     // increment the current value and wrap to 0 when the maximum value would have been exceeded
+		DecrementAndWrap      // decrements the current value and wrap to the maximum possible value when the value wourld bo below 0
 	};
+
 	/****************************************************************************
 	*				  			StencilOperatorInfo
 	*************************************************************************//**
 	*  @class     StencilOperatorInfo
-	*  @brief     StencilOperatorInfo
+	*  @brief     StencilOperatorInfo https://www.asawicki.info/news_1654_stencil_test_explained_using_code
 	*****************************************************************************/
 	struct StencilOperatorInfo
 	{
@@ -572,8 +616,29 @@ namespace rhi::core
 		StencilOperator FailOperator      = StencilOperator::Keep;
 		StencilOperator PassOperator      = StencilOperator::Keep;
 		StencilOperator DepthFailOperator = StencilOperator::Keep;
+		std::uint32_t   Reference         = 0;
 		StencilOperatorInfo() = default;
 	};
+
+	/****************************************************************************
+	*				  			DepthStencilProperty
+	*************************************************************************//**
+	*  @class     DepthStencilProperty
+	*  @brief     When the depthStencilState class is used, you use the structure. 
+	*****************************************************************************/
+	struct DepthStencilProperty
+	{
+		bool                UseDepthTest       = true;                       // Use depth test
+		bool                DepthWriteEnable   = true;                       // Enable to write depth
+		bool                StenciWriteEnable  = false;                       // Enable to write Stencil (stencil test: 描画マスクみたいなやつ)  
+		bool                UseDepthBoundsTest = false;                      // Use depth bounds test (vulkan api only)https://shikihuiku.wordpress.com/2012/06/27/depth-bounds-test1/
+		float               MinDepthBounds     = 0.0f;                       // Min depth bounds test region
+		float               MaxDepthBounds     = 0.0f;                       // Max depth bounds test region
+		CompareOperator     DepthOperator      = CompareOperator::LessEqual; // Depth test operator
+		StencilOperatorInfo Front              = StencilOperatorInfo();      
+		StencilOperatorInfo Back               = StencilOperatorInfo();
+	};
+
 #pragma endregion  DepthStencilState
 #pragma region InputAssemblyState
 	enum class PrimitiveTopology : std::uint8_t
@@ -585,6 +650,12 @@ namespace rhi::core
 		TriangleList  = 4,
 		TriangleStrip = 5,
 		CountOfPrimitiveTopology
+	};
+
+	enum class InputClassification : std::uint8_t
+	{
+		PerVertex   = 0,
+		PerInstance = 1,
 	};
 
 	#pragma endregion InputAssemblyState
@@ -646,7 +717,7 @@ namespace rhi::core
 	{
 		Default, // Memory area visible only from GPU  
 		Upload,  // Memory area visible to CPU and GPU (Read from GPU is used for one time.)
-		Readback,// for directX12
+		Readback,// 
 		Custom   // for directX12
 	};
 
@@ -762,6 +833,7 @@ namespace rhi::core
 		ResourceState  State         = ResourceState::GeneralRead; // resource layout
 		MemoryHeap     HeapType      = MemoryHeap::Default;         // memory heap type
 		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
+		InputFormat    Format        = InputFormat::Unknown;        // 基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある
 		void*          InitData      = nullptr; // Init Data
 
 		/****************************************************************************
@@ -777,12 +849,14 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBufferMetaData() = default;
+
 		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState layout, MemoryHeap heapType, core::BufferType bufferType, void* initData = nullptr);
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
-		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count, void* initData = nullptr);
-		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count, void* initData = nullptr);
+		static GPUBufferMetaData UploadBuffer(const InputFormat format, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
+		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
+		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, void* initData = nullptr);
 		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 
 		static GPUBufferMetaData VertexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead, void* initData = nullptr);
 		static GPUBufferMetaData IndexBuffer   (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common, void* initData = nullptr);
@@ -988,8 +1062,8 @@ namespace rhi::core
 		*****************************************************************************/
 		PixelFormat     Format        = PixelFormat::Unknown;         // pixel format
 		MultiSample     SampleCount   = MultiSample::Count1;          // multi sample count (default: single sample count)
-		ResourceState   InitialLayout = ResourceState::Common;       // initial resource layout  
-		ResourceState  FinalLayout    = ResourceState::Present;      // final desired resource layout
+		ResourceState   InitialLayout = ResourceState::Common;        // initial resource layout  
+		ResourceState  FinalLayout    = ResourceState::Present;       // final desired resource layout
 		AttachmentLoad  LoadOp        = AttachmentLoad::Clear;        // at the beginning of a render path, erase already existing data with a specific value
 		AttachmentStore StoreOp       = AttachmentStore::Store;       // at the end of a render pass, save data on memory
 		AttachmentLoad  StencilLoad   = AttachmentLoad::DontCare;     // stencil; 
@@ -1072,6 +1146,7 @@ namespace rhi::core
 		}
 
 	};
+
 #pragma endregion    Window Surface
 }
 #endif

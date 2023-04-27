@@ -36,54 +36,81 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void BeginRecording() override; // first call at draw frame 
+		/* @brief : This function must be called at draw function initially (stillMidFrame = false).
+					If still mid frame is set false, this function clears the command allocator.*/
+		void BeginRecording(const bool stillMidFrame) override; 
+		
 		void EndRecording () override;  // end call   at draw frame
+		
 		void BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer) override;
+		
 		void EndRenderPass() override;
-
+		
+		/* @brief : Proceed to the record state.*/
+		void Reset(const std::shared_ptr<core::RHICommandAllocator>& changeAllocator) override {};
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/
 		void SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptorHeap>& heap) override {};
+		
 		void SetResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& layout) override;
+		
 		void SetGraphicsPipeline(const std::shared_ptr<core::GPUGraphicsPipelineState>& pipeline);
-		void SetPrimitiveTopology(core::PrimitiveTopology topology) override;
-		void SetViewport          (const core::Viewport* viewport, std::uint32_t numViewport = 1)override;
-		void SetScissor           (const core::ScissorRect* rect , std::uint32_t numRect = 1) override;
+		
+		void SetPrimitiveTopology(const core::PrimitiveTopology topology) override;
+		
+		void SetViewport          (const core::Viewport* viewport, const std::uint32_t numViewport = 1)override;
+		
+		void SetScissor           (const core::ScissorRect* rect , const std::uint32_t numRect = 1) override;
+		
 		void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
 		void SetComputePipeline(const std::shared_ptr<core::GPUComputePipelineState>& pipeline) override {};
+		
 		void SetVertexBuffer (const std::shared_ptr<core::GPUBuffer>& buffer) override;
+		
 		void SetVertexBuffers(const std::vector<std::shared_ptr<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
+		
 		void SetIndexBuffer  (const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
+		
 		void DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0)override;
+		
 		void DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0, std::uint32_t startInstanceLocation = 0)override;
+		
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/
 		void SetComputeResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override{};
+		
 		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1)override;
 		/*-------------------------------------------------------------------
 		-                Transition Resource State
 		---------------------------------------------------------------------*/
 		void TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after) override;
+		
 		void TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters) override;
+		
 		void CopyResource(const std::shared_ptr<core::GPUTexture>& dest, const std::shared_ptr<core::GPUTexture>& source) override {};;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkCommandBuffer GetCommandList() { return _commandBuffer; }
 		
+		void SetName(const std::wstring& name);
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHICommandList() = default;
+		
 		~RHICommandList();
+		
 		explicit RHICommandList(
 			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr<core::RHICommandAllocator>& allocator);
+			const std::shared_ptr<core::RHICommandAllocator>& allocator,
+			const std::wstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -93,6 +120,7 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkCommandBuffer _commandBuffer = nullptr;
+		
 		std::shared_ptr<RHIResourceLayout> _resourceLayout = nullptr;
 	
 		bool _isFirstFrame = true;

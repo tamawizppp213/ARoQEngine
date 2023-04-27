@@ -37,12 +37,16 @@ namespace rhi::vulkan
 		// @brief : Basically for Default Buffer Initialize. Total Buffer Copy
 		//          Create temp upload buffer and copy this to default buffer
 		void Pack(const void* data, const std::shared_ptr<core::RHICommandList>& copyCommandList) override;
+		
 		// @brief : Begin Map Function
 		void CopyStart() override;
+		
 		// @brief : GPU copy to one element 
 		void CopyData(const void* data, const size_t elementIndex) override ;
+		
 		// @brief : GPU copy the specified range
 		void CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset = 0) override;
+		
 		// @brief : Unmap Function
 		void CopyEnd() override;
 
@@ -50,13 +54,17 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		VkBuffer GetBuffer() const noexcept { return _buffer; }
+
 		void SetName(const std::wstring& name) override;
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUBuffer() = default;
+
 		~GPUBuffer();
-		explicit GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData);
+
+		explicit GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name = L"Buffer");
 		
 	protected:
 		/****************************************************************************
@@ -70,10 +78,20 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		// 本体
 		VkDeviceMemory _memory = nullptr;
+
 		VkBuffer       _buffer = nullptr;
+
+		// GPUだけしかアクセスできないやつにコピー等を行うため中間バッファ
+		VkBuffer _stagingBuffer = nullptr;
+
+		VkDeviceMemory _stagingMemory = nullptr;
+
+		std::uint8_t* _stagingMappedData = nullptr;
+	
 	private:
-		void Prepare();
+		void Prepare(VkBuffer& buffer, VkDeviceMemory& memory, VkMemoryPropertyFlags flags);
 	};
 
 

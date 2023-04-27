@@ -39,18 +39,10 @@ namespace rhi::vulkan
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList) override;
 
 		std::shared_ptr<core::GPURasterizerState> CreateRasterizerState(
-			const core::FrontFace   frontFace   = core::FrontFace::Clockwise,
-			const core::CullingMode cullingMode = core::CullingMode::None,
-			const core::FillMode    fillMode    = core::FillMode::Solid,
-			const bool depthClamp = true) override;
+			const core::RasterizerProperty& rasterizerProperty) override;
 
 		std::shared_ptr<core::GPUDepthStencilState> CreateDepthStencilState(
-			const bool                 depthEnable      = true,
-			const bool                 depthWriteEnable = true,
-			const bool                 stencilEnable    = false,
-			const core::CompareOperator      depthOperator = core::CompareOperator::LessEqual,
-			const core::StencilOperatorInfo& front = core::StencilOperatorInfo(),
-			const core::StencilOperatorInfo& back  = core::StencilOperatorInfo()) override;
+			const core::DepthStencilProperty& depthStencilProperty) override;
 
 		std::shared_ptr<core::GPUShaderState> CreateShaderState() override;
 
@@ -70,7 +62,9 @@ namespace rhi::vulkan
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUPipelineFactory() = default;
+
 		explicit GPUPipelineFactory(const std::shared_ptr<core::RHIDevice>& device);
+
 		~GPUPipelineFactory() = default;
 	protected:
 		/****************************************************************************

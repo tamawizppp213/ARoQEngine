@@ -57,18 +57,21 @@ ColorChange::~ColorChange()
 	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
 	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
 }
-ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName) : _engine(engine)
+ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName) 
+	: IFullScreenEffector(engine), _colorType(type)
 {
+	assert(_colorType != ColorChangeType::None);
+
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"ColorChange::";
+	const auto name = DefineDebugName(addName);
+
 	/*-------------------------------------------------------------------
 	-           Prepare Pipeline
 	---------------------------------------------------------------------*/
 	PrepareVertexAndIndexBuffer(name);
-	PreparePipelineState(type, name);
+	PreparePipelineState(name);
 	PrepareResourceView();
 }
 
@@ -78,28 +81,35 @@ ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEngin
 *							OnResize
 *************************************************************************//**
 *  @fn        void ColorChange::OnResize(int newWidth, int newHeight)
+* 
 *  @brief     OnResize
+* 
 *  @param[in] int newWidth
+* 
 *  @param[in] int newHeight
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
 void ColorChange::OnResize(int newWidth, int newHeight)
 {
-	
+
 }
 /****************************************************************************
 *							Draw
 *************************************************************************//**
 *  @fn        void ColorChange::Draw
+* 
 *  @brief     Render to Back Buffer
+* 
 *  @param[in] void
-*  @return 　　void
+* 
+*  @return    void
 *****************************************************************************/
 void ColorChange::Draw()
 {
 	const auto frameIndex          = _engine->GetCurrentFrameIndex();
 	const auto device              = _engine->GetDevice();
-	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics, frameIndex);
+	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
@@ -108,75 +118,28 @@ void ColorChange::Draw()
 	graphicsCommandList->SetGraphicsPipeline(_pipeline);
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
 	graphicsCommandList->SetIndexBuffer (_indexBuffers[frameIndex]);
-	_resourceViews[frameIndex]->Bind(graphicsCommandList, 0);
+	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 0);
 	graphicsCommandList->DrawIndexedInstanced(
 		static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
 }
 #pragma endregion Main Function
 
 #pragma region Protected Function
-/****************************************************************************
-*							PrepareVertexAndIndexBuffer
-*************************************************************************//**
-*  @fn        void ColorChange::PrepareVertexAndIndexBuffer()
-*  @brief     Prepare Rect Vertex and Index Buffer
-*  @param[in] const std::wstring& addName
-*  @return 　　void
-*****************************************************************************/
-void ColorChange::PrepareVertexAndIndexBuffer(const std::wstring& addName)
-{
-	const auto frameIndex = _engine->GetCurrentFrameIndex();
-	const auto device     = _engine->GetDevice();
-	const auto commandList = _engine->GetCommandList(CommandListType::Copy, frameIndex);
-	/*-------------------------------------------------------------------
-	-            Create Sphere Mesh
-	---------------------------------------------------------------------*/
-	PrimitiveMesh rectMesh = PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
-	/*-------------------------------------------------------------------
-	-            Create Mesh Buffer
-	---------------------------------------------------------------------*/
-	const auto frameCount = device->GetFrameCount();
-	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers .resize(frameCount);
-	for (std::uint32_t i = 0; i < frameCount; ++i)
-	{
-		/*-------------------------------------------------------------------
-		-            Set up
-		---------------------------------------------------------------------*/
-		auto vertexByteSize = sizeof(Vertex);
-		auto indexByteSize  = sizeof(std::uint32_t);
-		auto vertexCount    = rectMesh.Vertices.size();
-		auto indexCount     = rectMesh.Indices.size();
 
-		/*-------------------------------------------------------------------
-		-            Set Vertex Buffer 
-		---------------------------------------------------------------------*/
-		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
-		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
-		_vertexBuffers[i]->SetName(addName + L"VB");
-		_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
-
-		/*-------------------------------------------------------------------
-		-            Set Index Buffer
-		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
-		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
-		_indexBuffers[i]->SetName(addName + L"IB");
-		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
-
-	}
-}
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
 *  @fn        void ColorChange::PreparePipelineState(ColorChangeType type)
+* 
 *  @brief     Prepare PipelineState
+* 
 *  @param[in] ColorChangeType type
+* 
 *  @param[in] const std::wstring& addName
+* 
 *  @return 　　void
 *****************************************************************************/
-void ColorChange::PreparePipelineState(ColorChangeType type, const std::wstring& addName)
+void ColorChange::PreparePipelineState(const std::wstring& addName)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -196,14 +159,14 @@ void ColorChange::PreparePipelineState(ColorChangeType type, const std::wstring&
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
 	vs->Compile(ShaderType::Vertex, L"Shader\\Effect\\ShaderColorChange.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel , L"Shader\\Effect\\ShaderColorChange.hlsl", s_ShaderFunctionName[(int)type], 6.4f, { L"Shader\\Core" });
+	ps->Compile(ShaderType::Pixel , L"Shader\\Effect\\ShaderColorChange.hlsl", s_ShaderFunctionName[(int)_colorType], 6.4f, { L"Shader\\Core" });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
 	---------------------------------------------------------------------*/
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::OverWrite()));
-	_pipeline->SetRasterizerState   (factory->CreateRasterizerState());
+	_pipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
 	_pipeline->SetDepthStencilState (factory->CreateDepthStencilState());
 	_pipeline->SetVertexShader(vs);
@@ -221,14 +184,6 @@ void ColorChange::PreparePipelineState(ColorChangeType type, const std::wstring&
 *****************************************************************************/
 void ColorChange::PrepareResourceView()
 {
-	const auto device     = _engine->GetDevice();
-	const auto frameCount = device->GetFrameCount();
-	const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _engine->GetBackBufferFormat());
 	
-	_resourceViews.resize(frameCount);
-	for (std::uint32_t i = 0; i < static_cast<std::uint32_t>(_resourceViews.size()); ++i)
-	{
-		_resourceViews[i] = device->CreateResourceView(ResourceViewType::Texture, _engine->GetFrameBuffer(i)->GetRenderTarget());
-	}
 }
 #pragma endregion Protected Function

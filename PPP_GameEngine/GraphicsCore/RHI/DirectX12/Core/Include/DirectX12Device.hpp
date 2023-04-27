@@ -36,8 +36,6 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void SetUp() override;
-
 		void Destroy() override;
 
 #pragma region Create Function
@@ -47,16 +45,18 @@ namespace rhi::directX12
 		
 		std::shared_ptr<core::RHIFrameBuffer>             CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil = nullptr) override;
 		
-		std::shared_ptr<core::RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0) override;
+		std::shared_ptr<core::RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0, const std::wstring& name = L"") override;
 		
-		std::shared_ptr<core::RHICommandList>             CreateCommandList(const std::shared_ptr<core::RHICommandAllocator>& commandAllocator) override;
+		std::shared_ptr<core::RHICommandList>             CreateCommandList(const std::shared_ptr<core::RHICommandAllocator>& commandAllocator, const std::wstring& name) override;
 		
-		std::shared_ptr<core::RHICommandQueue>            CreateCommandQueue    (const core::CommandListType type) override;
+		std::shared_ptr<core::RHICommandQueue>            CreateCommandQueue    (const core::CommandListType type, const std::wstring& name) override;
 		
-		std::shared_ptr<core::RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type) override;
+		std::shared_ptr<core::RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const std::wstring& name) override;
 		
 		std::shared_ptr<core::RHISwapchain>               CreateSwapchain       (const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
 		
+		std::shared_ptr<core::RHISwapchain>               CreateSwapchain(const core::SwapchainDesc& desc) override;
+
 		std::shared_ptr<core::RHIDescriptorHeap>          CreateDescriptorHeap  (const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		
 		std::shared_ptr<core::RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
@@ -69,7 +69,7 @@ namespace rhi::directX12
 		
 		std::shared_ptr<core::GPUComputePipelineState>    CreateComputePipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 		
-		std::shared_ptr<core::RHIResourceLayout>          CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt) override;
+		std::shared_ptr<core::RHIResourceLayout>          CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const std::wstring& name=L"ResourceLayout") override;
 		
 		std::shared_ptr<core::GPUPipelineFactory>         CreatePipelineFactory() override;
 		
@@ -79,9 +79,9 @@ namespace rhi::directX12
 		
 		std::shared_ptr<core::GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo); // both
 		
-		std::shared_ptr<core::GPUBuffer>                  CreateBuffer(const core::GPUBufferMetaData& metaData) override;
+		std::shared_ptr<core::GPUBuffer>                  CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name = L"") override;
 		
-		std::shared_ptr<core::GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData) override;
+		std::shared_ptr<core::GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name = L"") override;
 		
 		std::shared_ptr<core::GPUTexture>                 CreateTextureEmpty() override;
 
@@ -106,12 +106,10 @@ namespace rhi::directX12
 		DeviceComPtr  GetDevice () const noexcept { return _device; }
 
 		std::uint32_t GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
-
-		std::shared_ptr<core::RHICommandQueue>     GetCommandQueue    (const core::CommandListType commandListType) override ;
-
-		std::shared_ptr<core::RHICommandAllocator> GetCommandAllocator(const core::CommandListType commandListType, const std::uint32_t currentFrame = 0) override;
 		
 		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
+
+		void SetName(const std::wstring& name) override;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check
@@ -139,7 +137,7 @@ namespace rhi::directX12
 
 		~RHIDevice();
 
-		RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter, const std::uint32_t frameCount);
+		RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter);
 
 	protected:
 		/****************************************************************************
@@ -188,7 +186,7 @@ namespace rhi::directX12
 		void CheckDXRSupport();
 		void CheckVRSSupport();
 		void CheckHDRDisplaySupport();
-		void CheckMultiSampleQualityLevels();
+		void CheckMultiSampleQualityLevels(const core::PixelFormat format);
 		void CheckMeshShadingSupport();
 
 		/****************************************************************************

@@ -64,6 +64,7 @@ namespace rhi::core
 			_device(device), _commandList(graphicsCommandList), _customHeap(customHeap) { };
 
 		~GPUResourceCache() { _resourceViews.clear(); }
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -73,8 +74,11 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		std::shared_ptr<core::RHIDevice>      _device      = nullptr;
+
 		std::shared_ptr<core::RHICommandList> _commandList = nullptr;
+
 		std::shared_ptr<RHIDescriptorHeap> _customHeap = nullptr;
+
 		std::map<std::uint64_t, GPUResourceViewPtr> _resourceViews;
 	};
 }

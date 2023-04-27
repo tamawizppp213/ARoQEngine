@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanRenderPass.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
-#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
+#include "../Include/VulkanRenderPass.hpp"
+#include "../Include/VulkanDevice.hpp"
+#include "../Include/VulkanEnumConverter.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -46,6 +46,17 @@ RHIRenderPass::RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, con
 
 #pragma endregion Constructor and Destructor
 #pragma region Property
+/****************************************************************************
+*							GetVkClearValues
+*************************************************************************//**
+*  @fn        std::vector<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
+*
+*  @brief     Return clear value array including each render target and depth stencil buffer
+*
+*  @param[in] void
+*
+*  @return 　　std::vector<VkClearValue>
+*****************************************************************************/
 std::vector<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
 {
 	/*-------------------------------------------------------------------
@@ -73,6 +84,13 @@ std::vector<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const
 
 	return clearValues;
 }
+
+void RHIRenderPass::SetName(const std::wstring& name)
+{
+	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	device->SetVkResourceName(name, VK_OBJECT_TYPE_RENDER_PASS, reinterpret_cast<std::uint64_t>(_renderPass));
+}
+
 #pragma endregion Property
 #pragma region Prepare Function
 void rhi::vulkan::RHIRenderPass::Prepare()
@@ -132,30 +150,37 @@ void rhi::vulkan::RHIRenderPass::Prepare()
 	/*-------------------------------------------------------------------
 	-                  Set sub pass descriptor
 	---------------------------------------------------------------------*/
-	VkSubpassDescription subpassDescription = {};
-	subpassDescription.flags                   = 0;
-	subpassDescription.pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpassDescription.inputAttachmentCount    = 0;
-	subpassDescription.pInputAttachments       = nullptr;
-	subpassDescription.colorAttachmentCount    = static_cast<std::uint32_t>(colorsReference.size());
-	subpassDescription.pColorAttachments       = colorsReference.data();
-	subpassDescription.pDepthStencilAttachment = _depthAttachment.has_value() ? & depthReference : nullptr;
-	subpassDescription.pPreserveAttachments    = nullptr;
-	subpassDescription.preserveAttachmentCount = 0;
-	subpassDescription.pResolveAttachments     = nullptr;
+	const VkSubpassDescription subpassDescription = 
+	{
+		.flags                   = 0,
+		.pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS,
+		.inputAttachmentCount    = 0,
+		.pInputAttachments       = nullptr,
+		.colorAttachmentCount    = static_cast<std::uint32_t>(colorsReference.size()),
+		.pColorAttachments       = colorsReference.data(),
+		.pResolveAttachments     = nullptr,
+		.pDepthStencilAttachment = _depthAttachment.has_value() ? &depthReference : nullptr,
+		.preserveAttachmentCount = 0,
+		.pPreserveAttachments    = nullptr
+	};
+
+
 	/*-------------------------------------------------------------------
 	-                  Set render pass create info
 	---------------------------------------------------------------------*/
-	VkRenderPassCreateInfo renderPassCreateInfo = {};
-	renderPassCreateInfo.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassCreateInfo.flags           = 0;
-	renderPassCreateInfo.attachmentCount = static_cast<std::uint32_t>(attachments.size());
-	renderPassCreateInfo.pAttachments    = attachments.data();
-	renderPassCreateInfo.subpassCount    = 1;
-	renderPassCreateInfo.pSubpasses      = &subpassDescription;
-	renderPassCreateInfo.dependencyCount = 0;
-	renderPassCreateInfo.pDependencies   = nullptr;
-	renderPassCreateInfo.pNext           = nullptr; // 可変レートシェーディングを行う場合は拡張する
+	const VkRenderPassCreateInfo renderPassCreateInfo = 
+	{
+		.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+		.pNext           = nullptr,
+		.flags           = 0,
+		.attachmentCount = static_cast<std::uint32_t>(attachments.size()),
+		.pAttachments    = attachments.data(),
+		.subpassCount    = 1,
+		.pSubpasses      = &subpassDescription,
+		.dependencyCount = 0,
+		.pDependencies   = nullptr
+	};
+
 	/*-------------------------------------------------------------------
 	-                  Create render pass
 	---------------------------------------------------------------------*/

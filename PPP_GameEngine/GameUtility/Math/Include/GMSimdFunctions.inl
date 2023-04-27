@@ -56,10 +56,6 @@ namespace gm
 	INLINE TYPE Max( const TYPE& a, const TYPE& b )                  { return TYPE(DirectX::XMVectorMax(a, b)); } \
 	INLINE TYPE Min( const TYPE& a, const TYPE& b )                  { return TYPE(DirectX::XMVectorMin(a, b)); } \
 	INLINE TYPE Clamp( const TYPE& v, const TYPE& a, const TYPE& b ) { return Min(Max(v, a), b); } \
-	INLINE BoolVector operator<  ( const TYPE& lhs, const TYPE& rhs ){ return DirectX::XMVectorLess(lhs, rhs); } \
-	INLINE BoolVector operator<= ( const TYPE& lhs, const TYPE& rhs ){ return DirectX::XMVectorLessOrEqual(lhs, rhs); } \
-	INLINE BoolVector operator>  ( const TYPE& lhs, const TYPE& rhs ){ return DirectX::XMVectorGreater(lhs, rhs); } \
-	INLINE BoolVector operator>= ( const TYPE& lhs, const TYPE& rhs ){ return DirectX::XMVectorGreaterOrEqual(lhs, rhs); } \
 	INLINE TYPE Select( const TYPE& lhs, const TYPE& rhs, BoolVector mask ) { return TYPE(DirectX::XMVectorSelect(lhs, rhs, mask)); }\
 	INLINE void Swap(TYPE& a, TYPE& b){TYPE temp = a; a=b;b = temp;}
 }

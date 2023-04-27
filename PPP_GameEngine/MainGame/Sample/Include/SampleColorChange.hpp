@@ -23,6 +23,8 @@ namespace gc
 	class Camera;
 	class ColorChange;
 	class GaussianBlur;
+	class Dof;
+	class Mosaic;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +45,8 @@ namespace sample
 		using CameraPtr  = std::shared_ptr<gc::Camera>;
 		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
 		using GaussianBlurPtr = std::shared_ptr<gc::GaussianBlur>;
-
+		using MosaicPtr = std::shared_ptr<gc::Mosaic>;
+		
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -73,10 +76,19 @@ namespace sample
 		**                Protected Member Variables
 		*****************************************************************************/
 		SkyDomePtr _skybox = nullptr;
+
 		CameraPtr _camera = nullptr;
+
 		std::vector<ColorChangePtr> _colorChanges = {};
+
 		GaussianBlurPtr _gaussianBlur = nullptr;
+
+		MosaicPtr _mosaic = nullptr;
+
 		bool _useBlur = false;
+		bool _useMosaic = false;
+
+
 		std::uint32_t _colorIndex = 0;
 	};
 }

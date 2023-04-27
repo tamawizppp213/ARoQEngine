@@ -20,7 +20,6 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gc::audio;
-using namespace gc::core;
 
 namespace
 {

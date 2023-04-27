@@ -45,6 +45,8 @@ namespace rhi::vulkan
 		void Resize(const size_t width, const size_t height) override ;
 		/* @brief : Return current frame buffer*/
 		size_t GetCurrentBufferIndex() const override ;
+
+		void SwitchFullScreenMode(const bool isOn) override {};
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -53,16 +55,22 @@ namespace rhi::vulkan
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHISwapchain() = default;
+
 		explicit RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device,
 			const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue,
 			const core::WindowInfo& windowInfo,
 			const core::PixelFormat& pixelFormat,
 			const size_t frameBufferCount = 3,std::uint32_t vsync = 0, bool isValidHDR = true);
+
+		explicit RHISwapchain(const std::shared_ptr<core::RHIDevice>& device,
+			const core::SwapchainDesc& desc);
+
 		~RHISwapchain();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		void SetUp();
 
 		/****************************************************************************
 		**                Protected Member Variables

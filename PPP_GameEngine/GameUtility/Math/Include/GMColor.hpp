@@ -46,6 +46,22 @@ namespace gm
         };
     }
     
+    // Simple rgba
+    struct RGBA
+    {
+        float R;
+        float G;
+        float B;
+        float A;
+
+        RGBA() = default;
+        RGBA(const float r, const float g, const float b, const float a)
+            : R(r), G(g), B(b), A(a)
+        {
+            
+        }
+    };
+
 	struct Color
 	{
 	public:

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUBlendState.hpp
-///             @brief  Blend State
+//              @file   GPUPipelineFactory.cpp
+///             @brief  Pipeline each stage creator
 ///             @author Toide Yutaro
 ///             @date   2022_06_28
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,33 +33,32 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : Create and return input assembly state pointer*/
 		std::shared_ptr<core::GPUInputAssemblyState> CreateInputAssemblyState(
 			const std::vector<core::InputLayoutElement>& elements,
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList) override;
 
+		/* @brief : Create and return rasterizer state pointer*/
 		std::shared_ptr<core::GPURasterizerState> CreateRasterizerState(
-			const core::FrontFace   frontFace   = core::FrontFace::Clockwise,
-			const core::CullingMode cullingMode = core::CullingMode::None,
-			const core::FillMode    fillMode    = core::FillMode::Solid,
-			const bool depthClamp = true) override;
+			const core::RasterizerProperty& rasterizerProperty) override;
 
+		/* @brief : Create and return depth stencil state pointer*/
 		std::shared_ptr<core::GPUDepthStencilState> CreateDepthStencilState(
-			const bool                 depthEnable = true,
-			const bool                 depthWriteEnable = true,
-			const bool                 stencilEnable = false,
-			const core::CompareOperator      depthOperator = core::CompareOperator::LessEqual,
-			const core::StencilOperatorInfo& front = core::StencilOperatorInfo(),
-			const core::StencilOperatorInfo& back  = core::StencilOperatorInfo()) override;
+			const core::DepthStencilProperty& depthStencilProperty) override;
 
+		/* @brief : Create and return shader state pointer*/
 		std::shared_ptr<core::GPUShaderState> CreateShaderState() override;
 
+		/* @brief : Create and return multiple blend states pointer. */
 		std::shared_ptr<core::GPUBlendState> CreateBlendState(
 			const std::vector<core::BlendProperty>& properties) override;
 
+		/* @brief : Create and return blend state pointer*/
 		std::shared_ptr<core::GPUBlendState> CreateSingleBlendState(
 			const core::BlendProperty& blendProperty
 		) override ;
 
+		/* @brief : Create and return input assembly state pointer*/
 		std::shared_ptr<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets)override;
 		/****************************************************************************
 		**                Public Member Variables
@@ -69,7 +68,9 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUPipelineFactory() = default;
+
 		explicit GPUPipelineFactory(const std::shared_ptr<core::RHIDevice>& device);
+
 		~GPUPipelineFactory() = default;
 	protected:
 		/****************************************************************************

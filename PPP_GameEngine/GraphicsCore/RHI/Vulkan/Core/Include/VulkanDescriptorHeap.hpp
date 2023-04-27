@@ -40,22 +40,30 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		/* @brief : Allocate view. Return descriptor index*/
 		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;
+		
 		/* @brief : Allocate max view count size heap*/
 		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
+		
 		/* @brief : Allocate max view count size heap*/
 		void Resize(const core::DescriptorHeapType type, const size_t viewCount) override;
+		
 		/* @brief : Reset view offset*/
 		void Reset(const ResetFlag flag = ResetFlag::OnlyOffset) override;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) { return _resourceAllocator.GetDescriptorSet(id); }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIDescriptorHeap() = default;
+		
 		~RHIDescriptorHeap();
+		
 		explicit RHIDescriptorHeap(const std::shared_ptr<core::RHIDevice>& device);
+	
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

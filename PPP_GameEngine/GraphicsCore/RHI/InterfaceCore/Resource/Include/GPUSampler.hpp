@@ -42,12 +42,25 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		const SamplerInfo& GetSamplerInfo  () const noexcept { return _samplerInfo; }
+		
+		/* @brief : Return filter option which specifies sampling method for image enlargement/shirinkage*/
 		FilterOption       GetFilterOption () const noexcept { return _samplerInfo.Filter; }
+		
+		/* @brief : Return texture addressing mode in the U direction*/
 		SamplerAddressMode GetAddressModeU () const noexcept { return _samplerInfo.AddressModeU; }
+		
+		/* @brief : Return texture addressing mode in the V direction.*/
 		SamplerAddressMode GetAddressModeV () const noexcept { return _samplerInfo.AddressModeV; }
+		
+		/* @brief : Return texture addressing mode in the W direction.*/
 		SamplerAddressMode GetAddressModeW () const noexcept { return _samplerInfo.AddressModeW; }
+		
+		/* @brief : Return max anisotropy*/
 		size_t             GetMaxAnisotropy() const noexcept { return _samplerInfo.MaxAnisotropy; }
+		
+		/* @brief : Return border color*/
 		BorderColor        GetBorderColor  () const noexcept { return _samplerInfo.Border; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -57,7 +70,9 @@ namespace rhi::core
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUSampler() = default;
-		~GPUSampler() = default;
+		
+		virtual ~GPUSampler() = default;
+		
 		explicit GPUSampler(const std::shared_ptr<RHIDevice>& device, const SamplerInfo& samplerInfo) : _device(device), _samplerInfo(samplerInfo) {};
 		/****************************************************************************
 		**                Protected Function

@@ -57,12 +57,6 @@
     <ClInclude Include="GameUtility\Math\Include\GMVector.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreEngine.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12GraphicsDevice.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Core.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -129,34 +123,10 @@
     <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12ResourceAllocator.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Shader.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Texture.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12PipelineState.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Buffer.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GameCore\Core\Include\GameObject.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12VertexTypes.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\Memory.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12CommandContext.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12GPUResource.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\Engine\Include\GraphicsCoreResourceType.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Math\Include\GMTypeDef.hpp">
@@ -192,22 +162,13 @@
     <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\SkyDome.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Light\LightType.hpp">
+    <ClInclude Include="GameCore\Rendering\Light\Include\LightType.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIImage.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Math\Include\GMHash.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12RootSignature.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12StaticSampler.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\SimpleInclude\IncludeGraphicsPSO.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="MainGame\Sample\Include\SampleSky.hpp">
@@ -489,12 +450,6 @@
     <ClInclude Include="GameCore\Rendering\Model\Include\GameModelConverter.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanGraphicsDevice.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIGraphicsDevice.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHICommonState.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -747,9 +702,6 @@
     <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveMesh.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12PrimitiveGeometry.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Resource\Include\GPUResourceCache.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -882,7 +834,7 @@
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryPlane.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsCore\Core\Private\Include\PhysicsActor.hpp">
+    <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsActor.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsCore\Core\Public\Include\PhysicsRigidBody.hpp">
@@ -915,12 +867,84 @@
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Debugger\Include\DebugDrawer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Debugger\Include\ScreenCapture.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanErrorCode.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\FullScreenEffector.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanMemory.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\3Dゲーム教材(DirectX12)\stb\stb_image.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluguins\stb_image.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Pluguins\DDSLoader\dds_loader.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\Mosaic.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\RayTracing\Include\RayTracingPIpelineState.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGame\Sample\Include\SampleURP.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Light\Include\SceneLightBuffer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProperty.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\Sobel.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\SSAO.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\ParticleEffect.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\ParticleEffectStruct.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Light\Include\CascadeShadow.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHITypeCore.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Light\Include\ShadowMap.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCore\Collision\Simple\Include\SimpleCollisionDetector.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="MainGame\Sample\Include\SampleCollisionDetection.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryList.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryBox2D.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryCircle.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12GraphicsDevice.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameUtility\File\Source\Json.cpp">
@@ -974,28 +998,7 @@
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Core.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Shader.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Buffer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Texture.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="GameCore\Core\Source\GameObject.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12PipelineState.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCore\Engine\Source\GraphicsCoreEngine.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12CommandContext.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12VertexTypes.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\DirectX12\RayTracing\Source\DirectX12RayTracingBLASBuffer.cpp">
@@ -1026,12 +1029,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIImage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12RootSignature.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12StaticSampler.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="MainGame\Sample\Source\SampleSky.cpp">
@@ -1154,9 +1151,6 @@
     <ClCompile Include="GameCore\Rendering\Model\Source\ModelConverter.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanGraphicsDevice.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Device.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -1217,7 +1211,7 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUDepthStencilState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12InputAssemblyState.cpp">
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\PipelineState\Source\DirectX12GPUInputAssemblyState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\Vulkan\PipelineState\Source\VulkanGPUInputAssemblyState.cpp">
@@ -1331,9 +1325,6 @@
     <ClCompile Include="GameCore\Rendering\Model\Source\PrimitiveMesh.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12PrimitiveGeometry.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\PipelineState\Source\GPUInputASssemblyState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -1442,9 +1433,6 @@
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometrySphere.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsCore\Core\Private\Source\PhysicsActor.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsRigidBody.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -1472,6 +1460,60 @@
     <ClCompile Include="GameCore\Rendering\Core\Interface\Source\GBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Debugger\Source\DebugDrawer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Debugger\Source\ScreenCapture.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Memory.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanErrorCode.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\FullScreenEffector.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanMemory.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Pluguins\DDSLoader\dds_loader.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGame\Sample\Source\SampleURP.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\ParticleEffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Light\Source\CascadeShadow.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Light\Source\ShadowMap.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCore\Collision\Simple\Source\SimpleCollisionDetector.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="MainGame\Sample\Source\SampleCollisionDetection.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCore\Core\Public\Source\PhysicsActor.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCircle.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -1486,6 +1528,7 @@
     <None Include="Shader\Lighting\ShaderBRDF.hlsli" />
     <None Include="Shader\Lighting\ShaderLightType.hlsli" />
     <None Include="Shader\Effect\ShaderTonemapType.hlsli" />
+    <None Include="Shader\Lighting\ShaderShadow.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc">
@@ -1498,12 +1541,18 @@
     <FxCompile Include="Shader\Effect\ShaderColorChange.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderGaussianBlur.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderDepthOfField.hlsl" />
-    <FxCompile Include="Shader\Lighting\ShaderLightCulling.hlsl" />
+    <FxCompile Include="Shader\Lighting\ShaderTileBasedLightCulling.hlsl" />
     <FxCompile Include="Shader\Sprite\ShaderTest.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderTonemap.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderBloom.hlsl" />
     <FxCompile Include="Shader\Sprite\ShaderRayTracingTest.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderZPrepass.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderGBuffer.hlsl" />
+    <FxCompile Include="Shader\Core\ShaderDebug.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderMosaic.hlsl" />
+    <FxCompile Include="Shader\Model\ShaderURPForwardRendering.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderSobel.hlsl" />
+    <FxCompile Include="Shader\Lighting\ShaderSSAO.hlsl" />
+    <FxCompile Include="Shader\Lighting\ShaderShadowMap.hlsl" />
   </ItemGroup>
 </Project>
