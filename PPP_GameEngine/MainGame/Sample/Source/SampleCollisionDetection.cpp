@@ -106,12 +106,12 @@ void SampleCollisionDetection::Update()
 		}
 	}
 
-	// OBB_vs_OBB
+	// OBB_vs_OBB (‚Ü‚¾)
 	{
 		const auto geometryA = std::make_shared<GeometryOBB>(0.5f, 0.5f, 0.5f);
 		const auto actorA    = std::make_shared<PhysicsActor>(geometryA, Vector3(0, 0, 0));
 		const auto geometryB = std::make_shared<GeometryOBB>(0.5f, 0.5f, 0.5f);
-		const auto actorB    = std::make_shared<PhysicsActor>(geometryB, Vector3(1.0f, 0.0f, 0.0f));
+		const auto actorB    = std::make_shared<PhysicsActor>(geometryB, Vector3(1.0f, 0.0f, 0.0f), Quaternion(Vector3(0, 1, 0)));
 		if (detector.Intersects(actorA, actorB))
 		{
 			std::cout << "OBB_vs_OBB:" << "Hit" << std::endl;
