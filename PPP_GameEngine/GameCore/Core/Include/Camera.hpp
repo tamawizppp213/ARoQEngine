@@ -36,7 +36,7 @@ namespace gc
 	*  @struct    Frustum
 	*  @brief     Frustum
 	*****************************************************************************/
-	struct Frustum
+	struct PerspectiveInfo
 	{
 		float NearZ;
 		float FarZ;
@@ -44,6 +44,14 @@ namespace gc
 		float FovVertical; // angle
 		float NearWindowHeight;
 		float FarWindowHeight;
+	};
+
+	struct OrthographicInfo
+	{
+		float NearZ;
+		float FarZ;
+		float Height;
+		float Aspect;
 	};
 
 	/****************************************************************************
@@ -72,10 +80,12 @@ namespace gc
 			float  TotalTime = 0.0f;
 			float  DeltaTime = 0.0f;
 		};
+
 		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 		using SceneConstantBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
 		using GPUResourceViewPtr        = std::shared_ptr<rhi::core::GPUResourceView>;
 		using GameTimerPtr              = std::shared_ptr<GameTimer>;
+
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -83,23 +93,28 @@ namespace gc
 		/* @brief : Update view materix and scene constants buffer. Please call at a frame*/
 		void Update(const GameTimerPtr& gameTimer);
 
-		// Define camera space via LookAt parameters
+		// Define camera space via LookAt parameters.
 		void LookAt(gm::Vector3 position, gm::Vector3 target, gm::Vector3 worldUp);
+		
 		void LookAt(const gm::Float3& position, const gm::Float3& target, const gm::Float3& up);
 
 		// Camera Motion
 		void Strafe(float distance);
 		void Walk  (float distance);
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		SceneConstantBufferPtr GetSceneBuffer() const { return _sceneConstantBuffer; }
+		
 		GPUResourceViewPtr GetResourceView() const { return _resourceView; }
+		
 		/*-------------------------------------------------------------------
 		-    World Camera Position
 		---------------------------------------------------------------------*/
 		gm::Vector3 GetPosition()   const;
 		gm::Float3  GetPosition3f() const;
+		
 		void SetPosition(const gm::Float3& position);
 		void SetPosition(float x, float y, float z);
 
@@ -124,7 +139,8 @@ namespace gc
 		/*-------------------------------------------------------------------
 		-   Get frustum properties
 		---------------------------------------------------------------------*/
-		Frustum GetFrustum() const { return frustum; }
+		PerspectiveInfo GetPerspectiveInfo() const { return frustum; }
+		OrthographicInfo GetOrthographicsInfo() const { return OrthographicInfo(); }
 		float GetNearZ()         const;
 		float GetFarZ()          const;
 		float GetAspect()        const;
@@ -157,7 +173,11 @@ namespace gc
 		*****************************************************************************/
 		Camera();
 
-		explicit Camera(const LowLevelGraphicsEnginePtr engine);
+		explicit Camera(const LowLevelGraphicsEnginePtr& engine);
+
+		Camera(const LowLevelGraphicsEnginePtr& engine, const PerspectiveInfo& info);
+
+		Camera(const LowLevelGraphicsEnginePtr& engine, const OrthographicInfo& info);
 		
 		~Camera();
 	protected:
@@ -177,7 +197,7 @@ namespace gc
 
 		bool _viewDirty = true;
 
-		Frustum frustum;
+		PerspectiveInfo frustum;
 
 		gm::Float4x4 _view = gm::MatrixIdentityF();
 		gm::Float4x4 _proj = gm::MatrixIdentityF();

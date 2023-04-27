@@ -13,6 +13,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12RenderPass.hpp"
 #include <stdexcept>
+#include <cassert>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,6 +26,8 @@ using namespace rhi::core;
 RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil)
 	: _device(device), _renderPass(renderPass), _renderTargets(renderTargets), _depthStencil(depthStencil)
 {
+	assert(_device);
+	assert(_renderPass);
 	CheckResourceFormat();
 }
 
@@ -75,6 +78,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 #pragma region Property
 Viewport RHIFrameBuffer::GetFullViewport(const size_t index) const noexcept
 {
+	assert(index < _renderTargets.size());
 	return
 	{
 		0.0f, 0.0f,
@@ -85,6 +89,7 @@ Viewport RHIFrameBuffer::GetFullViewport(const size_t index) const noexcept
 }
 ScissorRect RHIFrameBuffer::GetFullScissorRect(const size_t index) const noexcept
 {
+	assert(index < _renderTargets.size());
 	return 
 	{
 		0,0, 
@@ -106,6 +111,7 @@ void RHIFrameBuffer::SetRenderTargets(const std::vector<TexturePtr>& textures)
 
 void RHIFrameBuffer::SetRenderTarget(const TexturePtr& texture, const size_t index)
 {
+	assert(index < _renderTargets.size());
 	_renderTargetViews[index]->SetTexture(texture);
 	_renderTargetSRVs[index]->SetTexture(texture);
 	_renderTargetUAVs[index]->SetTexture(texture);

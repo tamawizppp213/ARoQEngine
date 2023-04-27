@@ -190,7 +190,7 @@ void CascadeShadow::Update(const std::shared_ptr<GameTimer>& gameTimer, const gm
 	float nearDepth = _lightCamera->GetNearZ();
 	for (int areaNo = 0; areaNo < SHADOW_MAP_COUNT; ++areaNo)
 	{
-		const auto frustum = _lightCamera->GetFrustum();
+		const auto frustum = _lightCamera->GetPerspectiveInfo();
 
 		// acquire the camera information
 		const auto nearY        = tanf(frustum.FovVertical) * nearDepth;

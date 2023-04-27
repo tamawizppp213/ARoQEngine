@@ -35,7 +35,7 @@ Camera::~Camera()
 	if (_sceneConstantBuffer) { _sceneConstantBuffer.reset(); }
 }
 
-Camera::Camera(LowLevelGraphicsEnginePtr engine) : _engine(engine)
+Camera::Camera(const LowLevelGraphicsEnginePtr& engine) : _engine(engine)
 {
 	assert(("engine is nullptr", _engine));
 
