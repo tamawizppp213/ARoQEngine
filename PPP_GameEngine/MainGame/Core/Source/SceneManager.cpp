@@ -35,7 +35,7 @@ void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_p
 
 	_engine = engine;
 	_gameTimer = gameTimer;
-	PushScene(new sample::SampleCollisionDetection());
+	PushScene(new sample::SampleURP());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************
