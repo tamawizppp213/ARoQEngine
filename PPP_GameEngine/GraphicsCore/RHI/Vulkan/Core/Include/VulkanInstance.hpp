@@ -53,6 +53,12 @@ namespace rhi::vulkan
 		VkInstance       GetVkInstance()       { return _instance; }
 		
 		const VkInstance GetVkInstance() const { return _instance; }
+		
+		/* Checks if the given extension is enabled in the VkInstance. */
+		bool IsEnabledExtension(const std::string& extensionName) const;
+
+		std::uint32_t GetVkAPIVersion() const { return _vulkanAPIVersion; }
+	
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

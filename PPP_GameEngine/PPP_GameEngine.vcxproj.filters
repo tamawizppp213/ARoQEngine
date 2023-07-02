@@ -882,9 +882,6 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanMemory.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\3Dゲーム教材(DirectX12)\stb\stb_image.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Pluguins\stb_image.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>

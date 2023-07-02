@@ -55,7 +55,9 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIInstance() = default;
+
 		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger); 
+		
 		~RHIInstance();
 
 

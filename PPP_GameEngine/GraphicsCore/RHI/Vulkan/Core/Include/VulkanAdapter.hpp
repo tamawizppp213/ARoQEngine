@@ -48,6 +48,9 @@ namespace rhi::vulkan
 		
 		/* return physical device characteristics (device id, vender id...)*/
 		VkPhysicalDeviceProperties           GetProperties           () const noexcept;
+
+		// return physical device limits
+		VkPhysicalDeviceLimits GetLimits() const noexcept;
 		
 		/* return physical device support list (ex. can use geometry shader...?)*/
 		VkPhysicalDeviceFeatures             GetSupports             () const noexcept;
@@ -55,6 +58,7 @@ namespace rhi::vulkan
 		/* return format available properties*/
 		VkFormatProperties GetFormatProperties(const VkFormat format) const noexcept;
 
+		// return memory type, memory heap.
 		VkPhysicalDeviceMemoryProperties     GetMemoryProperties() const noexcept;
 		
 		/* return all available extension name list*/
@@ -64,6 +68,7 @@ namespace rhi::vulkan
 		/* return queue family characteristics*/
 		std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties() const noexcept;
 		
+		bool IsPresentSupported(VkSurfaceKHR surface, std::uint32_t queueFamilyIndex) const;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

@@ -126,7 +126,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Include;$(VK_SDK_PATH)\Lib;$(VK_SDK_PATH)\include;$(VK_SDK_PATH)\Include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -140,6 +140,7 @@
       <AdditionalLibraryDirectories>..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Lib</AdditionalLibraryDirectories>
       <EntryPointSymbol>
       </EntryPointSymbol>
+      <AdditionalDependencies>vulkan-1.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ShaderModel>6.4</ShaderModel>
@@ -157,7 +158,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Pluguins</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Include;$(VK_SDK_PATH)\Lib;;$(VK_SDK_PATH)\Include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -169,6 +170,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <EntryPointName>VSMain</EntryPointName>
@@ -178,7 +180,6 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\3Dゲーム教材(DirectX12)\stb\stb_image.h" />
     <ClInclude Include="GameCore\Audio\Core\Include\AudioSubmix.hpp" />
     <ClInclude Include="GameCore\Audio\Effect\Include\AudioFader.hpp" />
     <ClInclude Include="GameCore\Audio\Effect\Include\AudioIEffect.hpp" />

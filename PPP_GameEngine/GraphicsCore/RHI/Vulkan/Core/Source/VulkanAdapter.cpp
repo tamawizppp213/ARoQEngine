@@ -24,17 +24,15 @@ using namespace rhi::vulkan;
 RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const VkPhysicalDevice physicalDevice)
 	: core::RHIDisplayAdapter(instance), _physicalDevice(physicalDevice)
 {
-	VkPhysicalDeviceProperties prop;
-	vkGetPhysicalDeviceProperties(_physicalDevice, &prop);
-	_name     = prop.deviceName;
-	_venderID = prop.vendorID;
-	_deviceID = prop.deviceID;
+	const auto adapterProperties = GetProperties();
+	const auto memoryProperties  = GetMemoryProperties();
+	_name     = adapterProperties.deviceName;
+	_venderID = adapterProperties.vendorID;
+	_deviceID = adapterProperties.deviceID;
 
 	/*-------------------------------------------------------------------
 	-                  Get property and memory infomation
 	---------------------------------------------------------------------*/
-	VkPhysicalDeviceMemoryProperties memoryProperties;
-	vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memoryProperties);
 	_isDiscreteGPU = memoryProperties.memoryHeapCount > 1;
 
 }
@@ -64,12 +62,9 @@ std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice()
 void RHIDisplayAdapter::PrintInfo()
 {
 	/*-------------------------------------------------------------------
-	-                  Get property and memory infomation
+	-                  Get memory infomation
 	---------------------------------------------------------------------*/
-	VkPhysicalDeviceProperties prop;
-	vkGetPhysicalDeviceProperties(_physicalDevice, &prop);
-	VkPhysicalDeviceMemoryProperties memoryProperties;
-	vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memoryProperties);
+	const auto memoryProperties = GetMemoryProperties();
 
 	/*-------------------------------------------------------------------
 	-                  Print Adapter Name
@@ -104,6 +99,22 @@ VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const noexcept
 	VkPhysicalDeviceProperties deviceProperty = {};
 	vkGetPhysicalDeviceProperties(_physicalDevice, &deviceProperty);
 	return deviceProperty;
+}
+
+/****************************************************************************
+*                     GetLimits
+*************************************************************************//**
+*  @fn        VkPhysicalDeviceLimits RHIDisplayAdapter::GetLimits() const noexcept
+*
+*  @brief     Return device limit
+*
+*  @param[in] void
+*
+*  @return Å@ VkPhysicalDeviceLimits
+*****************************************************************************/
+VkPhysicalDeviceLimits RHIDisplayAdapter::GetLimits() const noexcept
+{
+	return GetProperties().limits;
 }
 
 /****************************************************************************
@@ -142,6 +153,17 @@ VkPhysicalDeviceFeatures RHIDisplayAdapter::GetSupports() const noexcept
 	return deviceFeatures;
 }
 
+/****************************************************************************
+*                     GetMemoryProperties
+*************************************************************************//**
+*  @fn        VkPhysicalDeviceMemoryProperties RHIDisplayAdapter::GetMemoryProperties() const noexcept
+*
+*  @brief     Return physical device memory property
+*
+*  @param[in] void
+*
+*  @return Å@ VkPhysicalDeviceMemoryProperties
+*****************************************************************************/
 VkPhysicalDeviceMemoryProperties RHIDisplayAdapter::GetMemoryProperties() const noexcept
 {
 	VkPhysicalDeviceMemoryProperties memoryProperties = {};
@@ -224,5 +246,17 @@ std::vector<VkQueueFamilyProperties> RHIDisplayAdapter::GetQueueFamilyProperties
 		vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &count, queueFamilyProperties.data());
 	}
 	return queueFamilyProperties;
+}
+
+bool RHIDisplayAdapter::IsPresentSupported(VkSurfaceKHR surface, std::uint32_t queueFamilyIndex) const
+{
+	VkBool32 presentSupported = false;
+
+	if (surface != VK_NULL_HANDLE)
+	{
+		vkGetPhysicalDeviceSurfaceSupportKHR(_physicalDevice, queueFamilyIndex, surface, &presentSupported);
+	}
+
+	return (bool)presentSupported;
 }
 #pragma endregion Public Function

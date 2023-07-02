@@ -108,7 +108,7 @@ namespace
 	*  @brief     Report debug error message. (処理は止めない. 報告のみ)
 	*****************************************************************************/
 	static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
-		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,    // メッセージの重要度
 		VkDebugUtilsMessageTypeFlagsEXT messageType, 
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, 
 		void* pUserData)
@@ -163,25 +163,36 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger)
 	/*-------------------------------------------------------------------
 	-               Set Application Infomation
 	---------------------------------------------------------------------*/
-	VkApplicationInfo applicationInfo = {};
-	applicationInfo.sType            = VK_STRUCTURE_TYPE_APPLICATION_INFO; // structure type
-	applicationInfo.pApplicationName = "Graphics Device Vulkan";           // application name
-	applicationInfo.pEngineName      = EngineName;                         // engine name
-	applicationInfo.apiVersion       = _vulkanAPIVersion;                  // newest version
-	applicationInfo.engineVersion    = VK_MAKE_VERSION(1, 0, 0);           // engine version
+	const VkApplicationInfo applicationInfo =
+	{
+		.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO, // structure type
+		.pNext              = nullptr,
+		.pApplicationName   = "Graphics Device Vulkan",           // application name
+		.applicationVersion = VK_MAKE_VERSION(1,0,0),             // application version (特に使用しない)
+		.pEngineName        = EngineName,                         // engine name
+		.engineVersion      = VK_MAKE_VERSION(1,0,0),             // engine version      (特に使用しない)
+		.apiVersion         = _vulkanAPIVersion,                  // newest version
+	};
 
 	/*-------------------------------------------------------------------
 	-               Set VKInstance Create Infomation
 	---------------------------------------------------------------------*/
-	VkInstanceCreateInfo createInfo = {}; 
-	createInfo.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;        // structure type
-	createInfo.pApplicationInfo        = &applicationInfo;                              // application infomation
-	createInfo.enabledExtensionCount   = static_cast<UINT32>(convertFoundExtensions.size());   // extension count
-	createInfo.ppEnabledExtensionNames = convertFoundExtensions.data();                        // extension name list
-	createInfo.flags                   = 0;
-	createInfo.enabledLayerCount       = 0;
-	createInfo.pNext                   = nullptr;
+	VkInstanceCreateInfo createInfo = 
+	{
+		.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,               // structure type
+		.pNext                   = nullptr,
+		.flags                   = 0,
+		.pApplicationInfo        = &applicationInfo,                                     // application infomation
+		.enabledLayerCount       = 0,
+		.ppEnabledLayerNames     = nullptr,
+		.enabledExtensionCount   = static_cast<UINT32>(convertFoundExtensions.size()),   // extension count
+		.ppEnabledExtensionNames = convertFoundExtensions.data(),                        // extension name list
+	}; 
+	
 #ifdef _DEBUG
+	/*-------------------------------------------------------------------
+	-       Layer : mesurement for the validation and performance
+	---------------------------------------------------------------------*/
 	if (enableCPUDebugger || enableGPUDebugger)
 	{
 		createInfo.enabledLayerCount   = static_cast<std::uint32_t>(_instanceLayers.size());                 // enable layer count
@@ -218,7 +229,7 @@ RHIInstance::~RHIInstance()
 #ifdef _DEBUG
 	printf("Destroy RHI Instance : (Vulkan)\n");
 #endif
-	if(_debugMessenger){DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);}
+	if (_debugMessenger){DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);}
 	if (_instance)     { vkDestroyInstance(_instance, nullptr); }
 	_instanceLayers.clear(); _instanceLayers.shrink_to_fit();
 }
@@ -290,6 +301,7 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhys
 	const auto& devices = EnumratePhysicalDevices();
 	if (devices.size() == 0) { return nullptr; }
 
+	// 必要となるものがなければ最初に見つけたAdapterを渡す. 
 	std::shared_ptr<core::RHIDisplayAdapter> adapter = std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(), devices[0]);
 	for (int i = 1; i < devices.size(); ++i)
 	{
@@ -412,6 +424,9 @@ bool RHIInstance::CheckValidationLayerSupport()
 		_instanceLayers.push_back("VK_LAYER_LUNARG_standard_validation");
 	}
 
+	_instanceLayers.push_back("VK_LAYER_KHRONOS_shader_object");
+	_instanceLayers.push_back( "VK_LAYER_LUNARG_api_dump");
+
 	/* This implementation is used because it is not used in release build.*/
 	for (const char* layerName : _instanceLayers)
 	{
@@ -429,6 +444,7 @@ bool RHIInstance::CheckValidationLayerSupport()
 	}
 	return true;
 }
+
 /****************************************************************************
 *                     PopulateDebugMessengerCreateInfo
 *************************************************************************//**
@@ -441,8 +457,14 @@ void RHIInstance::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateIn
 {
 	createInfo = {};
 	createInfo.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+
+	// メッセージの重要性: 診断メッセージ, アプリケーションのバグである可能性が高い動作に対するメッセージ, 無効でクラッシュにつながる動作についてのメッセージを出力する
 	createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	
+	// 仕様にもパフォーマンスにも関係のないイベントが発生, 仕様に違反した何かが行った場合, VUlkanの最適でない使い方をしている可能性のあるものを報告
 	createInfo.messageType     = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+	
+	// コールバックを行う関数.
 	createInfo.pfnUserCallback = DebugCallback;
 }
 #pragma endregion   Debug   Function
