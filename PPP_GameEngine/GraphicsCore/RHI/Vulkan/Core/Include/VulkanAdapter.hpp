@@ -32,6 +32,26 @@ namespace rhi::vulkan
 	class RHIDisplayAdapter : public rhi::core::RHIDisplayAdapter
 	{
 	public:
+		struct PhysicalDeviceInfo
+		{
+			// memory 
+			VkPhysicalDeviceMemoryProperties MemoryProperties = {};
+
+			std::vector<VkQueueFamilyProperties> QueueFamilyProperties = {};
+
+			// vulkanÇÃversionÇ…çáÇÌÇπÇΩFeature list
+			VkPhysicalDeviceFeatures         Features10 = {};
+			VkPhysicalDeviceVulkan11Features Features11 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES};
+			VkPhysicalDeviceVulkan12Features Features12 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES };
+			VkPhysicalDeviceVulkan13Features Features13 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES };
+
+			// vulkanÇÃversionÇ…çáÇÌÇπÇΩproperty list
+			VkPhysicalDeviceProperties         Properties10 = {};
+			VkPhysicalDeviceVulkan11Properties Properties11 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES };
+			VkPhysicalDeviceVulkan12Properties Properties12 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES };
+			VkPhysicalDeviceVulkan13Properties Properties13 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES };
+		};
+
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
@@ -44,16 +64,18 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const VkPhysicalDevice               GetPhysicalDevice       () const noexcept { return _physicalDevice; }
+		const VkPhysicalDevice GetPhysicalDevice() const noexcept { return _physicalDevice; }
+
+		const PhysicalDeviceInfo& GetPhysicalDeviceInfo() const noexcept { return _physicalDeviceInfo; }
 		
 		/* return physical device characteristics (device id, vender id...)*/
-		VkPhysicalDeviceProperties           GetProperties           () const noexcept;
+		VkPhysicalDeviceProperties GetProperties() const noexcept;
 
 		// return physical device limits
 		VkPhysicalDeviceLimits GetLimits() const noexcept;
 		
 		/* return physical device support list (ex. can use geometry shader...?)*/
-		VkPhysicalDeviceFeatures             GetSupports             () const noexcept;
+		VkPhysicalDeviceFeatures GetSupports() const noexcept;
 		
 		/* return format available properties*/
 		VkFormatProperties GetFormatProperties(const VkFormat format) const noexcept;
@@ -87,6 +109,8 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkPhysicalDevice _physicalDevice = nullptr;
+
+		PhysicalDeviceInfo _physicalDeviceInfo = {};
 	};
 }
 #endif

@@ -88,6 +88,7 @@ void RHIDevice::Destroy()
 
 	if (_logicalDevice) 
 	{ 
+		vkDeviceWaitIdle(_logicalDevice);
 		vkDestroyDevice(_logicalDevice, nullptr); 
 		_logicalDevice = nullptr;
 	} // destroy logical device

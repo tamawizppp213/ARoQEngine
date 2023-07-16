@@ -56,7 +56,7 @@ namespace rhi::vulkan
 		std::vector<VkLayerProperties> GetInstanceLayers() const;
 
 		// Vulkan version check. 
-		bool IsFitVersion(const std::uint32_t major, const std::uint32_t minor, const std::uint32_t patch = 0)
+		bool MeetRequiredVersion(const std::uint32_t major, const std::uint32_t minor, const std::uint32_t patch = 0)
 		{
 			return VK_MAKE_VERSION(_majorVersion, _minorVersion, _patchVersion) >= VK_MAKE_VERSION(major, minor, patch);
 		}

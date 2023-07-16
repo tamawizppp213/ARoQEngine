@@ -9,6 +9,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanAdapter.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanInstance.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <Windows.h>
 #include <iostream>
@@ -24,6 +25,8 @@ using namespace rhi::vulkan;
 RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const VkPhysicalDevice physicalDevice)
 	: core::RHIDisplayAdapter(instance), _physicalDevice(physicalDevice)
 {
+	assert(("instance is nullptr", _instance));
+
 	const auto adapterProperties = GetProperties();
 	const auto memoryProperties  = GetMemoryProperties();
 	_name     = adapterProperties.deviceName;
@@ -35,6 +38,45 @@ RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& i
 	---------------------------------------------------------------------*/
 	_isDiscreteGPU = memoryProperties.memoryHeapCount > 1;
 
+	/*-------------------------------------------------------------------
+	-                Set up physical device info
+	---------------------------------------------------------------------*/
+	// for quaries and device creation
+	VkPhysicalDeviceFeatures2   adapterFeatures2   = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2 };
+	VkPhysicalDeviceProperties2 adapterProperties2 = { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2 };
+
+	// memory property
+	_physicalDeviceInfo.MemoryProperties      = GetMemoryProperties();
+	_physicalDeviceInfo.QueueFamilyProperties = GetQueueFamilyProperties();
+	
+	const auto vkInstance = std::static_pointer_cast<vulkan::RHIInstance>(instance);
+	if (vkInstance->MeetRequiredVersion(1, 2))
+	{
+		// set up linked list (Features)
+		adapterFeatures2.pNext               = &_physicalDeviceInfo.Features11;
+		_physicalDeviceInfo.Features11.pNext = &_physicalDeviceInfo.Features12;
+		_physicalDeviceInfo.Features12.pNext = nullptr;
+		
+		// set up linked list (Properties)
+		_physicalDeviceInfo.Properties12.driverID                     = VK_DRIVER_ID_NVIDIA_PROPRIETARY;
+		_physicalDeviceInfo.Properties12.supportedDepthResolveModes   = VK_RESOLVE_MODE_MAX_BIT;
+		_physicalDeviceInfo.Properties12.supportedStencilResolveModes = VK_RESOLVE_MODE_MAX_BIT;
+		adapterProperties2.pNext               = &_physicalDeviceInfo.Properties11;
+		_physicalDeviceInfo.Properties11.pNext = &_physicalDeviceInfo.Properties12;
+		_physicalDeviceInfo.Properties12.pNext = nullptr;
+	}
+	if (vkInstance->MeetRequiredVersion(1, 3))
+	{
+		_physicalDeviceInfo.Features12.pNext   = &_physicalDeviceInfo.Features13;
+		_physicalDeviceInfo.Features13.pNext   = nullptr;
+		_physicalDeviceInfo.Properties12.pNext = &_physicalDeviceInfo.Properties13;
+		_physicalDeviceInfo.Properties13.pNext = nullptr;
+	}
+
+	vkGetPhysicalDeviceFeatures2  (_physicalDevice, &adapterFeatures2);
+	vkGetPhysicalDeviceProperties2(_physicalDevice, &adapterProperties2);
+	_physicalDeviceInfo.Properties10 = adapterProperties2.properties;
+	_physicalDeviceInfo.Features10   = adapterFeatures2.features;
 }
 RHIDisplayAdapter::~RHIDisplayAdapter()
 {
