@@ -32,7 +32,6 @@ namespace rhi::vulkan
 	class RHIInstance : public core::RHIInstance
 	{
 	public:
-		
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
@@ -53,12 +52,18 @@ namespace rhi::vulkan
 		VkInstance       GetVkInstance()       { return _instance; }
 		
 		const VkInstance GetVkInstance() const { return _instance; }
-		
-		/* Checks if the given extension is enabled in the VkInstance. */
-		bool IsEnabledExtension(const std::string& extensionName) const;
 
-		std::uint32_t GetVkAPIVersion() const { return _vulkanAPIVersion; }
-	
+		std::vector<VkLayerProperties> GetInstanceLayers() const;
+
+		// Vulkan version check. 
+		bool IsFitVersion(const std::uint32_t major, const std::uint32_t minor, const std::uint32_t patch = 0)
+		{
+			return VK_MAKE_VERSION(_majorVersion, _minorVersion, _patchVersion) >= VK_MAKE_VERSION(major, minor, patch);
+		}
+		std::uint32_t GetVkAPIVersion() const { return VK_MAKE_VERSION(_majorVersion, _minorVersion, _patchVersion); }
+		std::uint32_t GetVkMajorVersion() const { return _majorVersion; }
+		std::uint32_t GetVkMinorVersion() const { return _minorVersion; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -67,7 +72,16 @@ namespace rhi::vulkan
 		~RHIInstance();
 
 		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger);
+
 	protected:
+		struct Entry
+		{
+			std::string   Name          = "";
+			bool          Optional      = false;
+			void*         FeatureStruct = nullptr;
+			std::uint32_t Version = 0;
+		};
+
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -80,7 +94,11 @@ namespace rhi::vulkan
 		VkInstance               _instance         = nullptr;
 		VkDebugUtilsMessengerEXT _debugMessenger   = nullptr;
 		std::vector<const char*> _instanceLayers   = {};
-		std::uint32_t            _vulkanAPIVersion = VK_API_VERSION_1_3; // newest version
+		
+		// current version
+		std::uint32_t _majorVersion = 0;
+		std::uint32_t _minorVersion = 0;
+		std::uint32_t _patchVersion = 0;
 	
 	private:
 		/****************************************************************************
@@ -90,7 +108,17 @@ namespace rhi::vulkan
 		std::vector<std::string>      AcquireExtensionList();
 
 		std::vector<VkPhysicalDevice> EnumratePhysicalDevices();
-		
+
+		// push back name array list
+		VkResult FillFilteredNameArray(std::vector<std::string>& used, 
+			const std::vector<VkLayerProperties>& properties, 
+			const std::vector<Entry>& requestedLayers);
+
+		VkResult FillFilteredNameArray(std::vector<std::string>& used,
+			const std::vector<VkExtensionProperties>& properties,
+			const std::vector<Entry>& requested,
+			std::vector<void*>& featureStructs);
+
 		// debugging
 		void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 	};

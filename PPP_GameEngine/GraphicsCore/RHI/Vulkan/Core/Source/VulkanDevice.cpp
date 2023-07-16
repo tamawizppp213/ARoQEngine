@@ -480,19 +480,24 @@ void RHIDevice::CreateLogicalDevice()
 		VkPhysicalDeviceRayTracingPipelinePropertiesKHR rayTracingProperties = {};
 		rayTracingProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
 
+		// requesting ray tracing properties.
 		VkPhysicalDeviceProperties2 deviceProperties = {};
 		deviceProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
 		deviceProperties.pNext = &rayTracingProperties;
 		vkGetPhysicalDeviceProperties2(vkAdapter->GetPhysicalDevice(), &deviceProperties);
 
+		// activate the ray tracing extension
+		// This class is used to use vkCmdTraceRaysKHR
 		VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeature = {};
 		rayTracingPipelineFeature.sType              = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
 		rayTracingPipelineFeature.rayTracingPipeline = VK_TRUE;
 
+		// This class is used to bulid acceleration structures
 		VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeature = {};
 		accelerationStructureFeature.sType                 = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
 		accelerationStructureFeature.accelerationStructure = VK_TRUE;
 
+		// add extension list
 		AddExtension(rayTracingPipelineFeature);
 		AddExtension(accelerationStructureFeature);
 
@@ -562,14 +567,19 @@ void RHIDevice::CreateLogicalDevice()
 	/*-------------------------------------------------------------------
 	-               Set Device Create Info
 	---------------------------------------------------------------------*/
-	VkDeviceCreateInfo deviceCreateInfo = {};
-	deviceCreateInfo.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;   // structure type
-	deviceCreateInfo.pQueueCreateInfos       = deviceQueueCreateInfo.data();                 // vk device queue create info
-	deviceCreateInfo.queueCreateInfoCount    = static_cast<std::uint32_t>(deviceQueueCreateInfo.size());
-	deviceCreateInfo.pEnabledFeatures        = &defaultFeatures;	
-	deviceCreateInfo.ppEnabledExtensionNames = reviseExtensionNameList.data();
-	deviceCreateInfo.enabledExtensionCount   = static_cast<UINT32>(reviseExtensionNameList.size());
-	deviceCreateInfo.pNext                   = deviceCreateInfoNext;
+	const VkDeviceCreateInfo deviceCreateInfo =
+	{
+		.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,   // structure type
+		.pNext                   = deviceCreateInfoNext,
+		.flags                   = 0,
+		.queueCreateInfoCount    = static_cast<std::uint32_t>(deviceQueueCreateInfo.size()),
+		.pQueueCreateInfos       = deviceQueueCreateInfo.data(),
+		.enabledLayerCount       = 0,
+		.ppEnabledLayerNames     = nullptr,
+		.enabledExtensionCount   = static_cast<UINT32>(reviseExtensionNameList.size()),
+		.ppEnabledExtensionNames = reviseExtensionNameList.data(),
+		.pEnabledFeatures        = &defaultFeatures
+	};
 
 	/*-------------------------------------------------------------------
 	-               Set Device Create Info

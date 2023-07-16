@@ -120,6 +120,8 @@ namespace rhi::vulkan
 		/* @brief : g‚¢‚½‚¢ƒƒ‚ƒŠ‚Ìí—Ş‚ğ‚Á‚Ä‚¢‚émemoryIndex‚ğ•Ô‚·.*/
 		std::uint32_t  GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags);
 		
+		std::uint32_t GetQueueCount(const rhi::core::CommandListType type) { return _commandQueueInfo[type].QueueCount; }
+
 		std::uint32_t GetShadingRateImageTileSize() const { return 0; };
 		
 		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
@@ -167,6 +169,7 @@ namespace rhi::vulkan
 
 		/* @brief : variable shading rate : 1, 2, 4, 8, 16, 32, 64*/
 		std::uint32_t _shadingRateImageTileSize = 0;
+
 #pragma region Support check flags
 		bool _isSupportedRayTracing          = false;
 		bool _isSupportedTearing             = false;

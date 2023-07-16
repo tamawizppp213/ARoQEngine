@@ -101,6 +101,7 @@ VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const noexcept
 	return deviceProperty;
 }
 
+
 /****************************************************************************
 *                     GetLimits
 *************************************************************************//**

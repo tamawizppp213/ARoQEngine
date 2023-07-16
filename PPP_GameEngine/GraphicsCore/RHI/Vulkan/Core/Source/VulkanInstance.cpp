@@ -32,7 +32,7 @@ namespace
 	*				  			CreateDebugUtilsMessengerEXT
 	*************************************************************************//**
 	*  @class     DestroyDebugUtilsMessengerEXT
-	*  @brief     Call free debug messenger
+	*  @brief     Define a callback to capture the messages
 	*****************************************************************************/
 	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 	{
@@ -161,6 +161,22 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger)
 	}
 	
 	/*-------------------------------------------------------------------
+	-               Acquire current api version 
+	---------------------------------------------------------------------*/
+	// find the instance version
+	std::uint32_t instanceVersion = VK_API_VERSION_1_0;
+	auto EnumrateInstanceVersion  = PFN_vkEnumerateInstanceVersion(vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion"));
+	if (EnumrateInstanceVersion)
+	{
+		EnumrateInstanceVersion(&instanceVersion);
+	}
+
+	// extract newest version info
+	_majorVersion = VK_VERSION_MAJOR(instanceVersion);
+	_minorVersion = VK_VERSION_MINOR(instanceVersion);
+	_patchVersion = VK_VERSION_PATCH(instanceVersion);
+
+	/*-------------------------------------------------------------------
 	-               Set Application Infomation
 	---------------------------------------------------------------------*/
 	const VkApplicationInfo applicationInfo =
@@ -171,7 +187,7 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger)
 		.applicationVersion = VK_MAKE_VERSION(1,0,0),             // application version (特に使用しない)
 		.pEngineName        = EngineName,                         // engine name
 		.engineVersion      = VK_MAKE_VERSION(1,0,0),             // engine version      (特に使用しない)
-		.apiVersion         = _vulkanAPIVersion,                  // newest version
+		.apiVersion         = VK_MAKE_VERSION(_majorVersion, _minorVersion, _patchVersion), // newest version
 	};
 
 	/*-------------------------------------------------------------------
@@ -406,10 +422,7 @@ bool RHIInstance::CheckValidationLayerSupport()
 	/*-------------------------------------------------------------------
 	-                  Get Available Layers
 	---------------------------------------------------------------------*/
-	std::uint32_t layerCount = 0;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-	std::vector<VkLayerProperties> availableLayers(layerCount);
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+	const auto availableLayers = GetInstanceLayers();
 
 	/*-------------------------------------------------------------------
 	-                  Search Available Layers
@@ -443,6 +456,115 @@ bool RHIInstance::CheckValidationLayerSupport()
 		if (!layerFound) { return false; }
 	}
 	return true;
+}
+
+std::vector<VkLayerProperties> RHIInstance::GetInstanceLayers() const
+{
+	std::uint32_t layerCount = 0;
+	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+	std::vector<VkLayerProperties> availableLayers(layerCount);
+	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+	return availableLayers;
+}
+
+/****************************************************************************
+*                     FillFilteredNameArray
+*************************************************************************//**
+*  @fn        VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
+			  const std::vector<VkLayerProperties>& properties,
+		      const std::vector<Entry>& requestedLayers)
+
+*  @brief     used: layer property name vector list. 
+* 
+*  @param[out] std::vector<std::string>& used : layer property name vector.
+*  @param[in]  std::vector<VkLayerProperties>properties : VkLayerProperty
+*  @param[in]  std::vector<Entry>& requestedLayer
+* 
+*  @return 　　VkResult
+*****************************************************************************/
+VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
+	const std::vector<VkLayerProperties>& properties,
+	const std::vector<Entry>& requestedLayers)
+{
+	/* This implementation is used because it is not used in release build.*/
+	// requested layerの中から, propertiesの名前を見つける.
+	for (const auto& layer : requestedLayers)
+	{
+		bool layerFound = false;
+		for (const auto& property : properties)
+		{
+			if (strcmp(layer.Name.c_str(), property.layerName) == 0)
+			{
+				layerFound = true;
+				break;
+			}
+		}
+
+		if (layerFound)
+		{
+			used.push_back(layer.Name);
+		}
+		else if (layer.Optional == false)
+		{
+			return VK_ERROR_LAYER_NOT_PRESENT;
+		}
+	}
+
+	return VK_SUCCESS;
+}
+
+/****************************************************************************
+*                     FillFilteredNameArray
+*************************************************************************//**
+*  @fn        VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
+			  const std::vector<VkLayerProperties>& properties,
+			  const std::vector<Entry>& requestedLayers)
+
+*  @brief     used: layer property name vector list.
+*
+*  @param[out] std::vector<std::string>& used : layer property name vector.
+*  @param[in]  std::vector<VkLayerProperties>properties : VkLayerProperty
+*  @param[in]  std::vector<Entry>& requestedLayer
+*  @param[out] std::vector<void*>& featureStructs
+*
+*  @return 　　VkResult
+*****************************************************************************/
+VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
+	const std::vector<VkExtensionProperties>& properties,
+	const std::vector<Entry>& requested,
+	std::vector<void*>& featureStructs)
+{
+	for (const auto& itr : requested)
+	{
+		bool found = false;
+		for (const auto& property : properties)
+		{
+			// 対象の名前とスペックが一致するかを調べる.
+			if (strcmp(itr.Name.c_str(), property.extensionName) == 0 &&
+				itr.Version == 0 || itr.Version == property.specVersion)
+			{
+				found = true;
+				break;
+			}
+		}
+
+		// feature struct push back
+		if (found)
+		{
+			used.push_back(itr.Name);
+			if (itr.FeatureStruct)
+			{
+				featureStructs.push_back(itr.FeatureStruct);
+			}
+		}
+		else if (!itr.Optional)
+		{
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
+	}
+
+	return VK_SUCCESS;
 }
 
 /****************************************************************************
