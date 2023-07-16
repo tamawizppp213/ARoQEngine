@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIInstance.hpp"
+#include "VulkanHelper.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
@@ -74,14 +75,6 @@ namespace rhi::vulkan
 		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger);
 
 	protected:
-		struct Entry
-		{
-			std::string   Name          = "";
-			bool          Optional      = false;
-			void*         FeatureStruct = nullptr;
-			std::uint32_t Version = 0;
-		};
-
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/

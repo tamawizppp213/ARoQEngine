@@ -223,7 +223,7 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 std::uint64_t LowLevelGraphicsEngine::FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame)
 {
 	// set command lists
-	const auto commandList = _commandLists[type];
+	const auto& commandList = _commandLists[type];
 	
 	/*-------------------------------------------------------------------
 	-          Transit the recorded state into the executable state
@@ -259,7 +259,7 @@ std::uint64_t LowLevelGraphicsEngine::FlushGPUCommands(const rhi::core::CommandL
 
 void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU)
 {
-	const auto commandQueue = _commandQueues[type];
+	const auto& commandQueue = _commandQueues[type];
 
 	commandQueue->Wait(_fence, waitValue);    // gpu stop
 	if (stopCPU) { _fence->Wait(waitValue); } // cpu stop

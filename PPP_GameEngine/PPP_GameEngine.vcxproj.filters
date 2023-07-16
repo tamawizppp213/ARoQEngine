@@ -942,6 +942,9 @@
     <ClInclude Include="GameUtility\Base\Include\ThreadPool.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanHelper.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">

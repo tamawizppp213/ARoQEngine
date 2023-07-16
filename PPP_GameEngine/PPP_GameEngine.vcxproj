@@ -434,6 +434,7 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanErrorCode.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanFence.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanFrameBuffer.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanHelper.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanInstance.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanMemory.hpp" />
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanRenderPass.hpp" />

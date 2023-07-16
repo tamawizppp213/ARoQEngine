@@ -69,8 +69,8 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	SetUpCommandQueueInfo();
 	CreateLogicalDevice();
 	
-	const auto gpuName    = adapter->GetName();
-	const auto deviceName = L"Device::" + unicode::ToWString(gpuName);
+	const auto& gpuName    = adapter->GetName();
+	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName);
 	SetName(deviceName);
 }
 
@@ -384,17 +384,8 @@ void RHIDevice::SetUpCommandQueueInfo()
 *****************************************************************************/
 void RHIDevice::CreateLogicalDevice()
 {
-	const auto vkAdapter = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(_adapter);
-
-	/*-------------------------------------------------------------------
-	-               Proceed next extension function 
-	---------------------------------------------------------------------*/
-	void* deviceCreateInfoNext = nullptr;
-	auto AddExtension = [&](auto& extension)
-	{
-		extension.pNext      = deviceCreateInfoNext;
-		deviceCreateInfoNext = &extension;
-	};
+	const auto vkAdapter  = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(_adapter);
+	const auto vkInstance = static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance());
 
 	/*-------------------------------------------------------------------
 	-               Get Extension name list
@@ -407,108 +398,94 @@ void RHIDevice::CreateLogicalDevice()
 		reviseExtensionNameList.push_back(name.c_str());
 	}
 
+	/*-------------------------------------------------------------------
+	-               Get Extension name list
+	---------------------------------------------------------------------*/
+	struct ExtensionHeader
+	{
+		VkStructureType Type;
+		void*           Next;
+	};
+	auto& physicalDeviceInfo = vkAdapter->GetPhysicalDeviceInfo();
+
+	/*-------------------------------------------------------------------
+	-               Default extension
+	---------------------------------------------------------------------*/
+	std::vector<ExtensionHeader*> featureStructs = {};
+
+	VkPhysicalDeviceFeatures2 features2 =
+	{
+		.sType    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+		.pNext    = nullptr,
+		.features = physicalDeviceInfo.Features10
+	};
+	featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&features2));
+
+	if (vkInstance->MeetRequiredVersion(1, 1))
+	{
+		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&physicalDeviceInfo.Features11));
+	}
+	if (vkInstance->MeetRequiredVersion(1, 2))
+	{
+		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&physicalDeviceInfo.Features12));
+	}
+	if (vkInstance->MeetRequiredVersion(1, 3))
+	{
+		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&physicalDeviceInfo.Features13));
+	}
 
 	/*-------------------------------------------------------------------
 	-             Add Variable Rate Shading Extension
 	---------------------------------------------------------------------*/
 	if (_isSupportedVariableRateShading)
 	{
-//		std::map<core::ShadingRate, VkExtent2D> shadingRatePalette =
-//		{
-//			{ core::ShadingRate::K_1x1, { 1, 1 } },
-//			{ core::ShadingRate::K_1x2, { 1, 2 } },
-//			{ core::ShadingRate::K_2x1, { 2, 1 } },
-//			{ core::ShadingRate::K_2x2, { 2, 2 } },
-//			{ core::ShadingRate::K_2x4, { 2, 4 } },
-//			{ core::ShadingRate::K_4x2, { 4, 2 } },
-//			{ core::ShadingRate::K_4x4, { 4, 4 } },
-//		};
-//		
-//#ifndef USE_STATIC_MOLTENVK
-//		/*-------------------------------------------------------------------
-//		-             Acquire fragment shading rates
-//		---------------------------------------------------------------------*/
-//		std::uint32_t fragmentShadingRatesCount = 0;
-//		
-//		vkGetPhysicalDeviceFragmentShadingRatesKHR(vkAdapter->GetPhysicalDevice(), &fragmentShadingRatesCount, nullptr);
-//		std::vector<VkPhysicalDeviceFragmentShadingRateKHR> fragmentShadingRates(fragmentShadingRatesCount);
-//		vkGetPhysicalDeviceFragmentShadingRatesKHR(vkAdapter->GetPhysicalDevice(), &fragmentShadingRatesCount, fragmentShadingRates.data());
-//		
-//		for (const auto& fragmentShadingRate : fragmentShadingRates)
-//		{
-//			VkExtent2D size = fragmentShadingRate.fragmentSize;
-//			std::uint8_t shadingRate = static_cast<std::uint8_t>(((size.width >> 1) << 2) | (size.height >> 1));
-//			assert((1 << ((shadingRate >> 2) & 3)) == size.width);
-//			assert((1 << (shadingRate & 3)) == size.height);
-//			assert(shadingRatePalette.at((core::ShadingRate)shadingRate).width  == size.width);
-//			assert(shadingRatePalette.at((core::ShadingRate)shadingRate).height == size.height);
-//			shadingRatePalette.erase((core::ShadingRate)shadingRate);
-//		}
-//#endif
-//
-//		assert(shadingRatePalette.empty());
-
-		///*-------------------------------------------------------------------
-		//-             Acquire fragment shading rates properties
-		//---------------------------------------------------------------------*/
-		//VkPhysicalDeviceFragmentShadingRatePropertiesKHR shadingRateImageProperties = {};
-		//shadingRateImageProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_KHR;
-
-		//VkPhysicalDeviceProperties2 deviceProperties = {};
-		//deviceProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-		//deviceProperties.pNext = &shadingRateImageProperties;
-		//vkGetPhysicalDeviceProperties2(vkAdapter->GetPhysicalDevice(), &deviceProperties);
-		//assert(shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.width == shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.width);
-		//assert(shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.height == shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.height);
-		//assert(shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.width == shadingRateImageProperties.minFragmentShadingRateAttachmentTexelSize.height);
-		//assert(shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.width == shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.height);
-		//_shadingRateImageTileSize = shadingRateImageProperties.maxFragmentShadingRateAttachmentTexelSize.width;
-		//
-		///*-------------------------------------------------------------------
-		//-             Add fragment shading rate features extension
-		//---------------------------------------------------------------------*/
-		//VkPhysicalDeviceFragmentShadingRateFeaturesKHR fragmentShadingRateFeatures = {};
-		//fragmentShadingRateFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_FEATURES_KHR;
-		//fragmentShadingRateFeatures.attachmentFragmentShadingRate = VK_TRUE;
-		//AddExtension(fragmentShadingRateFeatures);
+		/*-------------------------------------------------------------------
+		-             Add fragment shading rate features extension
+		---------------------------------------------------------------------*/
+		VkPhysicalDeviceFragmentShadingRateFeaturesKHR fragmentShadingRateFeatures = 
+		{
+			.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_FEATURES_KHR,
+			.pNext = nullptr,
+			.attachmentFragmentShadingRate = VK_TRUE
+		};
+		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&fragmentShadingRateFeatures));
 	}
-
+	
 	/*-------------------------------------------------------------------
 	-            RayTracing Extenison
 	---------------------------------------------------------------------*/
 	if (_isSupportedRayTracing)
 	{
-		VkPhysicalDeviceRayTracingPipelinePropertiesKHR rayTracingProperties = {};
-		rayTracingProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR;
-
-		// requesting ray tracing properties.
-		VkPhysicalDeviceProperties2 deviceProperties = {};
-		deviceProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
-		deviceProperties.pNext = &rayTracingProperties;
-		vkGetPhysicalDeviceProperties2(vkAdapter->GetPhysicalDevice(), &deviceProperties);
-
 		// activate the ray tracing extension
 		// This class is used to use vkCmdTraceRaysKHR
-		VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeature = {};
-		rayTracingPipelineFeature.sType              = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
-		rayTracingPipelineFeature.rayTracingPipeline = VK_TRUE;
+		VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeature = 
+		{
+			.sType              = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR,
+			.pNext              = nullptr,
+			.rayTracingPipeline = VK_TRUE,
+		};
+		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&rayTracingPipelineFeature));
 
 		// This class is used to bulid acceleration structures
-		VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeature = {};
-		accelerationStructureFeature.sType                 = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
-		accelerationStructureFeature.accelerationStructure = VK_TRUE;
+		VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeature =
+		{
+			.sType                 = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR,
+			.pNext                 = nullptr,
+			.accelerationStructure = VK_TRUE
+		};
+		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&accelerationStructureFeature));
 
-		// add extension list
-		AddExtension(rayTracingPipelineFeature);
-		AddExtension(accelerationStructureFeature);
-
+		// Ray query
 		if (_isSupportedRayQuery)
 		{
-			VkPhysicalDeviceRayQueryFeaturesKHR rayQueryPipelineFeature = {};
-			rayQueryPipelineFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR;
-			rayQueryPipelineFeature.rayQuery = VK_TRUE;
+			VkPhysicalDeviceRayQueryFeaturesKHR rayQueryPipelineFeature = 
+			{
+				.sType    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR,
+				.pNext    = nullptr,
+				.rayQuery = VK_TRUE
+			};
+			featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&rayQueryPipelineFeature));
 			rayTracingPipelineFeature.rayTraversalPrimitiveCulling = VK_TRUE;
-			AddExtension(rayQueryPipelineFeature);
 		}
 	}
 	/*-------------------------------------------------------------------
@@ -516,38 +493,36 @@ void RHIDevice::CreateLogicalDevice()
 	---------------------------------------------------------------------*/
 	if (_isSupportedMeshShading)
 	{
-		VkPhysicalDeviceMeshShaderFeaturesNV meshShaderFeature = {};
-		meshShaderFeature.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
-		meshShaderFeature.meshShader = true;
-		meshShaderFeature.taskShader = true;
-		AddExtension(meshShaderFeature);
+		VkPhysicalDeviceMeshShaderFeaturesNV meshShaderFeature = 
+		{
+			.sType      = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV,
+			.pNext      = nullptr,
+			.taskShader = true,
+			.meshShader = true
+		};
+		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&meshShaderFeature));
 	}
 	
+	/*-------------------------------------------------------------------
+	-            Set next pointer list
+	---------------------------------------------------------------------*/
+	if (featureStructs.empty())
+	{
+		for (size_t i = 0; i < featureStructs.size(); ++i)
+		{
+			auto* header = reinterpret_cast<ExtensionHeader*>(featureStructs[i]);
+			header->Next = i < featureStructs.size() - 1 ? featureStructs[i + 1] : nullptr;
+		}
+
+		vkGetPhysicalDeviceFeatures2(vkAdapter->GetPhysicalDevice(), &features2);
+	}
+
 	/*-------------------------------------------------------------------
 	-               Physical device features setup
 	---------------------------------------------------------------------*/
 	VkPhysicalDeviceFeatures defaultFeatures = vkAdapter->GetSupports();
 	_isSupportedGeometryShader = defaultFeatures.geometryShader;
 	
-
-	VkPhysicalDeviceVulkan12Features vulkan12Features = {};
-	vulkan12Features.sType                    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
-	vulkan12Features.drawIndirectCount        = VK_TRUE;
-#ifndef USE_STATIC_MOLTENVK
-	vulkan12Features.bufferDeviceAddress      = VK_TRUE;
-#endif
-	vulkan12Features.timelineSemaphore        = VK_TRUE;
-	vulkan12Features.shaderOutputLayer        = VK_TRUE;
-	vulkan12Features.runtimeDescriptorArray   = VK_TRUE;
-	vulkan12Features.samplerMirrorClampToEdge = VK_TRUE;
-	vulkan12Features.descriptorIndexing       = VK_TRUE;
-	vulkan12Features.samplerFilterMinmax      = VK_TRUE;
-	vulkan12Features.shaderOutputViewportIndex = VK_TRUE;
-	vulkan12Features.bufferDeviceAddress       = VK_TRUE;
-	vulkan12Features.descriptorBindingVariableDescriptorCount = VK_TRUE;
-	AddExtension(vulkan12Features);
-
-
 	/*-------------------------------------------------------------------
 	-               Set device queue create info
 	---------------------------------------------------------------------*/
@@ -571,7 +546,7 @@ void RHIDevice::CreateLogicalDevice()
 	const VkDeviceCreateInfo deviceCreateInfo =
 	{
 		.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,   // structure type
-		.pNext                   = deviceCreateInfoNext,
+		.pNext                   = &features2,
 		.flags                   = 0,
 		.queueCreateInfoCount    = static_cast<std::uint32_t>(deviceQueueCreateInfo.size()),
 		.pQueueCreateInfos       = deviceQueueCreateInfo.data(),

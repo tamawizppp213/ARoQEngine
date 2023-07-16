@@ -66,6 +66,8 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		const VkPhysicalDevice GetPhysicalDevice() const noexcept { return _physicalDevice; }
 
+		/* return all physical device information(memory, feature, property)*/
+		PhysicalDeviceInfo& GetPhysicalDeviceInfo() { return _physicalDeviceInfo; }
 		const PhysicalDeviceInfo& GetPhysicalDeviceInfo() const noexcept { return _physicalDeviceInfo; }
 		
 		/* return physical device characteristics (device id, vender id...)*/
