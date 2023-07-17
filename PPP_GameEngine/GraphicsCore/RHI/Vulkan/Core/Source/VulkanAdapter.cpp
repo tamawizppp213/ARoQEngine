@@ -78,10 +78,12 @@ RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& i
 	_physicalDeviceInfo.Properties10 = adapterProperties2.properties;
 	_physicalDeviceInfo.Features10   = adapterFeatures2.features;
 }
+
 RHIDisplayAdapter::~RHIDisplayAdapter()
 {
 	
 }
+
 #pragma endregion Constructor and Destructor 
 
 #pragma region Public Function
@@ -213,6 +215,7 @@ VkPhysicalDeviceMemoryProperties RHIDisplayAdapter::GetMemoryProperties() const 
 	vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &memoryProperties);
 	return memoryProperties;
 }
+
 /****************************************************************************
 *                     GetExtensionProperties
 *************************************************************************//**
@@ -238,6 +241,7 @@ std::vector<VkExtensionProperties> RHIDisplayAdapter::GetExtensionProperties() c
 	}
 	return extensionProperties;
 }
+
 /****************************************************************************
 *                     GetExtensionNameList
 *************************************************************************//**
@@ -265,6 +269,7 @@ std::vector<std::string> RHIDisplayAdapter::GetExtensionNameList() const noexcep
 	}
 	return extensions;
 }
+
 /****************************************************************************
 *                     GetExtensionProperties
 *************************************************************************//**
@@ -302,4 +307,5 @@ bool RHIDisplayAdapter::IsPresentSupported(VkSurfaceKHR surface, std::uint32_t q
 
 	return (bool)presentSupported;
 }
+
 #pragma endregion Public Function

@@ -308,7 +308,6 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 
 }
 
-
 void LowLevelGraphicsEngine::BeginSwapchainRenderPass()
 {
 	const auto& graphicsCommandList = _commandLists[core::CommandListType::Graphics];

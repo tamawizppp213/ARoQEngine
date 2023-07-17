@@ -24,15 +24,18 @@ using namespace rhi;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::wstring& name) : core::RHICommandAllocator(device, type)
+RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::wstring& name) 
+	: core::RHICommandAllocator(device, type)
 {
+	assert(("device is nullptr.", device));
+
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	
-	VkCommandPoolCreateInfo createInfo = 
+	const VkCommandPoolCreateInfo createInfo = 
 	{
-		.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-		.pNext = nullptr,
-		.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, // enable each command buffer reset and buffer's lifetime is long.
+		.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+		.pNext            = nullptr,
+		.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, // enable each command buffer reset and buffer's lifetime is long.
 		.queueFamilyIndex = queueFamilyIndex,
 	};
 
@@ -47,7 +50,12 @@ RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>&
 RHICommandAllocator::~RHICommandAllocator()
 {
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
-	if (_commandPool) { vkDestroyCommandPool(vkDevice->GetDevice(), _commandPool, nullptr); }
+	
+	if (_commandPool) 
+	{
+		vkDestroyCommandPool(vkDevice->GetDevice(), _commandPool, nullptr); 
+		_commandPool = VK_NULL_HANDLE;
+	}
 }
 
 /****************************************************************************
@@ -68,6 +76,24 @@ void RHICommandAllocator::CleanUp()
 	{
 		throw std::runtime_error("failed to reset command pool");
 	}
+	
+}
+
+/****************************************************************************
+*                     CleanUp
+*************************************************************************//**
+*  @fn        void RHICommandAllocator::Trim(const VkCommandPoolTrimFlags flags)
+*
+*  @brief     Trimming
+*
+*  @param[in] const VkCommandPoolTrimFlags
+*
+*  @return Å@Å@void
+*****************************************************************************/
+void RHICommandAllocator::Trim(const VkCommandPoolTrimFlags flags)
+{
+	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	vkTrimCommandPool(vkDevice->GetDevice(), _commandPool, flags);
 }
 
 /****************************************************************************
