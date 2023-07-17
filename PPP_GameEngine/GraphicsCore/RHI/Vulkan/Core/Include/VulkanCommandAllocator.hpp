@@ -42,6 +42,7 @@ namespace rhi::vulkan
 		void CleanUp() override;
 		
 		void Trim(const VkCommandPoolTrimFlags flags);
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

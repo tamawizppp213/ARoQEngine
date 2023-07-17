@@ -30,7 +30,7 @@ RHIFence::RHIFence(const std::shared_ptr<core::RHIDevice>& device, const std::ui
 	/*-------------------------------------------------------------------
 	-   Set up semaphore type create info (TimelineInfo)
 	---------------------------------------------------------------------*/
-	VkSemaphoreTypeCreateInfo timelineInfo = 
+	const VkSemaphoreTypeCreateInfo timelineInfo = 
 	{
 		.sType         = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
 		.pNext         = nullptr,
@@ -41,7 +41,7 @@ RHIFence::RHIFence(const std::shared_ptr<core::RHIDevice>& device, const std::ui
 	/*-------------------------------------------------------------------
 	-   Set up semaphore create info
 	---------------------------------------------------------------------*/
-	VkSemaphoreCreateInfo semaphoreInfo = 
+	const VkSemaphoreCreateInfo semaphoreInfo = 
 	{
 		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
 		.pNext = &timelineInfo,
@@ -84,7 +84,11 @@ std::uint64_t RHIFence::GetCompletedValue()
 	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
 
 	std::uint64_t value = 0;
-	vkGetSemaphoreCounterValue(vkDevice, _timelineSemaphore, &value);
+	if (vkGetSemaphoreCounterValue(vkDevice, _timelineSemaphore, &value) != VK_SUCCESS)
+	{
+		throw std::runtime_error("couldn't get semaphore counter value");
+	}
+
 	return value;
 }
 
@@ -103,7 +107,7 @@ void RHIFence::Wait(const std::uint64_t value)
 {
 	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
 
-	VkSemaphoreWaitInfo waitInfo = 
+	const VkSemaphoreWaitInfo waitInfo = 
 	{
 		.sType          = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO,
 		.pNext          = nullptr,
@@ -134,7 +138,7 @@ void RHIFence::Signal(const std::uint64_t value)
 {
 	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
 
-	VkSemaphoreSignalInfo signalInfo = 
+	const VkSemaphoreSignalInfo signalInfo = 
 	{
 		.sType     = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO,
 		.pNext     = nullptr,

@@ -508,7 +508,7 @@ void RHIDevice::CreateLogicalDevice()
 	/*-------------------------------------------------------------------
 	-            Set next pointer list
 	---------------------------------------------------------------------*/
-	if (featureStructs.empty())
+	if (!featureStructs.empty())
 	{
 		for (size_t i = 0; i < featureStructs.size(); ++i)
 		{
@@ -518,12 +518,6 @@ void RHIDevice::CreateLogicalDevice()
 
 		vkGetPhysicalDeviceFeatures2(vkAdapter->GetPhysicalDevice(), &features2);
 	}
-
-	/*-------------------------------------------------------------------
-	-               Physical device features setup
-	---------------------------------------------------------------------*/
-	VkPhysicalDeviceFeatures defaultFeatures = vkAdapter->GetSupports();
-	_isSupportedGeometryShader = defaultFeatures.geometryShader;
 	
 	/*-------------------------------------------------------------------
 	-               Set device queue create info
