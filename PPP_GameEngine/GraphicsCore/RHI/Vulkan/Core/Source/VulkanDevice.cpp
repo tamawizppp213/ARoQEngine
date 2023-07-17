@@ -394,7 +394,9 @@ void RHIDevice::CreateLogicalDevice()
 	std::vector<const char*> reviseExtensionNameList = {}; // convert const char* 
 	for (const auto& name : extensionNameList)
 	{
+		// ignore
 		if (name == "VK_EXT_buffer_device_address"){ continue;}
+		if (name == "VK_NV_cuda_kernel_launch") { continue; }
 		reviseExtensionNameList.push_back(name.c_str());
 	}
 
@@ -554,7 +556,7 @@ void RHIDevice::CreateLogicalDevice()
 		.ppEnabledLayerNames     = nullptr,
 		.enabledExtensionCount   = static_cast<UINT32>(reviseExtensionNameList.size()),
 		.ppEnabledExtensionNames = reviseExtensionNameList.data(),
-		.pEnabledFeatures        = &defaultFeatures
+		.pEnabledFeatures        = nullptr
 	};
 
 	/*-------------------------------------------------------------------
@@ -645,12 +647,14 @@ void RHIDevice::SetVkResourceName(const std::wstring& name, const VkObjectType t
 	/*-------------------------------------------------------------------
 	-          Set Object Name Info
 	---------------------------------------------------------------------*/
-	VkDebugUtilsObjectNameInfoEXT info = {};
-	info.sType        = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;  // structure type
-	info.pNext        = nullptr;                                             // no extension
-	info.objectType   = type;                                                // object type : buffer
-	info.objectHandle = objectHandle;                                        // vkBuffer to std::uint64_t
-	info.pObjectName  = utf8Name.c_str();      
+	const VkDebugUtilsObjectNameInfoEXT info = 
+	{
+		.sType        = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT,  // structure type
+		.pNext        = nullptr,                                             // no extension
+		.objectType   = type,                                                // object type : buffer
+		.objectHandle = objectHandle,                                        // vkBuffer to std::uint64_t
+		.pObjectName  = utf8Name.c_str()
+	};
 
 	/*-------------------------------------------------------------------
 	-          GetInstance
