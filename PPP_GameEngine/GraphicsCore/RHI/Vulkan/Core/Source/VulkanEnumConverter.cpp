@@ -35,6 +35,7 @@ VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 		case core::PixelFormat::R32G32B32_FLOAT   : return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
 		case core::PixelFormat::D24_UNORM_S8_UINT : return VkFormat::VK_FORMAT_D24_UNORM_S8_UINT;
 		case core::PixelFormat::R10G10B10A2_UNORM : return VkFormat::VK_FORMAT_A2R10G10B10_UNORM_PACK32;
+		case core::PixelFormat::R32_FLOAT         : return VkFormat::VK_FORMAT_R32_SFLOAT;
 		case core::PixelFormat::D32_FLOAT         : return VkFormat::VK_FORMAT_D32_SFLOAT;
 		case core::PixelFormat::BC1_UNORM         : return VkFormat::VK_FORMAT_BC1_RGBA_UNORM_BLOCK;
 		case core::PixelFormat::Unknown           : return VkFormat::VK_FORMAT_UNDEFINED;
@@ -328,6 +329,7 @@ VkFormat EnumConverter::Convert(const rhi::core::InputFormat inputFormat)
 		case core::InputFormat::R32G32_FLOAT      : return VkFormat::VK_FORMAT_R32G32_SFLOAT;
 		case core::InputFormat::R32G32B32_FLOAT   : return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
 		case core::InputFormat::R32G32B32A32_FLOAT: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+		case core::InputFormat::R32G32B32A32_INT  : return VkFormat::VK_FORMAT_R32G32B32A32_SINT;
 		case core::InputFormat::R32_FLOAT         : return VkFormat::VK_FORMAT_R32_SFLOAT;
 		default:
 			throw std::runtime_error("not supported input layout format type (vulkan api)");

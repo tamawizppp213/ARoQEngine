@@ -12,7 +12,11 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHISwapchain.hpp"
+#if defined(_WIN32)
 #define VK_USE_PLATFORM_WIN32_KHR
+#else
+#define VK_USE_PLATFORM_XLIB_KHR
+#endif
 #include <vulkan/vulkan.h>
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,25 +36,29 @@ namespace rhi::vulkan
 	*****************************************************************************/
 	class RHISwapchain : public rhi::core::RHISwapchain
 	{
-		
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
 		std::uint32_t PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue) override;
+		
 		/* @brief : Display front buffer*/
 		void Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue) override ;
+		
 		/* @brief : Resize screen size. Rebuild everything once and update again.*/
 		void Resize(const size_t width, const size_t height) override ;
+		
 		/* @brief : Return current frame buffer*/
 		size_t GetCurrentBufferIndex() const override ;
 
 		void SwitchFullScreenMode(const bool isOn) override {};
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkSwapchainKHR GetSwapchain() { return _swapchain; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -76,23 +84,42 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkSwapchainKHR _swapchain = VK_NULL_HANDLE;
+
 		VkSurfaceKHR   _surface   = nullptr;
+
 		VkSemaphore    _imageAvailableSemaphore    = nullptr;
+		
 		VkSemaphore    _renderingFinishedSemaphore = nullptr;
+		
 		std::uint32_t _currentBufferIndex = 0;
-		std::vector<VkImage> _images;
+		
+		std::vector<VkImage> _vkImages;
 	private:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		void InitializeSwapchain();
+
+		void ChangeSDRFormat(const VkFormat format);
+		
 		void UpdateCurrentFrameIndex();
+		
 		/** @brief Select color format and color space format*/
 		VkSurfaceFormatKHR SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& format);
+		
 		/** @brief Select vsync mode*/
 		VkPresentModeKHR   SelectSwapchainPresentMode(const std::vector<VkPresentModeKHR>& presentMode);
+		
 		/** @brief Select swapchain screen size*/
 		VkExtent2D         SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+		/* @brief Select image array layer*/
+		std::uint32_t      SelectImageArrayLayers(std::uint32_t request, const std::uint32_t maxLayers);
+
+		/* @brief Select frame buffer count*/
+		std::uint32_t      SelectImageCount(const VkSurfaceCapabilitiesKHR& capabilities);
+
+		VkCompositeAlphaFlagBitsKHR SelectCompositeAlpha(const VkSurfaceCapabilitiesKHR& capabilities);
 	};
 }
 #endif

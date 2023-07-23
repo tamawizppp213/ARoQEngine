@@ -15,11 +15,20 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanFence.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanCommandQueue.hpp"
 #include "GraphicsCore/RHI/Vulkan/Resource/Include/VulkanGPUTexture.hpp"
+#include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
+
+#if defined(_WIN32)
+#include <Windows.h>
+#else
+#include <X11/Xlib.h>  
+#endif
+
 #undef max
+#undef min
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -31,6 +40,56 @@ using namespace rhi;
 #pragma region Swapchain Support 
 namespace
 {
+	/*-------------------------------------------------------------------
+	-       HDR and SDR pixel format and color space
+	---------------------------------------------------------------------*/
+	const std::vector<VkFormat> g_HDRFormat =
+	{
+		 VK_FORMAT_R16G16B16A16_SFLOAT,
+		 VK_FORMAT_A2B10G10R10_UNORM_PACK32,
+		 VK_FORMAT_R32G32B32A32_SFLOAT
+	};
+
+	const std::vector<VkFormat> g_SDRFormat =
+	{
+		VK_FORMAT_B8G8R8A8_UNORM,
+		VK_FORMAT_B8G8R8A8_SRGB
+	};
+
+	const std::vector<VkColorSpaceKHR> g_HDRColorSpace =
+	{
+		VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT,
+		VK_COLOR_SPACE_HDR10_ST2084_EXT,
+		VK_COLOR_SPACE_HDR10_HLG_EXT,
+		VK_COLOR_SPACE_DOLBYVISION_EXT
+	};
+
+	const std::vector<VkColorSpaceKHR> g_SDRColorSpace =
+	{
+		VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
+	};
+
+	bool CheckColorFormat(const std::vector<VkFormat>& formats, VkFormat desiredFormat)
+	{
+		for (const auto format : formats)
+		{
+			if (format == desiredFormat) { return true; }
+		}
+		return false;
+	}
+
+	bool CheckColorSpace(const std::vector<VkColorSpaceKHR>& colorSpaces, VkColorSpaceKHR desiredColorSpace)
+	{
+		for (const auto colorSpace : colorSpaces)
+		{
+			if (colorSpace == desiredColorSpace)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/****************************************************************************
 	*				  			SwapchainSupportDetails
 	*************************************************************************//**
@@ -75,22 +134,28 @@ namespace
 	};
 }
 #pragma endregion Swapchain Support
+
 #pragma region Constructor and Destructor
-RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat,
+RHISwapchain::RHISwapchain(
+	const std::shared_ptr<rhi::core::RHIDevice>& device, 
+	const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, 
+	const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat,
 	const size_t frameBufferCount, std::uint32_t vsync, bool isValidHDR) : rhi::core::RHISwapchain(device, commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
 {
 	SetUp();
 }
 
 RHISwapchain::RHISwapchain(const std::shared_ptr<core::RHIDevice>& device, const core::SwapchainDesc& desc)
+	: rhi::core::RHISwapchain(device, desc.CommandQueue, desc.WindowInfo, desc.PixelFormat, desc.FrameBufferCount, desc.VSync, desc.IsValidHDR)
 {
 	SetUp();
 }
+
 RHISwapchain::~RHISwapchain()
 {
 	const auto vkDevice  = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	const auto vkAdapter = std::static_pointer_cast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
-	_images.clear(); _images.shrink_to_fit();
+	_vkImages.clear(); _vkImages.shrink_to_fit();
 	if (_renderingFinishedSemaphore) 
 	{ 
 		vkDestroySemaphore(vkDevice->GetDevice(), _renderingFinishedSemaphore, nullptr); 
@@ -114,6 +179,14 @@ RHISwapchain::~RHISwapchain()
 }
 #pragma endregion Constructor and Destructor
 #pragma region Render Function
+/****************************************************************************
+*							SetUp
+*************************************************************************//**
+*  @fn        void RHISwapchain::SetUp()
+*  @brief     Prepare the swapchain setting
+*  @param[in] void
+*  @return 　　void
+*****************************************************************************/
 void RHISwapchain::SetUp()
 {
 	const auto vkDevice   = std::static_pointer_cast<vulkan::RHIDevice>(_device);
@@ -123,16 +196,35 @@ void RHISwapchain::SetUp()
 	/*-------------------------------------------------------------------
 	-          Acquire surface (現状ではWindowsのみ対応) // 必要になり次第macroで管理する.
 	---------------------------------------------------------------------*/
-#ifdef _WIN32
+#if defined(_WIN32)
 	{
-		VkWin32SurfaceCreateInfoKHR surfaceInfo = {};                            // Window32 Surface. (! not cross platform)
-		surfaceInfo.hinstance = (HINSTANCE)_desc.WindowInfo.HInstance;                 // hInstance
-		surfaceInfo.hwnd      = (HWND)_desc.WindowInfo.Handle;                         // hwnd 
-		surfaceInfo.sType     = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR; // Structure type
-		VkResult result       = vkCreateWin32SurfaceKHR(vkInstance->GetVkInstance(), &surfaceInfo, nullptr, &_surface);
-		if (result != VK_SUCCESS)
+		const VkWin32SurfaceCreateInfoKHR surfaceInfo = 
+		{
+			.sType     = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR, // Structure type
+			.pNext     = 0,
+			.flags     = 0,
+			.hinstance = (HINSTANCE)_desc.WindowInfo.HInstance,           // hInstance
+			.hwnd      = (HWND)_desc.WindowInfo.Handle                    // hwnd 
+		}; // Window32 Surface. (! not cross platform)
+
+		if (vkCreateWin32SurfaceKHR(vkInstance->GetVkInstance(), &surfaceInfo, nullptr, &_surface) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to prepare surface.");
+		}
+	}
+#else
+	{
+		const VkXlibSurfaceCreateInfoKHR surfaceInfo =
+		{
+			.sType = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR,
+			.pNext = nullptr,
+			.flags = 0,
+			.dpy   = XOpenDisplay(nullptr),
+		};
+		 
+		if (vkCreateXlibSurfaceKHR(vkInstance->GetVkInstance(), &surfaceInfo, nullptr, &_surface) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to prepare surface");
 		}
 	}
 #endif
@@ -140,6 +232,7 @@ void RHISwapchain::SetUp()
 	-         null check
 	---------------------------------------------------------------------*/
 	if (_surface == nullptr) { throw std::runtime_error("failed to prepare surface"); }
+
 	/*-------------------------------------------------------------------
 	-          Set Swapchain
 	---------------------------------------------------------------------*/
@@ -328,64 +421,44 @@ void RHISwapchain::InitializeSwapchain()
 {
 	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device);
 	const auto vkAdapter = std::static_pointer_cast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
+
 	/*-------------------------------------------------------------------
 	-               Acquire Surface infomation
 	---------------------------------------------------------------------*/
-	const auto details       = SwapchainSupportDetails::Query(vkAdapter->GetPhysicalDevice(), _surface);
-	const auto surfaceFormat = SelectSwapchainFormat(details.Formats);
-	const auto presentMode   = SelectSwapchainPresentMode(details.PresentModes);
-	const auto extent        = SelectSwapExtent(details.Capabilities);
+	const auto details          = SwapchainSupportDetails::Query(vkAdapter->GetPhysicalDevice(), _surface);
+	      auto imageCount       = SelectImageCount(details.Capabilities);
+	const auto surfaceFormat    = SelectSwapchainFormat(details.Formats);
+	const auto presentMode      = SelectSwapchainPresentMode(details.PresentModes);
+	const auto extent           = SelectSwapExtent(details.Capabilities);
+	const auto imageArrayLayers = SelectImageArrayLayers(1, details.Capabilities.maxImageArrayLayers);
+	const auto compositeAlpha   = SelectCompositeAlpha(details.Capabilities);
+	const std::uint32_t queueFamilyIndex = vkDevice->GetQueueFamilyIndex(rhi::core::CommandListType::Graphics);
 	
-	/*-------------------------------------------------------------------
-	-               Acquire Swapchain frame buffer count
-	---------------------------------------------------------------------*/
-	UINT32 imageCount = static_cast<UINT32>(_desc.FrameBufferCount);
-	if (details.Capabilities.minImageCount > 0 && imageCount < details.Capabilities.minImageCount)
-	{
-		imageCount = details.Capabilities.minImageCount;
-	}
-	if (details.Capabilities.maxImageCount > 0 && imageCount > details.Capabilities.maxImageCount)
-	{
-		imageCount = details.Capabilities.maxImageCount;
-	}
-
 	/*-------------------------------------------------------------------
 	-               Acquire Swapchain create infomation
 	---------------------------------------------------------------------*/
-	VkSwapchainCreateInfoKHR createInfo = {};
-	createInfo.sType                 = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;   // structure type
-	createInfo.surface               = _surface;                                      // display surface 
-	createInfo.minImageCount         = imageCount;                                    // frame buffer image count
-	createInfo.imageFormat           = surfaceFormat.format;                          // pixel format : SDR B8G8R8A8 HDR : Float
-	createInfo.imageColorSpace       = surfaceFormat.colorSpace;                      // color space 
-	createInfo.imageExtent           = extent;
-	createInfo.imageArrayLayers      = 1;
-	createInfo.imageUsage            = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;        
-	createInfo.imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE;                     // access to any range or image subresource of the object will be exclusive to a single queue family at a time.
-	createInfo.clipped               = VK_TRUE;                                       // clipped 
-	createInfo.queueFamilyIndexCount = 0;
-	createInfo.pQueueFamilyIndices   = nullptr;
-	createInfo.oldSwapchain          = _swapchain; // basically nullptr
-	createInfo.preTransform          = details.Capabilities.currentTransform;
-	createInfo.pNext                 = nullptr;
-	createInfo.compositeAlpha        = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;             // alpha : 1.0 (ひとまず)
-	createInfo.presentMode           = presentMode;
-	/*-------------------------------------------------------------------
-	-               Composite Alpha Flags
-	---------------------------------------------------------------------*/
-	const VkCompositeAlphaFlagBitsKHR compositeAlphaFlags[] = {
-			VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
-			VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
-			VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
-			VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR
-	};
-	for (size_t index = 0; index < _countof(compositeAlphaFlags); index++)
+	VkSwapchainCreateInfoKHR createInfo = 
 	{
-		if (details.Capabilities.supportedCompositeAlpha & compositeAlphaFlags[index])
-		{
-			createInfo.compositeAlpha = compositeAlphaFlags[index]; break;
-		}
-	}
+		.sType                 = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,   // structure type
+		.pNext                 = nullptr,
+		.flags                 = 0,
+		.surface               = _surface,                                      // display surface
+		.minImageCount         = imageCount,                                    // frame buffer image count (default : 3)
+		.imageFormat           = surfaceFormat.format,                          // pixel format : SDR B8G8R8A8 HDR : Float
+		.imageColorSpace       = surfaceFormat.colorSpace,                      // color space 
+		.imageExtent           = extent,                                        // screen pixel size
+		.imageArrayLayers      = imageArrayLayers,
+		.imageUsage            = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+		.imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE,                     // access to any range or image subresource of the object will be exclusive to a single queue family at a time.
+		.queueFamilyIndexCount = 1,
+		.pQueueFamilyIndices   = &queueFamilyIndex,
+		.preTransform          = details.Capabilities.currentTransform,         // current monitor rotation (default identity)
+		.compositeAlpha        = compositeAlpha,                                // ウィンドウシステムによるアルファ合成の扱い
+		.presentMode           = presentMode,
+		.clipped               = VK_TRUE,                                       // 画面が隠れている部分の描画処理をなくす.
+		.oldSwapchain          = _swapchain                                     // basically nullptr
+	};
+
 
 	/*-------------------------------------------------------------------
 	-               Create Swapchain KHR
@@ -394,23 +467,26 @@ void RHISwapchain::InitializeSwapchain()
 	{
 		throw std::runtime_error("failed to create swapchain (vulkan api)");
 	}
-
+	
 	/*-------------------------------------------------------------------
 	-               Set HDR metadata
 	---------------------------------------------------------------------*/
 	if (vkDevice->IsSupportedHDR() && _desc.IsValidHDR)
 	{
-		VkHdrMetadataEXT hdrMetadata = {};
-		hdrMetadata.sType = VK_STRUCTURE_TYPE_HDR_METADATA_EXT;
-		hdrMetadata.pNext = nullptr;
-		hdrMetadata.displayPrimaryRed         = { 0.70800f, 0.29200f };
-		hdrMetadata.displayPrimaryGreen       = { 0.17000f, 0.79700f };
-		hdrMetadata.displayPrimaryBlue        = { 0.13100f, 0.04600f };
-		hdrMetadata.whitePoint                = { 0.31270f, 0.32900f };
-		hdrMetadata.maxLuminance              = 1000.0f;
-		hdrMetadata.minLuminance              = 0.001f;
-		hdrMetadata.maxContentLightLevel      = 2000.0f;
-		hdrMetadata.maxFrameAverageLightLevel = 500.0f;
+		
+		const VkHdrMetadataEXT hdrMetadata = 
+		{
+			.sType = VK_STRUCTURE_TYPE_HDR_METADATA_EXT,
+			.pNext = nullptr,
+			.displayPrimaryRed         = { 0.70800f, 0.29200f },
+			.displayPrimaryGreen       = { 0.17000f, 0.79700f },
+			.displayPrimaryBlue        = { 0.13100f, 0.04600f },
+			.whitePoint                = { 0.31270f, 0.32900f },
+			.maxLuminance              = 1000.0f,
+			.minLuminance              = 0.001f,
+			.maxContentLightLevel      = 2000.0f,
+			.maxFrameAverageLightLevel = 500.0f
+		};
 
 		PFN_vkSetHdrMetadataEXT pfnVkSetMetadataEXT 
 			= reinterpret_cast<PFN_vkSetHdrMetadataEXT>(vkGetDeviceProcAddr(vkDevice->GetDevice(),"vkSetHdrMetadataEXT"));
@@ -420,19 +496,22 @@ void RHISwapchain::InitializeSwapchain()
 	/*-------------------------------------------------------------------
 	-               Get swapchain images
 	---------------------------------------------------------------------*/
-	_images.resize(imageCount);
+	_vkImages     .resize(imageCount);
 	_backBuffers.resize(imageCount);
-	if (vkGetSwapchainImagesKHR(vkDevice->GetDevice(), _swapchain, &imageCount, _images.data()) != VK_SUCCESS)
+	if (vkGetSwapchainImagesKHR(vkDevice->GetDevice(), _swapchain, &imageCount, _vkImages.data()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to get swapchain images");
 	}
 
-	for (size_t index = 0; index < _images.size(); ++index)
+	for (size_t index = 0; index < _vkImages.size(); ++index)
 	{
 		auto info = core::GPUTextureMetaData::Texture2D(
-			static_cast<size_t>(_desc.WindowInfo.Width), static_cast<size_t>(_desc.WindowInfo.Height), _desc.PixelFormat, 1, core::ResourceUsage::RenderTarget);
+			static_cast<size_t>(_desc.WindowInfo.Width), static_cast<size_t>(_desc.WindowInfo.Height),
+			_desc.PixelFormat, 1, core::ResourceUsage::RenderTarget);
+
 		info.State = core::ResourceState::Common;
-		_backBuffers[index] = std::make_shared<vulkan::GPUTexture>(_device, info, _images[index]);
+
+		_backBuffers[index] = std::make_shared<vulkan::GPUTexture>(_device, info, _vkImages[index]);
 	}
 
 	// もしかしたらここにCommandListのClose処理が入るかも.
@@ -440,11 +519,14 @@ void RHISwapchain::InitializeSwapchain()
 	/*-------------------------------------------------------------------
 	-               Create Semaphore
 	---------------------------------------------------------------------*/
-	VkSemaphoreCreateInfo semaphoreCreateInfo = {};
-	semaphoreCreateInfo.pNext = nullptr;
-	semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-	semaphoreCreateInfo.flags = 0;
-	if (vkCreateSemaphore(vkDevice->GetDevice(), &semaphoreCreateInfo, nullptr, &_imageAvailableSemaphore) != VK_SUCCESS) { throw std::runtime_error("failed to create image available semaphore"); }
+	const VkSemaphoreCreateInfo semaphoreCreateInfo = 
+	{
+		.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+		.pNext = nullptr,
+		.flags = 0
+	};
+	                          
+	if (vkCreateSemaphore(vkDevice->GetDevice(), &semaphoreCreateInfo, nullptr, &_imageAvailableSemaphore   ) != VK_SUCCESS) { throw std::runtime_error("failed to create image available semaphore"); }
 	if (vkCreateSemaphore(vkDevice->GetDevice(), &semaphoreCreateInfo, nullptr, &_renderingFinishedSemaphore) != VK_SUCCESS) { throw std::runtime_error("failed to create rendering finished semaphore"); }
 }
 /****************************************************************************
@@ -474,8 +556,11 @@ void RHISwapchain::UpdateCurrentFrameIndex()
 *                     SelectSwapchainFormat
 *************************************************************************//**
 *  @fn        VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& format)
+* 
 *  @brief     Select swapchain format
+* 
 *  @param[in] const std::vector<VkSurfaceFormatKHR>& format
+* 
 *  @return 　　VkSurfaceFormatKHR
 *****************************************************************************/
 VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& formats)
@@ -489,19 +574,8 @@ VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfa
 		---------------------------------------------------------------------*/
 		if (vkDevice->IsSupportedHDR() && _desc.IsValidHDR)
 		{
-			if ((format.format == VK_FORMAT_R16G16B16A16_SFLOAT) ||
-				(format.format == VK_FORMAT_A2B10G10R10_UNORM_PACK32))
-			{
-			}
-			else { continue; }
-
-			if ((format.colorSpace == VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT) ||
-				(format.colorSpace == VK_COLOR_SPACE_HDR10_ST2084_EXT) ||
-				(format.colorSpace == VK_COLOR_SPACE_HDR10_HLG_EXT) ||
-				(format.colorSpace == VK_COLOR_SPACE_DOLBYVISION_EXT))
-			{
-			}
-			else { continue; }
+			if (!CheckColorFormat(g_HDRFormat    , format.format))     { continue; }
+			if (!CheckColorSpace (g_HDRColorSpace, format.colorSpace)) { continue; }
 
 			return format;
 		}
@@ -510,21 +584,21 @@ VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfa
 		---------------------------------------------------------------------*/
 		else
 		{
-			if ((format.format == VK_FORMAT_B8G8R8A8_UNORM) ||
-				(format.format == VK_FORMAT_B8G8R8A8_SRGB))
-			{
-				OutputDebugStringA("change sdr format : B8G8R8A8_UNORM\n");
-				_desc.PixelFormat = core::PixelFormat::B8G8R8A8_UNORM;
-			}
-			else { continue; }
+			if (!CheckColorFormat(g_SDRFormat, format.format)) { continue; }
+			if (!CheckColorSpace(g_SDRColorSpace, format.colorSpace)) { continue; }
 
-			if ((format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)) {}
-			else { continue; }
-
+			ChangeSDRFormat(format.format);
 			return format;
 		}
 	}
+
 	return formats[0];
+}
+
+void RHISwapchain::ChangeSDRFormat(const VkFormat format)
+{
+	if (format == VK_FORMAT_B8G8R8A8_UNORM) { _desc.PixelFormat = core::PixelFormat::B8G8R8A8_UNORM; }
+	if (format == VK_FORMAT_B8G8R8A8_SRGB ) { _desc.PixelFormat = core::PixelFormat::B8G8R8A8_UNORM_SRGB; }
 }
 /****************************************************************************
 *                     SelectSwapchainPresentMode
@@ -563,10 +637,57 @@ VkExtent2D RHISwapchain::SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabi
 	{
 		const int width               = static_cast<int>(Screen::GetScreenWidth());
 		const int height              = static_cast<int>(Screen::GetScreenHeight());
+		
+		if (width <= 0) { throw std::runtime_error("width needs to over 0"); }
+		if (height <= 0) { throw std::runtime_error("height needs to over 0"); }
+
 		VkExtent2D actualExtent = { static_cast<UINT32>(width), static_cast<UINT32>(height) };
 		actualExtent.width            = std::clamp(actualExtent.width , capabilities.minImageExtent.width , capabilities.maxImageExtent.width);
 		actualExtent.height           = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 		return actualExtent;
 	}
+}
+
+std::uint32_t RHISwapchain::SelectImageArrayLayers(std::uint32_t request, const std::uint32_t maxLayers)
+{
+	request = std::min(request, maxLayers);
+	request = std::max(request, 1u);
+	return request;
+}
+
+std::uint32_t RHISwapchain::SelectImageCount(const VkSurfaceCapabilitiesKHR& capabilities)
+{
+	UINT32 imageCount = static_cast<UINT32>(_desc.FrameBufferCount);
+	if (capabilities.minImageCount > 0 && imageCount < capabilities.minImageCount)
+	{
+		imageCount = capabilities.minImageCount;
+	}
+	if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount)
+	{
+		imageCount = capabilities.maxImageCount;
+	}
+
+	return imageCount;
+}
+
+VkCompositeAlphaFlagBitsKHR RHISwapchain::SelectCompositeAlpha(const VkSurfaceCapabilitiesKHR& capabilities)
+{
+	const VkCompositeAlphaFlagBitsKHR compositeAlphaFlags[] =
+	{
+			VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+			VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
+			VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
+			VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR
+	};
+
+	for (size_t index = 0; index < _countof(compositeAlphaFlags); index++)
+	{
+		if (capabilities.supportedCompositeAlpha & compositeAlphaFlags[index])
+		{
+			return compositeAlphaFlags[index];
+		}
+	}
+
+	return VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 }
 #pragma endregion Swap Chain Config

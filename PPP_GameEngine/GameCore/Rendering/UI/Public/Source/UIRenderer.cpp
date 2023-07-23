@@ -308,7 +308,7 @@ void UIRenderer::PreparePipelineState(const std::wstring& name)
 	_resourceLayout = device->CreateResourceLayout
 	(
 		{ ResourceLayoutElement(DescriptorHeapType::SRV, 0) },
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0) }
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),1) }
 	);
 
 	/*-------------------------------------------------------------------

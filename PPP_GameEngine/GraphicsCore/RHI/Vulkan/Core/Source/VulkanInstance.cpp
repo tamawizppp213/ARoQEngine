@@ -438,7 +438,7 @@ bool RHIInstance::CheckValidationLayerSupport()
 	}
 
 	_instanceLayers.push_back("VK_LAYER_KHRONOS_shader_object");
-	_instanceLayers.push_back( "VK_LAYER_LUNARG_api_dump");
+	//_instanceLayers.push_back( "VK_LAYER_LUNARG_api_dump");
 
 	/* This implementation is used because it is not used in release build.*/
 	for (const char* layerName : _instanceLayers)

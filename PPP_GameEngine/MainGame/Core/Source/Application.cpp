@@ -104,6 +104,7 @@ bool Application::CreateMainWindow()
 		MessageBox(NULL, L"Failed to register class.", NULL, NULL);
 	}
 	
+	
 	/*---------------------------------------------------------------
 						Set Full Screen size
 	-----------------------------------------------------------------*/
