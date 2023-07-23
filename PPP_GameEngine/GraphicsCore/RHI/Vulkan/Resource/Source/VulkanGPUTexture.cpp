@@ -159,6 +159,8 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 		_metaData = core::GPUTextureMetaData::Texture2DArray(image->width, image->height, dxMetaData.arraySize,
 			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
 	}
+	// •K‚¸Å‰‚ÍUndefined‚©‚çn‚ß‚é.
+	_metaData.State = rhi::core::ResourceState::Common;
 
 	/*-------------------------------------------------------------------
 	-                 Create texture buffers
