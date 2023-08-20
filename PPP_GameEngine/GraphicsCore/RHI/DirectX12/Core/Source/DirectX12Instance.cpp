@@ -120,26 +120,15 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_G
 		throw std::runtime_error("failed to search adapter");
 	}
 #else
-	const auto adapterList = EnumrateAdapters();
-	adapter   = std::static_pointer_cast<directX12::RHIDisplayAdapter>(adapterList[0])->GetAdapter();
-	if (preference == DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE)
+	for (UINT i = 0; _factory->EnumAdapters(i, (IDXGIAdapter**)adapter.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
-		for (size_t i = 1; i < adapterList.size(); ++i)
+		DXGI_ADAPTER_DESC desc; adapter->GetDesc(&desc);
+		const bool isDiscreteGPU = desc.DedicatedVideoMemory != 0;
+
+		if ((preference == DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE &&  isDiscreteGPU) ||  
+			(preference == DXGI_GPU_PREFERENCE_MINIMUM_POWER    && !isDiscreteGPU))
 		{
-			if (adapterList[i]->IsDiscreteGPU())
-			{
-				adapter = std::static_pointer_cast<directX12::RHIDisplayAdapter>(adapterList[i])->GetAdapter();
-			}
-		}
-	}
-	if (preference == DXGI_GPU_PREFERENCE_MINIMUM_POWER)
-	{
-		for (size_t i = 1; i < adapterList.size(); ++i)
-		{
-			if (adapterList[i]->IsUnifiedGPU())
-			{
-				adapter = std::static_pointer_cast<directX12::RHIDisplayAdapter>(adapterList[i])->GetAdapter();
-			}
+			break;
 		}
 	}
 #endif
@@ -165,25 +154,25 @@ std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapt
 	/*-------------------------------------------------------------------
 	-                  Define Proceed next adapter function
 	---------------------------------------------------------------------*/
-	auto ProceedNextAdapter = [&](std::uint32_t adapterIndex, ComPtr<IDXGIAdapter>& adapter)
+	auto ProceedNextAdapter = [&](std::uint32_t adapterIndex, AdapterComPtr& adapter)
 	{
 #if DXGI_MAX_FACTORY_INTERFACE >= 6
 		return _factory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter));
 #else
-		return _factory->EnumAdapters(adapterIndex, adapter.GetAddressOf());
+		return _factory->EnumAdapters(adapterIndex, (IDXGIAdapter**)adapter.GetAddressOf());
 #endif
 	};
 
 	/*-------------------------------------------------------------------
 	-                  EmplaceBack Adapter List
 	---------------------------------------------------------------------*/
-	ComPtr<IDXGIAdapter> adapter = nullptr;
+	AdapterComPtr adapter = nullptr;
 	for (int i = 0; ProceedNextAdapter(i, adapter) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
-		AdapterComPtr temp = nullptr;
-		ThrowIfFailed(adapter->QueryInterface(IID_PPV_ARGS(&temp)));
-		adapterLists.emplace_back(std::make_shared<RHIDisplayAdapter>(shared_from_this(), temp));
+		adapterLists.emplace_back(std::make_shared<RHIDisplayAdapter>(shared_from_this(), adapter));
+		adapter.Reset(); // memory leakÇ…ëŒèà
 	}
+
 	return adapterLists;
 }
 
