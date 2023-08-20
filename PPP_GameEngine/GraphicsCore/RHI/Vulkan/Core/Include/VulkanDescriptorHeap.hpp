@@ -41,6 +41,9 @@ namespace rhi::vulkan
 		/* @brief : Allocate view. Return descriptor index*/
 		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;
 		
+		/* @brief : Free offset ID*/
+		void Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex) override;
+
 		/* @brief : Allocate max view count size heap*/
 		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
 		
@@ -53,8 +56,13 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) { return _resourceAllocator.GetDescriptorSet(id); }
+		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) 
+		{ 
+			return _resourceAllocator.GetDescriptorSet(id); 
+		}
 		
+		VkDescriptorPool GetVkDescriptorPool() { return _descriptorPool; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

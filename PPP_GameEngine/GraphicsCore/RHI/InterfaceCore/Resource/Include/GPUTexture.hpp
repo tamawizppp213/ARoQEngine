@@ -124,8 +124,8 @@ namespace rhi::core
 
 		~GPUTexture() = default;
 
-		explicit GPUTexture(const std::shared_ptr<RHIDevice>& device, const std::wstring& name = L"Texture") : core::GPUResource(device) {};
-		explicit GPUTexture(const std::shared_ptr<RHIDevice>& device, const GPUTextureMetaData& metaData, const std::wstring& name): core::GPUResource(device), _metaData(metaData) {};
+		explicit GPUTexture(const std::shared_ptr<RHIDevice>& device, [[maybe_unused]]const std::wstring& name = L"Texture") : core::GPUResource(device) {};
+		explicit GPUTexture(const std::shared_ptr<RHIDevice>& device, const GPUTextureMetaData& metaData, [[maybe_unused]] const std::wstring& name): core::GPUResource(device), _metaData(metaData) {};
 		
 		/****************************************************************************
 		**                Protected Function

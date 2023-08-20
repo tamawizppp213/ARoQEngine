@@ -98,11 +98,10 @@ GPUResourceView::~GPUResourceView()
 *****************************************************************************/
 void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
 {
-
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	const auto vkHeap   = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_heap);
 	const auto vkDescriptorSet = vkHeap->GetDescriptorSet(_heapOffset);
-	
+
 	/*-------------------------------------------------------------------
 	-               Set up write descriptor
 	---------------------------------------------------------------------*/
@@ -152,7 +151,7 @@ void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandL
 		throw std::runtime_error("failed to bind resource");
 	}
 	/*-------------------------------------------------------------------
-	-                   Update
+	-                   Update descriptor set 
 	---------------------------------------------------------------------*/
 	vkUpdateDescriptorSets(vkDevice->GetDevice(), 1, &writeDesc, 0, nullptr);
 }

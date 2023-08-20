@@ -24,10 +24,10 @@ namespace rhi::vulkan
 {
 
 	/****************************************************************************
-	*				  			GPUBuffer
+	*				  			GPUTexture
 	*************************************************************************//**
-	*  @class     GPUBuffer
-	*  @brief     Buffer
+	*  @class     GPUTexture
+	*  @brief     Texture 
 	*****************************************************************************/
 	class GPUTexture : public core::GPUTexture
 	{

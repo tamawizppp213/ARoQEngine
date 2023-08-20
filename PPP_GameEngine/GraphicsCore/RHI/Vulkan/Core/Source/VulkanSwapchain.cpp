@@ -432,7 +432,7 @@ void RHISwapchain::InitializeSwapchain()
 	const auto extent           = SelectSwapExtent(details.Capabilities);
 	const auto imageArrayLayers = SelectImageArrayLayers(1, details.Capabilities.maxImageArrayLayers);
 	const auto compositeAlpha   = SelectCompositeAlpha(details.Capabilities);
-	const std::uint32_t queueFamilyIndex = vkDevice->GetQueueFamilyIndex(rhi::core::CommandListType::Graphics);
+	const std::uint32_t queueFamilyIndex = static_cast<std::uint32_t>(vkDevice->GetQueueFamilyIndex(rhi::core::CommandListType::Graphics));
 	
 	/*-------------------------------------------------------------------
 	-               Acquire Swapchain create infomation

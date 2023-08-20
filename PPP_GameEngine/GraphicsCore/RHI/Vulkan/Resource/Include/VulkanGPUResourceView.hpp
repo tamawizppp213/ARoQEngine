@@ -36,17 +36,23 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) override;
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkImageView  GetImageView () const noexcept{ return _imageView; }
+		
 		VkBufferView GetBufferView() const noexcept { return _bufferView; }
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GPUResourceView() = default;
+		
 		~GPUResourceView();
+		
 		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
+		
 		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
 	private:
 		/****************************************************************************

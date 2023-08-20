@@ -106,7 +106,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	assert(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
 #endif
 
-	const auto vkDevice      = static_cast<vulkan::RHIDevice*>(_device.get())->GetDevice();
+	const auto& vkDevice      = static_cast<vulkan::RHIDevice*>(_device.get())->GetDevice();
 	const auto vkCommandList = static_cast<vulkan::RHICommandList*>(commandList.get())->GetCommandList();
 
 	/*-------------------------------------------------------------------
@@ -115,7 +115,6 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	const std::wstring extension    = file::FileSystem::GetExtension(filePath);
 	const std::wstring fileName     = file::FileSystem::GetFileName(filePath, false);
 	std::string utf8FilePath        = unicode::ToUtf8String(filePath);
-
 
 	/*-------------------------------------------------------------------
 	-    Select the appropriate texture loading function for each extension
