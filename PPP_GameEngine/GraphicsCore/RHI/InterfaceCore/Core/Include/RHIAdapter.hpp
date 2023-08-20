@@ -67,6 +67,12 @@ namespace rhi::core
 		
 		// @brief : Return RHIInstance Raw Pointer
 		RHIInstance* GetInstance() const { return _instance.get(); };
+		
+		/* @brief : NVIDIA device check*/
+		bool IsAdapterNVIDIA() const { assert(_venderID != 0); return _venderID == 0x10DE; }
+		bool IsAdapterIntel()  const { assert(_venderID != 0); return _venderID == 0x8086;}
+		bool IsAdapterAMD()    const { assert(_venderID != 0); return _venderID == 0x1002; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

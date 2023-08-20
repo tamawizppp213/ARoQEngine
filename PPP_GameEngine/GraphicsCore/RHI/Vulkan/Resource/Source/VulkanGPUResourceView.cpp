@@ -179,9 +179,9 @@ void GPUResourceView::CreateView()
 	{
 		case core::ResourceViewType::ConstantBuffer:
 		case core::ResourceViewType::StructuredBuffer:
-		case core::ResourceViewType::RWStructuredBuffer:
 		case core::ResourceViewType::Buffer:
 		case core::ResourceViewType::RWBuffer:
+		case core::ResourceViewType::RWStructuredBuffer:
 		{
 			CreateBufferView();
 			break;
@@ -245,7 +245,14 @@ void GPUResourceView::CreateImageView()
 		throw std::runtime_error("failed to create buffer view (vulkan api)");
 	}
 
-	_heapType = rhi::core::DescriptorHeapType::SRV;
+	if (_resourceViewType == core::ResourceViewType::RWTexture)
+	{
+		_heapType = rhi::core::DescriptorHeapType::UAV;
+	}
+	else
+	{
+		_heapType = rhi::core::DescriptorHeapType::SRV;
+	}
 }
 
 /****************************************************************************
@@ -293,7 +300,14 @@ void GPUResourceView::CreateBufferView()
 		_calledCreateBufferView = true;
 	}
 
-	_heapType = rhi::core::DescriptorHeapType::CBV;
+	if (_resourceViewType == core::ResourceViewType::RWBuffer || _resourceViewType == core::ResourceViewType::RWStructuredBuffer)
+	{
+		_heapType = rhi::core::DescriptorHeapType::UAV;
+	}
+	else
+	{
+		_heapType = rhi::core::DescriptorHeapType::CBV;
+	}
 }
 
 /****************************************************************************

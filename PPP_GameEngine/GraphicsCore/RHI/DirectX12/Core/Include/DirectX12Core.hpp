@@ -21,11 +21,11 @@
 //                         Alias 
 //////////////////////////////////////////////////////////////////////////////////
 using Microsoft::WRL::ComPtr;
-struct ID3D12Device9;
+struct ID3D12Device10;
 struct IDXGIFactory7;
 struct IDXGIAdapter4;
 struct IDXGIOutput6;
-struct ID3D12GraphicsCommandList6;
+struct ID3D12GraphicsCommandList7;
 struct ID3D12CommandQueue;
 struct ID3D12CommandAllocator;
 struct IDXGISwapChain4;
@@ -36,16 +36,16 @@ struct ID3D12PipelineState;
 struct ID3D12DescriptorHeap;
 struct ID3D12Fence;
 struct  ID3D10Blob;
-struct ID3D12Debug5;
+struct ID3D12Debug6;
 struct ID3D12Heap;
 struct D3D12_GLOBAL_ROOT_SIGNATURE;
 struct D3D12_LOCAL_ROOT_SIGNATURE;
 
-using IDevice           = ID3D12Device9;
+using IDevice           = ID3D12Device10;
 using IFactory          = IDXGIFactory7;
 using IAdapter          = IDXGIAdapter4;
 using IOutput           = IDXGIOutput6;
-using ICommandList      = ID3D12GraphicsCommandList6;
+using ICommandList      = ID3D12GraphicsCommandList7;
 using ICommandQueue     = ID3D12CommandQueue;
 using ICommandAllocator = ID3D12CommandAllocator;
 using ISwapChain        = IDXGISwapChain4;
@@ -56,7 +56,7 @@ using IPipelineState    = ID3D12PipelineState;
 using IDescriptorHeap   = ID3D12DescriptorHeap;
 using IFence            = ID3D12Fence;
 using IBlob             = ID3D10Blob;
-using IDebug            = ID3D12Debug5;
+using IDebug            = ID3D12Debug6;
 using IHeap             = ID3D12Heap;
 
 using DeviceComPtr           = ComPtr<IDevice>;
