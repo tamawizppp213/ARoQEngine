@@ -35,7 +35,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) override;
+		void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index, const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) override;
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -74,8 +74,12 @@ namespace rhi::vulkan
 
 		bool _calledCreateBufferView = false;
 
-		std::uint32_t _heapOffset = 0;
+		int _heapOffset = INVALID_ID;
 		
+		rhi::core::DescriptorHeapType _heapType;
+
+		static constexpr int INVALID_ID = -1;
+
 	};
 }
 #endif

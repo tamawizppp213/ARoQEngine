@@ -38,7 +38,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		/* @brief : Bind resource layout array index to the command list.
 					index : resource layout array index*/
-		void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) override;
+		void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index, const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) override;
 		
 		/****************************************************************************
 		**                Public Member Variables

@@ -81,7 +81,7 @@ void Bloom::Draw()
 	computeCommandList->SetResourceLayout(_resourceLayout);
 	computeCommandList->SetComputePipeline(_luminancePipeline);
 	frameBuffer->GetRenderTargetSRV()->Bind(computeCommandList, 0);
-	_luminanceUAV->Bind(computeCommandList, 5);
+	_luminanceUAV->Bind(computeCommandList, 5, _resourceLayout);
 	computeCommandList->Dispatch(Screen::GetScreenWidth() / THREAD, Screen::GetScreenHeight() / THREAD, 1);
 
 	/*-------------------------------------------------------------------

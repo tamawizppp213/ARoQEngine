@@ -29,6 +29,7 @@ namespace rhi::core
 	class GPUBuffer;
 	class GPUTexture;
 	class RHIDescriptorHeap;
+	class RHIResourceLayout;
 	/****************************************************************************
 	*				  			GPUResourceView
 	*************************************************************************//**
@@ -44,7 +45,7 @@ namespace rhi::core
 		*****************************************************************************/
 		/* @brief : Bind resource layout array index to the command list.
 		            index : resource layout array index*/
-		virtual void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) = 0;
+		virtual void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index, const std::shared_ptr<RHIResourceLayout>& layout = nullptr) = 0;
 		
 		/****************************************************************************
 		**                Public Member Variables

@@ -52,11 +52,12 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (!_heapInfo.contains(heapType)) { return static_cast<core::RHIDescriptorHeap::DescriptorID>(INVALID_ID); }
+	if (!_heapInfo.contains(heapType)) { throw std::runtime_error("Not include heap type"); }
 	
 	/*-------------------------------------------------------------------
 	-			     Set up descriptor set layout
 	---------------------------------------------------------------------*/
+	if(!resourceLayout){ throw std::runtime_error("Resource layout is nullptr"); }
 	VkDevice   vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
 	const auto vkLayout = std::static_pointer_cast<vulkan::RHIResourceLayout>(resourceLayout);
 
@@ -167,6 +168,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 		poolSizes.emplace_back(poolSize);
 		totalHeapCount += poolSize.descriptorCount;
 	}
+	_heapInfo = heapInfos;
 
 	/*-------------------------------------------------------------------
 	-               Max descriptor size check

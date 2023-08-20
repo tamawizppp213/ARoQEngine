@@ -181,7 +181,7 @@ void UIRenderer::Draw()
 	{
 		// Regist root descriptor table 
 		commandList->SetDescriptorHeap(_resourceViews[i]->GetHeap());
-		_resourceViews[i]->Bind(commandList, 0);
+		_resourceViews[i]->Bind(commandList, 0, _resourceLayout);
 
 		// Draw Rects in one texture at a time
 		const std::uint32_t oneImageTotalIndexCount = 6 * _imageCountList[i];

@@ -82,7 +82,7 @@ GPUResourceView::~GPUResourceView()
 *
 *  @return Å@Å@void
 *****************************************************************************/
-void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
+void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index, const std::shared_ptr<core::RHIResourceLayout>& layout)
 {
 	/*-------------------------------------------------------------------
 	-             Set Descirptor Table
@@ -465,6 +465,7 @@ void GPUResourceView::CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHe
 			{
 				desc.ViewDimension = D3D12_RTV_DIMENSION::D3D12_RTV_DIMENSION_TEXTURE1D;
 				desc.Texture1D.MipSlice = static_cast<UINT>(0);
+				break;
 			}
 			case core::ResourceType::Texture2D:
 			{
@@ -479,6 +480,7 @@ void GPUResourceView::CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHe
 				desc.Texture3D.MipSlice    = 0;
 				desc.Texture3D.WSize       = 0;
 				desc.Texture3D.FirstWSlice = 0;
+				break;
 			}
 			case core::ResourceType::Texture2DMultiSample:
 			{

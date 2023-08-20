@@ -56,7 +56,7 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (!_heapInfo.contains(heapType)) { return static_cast<DescriptorID>(INVALID_ID); }
+	if (!_heapInfo.contains(heapType)) { throw std::runtime_error("Not include heap type"); }
 
 	/*-------------------------------------------------------------------
 	-			     Issue ID

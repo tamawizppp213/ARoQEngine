@@ -96,10 +96,15 @@ GPUResourceView::~GPUResourceView()
 *
 *  @return Å@Å@void
 *****************************************************************************/
-void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
+void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index, const std::shared_ptr<core::RHIResourceLayout>& layout)
 {
 	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
 	const auto vkHeap   = std::static_pointer_cast<vulkan::RHIDescriptorHeap>(_heap);
+
+	if (_heapOffset == INVALID_ID)
+	{
+		_heapOffset = static_cast<int>(vkHeap->Allocate(_heapType, layout));
+	}
 	const auto vkDescriptorSet = vkHeap->GetDescriptorSet(_heapOffset);
 
 	/*-------------------------------------------------------------------
@@ -239,6 +244,8 @@ void GPUResourceView::CreateImageView()
 	{
 		throw std::runtime_error("failed to create buffer view (vulkan api)");
 	}
+
+	_heapType = rhi::core::DescriptorHeapType::SRV;
 }
 
 /****************************************************************************
@@ -285,6 +292,8 @@ void GPUResourceView::CreateBufferView()
 	{
 		_calledCreateBufferView = true;
 	}
+
+	_heapType = rhi::core::DescriptorHeapType::CBV;
 }
 
 /****************************************************************************

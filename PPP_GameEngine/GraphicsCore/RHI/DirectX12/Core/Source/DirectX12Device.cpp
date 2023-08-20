@@ -75,8 +75,8 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 		D3D_FEATURE_LEVEL_12_0, // minimum feature level
 		IID_PPV_ARGS(&_device)));
 
-	const auto gpuName    = adapter->GetName();
-	const auto deviceName = L"Device::" + unicode::ToWString(gpuName);
+	const auto& gpuName    = adapter->GetName();
+	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName);
 	_device->SetName(deviceName.c_str());
 	
 	/*-------------------------------------------------------------------
