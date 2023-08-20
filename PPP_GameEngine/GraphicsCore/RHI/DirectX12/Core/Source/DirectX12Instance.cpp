@@ -114,10 +114,35 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_G
 	AdapterComPtr adapter = nullptr;
 
 	// (High) xGPU, dGPU iGPU (Low) selected
+#if DXGI_MAX_FACTORY_INTERFACE >= 6
 	if (_factory->EnumAdapterByGpuPreference(0, preference, IID_PPV_ARGS(&adapter)) == DXGI_ERROR_NOT_FOUND)
 	{
 		throw std::runtime_error("failed to search adapter");
 	}
+#else
+	const auto adapterList = EnumrateAdapters();
+	adapter   = std::static_pointer_cast<directX12::RHIDisplayAdapter>(adapterList[0])->GetAdapter();
+	if (preference == DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE)
+	{
+		for (size_t i = 1; i < adapterList.size(); ++i)
+		{
+			if (adapterList[i]->IsDiscreteGPU())
+			{
+				adapter = std::static_pointer_cast<directX12::RHIDisplayAdapter>(adapterList[i])->GetAdapter();
+			}
+		}
+	}
+	if (preference == DXGI_GPU_PREFERENCE_MINIMUM_POWER)
+	{
+		for (size_t i = 1; i < adapterList.size(); ++i)
+		{
+			if (adapterList[i]->IsUnifiedGPU())
+			{
+				adapter = std::static_pointer_cast<directX12::RHIDisplayAdapter>(adapterList[i])->GetAdapter();
+			}
+		}
+	}
+#endif
 
 	return std::make_shared<RHIDisplayAdapter>(shared_from_this(), adapter);
 }
@@ -140,18 +165,24 @@ std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapt
 	/*-------------------------------------------------------------------
 	-                  Define Proceed next adapter function
 	---------------------------------------------------------------------*/
-	auto ProceedNextAdapter = [&](std::uint32_t adapterIndex, AdapterComPtr& adapter)
+	auto ProceedNextAdapter = [&](std::uint32_t adapterIndex, ComPtr<IDXGIAdapter>& adapter)
 	{
+#if DXGI_MAX_FACTORY_INTERFACE >= 6
 		return _factory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter));
+#else
+		return _factory->EnumAdapters(adapterIndex, adapter.GetAddressOf());
+#endif
 	};
 
 	/*-------------------------------------------------------------------
 	-                  EmplaceBack Adapter List
 	---------------------------------------------------------------------*/
-	AdapterComPtr adapter = nullptr;
+	ComPtr<IDXGIAdapter> adapter = nullptr;
 	for (int i = 0; ProceedNextAdapter(i, adapter) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
-		adapterLists.emplace_back(std::make_shared<RHIDisplayAdapter>(shared_from_this(), adapter));
+		AdapterComPtr temp = nullptr;
+		ThrowIfFailed(adapter->QueryInterface(IID_PPV_ARGS(&temp)));
+		adapterLists.emplace_back(std::make_shared<RHIDisplayAdapter>(shared_from_this(), temp));
 	}
 	return adapterLists;
 }
@@ -225,19 +256,18 @@ void RHIInstance::EnabledDebugLayer()
 *****************************************************************************/
 void RHIInstance::EnabledShaderBasedValidation()
 {
+#if D3D12_MAX_DEBUG_INTERFACE >= 3
 	DebugComPtr debugController;
-	ComPtr<ID3D12Debug3> debug3;
 
 	// Get Debugger
 	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
-	ThrowIfFailed(debugController->QueryInterface(IID_PPV_ARGS(&debug3)));
 
 	/* Switch on GPU Debugger*/
-	debug3->SetEnableGPUBasedValidation(true);
+	debugController->SetEnableGPUBasedValidation(true);
 
 	/* Release Debug Pointer*/
 	debugController.Reset();
-	debug3.Reset();
+#endif
 }
 #pragma endregion Debugger
 #pragma region Private Function
