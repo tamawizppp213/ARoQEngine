@@ -16,6 +16,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Forward Declaration
 //////////////////////////////////////////////////////////////////////////////////
+#define D3D12_CORE_ENABLED              (1)
 #define D3D12_MAX_DEVICE_INTERFACE      (10)
 #define D3D12_MAX_COMMANDLIST_INTERFACE (7)
 #define D3D12_MAX_DEBUG_INTERFACE       (6)
@@ -234,6 +235,7 @@ using RootSignatureComPtr    = ComPtr<IRootSignature>;
 using BlobComPtr             = ComPtr<IBlob>;
 using DebugComPtr            = ComPtr<IDebug>;
 using HeapComPtr             = ComPtr<IHeap>;
+
 
 #endif DirectX12_CORE_HPP
 

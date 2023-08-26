@@ -52,6 +52,10 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger):
 	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&_factory)));
 #endif
 	
+	/*-------------------------------------------------------------------
+	-                   Create DRED
+	---------------------------------------------------------------------*/
+	EnabledGPUClashDebuggingModes();
 }
 
 RHIInstance::~RHIInstance()
@@ -257,6 +261,37 @@ void RHIInstance::EnabledShaderBasedValidation()
 	/* Release Debug Pointer*/
 	debugController.Reset();
 #endif
+}
+
+void RHIInstance::EnabledGPUClashDebuggingModes()
+{
+#ifdef  __ID3D12DeviceRemovedExtendedDataSettings_INTERFACE_DEFINED__
+	ComPtr<ID3D12DeviceRemovedExtendedDataSettings> dredSettings = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(dredSettings.GetAddressOf()))))
+	{
+		// Turn on AutoBreadCrumbs and Page Fault reporting.
+		dredSettings->SetAutoBreadcrumbsEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		dredSettings->SetPageFaultEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+
+		_useDRED = true;
+		OutputDebugStringA("dred enabled\n");
+	}
+	else
+	{
+		OutputDebugStringA(" DRED requested but interface was not found, hresult: %x. DRED only works on Windows 10 1903+.");
+	}
+#endif
+
+#ifdef  __ID3D12DeviceRemovedExtendedDataSettings1_INTERFACE_DEFINED__
+	ComPtr<ID3D12DeviceRemovedExtendedDataSettings1> dredSettings1 = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(dredSettings1.GetAddressOf()))))
+	{
+		dredSettings1->SetBreadcrumbContextEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		_useDREDContext = true;
+		OutputDebugStringA("dred breadcrumb context enabled\n");
+	}
+#endif
+
 }
 #pragma endregion Debugger
 #pragma region Private Function

@@ -163,6 +163,10 @@ namespace rhi::core
 
 		virtual bool IsSupportedRenderPass         () const = 0;
 
+		/* @brief : This function tests whether the depth value is within the specified range and runs the pixel shader 
+		*if it is within the range, and prematurely dismisses the corresponding pixel if it is outside the range.*/
+		virtual bool IsSupportedDepthBoundsTest    () const = 0;
+
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

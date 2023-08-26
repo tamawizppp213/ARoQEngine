@@ -1125,6 +1125,18 @@ namespace rhi::core
 			this->Left = left; this->Top = top; this->Right = right; this->Bottom = bottom;
 		}
 	};
+
+	struct HDRDisplayInfo
+	{
+		float RedPrimary[2];   // red   xy coordinate in the color space
+		float GreenPrimary[2]; // green xy coordinate in the color space
+		float BluePrimary[2];  // blue  xy coordinate in the color space
+		float WhitePoint[2];   // white xy coordinate in the color space
+		float MinLuminance;    // nits
+		float MaxLuminacnce;   // nits
+		float MaxFullFrameLuminance;
+		ScissorRect Rect;
+	};
 	/****************************************************************************
 	*				  			WindowInfo
 	*************************************************************************//**

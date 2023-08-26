@@ -14,6 +14,8 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDevice.hpp"
 #include "DirectX12Core.hpp"
 #include <dxgiformat.h>
+#include <d3d12.h>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -109,11 +111,19 @@ namespace rhi::directX12
 		
 		std::shared_ptr<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 
+		std::uint32_t GetNodeCount() const { return _deviceNodeCount; }
+
+		const rhi::core::HDRDisplayInfo& GetHDRDisplayInfo() const { return _displayInfo; }
+
 		void SetName(const std::wstring& name) override;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check
 		---------------------------------------------------------------------*/
+		D3D_FEATURE_LEVEL GetMaxSupportedFeatureLevel() const { return _maxSupportedFeatureLevel; }
+
+		D3D_SHADER_MODEL GetMaxSupportedShaderModel() const { return _maxSupportedShaderModel; }
+
 		bool IsSupportedTearingSupport     () const noexcept { return _isSupportedTearing; }
 
 		bool IsSupportedDxr                () const override { return _isSupportedRayTracing; }
@@ -129,6 +139,9 @@ namespace rhi::directX12
 		bool IsSupportedGeometryShader     () const override { return true; }
 		
 		bool IsSupportedRenderPass         () const override { return _isSupportedRenderPass; }
+
+		bool IsSupportedDepthBoundsTest    () const override { return _isSupportedDepthBoundsTest; }
+
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -160,10 +173,26 @@ namespace rhi::directX12
 		bool          _isSupportedMeshShading              = true;
 		bool          _isSupportedRenderPass               = true;
 		bool          _isSupportedRayQuery                 = true;
+		bool          _isSupportedDepthBoundsTest          = true;
+
+		/* @brief : The maximum D3D12 feature level supported. 0 if not supported*/
+		D3D_FEATURE_LEVEL _maxSupportedFeatureLevel = (D3D_FEATURE_LEVEL)0;
+
+		/*` @brief : Thre maximum Shader Model supported. 0 if not supported*/
+		D3D_SHADER_MODEL _maxSupportedShaderModel = (D3D_SHADER_MODEL)0;
+
+		/* @brief Tier1 (few available pipeline resources)-> Tier3 (A lot of available pipeline resources*/
+		D3D12_RESOURCE_BINDING_TIER _resourceBindingTier = D3D12_RESOURCE_BINDING_TIER_1;
+
+		/* @brief For the HeapTier, it checks if the buffer, RenderTarget and DepthStencil, TargetStencil and depth stencil texture rendering can be used in the same heap*/
+		D3D12_RESOURCE_HEAP_TIER    _resourceHeapTier    = D3D12_RESOURCE_HEAP_TIER_1;
+
+		std::uint32_t _deviceNodeCount = 0;
 
 		std::uint32_t _variableRateShadingImageTileSize = 0;
 		std::uint32_t _4xMsaaQuality = 0;
 
+		rhi::core::HDRDisplayInfo _displayInfo;
 	private:
 		/****************************************************************************
 		**                Private Enum Class
@@ -183,11 +212,15 @@ namespace rhi::directX12
 		/*-------------------------------------------------------------------
 		-               Device Support Check
 		---------------------------------------------------------------------*/
+		void FindHighestFeatureLevel();
+		void FindHighestShaderModel();
 		void CheckDXRSupport();
 		void CheckVRSSupport();
-		void CheckHDRDisplaySupport();
+		void CheckDepthBoundsTestSupport();
 		void CheckMultiSampleQualityLevels(const core::PixelFormat format);
 		void CheckMeshShadingSupport();
+		void CheckResourceTiers();
+		void SetupDisplayHDRMetaData();
 
 		/****************************************************************************
 		**                Protected Member Variables

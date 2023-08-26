@@ -143,6 +143,7 @@ namespace rhi::vulkan
 		bool IsSupportedDrawIndirected     () const override { return _isSupportedDrawIndirected; };
 		bool IsSupportedGeometryShader     () const override { return _isSupportedGeometryShader; };
 		bool IsSupportedRenderPass         () const override { return true; }
+		bool IsSupportedDepthBoundsTest    () const override { return true; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

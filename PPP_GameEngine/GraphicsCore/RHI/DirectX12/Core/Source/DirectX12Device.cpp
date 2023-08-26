@@ -47,7 +47,6 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-
 #pragma region Constructor and Destructor
 RHIDevice::RHIDevice()
 {
@@ -80,13 +79,25 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	_device->SetName(deviceName.c_str());
 	
 	/*-------------------------------------------------------------------
+	-                   Find Highest support model
+	---------------------------------------------------------------------*/
+	FindHighestFeatureLevel();
+	FindHighestShaderModel();
+
+	/*-------------------------------------------------------------------
+	-                   Device node count
+	---------------------------------------------------------------------*/
+	_deviceNodeCount = _device->GetNodeCount();
+
+	/*-------------------------------------------------------------------
 	-                   Device Support Check
 	---------------------------------------------------------------------*/
 	CheckDXRSupport();
 	CheckVRSSupport();
 	CheckMeshShadingSupport();
-	CheckHDRDisplaySupport(); // まだどのクラスに配置するか決めてないので未実装
-	
+	CheckDepthBoundsTestSupport();
+	CheckResourceTiers();
+	SetupDisplayHDRMetaData();
 }
 
 #pragma endregion Constructor and Destructor
@@ -127,6 +138,7 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	_defaultHeap[DefaultHeapType::CBV_SRV_UAV]->Resize(heapInfoList);
 	_defaultHeap[DefaultHeapType::RTV]->Resize(core::DescriptorHeapType::RTV, heapCount.RTVDescCount);
 	_defaultHeap[DefaultHeapType::DSV]->Resize(core::DescriptorHeapType::DSV, heapCount.DSVDescCount);
+
 }
 
 /****************************************************************************
@@ -429,7 +441,7 @@ void RHIDevice::CheckMultiSampleQualityLevels(const core::PixelFormat format)
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHIDevice::CheckHDRDisplaySupport()
+void RHIDevice::SetupDisplayHDRMetaData()
 {
 	/*-------------------------------------------------------------------
 	-               Get display adapter
@@ -439,26 +451,49 @@ void RHIDevice::CheckHDRDisplaySupport()
 
 	ComPtr<IDXGIOutput> output = nullptr;
 
-	std::uint32_t index = 0;
 	/*-------------------------------------------------------------------
 	-              Search EnableHDR output
 	---------------------------------------------------------------------*/
-	while (dxAdapter->EnumOutputs(index, output.GetAddressOf()) != DXGI_ERROR_NOT_FOUND)
+	for(std::uint32_t i = 0; dxAdapter->EnumOutputs(i, output.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
-		OutputComPtr currentOutput = nullptr;
-		output.As(&currentOutput);
-
-		DXGI_OUTPUT_DESC1 desc = {};
-		currentOutput->GetDesc1(&desc);
+#if DXGI_MAX_OUTPUT_INTERFACE >= 6
 		
-		if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020)
-		{
-			_isSupportedHDR = true;
-			output.Reset();
-			break;
-		}
+		OutputComPtr output6 = nullptr;
 
-		++index;
+		if (SUCCEEDED(output->QueryInterface(IID_PPV_ARGS(output6.GetAddressOf()))))
+		{
+			DXGI_OUTPUT_DESC1 desc = {};
+			output6->GetDesc1(&desc);
+
+			/*-------------------------------------------------------------------
+			-              IS HDR Enable Color Space
+			---------------------------------------------------------------------*/
+			if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020)
+			{
+				_isSupportedHDR = true;
+
+				/*-------------------------------------------------------------------
+				-              Set up hdr display information
+				---------------------------------------------------------------------*/
+				_displayInfo = 
+				{
+					{desc.RedPrimary  [0], desc.RedPrimary  [1]},
+					{desc.GreenPrimary[0], desc.GreenPrimary[1]},
+					{desc.BluePrimary [0], desc.BluePrimary [1]},
+					{desc.WhitePoint  [0], desc.WhitePoint  [1]},
+					{desc.MinLuminance},
+					{desc.MaxLuminance},
+					{desc.MaxFullFrameLuminance},
+					{desc.DesktopCoordinates.left, desc.DesktopCoordinates.top, desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom},
+				};
+
+
+				output.Reset();
+				break;
+			}
+		}
+		
+#endif
 		output.Reset();
 	}
 
@@ -481,10 +516,147 @@ void RHIDevice::CheckMeshShadingSupport()
 	D3D12_FEATURE_DATA_D3D12_OPTIONS7 options{};
 
 	if (FAILED(_device->CheckFeatureSupport(
-		D3D12_FEATURE_D3D12_OPTIONS7, &options, UINT(sizeof(options))))) { return; }
+		D3D12_FEATURE_D3D12_OPTIONS7, &options, UINT(sizeof(options)))))
+	{
+		_isSupportedMeshShading = false; return;
+	}
+
 	_isSupportedMeshShading = options.MeshShaderTier >= D3D12_MESH_SHADER_TIER_1;
 }
 
+/****************************************************************************
+*                     DepthBoundsTestSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckDepthBoundsTestSupport()
+*
+*  @brief      深度値が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させ, 範囲外ならば該当ピクセルを早期棄却する方法
+		　　　　 Deferred Renderingにおけるライトのaccumulation, Deferred RenderingにおけるCascaded Shadow Map, 被写界深度エフェクト, 遠景描画等に使用可能 
+*              https://microsoft.github.io/DirectX-Specs/d3d/DepthBoundsTest.html
+*              https://shikihuiku.wordpress.com/tag/depthboundstest/
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckDepthBoundsTestSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS2 options{};
+	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS2, &options, sizeof(options))))
+	{
+		_isSupportedDepthBoundsTest = options.DepthBoundsTestSupported;
+	}
+	else
+	{
+		_isSupportedDepthBoundsTest = false;
+	}
+}
+
+/****************************************************************************
+*                     CheckResourceTiers
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckResourceTiers()
+*
+*  @brief     パイプラインで使用可能なリソースの上限値を確認するために使用する
+* 　　　　　　　　
+*  @param[in] void
+*
+*  @return 　　void
+*  
+*  @details    大きく異なるのは以下の点です
+*             1. CBV : Tier 1, 2は14まで. Tier3 はDescripterHeapの最大数
+*             2. SRV : Tier 1は128まで. Tier2, 3はDescripterHeapの最大数
+*             3. UAV : Tier1は機能レベル 11.1+以上で64, それ以外で8, Tier2は64, Tier3はDescripterHeapの最大数
+*             4. Sampler : Tier1は16, それ以外で2048
+*             5. ヒープ内のDescripterの最大数 Tier1, 2は1,000,000、Tier3は無制限
+* 　　　　　　　　https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/hardware-support
+* 
+* 　　　　　　　　HeapTierの方では, バッファー, RenderTargetとDepthStencil, TargetStencil, 深度ステンシルテクスチャのレンダリングを同一ヒープで使用できるかを調べます
+* 　　　　　　　　Tier1が排他, Tier2が混在可能です.
+* 　　　　　　　　https://learn.microsoft.com/ja-jp/windows/win32/api/d3d12/ne-d3d12-d3d12_resource_heap_tier
+*****************************************************************************/
+void RHIDevice::CheckResourceTiers()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS options{};
+	
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options)))) { return; }
+	_resourceBindingTier = options.ResourceBindingTier;
+	_resourceHeapTier    = options.ResourceHeapTier;
+}
+
+/****************************************************************************
+*                     FindHighestFeatureLevel
+*************************************************************************//**
+*  @fn        void RHIDevice::FindHighestFeatureLevel()
+*
+*  @brief     Set up max feature level.
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::FindHighestFeatureLevel()
+{
+	const D3D_FEATURE_LEVEL featureLevels[] =
+	{
+#if D3D12_CORE_ENABLED
+		D3D_FEATURE_LEVEL_12_2,
+#endif
+		D3D_FEATURE_LEVEL_12_1,
+		D3D_FEATURE_LEVEL_12_0,
+		D3D_FEATURE_LEVEL_11_1,
+		D3D_FEATURE_LEVEL_11_0
+	};
+
+	D3D12_FEATURE_DATA_FEATURE_LEVELS featureLevelCaps = {};
+	featureLevelCaps.pFeatureLevelsRequested = featureLevels;
+	featureLevelCaps.NumFeatureLevels        = _countof(featureLevels);
+
+	/*-------------------------------------------------------------------
+	-               Feature Support Check
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(_device->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS, &featureLevelCaps, sizeof(featureLevelCaps)));
+	_maxSupportedFeatureLevel = featureLevelCaps.MaxSupportedFeatureLevel;
+}
+
+/****************************************************************************
+*                     FindHighestShaderModel
+*************************************************************************//**
+*  @fn        void RHIDevice::FindHighestShaderModel()
+*
+*  @brief     Set up max shader model.
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::FindHighestShaderModel()
+{
+	const D3D_SHADER_MODEL shaderModels[] =
+	{
+#if D3D12_CORE_ENABLED
+		D3D_HIGHEST_SHADER_MODEL,
+		D3D_SHADER_MODEL_6_7,
+		D3D_SHADER_MODEL_6_6,
+#endif
+		D3D_SHADER_MODEL_6_5,
+		D3D_SHADER_MODEL_6_4,
+		D3D_SHADER_MODEL_6_3,
+		D3D_SHADER_MODEL_6_2,
+		D3D_SHADER_MODEL_6_1,
+		D3D_SHADER_MODEL_6_0,
+	};
+
+	D3D12_FEATURE_DATA_SHADER_MODEL featureShaderModel = {};
+	for (const auto shaderModel : shaderModels)
+	{
+		featureShaderModel.HighestShaderModel = shaderModel;
+
+		if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &featureShaderModel, sizeof(featureShaderModel))))
+		{
+			_maxSupportedShaderModel = featureShaderModel.HighestShaderModel;
+			return;
+		}
+	}
+}
 #pragma endregion  Device Support Function
 
 #pragma region Property
