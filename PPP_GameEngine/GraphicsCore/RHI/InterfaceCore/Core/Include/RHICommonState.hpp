@@ -1125,7 +1125,7 @@ namespace rhi::core
 			this->Left = left; this->Top = top; this->Right = right; this->Bottom = bottom;
 		}
 	};
-
+	// https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
 	struct HDRDisplayInfo
 	{
 		float RedPrimary[2];   // red   xy coordinate in the color space

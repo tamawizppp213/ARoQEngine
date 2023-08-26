@@ -187,12 +187,22 @@ namespace rhi::directX12
 		/* @brief For the HeapTier, it checks if the buffer, RenderTarget and DepthStencil, TargetStencil and depth stencil texture rendering can be used in the same heap*/
 		D3D12_RESOURCE_HEAP_TIER    _resourceHeapTier    = D3D12_RESOURCE_HEAP_TIER_1;
 
+		D3D12_VARIABLE_SHADING_RATE_TIER _variableRateShadingTier = D3D12_VARIABLE_SHADING_RATE_TIER_NOT_SUPPORTED;
+
 		std::uint32_t _deviceNodeCount = 0;
 
+		// variable rate shading
 		std::uint32_t _variableRateShadingImageTileSize = 0;
-		std::uint32_t _4xMsaaQuality = 0;
+		bool _isSupportedLargerVariableRateShadingSize  = false;
 
+		// MSAA
+		std::uint32_t _msaaQuality     = 0;
+		std::uint32_t _maxMSAASampleCount = 0;
+
+		// HDR
 		rhi::core::HDRDisplayInfo _displayInfo;
+
+		static constexpr std::uint32_t DESIRED_MAX_MSAA_SAMPLE_COUNT = 16;
 	private:
 		/****************************************************************************
 		**                Private Enum Class
@@ -217,7 +227,7 @@ namespace rhi::directX12
 		void CheckDXRSupport();
 		void CheckVRSSupport();
 		void CheckDepthBoundsTestSupport();
-		void CheckMultiSampleQualityLevels(const core::PixelFormat format);
+		void CheckMultiSampleQualityLevels();
 		void CheckMeshShadingSupport();
 		void CheckResourceTiers();
 		void SetupDisplayHDRMetaData();

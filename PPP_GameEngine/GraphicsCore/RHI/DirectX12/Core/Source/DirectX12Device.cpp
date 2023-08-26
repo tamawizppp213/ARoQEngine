@@ -95,6 +95,7 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	CheckDXRSupport();
 	CheckVRSSupport();
 	CheckMeshShadingSupport();
+	CheckMultiSampleQualityLevels();
 	CheckDepthBoundsTestSupport();
 	CheckResourceTiers();
 	SetupDisplayHDRMetaData();
@@ -371,25 +372,46 @@ void RHIDevice::CheckDXRSupport()
 *  @param[in] void
 * 
 *  @return 　　void
+* 
+*  @details   可変レートシェーディングは, 複数ピクセルの塊を1ピクセルとして計算する手法です. 
+*             Tier1はDrawCallごとに指定でき, 描画される対象に一律に適用します.
+*             Tier2はDrawCallだけでなく, プリミティブごと, タイルごとにも設定できるようになります. 
+*             共通して, 1x1, 1x2, 2x1, 2x2は全てのレベルでサポートされているものの, 2x4, 4x2, 4x4はAdditionalShadingRatesSupportedを確認する必要があります.
+*             https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/vrs
+*             https://sites.google.com/site/monshonosuana/directx%E3%81%AE%E8%A9%B1/directx%E3%81%AE%E8%A9%B1-%E7%AC%AC168%E5%9B%9E
 *****************************************************************************/
 void RHIDevice::CheckVRSSupport()
 {
 	D3D12_FEATURE_DATA_D3D12_OPTIONS6 options = {};
 	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS6, &options, sizeof(options))))
 	{
+		_variableRateShadingTier = options.VariableShadingRateTier;
+
+		if (_variableRateShadingTier != D3D12_VARIABLE_SHADING_RATE_TIER_NOT_SUPPORTED)
+		{
+			_isSupportedLargerVariableRateShadingSize = options.AdditionalShadingRatesSupported;
+		}
+
 		if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_1)
 		{
 			OutputDebugStringA("Gpu api: Variable Rate Shading Tier1 supported\n");
 			_isSupportedVariableRateShadingTier1 = true;
 			_isSupportedVariableRateShadingTier2 = false;
-			_variableRateShadingImageTileSize    = options.ShadingRateImageTileSize;
+			_variableRateShadingImageTileSize    = 1;    // Tier2のみの機能なので必要なし
 		}
 		else if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2)
 		{
 			OutputDebugStringA("Gpu api: Valiable Rate Shading Tier2 supported\n");
 			_isSupportedVariableRateShadingTier1 = true;
 			_isSupportedVariableRateShadingTier2 = true;
-			_variableRateShadingImageTileSize = options.ShadingRateImageTileSize;
+			_variableRateShadingImageTileSize = options.ShadingRateImageTileSize; // 8, 16, 32が返される
+		}
+		else
+		{
+			OutputDebugStringA("Gpu api: Variable Rate Shading not supported");
+			_isSupportedVariableRateShadingTier1 = false;
+			_isSupportedVariableRateShadingTier2 = false;
+			_variableRateShadingImageTileSize = 1;
 		}
 	}
 	else
@@ -397,6 +419,7 @@ void RHIDevice::CheckVRSSupport()
 		OutputDebugStringA("GpuApi : Variable Rate Shading note supported on current gpu hardware.\n");
 		_isSupportedVariableRateShadingTier1 = false;
 		_isSupportedVariableRateShadingTier2 = false;
+		_variableRateShadingImageTileSize = 1;
 	}
 }
 
@@ -405,29 +428,26 @@ void RHIDevice::CheckVRSSupport()
 *************************************************************************//**
 *  @fn        void DirectX12::CheckMultiSampleQualityLevels(void)
 * 
-*  @brief     Multi Sample Quality Levels for 4xMsaa (Anti-Alias)
+*  @brief     Multi Sample Quality Levels for Msaa (Anti-Alias)
 * 
 *  @param[in] void
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHIDevice::CheckMultiSampleQualityLevels(const core::PixelFormat format)
+void RHIDevice::CheckMultiSampleQualityLevels()
 {
-	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
-	msQualityLevels.Format           = DXGI_FORMAT_R16G16B16A16_FLOAT; // back buffer にした方がいいかと
-	msQualityLevels.SampleCount      = 4;
-	msQualityLevels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
-	msQualityLevels.NumQualityLevels = 0;
+	for (std::uint32_t sampleCount = DESIRED_MAX_MSAA_SAMPLE_COUNT; sampleCount > 0; sampleCount--)
+	{
+		D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
+		msQualityLevels.SampleCount = sampleCount;
 
-	ThrowIfFailed(_device->CheckFeatureSupport(
-		D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
-		&msQualityLevels,
-		sizeof(msQualityLevels)));
-
-	_4xMsaaQuality = msQualityLevels.NumQualityLevels;
-#ifdef _DEBUG
-	assert(_4xMsaaQuality > 0 && "Unexpected MSAA quality level.");
-#endif
+		if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels))))
+		{
+			_msaaQuality     = msQualityLevels.NumQualityLevels;
+			_maxMSAASampleCount = sampleCount;
+			break;
+		}
+	}
 }
 
 /****************************************************************************
@@ -435,7 +455,7 @@ void RHIDevice::CheckMultiSampleQualityLevels(const core::PixelFormat format)
 *************************************************************************//**
 *  @fn        void DirectX12::CheckHDRDisplaySupport()
 * 
-*  @brief     CheckHDRDisplaySupport()
+*  @brief     CheckHDRDisplaySupport()　https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
 * 
 *  @param[in] void
 * 
