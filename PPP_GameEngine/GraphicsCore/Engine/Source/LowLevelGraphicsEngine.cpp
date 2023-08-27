@@ -284,7 +284,7 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 
 	Screen::SetScreenWidth(newWidth);
 	Screen::SetScreenHeight(newHeight);
-	SetFrameBuffers(newWidth, newHeight);
+	SetFrameBuffers((int)newWidth, (int)newHeight);
 
 	_swapchain->Resize(newWidth, newHeight);
 

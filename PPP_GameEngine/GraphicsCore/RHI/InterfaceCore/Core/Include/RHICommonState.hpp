@@ -1128,15 +1128,16 @@ namespace rhi::core
 	// https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
 	struct HDRDisplayInfo
 	{
-		float RedPrimary[2];   // red   xy coordinate in the color space
-		float GreenPrimary[2]; // green xy coordinate in the color space
-		float BluePrimary[2];  // blue  xy coordinate in the color space
-		float WhitePoint[2];   // white xy coordinate in the color space
-		float MinLuminance;    // nits
-		float MaxLuminacnce;   // nits
-		float MaxFullFrameLuminance;
-		ScissorRect Rect;
+		float RedPrimary[2]   = {0,0};   // red   xy coordinate in the color space
+		float GreenPrimary[2] = {0,0}; // green xy coordinate in the color space
+		float BluePrimary[2]  = {0,0};  // blue  xy coordinate in the color space
+		float WhitePoint[2]   = {0,0};   // white xy coordinate in the color space
+		float MinLuminance    = 0.0f;    // nits
+		float MaxLuminacnce   = 0.0f;   // nits
+		float MaxFullFrameLuminance = 0.0f;
+		ScissorRect Rect = {};
 	};
+
 	/****************************************************************************
 	*				  			WindowInfo
 	*************************************************************************//**

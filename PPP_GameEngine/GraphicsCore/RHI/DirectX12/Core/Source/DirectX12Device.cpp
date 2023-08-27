@@ -94,6 +94,7 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	---------------------------------------------------------------------*/
 	CheckDXRSupport();
 	CheckVRSSupport();
+	CheckRenderPassSupport();
 	CheckMeshShadingSupport();
 	CheckMultiSampleQualityLevels();
 	CheckDepthBoundsTestSupport();
@@ -345,21 +346,64 @@ void RHIDevice::ReportLiveObjects()
 /****************************************************************************
 *						CheckDXRSupport
 *************************************************************************//**
-*  @fn        void DirectX12::CheckDXRSupport
+*  @fn        void DirectX12::CheckDXRSupport()
+* 
 *  @brief     Check DXRSupport
+* 
 *  @param[in] void
+* 
 *  @return 　　void
+* 
+*  @details   Tier1_1の場合,　以下の内容が可能となります 
+　　　　　　　　　・ExecuteIndirectを介したDispatchRays呼び出しのサポート, RayQueryの使用
+* 　　　　　　　　・AddToStateObjectを介した既存の状態オブジェクトへの増分追加
+　　　　　　　　　・SkipTriangles, skip procedual primitivesのフラグの使用
+		 　　　　https://github.com/microsoft/DirectX-Specs/blob/master/d3d/Raytracing.md#d3d12_raytracing_tier　
+			   https://devblogs.microsoft.com/directx/dxr-1-1/　
 *****************************************************************************/
 void RHIDevice::CheckDXRSupport()
 {
 	D3D12_FEATURE_DATA_D3D12_OPTIONS5 options{};
 		
-	if (FAILED(_device->CheckFeatureSupport(
-		D3D12_FEATURE_D3D12_OPTIONS5, &options, UINT(sizeof(options))))) { return; }
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &options, UINT(sizeof(options))))) 
+	{
+		_isSupportedRayTracing = false;
+		return; 
+	}
 
+	_rayTracingTier        = options.RaytracingTier;
 	_isSupportedRayTracing = options.RaytracingTier   >= D3D12_RAYTRACING_TIER_1_0;
-	_isSupportedRenderPass = options.RenderPassesTier >= D3D12_RENDER_PASS_TIER_0;
 	_isSupportedRayQuery   = options.RaytracingTier   >= D3D12_RAYTRACING_TIER_1_1;
+}
+
+/****************************************************************************
+*						CheckRenderPassSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckRenderPassSupport()
+*
+*  @brief     Check render pass support
+*
+*  @param[in] void
+*
+*  @return 　　void
+*
+*  @details   Tier0 : レンダーパスは未実装, 一応ソフトウェアエミュレーションを介してのみ提供とは言っているので, サポート対象とはいたします. 
+*             Tier1 : Render Target, Depth Bufferの書き込みの高速化, しかし, UAVの書き込みはRenderPass内では効率的にはならないとのこと
+*             Tier2 : Render Target, Depth Bufferの書き込みの高速化, UAVの書き込みもOK
+*****************************************************************************/
+void RHIDevice::CheckRenderPassSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS5 options{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &options, UINT(sizeof(options)))))
+	{
+		_isSupportedRenderPass = false;
+		_renderPassTier        = D3D12_RENDER_PASS_TIER_0; 
+		return;
+	}
+
+	_isSupportedRenderPass = options.RenderPassesTier >= D3D12_RENDER_PASS_TIER_0;
+	_renderPassTier        = options.RenderPassesTier;
 }
 
 /****************************************************************************
