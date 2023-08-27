@@ -150,7 +150,7 @@ namespace rhi::directX12
 
 		bool IsSupportedDepthBoundsTest    () const override { return _isSupportedDepthBoundsTest; }
 
-
+		bool IsSupportedSamplerFeedback    () const override { return _isSupportedSamplerFeedback; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -182,6 +182,7 @@ namespace rhi::directX12
 		bool          _isSupportedRenderPass               = true;
 		bool          _isSupportedRayQuery                 = true;
 		bool          _isSupportedDepthBoundsTest          = true;
+		bool          _isSupportedSamplerFeedback          = true;
 
 		/* @brief : The maximum D3D12 feature level supported. 0 if not supported*/
 		D3D_FEATURE_LEVEL _maxSupportedFeatureLevel = (D3D_FEATURE_LEVEL)0;
@@ -233,13 +234,21 @@ namespace rhi::directX12
 		---------------------------------------------------------------------*/
 		std::uint32_t _msaaQuality     = 0;
 		std::uint32_t _maxMSAASampleCount = 0;
+		static constexpr std::uint32_t DESIRED_MAX_MSAA_SAMPLE_COUNT = 16;
 
 		/*-------------------------------------------------------------------
 		-                        HDR
 		---------------------------------------------------------------------*/
 		rhi::core::HDRDisplayInfo _displayInfo;
 
-		static constexpr std::uint32_t DESIRED_MAX_MSAA_SAMPLE_COUNT = 16;
+		/*-------------------------------------------------------------------
+		-                        SamplerFeedback
+		---------------------------------------------------------------------*/
+		/* @brief テクスチャのサンプリング情報をキャプチャ, 記録するための機能です.: 
+		      Tier 0.9 : D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_CLAMPのみに対応する, mipmapも0のみ対応
+* 　　　　　　　 Tier 1.0 : 全てのTexture addressing modeで使用可能*/
+		D3D12_SAMPLER_FEEDBACK_TIER _samplerFeedbackTier = D3D12_SAMPLER_FEEDBACK_TIER_NOT_SUPPORTED;
+
 	private:
 		/****************************************************************************
 		**                Private Enum Class
@@ -268,6 +277,7 @@ namespace rhi::directX12
 		void CheckMultiSampleQualityLevels();
 		void CheckMeshShadingSupport();
 		void CheckResourceTiers();
+		void CheckSamplerFeedbackSupport();
 		void SetupDisplayHDRMetaData();
 
 		/****************************************************************************

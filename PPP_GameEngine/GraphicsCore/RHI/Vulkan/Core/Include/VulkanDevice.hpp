@@ -144,6 +144,7 @@ namespace rhi::vulkan
 		bool IsSupportedGeometryShader     () const override { return _isSupportedGeometryShader; };
 		bool IsSupportedRenderPass         () const override { return true; }
 		bool IsSupportedDepthBoundsTest    () const override { return true; }
+		bool IsSupportedSamplerFeedback    ()const override { return false; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

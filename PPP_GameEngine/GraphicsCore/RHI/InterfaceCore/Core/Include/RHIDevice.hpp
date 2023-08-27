@@ -167,6 +167,7 @@ namespace rhi::core
 		*if it is within the range, and prematurely dismisses the corresponding pixel if it is outside the range.*/
 		virtual bool IsSupportedDepthBoundsTest    () const = 0;
 
+		virtual bool IsSupportedSamplerFeedback    () const = 0;
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

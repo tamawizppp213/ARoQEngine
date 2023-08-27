@@ -99,6 +99,7 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	CheckMultiSampleQualityLevels();
 	CheckDepthBoundsTestSupport();
 	CheckResourceTiers();
+	CheckSamplerFeedbackSupport();
 	SetupDisplayHDRMetaData();
 }
 
@@ -406,6 +407,38 @@ void RHIDevice::CheckRenderPassSupport()
 	_renderPassTier        = options.RenderPassesTier;
 }
 
+/****************************************************************************
+*						CheckSamplerFeedbackSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckSamplerFeedbackSupport()
+*
+*  @brief     Check sampelr feedback support
+*
+*  @param[in] void
+*
+*  @return 　　void
+*
+*  @details   Sampler feedbackは, テクスチャサンプリング情報と位置をキャプチャ, 記録するための機能. 
+*             https://microsoft.github.io/DirectX-Specs/d3d/SamplerFeedback.html
+*             Tier 0.9 : D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_CLAMPのみに対応する, mipmapも0のみ対応
+* 　　　　　　　 Tier 1.0 : 全てのTexture addressing modeで使用可能
+*****************************************************************************/
+void RHIDevice::CheckSamplerFeedbackSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS7 options{};
+
+	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS7, &options, UINT(sizeof(options)))))
+	{
+		_isSupportedSamplerFeedback = options.SamplerFeedbackTier >= D3D12_SAMPLER_FEEDBACK_TIER_0_9;
+		_samplerFeedbackTier        = options.SamplerFeedbackTier;
+	}
+	else
+	{
+		_isSupportedSamplerFeedback = false;
+		_samplerFeedbackTier        = D3D12_SAMPLER_FEEDBACK_TIER_NOT_SUPPORTED;
+	}
+
+}
 /****************************************************************************
 *                     CheckVRSSupport
 *************************************************************************//**
