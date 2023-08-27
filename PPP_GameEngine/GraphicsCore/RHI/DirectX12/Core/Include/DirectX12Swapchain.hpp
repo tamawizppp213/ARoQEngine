@@ -87,7 +87,12 @@ namespace rhi::directX12
 		DXGI_SWAP_CHAIN_FLAG _swapchainFlag;
 
 		DXGI_FORMAT          _backBufferFormat; // color format
-	
+
+		/*----------------------------------------------------------------------
+		*  @brief : VSyncが0のときかつ, AllowTearingがサポートされているなら,　
+		*           スワップの準備が出来るまで待つようにします.
+		/*----------------------------------------------------------------------*/
+		bool _useAllowTearing = false;
 	private:
 		/****************************************************************************
 		**                Private Function

@@ -198,31 +198,34 @@ namespace rhi::directX12
 
 		std::uint32_t _deviceNodeCount = 0;
 
-		/*------------------------------------------------------------------ -
+		/*-------------------------------------------------------------------
 		-                RenderPass
-		-------------------------------------------------------------------- - */
-		/*    @brief :
-		      Tier0 : レンダーパスは未実装, 一応ソフトウェアエミュレーションを介してのみ提供とは言っているので, サポート対象とはいたします. 
-        *     Tier1 : Render Target, Depth Bufferの書き込みの高速化, しかし, UAVの書き込みはRenderPass内では効率的にはならないとのこと
-        *     Tier2 : Render Target, Depth Bufferの書き込みの高速化, UAVの書き込みもOK */
+		--------------------------------------------------------------------- */
+		/*----------------------------------------------------------------------    
+		*  @brief : Tier0 : レンダーパスは未実装, 一応ソフトウェアエミュレーションを介してのみ提供とは言っているので, サポート対象とはいたします. 
+        *           Tier1 : Render Target, Depth Bufferの書き込みの高速化, しかし, UAVの書き込みはRenderPass内では効率的にはならないとのこと
+        *           Tier2 : Render Target, Depth Bufferの書き込みの高速化, UAVの書き込みもOK 
+		/*----------------------------------------------------------------------*/
 		D3D12_RENDER_PASS_TIER _renderPassTier = D3D12_RENDER_PASS_TIER_0;
 
 		/*-------------------------------------------------------------------
 		-               DirectX12RayTracing
 		---------------------------------------------------------------------*/
-		/*    @brief:
-		      Tier1_1の場合,　以下の内容が可能となります 
-　　　　　　　　　・ExecuteIndirectを介したDispatchRays呼び出しのサポート, RayQueryの使用
-* 　　　　　　　　・AddToStateObjectを介した既存の状態オブジェクトへの増分追加
-　　　　　　　　　・SkipTriangles, skip procedual primitivesのフラグの使用*/
+		/*----------------------------------------------------------------------
+		*  @brief: Tier1_1の場合,　以下の内容が可能となります
+		*        ・ExecuteIndirectを介したDispatchRays呼び出しのサポート, RayQueryの使用
+	    *　　　　  ・AddToStateObjectを介した既存の状態オブジェクトへの増分追加
+		*        ・SkipTriangles, skip procedual primitivesのフラグの使用
+		*----------------------------------------------------------------------*/
 		D3D12_RAYTRACING_TIER _rayTracingTier = D3D12_RAYTRACING_TIER_NOT_SUPPORTED;
 
 		/*-------------------------------------------------------------------
 		-               variable rate shading
 		---------------------------------------------------------------------*/
-		/* @brief: 
-		   Tier1はDrawCallごとに指定でき, 描画される対象に一律に適用します.
-         * Tier2はDrawCallだけでなく, プリミティブごと, タイルごとにも設定できるようになります. */
+		/*----------------------------------------------------------------------
+		*  @brief : Tier1はDrawCallごとに指定でき, 描画される対象に一律に適用します.
+        *           Tier2はDrawCallだけでなく, プリミティブごと, タイルごとにも設定できるようになります
+		*----------------------------------------------------------------------*/
 		D3D12_VARIABLE_SHADING_RATE_TIER _variableRateShadingTier = D3D12_VARIABLE_SHADING_RATE_TIER_NOT_SUPPORTED;
 
 		std::uint32_t _variableRateShadingImageTileSize = 0;
