@@ -130,8 +130,10 @@ void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, std::ui
 {
 	/*synchronization between command queue */
 	_desc.CommandQueue->Wait(fence, waitValue);
+
 	/* present front buffer*/
-	ThrowIfFailed(_swapchain->Present(_desc.VSync, 0));
+	const auto rhiDevice = std::static_pointer_cast<RHIDevice>(_device);
+	ThrowIfFailed(_swapchain->Present(_desc.VSync, rhiDevice->IsSupportedAllowTearing() && _desc.VSync == 0 ? DXGI_PRESENT_ALLOW_TEARING : 0));
 }
 /****************************************************************************
 *							GetCurrentBufferIndex
@@ -180,7 +182,10 @@ void RHISwapchain::SetUp()
 	-        SwapChain Flag
 	---------------------------------------------------------------------*/
 	int flag = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	if (rhiDevice->IsSupportedTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
+	if (rhiDevice->IsSupportedAllowTearing()) 
+	{ 
+		flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; 
+	}
 	_swapchainFlag = static_cast<DXGI_SWAP_CHAIN_FLAG>(flag);
 
 	/*-------------------------------------------------------------------

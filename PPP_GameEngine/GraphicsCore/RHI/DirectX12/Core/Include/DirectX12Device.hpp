@@ -132,7 +132,7 @@ namespace rhi::directX12
 
 		D3D12_VARIABLE_SHADING_RATE_TIER GetVariableShadingRateTier() const { return _variableRateShadingTier; }
 
-		bool IsSupportedTearingSupport     () const noexcept { return _isSupportedTearing; }
+		bool IsSupportedAllowTearing       () const noexcept { return _isSupportedAllowTearing; }
 
 		bool IsSupportedDxr                () const override { return _isSupportedRayTracing; }
 
@@ -174,7 +174,7 @@ namespace rhi::directX12
 		-               Device Support Check
 		---------------------------------------------------------------------*/
 		bool          _isSupportedRayTracing = true;
-		bool          _isSupportedTearing    = true;
+		bool          _isSupportedAllowTearing = true;
 		bool          _isSupportedHDR        = true;
 		bool          _isSupportedVariableRateShadingTier1 = true;
 		bool          _isSupportedVariableRateShadingTier2 = true;
@@ -278,6 +278,7 @@ namespace rhi::directX12
 		void CheckMeshShadingSupport();
 		void CheckResourceTiers();
 		void CheckSamplerFeedbackSupport();
+		void CheckAllowTearingSupport();
 		void SetupDisplayHDRMetaData();
 
 		/****************************************************************************

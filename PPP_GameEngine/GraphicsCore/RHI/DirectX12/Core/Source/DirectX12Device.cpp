@@ -19,6 +19,7 @@
 #include "../Include/DirectX12RenderPass.hpp"
 #include "../Include/DirectX12ResourceLayout.hpp"
 #include "../Include/DirectX12FrameBuffer.hpp"
+#include "../Include//DirectX12Instance.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
@@ -100,6 +101,7 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	CheckDepthBoundsTestSupport();
 	CheckResourceTiers();
 	CheckSamplerFeedbackSupport();
+	CheckAllowTearingSupport();
 	SetupDisplayHDRMetaData();
 }
 
@@ -619,6 +621,39 @@ void RHIDevice::CheckMeshShadingSupport()
 	}
 
 	_isSupportedMeshShading = options.MeshShaderTier >= D3D12_MESH_SHADER_TIER_1;
+}
+
+/****************************************************************************
+*                     CheckAllowTearingSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckAllowTearingSupport()
+*
+*  @brief     Allow tearing support
+*            
+*  @param[in] void
+*
+*  @return 　　void
+* 
+*  @details   可変レートのリフレッシュレートを使用するときに使用します. 
+*             画面のティアリング (準備できてないときにフリップ処理が入ってしまう画面のちらつき)が生じないように, 次のフレームの準備がおきるまで遅延をしてくれる機能です.
+*             ただし, VSyncは0にしてください. 
+*****************************************************************************/
+void RHIDevice::CheckAllowTearingSupport()
+{
+#if DXGI_MAX_FACTORY_INTERFACE >= 5
+	const auto dxInstance = static_cast<directX12::RHIInstance*>(_adapter->GetInstance());
+	const auto factory    = dxInstance->GetFactory();
+	
+	BOOL allowTearing = FALSE; // Boolはint型なので, boolだと×
+	if (SUCCEEDED(factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing))))
+	{
+		_isSupportedAllowTearing = allowTearing;
+	}
+	else
+	{
+		_isSupportedAllowTearing = false;
+	}
+#endif
 }
 
 /****************************************************************************
