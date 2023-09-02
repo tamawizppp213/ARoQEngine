@@ -48,6 +48,7 @@ namespace rhi::core
 		std::uint32_t   VSync            = 0;
 		bool            IsValidHDR       = true;
 		bool            IsValidStereo    = false;
+		bool            IsFullScreen     = false;
 
 		~SwapchainDesc()
 		{

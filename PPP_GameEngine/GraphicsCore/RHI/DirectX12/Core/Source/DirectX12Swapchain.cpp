@@ -8,14 +8,15 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/DirectX12Swapchain.hpp"
+#include "../Include/DirectX12Instance.hpp"
 #include "../Include/DirectX12CommandQueue.hpp"
 #include "../Include/DirectX12Adapter.hpp"
-#include "../Include/DirectX12Instance.hpp"
 #include "../Include/DirectX12Fence.hpp"
 #include "../Include/DirectX12Device.hpp"
 #include "../Include/DirectX12Debug.hpp"
 #include "../Include/DirectX12EnumConverter.hpp"
 #include "../../Resource/Include/DirectX12GPUTexture.hpp"
+#include "GameUtility/Base/Include/Screen.hpp"
 #include <d3d12.h>
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
@@ -173,9 +174,11 @@ void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 *****************************************************************************/
 void RHISwapchain::SetUp()
 {
-	const auto rhiDevice = std::static_pointer_cast<RHIDevice>(_device);
-	const auto dxDevice  = rhiDevice->GetDevice();
-	const auto dxQueue   = std::static_pointer_cast<RHICommandQueue>(_desc.CommandQueue)->GetCommandQueue();
+	const auto rhiDevice  = std::static_pointer_cast<RHIDevice>(_device);
+	const auto dxDevice   = rhiDevice->GetDevice();
+	const auto dxQueue    = std::static_pointer_cast<RHICommandQueue>(_desc.CommandQueue)->GetCommandQueue();
+	const auto dxInstance = static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance());
+	const auto factory    = dxInstance->GetFactory();
 
 	/*-------------------------------------------------------------------
 	-        SwapChain Flag
@@ -200,44 +203,77 @@ void RHISwapchain::SetUp()
 	_backBufferFormat = EnumConverter::Convert(_desc.PixelFormat);
 
 	/*-------------------------------------------------------------------
-	-                   Create Swapchain Descriptor
+	-        立体視を行うために, 両目で画像をずらす対応を行うかどうか
 	---------------------------------------------------------------------*/
-	const DXGI_SWAP_CHAIN_DESC1 sd =
+	if (_desc.IsValidStereo)
 	{
-		.Width       = static_cast<UINT>(_desc.WindowInfo.Width),  // Window Size Pixel Width
-		.Height      = static_cast<UINT>(_desc.WindowInfo.Height), // Window Size Pixel Height 
-		.Format      = _backBufferFormat,                          // Back Buffer Format 
-		.Stereo      = _desc.IsValidStereo,                        // Use stereoscopic rendering
-		.SampleDesc  = {1, 0},                                     // Count + quality (Not support multi sampling.)
-		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,            // Use the surface or resource as an output render target
-		.BufferCount = static_cast<UINT>(_desc.FrameBufferCount),  // Current: Triple Buffer
-		.Scaling     = DXGI_SCALING_STRETCH,                       // scaling: stretch
-		.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD,              // bit-block transfer model
-		.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED,                // Alpha Mode => transparency behavior is not specified
-		.Flags       = (UINT)_swapchainFlag,                       // Allow Resize Window
-	};
+		if (factory->IsWindowedStereoEnabled())
+		{
+			const DXGI_SWAP_CHAIN_DESC1 desc = 
+			{
+				.Width       = static_cast<UINT>(_desc.WindowInfo.Width),  // Window Size Pixel Width
+				.Height      = static_cast<UINT>(_desc.WindowInfo.Height), // Window Size Pixel Height 
+				.Format      = _backBufferFormat,                          // Back Buffer Format 
+				.Stereo      = true,                                       // Use stereoscopic rendering
+				.SampleDesc  = {1, 0},                                     // Count + quality (Not support multi sampling.)
+				.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT,  // Use the surface or resource as an output render target
+				.BufferCount = static_cast<UINT>(_desc.FrameBufferCount),  // Current: Triple Buffer
+				.Scaling     = DXGI_SCALING_NONE,                          // fixed
+				.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD,              // bit-block transfer model
+				.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED,                // Alpha Mode => transparency behavior is not specified
+				.Flags       = (UINT)_swapchainFlag,                       // Allow Resize Window
+			};
 
-	// 起動時にフルスクリーンにする場合は使用するが, 現状は使用しないことにする. (フレームレートを固定する必要があるため.)
-	/*DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
-	fullScreenDesc.RefreshRate.Denominator = 60;
-	fullScreenDesc.RefreshRate.Numerator   = 1;
-	fullScreenDesc.Scaling                 = DXGI_MODE_SCALING_STRETCHED;
-	fullScreenDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	fullScreenDesc.Windowed                = FALSE;*/
+			ThrowIfFailed(factory->CreateSwapChainForHwnd (
+					dxQueue.Get(),
+					(HWND)_desc.WindowInfo.Handle,
+					&desc,
+					nullptr, // full screen desc
+					nullptr, // main monitor display
+					(IDXGISwapChain1**)(_swapchain.GetAddressOf())));
+		}
+		else
+		{
+			_desc.IsValidStereo = false;
+			OutputDebugStringA("Failed to use stereo rendering\n");
+		}
+	}
 
 	/*-------------------------------------------------------------------
-	-                   Create Swapchain for hwnd
+	-         ステレオが有効化出来なかった場合か, 使わない場合の対応
 	---------------------------------------------------------------------*/
-	ThrowIfFailed(static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance())->GetFactory()->
-	CreateSwapChainForHwnd
-	(
-		dxQueue.Get(),
-		(HWND)_desc.WindowInfo.Handle,
-		&sd,
-		nullptr, // full screen desc
-		nullptr, // main monitor display
-		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
-	));
+	if (_swapchain == nullptr)
+	{
+		const DXGI_MODE_DESC modeDesc =
+		{
+			.Width            = static_cast<UINT>(_desc.WindowInfo.Width),  // Window Size Pixel Width
+			.Height           = static_cast<UINT>(_desc.WindowInfo.Height), // Window Size Pixel Height 
+			.RefreshRate      = {0, 0},
+			.Format           = _backBufferFormat,                          // Back Buffer Format 
+			.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
+			.Scaling          = DXGI_MODE_SCALING_STRETCHED,                       // scaling: stretch
+		};
+
+		DXGI_SWAP_CHAIN_DESC desc = 
+		{
+			.BufferDesc   = modeDesc,
+			.SampleDesc   = {1, 0},                                     // Count + quality (Not support multi sampling.)
+			.BufferUsage  = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT, // Use the surface or resource as an output render target
+			.BufferCount  = static_cast<UINT>(_desc.FrameBufferCount),  // Current: Triple Buffer
+			.OutputWindow = (HWND)_desc.WindowInfo.Handle,              
+			.Windowed     = !_isFullScreen,                             // Full screen setting is border less window
+			.SwapEffect   = DXGI_SWAP_EFFECT_FLIP_DISCARD,              // bit-block transfer model
+			.Flags        = (UINT)_swapchainFlag,                       // Allow Resize Window
+		};
+
+		/*-------------------------------------------------------------------
+		-                   Create Swapchain for hwnd
+		---------------------------------------------------------------------*/
+		ThrowIfFailed(factory->CreateSwapChain(dxQueue.Get(), &desc, (IDXGISwapChain**)(_swapchain.GetAddressOf())));
+	}
+	
+	// 背後でウィンドウを変更しないように、DXGIメッセージフックを設定する。
+	factory->MakeWindowAssociation((HWND)_desc.WindowInfo.Handle, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER);
 
 	if (rhiDevice->IsSupportedHDR() && _desc.IsValidHDR)
 	{
