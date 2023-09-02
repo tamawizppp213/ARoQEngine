@@ -353,8 +353,11 @@
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVertex.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\LowLevelGraphicsEngine.hpp" />
+    <ClInclude Include="Platform\Core\Include\CoreCommonState.hpp" />
+    <ClInclude Include="Platform\Core\Include\CoreCursor.hpp" />
     <ClInclude Include="Platform\Core\Include\CorePlatformApplication.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreWindow.hpp" />
+    <ClInclude Include="Platform\Windows\Include\WindowsCursor.hpp" />
     <ClInclude Include="Platform\Windows\Include\WindowsPlatformApplication.hpp" />
     <ClInclude Include="Platform\Windows\Include\WindowsWindow.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHITypeCore.hpp" />
@@ -586,6 +589,7 @@
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\LowLevelGraphicsEngine.cpp" />
+    <ClCompile Include="Platform\Windows\Source\WindowsCursor.cpp" />
     <ClCompile Include="Platform\Windows\Source\WindowsPlatformApplication.cpp" />
     <ClCompile Include="Platform\Windows\Source\WindowsWindow.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Adapter.cpp" />

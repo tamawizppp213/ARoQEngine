@@ -30,7 +30,12 @@ PlatformApplication::PlatformApplication() : core::PlatformApplication()
 #pragma endregion Contructor and Destructor
 
 #pragma region Main Function
-bool PlatformApplication::RegisterWindowClass(const HINSTANCE instanceHandle, const HICON icon, const HCURSOR cursor)
+LRESULT CALLBACK PlatformApplication::WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	return TRUE;
+}
+
+bool PlatformApplication::RegisterWindowClass(const HINSTANCE instanceHandle, const HICON icon)
 {
 	/*---------------------------------------------------------------
 						Register Window Class
@@ -44,7 +49,7 @@ bool PlatformApplication::RegisterWindowClass(const HINSTANCE instanceHandle, co
 	windowClass.cbWndExtra    = 0;                // windowInstanceの後に確保する領域のバイト数
 	windowClass.hInstance     = instanceHandle;   // lpfnWndProcで指定した関数が含まれるインスタンスへのハンドルを指定
 	windowClass.hIcon         = icon;             // アイコン
-	windowClass.hCursor       = cursor;           // カーソルの見た目
+	windowClass.hCursor       = NULL;             // 別途管理する
 	windowClass.hbrBackground = NULL;             // 背景は透明にする
 	windowClass.lpszMenuName  = NULL;
 	windowClass.lpszClassName = g_ApplicationName;

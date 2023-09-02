@@ -1,20 +1,20 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GeneralWindow.hpp
-///             @brief  ウィンドウを作成するクラス
+///             @file   CoreCursor.hpp
+///             @brief  カーソルのアプリケーションに対する表示, 非表示を行います
 ///             @author Toide Yutaro
-///             @date   2023_08_31
+///             @date   2023_09_02
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef WINDOWS_PLATFORM_APPLICATION_HPP
-#define WINDOWS_PLATFORM_APPLICATION_HPP
+#ifndef CORE_CURSOR_HPP
+#define CORE_CURSOR_HPP
 
-#ifdef _WIN32
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../../Core/Include/CorePlatformApplication.hpp"
-#include <Windows.h>
-
+#include "CoreCommonState.hpp"
+#include "GameUtility/Math/Include/GMVector.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include <cstdint>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,54 +23,49 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace platform::windows
+namespace platform::core
 {
 	/****************************************************************************
-	*				  			    Class
+	*				  			    ICursor
 	*************************************************************************//**
-	*  @class     Class
-	*  @brief     temp
+	*  @class     ICursor
+	*  @brief     カーソルの表示クラス
 	*****************************************************************************/
-	class PlatformApplication : public platform::core::PlatformApplication
+	class ICursor : public NonCopyable
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		virtual void Show() = 0;
+
+		virtual void Hide() = 0;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		HINSTANCE GetInstanceHandle() const noexcept { return _instanceHandle; }
+		virtual gm::Float2  GetPosition() const = 0;
+		
+		virtual CursorType  GetType() const = 0;
 
+		virtual void SetPosition(const std::int32_t x, const std::int32_t y) const = 0;
 
+		virtual void SetType(const CursorType type) = 0;
+		
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		PlatformApplication();
+		explicit ICursor(const CursorType type) : _type(type) {};
 
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		static LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		HINSTANCE _instanceHandle = NULL;
-
-	private:
-		/****************************************************************************
-		**                Private Function
-		*****************************************************************************/
-		bool RegisterWindowClass(const HINSTANCE instanceHandle, const HICON icon);
-
-		
-		/****************************************************************************
-		**                Private Member Variables
-		*****************************************************************************/
+		CursorType _type = CursorType::Default;
 	};
 }
-#endif
 #endif

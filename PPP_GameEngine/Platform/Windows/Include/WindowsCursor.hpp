@@ -5,16 +5,15 @@
 ///             @date   2023_08_31
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef WINDOWS_PLATFORM_APPLICATION_HPP
-#define WINDOWS_PLATFORM_APPLICATION_HPP
+#ifndef WINDOWS_CURSOR_HPP
+#define WINDOWS_CURSOR_HPP
 
 #ifdef _WIN32
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../../Core/Include/CorePlatformApplication.hpp"
+#include "../../Core/Include/CoreCursor.hpp"
 #include <Windows.h>
-
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -31,45 +30,42 @@ namespace platform::windows
 	*  @class     Class
 	*  @brief     temp
 	*****************************************************************************/
-	class PlatformApplication : public platform::core::PlatformApplication
+	class ICursor : public core::ICursor
 	{
 	public:
 		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+			**                Public Function
+			*****************************************************************************/
+		virtual void Show() override;
+
+		virtual void Hide() override;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		HINSTANCE GetInstanceHandle() const noexcept { return _instanceHandle; }
+		virtual gm::Float2  GetPosition() const override;
 
+		virtual core::CursorType  GetType() const override;
+
+		virtual void SetPosition(const std::int32_t x, const std::int32_t y) const override;
+
+		virtual void SetType(const core::CursorType type) override;
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		PlatformApplication();
+		explicit ICursor(const core::CursorType type);
 
+		~ICursor();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		static LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		HINSTANCE _instanceHandle = NULL;
-
-	private:
-		/****************************************************************************
-		**                Private Function
-		*****************************************************************************/
-		bool RegisterWindowClass(const HINSTANCE instanceHandle, const HICON icon);
-
-		
-		/****************************************************************************
-		**                Private Member Variables
-		*****************************************************************************/
+		HCURSOR _cursor = NULL;
 	};
 }
 #endif
