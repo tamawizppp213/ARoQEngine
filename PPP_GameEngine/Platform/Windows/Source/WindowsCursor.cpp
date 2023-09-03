@@ -193,4 +193,5 @@ void ICursor::SetPosition(const std::int32_t x, const std::int32_t y) const
 {
 	::SetCursorPos(x, y);
 }
+
 #pragma endregion Main Function

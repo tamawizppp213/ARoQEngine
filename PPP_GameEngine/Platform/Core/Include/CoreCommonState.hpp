@@ -43,5 +43,48 @@ namespace platform::core
 		Prohibit,
 		CountOf,
 	};
+
+	/****************************************************************************
+	*				  			  ActivationType
+	*************************************************************************//**
+	*  @class     ActivationType
+	*  @brief     ウィンドウの起動時, 非起動時の瞬間に呼ばれるenum classです.
+	*****************************************************************************/
+	enum class ActivationType
+	{
+		InActive,      // 非アクティブ
+		Activate,      // マウスクリック以外のメソッドによってアクティブ化
+		ClickActivate, // マウスクリックでアクティブ化
+	};
+
+	/****************************************************************************
+	*				  			    WindowMode
+	*************************************************************************//**
+	*  @class     WindowMode
+	*  @brief     window mode
+	*****************************************************************************/
+	enum class WindowMode
+	{
+		FullScreen,
+		BorderLess,
+		Windowed,
+		CountOf
+	};
+
+	/****************************************************************************
+	*				  			  CoreWindowDesc
+	*************************************************************************//**
+	*  @struct     CoreWindowDesc
+	*  @brief     ウィンドウ用のディスクリプタです
+	*****************************************************************************/
+	struct CoreWindowDesc
+	{
+		float DesiredScreenPositionX = 0.0f;
+		float DesiredScreenPositionY = 0.0f;
+		float DesiredScreenWidth     = 0.0f;
+		float DesiredScreenHeight    = 0.0f;
+		wchar_t* Title               = L"PPP Game Window";
+	};
 }
+
 #endif

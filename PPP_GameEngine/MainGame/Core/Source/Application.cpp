@@ -33,6 +33,7 @@ bool Application::StartUp()
 	_gameTimer = std::make_shared<GameTimer>();
 	if (!CreateMainWindow())                               { return false; }
 	if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
+
 	return true;
 }
 

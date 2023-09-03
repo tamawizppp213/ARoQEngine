@@ -11,6 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "../../Core/Include/CoreCommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <cstdint>
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,13 +24,7 @@
 
 namespace platform::core
 {
-	enum class WindowMode
-	{
-		FullScreen,         
-		BorderLess,
-		Windowed,
-		CountOf
-	};
+	class PlatformApplication;
 
 	/****************************************************************************
 	*				  			    Class
@@ -57,6 +52,8 @@ namespace platform::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+
+
 		WindowMode GetWindowMode() const { return _windowMode; };
 
 		bool IsVisible() const { return _isVisible; }

@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Core/Include/CoreWindow.hpp"
 #include <Windows.h>
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +36,7 @@ namespace platform::windows
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Create();
+		void Create(const std::shared_ptr<core::PlatformApplication>& application, const core::CoreWindowDesc& desc);
 
 		/* @brief : Visibleでなかった場合にウィンドウを表示します.*/
 		void Show() override;
@@ -51,11 +52,7 @@ namespace platform::windows
 		*****************************************************************************/
 		HWND GetHWND() const { return _hwnd; }
 
-		HINSTANCE GetInstance() const { return _hInstance; }
-
 		void SetHWND(const HWND hwnd) { _hwnd = hwnd; }
-
-		void SetInstance(const HINSTANCE hInstance) { _hInstance = hInstance; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -71,8 +68,6 @@ namespace platform::windows
 		*****************************************************************************/
 		/* @brief : Window handle*/
 		HWND _hwnd = NULL;
-
-		HINSTANCE _hInstance = NULL;
 
 		bool _isFirstTimeVisible = true;
 	};
