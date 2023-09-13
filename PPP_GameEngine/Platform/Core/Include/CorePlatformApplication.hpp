@@ -11,6 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "CoreCommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
@@ -31,12 +32,14 @@ namespace platform::core
 	*  @class     Class
 	*  @brief     temp
 	*****************************************************************************/
-	class PlatformApplication : public NonCopyable
+	class PlatformApplication : public NonCopyable, std::enable_shared_from_this<PlatformApplication>
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		static std::shared_ptr<PlatformApplication> Create(const core::PlatformType type);
+
 		virtual void InitializeWindow(const std::shared_ptr<CoreWindow>& window) = 0;
 
 		/****************************************************************************
