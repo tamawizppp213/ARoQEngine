@@ -57,6 +57,8 @@ namespace platform::windows
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		void* GetWindowHandle() const noexcept override { return _hwnd; }
+
 		HWND GetHWND() const { return _hwnd; }
 
 		void SetHWND(const HWND hwnd) { _hwnd = hwnd; }

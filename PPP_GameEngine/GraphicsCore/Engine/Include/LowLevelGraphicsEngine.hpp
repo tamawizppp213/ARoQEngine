@@ -64,7 +64,7 @@ public:
 	**                Public Function
 	*****************************************************************************/
 	/* @brief : Rendering engine start function.*/
-	void StartUp(rhi::core::APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance);
+	void StartUp(rhi::core::APIVersion apiVersion, void* hwnd, void* hInstance);
 
 	/* @brief : The first call to the Draw function generates the back buffer image and executes the Default render pass. */
 	void BeginDrawFrame();
@@ -168,8 +168,6 @@ protected:
 	std::uint32_t _currentFrameIndex = 0;
 	
 	/* @brief : Windows API*/
-	HWND      _hwnd      = nullptr;
-	HINSTANCE _hInstance = nullptr;
 	std::int32_t _width = 0;
 	std::int32_t _height = 0;
 

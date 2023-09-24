@@ -45,7 +45,7 @@ public:
 	void Tick();
 
 	/* @brief : Show sverage fps at window*/
-	void AverageFrame(const HWND& hwnd);
+	void AverageFrame(const void* hwnd);
 
 	/****************************************************************************
 	**                Public Member Variables

@@ -50,8 +50,9 @@ namespace platform::windows
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		HINSTANCE GetInstanceHandle() const noexcept { return _instanceHandle; }
+		HINSTANCE GetWindowsInstanceHandle() const noexcept { return _instanceHandle; }
 
+		void* GetInstanceHandle() const noexcept override { return _instanceHandle; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

@@ -86,7 +86,7 @@ LRESULT CALLBACK PlatformApplication::StaticWindowProcedure(HWND hwnd, UINT mess
 	
 	if (application)
 	{
-		return application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
+		application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
 	}
 	else
 	{
@@ -98,7 +98,7 @@ LRESULT CALLBACK PlatformApplication::StaticWindowProcedure(HWND hwnd, UINT mess
 		if (application)
 		{
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)application);
-			return application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
+			application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
 		}
 	}
 
@@ -167,7 +167,7 @@ bool PlatformApplication::PumpMessage()
 		/*-----------------------------------------------------------------
 				メッセージの変換と割り当て
 		--------------------------------------------------------------------*/
-		if (!TranslateMessage(&_windowMessage)) { return false; }
+		TranslateMessage(&_windowMessage);
 		DispatchMessage(&_windowMessage);
 
 		/*-----------------------------------------------------------------
@@ -210,20 +210,22 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 		--------------------------------------------------------------------*/
 		case WM_ACTIVATE:
 		{
-			return 0; // Non action
+			break;
 		}
 		/*-----------------------------------------------------------------
 		  アクティブなウィンドウとは異なるアプリケーションに属するウィンドウがアクティブ化される時に送られる
 		--------------------------------------------------------------------*/
 		case WM_ACTIVATEAPP:
 		{
-			return 0; // Non action
+			break;
 		}
 		/*-----------------------------------------------------------------
 		  ウィンドウサイズが変わったときに送られる
 		--------------------------------------------------------------------*/
 		case WM_SIZE:
 		{
+			Screen::SetScreenWidth(LOWORD(message.LParam));
+			Screen::SetScreenHeight(HIWORD(message.LParam));
 			switch (message.WParam)
 			{
 				case SIZE_RESTORED:
@@ -247,6 +249,10 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 				{
 					break;
 				}
+				default:
+				{
+					break;
+				}
 			}
 			return 0;
 		}
@@ -263,14 +269,16 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 		--------------------------------------------------------------------*/
 		case WM_DESTROY:
 		{
-			return 0;
-		}
-		case WM_QUIT:
-		{
-			PostQuitMessage(0);
+			std::erase(_windows, window);
+			if (_windows.empty())
+			{
+				PostQuitMessage(0);
+			}
 			return 0;
 		}
 	}
+
+	return DefWindowProc(message.WindowHandle, message.MessageCode, message.WParam, message.LParam); // default window procedure
 }
 
 /****************************************************************************

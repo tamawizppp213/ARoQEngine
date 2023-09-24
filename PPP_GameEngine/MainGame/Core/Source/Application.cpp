@@ -36,7 +36,6 @@ bool Application::StartUp()
 {
 	_gameTimer = std::make_shared<GameTimer>();
 	//if (!CreateMainWindow())                               { return false; }
-	//if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
 	/*---------------------------------------------------------------
 					  Platform Applicationの作成
 	-----------------------------------------------------------------*/
@@ -48,6 +47,8 @@ bool Application::StartUp()
 	CoreWindowDesc windowDesc = {};
 	windowDesc.DesiredScreenWidth  = 1920;
 	windowDesc.DesiredScreenHeight = 1080;
+	windowDesc.DesiredScreenPositionX = 960;
+	windowDesc.DesiredScreenPositionY = 540;
 
 	/*---------------------------------------------------------------
 					  ウィンドウクラスの作成
@@ -56,6 +57,10 @@ bool Application::StartUp()
 	_platformApplication->SetUpWindow(_coreWindow, windowDesc);
 	if (!_coreWindow->Show()) { printf("failed to show window\n"); }
 
+	/*---------------------------------------------------------------
+					  Inputの作成
+	-----------------------------------------------------------------*/
+	if (!_gameInput.Initialize(_platformApplication->GetInstanceHandle(), _coreWindow->GetWindowHandle())) { return false; }
 	return true;
 }
 
@@ -64,7 +69,7 @@ void Application::Run()
 	MSG message = { NULL };
 
 	_gameTimer->Reset();
-	//_gameManager.GameStart(_apiVersion, _gameTimer, _mainWindow, _appInstance);
+	_gameManager.GameStart(_apiVersion, _gameTimer, _coreWindow->GetWindowHandle(), _platformApplication->GetInstanceHandle());
 	/*---------------------------------------------------------------
 						Main Loop
 	-----------------------------------------------------------------*/
@@ -75,9 +80,9 @@ void Application::Run()
 			_gameTimer->Tick();
 			if (!_isApplicationPaused)
 			{
-				_gameTimer->AverageFrame(_mainWindow);
-				//_gameInput.Update();
-				//_gameManager.GameMain();
+				_gameTimer->AverageFrame(_coreWindow->GetWindowHandle());
+				_gameInput.Update();
+				_gameManager.GameMain();
 			}
 		}
 	}

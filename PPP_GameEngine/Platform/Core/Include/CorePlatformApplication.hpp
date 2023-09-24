@@ -56,6 +56,8 @@ namespace platform::core
 		*****************************************************************************/
 		static constexpr wchar_t* APPLICATION_NAME = L"PPP Game Window";
 
+		virtual void* GetInstanceHandle() const noexcept = 0;
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

@@ -63,6 +63,8 @@ namespace platform::core
 
 		virtual bool IsForegroundWindow() const = 0;
 
+		virtual void* GetWindowHandle() const noexcept = 0;
+
 		WindowMode GetWindowMode() const { return _windowMode; };
 
 		bool IsVisible() const { return _isVisible; }

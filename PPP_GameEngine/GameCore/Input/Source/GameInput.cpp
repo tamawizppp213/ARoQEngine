@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //							Implement
 //////////////////////////////////////////////////////////////////////////////////
-bool GameInput::Initialize(HINSTANCE hInstance, HWND hwnd)
+bool GameInput::Initialize(void* hInstance, void* hwnd)
 {
 	bool result = true;
 
@@ -27,9 +27,9 @@ bool GameInput::Initialize(HINSTANCE hInstance, HWND hwnd)
 	_mouse    = std::make_shared<Mouse>();
 	_gamePad  = std::make_shared<GamePad>();
 
-	result = DInputInitialize(hInstance);
-	result = _keyboard->Initialize(_dInput, hInstance, hwnd);
-	result = _mouse   ->Initialize(_dInput, hInstance, hwnd);
+	result = DInputInitialize((HINSTANCE)hInstance);
+	result = _keyboard->Initialize(_dInput, (HINSTANCE)hInstance, (HWND)hwnd);
+	result = _mouse   ->Initialize(_dInput, (HINSTANCE)hInstance, (HWND)hwnd);
 	result = _gamePad ->Initialize();
 
 	return result;

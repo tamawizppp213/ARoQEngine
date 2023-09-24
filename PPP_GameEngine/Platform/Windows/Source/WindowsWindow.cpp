@@ -103,17 +103,17 @@ void CoreWindow::Create(const std::shared_ptr<core::PlatformApplication>& applic
 	--------------------------------------------------------------------*/
 	_hwnd = CreateWindowEx
 	(
-		NULL,//windowExtensionStyle, // Window style
+		windowExtensionStyle, // Window style
 		core::PlatformApplication::APPLICATION_NAME, // Name to register with Windows
 		desc.Title,
-		NULL, //windowDefaultStyle,
+		windowDefaultStyle,
 		windowCenterX, // Center position_X
 		windowCenterY, // Center position_Y
 		windowWidth,   // window width
 		windowHeight,  // window height
 		NULL, // parent window
 		NULL, // menu handler 
-		windowsApplication->GetInstanceHandle(), // instance handler 
+		windowsApplication->GetWindowsInstanceHandle(), // instance handler 
 		windowsApplication.get()  // additional expansion area
 	);
 

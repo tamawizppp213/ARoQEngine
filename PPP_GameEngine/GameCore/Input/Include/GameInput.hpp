@@ -37,7 +37,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	bool Initialize(HINSTANCE hInstance, HWND hwnd);
+	bool Initialize(void* hInstance, void* hwnd);
 	void Update();
 	void Finalize();
 	KeyboardPtr GetKeyboard() { return this->_keyboard; }

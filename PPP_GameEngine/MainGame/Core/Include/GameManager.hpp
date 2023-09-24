@@ -33,7 +33,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void GameStart(rhi::core::APIVersion apiVersion, const std::shared_ptr<GameTimer>& gameTimer, HWND hwnd, HINSTANCE hInstance);
+	void GameStart(rhi::core::APIVersion apiVersion, const std::shared_ptr<GameTimer>& gameTimer, void* hwnd, void* hInstance);
 	void GameMain();
 	void GameEnd();
 

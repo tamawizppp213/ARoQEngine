@@ -110,8 +110,8 @@ namespace platform::core
 		float DesiredScreenWidth      = 0.0f;  // 最初に望ましいとされる幅
 		float DesiredScreenHeight     = 0.0f;  // 最初に望ましいとされる高さ
 		wchar_t* Title                = L"PPP Game Window";
-		bool  HasWindowOSWindowBorder = false; // OSのウィンドウの境界線を使用したい場合はtrue
-		bool  IsVanillaWindow         = false;
+		bool  HasWindowOSWindowBorder = true; // OSのウィンドウの境界線を使用したい場合はtrue
+		bool  IsVanillaWindow         = true;
 		bool  SupportMaximize         = true;  // ウィンドウの最大化をするか  
 		bool  SupportMinimize         = true;  // ウィンドウの最小化をするか
 		bool  SupportResize           = true;  // ウィンドウのリサイズを可能にするか

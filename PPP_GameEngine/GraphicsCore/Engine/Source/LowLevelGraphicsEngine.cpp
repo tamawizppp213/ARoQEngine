@@ -59,9 +59,9 @@ LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
+void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hInstance)
 {
-	_hwnd = hwnd; _hInstance = hInstance; _apiVersion = apiVersion;
+	_apiVersion = apiVersion;
 
 	/*-------------------------------------------------------------------
 	-      Create Instance
@@ -105,7 +105,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	/*-------------------------------------------------------------------
 	-      Set up swapchain
 	---------------------------------------------------------------------*/
-	const core::WindowInfo    windowInfo = core::WindowInfo(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _hwnd, _hInstance);
+	const core::WindowInfo    windowInfo = core::WindowInfo(Screen::GetScreenWidth(), Screen::GetScreenHeight(), hwnd, hInstance);
 	const core::SwapchainDesc swapchainDesc = 
 	{
 		.CommandQueue     = _commandQueues[CommandListType::Graphics],
