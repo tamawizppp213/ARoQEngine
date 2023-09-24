@@ -11,6 +11,8 @@
 #include "MainGame/Core/Include/Application.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "Platform/Core/Include/CorePlatformApplication.hpp"
+#include "Platform/Core/Include/CoreWindow.hpp"
 #include "resource.h"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -19,6 +21,8 @@ static constexpr LPCWSTR CLASS_NAME = L"Game Window";
 static constexpr LPCWSTR GAME_TITLE = L"PPP Engine";
 static constexpr int GAME_WINDOW_WIDTH  = 1920;
 static constexpr int GAME_WINDOW_HEIGHT = 1080;
+
+using namespace platform::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
@@ -31,8 +35,26 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 bool Application::StartUp()
 {
 	_gameTimer = std::make_shared<GameTimer>();
-	if (!CreateMainWindow())                               { return false; }
-	if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
+	//if (!CreateMainWindow())                               { return false; }
+	//if (!_gameInput.Initialize(_appInstance, _mainWindow)) { return false; }
+	/*---------------------------------------------------------------
+					  Platform Applicationの作成
+	-----------------------------------------------------------------*/
+	_platformApplication = PlatformApplication::Create(PlatformType::Windows);
+
+	/*---------------------------------------------------------------
+					  ウィンドウサイズの決定
+	-----------------------------------------------------------------*/
+	CoreWindowDesc windowDesc = {};
+	windowDesc.DesiredScreenWidth  = 1920;
+	windowDesc.DesiredScreenHeight = 1080;
+
+	/*---------------------------------------------------------------
+					  ウィンドウクラスの作成
+	-----------------------------------------------------------------*/
+	_coreWindow          = _platformApplication->MakeWindow();
+	_platformApplication->SetUpWindow(_coreWindow, windowDesc);
+	if (!_coreWindow->Show()) { printf("failed to show window\n"); }
 
 	return true;
 }
@@ -42,25 +64,20 @@ void Application::Run()
 	MSG message = { NULL };
 
 	_gameTimer->Reset();
-	_gameManager.GameStart(_apiVersion, _gameTimer, _mainWindow, _appInstance);
+	//_gameManager.GameStart(_apiVersion, _gameTimer, _mainWindow, _appInstance);
 	/*---------------------------------------------------------------
 						Main Loop
 	-----------------------------------------------------------------*/
-	while (WM_QUIT != message.message)
+	while (!_platformApplication->IsQuit())
 	{
-		if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&message);
-			DispatchMessage(&message);
-		}
-		else
+		if (!_platformApplication->PumpMessage())
 		{
 			_gameTimer->Tick();
 			if (!_isApplicationPaused)
 			{
 				_gameTimer->AverageFrame(_mainWindow);
-				_gameInput.Update();
-				_gameManager.GameMain();
+				//_gameInput.Update();
+				//_gameManager.GameMain();
 			}
 		}
 	}

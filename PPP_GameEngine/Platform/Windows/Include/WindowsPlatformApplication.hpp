@@ -13,7 +13,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Core/Include/CorePlatformApplication.hpp"
-#include <Windows.h>
+#include "../Private/Include/WindowsDeferredMessage.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -38,8 +38,15 @@ namespace platform::windows
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void InitializeWindow(const std::shared_ptr<core::CoreWindow>& window) override;
+		std::shared_ptr<core::CoreWindow> MakeWindow() override;
 
+		void SetUpWindow(const std::shared_ptr<core::CoreWindow>& window, const core::CoreWindowDesc& desc) override;
+
+		/* @brief : メッセージを出します. この関数は仮想キーメッセージが受け取られ, それをメッセージ形式に変換した時にtrueを返します*/
+		bool PumpMessage() override;
+
+		/* @brief : アプリケーションが終了したかを検知します.*/
+		bool IsQuit() const override { return _isApplicationQuited; };
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -50,14 +57,15 @@ namespace platform::windows
 		*****************************************************************************/
 		PlatformApplication();
 
+		~PlatformApplication();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		/* @brief : Event driven windows function*/
-		static LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+		static LRESULT CALLBACK StaticWindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-		static LRESULT WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+		virtual LRESULT ApplicationWindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 		
 		/****************************************************************************
 		**                Protected Member Variables
@@ -70,12 +78,23 @@ namespace platform::windows
 		*****************************************************************************/
 		bool RegisterWindowClass();
 
+		LRESULT ProcessDeferredWindowsMessage(const DeferredMessage& message);
 		
+		void ProcessDeferredEvents();
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		std::shared_ptr<windows::CoreWindow> _window = nullptr;
+		std::vector<std::shared_ptr<windows::CoreWindow>> _windows = {};
 
+		std::vector<DeferredMessage> _messageList = {};
+
+		MSG _windowMessage = { NULL };
+
+		// @brief : メインループの外で実行するときにtrueになります
+		bool _allowedToDeferredMessageProcessing = false;
+
+		//@brief : アプリケーションが終了したときにtrueになる
+		bool _isApplicationQuited = false;
 	};
 }
 #endif

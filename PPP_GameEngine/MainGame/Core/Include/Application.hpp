@@ -19,7 +19,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+namespace platform::core
+{
+	class PlatformApplication;
+	class CoreWindow;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                              Class 
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,6 +36,9 @@
 *****************************************************************************/
 class Application final
 {
+private :
+	using PlatformApplicationPtr = std::shared_ptr<platform::core::PlatformApplication>;
+	using CoreWindowPtr          = std::shared_ptr<platform::core::CoreWindow>;
 public:
 	/****************************************************************************
 	**                Public Function
@@ -69,6 +76,8 @@ private:
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
+	PlatformApplicationPtr _platformApplication = nullptr;
+	CoreWindowPtr          _coreWindow          = nullptr;
 	HINSTANCE  _appInstance = nullptr;
 	HWND       _mainWindow  = nullptr;
 	WNDCLASSEX _windowClass = {};

@@ -40,6 +40,7 @@ namespace platform::windows
 
 		bool OnWindowClosed(const CoreWindowPtr& window) override;
 
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

@@ -357,7 +357,11 @@
     <ClInclude Include="Platform\Core\Include\CoreCursor.hpp" />
     <ClInclude Include="Platform\Core\Include\CorePlatformApplication.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreWindow.hpp" />
+    <ClInclude Include="Platform\Core\Include\CoreWindowMessageHandler.hpp" />
+    <ClInclude Include="Platform\Windows\Include\WindowsWindowsMessageHandler.hpp" />
+    <ClInclude Include="Platform\Windows\Private\Include\WindowsDeferredMessage.hpp" />
     <ClInclude Include="Platform\Windows\Include\WindowsCursor.hpp" />
+    <ClInclude Include="Platform\Windows\Include\WindowsError.hpp" />
     <ClInclude Include="Platform\Windows\Include\WindowsPlatformApplication.hpp" />
     <ClInclude Include="Platform\Windows\Include\WindowsWindow.hpp" />
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHITypeCore.hpp" />
@@ -589,7 +593,11 @@
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\LowLevelGraphicsEngine.cpp" />
+    <ClCompile Include="Platform\Core\Source\CorePlatformApplication.cpp" />
+    <ClCompile Include="Platform\Core\Source\CoreWindow.cpp" />
+    <ClCompile Include="Platform\Core\Source\CoreWindowMessageHandler.cpp" />
     <ClCompile Include="Platform\Windows\Source\WindowsCursor.cpp" />
+    <ClCompile Include="Platform\Windows\Source\WIndowsError.cpp" />
     <ClCompile Include="Platform\Windows\Source\WindowsPlatformApplication.cpp" />
     <ClCompile Include="Platform\Windows\Source\WindowsWindow.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Adapter.cpp" />
@@ -692,6 +700,7 @@
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCapsule.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCircle.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometrySphere.cpp" />
+    <ClCompile Include="Platform\Windows\Source\WindowsWindowMessageHandler.cpp" />
     <ClCompile Include="Pluguins\DDSLoader\dds_loader.cpp" />
   </ItemGroup>
   <ItemGroup>

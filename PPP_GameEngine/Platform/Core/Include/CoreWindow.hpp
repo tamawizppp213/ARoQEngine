@@ -39,20 +39,29 @@ namespace platform::core
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : native window should make itself visible*/
-		virtual void Show() = 0;
+		virtual bool Show() = 0;
 
 		/* @brief : native window should hide itself */
-		virtual void Hide() = 0;
+		virtual bool Hide() = 0;
 
 		/* @brief :  Native window should implement this function by performing the equivalent of the Win32 minimize-to-taskbar operation */
-		virtual void Minimize() = 0;
+		virtual bool Minimize() = 0;
 
 		/* @brief : Native window should implement this function by performing the equivalent of the Win32 maximize operation */
-		virtual void Maximize() = 0;
+		virtual bool Maximize() = 0;
+
+		/* @brief : Restore the window info when the window maximize and minimize*/
+		virtual bool ReStore() = 0;
+
+		/* @brief : Destroy the window*/
+		virtual bool Destroy() = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/* @brief : return true if the window is in the foreground*/
+		virtual bool IsFullscreenSupported() const = 0;
 
+		virtual bool IsForegroundWindow() const = 0;
 
 		WindowMode GetWindowMode() const { return _windowMode; };
 
@@ -68,6 +77,9 @@ namespace platform::core
 		~CoreWindow() = default;
 
 		CoreWindow(const WindowMode windowMode) : _windowMode(windowMode) {};
+
+		CoreWindow(const CoreWindowDesc& desc);
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -78,7 +90,9 @@ namespace platform::core
 		*****************************************************************************/
 		WindowMode _windowMode = WindowMode::Windowed;
 
-		bool _isVisible = true;
+		ActivationPolicy _activationPolicy = ActivationPolicy::FirstOnlyShow;
+
+		bool _isVisible = false;
 	};
 }
 #endif

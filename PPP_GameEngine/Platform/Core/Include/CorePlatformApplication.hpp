@@ -24,15 +24,16 @@
 
 namespace platform::core
 {
+	class CoreWindowMessageHandler;
 	class CoreWindow;
 
 	/****************************************************************************
-	*				  			    Class
+	*				  			    PlatformApplication
 	*************************************************************************//**
 	*  @class     Class
 	*  @brief     temp
 	*****************************************************************************/
-	class PlatformApplication : public NonCopyable, std::enable_shared_from_this<PlatformApplication>
+	class PlatformApplication : public NonCopyable, public std::enable_shared_from_this<PlatformApplication>
 	{
 	public:
 		/****************************************************************************
@@ -40,7 +41,15 @@ namespace platform::core
 		*****************************************************************************/
 		static std::shared_ptr<PlatformApplication> Create(const core::PlatformType type);
 
-		virtual void InitializeWindow(const std::shared_ptr<CoreWindow>& window) = 0;
+		virtual std::shared_ptr<CoreWindow> MakeWindow() = 0;
+		
+		virtual void SetUpWindow(const std::shared_ptr<CoreWindow>& window, const CoreWindowDesc& desc) = 0;
+
+		/* @brief : This function pumps window message, when you are returned the true, you accept the message. */
+		virtual bool PumpMessage() = 0;
+
+		/* @brief : Is platform application is quited.*/
+		virtual bool IsQuit() const = 0;
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -52,6 +61,7 @@ namespace platform::core
 		*****************************************************************************/
 		PlatformApplication() = default;
 
+		virtual ~PlatformApplication() = default;
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -60,6 +70,7 @@ namespace platform::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		std::shared_ptr<CoreWindowMessageHandler> _messageHandler = nullptr;
 	};
 }
 #endif

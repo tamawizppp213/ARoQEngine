@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   WindowsError.cpp
-///             @brief  Log windows error code and error sentence for debugging
+//              @file   CoreWindow.cpp
+///             @brief  window 
 ///             @author Toide Yutaro
 ///             @date   2023_09_13
 //////////////////////////////////////////////////////////////////////////////////
@@ -8,9 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../../Core/Include/CorePlatformApplication.hpp"
-#include "../../Core/Include/CoreWindowMessageHandler.hpp"
-#include "../../Windows/Include/WindowsPlatformApplication.hpp"
+#include "../../Core/Include/CoreWindow.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -20,22 +18,10 @@ using namespace platform;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 /////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<PlatformApplication> PlatformApplication::Create(const PlatformType type)
+#pragma region Constructor and Destructor
+CoreWindow::CoreWindow(const CoreWindowDesc& desc)
 {
-	switch (type)
-	{
-		case PlatformType::Windows:
-		{
-			#ifdef _WIN32
-			return std::make_shared<windows::PlatformApplication>();
-			#endif
-		}
-		default:
-		{
-			throw std::runtime_error("Unknown platform");
-		}
-	}
-
-	OutputDebugStringA("platform application is nullptr");
-	return nullptr;
+	_activationPolicy = desc.ActivationPolicy;
+	_windowMode       = desc.WindowMode;
 }
+#pragma endregion Constructor and Destructor

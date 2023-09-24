@@ -24,6 +24,7 @@ void ErrorLogger::Log(HWND hwnd)
 {
 	const std::uint32_t errorCode = ::GetLastError();
 
+	if (errorCode == 0) { return; }
 	LPVOID messageBuffer = NULL;
 	FormatMessage
 	(
@@ -36,4 +37,5 @@ void ErrorLogger::Log(HWND hwnd)
 	MessageBox(hwnd, (LPCTSTR)messageBuffer, NULL, MB_OK | MB_ICONINFORMATION);
 	LocalFree(messageBuffer);
 }
+
 #endif
