@@ -27,10 +27,10 @@ namespace platform::windows
 {
 	class CoreWindow;
 	/****************************************************************************
-	*				  			    Class
+	*				  			    PlatformApplication
 	*************************************************************************//**
-	*  @class     Class
-	*  @brief     temp
+	*  @class     PlatformApplication
+	*  @brief     ウィンドウを管理し, メッセージループを管理するクラス
 	*****************************************************************************/
 	class PlatformApplication : public platform::core::PlatformApplication
 	{
@@ -38,8 +38,10 @@ namespace platform::windows
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/* @brief : 新規のウィンドウインスタンスを作成します. ここではセットアップは行いません*/
 		std::shared_ptr<core::CoreWindow> MakeWindow() override;
 
+		/* @brief : 指定のウィンドウを実際に作成するまで行います. セットアップも行います*/
 		void SetUpWindow(const std::shared_ptr<core::CoreWindow>& window, const core::CoreWindowDesc& desc) override;
 
 		/* @brief : メッセージを出します. この関数は仮想キーメッセージが受け取られ, それをメッセージ形式に変換した時にtrueを返します*/

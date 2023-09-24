@@ -43,7 +43,11 @@ namespace platform::core
 		/* @brief : This function is called by window activation changed*/
 		virtual bool OnWindowActivationChanged(const CoreWindowPtr& window, const core::ActivationType type) = 0;
 
+		/* @brief : This function is called by window closed*/
 		virtual bool OnWindowClosed(const CoreWindowPtr& window) = 0;
+
+		/* @brief : This function is called by the window size changed*/
+		virtual bool OnSizeChanged(const std::uint32_t width, const std::uint32_t height) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

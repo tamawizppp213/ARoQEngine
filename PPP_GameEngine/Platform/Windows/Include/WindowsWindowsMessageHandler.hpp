@@ -40,7 +40,7 @@ namespace platform::windows
 
 		bool OnWindowClosed(const CoreWindowPtr& window) override;
 
-
+		bool OnSizeChanged(const std::uint32_t width, const std::uint32_t height) override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

@@ -30,8 +30,8 @@ namespace platform::core
 	/****************************************************************************
 	*				  			    PlatformApplication
 	*************************************************************************//**
-	*  @class     Class
-	*  @brief     temp
+	*  @class     PlatformApplication
+	*  @brief     This class is the window list manager.
 	*****************************************************************************/
 	class PlatformApplication : public NonCopyable, public std::enable_shared_from_this<PlatformApplication>
 	{

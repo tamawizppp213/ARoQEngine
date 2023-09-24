@@ -34,7 +34,7 @@ namespace platform::core
 
 	};
 
-
+#pragma region Mouse
 	/****************************************************************************
 	*				  			    CursorType
 	*************************************************************************//**
@@ -70,6 +70,9 @@ namespace platform::core
 		ClickActivate, // マウスクリックでアクティブ化
 	};
 
+#pragma endregion Mouse
+
+#pragma region Window
 	/****************************************************************************
 	*				  			  ActivationPolicy
 	*************************************************************************//**
@@ -117,9 +120,12 @@ namespace platform::core
 		bool  SupportResize           = true;  // ウィンドウのリサイズを可能にするか
 		bool  AppearsInTaskbar        = false; // タスクバーにウィンドウを表示するか
 		bool  UseTouchFeedback        = false; // uiボタン等のタッチ入力を可能にするか
+		bool  ShouldPreserveAspectRatio = false; // アスペクト比を一定にするか
 		ActivationPolicy ActivationPolicy = ActivationPolicy::FirstOnlyShow;
 		WindowMode       WindowMode       = WindowMode::Windowed;
 	};
+
+#pragma endregion Window
 }
 
 #endif

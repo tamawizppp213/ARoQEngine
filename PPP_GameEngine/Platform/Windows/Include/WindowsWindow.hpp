@@ -26,10 +26,10 @@
 namespace platform::windows
 {
 	/****************************************************************************
-	*				  			    Class
+	*				  			    CoreWindow
 	*************************************************************************//**
-	*  @class     Class
-	*  @brief     temp
+	*  @class     CoreWindow
+	*  @brief     描画用のウィンドウを作成するクラス
 	*****************************************************************************/
 	class CoreWindow : public platform::core::CoreWindow
 	{
@@ -45,8 +45,10 @@ namespace platform::windows
 		/* @brief : Visible出会った場合にウィンドウを隠します*/
 		bool Hide() override;
 
+		/* @brief : ウィンドウを最小化します*/
 		bool Minimize() override;
 
+		/* @brief : ウィンドウを最大化します.*/
 		bool Maximize() override;
 
 		/* @brief : ウィンドウをアクティブにして表示する。最小化・最大化されている場合は元のサイズと位置に復元される.*/
@@ -59,15 +61,26 @@ namespace platform::windows
 		*****************************************************************************/
 		void* GetWindowHandle() const noexcept override { return _hwnd; }
 
+		float GetAspectRatio() const override { return _aspectRatio;  }
+
 		HWND GetHWND() const { return _hwnd; }
 
 		void SetHWND(const HWND hwnd) { _hwnd = hwnd; }
+
+		/* @brief : キャプションにテキストを追加します. */
+		void SetText(const wchar_t* const text) override { SetWindowText(_hwnd, text); }
 
 		/* @brief : 現在作業中のウィンドウであるかを調べます. */
 		bool IsForegroundWindow() const override;
 
 		/* @brief : フルスクリーンをサポートしているかを調べます. */
 		bool IsFullscreenSupported() const override;
+
+		// @brief : 最大化されているかを調べます
+		bool IsMaximized() const override { return !!::IsZoomed(_hwnd); }
+
+		// @brief : 最小化されているかを調べます (アイコン状態になっているか)
+		bool IsMinimized() const override { return !!::IsIconic(_hwnd); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -82,6 +95,8 @@ namespace platform::windows
 		*****************************************************************************/
 		/* @brief : Window handle*/
 		HWND _hwnd = NULL;
+
+		float _aspectRatio = 0.0f;
 
 		bool _isFirstTimeVisible = true;
 		bool _initiallyMinimized = false;

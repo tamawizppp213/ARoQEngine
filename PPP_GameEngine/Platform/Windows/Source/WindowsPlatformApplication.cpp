@@ -13,7 +13,6 @@
 #include "../../Windows/Include/WindowsWindowsMessageHandler.hpp"
 #include "../../Windows/Include/WindowsWindow.hpp"
 #include "../../Core/Include/CoreCommonState.hpp"
-#include "GameUtility/Base/Include/Screen.hpp"
 #include <cassert>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -134,11 +133,34 @@ bool PlatformApplication::RegisterWindowClass()
 	return true;
 }
 
+/****************************************************************************
+*                     MakeWindow
+*************************************************************************//**
+*  @fn        std::shared_ptr<core::CoreWindow> PlatformApplication::MakeWindow()
+*
+*  @brief     新規のウィンドウインスタンスを作成します. ここではセットアップは行いません
+*
+*  @param[in] void
+*
+*  @return    std::shared_ptr<core::CoreWindow>
+*****************************************************************************/
 std::shared_ptr<core::CoreWindow> PlatformApplication::MakeWindow()
 {
 	return std::make_shared<windows::CoreWindow>();
 }
 
+/****************************************************************************
+*                     SetUpWindow
+*************************************************************************//**
+*  @fn        void PlatformApplication::SetUpWindow(const std::shared_ptr<core::CoreWindow>& window, const core::CoreWindowDesc& desc)
+*
+*  @brief     指定のウィンドウを実際に作成するまで行います. セットアップも行います
+*
+*  @param[in] const std::shared_ptr<core::CoreWindow>& window, 特定のウィンドウ
+*  @param[in] const core:CoreWidowDesc& desc, 設定
+*
+*  @return    void
+*****************************************************************************/
 void PlatformApplication::SetUpWindow(const std::shared_ptr<core::CoreWindow>& window, const core::CoreWindowDesc& desc)
 {
 	assert(("window is nullptr", window != nullptr));
@@ -184,6 +206,21 @@ bool PlatformApplication::PumpMessage()
 		return false;
 	}
 }
+
+/****************************************************************************
+*                     ApplicationWindowMessageProcedure
+*************************************************************************//**
+*  @fn        LRESULT PlatformApplication::ApplicationWindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+*
+*  @brief     メンバ関数で呼び出せるようにした (StaticWindowProcedureの代わり)
+*
+*  @param[in] HWND windowHandle
+*  @param[in] UINT messageCode
+*  @param[in] WPARAM wParam
+*  @param[in] LPARAM lParam
+*
+*  @return    LRESULT
+*****************************************************************************/
 LRESULT PlatformApplication::ApplicationWindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (_allowedToDeferredMessageProcessing)
@@ -202,6 +239,8 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 {
 	const auto window      = FindWindowByHWND(_windows, message.WindowHandle);
 	const auto messageCode = message.MessageCode;
+
+	if (window == nullptr) { return 0; }
 
 	switch (messageCode)
 	{
@@ -224,8 +263,17 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 		--------------------------------------------------------------------*/
 		case WM_SIZE:
 		{
-			Screen::SetScreenWidth(LOWORD(message.LParam));
-			Screen::SetScreenHeight(HIWORD(message.LParam));
+			/*-----------------------------------------------------------------
+			   fullscreen window rendering size should be determined by the application. 
+			   Do not adjust based on WM_SIZE message.
+			--------------------------------------------------------------------*/
+			if (window->GetWindowMode() == core::WindowMode::FullScreen)
+			{
+				return 0;
+			}
+
+			_messageHandler->OnSizeChanged(LOWORD(message.LParam), HIWORD(message.LParam));
+
 			switch (message.WParam)
 			{
 				case SIZE_RESTORED:
@@ -257,11 +305,25 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 			return 0;
 		}
 		/*-----------------------------------------------------------------
+		  ウィンドウサイズを変更しているウィンドウに送信
+		--------------------------------------------------------------------*/
+		case WM_SIZING:
+		{
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+		  DPIが変化した時に送信
+		--------------------------------------------------------------------*/
+		case WM_DPICHANGED:
+		{
+			return 0;
+		}
+		/*-----------------------------------------------------------------
 			WM_CLOSE is sent when the window is closed
 		--------------------------------------------------------------------*/
 		case WM_CLOSE:
 		{
-			if(window){ _messageHandler->OnWindowClosed(window); }
+			_messageHandler->OnWindowClosed(window);
 			return 0;
 		}
 		/*-----------------------------------------------------------------

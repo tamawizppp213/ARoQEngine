@@ -11,6 +11,7 @@
 #ifdef _WIN32
 #include "../../Windows/Include/WindowsWindowsMessageHandler.hpp"
 #include "../../Windows/Include/WindowsWindow.hpp"
+#include "GameUtility/Base/Include/Screen.hpp"
 #include <cassert>
 #include <stdexcept>
 
@@ -45,6 +46,13 @@ bool CoreWindowMessageHandler::OnWindowActivationChanged(const CoreWindowPtr& wi
 bool CoreWindowMessageHandler::OnWindowClosed(const CoreWindowPtr& window)
 {
 	return window->Destroy();
+}
+
+bool CoreWindowMessageHandler::OnSizeChanged(const std::uint32_t width, const std::uint32_t height)
+{
+	Screen::SetScreenWidth(width);
+	Screen::SetScreenHeight(height);
+	return true;
 }
 #pragma endregion Main Function
 #endif

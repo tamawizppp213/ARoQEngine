@@ -27,10 +27,10 @@ namespace platform::core
 	class PlatformApplication;
 
 	/****************************************************************************
-	*				  			    Class
+	*				  			    CoreWindow
 	*************************************************************************//**
-	*  @class     Class
-	*  @brief     temp
+	*  @class     CoreWindow
+	*  @brief     This class is used to draw the objects
 	*****************************************************************************/
 	class CoreWindow : public NonCopyable
 	{
@@ -63,13 +63,22 @@ namespace platform::core
 
 		virtual bool IsForegroundWindow() const = 0;
 
+		virtual bool IsMaximized() const = 0;
+
+		virtual bool IsMinimized() const = 0;
+
 		virtual void* GetWindowHandle() const noexcept = 0;
+
+		virtual float GetAspectRatio() const = 0;
 
 		WindowMode GetWindowMode() const { return _windowMode; };
 
+		/* @brief : IsVisible the window*/
 		bool IsVisible() const { return _isVisible; }
 
 		void SetWindowMode(const WindowMode windowMode) { _windowMode = windowMode; }
+
+		virtual void SetText(const wchar_t* const text) = 0;
 
 		/****************************************************************************
 		**                Constructor and Destructor

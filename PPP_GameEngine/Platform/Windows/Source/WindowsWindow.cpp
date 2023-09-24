@@ -272,8 +272,17 @@ bool CoreWindow::Maximize()
 bool CoreWindow::ReStore()
 {
 	// ウィンドウをアクティブにして表示する。最小化・最大化されている場合は元のサイズと位置に復元される.
-	::ShowWindow(_hwnd, SW_RESTORE);
-	return ErrorLogger::Succeed();
+	if (_isFirstTimeVisible)
+	{
+		_initiallyMaximized = false;
+		_initiallyMinimized = false;
+		return true;
+	}
+	else
+	{
+		::ShowWindow(_hwnd, SW_RESTORE);
+		return ErrorLogger::Succeed();
+	}
 }
 
 /****************************************************************************
