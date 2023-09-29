@@ -180,6 +180,9 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Public\Include\EngineProfiles.hpp" />
+    <ClInclude Include="Engine\Public\Include\EngineThreadManager.hpp" />
+    <ClInclude Include="Engine\Public\Include\PPPEngine.hpp" />
     <ClInclude Include="GameCore\Audio\Core\Include\AudioSubmix.hpp" />
     <ClInclude Include="GameCore\Audio\Effect\Include\AudioFader.hpp" />
     <ClInclude Include="GameCore\Audio\Effect\Include\AudioIEffect.hpp" />
@@ -221,7 +224,10 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
-    <ClInclude Include="GameUtility\Base\Include\ThreadPool.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\Assert.hpp" />
+    <ClInclude Include="GameUtility\Thread\Public\Include\GUSemaphore.hpp" />
+    <ClInclude Include="GameUtility\Thread\Public\Include\GUThread.hpp" />
+    <ClInclude Include="GameUtility\Thread\Public\Include\ThreadPool.hpp" />
     <ClInclude Include="GameUtility\File\Include\BitConverter.hpp" />
     <ClInclude Include="GameCore\Network\Public\Include\IPAddress.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\MemoryStream.hpp" />
@@ -503,6 +509,8 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Public\Source\EngineProfiles.cpp" />
+    <ClCompile Include="Engine\Public\Source\PPPEngine.cpp" />
     <ClCompile Include="GameCore\Audio\Core\Source\AudioClip.cpp" />
     <ClCompile Include="GameCore\Audio\Core\Source\AudioClipCache.cpp" />
     <ClCompile Include="GameCore\Audio\Core\Source\AudioMaster.cpp" />
@@ -538,7 +546,9 @@
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UISlider.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIText.cpp" />
-    <ClCompile Include="GameUtility\Base\Source\ThreadPool.cpp" />
+    <ClCompile Include="GameUtility\Thread\Public\Source\GUSemaphore.cpp" />
+    <ClCompile Include="GameUtility\Thread\Public\Source\GUThread.cpp" />
+    <ClCompile Include="GameUtility\Thread\Public\Source\ThreadPool.cpp" />
     <ClCompile Include="GameUtility\File\Source\BitConverter.cpp" />
     <ClCompile Include="GameCore\Network\Public\Source\IPAddress.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\MemoryStream.cpp" />

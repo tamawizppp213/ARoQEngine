@@ -13,6 +13,7 @@
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "Platform/Core/Include/CorePlatformApplication.hpp"
 #include "Platform/Core/Include/CoreWindow.hpp"
+#include "GameUtility/Base/Include/ThreadPool.hpp"
 #include "resource.h"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

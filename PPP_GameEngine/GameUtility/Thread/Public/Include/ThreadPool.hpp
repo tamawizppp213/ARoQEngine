@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "ClassUtility.hpp"
+#include "../../../Base/Include/ClassUtility.hpp"
 #include <functional>
 #include <thread>
 #include <memory>
@@ -21,6 +21,7 @@
 #include <mutex>
 #include <queue>
 #include <future>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -45,7 +46,7 @@ public:
 	template<typename Function, typename... Arguments, typename Return = std::invoke_result_t<std::decay_t<Function>, std::decay_t<Arguments>...>>
 	std::future<Return> Submit(Function&& function, const Arguments&&... arguments)
 	{
-		// packaged taskは, 別スレッドでの処理完了を町, その処理結果を取得する非同期処理を実現するためのクラス. 
+		// packaged taskは, 別スレッドでの処理完了を待ち, その処理結果を取得する非同期処理を実現するためのクラス. 
 		auto task = std::make_shared<std::packaged_task<Return()>>([function, arguments...]()
 		{
 			return function(arguments...);
