@@ -33,14 +33,13 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void GameStart(const engine::setting::StartUpParameters& parameters, const std::shared_ptr<GameTimer>& gameTimer);
+	void GameStart(const engine::setting::StartUpParameters& parameters);
 	void GameMain();
 	void GameEnd();
 
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	void SetHWND(HWND hwnd);
 	std::shared_ptr<PPPEngine> GetEngine() const { return _engine; }
 	std::shared_ptr<LowLevelGraphicsEngine> GetGraphicsEngine() { return _engine->GetLowLevelGraphics(); }
 	/****************************************************************************

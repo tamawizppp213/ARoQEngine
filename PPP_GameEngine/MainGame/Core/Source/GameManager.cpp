@@ -19,11 +19,11 @@ using namespace gc::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-void GameManager::GameStart(const engine::setting::StartUpParameters& parameters, const std::shared_ptr<GameTimer>& gameTimer)
+void GameManager::GameStart(const engine::setting::StartUpParameters& parameters)
 {
 	_engine = std::make_shared<PPPEngine>();
 	_engine->StartUp(parameters);
-	_sceneManager.StartUp(_engine->GetLowLevelGraphics(), gameTimer);
+	_sceneManager.StartUp(_engine->GetLowLevelGraphics(), _engine->GetMainThreadTimer());
 }
 
 void GameManager::GameMain()
@@ -38,9 +38,4 @@ void GameManager::GameEnd()
 	_sceneManager.ShutDown();
 	GameObject::ClearAllGameObjects();
 	_engine->ShutDown();
-}
-
-void GameManager::SetHWND(HWND hwnd)
-{
-	_mainWindow = hwnd;
 }

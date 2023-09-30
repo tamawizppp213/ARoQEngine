@@ -30,8 +30,6 @@ using namespace engine::setting;
 //////////////////////////////////////////////////////////////////////////////////
 bool Application::StartUp()
 {
-	_gameTimer = std::make_shared<GameTimer>();
-	
 	StartUpParameters engineParameter = {};
 	engineParameter.WindowSettings.DesiredScreenWidth  = 1920;
 	engineParameter.WindowSettings.DesiredScreenHeight = 1080;
@@ -39,38 +37,17 @@ bool Application::StartUp()
 	engineParameter.WindowSettings.DesiredScreenPositionY  = 540;
 	engineParameter.GraphicsSettings.APIversion            = _apiVersion;
 
-	_gameManager.GameStart(engineParameter, _gameTimer);
+	_gameManager.GameStart(engineParameter);
 	return true;
 }
 
 void Application::Run()
 {
-	const auto engine = _gameManager.GetEngine();
-
-	MSG message = { NULL };
-
-	_gameTimer->Reset();
-	/*---------------------------------------------------------------
-						Main Loop
-	-----------------------------------------------------------------*/
-	while (!engine->GetPlatformApplication()->IsQuit())
-	{
-		if (!engine->GetPlatformApplication()->PumpMessage())
-		{
-			_gameTimer->Tick();
-			if (!_isApplicationPaused)
-			{
-				_gameTimer->AverageFrame(engine->GetWindow()->GetWindowHandle());
-				_gameInput.Update();
-				_gameManager.GameMain();
-			}
-		}
-	}
+	_gameManager.GetEngine()->ExecuteMainThread();
 }
 
 void Application::ShutDown()
 {
-	_gameInput.Finalize();
 	_gameManager.GameEnd();
 }
 

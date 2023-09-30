@@ -19,6 +19,11 @@
 
 // input
 #include "GameCore/Input/Include/GameInput.hpp"
+
+// timer
+#include "GameUtility/Base/Include/GameTimer.hpp"
+
+#include "MainGame/Core/Include/GameManager.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +41,11 @@ using namespace platform::core;
 #pragma region Main Function
 void PPPEngine::StartUp(const StartUpParameters& setting)
 {
+	/*---------------------------------------------------------------
+					  Timer
+	-----------------------------------------------------------------*/
+	_mainThreadTimer = std::make_shared<GameTimer>();
+
 	/*---------------------------------------------------------------
 					  Platform ApplicationÇÃçÏê¨
 	-----------------------------------------------------------------*/
@@ -66,6 +76,26 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 	_engineThreadManager = std::make_unique<EngineThreadManager>();
 }
 
+void PPPEngine::ExecuteMainThread()
+{
+	_mainThreadTimer->Reset();
+	/*---------------------------------------------------------------
+						Main Loop
+	-----------------------------------------------------------------*/
+	while (!_platformApplication->IsQuit())
+	{
+		if (!_platformApplication->PumpMessage())
+		{
+			_mainThreadTimer->Tick();
+			if (!_isApplicationPaused)
+			{
+				_mainThreadTimer->AverageFrame(_mainWindow->GetWindowHandle());
+				GameInput::Instance().Update();
+				GameManager::Instance().GameMain(); // ç°å„ïœçXÇµÇ‹Ç∑. 
+			}
+		}
+	}
+}
 
 void PPPEngine::ShutDown()
 {
