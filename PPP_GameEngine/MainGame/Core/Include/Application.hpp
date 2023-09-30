@@ -14,16 +14,12 @@
 #include "GameUtility/Base/Include/GameTimer.hpp"
 #include "GameCore/Input/Include/GameInput.hpp"
 #include "GameManager.hpp"
-#include <Windows.h>
+
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace platform::core
-{
-	class PlatformApplication;
-	class CoreWindow;
-}
+// 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Class 
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,9 +32,6 @@ namespace platform::core
 *****************************************************************************/
 class Application final
 {
-private :
-	using PlatformApplicationPtr = std::shared_ptr<platform::core::PlatformApplication>;
-	using CoreWindowPtr          = std::shared_ptr<platform::core::CoreWindow>;
 public:
 	/****************************************************************************
 	**                Public Function
@@ -47,7 +40,6 @@ public:
 	void Run();
 	void ShutDown();
 
-	LRESULT WindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
@@ -69,18 +61,12 @@ private:
 	**                Private Function
 	*****************************************************************************/
 	Application () = default;
-	~Application() = default;
-	bool CreateMainWindow();
 	
-	LRESULT ExecuteWindowsCommand(WPARAM wParam);
+	~Application() = default;
+
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
-	PlatformApplicationPtr _platformApplication = nullptr;
-	CoreWindowPtr          _coreWindow          = nullptr;
-	HINSTANCE  _appInstance = nullptr;
-	HWND       _mainWindow  = nullptr;
-	WNDCLASSEX _windowClass = {};
 	std::shared_ptr<GameTimer> _gameTimer = nullptr;
 	GameInput& _gameInput             = GameInput::Instance();
 	GameManager& _gameManager         = GameManager::Instance();

@@ -124,7 +124,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Include;$(VK_SDK_PATH)\Lib;$(VK_SDK_PATH)\include;$(VK_SDK_PATH)\Include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -156,7 +156,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Include;$(VK_SDK_PATH)\Lib;;$(VK_SDK_PATH)\Include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -227,7 +227,7 @@
     <ClInclude Include="GameUtility\Base\Include\Assert.hpp" />
     <ClInclude Include="GameUtility\Thread\Public\Include\GUSemaphore.hpp" />
     <ClInclude Include="GameUtility\Thread\Public\Include\GUThread.hpp" />
-    <ClInclude Include="GameUtility\Thread\Public\Include\ThreadPool.hpp" />
+    <ClInclude Include="GameUtility\Thread\Public\Include\GUThreadPool.hpp" />
     <ClInclude Include="GameUtility\File\Include\BitConverter.hpp" />
     <ClInclude Include="GameCore\Network\Public\Include\IPAddress.hpp" />
     <ClInclude Include="GameCore\Network\Private\Include\MemoryStream.hpp" />
@@ -510,6 +510,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Public\Source\EngineProfiles.cpp" />
+    <ClCompile Include="Engine\Public\Source\EngineThreadManager.cpp" />
     <ClCompile Include="Engine\Public\Source\PPPEngine.cpp" />
     <ClCompile Include="GameCore\Audio\Core\Source\AudioClip.cpp" />
     <ClCompile Include="GameCore\Audio\Core\Source\AudioClipCache.cpp" />
@@ -548,7 +549,7 @@
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIText.cpp" />
     <ClCompile Include="GameUtility\Thread\Public\Source\GUSemaphore.cpp" />
     <ClCompile Include="GameUtility\Thread\Public\Source\GUThread.cpp" />
-    <ClCompile Include="GameUtility\Thread\Public\Source\ThreadPool.cpp" />
+    <ClCompile Include="GameUtility\Thread\Public\Source\GUThreadPool.cpp" />
     <ClCompile Include="GameUtility\File\Source\BitConverter.cpp" />
     <ClCompile Include="GameCore\Network\Public\Source\IPAddress.cpp" />
     <ClCompile Include="GameCore\Network\Private\Source\MemoryStream.cpp" />

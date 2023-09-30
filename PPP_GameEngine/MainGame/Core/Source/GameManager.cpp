@@ -19,11 +19,11 @@ using namespace gc::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-void GameManager::GameStart(APIVersion apiVersion, const std::shared_ptr<GameTimer>& gameTimer, void* hwnd, void* hInstance)
+void GameManager::GameStart(const engine::setting::StartUpParameters& parameters, const std::shared_ptr<GameTimer>& gameTimer)
 {
-	_engine = std::make_shared<LowLevelGraphicsEngine>();
-	_engine->StartUp(apiVersion, hwnd, hInstance);
-	_sceneManager.StartUp(_engine, gameTimer);
+	_engine = std::make_shared<PPPEngine>();
+	_engine->StartUp(parameters);
+	_sceneManager.StartUp(_engine->GetLowLevelGraphics(), gameTimer);
 }
 
 void GameManager::GameMain()

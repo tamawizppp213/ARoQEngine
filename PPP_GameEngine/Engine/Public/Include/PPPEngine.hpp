@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "EngineProfiles.hpp"
+#include "EngineThreadManager.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,7 +23,6 @@ class LowLevelGraphicsEngine;
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-
 
 /****************************************************************************
 *				  			    PPPEngine
@@ -35,6 +35,7 @@ class PPPEngine : public NonCopyable
 protected:
 	using PlatformApplicationPtr = std::shared_ptr<platform::core::PlatformApplication>;
 	using CoreWindowPtr          = std::shared_ptr<platform::core::CoreWindow>;
+	using EngineThreadManagerPtr = std::shared_ptr<engine::core::EngineThreadManager>;
 	using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
 public:
 	/****************************************************************************
@@ -42,14 +43,15 @@ public:
 	*****************************************************************************/
 	void StartUp(const engine::setting::StartUpParameters& setting);
 
-
-
 	void ShutDown();
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
 	LowLevelGraphicsEnginePtr GetLowLevelGraphics() const noexcept { return _graphicsEngine; }
 	
+	PlatformApplicationPtr GetPlatformApplication() const noexcept { return _platformApplication; }
+
+	CoreWindowPtr GetWindow() const noexcept { return _mainWindow; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -73,6 +75,9 @@ protected:
 
 	/* @brief : 描画用の低レイヤー側のエンジン*/
 	LowLevelGraphicsEnginePtr _graphicsEngine = nullptr;
+
+	/* @brief : エンジンのスレッドを管理するクラス*/
+	EngineThreadManagerPtr _engineThreadManager = nullptr;
 };
 
 #endif

@@ -1,37 +1,39 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   PPPEngine.hpp
-///             @brief  Engine
+//              @file   PPPEngine.cpp
+///             @brief  各分野のエンジンをまとめ, スレッドを管理するクラス
 ///             @author Toide Yutaro
 ///             @date   2023_09_24
 //////////////////////////////////////////////////////////////////////////////////
-#pragma once
-#ifndef PPP_ENGINE_PROFILES_HPP
-#define PPP_ENGINE_PROFILES_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "Platform/Core/Include/CoreWindow.hpp"
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
+#include "../Include/EngineThreadManager.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+using namespace engine::core;
+using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
-//                               Class
+//                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-
-namespace engine::setting
+#pragma region Constructor and Destructor
+EngineThreadManager::EngineThreadManager()
 {
-	struct GraphicsSettings
-	{
-		rhi::core::APIVersion APIversion;
-	};
+	_threadPools.resize(static_cast<int>(ThreadPoolType::CountOf));
 
-	struct StartUpParameters
-	{
-		platform::core::CoreWindowDesc WindowSettings = {};
-		GraphicsSettings GraphicsSettings = {};
-	};
+	_threadPools[(int)ThreadPoolType::RenderMain] = std::make_shared<ThreadPool>(1);
+	_threadPools[(int)ThreadPoolType::UpdateMain] = std::make_shared<ThreadPool>(1);
 }
-#endif
+
+EngineThreadManager::~EngineThreadManager()
+{
+	_threadPools.clear();
+	_threadPools.shrink_to_fit();
+}
+#pragma endregion Constructor and Destructor
+
+#pragma region Main Function
+
+#pragma endregion Main Function

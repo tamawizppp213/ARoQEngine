@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "SceneManager.hpp"
-#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "Engine/Public/Include/PPPEngine.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void GameStart(rhi::core::APIVersion apiVersion, const std::shared_ptr<GameTimer>& gameTimer, void* hwnd, void* hInstance);
+	void GameStart(const engine::setting::StartUpParameters& parameters, const std::shared_ptr<GameTimer>& gameTimer);
 	void GameMain();
 	void GameEnd();
 
@@ -41,7 +41,8 @@ public:
 	**                Public Member Variables
 	*****************************************************************************/
 	void SetHWND(HWND hwnd);
-	std::shared_ptr<LowLevelGraphicsEngine> GetGraphicsEngine() { return _engine; }
+	std::shared_ptr<PPPEngine> GetEngine() const { return _engine; }
+	std::shared_ptr<LowLevelGraphicsEngine> GetGraphicsEngine() { return _engine->GetLowLevelGraphics(); }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -71,7 +72,7 @@ private:
 	**                Private Member Variables
 	*****************************************************************************/
 	SceneManager& _sceneManager = SceneManager::Instance();
-	std::shared_ptr<LowLevelGraphicsEngine> _engine;
+	std::shared_ptr<PPPEngine> _engine = nullptr;
 	HWND _mainWindow = nullptr;
 };
 #endif

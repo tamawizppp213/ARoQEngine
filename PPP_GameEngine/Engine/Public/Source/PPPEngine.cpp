@@ -23,6 +23,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace engine::setting;
+using namespace engine::core;
 using namespace platform::core;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -58,18 +59,24 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 					  Inputの作成
 	-----------------------------------------------------------------*/
 	GameInput::Instance().Initialize(_platformApplication->GetInstanceHandle(), _mainWindow->GetWindowHandle());
+
+	/*---------------------------------------------------------------
+					  スレッドの管理
+	-----------------------------------------------------------------*/
+	_engineThreadManager = std::make_unique<EngineThreadManager>();
 }
 
 
 void PPPEngine::ShutDown()
 {
-
+	// 入力デバイスの破棄
 	GameInput::Instance().Finalize();
-
-	/*---------------------------------------------------------------
-					  レンダリングエンジンの破棄
-	-----------------------------------------------------------------*/
+	
+	// グラフィックエンジンの破棄
 	_graphicsEngine->ShutDown();
+
+	// スレッドの破棄
+	_engineThreadManager.reset();
 
 }
 #pragma endregion Main Function
