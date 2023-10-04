@@ -52,11 +52,13 @@ namespace gc
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual bool Draw(const ResourceViewPtr& scene) = 0;
+		virtual bool Draw() = 0;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		virtual ResourceViewPtr GetSceneView() const noexcept = 0;
+		virtual void SetSceneView(const ResourceViewPtr& scene) = 0;
 
 		/****************************************************************************
 		**                Constructor and Destructor

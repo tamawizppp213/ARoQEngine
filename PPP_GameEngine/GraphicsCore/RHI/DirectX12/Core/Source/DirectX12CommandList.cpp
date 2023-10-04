@@ -91,6 +91,7 @@ void RHICommandList::BeginRecording(const bool stillMidFrame)
 	/*-------------------------------------------------------------------
 	-          Reset command list and allocator
 	---------------------------------------------------------------------*/
+	if (_isOpen) { return; }
 	if (!stillMidFrame) { _commandAllocator->CleanUp(); } // command buffer clear
 	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
 	_isOpen = true;

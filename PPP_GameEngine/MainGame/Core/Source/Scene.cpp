@@ -26,10 +26,11 @@ Scene::~Scene()
 
 }
 #pragma region Public Function
-void Scene::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine,const std::shared_ptr<GameTimer>& gameTimer)
+void Scene::Initialize(const std::shared_ptr<PPPEngine>& engine,const std::shared_ptr<GameTimer>& gameTimer)
 {
 	_gameTimer = gameTimer;
-	_engine    = engine;
+	_pppEngine = engine;
+	_engine    = engine->GetLowLevelGraphics();
 	LoadMaterials();
 }
 void Scene::Update()

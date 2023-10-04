@@ -23,12 +23,16 @@ void GameManager::GameStart(const engine::setting::StartUpParameters& parameters
 {
 	_engine = std::make_shared<PPPEngine>();
 	_engine->StartUp(parameters);
-	_sceneManager.StartUp(_engine->GetLowLevelGraphics(), _engine->GetMainThreadTimer());
+	_sceneManager.StartUp(_engine, _engine->GetMainThreadTimer());
 }
 
-void GameManager::GameMain()
+void GameManager::GameUpdateMain()
 {
 	_sceneManager.CallSceneUpdate();
+}
+
+void GameManager::GameDrawMain()
+{
 	_sceneManager.CallSceneDraw();
 }
 

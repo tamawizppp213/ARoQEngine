@@ -27,7 +27,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_ptr<GameTimer>& gameTimer)
+void SceneManager::StartUp(PPPEnginePtr& engine, const std::shared_ptr<GameTimer>& gameTimer)
 {
 	// debug log
 	assert(("engine is nullptr."   , engine));

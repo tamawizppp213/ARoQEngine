@@ -48,7 +48,7 @@ SampleModel::~SampleModel()
 *  @param[in] GameTimer* gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleModel::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleModel::Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

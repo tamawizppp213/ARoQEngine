@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "Engine/Public/Include/PPPEngine.hpp"
 #include "GameCore/Input/Include/GameInput.hpp"
 #include "GameUtility/Base/Include/GameTimer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	virtual void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer);
+	virtual void Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer);
 	virtual void Update   ();
 	virtual void Draw     () = 0;
 	virtual void Terminate() = 0;
@@ -60,6 +60,7 @@ protected:
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
+	std::shared_ptr<PPPEngine> _pppEngine = nullptr;
 	std::shared_ptr<LowLevelGraphicsEngine> _engine;
 
 	// @brief: keyboard + mouse + gamePad manager

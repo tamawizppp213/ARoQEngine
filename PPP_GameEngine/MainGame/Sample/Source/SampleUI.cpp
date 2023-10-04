@@ -48,7 +48,7 @@ SampleUI::~SampleUI()
 *  @param[in] const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleUI::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleUI::Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

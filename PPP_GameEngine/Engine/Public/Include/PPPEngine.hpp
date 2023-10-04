@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "EngineProfiles.hpp"
 #include "EngineThreadManager.hpp"
+#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,7 +21,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
 class GameTimer;
-
+namespace rhi::core
+{
+	class GPUResourceView;
+}
+namespace gc
+{
+	class IRenderPipeline;
+	class Camera;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,12 +43,14 @@ class GameTimer;
 class PPPEngine : public NonCopyable
 {
 protected:
-	using PlatformApplicationPtr = std::shared_ptr<platform::core::PlatformApplication>;
-	using CoreWindowPtr          = std::shared_ptr<platform::core::CoreWindow>;
-	using EngineThreadManagerPtr = std::shared_ptr<engine::core::EngineThreadManager>;
-	using GameTimerPtr           = std::shared_ptr<GameTimer>;
+	using PlatformApplicationPtr    = std::shared_ptr<platform::core::PlatformApplication>;
+	using CoreWindowPtr             = std::shared_ptr<platform::core::CoreWindow>;
+	using EngineThreadManagerPtr    = std::shared_ptr<engine::core::EngineThreadManager>;
+	using GameTimerPtr              = std::shared_ptr<GameTimer>;
 	using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-
+	using RenderPipelinePtr         = std::shared_ptr<gc::IRenderPipeline>;
+	using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
+	using CameraPtr                 = std::shared_ptr<gc::Camera>;
 public:
 	/****************************************************************************
 	**                Public Function
@@ -47,6 +58,8 @@ public:
 	void StartUp(const engine::setting::StartUpParameters& setting);
 
 	void ExecuteMainThread();
+	void ExecuteUpdateThread();
+	void ExecuteRenderThread();
 
 	void ShutDown();
 	/****************************************************************************
@@ -59,6 +72,11 @@ public:
 	CoreWindowPtr GetWindow() const noexcept { return _mainWindow; }
 
 	GameTimerPtr GetMainThreadTimer() const noexcept { return _mainThreadTimer; }
+
+	RenderPipelinePtr GetRenderPipeline() const noexcept { return _renderPipeline; }
+
+	void SetRenderingPipeline(const RenderPipelinePtr& pipeline) { _renderPipeline = pipeline; }
+
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -74,23 +92,39 @@ protected:
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
+#pragma region Variables
+#pragma region Common 
 	/* @brief : ウィンドウを管理するクラス*/
 	PlatformApplicationPtr _platformApplication = nullptr;
 
 	/* @brief : メインウィンドウ*/
 	CoreWindowPtr _mainWindow = nullptr;
 
-	/* @brief : 描画用の低レイヤー側のエンジン*/
-	LowLevelGraphicsEnginePtr _graphicsEngine = nullptr;
-
 	/* @brief : エンジンのスレッドを管理するクラス*/
 	EngineThreadManagerPtr _engineThreadManager = nullptr;
 
+	/* @brief : 全てのスレッドが停止要求を行ったか*/
+	std::atomic_bool _isStoppedAllThreads = false;
+
+#pragma endregion      Common
+
+#pragma region Main Thread
 	/* @brief : メインスレッドのタイマー*/
 	GameTimerPtr _mainThreadTimer = nullptr;
 
 	/* @brief : ポーズ処理を走らせるか*/
 	bool _isApplicationPaused = false;
+#pragma endregion Main Thread
+
+#pragma region Render Thread
+	/* @brief : 描画用の低レイヤー側のエンジン*/
+	LowLevelGraphicsEnginePtr _graphicsEngine = nullptr;
+
+	/* @brief : 描画パイプライン. デフォルトではURPを使用します.*/
+	RenderPipelinePtr _renderPipeline = nullptr;
+
+#pragma endregion Render Thread
+#pragma endregion Variables
 };
 
 #endif

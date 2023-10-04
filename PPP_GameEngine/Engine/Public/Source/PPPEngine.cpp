@@ -16,6 +16,8 @@
 
 // renderer
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "GameCore/Rendering/Core/Renderer/Include/RenderPipeline.hpp"
+#include "GameCore/Core/Include/Camera.hpp"
 
 // input
 #include "GameCore/Input/Include/GameInput.hpp"
@@ -65,6 +67,7 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 	_graphicsEngine = std::make_shared<LowLevelGraphicsEngine>();
 	_graphicsEngine->StartUp(setting.GraphicsSettings.APIversion, _mainWindow->GetWindowHandle(), _platformApplication->GetInstanceHandle());
 
+
 	/*---------------------------------------------------------------
 					  Inputの作成
 	-----------------------------------------------------------------*/
@@ -74,11 +77,27 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 					  スレッドの管理
 	-----------------------------------------------------------------*/
 	_engineThreadManager = std::make_unique<EngineThreadManager>();
+	_isStoppedAllThreads.store(false); // falseを書き込み
+
+	_engineThreadManager->GetUpdateMainThread()->Submit([&]() { this->ExecuteUpdateThread(); });
+	_engineThreadManager->GetRenderMainThread()->Submit([&]() { this->ExecuteRenderThread(); });
 }
 
+/****************************************************************************
+*                     ExecuteMainThread
+*************************************************************************//**
+*  @fn        void PPPEngine::ExecuteMainThread()
+*
+*  @brief     Message loopを入れてます.
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void PPPEngine::ExecuteMainThread()
 {
 	_mainThreadTimer->Reset();
+
 	/*---------------------------------------------------------------
 						Main Loop
 	-----------------------------------------------------------------*/
@@ -91,22 +110,48 @@ void PPPEngine::ExecuteMainThread()
 			{
 				_mainThreadTimer->AverageFrame(_mainWindow->GetWindowHandle());
 				GameInput::Instance().Update();
-				GameManager::Instance().GameMain(); // 今後変更します. 
+				GameManager::Instance().GameUpdateMain();
+				GameManager::Instance().GameDrawMain();
 			}
 		}
+
 	}
+	_isStoppedAllThreads.store(true);
+}
+
+void PPPEngine::ExecuteUpdateThread()
+{
+	while (!_isStoppedAllThreads)
+	{
+		
+	}
+
+	printf("update finish\n");
+}
+
+void PPPEngine::ExecuteRenderThread()
+{
+	while (!_isStoppedAllThreads)
+	{
+		if (!_renderPipeline) { continue; }
+		/*_graphicsEngine->BeginDrawFrame();
+		_renderPipeline->Draw();
+		_graphicsEngine->EndDrawFrame();*/
+	}
+
+	printf("draw finish\n");
 }
 
 void PPPEngine::ShutDown()
 {
+	// スレッドの破棄
+	_engineThreadManager.reset();
+
 	// 入力デバイスの破棄
 	GameInput::Instance().Finalize();
 	
 	// グラフィックエンジンの破棄
 	_graphicsEngine->ShutDown();
-
-	// スレッドの破棄
-	_engineThreadManager.reset();
 
 }
 #pragma endregion Main Function

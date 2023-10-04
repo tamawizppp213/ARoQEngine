@@ -42,7 +42,7 @@ SampleRayTracingRectangle::~SampleRayTracingRectangle()
 *  @param[in]  const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleRayTracingRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleRayTracingRectangle::Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

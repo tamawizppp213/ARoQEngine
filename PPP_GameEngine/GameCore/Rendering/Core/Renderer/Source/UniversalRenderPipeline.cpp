@@ -63,20 +63,20 @@ URP::~URP()
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function
-bool URP::Draw(const ResourceViewPtr& scene)
+bool URP::Draw()
 {
 	/*-------------------------------------------------------------------
 	-         Is there a scene object
 	---------------------------------------------------------------------*/
-	if (!scene) { return false; }
+	if (!_scene) { return false; }
 
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------
 	-         Preprocess
 	---------------------------------------------------------------------*/
-	_zPrepass->Draw(scene);
-	_gBuffer ->Draw(scene);
+	_zPrepass->Draw(_scene);
+	_gBuffer ->Draw(_scene);
 	//_ssao->Draw(scene);
 	_cascadeShadowMap->Draw(_gameTimer, _directionalLights->GetLight(0).Direction);
 
@@ -86,7 +86,7 @@ bool URP::Draw(const ResourceViewPtr& scene)
 	_engine->BeginSwapchainRenderPass();
 	commandList->SetResourceLayout(_resourceLayout);
 	commandList->SetGraphicsPipeline(_pipeline);
-	scene->Bind(commandList, 0);
+	_scene->Bind(commandList, 0);
 	_directionalLights->BindLightData(commandList, 2);
 	_cascadeShadowMap->GetShadowInfoView()->Bind(commandList, 3);
 	for (const auto& model : _forwardModels)

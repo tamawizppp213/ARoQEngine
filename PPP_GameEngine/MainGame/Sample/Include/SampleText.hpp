@@ -52,7 +52,7 @@ namespace sample
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
+		void Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer) override;
 		void Update() override;
 		void Draw() override;
 		void Terminate() override;

@@ -56,7 +56,7 @@ SampleURP::~SampleURP()
 * 
 *  @return    void
 *****************************************************************************/
-void SampleURP::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleURP::Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -111,7 +111,7 @@ void SampleURP::Draw()
 		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
 
-	_renderer->Draw(_camera->GetResourceView());
+	_renderer->Draw();
 	_skybox  ->Draw(_camera->GetResourceView());
 	_engine  ->EndDrawFrame();
 }
@@ -188,8 +188,10 @@ void SampleURP::LoadMaterials()
 	-           Universal Rendering Pipeline
 	---------------------------------------------------------------------*/
 	_renderer = std::make_shared<gc::URP>(_engine, _gameTimer);
+	_renderer->SetSceneView(_camera->GetResourceView());
 	_renderer->Add(Forward, _model);
 	_renderer->Add(Forward, _floor);
+	_pppEngine->SetRenderingPipeline(_renderer);
 
 	IESProfiler profiler;
 	profiler.Load(L"Resources/Test.IES");

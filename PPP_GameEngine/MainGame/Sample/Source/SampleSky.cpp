@@ -41,7 +41,7 @@ SampleSky::~SampleSky()
 *  @param[in] GameTimer* gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleSky::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleSky::Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

@@ -71,7 +71,7 @@ namespace gc
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Draw(const ResourceViewPtr& scene) override;
+		bool Draw() override;
 
 		void Add(const URPDrawType type, const GameModelPtr& gameModel);
 
@@ -79,6 +79,9 @@ namespace gc
 		**                Public Member Variables
 		*****************************************************************************/
 		UIRendererPtr GetUIRenderer() const noexcept { return _uiRenderer; }
+
+		ResourceViewPtr GetSceneView() const noexcept override { return _scene; }
+		void SetSceneView(const ResourceViewPtr& scene) override { _scene = scene; }
 
 		template<class TLight> requires std::is_base_of_v<gc::rendering::LightData, TLight> 
 		void SetLight(const gc::rendering::LightType type, const std::uint32_t index, const TLight& light);
@@ -120,6 +123,8 @@ namespace gc
 		std::shared_ptr<GameTimer> _gameTimer = nullptr;
 
 		std::vector<GameModelPtr> _forwardModels  = {};
+
+		ResourceViewPtr _scene = nullptr;
 
 		static constexpr std::uint32_t MAX_UI_COUNT = 1024;
 	};
