@@ -110,6 +110,7 @@ void PPPEngine::ExecuteMainThread()
 			{
 				_mainThreadTimer->AverageFrame(_mainWindow->GetWindowHandle());
 				GameInput::Instance().Update();
+				// 現状シングルスレッドで.
 				GameManager::Instance().GameUpdateMain();
 				GameManager::Instance().GameDrawMain();
 			}

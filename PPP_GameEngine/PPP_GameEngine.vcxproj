@@ -719,6 +719,7 @@
     <None Include="GameUtility\Math\Include\GMSimdFunctions.inl" />
     <None Include="Shader\Core\ShaderColor.hlsli" />
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
+    <None Include="Shader\Core\ShaderCore.hlsli" />
     <None Include="Shader\Core\ShaderVertexType.hlsli" />
     <None Include="Shader\Effect\ShaderTonemapType.hlsli" />
     <None Include="Shader\Lighting\ShaderBRDF.hlsli" />

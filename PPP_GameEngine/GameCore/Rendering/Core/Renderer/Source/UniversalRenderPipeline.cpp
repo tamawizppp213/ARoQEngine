@@ -71,7 +71,7 @@ bool URP::Draw()
 	if (!_scene) { return false; }
 
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
-
+	if (!commandList->IsOpen()) { return false; }
 	/*-------------------------------------------------------------------
 	-         Preprocess
 	---------------------------------------------------------------------*/

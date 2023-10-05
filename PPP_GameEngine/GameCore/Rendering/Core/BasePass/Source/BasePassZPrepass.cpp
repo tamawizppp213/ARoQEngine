@@ -210,7 +210,7 @@ void ZPrepass::PrepareFrameBuffers(const std::wstring& name)
 {
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto device     = _engine->GetDevice();
-	const auto clearColor      = ClearValue(1.0f, 0.0f, 0.0f, 1.0f);
+	const auto clearColor      = ClearValue(1.0f, 1.0f, 1.0f, 1.0f);
 	const auto clearDepthColor = ClearValue(0.0f, 0.0f, 0.0f, 1.0f);
 
 	/*-------------------------------------------------------------------

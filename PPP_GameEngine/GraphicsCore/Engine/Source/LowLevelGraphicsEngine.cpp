@@ -182,9 +182,12 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 
 	// close graphics command list
 	const auto& graphicsCommandList = _commandLists[core::CommandListType::Graphics];
-	graphicsCommandList->EndRenderPass();
-	graphicsCommandList->CopyResource(_swapchain->GetBuffer(_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
-	graphicsCommandList->EndRecording();
+	if (graphicsCommandList->IsOpen())
+	{
+		graphicsCommandList->EndRenderPass();
+		graphicsCommandList->CopyResource(_swapchain->GetBuffer(_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
+		graphicsCommandList->EndRecording();
+	}
 
 	/*-------------------------------------------------------------------
 	-          Execute GPU Command
