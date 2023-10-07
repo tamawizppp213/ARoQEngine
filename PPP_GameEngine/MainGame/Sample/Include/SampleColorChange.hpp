@@ -25,6 +25,7 @@ namespace gc
 	class GaussianBlur;
 	class Dof;
 	class Mosaic;
+	class Vignette;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -46,6 +47,7 @@ namespace sample
 		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
 		using GaussianBlurPtr = std::shared_ptr<gc::GaussianBlur>;
 		using MosaicPtr = std::shared_ptr<gc::Mosaic>;
+		using VignettePtr = std::shared_ptr<gc::Vignette>;
 		
 	public:
 		/****************************************************************************
@@ -85,9 +87,11 @@ namespace sample
 
 		MosaicPtr _mosaic = nullptr;
 
+		VignettePtr _vignette = nullptr;
+
 		bool _useBlur = false;
 		bool _useMosaic = false;
-
+		bool _useVignette = false;
 
 		std::uint32_t _colorIndex = 0;
 	};

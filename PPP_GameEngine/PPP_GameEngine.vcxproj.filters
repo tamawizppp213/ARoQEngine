@@ -996,6 +996,9 @@
     <ClInclude Include="GameUtility\Thread\Public\Include\GUSemaphore.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\Vignette.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1610,6 +1613,9 @@
     <ClCompile Include="Engine\Public\Source\EngineThreadManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\Vignette.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -1651,5 +1657,6 @@
     <FxCompile Include="Shader\Effect\ShaderSobel.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderSSAO.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderShadowMap.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderVignette.hlsl" />
   </ItemGroup>
 </Project>
