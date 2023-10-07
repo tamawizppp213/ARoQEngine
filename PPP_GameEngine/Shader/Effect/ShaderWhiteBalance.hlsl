@@ -4,26 +4,25 @@
 //             Author:  Toide Yutaro
 //             Create:  2023_10_06
 //////////////////////////////////////////////////////////////////////////////////
-#ifndef SHADER_VIGNETTE_HLSL
-#define SHADER_VIGNETTE_HLSL
+#ifndef SHADER_WHITE_BALANCE_HLSL
+#define SHADER_WHITE_BALANCE_HLSL
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Core/ShaderVertexType.hlsli"
+#include "../Core/ShaderColor.hlsli"
 #define VertexIn  VSInputVertex
 #define VertexOut VSOutputVertex
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 /////////////////////////////////////////////////////////////////////////////////
 SamplerState SamplerLinearClamp : register(s0);
-Texture2D    DiffuseMap         : register(t0);
+Texture2D DiffuseMap : register(t0);
 
-cbuffer VignetteSettings : register(b0)
+cbuffer WhiteBalanceSettings : register(b0)
 {
-    float4 Color;     // ビネットの色
-    float2 UVCenter;  // 中心座標 (ビネットは通常(0.5, 0.5))の位置から広がります.
-    float  Intensity; // ビネットの強さ\, 0.0～1.0まで適用できます
-    float  Smoothness; // ビネットの端っこをどれだけぼかすか-
+    float Temperature; // 色温度
+    float Tint;        // 色合い
 };
 //////////////////////////////////////////////////////////////////////////////////
 //                            Implement
@@ -55,14 +54,29 @@ float4 PSMain(VertexOut input) : SV_TARGET
 {
     const float4 diffuse = float4(DiffuseMap.Sample(SamplerLinearClamp, input.UV));
     
-    // uvとuvCenter間の距離を取得する
-    const float2 uvDistance = abs(input.UV - UVCenter) * Intensity;
+    // 範囲としては[-1.67 ～ 1.67]が最適とのこと
+    // https://docs.unity3d.com/ja/Packages/com.unity.shadergraph@10.0/manual/White-Balance-Node.html
+    const float temperature = Temperature * 10 / 6;
+    const float tint        = Tint * 10 / 6;
     
-    // 色をcenterからの距離が遠くなるほど, Colorの影響を及ぼすようにするため, 乗算値の調整.
-    const float vignetteFactor = pow(saturate(1.0f - dot(uvDistance, uvDistance)), Smoothness);
+    /*-------------------------------------------------------------------
+	-        参照白色点のCIE_RGB表色系を用いたxy色度を取得する
+	---------------------------------------------------------------------*/
+    const float whitePointX = 0.31271 - temperature * (temperature < 0 ? 0.1 : 0.05);;
+    const float standardIlluminantY = 2.87 * whitePointX - 3 * whitePointX * whitePointX - 0.27509507;
+    const float whitePointY = standardIlluminantY + tint * 0.05;
     
-    // centerに近いほど元のDiffuse色, 遠いほどColor色にする
-    return diffuse * lerp(Color, (1.0f.xxxx), vignetteFactor); 
+    // LMS空間の相互効果を計算
+    const float3 w   = float3(0.949237, 1.03542, 1.08728);
+    const float3 LMS = xyYToLMS(float2(whitePointX, whitePointY));
+    
+    // ホワイトバランスの取得
+    const float3 balance = float3(w.x / LMS.x, w.y / LMS.y, w.z / LMS.z);
+    float3 lmsColor = LinearToLMS(diffuse.rgb);
+    lmsColor *= balance;
+    const float3 linearColor = LMSToLinear(lmsColor);
+    
+    return float4(linearColor, 1);
 
 }
 #endif

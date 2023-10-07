@@ -207,6 +207,7 @@
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Vignette.hpp" />
+    <ClInclude Include="GameCore\Rendering\Effect\Include\WhiteBalance.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\CascadeShadow.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\UniversalRenderPipeline.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\DebugDrawer.hpp" />
@@ -542,6 +543,7 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Vignette.cpp" />
+    <ClCompile Include="GameCore\Rendering\Effect\Source\WhiteBalance.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\Source\CascadeShadow.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\Source\ShadowMap.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\MMDModelConverter.cpp" />
@@ -811,6 +813,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\Effect\ShaderWhiteBalance.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PSMain</EntryPointName>
     </FxCompile>
     <FxCompile Include="Shader\Lighting\ShaderGBuffer.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

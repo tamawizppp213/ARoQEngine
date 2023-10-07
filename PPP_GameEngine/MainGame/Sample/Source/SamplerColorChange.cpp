@@ -16,6 +16,7 @@
 #include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
 #include "GameCore/Rendering/Effect/Include/Mosaic.hpp"
 #include "GameCore/Rendering/Effect/Include/Vignette.hpp"
+#include "GameCore/Rendering/Effect/Include/WhiteBalance.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameCore/Rendering/Debugger/Include/ScreenCapture.hpp"
@@ -98,9 +99,10 @@ void SampleColorChange::Draw()
 	/*-------------------------------------------------------------------
 	-             Use effects
 	---------------------------------------------------------------------*/
-	_colorChanges[_colorIndex]->Draw();
-	_capture->Capture(_engine->GetFrameBuffer(frameIndex)->GetRenderTarget());
+	//_colorChanges[_colorIndex]->Draw();
+	//_capture->Capture(_engine->GetFrameBuffer(frameIndex)->GetRenderTarget());
 	
+	if (_useWhiteBalance) { _whiteBalance->Draw(); }
 	if (_useVignette) { _vignette->Draw(); }
 	if (_useBlur)  { _gaussianBlur->Draw(frameBuffer); }
 	if (_useMosaic) { _mosaic->Draw(); }
@@ -170,6 +172,7 @@ void SampleColorChange::LoadMaterials()
 	};
 	_vignette = std::make_shared<Vignette>(_engine, vignetteSettings);
 
+	_whiteBalance = std::make_shared<WhiteBalance>(_engine, 1.0f, 0.0f);
 	_capture = std::make_shared<gc::rendering::ScreenCapture>(_engine, _gameInput.GetKeyboard());
 
 	/*-------------------------------------------------------------------
@@ -223,6 +226,10 @@ void SampleColorChange::OnKeyboardInput()
 	if (_gameInput.GetKeyboard()->IsTrigger(DIK_U))
 	{
 		_useVignette = _useVignette ? false : true;
+	}
+	if (_gameInput.GetKeyboard()->IsTrigger(DIK_Y))
+	{
+		_useWhiteBalance = _useWhiteBalance ? false : true;
 	}
 }
 /****************************************************************************

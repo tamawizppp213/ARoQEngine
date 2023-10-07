@@ -999,6 +999,9 @@
     <ClInclude Include="GameCore\Rendering\Effect\Include\Vignette.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\WhiteBalance.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1616,6 +1619,9 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\Vignette.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\WhiteBalance.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -1658,5 +1664,6 @@
     <FxCompile Include="Shader\Lighting\ShaderSSAO.hlsl" />
     <FxCompile Include="Shader\Lighting\ShaderShadowMap.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderVignette.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderWhiteBalance.hlsl" />
   </ItemGroup>
 </Project>
