@@ -72,7 +72,7 @@ namespace rhi::vulkan
 
 		~RHIInstance();
 
-		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger);
+		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak);
 
 	protected:
 		/****************************************************************************

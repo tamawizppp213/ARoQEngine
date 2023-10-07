@@ -60,7 +60,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		RHIInstance() = default;
 
-		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger); 
+		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUBreakPoint); 
 		
 		~RHIInstance();
 
@@ -86,6 +86,7 @@ namespace rhi::directX12
 
 		bool _useDRED        = false;
 		bool _useDREDContext = false;
+		bool _useLightWeightDRED = false;
 	};
 }
 

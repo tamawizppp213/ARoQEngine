@@ -21,7 +21,7 @@ Texture2D DiffuseMap : register(t0);
 
 cbuffer WhiteBalanceSettings : register(b0)
 {
-    float Temperature; // 色温度
+    float Temperature; // 色温度 (-1～1)
     float Tint;        // 色合い
 };
 //////////////////////////////////////////////////////////////////////////////////

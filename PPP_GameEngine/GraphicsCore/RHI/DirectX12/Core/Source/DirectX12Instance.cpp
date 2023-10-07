@@ -33,8 +33,8 @@ namespace
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger):
-	core::RHIInstance(enableCPUDebugger, enableGPUDebugger)
+RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak):
+	core::RHIInstance(enableCPUDebugger, enableGPUDebugger, useGPUDebugBreak)
 {
 	/*-------------------------------------------------------------------
 	-                   Enable CPU and GPU Debugger
@@ -263,8 +263,23 @@ void RHIInstance::EnabledShaderBasedValidation()
 #endif
 }
 
+/****************************************************************************
+*                     EnabledGPUClashDebuggingModes
+*************************************************************************//**
+*  @fn        void RHIInstance::EnabledGPUClashDebuggingModes()
+*
+*  @brief     GPU Clashの解析を行うため,　予期しないデバイス削除エラーが検出された後にDREDデータにアクセスし, エラー原因を解析できるようにします.
+* 　　　　　　　　この関数はあくまで有効化するだけです.実際の検知は別で行います. 
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
 void RHIInstance::EnabledGPUClashDebuggingModes()
 {
+	/*-------------------------------------------------------------------
+	-                Dred setting default
+	---------------------------------------------------------------------*/
 #ifdef  __ID3D12DeviceRemovedExtendedDataSettings_INTERFACE_DEFINED__
 	ComPtr<ID3D12DeviceRemovedExtendedDataSettings> dredSettings = nullptr;
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(dredSettings.GetAddressOf()))))
@@ -282,6 +297,9 @@ void RHIInstance::EnabledGPUClashDebuggingModes()
 	}
 #endif
 
+	/*-------------------------------------------------------------------
+	-                Dred setting 1
+	---------------------------------------------------------------------*/
 #ifdef  __ID3D12DeviceRemovedExtendedDataSettings1_INTERFACE_DEFINED__
 	ComPtr<ID3D12DeviceRemovedExtendedDataSettings1> dredSettings1 = nullptr;
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(dredSettings1.GetAddressOf()))))
@@ -292,6 +310,22 @@ void RHIInstance::EnabledGPUClashDebuggingModes()
 	}
 #endif
 
+	/*-------------------------------------------------------------------
+	-                Dred setting 2
+	---------------------------------------------------------------------*/
+#ifdef __ID3D12DeviceRemovedExtendedDataSettings2_INTERFACE_DEFINED__
+	ComPtr<ID3D12DeviceRemovedExtendedDataSettings2> dredSettings2 = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(dredSettings2.GetAddressOf()))))
+	{
+		dredSettings2->SetBreadcrumbContextEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		dredSettings2->SetAutoBreadcrumbsEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		dredSettings2->SetPageFaultEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		dredSettings2->UseMarkersOnlyAutoBreadcrumbs(true);
+		_useDREDContext = true;
+		_useLightWeightDRED = true;
+		OutputDebugStringA("dred breadcrumb context enabled\n");
+	}
+#endif
 }
 #pragma endregion Debugger
 #pragma region Private Function

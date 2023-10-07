@@ -5,8 +5,8 @@
 ///             @date   2022_06_06
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef MODEL_HPP
-#define MODEL_HPP
+#ifndef GAME_MODEL_HPP
+#define GAME_MODEL_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -126,6 +126,7 @@ namespace gc::core
 	public:
 		friend class PMXConverter;
 		friend class PMDConverter;
+		friend class GLTFConverter;
 	};
 }
 #endif

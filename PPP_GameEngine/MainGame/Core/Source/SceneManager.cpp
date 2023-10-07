@@ -35,7 +35,7 @@ void SceneManager::StartUp(PPPEnginePtr& engine, const std::shared_ptr<GameTimer
 
 	_engine = engine;
 	_gameTimer = gameTimer;
-	PushScene(new sample::SampleColorChange());
+	PushScene(new sample::SampleURP());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

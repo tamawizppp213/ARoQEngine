@@ -14,6 +14,7 @@
 #include "../Include/Material.hpp"
 #include "../../../Core/Include/GameWorldInfo.hpp"
 #include "../External/MMD/Include/MMDModelConverter.hpp"
+#include "../External/GLTF/Public/Include/GLTFModelConverter.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
 #include <iostream>

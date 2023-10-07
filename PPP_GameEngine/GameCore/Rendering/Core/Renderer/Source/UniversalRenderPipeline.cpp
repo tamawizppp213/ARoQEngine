@@ -76,9 +76,9 @@ bool URP::Draw()
 	-         Preprocess
 	---------------------------------------------------------------------*/
 	_zPrepass->Draw(_scene);
-	_gBuffer ->Draw(_scene);
+	//_gBuffer ->Draw(_scene);
 	//_ssao->Draw(scene);
-	_cascadeShadowMap->Draw(_gameTimer, _directionalLights->GetLight(0).Direction);
+	//_cascadeShadowMap->Draw(_gameTimer, _directionalLights->GetLight(0).Direction);
 
 	/*-------------------------------------------------------------------
 	-         Rendering

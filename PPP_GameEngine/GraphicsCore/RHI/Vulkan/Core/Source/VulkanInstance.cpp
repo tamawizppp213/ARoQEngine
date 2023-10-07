@@ -134,8 +134,8 @@ namespace
 }
 
 #pragma region Constructor and Destructor
-RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger) 
-	:core::RHIInstance(enableCPUDebugger, enableGPUDebugger)
+RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak) 
+	:core::RHIInstance(enableCPUDebugger, enableGPUDebugger, useGPUDebugBreak)
 {
 	/*-------------------------------------------------------------------
 	-          Check validation support (in case enable CPU or GPU debugger)

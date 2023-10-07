@@ -36,7 +36,7 @@ namespace rhi::core
 	public:
 		/* The CPU debugger and GPU debugger do not cause anything special when in Release mode.*/
 	    /* The GPU debugger impacts on the frame rate. default : off*/
-		static std::shared_ptr<RHIInstance> CreateInstance(const core::APIVersion version, bool enableCPUDebugger = true, bool enableGPUDebugger = false);
+		static std::shared_ptr<RHIInstance> CreateInstance(const core::APIVersion version, bool enableCPUDebugger = true, bool enableGPUDebugger = false, bool useGPUDebugBreak = false);
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
@@ -56,6 +56,7 @@ namespace rhi::core
 		*****************************************************************************/
 		const char* GetEngineName() const { return EngineName; }
 
+		bool UseGPUDebugBreak() const { return _useGPUDebugBreak; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -66,9 +67,10 @@ namespace rhi::core
 		*****************************************************************************/
 		RHIInstance() = default;
 
-		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger) :
+		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak) :
 			_enableCPUDebugger(enableCPUDebugger),
-			_enableGPUDebugger(enableGPUDebugger)
+			_enableGPUDebugger(enableGPUDebugger),
+			_useGPUDebugBreak(useGPUDebugBreak)
 		{
 		};
 
@@ -79,6 +81,7 @@ namespace rhi::core
 		*****************************************************************************/
 		bool _enableCPUDebugger = false; // debug only
 		bool _enableGPUDebugger = false; // debug only
+		bool _useGPUDebugBreak  = false; // debug only
 		const char* EngineName = "PPP_Engine";
 	};
 	
