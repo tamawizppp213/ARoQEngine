@@ -72,6 +72,10 @@ float4 PSMain(VertexOut input) : SV_TARGET
     
     // ホワイトバランスの取得
     const float3 balance = float3(w.x / LMS.x, w.y / LMS.y, w.z / LMS.z);
+    
+    /*-------------------------------------------------------------------
+	-        LMS空間を使ってホワイトバランスの調整を行う.
+	---------------------------------------------------------------------*/
     float3 lmsColor = LinearToLMS(diffuse.rgb);
     lmsColor *= balance;
     const float3 linearColor = LMSToLinear(lmsColor);
