@@ -132,6 +132,8 @@ namespace rhi::directX12
 
 		D3D12_VARIABLE_SHADING_RATE_TIER GetVariableShadingRateTier() const { return _variableRateShadingTier; }
 
+		CommandSignaturePtr GetDefaultDrawIndexedIndirectCommandSignature() const { return _drawIndexedIndirectCommandSignature; }
+
 		std::uint32_t MaxUsableSamplerHeapCount() const { return _maxSamplerHeapCount; }
 
 		std::uint32_t MaxUsableDescriptorHeapCount() const { return _maxDescriptorHeapCount; }
@@ -163,6 +165,8 @@ namespace rhi::directX12
 		bool IsSupportedNative16bitOperation() const override { return _isSupported16bitOperation; }
 
 		bool IsSupportedAtomicOperation() const override { return _isSupportedAtomicOperation; }
+
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -296,6 +300,12 @@ namespace rhi::directX12
 		bool _isSupportedAtomicOperation                        = false;
 		bool _isSupportedAtomicInt64OnTypedResource             = false;
 		bool _isSupportedAtomicUInt64                           = false;
+
+		/*-------------------------------------------------------------------
+		-               IndirectDraw
+		---------------------------------------------------------------------*/
+		CommandSignaturePtr _drawIndexedIndirectCommandSignature = nullptr;
+
 	private:
 		/****************************************************************************
 		**                Private Enum Class
@@ -334,6 +344,7 @@ namespace rhi::directX12
 		void CheckNative16bitOperation();
 		void CheckAtomicOperation();
 		void SetupDisplayHDRMetaData();
+		void SetupDefaultCommandSignatures();
 		void SetGPUDebugBreak();
 
 		/****************************************************************************

@@ -110,7 +110,6 @@ void SampleURP::Draw()
 	commandList->SetViewportAndScissor(
 		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
-
 	_renderer->Draw();
 	_skybox  ->Draw(_camera->GetResourceView());
 	_engine  ->EndDrawFrame();

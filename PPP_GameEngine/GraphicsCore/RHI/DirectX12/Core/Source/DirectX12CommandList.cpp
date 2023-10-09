@@ -89,12 +89,21 @@ RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& devi
 void RHICommandList::BeginRecording(const bool stillMidFrame)
 {
 	/*-------------------------------------------------------------------
-	-          Reset command list and allocator
+	-        コマンドリストが記録可能状態だった場合, Resetすることが出来ない.
 	---------------------------------------------------------------------*/
-	if (_isOpen) { return; }
+	if (IsOpen()) { return; }
+
+	/*-------------------------------------------------------------------
+	-        描画フレームの途中でなければCommandAllocatorのバッファを先頭に戻す.
+	---------------------------------------------------------------------*/
 	if (!stillMidFrame) { _commandAllocator->CleanUp(); } // command buffer clear
 	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
-	_isOpen = true;
+	
+	/*-------------------------------------------------------------------
+	-        コマンドリストを記録可能状態に変更します
+	---------------------------------------------------------------------*/
+	_isOpen          = true;
+	_beginRenderPass = false;
 }
 
 /****************************************************************************
@@ -102,8 +111,7 @@ void RHICommandList::BeginRecording(const bool stillMidFrame)
 *************************************************************************//**
 *  @fn        void RHICommandList::EndRecording()
 *
-*  @brief     Call at end draw frame. Close executed command list.
-*              The command list is closed, it transits the executable state.
+*  @brief     コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
 * 
 *  @param[in] void
 *
@@ -111,8 +119,19 @@ void RHICommandList::BeginRecording(const bool stillMidFrame)
 *****************************************************************************/
 void RHICommandList::EndRecording()
 {
-	if (!_isOpen) { OutputDebugStringA("Already closed. \n");  return; }
+	/*-------------------------------------------------------------------
+	-      　既に閉じられているならこの後の処理は行わない
+	---------------------------------------------------------------------*/
+	if (IsClosed()) { OutputDebugStringA("Already closed. \n");  return; }
+	
+	/*-------------------------------------------------------------------
+	-      　記録状態からクローズ状態に以降する
+	---------------------------------------------------------------------*/
 	ThrowIfFailed(_commandList->Close());
+
+	/*-------------------------------------------------------------------
+	-      　終了処理
+	---------------------------------------------------------------------*/
 	_isOpen = false;
 	_beginRenderPass = false;
 }
@@ -120,11 +139,20 @@ void RHICommandList::EndRecording()
 void RHICommandList::Reset(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
 {
 	/*-------------------------------------------------------------------
-	-          Reset command list and allocator
+	-        コマンドリストが記録可能状態だった場合, Resetすることが出来ない.
+	---------------------------------------------------------------------*/
+	if (IsOpen()) { return; }
+
+	/*-------------------------------------------------------------------
+	-        コマンドリストが記録可能状態に変更する
 	---------------------------------------------------------------------*/
 	if (commandAllocator) { _commandAllocator = commandAllocator; }
-	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
-	_isOpen = false;
+	if (_commandAllocator) { ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr)); }
+	
+	/*-------------------------------------------------------------------
+	-        コマンドリストを開いている状態にする
+	---------------------------------------------------------------------*/
+	_isOpen = true;
 	_beginRenderPass = false;
 }
 
@@ -186,6 +214,13 @@ void RHICommandList::EndRenderPass()
 #pragma endregion Call Draw Frame
 
 #pragma region GPU Command
+void RHICommandList::SetDepthBounds(const float minDepth, const float maxDepth)
+{
+	if (_device->IsSupportedDepthBoundsTest())
+	{
+		_commandList->OMSetDepthBounds(minDepth, maxDepth);
+	}
+}
 void RHICommandList::SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptorHeap>& heap)
 {
 	const auto dxHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(heap);
@@ -351,9 +386,23 @@ void RHICommandList::DrawIndexed(std::uint32_t indexCount, std::uint32_t startIn
 {
 	_commandList->DrawIndexedInstanced(indexCount, 1, startIndexLocation, baseVertexLocation, 0);
 }
+
+
 void RHICommandList::DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation, std::uint32_t baseVertexLocation, std::uint32_t startInstanceLocation)
 {
 	_commandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+}
+
+void RHICommandList::DrawIndexedIndirect(const std::shared_ptr<core::GPUBuffer>& argumentBuffer, const std::uint32_t drawCallCount)
+{
+	const auto dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device);
+	const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(argumentBuffer);
+	_commandList->ExecuteIndirect(dxDevice->GetDefaultDrawIndexedIndirectCommandSignature().Get(), drawCallCount, dxBuffer->GetResourcePtr(), 0, nullptr, 0);
+}
+
+void RHICommandList::DispatchMesh(const std::uint32_t threadGroupCountX, const std::uint32_t threadGroupCountY, const std::uint32_t threadGroupCountZ)
+{
+	_commandList->DispatchMesh(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
 
 void RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t threadGroupCountY, std::uint32_t threadGroupCountZ)

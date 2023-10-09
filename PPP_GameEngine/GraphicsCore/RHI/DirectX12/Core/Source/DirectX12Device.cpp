@@ -112,6 +112,7 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	CheckAllowTearingSupport();
 	CheckWaveLaneSupport();
 	SetupDisplayHDRMetaData();
+	SetupDefaultCommandSignatures();
 }
 
 #pragma endregion Constructor and Destructor
@@ -1019,5 +1020,37 @@ void RHIDevice::SetGPUDebugBreak()
 	-              [“x‚ÌÝ’è (Œ»Ý‚Íerror‚Ì‚Ý‘Î‰ž‚¢‚½‚µ‚Ü‚·.)
 	---------------------------------------------------------------------*/
 	infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+}
+
+/****************************************************************************
+*                     SetupDefaultCommandSignatures
+*************************************************************************//**
+*  @fn        void RHIDevice::SetupDefaultCommandSignatures()
+*
+*  @brief     Set up command signatures
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
+void RHIDevice::SetupDefaultCommandSignatures()
+{
+	/*-------------------------------------------------------------------
+	-              ExecuteIndirect draw index command signatures
+	---------------------------------------------------------------------*/
+	{
+		D3D12_INDIRECT_ARGUMENT_DESC indirectArgumentDesc;
+		indirectArgumentDesc.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED;
+
+		const D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc =
+		{
+			.ByteStride = sizeof(D3D12_DRAW_INDEXED_ARGUMENTS),
+			.NumArgumentDescs = 1,
+			.pArgumentDescs = &indirectArgumentDesc,
+			.NodeMask = 0
+		};
+
+		ThrowIfFailed(_device->CreateCommandSignature(&commandSignatureDesc, nullptr, IID_PPV_ARGS(_drawIndexedIndirectCommandSignature.GetAddressOf())));
+	}
 }
 #pragma endregion Property

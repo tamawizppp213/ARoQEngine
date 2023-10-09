@@ -51,6 +51,8 @@ namespace rhi::vulkan
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/
+		void SetDepthBounds(const float minDepth, const float maxDepth) override {};
+
 		void SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptorHeap>& heap) override {};
 		
 		void SetResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& layout) override;
@@ -79,6 +81,15 @@ namespace rhi::vulkan
 		
 		void DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0, std::uint32_t startInstanceLocation = 0)override;
 		
+		/*----------------------------------------------------------------------
+		*  @brief :インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です
+		/*----------------------------------------------------------------------*/
+		void DrawIndexedIndirect(const std::shared_ptr<core::GPUBuffer>& argumentBuffer, const std::uint32_t drawCallCount) override;
+
+		/*----------------------------------------------------------------------
+		*  @brief :Mesh shaderで使用する描画関数です.
+		/*----------------------------------------------------------------------*/
+		void DispatchMesh(const std::uint32_t threadGroupCountX = 1, const std::uint32_t threadGroupCountY = 1, const std::uint32_t threadGroupCountZ = 1) override;
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/

@@ -41,26 +41,47 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : This function must be called at draw function initially (stillMidFrame = false).
-					If still mid frame is set false, this function clears the command allocator.*/
+		/*----------------------------------------------------------------------
+		*  @brief : コマンドリストを記録状態に変更します. これはDraw関数の最初に使用します
+		*           stillMidFrameは, コマンドアロケーターの中身をResetするかを決定します.
+		/*----------------------------------------------------------------------*/
 		void BeginRecording(const bool stillMidFrame) override;
 
+		/*----------------------------------------------------------------------
+		*  @brief : コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
+		/*----------------------------------------------------------------------*/
 		void EndRecording  () override;
 
+		/*----------------------------------------------------------------------
+		*  @brief : RenderPassを開始します.基本的には各Draw関数のBeginRecordingの後に呼ばれます
+		/*----------------------------------------------------------------------*/
 		void BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer) override;
 		
+		/*----------------------------------------------------------------------
+		*  @brief : RenderPassを終了します.基本的には各Draw関数のEndRecording前に呼ばれます
+		/*----------------------------------------------------------------------*/
 		void EndRenderPass() override;
 
-		/* @brief : Proceed to the record state.*/
+		/*----------------------------------------------------------------------
+		*  @brief : Proceed to the record state. コマンドリストを記録状態に変更します.
+		            基本的には, ResetではなくBeginRecordingを使用してください.
+		/*----------------------------------------------------------------------*/
 		void Reset(const std::shared_ptr<core::RHICommandAllocator>& changeAllocator = nullptr) override;
 
 		/*-------------------------------------------------------------------
 		-               Common command
 		---------------------------------------------------------------------*/
 		void SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptorHeap>& heap) override;
+
+#pragma region Graphics Command Function
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------
+		*  @brief : 深度が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させます.
+		/*----------------------------------------------------------------------*/
+		void SetDepthBounds(const float minDepth, const float maxDepth) override;
+
 		void SetPrimitiveTopology(const core::PrimitiveTopology topology) override;
 
 		void SetViewport(const core::Viewport* viewport, const std::uint32_t numViewport = 1) override;
@@ -79,10 +100,31 @@ namespace rhi::directX12
 		
 		void SetIndexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
 		
-		void DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0) override;
-		
+		/*----------------------------------------------------------------------
+		*  @brief : インデックスがついているモデルでかつ, インスタンシング描画が必要となるプリミティブを描画します.
+		*           indexCountPerInstance : インスタンス毎に必要となるインデックスの総数
+		*           instance Count        : インスタンスの数
+		*           startIndexLocation    : インデックスを読み取り始める, インデックスバッファ中の配列要素数
+		* 　　　　　　 baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
+		*           startInstanceLocation : 描画を行う最初のインスタンス番号
+		/*----------------------------------------------------------------------*/
 		void DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0, std::uint32_t startInstanceLocation = 0) override;
 		
+		/*----------------------------------------------------------------------
+		*  @brief : インデックスがついているモデルでかつ, インスタンシング描画が必要ないプリミティブを描画します.
+		/*----------------------------------------------------------------------*/
+		void DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0) override;
+		
+		/*----------------------------------------------------------------------
+		*  @brief :インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です
+		/*----------------------------------------------------------------------*/
+		void DrawIndexedIndirect(const std::shared_ptr<core::GPUBuffer>& argumentBuffer, const std::uint32_t drawCallCount) override;
+
+		/*----------------------------------------------------------------------
+		*  @brief :Mesh shaderで使用する描画関数です. 
+		/*----------------------------------------------------------------------*/
+		void DispatchMesh(const std::uint32_t threadGroupCountX = 1, const std::uint32_t threadGroupCountY = 1, const std::uint32_t threadGroupCountZ = 1) override;
+#pragma endregion Graphics Command Function
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/

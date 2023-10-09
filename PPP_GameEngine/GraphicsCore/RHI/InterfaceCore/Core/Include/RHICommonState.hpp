@@ -48,7 +48,7 @@ namespace rhi::core
 	{
 		Unknown,    // For Initialize
 		Graphics,   // Graphics command list (directX12 api includes all command list type (use this) )
-		Compute,    // Compute command list
+		Compute,    // Compute command list. This type is used to async compute command
 		Copy,       // Copy command list
 		CountOfType
 	};
