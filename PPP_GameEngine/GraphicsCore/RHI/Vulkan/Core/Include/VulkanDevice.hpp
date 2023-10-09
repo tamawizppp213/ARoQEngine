@@ -145,6 +145,10 @@ namespace rhi::vulkan
 		bool IsSupportedRenderPass         () const override { return true; }
 		bool IsSupportedDepthBoundsTest    () const override { return true; }
 		bool IsSupportedSamplerFeedback    ()const override { return false; }
+		bool IsSupportedStencilReferenceFromPixelShader() const override { return true; }
+		bool IsSupportedWaveLane() const override { return true; }
+		bool IsSupportedNative16bitOperation() const override { return true; }
+		bool IsSupportedAtomicOperation() const override { return true; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

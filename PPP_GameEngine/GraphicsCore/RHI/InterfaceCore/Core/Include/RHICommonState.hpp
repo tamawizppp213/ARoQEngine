@@ -796,7 +796,12 @@ namespace rhi::core
 		return false;
 	}
 
-
+	enum class BindlessResourceType
+	{
+		Unsupported = 0,
+		OnlyRayTracing = 1,
+		AllShaderTypes = 2,
+	};
 #pragma region GPUBuffer
 	/****************************************************************************
 	*				  			BufferType

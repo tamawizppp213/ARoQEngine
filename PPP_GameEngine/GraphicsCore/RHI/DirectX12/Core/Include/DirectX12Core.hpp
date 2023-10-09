@@ -21,10 +21,12 @@
 #define D3D12_MAX_COMMANDLIST_INTERFACE (7)
 #define D3D12_MAX_DEBUG_INTERFACE       (6)
 #define D3D12_MAX_RESOURCE_INTERFACE    (2)
+#define D3D12_MAX_INFO_QUEUE_INTERFACE  (1)
 #define DXGI_MAX_FACTORY_INTERFACE      (7)
 #define DXGI_MAX_SWAPCHAIN_INTERFACE    (4)
 #define DXGI_MAX_OUTPUT_INTERFACE       (6)
 #define DXGI_MAX_ADAPTER_INTERFACE      (4)
+#define D3D12_MAX_GPU_COUNT             (1)
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Alias 
@@ -32,7 +34,13 @@
 using Microsoft::WRL::ComPtr;
 
 // device
-#if   D3D12_MAX_DEVICE_INTERFACE >= 10
+#if   D3D12_MAX_DEVICE_INTERFACE >= 12
+struct ID3D12Device12;
+using  IDevice = ID3D12Device12;
+#elif D3D12_MAX_DEVICE_INTERFACE >= 11
+struct ID3D12Device11;
+using  IDevice = ID3D12Device11;
+#elif D3D12_MAX_DEVICE_INTERFACE >= 10
 struct ID3D12Device10;
 using  IDevice = ID3D12Device10;
 #elif D3D12_MAX_DEVICE_INTERFACE >= 9
@@ -196,6 +204,14 @@ struct IDXGIAdapter;
 using IAdapter = IDXGIAdapter;
 #endif 
 
+// InfoQueue
+#if D3D12_MAX_INFO_QUEUE_INTERFACE >= 1
+struct ID3D12InfoQueue1;
+using  IInfoQueue = ID3D12InfoQueue1;
+#elif  D3D12_MAX_INFO_QUEUE_INTERFACE >= 0
+struct ID3D12InfoQueue;
+using  IInfoQueue = ID3D12InfoQueue;
+#endif
 
 struct ID3D12CommandQueue;
 struct ID3D12CommandAllocator;
@@ -235,7 +251,7 @@ using RootSignatureComPtr    = ComPtr<IRootSignature>;
 using BlobComPtr             = ComPtr<IBlob>;
 using DebugComPtr            = ComPtr<IDebug>;
 using HeapComPtr             = ComPtr<IHeap>;
-
+using InfoQueuePtr           = ComPtr<IInfoQueue>;
 
 #endif DirectX12_CORE_HPP
 

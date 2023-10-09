@@ -48,7 +48,7 @@ RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& de
 	{
 		.Type     = dxCommandListType,                    // Enable to execute all command 
 		.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL,  // Command queue priority (ç°å„ïœÇ¶ÇÈÇ©Ç‡)
-		.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE,        // Default 
+		.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE,        // TimeoutÇÕèÌÇ…óLå¯Ç…ÇµÇƒÇ®Ç≠.
 		.NodeMask = 0                                     // Single GPU
 	};
 

@@ -132,6 +132,10 @@ namespace rhi::directX12
 
 		D3D12_VARIABLE_SHADING_RATE_TIER GetVariableShadingRateTier() const { return _variableRateShadingTier; }
 
+		std::uint32_t MaxUsableSamplerHeapCount() const { return _maxSamplerHeapCount; }
+
+		std::uint32_t MaxUsableDescriptorHeapCount() const { return _maxDescriptorHeapCount; }
+
 		bool IsSupportedAllowTearing       () const noexcept { return _isSupportedAllowTearing; }
 
 		bool IsSupportedDxr                () const override { return _isSupportedRayTracing; }
@@ -151,6 +155,14 @@ namespace rhi::directX12
 		bool IsSupportedDepthBoundsTest    () const override { return _isSupportedDepthBoundsTest; }
 
 		bool IsSupportedSamplerFeedback    () const override { return _isSupportedSamplerFeedback; }
+
+		bool IsSupportedStencilReferenceFromPixelShader() const override { return _isSupportedStencilReferenceFromPixelShader; }
+		
+		bool IsSupportedWaveLane() const override { return _isSupportedWaveLane; }
+
+		bool IsSupportedNative16bitOperation() const override { return _isSupported16bitOperation; }
+
+		bool IsSupportedAtomicOperation() const override { return _isSupportedAtomicOperation; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -173,16 +185,19 @@ namespace rhi::directX12
 		/*-------------------------------------------------------------------
 		-               Device Support Check
 		---------------------------------------------------------------------*/
-		bool          _isSupportedRayTracing = true;
-		bool          _isSupportedAllowTearing = true;
-		bool          _isSupportedHDR        = true;
-		bool          _isSupportedVariableRateShadingTier1 = true;
-		bool          _isSupportedVariableRateShadingTier2 = true;
-		bool          _isSupportedMeshShading              = true;
-		bool          _isSupportedRenderPass               = true;
-		bool          _isSupportedRayQuery                 = true;
-		bool          _isSupportedDepthBoundsTest          = true;
-		bool          _isSupportedSamplerFeedback          = true;
+		bool _isSupportedRayTracing = true;
+		bool _isSupportedAllowTearing = true;
+		bool _isSupportedHDR        = true;
+		bool _isSupportedVariableRateShadingTier1 = true;
+		bool _isSupportedVariableRateShadingTier2 = true;
+		bool _isSupportedMeshShading              = true;
+		bool _isSupportedRenderPass               = true;
+		bool _isSupportedRayQuery                 = true;
+		bool _isSupportedDepthBoundsTest          = true;
+		bool _isSupportedSamplerFeedback          = true;
+		bool _isSupportedBindless                 = true;
+		bool _isSupportedStencilReferenceFromPixelShader   = true;
+		bool _isSupported16bitOperation           = false;
 
 		/* @brief : The maximum D3D12 feature level supported. 0 if not supported*/
 		D3D_FEATURE_LEVEL _maxSupportedFeatureLevel = (D3D_FEATURE_LEVEL)0;
@@ -190,13 +205,24 @@ namespace rhi::directX12
 		/*` @brief : Thre maximum Shader Model supported. 0 if not supported*/
 		D3D_SHADER_MODEL _maxSupportedShaderModel = (D3D_SHADER_MODEL)0;
 
-		/* @brief Tier1 (few available pipeline resources)-> Tier3 (A lot of available pipeline resources*/
-		D3D12_RESOURCE_BINDING_TIER _resourceBindingTier = D3D12_RESOURCE_BINDING_TIER_1;
-
 		/* @brief For the HeapTier, it checks if the buffer, RenderTarget and DepthStencil, TargetStencil and depth stencil texture rendering can be used in the same heap*/
 		D3D12_RESOURCE_HEAP_TIER    _resourceHeapTier    = D3D12_RESOURCE_HEAP_TIER_1;
 
 		std::uint32_t _deviceNodeCount = 0;
+
+		/*-------------------------------------------------------------------
+		-                Descriptor Heap Info
+		--------------------------------------------------------------------- */
+		/* @brief Tier1 (few available pipeline resources)-> Tier3 (A lot of available pipeline resources*/
+		D3D12_RESOURCE_BINDING_TIER _resourceBindingTier = D3D12_RESOURCE_BINDING_TIER_1;
+
+		std::uint32_t _maxDescriptorHeapCount = 0;
+		std::uint32_t _maxSamplerHeapCount    = 0;
+
+		/*-------------------------------------------------------------------
+		-                    Bindless resource
+		---------------------------------------------------------------------*/
+		core::BindlessResourceType _bindlessResourceType = core::BindlessResourceType::Unsupported;
 
 		/*-------------------------------------------------------------------
 		-                RenderPass
@@ -252,6 +278,24 @@ namespace rhi::directX12
 * 　　　　　　　 Tier 1.0 : 全てのTexture addressing modeで使用可能*/
 		D3D12_SAMPLER_FEEDBACK_TIER _samplerFeedbackTier = D3D12_SAMPLER_FEEDBACK_TIER_NOT_SUPPORTED;
 
+		/*-------------------------------------------------------------------
+		-               Wave 
+		---------------------------------------------------------------------*/
+		/* @brief : HLSLで明示的にGPU上で複数スレッドの使用が可能となります.
+		            Wave : プロセッサ上の同時に実行されるスレッドの集合
+					Lane : 個々のスレッド*/
+		bool _isSupportedWaveLane = false;
+		std::uint32_t _minWaveLaneCount = 0;
+		std::uint32_t _maxWaveLaneCount = 0;
+
+		/*-------------------------------------------------------------------
+		-               Atomic
+		---------------------------------------------------------------------*/
+		bool _isSupportedAtomicInt64OnGroupSharedSupported      = false;
+		bool _isSupportedInt64OnDescriptorHeapResourceSupported = false;
+		bool _isSupportedAtomicOperation                        = false;
+		bool _isSupportedAtomicInt64OnTypedResource             = false;
+		bool _isSupportedAtomicUInt64                           = false;
 	private:
 		/****************************************************************************
 		**                Private Enum Class
@@ -261,6 +305,7 @@ namespace rhi::directX12
 			CBV_SRV_UAV,
 			RTV,
 			DSV,
+			Sampler,
 		};
 
 		/****************************************************************************
@@ -280,9 +325,16 @@ namespace rhi::directX12
 		void CheckMultiSampleQualityLevels();
 		void CheckMeshShadingSupport();
 		void CheckResourceTiers();
+		void CheckMaxHeapSize();
+		void CheckBindlessSupport();
 		void CheckSamplerFeedbackSupport();
 		void CheckAllowTearingSupport();
+		void CheckStencilReferenceFromPixelShaderSupport();
+		void CheckWaveLaneSupport();
+		void CheckNative16bitOperation();
+		void CheckAtomicOperation();
 		void SetupDisplayHDRMetaData();
+		void SetGPUDebugBreak();
 
 		/****************************************************************************
 		**                Protected Member Variables

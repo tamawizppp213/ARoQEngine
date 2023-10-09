@@ -56,13 +56,15 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool us
 	-                   Create DRED
 	---------------------------------------------------------------------*/
 	EnabledGPUClashDebuggingModes();
+
+	printf("StartInstance\n");
 }
 
 RHIInstance::~RHIInstance()
 {
 	if (_factory) { _factory.Reset(); }
 
-	printf("DestroyInstance");
+	printf("DestroyInstance\n");
 }
 
 #pragma endregion Constructor and Destructor

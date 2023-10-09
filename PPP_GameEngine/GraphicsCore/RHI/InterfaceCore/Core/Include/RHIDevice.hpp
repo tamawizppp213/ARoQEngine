@@ -168,6 +168,14 @@ namespace rhi::core
 		virtual bool IsSupportedDepthBoundsTest    () const = 0;
 
 		virtual bool IsSupportedSamplerFeedback    () const = 0;
+
+		virtual bool IsSupportedStencilReferenceFromPixelShader() const = 0;
+
+		virtual bool IsSupportedWaveLane() const = 0;
+
+		virtual bool IsSupportedNative16bitOperation() const = 0;
+
+		virtual bool IsSupportedAtomicOperation() const = 0;
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

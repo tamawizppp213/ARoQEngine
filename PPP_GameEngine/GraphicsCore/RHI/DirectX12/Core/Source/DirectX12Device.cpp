@@ -78,7 +78,12 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	const auto& gpuName    = adapter->GetName();
 	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName);
 	_device->SetName(deviceName.c_str());
-	
+
+	/*-------------------------------------------------------------------
+	-                 Set gpu debug break
+	---------------------------------------------------------------------*/
+	SetGPUDebugBreak();
+
 	/*-------------------------------------------------------------------
 	-                   Find Highest support model
 	---------------------------------------------------------------------*/
@@ -100,8 +105,12 @@ RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
 	CheckMultiSampleQualityLevels();
 	CheckDepthBoundsTestSupport();
 	CheckResourceTiers();
+	CheckMaxHeapSize();
+	CheckBindlessSupport();
+	CheckStencilReferenceFromPixelShaderSupport();
 	CheckSamplerFeedbackSupport();
 	CheckAllowTearingSupport();
+	CheckWaveLaneSupport();
 	SetupDisplayHDRMetaData();
 }
 
@@ -126,16 +135,17 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	-                   Create descriptor heap
 	---------------------------------------------------------------------*/
 	_defaultHeap[DefaultHeapType::CBV_SRV_UAV] = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
-	_defaultHeap[DefaultHeapType::RTV] = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
-	_defaultHeap[DefaultHeapType::DSV] = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
+	_defaultHeap[DefaultHeapType::RTV]         = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
+	_defaultHeap[DefaultHeapType::DSV]         = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
+	_defaultHeap[DefaultHeapType::Sampler]     = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
 
 	/*-------------------------------------------------------------------
 	-                   Set up descriptor count
 	---------------------------------------------------------------------*/
 	std::map<core::DescriptorHeapType, size_t> heapInfoList;
-	heapInfoList[core::DescriptorHeapType::CBV] = heapCount.CBVDescCount;
-	heapInfoList[core::DescriptorHeapType::SRV] = heapCount.SRVDescCount;
-	heapInfoList[core::DescriptorHeapType::UAV] = heapCount.UAVDescCount;
+	heapInfoList[core::DescriptorHeapType::CBV]     = heapCount.CBVDescCount;
+	heapInfoList[core::DescriptorHeapType::SRV]     = heapCount.SRVDescCount;
+	heapInfoList[core::DescriptorHeapType::UAV]     = heapCount.UAVDescCount;
 
 	/*-------------------------------------------------------------------
 	-                   Allocate decsriptor heap
@@ -143,6 +153,7 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	_defaultHeap[DefaultHeapType::CBV_SRV_UAV]->Resize(heapInfoList);
 	_defaultHeap[DefaultHeapType::RTV]->Resize(core::DescriptorHeapType::RTV, heapCount.RTVDescCount);
 	_defaultHeap[DefaultHeapType::DSV]->Resize(core::DescriptorHeapType::DSV, heapCount.DSVDescCount);
+	_defaultHeap[DefaultHeapType::Sampler]->Resize(core::DescriptorHeapType::SAMPLER, heapCount.SamplerDescCount);
 
 }
 
@@ -441,6 +452,30 @@ void RHIDevice::CheckSamplerFeedbackSupport()
 	}
 
 }
+
+/****************************************************************************
+*						CheckBindlessSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckBindlessSupport()
+*
+*  @brief     Check bindless support
+*
+*  @param[in] void
+*
+*  @return 　　void
+*
+*  @details   通常はRootParameterを使って各リソースビューとグラフィックパイプラインの紐づけを行うが, 
+*             DescriptorHeapのインデックスだけを使ってバインドし, これらのインデクスを全てRootConstantに配置可能.
+*             https://rtarun9.github.io/blogs/bindless_rendering/
+*****************************************************************************/
+void RHIDevice::CheckBindlessSupport()
+{
+	if (GetMaxSupportedShaderModel() >= D3D_SHADER_MODEL_6_6 && _resourceBindingTier == D3D12_RESOURCE_BINDING_TIER_3)
+	{
+		_isSupportedBindless = true;
+		_bindlessResourceType = GetMaxSupportedFeatureLevel() <= D3D_FEATURE_LEVEL_11_1 ? core::BindlessResourceType::OnlyRayTracing : core::BindlessResourceType::AllShaderTypes;
+	}
+}
 /****************************************************************************
 *                     CheckVRSSupport
 *************************************************************************//**
@@ -715,6 +750,57 @@ void RHIDevice::CheckResourceTiers()
 }
 
 /****************************************************************************
+*                     CheckStencilReferenceFromPixelShaderSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckStencilReferenceFromPixelShaderSupport()
+*
+*  @brief     ステンシルバッファの参照値をピクセルシェーダーで出力出来るようにします. 
+*             https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/shader-specified-stencil-reference-value
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckStencilReferenceFromPixelShaderSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS options{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options)))) { return; }
+	_isSupportedStencilReferenceFromPixelShader = options.PSSpecifiedStencilRefSupported != 0;
+}
+/****************************************************************************
+*                     CheckMaxHeapSize()
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckMaxHeapSize()
+*
+*  @brief     最大のHeap Sizeをセットします.
+* 
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckMaxHeapSize()
+{
+	if (_resourceBindingTier == D3D12_RESOURCE_BINDING_TIER_1)
+	{
+		_maxDescriptorHeapCount = D3D12_MAX_SHADER_VISIBLE_DESCRIPTOR_HEAP_SIZE_TIER_1;
+	}
+	else if (_resourceBindingTier == D3D12_RESOURCE_BINDING_TIER_2)
+	{
+		_maxDescriptorHeapCount = D3D12_MAX_SHADER_VISIBLE_DESCRIPTOR_HEAP_SIZE_TIER_2;
+	}
+	else if (_resourceBindingTier == D3D12_RESOURCE_BINDING_TIER_3)
+	{
+		_maxDescriptorHeapCount = D3D12_MAX_SHADER_VISIBLE_DESCRIPTOR_HEAP_SIZE_TIER_2;
+	}
+	else
+	{
+		_maxDescriptorHeapCount = D3D12_MAX_SHADER_VISIBLE_DESCRIPTOR_HEAP_SIZE_TIER_2;
+	}
+
+	_maxSamplerHeapCount = D3D12_MAX_SHADER_VISIBLE_SAMPLER_HEAP_SIZE;
+}
+/****************************************************************************
 *                     FindHighestFeatureLevel
 *************************************************************************//**
 *  @fn        void RHIDevice::FindHighestFeatureLevel()
@@ -789,6 +875,76 @@ void RHIDevice::FindHighestShaderModel()
 		}
 	}
 }
+
+/****************************************************************************
+*                     CheckWaveLaneSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckWaveLaneSupport()
+*
+*  @brief      HLSLで明示的にGPU上で複数スレッドの使用が可能となります.
+		       Wave : プロセッサ上の同時に実行されるスレッドの集合
+			   Lane : 個々のスレッド
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckWaveLaneSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS1 options{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS1, &options, sizeof(options)))) { return; }
+	_isSupportedWaveLane = !!options.WaveOps;
+	_minWaveLaneCount    = options.WaveLaneCountMin;
+	_maxWaveLaneCount    = options.WaveLaneCountMax;
+}
+
+/****************************************************************************
+*                     CheckNative16bitOperation
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckNative16bitOperation()
+*
+*  @brief     16 bitのシェーダー操作が可能かどうかを調べます
+* 
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckNative16bitOperation()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS4 options{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS4, &options, sizeof(options)))) { return; }
+	_isSupported16bitOperation = !!options.Native16BitShaderOpsSupported;
+}
+
+/****************************************************************************
+*                     CheckAtomicOperation
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckAtomicOperation()
+*
+*  @brief     Wave用にAtomic操作が可能かどうかを調べます.
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckAtomicOperation()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS7 options7{};
+	D3D12_FEATURE_DATA_D3D12_OPTIONS9 options9{};
+	D3D12_FEATURE_DATA_D3D12_OPTIONS11 options11{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS7, &options7, sizeof(options7)))) { return; }
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS9, &options9, sizeof(options9)))) { return; }
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS11, &options11, sizeof(options11)))) { return; }
+
+	_isSupportedAtomicOperation = true;
+	_isSupportedAtomicInt64OnTypedResource             = !!options9.AtomicInt64OnTypedResourceSupported;
+	_isSupportedAtomicInt64OnGroupSharedSupported      = !!options9.AtomicInt64OnGroupSharedSupported;
+	_isSupportedInt64OnDescriptorHeapResourceSupported = !!options11.AtomicInt64OnDescriptorHeapResourceSupported;
+	_isSupportedAtomicUInt64 = _isSupportedAtomicInt64OnTypedResource && _isSupportedInt64OnDescriptorHeapResourceSupported;
+}
 #pragma endregion  Device Support Function
 
 #pragma region Property
@@ -830,5 +986,38 @@ std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::D
 		case core::DescriptorHeapType::DSV: { return _defaultHeap[DefaultHeapType::DSV]; }
 		default: { return nullptr;}
 	}
+}
+
+/****************************************************************************
+*                     SetGPUDebugBreak
+*************************************************************************//**
+*  @fn        void RHIDevice::SetGPUDebugBreak()
+*
+*  @brief     Set gpu debug break
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
+void RHIDevice::SetGPUDebugBreak()
+{
+	/*-------------------------------------------------------------------
+	-              GPU debug breakを使用するか
+	---------------------------------------------------------------------*/
+	const auto dxInstance = static_cast<rhi::directX12::RHIInstance*>(_adapter->GetInstance());
+	if (!dxInstance->UseGPUDebugBreak()) { return; }
+
+	/*-------------------------------------------------------------------
+	-              Info queueが存在しているか
+	---------------------------------------------------------------------*/
+	InfoQueuePtr infoQueue = nullptr;
+	_device.As(&infoQueue);
+
+	if (!infoQueue) { return; }
+
+	/*-------------------------------------------------------------------
+	-              深刻度の設定 (現在はerrorのみ対応いたします.)
+	---------------------------------------------------------------------*/
+	infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
 }
 #pragma endregion Property

@@ -67,9 +67,9 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 	-      Create Instance
 	---------------------------------------------------------------------*/
 #if _DEBUG
-	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, true, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, true, false, false);
 #else
-	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, false, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, false, false, false);
 #endif
 	_instance->LogAdapters();
 
@@ -383,11 +383,12 @@ void LowLevelGraphicsEngine::ShutDown()
 void LowLevelGraphicsEngine::SetUpHeap()
 {
 	core::DefaultHeapCount heapCount = {};
-	heapCount.CBVDescCount = CBV_DESC_COUNT;
+	heapCount.CBVDescCount = CBV_DESC_COUNT; 
 	heapCount.SRVDescCount = SRV_DESC_COUNT;
 	heapCount.UAVDescCount = UAV_DESC_COUNT;
 	heapCount.DSVDescCount = _apiVersion == APIVersion::DirectX12 ? DSV_DESC_COUNT : 0;
 	heapCount.RTVDescCount = _apiVersion == APIVersion::DirectX12 ? RTV_DESC_COUNT : 0;
+	heapCount.SamplerDescCount = MAX_SAMPLER_STATE;
 	_device->SetUpDefaultHeap(heapCount);
 
 }
