@@ -188,7 +188,7 @@ float4 ExecuteSSAO(VertexOut input) : SV_Target
         const float3 randomSamplePosition = Radius * flip * randomOffset + viewSurfacePosition.xyz;
         
         // Project random sample position and generate projective tex-coords.
-        const float4 projectionRandomSample = mul(float4(randomSamplePosition, 1.0f), input.ProjectionTexture) / projectionSample.w;
+        const float4 projectionRandomSample = mul(float4(randomSamplePosition, 1.0f), input.ProjectionTexture) / projectionRandomSample.w;
         
         // 目からランダムなサンプル位置までのレイに沿って, 最も近い深度値を見つける
         // これはランダムなサンプル位置についての深度値ではないことは注意しておく
