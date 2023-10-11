@@ -1,6 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //              Title:  ShaderBRDF.hlsli
 //            Content:  BRDF function
+//                      BRDFとは, 光どの方向にどれだけ反射されるかを表現した式です. 
+//                      光の入射位置と反射位置は同じものとして仮定します. 
 //             Author:  Toide Yutaro
 //             Create:  
 //////////////////////////////////////////////////////////////////////////////////
@@ -50,9 +52,14 @@ float3 Calculate_F0(float refractive_1, float refractive_2 = 1.0f)
     return F0;
 }
 
-float3 Fresnel_Schlick(float u, float3 F0, float3 F90 = 1.0f, float powValue = 5.0f)
+float Fresnel_Schlick(float u, float F90, float F0 = 1.0f, float powValue = 5.0f)
 {
     return F0 + (F90 - F0) * pow(1.0f - u, powValue); 
+}
+
+float3 Fresnel_Schlick(float u, float3 F90, float3 F0 = 1.0f, float powValue = 5.0f)
+{
+    return F0 + (F90 - F0) * pow(1.0f - u, powValue);
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -65,23 +72,23 @@ float3 Fresnel_Schlick(float u, float3 F0, float3 F90 = 1.0f, float powValue = 5
 /****************************************************************************
 *				  		DiffuseBRDF_Normalized_Lambert
 *************************************************************************//**
-*  @fn        float3 DiffuseBRDF_Normalized_Lambert(float3 cDiffuse)
+*  @fn        float DiffuseBRDF_Normalized_Lambert(float3 cDiffuse)
 
 *  @brief     Calcurate Lambert Diffuse
 
 *  @param[in] void
 
-*  @return    float3 
+*  @return    float
 *****************************************************************************/
-float3 DiffuseBRDF_Normalized_Lambert()
+float DiffuseBRDF_Normalized_Lambert()
 {
-    return 1.0f / PI;
+    return (1.0f / PI);
 }
 
 /****************************************************************************
 *				  		DiffuseBRDF_Disney
 *************************************************************************//**
-*  @fn        float3 DiffuseBRDF_Disney(const float normalDotEye, const float normalDotLight, const float lightDotHalf, const float roughness)
+*  @fn        float DiffuseBRDF_Disney(const float normalDotEye, const float normalDotLight, const float lightDotHalf, const float roughness)
 
 *  @brief     Calcurate BRDF Diffuse using the disney(burley) model.
 *             [Burley 2012, "Physically-Based Shading at Disney"]
@@ -90,13 +97,13 @@ float3 DiffuseBRDF_Normalized_Lambert()
 *  @param[in] const float normalDotLight : normalize(surfaceNormal ・ toLight)
 *  @param[in] const float roughness
 
-*  @return    float3 f_reflect_diffuse
+*  @return    float f_reflect_diffuse
 *****************************************************************************/
-float3 DiffuseBRDF_Disney(const float normalDotEye, const float normalDotLight, const float lightDotHalf, const float roughness)
+float DiffuseBRDF_Disney(const float normalDotEye, const float normalDotLight, const float lightDotHalf, const float roughness)
 {
-    const float  F90          = 0.5f + 2.0f * roughness * pow(lightDotHalf, 2.0f);
-    const float3 lightScatter = Fresnel_Schlick(normalDotLight, 1.0f, F90);
-    const float3 toEyeScatter = Fresnel_Schlick(normalDotEye  , 1.0f, F90);
+    const float  F90          = 0.5f + 2.0f * roughness * pow(lightDotHalf, 2.0f); // 光が平行に入ってきたときの反射率
+    const float3 lightScatter = Fresnel_Schlick(normalDotLight, F90, 1.0f);        // 平行に入ってきたときにも拡散の影響が出るようにしてる
+    const float3 toEyeScatter = Fresnel_Schlick(normalDotEye  , F90, 1.0f);
     return lightScatter * toEyeScatter * (1.0f / PI);
 }
 
@@ -107,15 +114,16 @@ float3 DiffuseBRDF_Disney(const float normalDotEye, const float normalDotLight, 
 
 *  @brief     Calcurate BRDF Diffuse using the onenNayar model.
 *             [Gotanda 2012, "Beyond a Simple Physically Based Blinn-Phong Model in Real-Time""]
+              観測方向と表面粗さによって拡散反射の見え方が変化する現象を再現してる
  
 *  @param[in] const float normalDotEye   : normalize(surfaceNormal ・ toEye)
 *  @param[in] const float normalDotLight : normalize(surfaceNormal ・ toLight)
 *  @param[in] const float eyeDotHalf     : normalize(toEye ・ half)
 *  @param[in] const float roughness
 
-*  @return    float3 f_reflect_diffuse
+*  @return    float f_reflect_diffuse
 *****************************************************************************/
-float3 DiffuseBRDF_OnenNayar(const float normalDotEye, const float normalDotLight, const float eyeDotHalf, const float roughness)
+float DiffuseBRDF_OnenNayar(const float normalDotEye, const float normalDotLight, const float eyeDotHalf, const float roughness)
 {
     const float alpha         = roughness * roughness;
     const float alpha2        = alpha * alpha;
@@ -143,7 +151,7 @@ float3 DiffuseBRDF_OnenNayar(const float normalDotEye, const float normalDotLigh
 
 *  @return    float3 f_reflect_diffuse
 *****************************************************************************/
-float3 DiffuseBRDF_Gotanda(const float normalDotEye, const float normalDotLight, const float eyeDotHalf, const float roughness, const float F0)
+float DiffuseBRDF_Gotanda(const float normalDotEye, const float normalDotLight, const float eyeDotHalf, const float roughness, const float F0)
 {
     const float alpha       = roughness * roughness;
     const float alpha2      = alpha * alpha;
@@ -161,6 +169,8 @@ float3 DiffuseBRDF_Gotanda(const float normalDotEye, const float normalDotLight,
     float Lr = (21.0 / 20.0) * (1 - F0) * (Fr * Lm + Vd + Bp);
     return Lr / PI;
 }
+
+
 //////////////////////////////////////////////////////////////////////////////////
 //                            Specular
 //                     鏡面反射のBRDF計算に使用します.
@@ -197,7 +207,7 @@ float SpecularBRDF_D_NDF_GGX(const float normalDotHalf, const float roughness)
     
     const float result = alpha2 / denominator;
     
-    // 0.0fより小さいのは, マクロ面とマイクロ面が同じ側にある方向に対してのみマイクロ面が見えることを保証するもの.
+    // 0.0f以上なのは, マクロ面とマイクロ面が同じ側にある方向に対してのみマイクロ面が見えることを保証するもの.
     // 1.0fよりは大きくしない. あくまで確率分布
     return saturate(result);
 }
@@ -239,7 +249,7 @@ float SpecularBRDF_D_NDF_Beckmann(const float normalDotHalf, const float roughne
 
 *  @return    float3
 *****************************************************************************/
-float3 SpecularBRDF_F_Schlick(const float3 toEye, const float3 halfVector, const float3 F0, const float3 F90 = 1.0f)
+float3 SpecularBRDF_F_Schlick(const float3 toEye, const float3 halfVector, const float3 F90, const float3 F0 = 1.0f)
 {
     const float normalDotLight = saturate(dot(toEye, halfVector));
     const float3 reflectance = F0 + (F90 - F0) * pow(1.0f - normalDotLight, 5.0f);
@@ -317,6 +327,7 @@ float SpecularBRDF_V_SmithJoint(const float roughness, const float normalDotEye,
     const float vSmithLight = normalDotEye   * sqrt(normalDotLight * (normalDotLight - normalDotLight * alpha2) + alpha2);
     return 0.5f * saturate(rcp(vSmithEye + vSmithLight)); // 1を超えてくる可能性があったので, 念のため
 }
+
 /****************************************************************************
 *				  			Geometry_Smiths_Schlick_GGX
 *************************************************************************//**
@@ -385,6 +396,40 @@ float Masking_Abd_Shadowing_Function_EnvironmentMap(float3 normal, float toEye, 
          * Geometry_Smiths_Schlick_GGX_EnvironmentMap(normal, light, roughness);
 }
 
+float3 ClearCoatTransmittance(float normalDotLight, float normalDotEye, float metallic, float3 baseColor)
+{
+    float transmittance = 1.0f;
+    
+    /*-------------------------------------------------------------------
+	-            クリアコートの被覆率をメタルネスで定義 
+	---------------------------------------------------------------------*/
+    const float clearCoatCoverage = metallic;
+    
+    /*-------------------------------------------------------------------
+	-            透過カラーの計算
+	---------------------------------------------------------------------*/
+    if (clearCoatCoverage > 0.0f)
+    {
+        const float layerThickness = 1.0f; // 正規化された厚みを仮定している. (これは後で修正案件)
+        
+        // 媒体内部の経路の長さは, 光の入射位置から表面の底面, 見ている人までの距離
+        const float thinDistance   = layerThickness * (rcp(normalDotEye) + rcp(normalDotLight));
+        
+        // 反射色の定義
+        const float3 transmittanceColor = DiffuseBRDF_Normalized_Lambert() * baseColor;
+        
+        // このため、消光は層厚を2回通過することで正規化される。
+        const float3 extinctionCoefficient = -log(max(transmittanceColor, 0.0001f)) / (2.0f * layerThickness);
+        
+        // 光学的深度は, 上記でw計算されたthinDistanceに対して表か
+        const float3 opticalDepth = extinctionCoefficient *  max(thinDistance - 2.0 * layerThickness, 0.0);
+        
+        transmittance = exp(-opticalDepth);
+        transmittance = lerp(1.0, transmittance, clearCoatCoverage);
+    }
+    
+    return transmittance;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                            Luminance
 //////////////////////////////////////////////////////////////////////////////////
@@ -398,19 +443,20 @@ float Masking_Abd_Shadowing_Function_EnvironmentMap(float3 normal, float toEye, 
 *  @param[in] float3 light
 *  @param[in] float3 toEye
 *****************************************************************************/
-DirectLight AccumulateSurfaceEnergy(in BRDFSurface surface, float3 light, float3 toEye)
+DirectLight AccumulateSurfaceEnergy(in BRDFSurface surface, float3 toLight, float3 toEye)
 {
     /*-------------------------------------------------------------------
 	-             Get each of vector for surface.  
 	---------------------------------------------------------------------*/
-    const float3 toEyeNormalize  = normalize(toEye);
-    const float3 surfaceNormal   = normalize(surface.Normal);
-    const float3 halfVector      = normalize(toEyeNormalize + surface.Normal);
-    const float  normalDotHalf   = saturate(dot(surfaceNormal, halfVector));
-    const float  normalDotToEye  = saturate(dot(surfaceNormal, toEyeNormalize));
-    const float  normalDotLight  = saturate(dot(surfaceNormal, light));
-    const float  lightDotHalf    = saturate(dot(light, halfVector));
-    const float  eyeDotHalf      = saturate(dot(toEye, halfVector));
+    const float3 toEyeNormalize   = normalize(toEye);                             // 視線方向に向かう正規化ベクトル
+    const float3 toLightNormalize = normalize(toLight);                           // 光源方向に向かう正規化ベクトル
+    const float3 surfaceNormal    = normalize(surface.Normal);                    // マクロ表面の法線方向
+    const float3 halfVector       = normalize(toEyeNormalize + toLightNormalize); // ハーフベクトル (視線とライト), 反射ベクトル = ハーフベクトルで最も光の反射が強い 
+    const float  normalDotHalf    = saturate(dot(surfaceNormal, halfVector));     // 表面とハーフベクトル間の角度
+    const float  normalDotToEye   = saturate(dot(surfaceNormal, toEyeNormalize)); // 表面と視線方向の角度
+    const float  normalDotLight   = saturate(dot(surfaceNormal, toLight));        // 表面とライト方向の角度
+    const float  lightDotHalf     = saturate(dot(toLight, halfVector));           // ライトとハーフベクトルの角度
+    const float  eyeDotHalf       = saturate(dot(toEye, halfVector));             // 視線とハーフベクトルの角度
     
     /*-------------------------------------------------------------------
 	-             Surface infomation
@@ -456,28 +502,28 @@ DirectLight AccumulateSurfaceEnergy(in BRDFSurface surface, float3 light, float3
     //const float  denominator = (4.0f * normalDotToEye * normalDotLight) + 0.0001f;
     //const float3 Ls          = surface.Specular * numerator;
     const float3 Ls = ((D * V) * F) * normalDotLight;
-    /*-------------------------------------------------------------------
-	-             Diffuse (Lambert model) 
-	---------------------------------------------------------------------*/
-    //const float3 cDiffuse = (1.0f - F) * (1.0f - metalness) * albedo;
+     //const float3 cDiffuse = (1.0f - F) * (1.0f - metalness) * albedo;
     
+    /*-------------------------------------------------------------------
+	-             Diffuse項の輝度計算 (Lambert model) 
+	---------------------------------------------------------------------*/
 #ifdef USE_DIFFUSE_DISNEY
-    const float3 Ld = diffuse * DiffuseBRDF_Disney(normalDotToEye, normalDotLight, lightDotHalf, roughness);
+    const float Ld = DiffuseBRDF_Disney(normalDotToEye, normalDotLight, lightDotHalf, roughness);
 #elif USE_DIFFUSE_ONEN_NAYAR
-    const float3 Ld = diffuse * DiffuseBRDF_OnenNayar(normalDotToEye, normalDotLight,eyeDotHalf, roughness);
+    const float Ld = DiffuseBRDF_OnenNayar(normalDotToEye, normalDotLight,eyeDotHalf, roughness);
 #elif USE_DIFFUSE_GOTANDA
-    const float3 Ld = diffuse * DiffuseBRDF_Gotanda(normalDotToEye, normalDotLight,eyeDotHalf, roughness, F0);
+    const float Ld = DiffuseBRDF_Gotanda(normalDotToEye, normalDotLight,eyeDotHalf, roughness, F0);
 #else   
-    const float3 Ld = diffuse * DiffuseBRDF_Normalized_Lambert() * normalDotLight;  
+    const float Ld = DiffuseBRDF_Normalized_Lambert() * normalDotLight;  
 #endif
     
     /*-------------------------------------------------------------------
 	-             Set directLight
 	---------------------------------------------------------------------*/
     DirectLight directLight;
-    directLight.Diffuse      = Ld;
+    directLight.Diffuse      = Ld * diffuse;
     directLight.Transmission = 0.0f;
-    directLight.Specular     = Ls;
+    directLight.Specular     = Ls * metalness;
     
     return directLight; // Luminance emit + specular +  diffuse 
 }

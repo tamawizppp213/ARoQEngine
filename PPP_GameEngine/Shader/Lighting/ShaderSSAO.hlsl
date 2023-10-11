@@ -51,27 +51,17 @@ cbuffer BlurMode : register(b4)
 }
 
 // Texture
-Texture2D<float4>   NormalTexture   : register(t0);
-Texture2D<float>    DepthTexture    : register(t1);
-Texture2D<float4>   RandomTexture   : register(t2);
-Texture2D<float4>   InputTexture    : register(t3);
-RWTexture2D<float4> OutputTexture   : register(u0);
+Texture2D<float4>   NormalTexture    : register(t0);
+Texture2D<float>    DepthTexture     : register(t1);
+Texture2D<float4>   BlueNoiseTexture : register(t2);
+Texture2D<float4>   InputTexture     : register(t3);
+RWTexture2D<float4> OutputTexture    : register(u0);
 
 // Sampler
 SamplerState SamplerPointClamp : register(s1);
 SamplerState SamplerDepth      : register(s2);
 
 // Variables
-static const float2 RectUVs[6] =
-{
-    float2(0.0f, 1.0f),
-    float2(0.0f, 0.0f),
-    float2(1.0f, 0.0f),
-    float2(0.0f, 1.0f),
-    float2(1.0f, 0.0f),
-    float2(1.0f, 1.0f)
-};
-
 struct VertexOut
 {
     float4   Position          : SV_Position; // NDC space
@@ -113,13 +103,13 @@ float NDCDepthToViewDepth(const float z_ndc)
 
 *  @return    float
 *****************************************************************************/
-float CalculateOcclusion(const float distZ)
+float CalculateOcclusion(const float distanceViewZ)
 {
     // if (dist <= surface epsilon, don't occlude the object)
-    if (distZ <= SurfaceEpsilon){ return 0.0f; }
+    if (distanceViewZ <= SurfaceEpsilon){ return 0.0f; }
     
     const float fadeLength = FadeEnd - FadeStart;
-    const float occlusion  = saturate((FadeEnd - distZ) / fadeLength);
+    const float occlusion  = saturate((FadeEnd - distanceViewZ) / fadeLength);
     return occlusion;
 }
 
@@ -132,8 +122,7 @@ VertexOut VSMain( const VSInputVertex vertexIn)
 {
     VertexOut result;
     
-    // based on the vertex id, you select the rect UV value. 
-    // vertex data must be set rectangle polygon. 
+    // ここでは, 長方形メッシュを対象にしています. 
     result.UV = vertexIn.UV;
     
     // Rectangle covering screen in NDC space
@@ -161,19 +150,23 @@ float4 ExecuteSSAO(VertexOut input) : SV_Target
     /*-------------------------------------------------------------------
 	-        Get ssao variables
 	---------------------------------------------------------------------*/
-    // Acquire z-coord of this pixel in NDC space from depth map
+    // 深度マップからNDC空間におけるこのピクセルのz座標を取得する
+    // 深度マップの定義はzPrefass.hlslを参照してください.
     const float ndcDepth  = DepthTexture.Sample(SamplerDepth, input.UV).r; // LODを使わないことが分かるならSampleLevel
-    const float viewDepth = NDCDepthToViewDepth(ndcDepth);
     
-    // Reconstruct the view space position of the point with depth pz.
-    const float  distanceRatio = (viewDepth / input.NearPlaneViewPosition.z);
-    const float3 viewPosition  = distanceRatio * input.NearPlaneViewPosition; // NearPlaneは単位ベクトル的な扱い.
+    // ビュー空間における深度 (カメラ -> 視点までの深度)
+    const float viewSurfaceDepth = NDCDepthToViewDepth(ndcDepth);
+    
+    // 深度の値をもとに, View空間におけるサンプリング位置を再構成する
+    const float  distanceRatio       = (viewSurfaceDepth / input.NearPlaneViewPosition.z); // 
+    const float3 viewSurfacePosition = distanceRatio * input.NearPlaneViewPosition; // NearPlaneは単位ベクトル的な扱い.
     
     // Acquire world normal: the normal value range is converted 0～1 into -1 ～ 1.
-    const float3 normal = normalize((NormalTexture.Sample(SamplerPointClamp, input.UV).xyz * 2) - 1);
+    // 法線マップを0～1から, -1～1に変換する. 法線はワールド空間のものを使用する. 
+    const float3 normal = (NormalTexture.Sample(SamplerPointClamp, input.UV).xyz * 2) - 1;
     
-    // Acquire random value : the random value range is converted 0～1 into －1 ～ 1.
-    const float3 random = normalize(2.0f * RandomTexture.Sample(SamplerLinearWrap, 4.0f * input.UV, 0).xyz - 1);
+    // Blue noiseをランダム値には使用し, なるべく均等にサンプリングされるようにする. また, 範囲を0～1から-1～1に変換する
+    const float3 randomVector = normalize(2.0f * BlueNoiseTexture.Sample(SamplerLinearWrap, 4.0f * input.UV, 0).xyz - 1);
     
     float occlusionSum = 0.0f;
     float division     = 0.0f;
@@ -181,36 +174,40 @@ float4 ExecuteSSAO(VertexOut input) : SV_Target
     /*-------------------------------------------------------------------
 	-        Execute SSAO
 	---------------------------------------------------------------------*/
+    // 法線方向に半球状に放射する近接点をサンプリング
     for(int i = 0; i < SAMPLE_COUNT; ++i)
     {
-        // Offset vectors are fixed and uniformly distributed.
-        // If we reflect them about a random vector then we get a random uniform distribution of offset vectors.
-        const float3 offset = reflect(OffsetVectors[i].xyz, random);
+        // offset Vectorは固定され, 一様に分散している.(offset vectorが固まらないようにする処置です. )
+        // offset vectorをランダムなベクトルに対して適用すると, オフセットベクトルのランダムな一様分布が得られます. 
+        const float3 randomOffset = reflect(OffsetVectors[i].xyz, randomVector);
         
-        // Flip offset vector if it is behind the plane defined by (p, n).
-        const float  flip   = sign(dot(offset, normal));
+        // offset vectorが(p, n)で定義される平面の後ろにある場合、それを反転させる。
+        const float  flip   = sign(dot(randomOffset, normal));
         
-        // random sample position must not have been occluded already.
-        const float3 randomSamplePosition = random * Radius * flip + viewPosition.xyz;
+        // ランダムなサンプリング位置は, Occlude radius内に取得できるようにする. 
+        const float3 randomSamplePosition = Radius * flip * randomOffset + viewSurfacePosition.xyz;
         
         // Project random sample position and generate projective tex-coords.
-        const float4 projectionSample = mul(float4(randomSamplePosition, 1.0f), input.ProjectionTexture) / projectionSample.w;
+        const float4 projectionRandomSample = mul(float4(randomSamplePosition, 1.0f), input.ProjectionTexture) / projectionSample.w;
         
-        // Find the nearest depth value along the ray from the eye to random sample position.
-        const float ndcSampleDepth = DepthTexture.Sample(SamplerDepth, projectionSample.xy);
+        // 目からランダムなサンプル位置までのレイに沿って, 最も近い深度値を見つける
+        // これはランダムなサンプル位置についての深度値ではないことは注意しておく
+        const float ndcRandomSampleDepth = DepthTexture.Sample(SamplerDepth, projectionRandomSample.xy);
+        const float viewSampleDepth      = NDCDepthToViewDepth(ndcRandomSampleDepth);
         
-        const float viewSampleDepth = NDCDepthToViewDepth(ndcSampleDepth);
+        // 奥行きのある点のビュー空間の位置を再構築する。
+        const float3 viewRandomSamplePosition = (viewSampleDepth / randomSamplePosition.z) * randomSamplePosition;
         
-        // Reconstruct the view space position of the point with depth.
-        const float3 viewSamplePosition = (viewSampleDepth / randomSamplePosition.z) * randomSamplePosition;
-        
-        // Test whether random sample position occludes position.
-        const float distZ = viewPosition.z - viewSamplePosition.z;
-        const float dp    = max(dot(normal, normalize(viewSamplePosition - viewPosition)), 0.0f);
-        
-        const float occlusion = dp * CalculateOcclusion(distZ);
+        // Random Sample位置がsurface positionを遮蔽するかどうか
+        // dot(normal, normalize(viewRandomSamplePosition - viewSurfacePosition))は, occluder pointがどれだけplaneの正面にいるかを測定
+        // 正面になるほど, 遮蔽可能性が高いため, 遮蔽重みを追加する. 
+        const float distanceViewZ = viewSurfacePosition.z - viewRandomSamplePosition.z; 
+        const float dp            = max(dot(normal, normalize(viewRandomSamplePosition - viewSurfacePosition)), 0.0f);
+        const float occlusion = CalculateOcclusion(distanceViewZ) * dp;
         occlusionSum += occlusion;
     }
+    
+    // 平均
     occlusionSum /= (float) (SAMPLE_COUNT);
     
     const float4 result = saturate(pow(1.0f - occlusionSum, Sharpness));

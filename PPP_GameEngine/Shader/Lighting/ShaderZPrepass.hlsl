@@ -40,7 +40,7 @@ PSIn VSMain( VSInputSkinVertex vertexIn)
     const float4 positionView       = mul(View, positionWorld);           // ワールド座標系       -> ビュー座標系
     result.Position = mul(Projection, positionView);                      // ビュー座標系     -> スクリーン座標系
 		
-    result.Depth.x = result.Position.z / result.Position.w;       // 非線形な深度状態の正規化(0～1)    : Raw
+    result.Depth.x = result.Position.z / result.Position.w;       // 非線形
     result.Depth.y = positionView.z;                              // カメラからのワールド座標としての距離 : Eye
     result.Depth.z = LinearizeDepth(result.Depth.x, NearZ, FarZ); // 線形な深度状態の正規化(0～1)      : Linear01
 	return result;

@@ -152,7 +152,7 @@ void URP::PrepareModelPipeline()
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
 	vs->Compile(ShaderType::Vertex, L"Shader\\Model\\ShaderURPForwardRendering.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel, L"Shader\\Model\\ShaderURPForwardRendering.hlsl",  L"PSMain", 6.4f, { L"Shader\\Core" });
+	ps->Compile(ShaderType::Pixel, L"Shader\\Model\\ShaderURPForwardRendering.hlsl",  L"PSMain", 6.4f, { L"Shader\\Core" }, {L"USE_SPECULAR_F_NONE"});
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
