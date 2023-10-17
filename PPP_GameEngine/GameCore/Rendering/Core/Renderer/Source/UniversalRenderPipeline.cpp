@@ -42,7 +42,7 @@ _gameTimer(gameTimer)
 
 	_gBuffer = std::make_shared<GBuffer>(engine, gc::rendering::GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
 
-	//_ssao = std::make_shared<SSAO>(engine, _gBuffer->GetRenderedTextureView(1), _zPrepass->GetRenderedTextureView());
+	_ssao = std::make_shared<SSAO>(engine, _gBuffer->GetRenderedTextureView(1), _zPrepass->GetRenderedTextureView());
 	
 	const auto shadowDesc = gc::rendering::CascadeShadowDesc();
 	_cascadeShadowMap = std::make_shared<rendering::CascadeShadow>(_engine, shadowDesc, L"URP");
@@ -76,8 +76,8 @@ bool URP::Draw()
 	-         Preprocess
 	---------------------------------------------------------------------*/
 	_zPrepass->Draw(_scene);
-	//_gBuffer ->Draw(_scene);
-	//_ssao->Draw(scene);
+	_gBuffer ->Draw(_scene);
+	_ssao->Draw(_scene);
 	//_cascadeShadowMap->Draw(_gameTimer, _directionalLights->GetLight(0).Direction);
 
 	/*-------------------------------------------------------------------

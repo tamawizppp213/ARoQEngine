@@ -206,6 +206,7 @@
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
+    <ClInclude Include="GameCore\Rendering\Effect\Include\ScreenSpaceReflection.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\Vignette.hpp" />
     <ClInclude Include="GameCore\Rendering\Effect\Include\WhiteBalance.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\CascadeShadow.hpp" />
@@ -541,6 +542,7 @@
     <ClCompile Include="GameCore\Rendering\Effect\Source\FullScreenEffector.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\ParticleEffect.cpp" />
+    <ClCompile Include="GameCore\Rendering\Effect\Source\ScreenSpaceReflection.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp" />
     <ClCompile Include="GameCore\Rendering\Effect\Source\Vignette.cpp" />
@@ -803,6 +805,12 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExecuteSobel</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExecuteSobel</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="Shader\Effect\ShaderSSR.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Shader\Effect\ShaderTonemap.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

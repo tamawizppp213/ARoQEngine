@@ -21,12 +21,17 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
+namespace gc
+{
+	class GaussianBlur;
+};
 namespace rhi::core
 {
 	class GPUBuffer;
 	class GPUResourceView;
 	class RHIResourceLayout;
 	class GPUGraphicsPipelineState;
+
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
@@ -47,10 +52,10 @@ namespace gc
 		struct SSAOSetting
 		{
 			hlsl::float2 TextureSize    = gm::Float2(Screen::GetScreenWidth(), Screen::GetScreenHeight());
-			hlsl::float1 Radius         = 0.5f;
+			hlsl::float1 Radius         = 1.5f;
 			hlsl::float1 Sharpness      = 4.0f;
 			hlsl::float1 FadeStart      = 0.2f;  // view space
-			hlsl::float1 FadeEnd        = 1.0f;    // view space
+			hlsl::float1 FadeEnd        = 500.0f; // view space
 			hlsl::float1 SurfaceEpsilon = 0.05f;
 			int          Padding     = 0;
 			hlsl::float4 Offsets[14] = {}; // SSAOèâä˙âªéûÇ…ê∂ê¨Ç∑ÇÈÇΩÇﬂ, ê›íËïsóvÇ≈Ç∑. 8 cube corners + 6 centers of cube faces
@@ -70,6 +75,7 @@ namespace gc
 		using ResourceLayoutPtr         = std::shared_ptr<rhi::core::RHIResourceLayout>;
 		using VertexBufferPtr           = std::shared_ptr<rhi::core::GPUBuffer>;
 		using IndexBufferPtr            = std::shared_ptr<rhi::core::GPUBuffer>;
+		using GaussianBlurPtr           = std::shared_ptr<gc::GaussianBlur>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -127,6 +133,7 @@ namespace gc
 		ResourceViewPtr  _blurHorizontalModeView = nullptr;
 		ResourceViewPtr  _blurVerticalModeView   = nullptr;
 		PipelineStatePtr _blurPipeline = nullptr;
+		GaussianBlurPtr _gaussianBlur = nullptr;
 
 		/* @brief : This value is used when the ssao settings set function is called.*/
 		bool _isUpdated = false;

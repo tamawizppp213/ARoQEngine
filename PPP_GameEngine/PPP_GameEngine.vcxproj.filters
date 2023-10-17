@@ -1005,6 +1005,9 @@
     <ClInclude Include="GameCore\Rendering\Model\External\GLTF\Public\Include\GLTFModelConverter.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Effect\Include\ScreenSpaceReflection.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1628,6 +1631,9 @@
     <ClCompile Include="GameCore\Rendering\Model\External\GLTF\Public\Source\GLTFModelConverter.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Effect\Source\ScreenSpaceReflection.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -1671,5 +1677,6 @@
     <FxCompile Include="Shader\Lighting\ShaderShadowMap.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderVignette.hlsl" />
     <FxCompile Include="Shader\Effect\ShaderWhiteBalance.hlsl" />
+    <FxCompile Include="Shader\Effect\ShaderSSR.hlsl" />
   </ItemGroup>
 </Project>

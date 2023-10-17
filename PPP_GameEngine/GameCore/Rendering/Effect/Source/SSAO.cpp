@@ -20,6 +20,7 @@
 #include <iostream>
 #include "GameUtility/Math/Include/GMDistribution.hpp"
 #include "GameUtility/Math/Include/GMColor.hpp"
+#include "GameCore/Rendering/Effect/Include/Blur.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -63,6 +64,7 @@ SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& norma
 	PrepareVertexAndIndexBuffer(name);
 	PreparePipelineState(name);
 
+	_gaussianBlur = std::make_shared<gc::GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), false);
 }
 
 SSAO::~SSAO()
@@ -115,19 +117,10 @@ void SSAO::Draw(const ResourceViewPtr& scene)
 	
 	// draw fullscreen quad
 	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
-
-	/*-------------------------------------------------------------------
-	-            Execute Blur
-	---------------------------------------------------------------------*/
-	// vertical blur
-	frameBuffer->GetRenderTargetSRV()->Bind(commandList, 6);
-	commandList->SetGraphicsPipeline(_blurPipeline);
-	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
-
-	//horizontal blur
-	_blurHorizontalModeView->Bind(commandList, 2);
-	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
 	commandList->EndRenderPass();
+	
+	// blur
+	_gaussianBlur->DrawPS(frameBuffer);
 }
 
 #pragma endregion Main Function
