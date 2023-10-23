@@ -159,7 +159,7 @@ bool ExecuteRayMarchInCameraSpace(const float3 rayOrigin, const float3 rayDirect
 	---------------------------------------------------------------------*/
     // clipping領域の範囲内
     const float3 rayEnd       = rayOrigin + rayDirection * MaxRayDistance;
-    const float3 rayStepDelta = (rayEnd - rayOrigin) / MaxRayMarchIteration;
+    float3 rayStepDelta = (rayEnd - rayOrigin) / MaxRayMarchIteration;
     
     /*-------------------------------------------------------------------
 	-        レイマーチングの実行 (粗めに探索)

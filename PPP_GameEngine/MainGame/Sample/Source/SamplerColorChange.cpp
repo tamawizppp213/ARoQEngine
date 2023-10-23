@@ -17,6 +17,7 @@
 #include "GameCore/Rendering/Effect/Include/Mosaic.hpp"
 #include "GameCore/Rendering/Effect/Include/Vignette.hpp"
 #include "GameCore/Rendering/Effect/Include/WhiteBalance.hpp"
+#include "GameCore/Rendering/Effect/Include/ScreenSpaceReflection.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameCore/Rendering/Debugger/Include/ScreenCapture.hpp"
@@ -104,8 +105,9 @@ void SampleColorChange::Draw()
 	
 	if (_useWhiteBalance) { _whiteBalance->Draw(); }
 	if (_useVignette) { _vignette->Draw(); }
-	if (_useBlur)  { _gaussianBlur->Draw(frameBuffer); }
+	if (_useBlur)   { _gaussianBlur->Draw(frameBuffer); }
 	if (_useMosaic) { _mosaic->Draw(); }
+	
 
 	_engine->EndDrawFrame();
 }
@@ -163,7 +165,7 @@ void SampleColorChange::LoadMaterials()
 
 	_mosaic = std::make_shared<Mosaic>(_engine, 20.0f);
 
-	const auto vignetteSettings = VignetteSettings
+	const VignetteSettings vignetteSettings =
 	{
 		.Color = gm::Float4(1,0,0,1),
 		.UVCenter = gm::Float2(0.5f, 0.5f),
@@ -230,6 +232,10 @@ void SampleColorChange::OnKeyboardInput()
 	if (_gameInput.GetKeyboard()->IsTrigger(DIK_Y))
 	{
 		_useWhiteBalance = _useWhiteBalance ? false : true;
+	}
+	if (_gameInput.GetKeyboard()->IsTrigger(DIK_T))
+	{
+		_useScreenSpaceReflection = _useScreenSpaceReflection ? false : true;
 	}
 }
 /****************************************************************************

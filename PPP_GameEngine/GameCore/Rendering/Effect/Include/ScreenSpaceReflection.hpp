@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "FullScreenEffector.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,11 +25,11 @@ namespace gc
 {
 	struct SSRSettings
 	{
-		int   MaxRayMarchIteraction; // レイマーチングを行う最大の試行回数
-		int   MaxBinarySearchIteration; // 二分探索を行う試行回数
-		float MaxRayDistance;           // レイの最大距離
-		float RayThicknessInViewSpace;  // レイの厚み
-		float MaxFadeDistance;          // 最大の距離フェードを行う長さ
+		int   MaxRayMarchIteraction    = 16; // レイマーチングを行う最大の試行回数
+		int   MaxBinarySearchIteration = 16; // 二分探索を行う試行回数
+		float MaxRayDistance = 100;           // レイの最大距離
+		float RayThicknessInViewSpace = 10;  // レイの厚み
+		float MaxFadeDistance         = 50;  // 最大の距離フェードを行う長さ
 	};
 
 	/****************************************************************************
@@ -37,17 +38,24 @@ namespace gc
 	*  @class     ScreenSpaceReflection
 	*  @brief     ポストエフェクト的に反射を表現する
 	*****************************************************************************/
-	class ScreenSpaceReflection : public IFullScreenEffector
+	class ScreenSpaceReflection : public NonCopyable
 	{
+	protected:
+		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
+		using PipelineStatePtr          = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		using VertexBufferPtr           = std::shared_ptr<rhi::core::GPUBuffer>;
+		using IndexBufferPtr            = std::shared_ptr<rhi::core::GPUBuffer>;
+		using ResourceLayoutPtr         = std::shared_ptr<rhi::core::RHIResourceLayout>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Resize frame buffer (Not implement)*/
-		void OnResize(int newWidth, int newHeight) override;
+		void OnResize(int newWidth, int newHeight);
 
 		/*@brief : Render to back buffer*/
-		void Draw() override;
+		void Draw(const ResourceViewPtr& scene);
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -79,24 +87,44 @@ namespace gc
 
 		~ScreenSpaceReflection();
 
-		ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const SSRSettings& settings, const std::wstring& addName = L"");
+		ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const SSRSettings& settings, const std::wstring& addName = L"");
 
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		void PrepareVertexAndIndexBuffer(const std::wstring& name);
+		
 		void PrepareBuffer(const SSRSettings& setting, const std::wstring& addName);
 
-		void PreparePipelineState(const std::wstring& addName) override;
+		void PreparePipelineState(const std::wstring& addName);
 
-		void PrepareResourceView() override;
+		void PrepareResourceView();
 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		SSRSettings _settings = {};
 
+		ResourceViewPtr _settingsView = nullptr;
+
 		bool _isSettingChanged = false;
+
+		/* @brief : Normal texture*/
+		ResourceViewPtr _normalMap = nullptr;
+
+		/* @brief : Linear depth texture*/
+		ResourceViewPtr _depthMap = nullptr;
+
+		ResourceLayoutPtr _resourceLayout = nullptr;
+		PipelineStatePtr _pipeline = nullptr;
+
+		std::vector<VertexBufferPtr> _vertexBuffers = {};
+
+		std::vector<IndexBufferPtr>  _indexBuffers = {};
+
+		LowLevelGraphicsEnginePtr _engine = nullptr;
+
 	};
 }
 #endif

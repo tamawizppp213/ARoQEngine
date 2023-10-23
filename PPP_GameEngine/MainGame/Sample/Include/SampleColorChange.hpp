@@ -97,6 +97,7 @@ namespace sample
 		bool _useMosaic = false;
 		bool _useVignette = false;
 		bool _useWhiteBalance = false;
+		bool _useScreenSpaceReflection = false;
 
 		std::uint32_t _colorIndex = 0;
 	};
