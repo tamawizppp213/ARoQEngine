@@ -1,0 +1,90 @@
+//////////////////////////////////////////////////////////////////////////////////
+//              Title:  GameTimer.hpp
+//            Content:  Time Measurement Function 
+//             Author:  Toide Yutaro (Reference: 3DGame Programming with DirectX12)
+//             Create:  2020_11_08
+//////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////
+//                             Include
+//////////////////////////////////////////////////////////////////////////////////
+#include "../Include/GUAssert.hpp"
+#include <Windows.h>
+#include <iostream>
+#include <string>
+//////////////////////////////////////////////////////////////////////////////////
+//                              Define
+//////////////////////////////////////////////////////////////////////////////////
+using namespace gu;
+
+//////////////////////////////////////////////////////////////////////////////////
+//                              Implement
+//////////////////////////////////////////////////////////////////////////////////
+#pragma region Main Function
+bool ErrorLogger::CheckOrVerifyFailed(const char* expression, const char* fileName, const int lineNumber, const char* format)
+{
+	/*-------------------------------------------------------------------
+	-           メッセージ出力 (出力部分に表示)
+	---------------------------------------------------------------------*/
+	OutputErrorLog(expression, fileName, lineNumber, format);
+
+	/*-------------------------------------------------------------------
+	-     今後追加: クラッシュレポートを表示する
+	---------------------------------------------------------------------*/
+
+	/*-------------------------------------------------------------------
+	-     処理を強制終了するようにする.
+	---------------------------------------------------------------------*/
+	return true;
+}
+
+bool ErrorLogger::EnsureFailed(const char* expression, const char* fileName, const int lineNumber, const char* format)
+{
+	/*-------------------------------------------------------------------
+	-           メッセージ出力 (出力部分に表示)
+	---------------------------------------------------------------------*/
+	OutputErrorLog(expression, fileName, lineNumber, format);
+
+	/*-------------------------------------------------------------------
+	-     今後追加: クラッシュレポートを表示する
+	---------------------------------------------------------------------*/
+
+	return true;
+}
+
+/****************************************************************************
+*                       OutputErrorLog
+*************************************************************************//**
+*  @fn        void Debugger::OutputErrorLog(const char* expression, const char* fileName, const int lineNumber, bool isEnsure, const char* descriptionFormat, const va_list descriptionArguments)
+*
+*  @brief     出力部分にエラー文を出力します
+*
+*  @param[in] const char* expression : Checkに使用した真偽値評価文
+*  @param[in] const char* fileName : ファイル名
+*  @param[in] const int lineNumber : 行番号
+*
+*  @return 　　void
+*****************************************************************************/
+void ErrorLogger::OutputErrorLog(const char* expression, const char* fileName, const int lineNumber,const char* descriptionFormat)
+{
+	std::string errorLog = "";
+	errorLog.append("Assertion Failed ");
+
+	errorLog.append(" in ");
+	errorLog.append(fileName);
+	errorLog.append(", line ");
+	errorLog.append(std::to_string(lineNumber));
+	errorLog.append("\n");
+	
+	errorLog.append(expression);
+
+	if (descriptionFormat)
+	{
+		errorLog.append(", ");
+		errorLog.append(descriptionFormat);
+		errorLog.append("\n");
+	}
+
+	OutputDebugStringA(errorLog.c_str());
+}
+#pragma endregion Main Function

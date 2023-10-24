@@ -23,6 +23,7 @@
 #include "MainGame/Sample/Include/SampleColorChange.hpp"
 #include "MainGame/Core/Include/SceneManager.hpp"
 #include <iostream>
+#include "GameUtility/Base/Include/GUAssert.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -194,8 +195,6 @@ void SampleURP::LoadMaterials()
 
 	IESProfiler profiler;
 	profiler.Load(L"Resources/Test.IES");
-
-
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/
