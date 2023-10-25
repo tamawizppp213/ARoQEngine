@@ -1008,6 +1008,9 @@
     <ClInclude Include="GameCore\Rendering\Effect\Include\ScreenSpaceReflection.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Platform\Core\Include\CorePlatformMacros.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">

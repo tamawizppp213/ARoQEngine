@@ -3,7 +3,7 @@
 ///             @brief  エラーを表示するために使用するクラス. 参考はUnreal engineを使用
 ///                     Check, Verify, Ensureがあります. 
 ///             @author Toide Yutaro
-///             @date   2022_06_21
+///             @date   2023_10_25
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef ASSERT_HPP
@@ -24,10 +24,10 @@
 namespace gu
 {
 	/****************************************************************************
-	*				  			NonCopyable
+	*				  			ErrorLogger
 	*************************************************************************//**
-	*  @class     NonCopyable
-	*  @brief     Prohibit copy class
+	*  @class     ErrorLogger
+	*  @brief     Errorを表示するクラス
 	*****************************************************************************/
 	class ErrorLogger
 	{

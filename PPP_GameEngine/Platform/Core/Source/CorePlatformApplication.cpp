@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Core/Include/CorePlatformApplication.hpp"
 #include "../../Core/Include/CoreWindowMessageHandler.hpp"
+#include "../../Core/Include/CorePlatformMacros.hpp"
 #include "../../Windows/Include/WindowsPlatformApplication.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +27,7 @@ std::shared_ptr<PlatformApplication> PlatformApplication::Create(const PlatformT
 	{
 		case PlatformType::Windows:
 		{
-			#ifdef _WIN32
+			#if PLATFORM_WINDOWS
 			return std::make_shared<windows::PlatformApplication>();
 			#endif
 		}
@@ -38,4 +39,14 @@ std::shared_ptr<PlatformApplication> PlatformApplication::Create(const PlatformT
 
 	OutputDebugStringA("platform application is nullptr");
 	return nullptr;
+}
+
+std::shared_ptr<PlatformApplication> PlatformApplication::Create()
+{
+#if PLATFORM_WINDOWS
+	return std::make_shared<windows::PlatformApplication>();
+#else
+	OutputDebugStringA("platform application is nullptr");
+	return nullptr;
+#endif
 }

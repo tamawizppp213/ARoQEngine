@@ -41,6 +41,9 @@ namespace platform::core
 		*****************************************************************************/
 		static std::shared_ptr<PlatformApplication> Create(const core::PlatformType type);
 
+		/* @brief : This application creator is determined in according to platform macro*/
+		static std::shared_ptr<PlatformApplication> Create();
+
 		virtual std::shared_ptr<CoreWindow> MakeWindow() = 0;
 		
 		virtual void SetUpWindow(const std::shared_ptr<CoreWindow>& window, const CoreWindowDesc& desc) = 0;

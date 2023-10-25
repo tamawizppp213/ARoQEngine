@@ -1,8 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              Title:  GameTimer.hpp
-//            Content:  Time Measurement Function 
-//             Author:  Toide Yutaro (Reference: 3DGame Programming with DirectX12)
-//             Create:  2020_11_08
+//              Title:  GUAssert.hpp
+//            Content:  エラーを表示するために使用するクラス. 参考はUnreal engineを使用
+///                     Check, Verify, Ensureがあります. 
+///           @author Toide Yutaro
+///           @date   2023_10_25
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////

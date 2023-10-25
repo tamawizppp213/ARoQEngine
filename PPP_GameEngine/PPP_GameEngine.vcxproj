@@ -366,6 +366,7 @@
     <ClInclude Include="Platform\Core\Include\CoreCommonState.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreCursor.hpp" />
     <ClInclude Include="Platform\Core\Include\CorePlatformApplication.hpp" />
+    <ClInclude Include="Platform\Core\Include\CorePlatformMacros.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreWindow.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreWindowMessageHandler.hpp" />
     <ClInclude Include="Platform\Windows\Include\WindowsWindowsMessageHandler.hpp" />
