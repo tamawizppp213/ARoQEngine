@@ -36,9 +36,6 @@ std::shared_ptr<PlatformApplication> PlatformApplication::Create(const PlatformT
 			throw std::runtime_error("Unknown platform");
 		}
 	}
-
-	OutputDebugStringA("platform application is nullptr");
-	return nullptr;
 }
 
 std::shared_ptr<PlatformApplication> PlatformApplication::Create()
