@@ -27,7 +27,7 @@ std::shared_ptr<PlatformApplication> PlatformApplication::Create(const PlatformT
 	{
 		case PlatformType::Windows:
 		{
-			#if PLATFORM_WINDOWS
+			#if PLATFORM_OS_WINDOWS
 			return std::make_shared<windows::PlatformApplication>();
 			#endif
 		}
@@ -40,7 +40,7 @@ std::shared_ptr<PlatformApplication> PlatformApplication::Create(const PlatformT
 
 std::shared_ptr<PlatformApplication> PlatformApplication::Create()
 {
-#if PLATFORM_WINDOWS
+#if PLATFORM_OS_WINDOWS
 	return std::make_shared<windows::PlatformApplication>();
 #else
 	OutputDebugStringA("platform application is nullptr");
