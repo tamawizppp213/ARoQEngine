@@ -255,4 +255,5 @@
 #define PLATFORM_CPU_INSTRUCTION_AVX2 0
 #endif
 #pragma endregion SIMD
+
 #endif
