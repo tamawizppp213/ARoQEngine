@@ -229,6 +229,7 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUAssert.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUUUID.hpp" />
     <ClInclude Include="GameUtility\Thread\Public\Include\GUSemaphore.hpp" />
     <ClInclude Include="GameUtility\Thread\Public\Include\GUThread.hpp" />
     <ClInclude Include="GameUtility\Thread\Public\Include\GUThreadPool.hpp" />

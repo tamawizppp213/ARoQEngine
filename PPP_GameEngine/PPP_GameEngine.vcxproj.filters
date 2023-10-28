@@ -1011,6 +1011,9 @@
     <ClInclude Include="Platform\Core\Include\CorePlatformMacros.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUUUID.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
