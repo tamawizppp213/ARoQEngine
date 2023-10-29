@@ -13,6 +13,7 @@
 // platform
 #include "Platform/Core/Include/CorePlatformApplication.hpp"
 #include "Platform/Core/Include/CoreWindow.hpp"
+#include "Platform//Core/Include/CorePlatformCommand.hpp"
 
 // renderer
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
@@ -60,6 +61,11 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 	_platformApplication->SetUpWindow(_mainWindow, setting.WindowSettings);
 
 	if (!_mainWindow->Show()) { printf("failed to show window\n"); }
+
+	/*---------------------------------------------------------------
+					  Platform commandクラスの作成
+	-----------------------------------------------------------------*/
+	_platformCommand = _platformApplication->MakeCommand();
 
 	/*---------------------------------------------------------------
 					  レンダリングエンジンの作成

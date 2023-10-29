@@ -45,6 +45,7 @@ class PPPEngine : public NonCopyable
 protected:
 	using PlatformApplicationPtr    = std::shared_ptr<platform::core::PlatformApplication>;
 	using CoreWindowPtr             = std::shared_ptr<platform::core::CoreWindow>;
+	using PlatformCommandPtr        = std::shared_ptr<platform::core::PlatformCommand>;
 	using EngineThreadManagerPtr    = std::shared_ptr<engine::core::EngineThreadManager>;
 	using GameTimerPtr              = std::shared_ptr<GameTimer>;
 	using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
@@ -70,6 +71,8 @@ public:
 	PlatformApplicationPtr GetPlatformApplication() const noexcept { return _platformApplication; }
 
 	CoreWindowPtr GetWindow() const noexcept { return _mainWindow; }
+
+	PlatformCommandPtr GetPlatformCommand() const noexcept { return _platformCommand; }
 
 	GameTimerPtr GetMainThreadTimer() const noexcept { return _mainThreadTimer; }
 
@@ -99,6 +102,9 @@ protected:
 
 	/* @brief : メインウィンドウ*/
 	CoreWindowPtr _mainWindow = nullptr;
+
+	/* @brief : プラットフォームのコマンドをまとめたクラス*/
+	PlatformCommandPtr _platformCommand = nullptr;
 
 	/* @brief : エンジンのスレッドを管理するクラス*/
 	EngineThreadManagerPtr _engineThreadManager = nullptr;

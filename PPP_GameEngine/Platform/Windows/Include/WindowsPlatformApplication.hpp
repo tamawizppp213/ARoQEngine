@@ -41,6 +41,9 @@ namespace platform::windows
 		/* @brief : 新規のウィンドウインスタンスを作成します. ここではセットアップは行いません*/
 		std::shared_ptr<core::CoreWindow> MakeWindow() override;
 
+		/* @brief : 新規でコマンドをまとめたクラスのインスタンスを作成します.*/
+		std::shared_ptr<core::PlatformCommand> MakeCommand() override;
+
 		/* @brief : 指定のウィンドウを実際に作成するまで行います. セットアップも行います*/
 		void SetUpWindow(const std::shared_ptr<core::CoreWindow>& window, const core::CoreWindowDesc& desc) override;
 

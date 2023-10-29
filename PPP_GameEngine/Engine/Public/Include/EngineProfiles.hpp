@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "Platform/Core/Include/CoreWindow.hpp"
+#include "Platform/Core/Include/CorePlatformCommand.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

@@ -12,6 +12,7 @@
 #include "../../Windows/Include/WindowsPlatformApplication.hpp"
 #include "../../Windows/Include/WindowsWindowsMessageHandler.hpp"
 #include "../../Windows/Include/WindowsWindow.hpp"
+#include "../../Windows/Include/WindowsPlatformCommand.hpp"
 #include "../../Core/Include/CoreCommonState.hpp"
 #include <cassert>
 //////////////////////////////////////////////////////////////////////////////////
@@ -147,6 +148,22 @@ bool PlatformApplication::RegisterWindowClass()
 std::shared_ptr<core::CoreWindow> PlatformApplication::MakeWindow()
 {
 	return std::make_shared<windows::CoreWindow>();
+}
+
+/****************************************************************************
+*                     MakeCommand
+*************************************************************************//**
+*  @fn        std::shared_ptr<core::PlatformCommand> PlatformApplication::MakeCommand()
+*
+*  @brief     新規でコマンドをまとめたクラスのインスタンスを作成します.
+*
+*  @param[in] void
+*
+*  @return    std::shared_ptr<core::PlatformCommand>
+*****************************************************************************/
+std::shared_ptr<core::PlatformCommand> PlatformApplication::MakeCommand()
+{
+	return std::make_shared<windows::WindowsPlatformCommand>();
 }
 
 /****************************************************************************
