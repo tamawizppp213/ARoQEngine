@@ -70,15 +70,15 @@ namespace gc
 		
 		float GetRayThicknessInViewSpace() const { return _settings.RayThicknessInViewSpace; }
 
-		void SetMaxRayMarchIteration(const int iteration) { _isSettingChanged = true; _settings.MaxRayMarchIteraction; }
+		void SetMaxRayMarchIteration(const int iteration) { _isSettingChanged = true; _settings.MaxRayMarchIteraction = iteration; }
 
-		void SetMaxBinarySearchIteration(const int iteration) { _isSettingChanged = true; _settings.MaxBinarySearchIteration; }
+		void SetMaxBinarySearchIteration(const int iteration) { _isSettingChanged = true; _settings.MaxBinarySearchIteration = iteration; }
 
-		void SetMaxRayDistance(const float distance) { _isSettingChanged = true; _settings.MaxRayDistance; }
+		void SetMaxRayDistance(const float distance) { _isSettingChanged = true; _settings.MaxRayDistance = distance; }
 
-		void SetMaxFadeDistance(const float distance) { _isSettingChanged = true; _settings.MaxFadeDistance; }
+		void SetMaxFadeDistance(const float distance) { _isSettingChanged = true; _settings.MaxFadeDistance = distance; }
 
-		void SetRayThicknessInViewSpace(const float thickness) { _isSettingChanged = true; _settings.RayThicknessInViewSpace; }
+		void SetRayThicknessInViewSpace(const float thickness) { _isSettingChanged = true; _settings.RayThicknessInViewSpace = thickness; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
