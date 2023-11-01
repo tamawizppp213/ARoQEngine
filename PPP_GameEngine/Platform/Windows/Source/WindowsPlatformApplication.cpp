@@ -163,7 +163,7 @@ std::shared_ptr<core::CoreWindow> PlatformApplication::MakeWindow()
 *****************************************************************************/
 std::shared_ptr<core::PlatformCommand> PlatformApplication::MakeCommand()
 {
-	return std::make_shared<windows::WindowsPlatformCommand>();
+	return std::make_shared<windows::PlatformCommand>();
 }
 
 /****************************************************************************
