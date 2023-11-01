@@ -37,11 +37,18 @@ namespace platform::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+#pragma region Debuggging Command
 		/*----------------------------------------------------------------------
-		*  @brief : This function checked debug mode.
+		*  @brief : This function checks debug mode.
 		/*----------------------------------------------------------------------*/
 		virtual bool UseDebugger() const = 0;
 
+		/*----------------------------------------------------------------------
+		*  @brief : This function puts on the debug break
+		/*----------------------------------------------------------------------*/
+		virtual void PutDebugBreak() const = 0;
+
+#pragma endregion Debugging Command
 		/*----------------------------------------------------------------------
 		*  @brief : This function issues the UUID which specifies the object.
 		/*----------------------------------------------------------------------*/
