@@ -40,7 +40,8 @@ ScreenSpaceReflection::ScreenSpaceReflection()
 
 ScreenSpaceReflection::~ScreenSpaceReflection()
 {
-
+	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
+	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
 }
 
 ScreenSpaceReflection::ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const SSRSettings& settings, const std::wstring& addName)

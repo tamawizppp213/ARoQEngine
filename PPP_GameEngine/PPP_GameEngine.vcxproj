@@ -229,7 +229,10 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUAssert.hpp" />
-    <ClInclude Include="GameUtility\Base\Include\GUUUID.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUUUID.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Thread\Public\Include\GUSemaphore.hpp" />
     <ClInclude Include="GameUtility\Thread\Public\Include\GUThread.hpp" />
     <ClInclude Include="GameUtility\Thread\Public\Include\GUThreadPool.hpp" />
@@ -367,9 +370,17 @@
     <ClInclude Include="Platform\Core\Include\CoreCommonState.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreCursor.hpp" />
     <ClInclude Include="Platform\Core\Include\CorePlatformApplication.hpp" />
+    <ClInclude Include="Platform\Core\Include\CorePlatformCommand.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Core\Include\CorePlatformMacros.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreWindow.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreWindowMessageHandler.hpp" />
+    <ClInclude Include="Platform\Windows\Include\WindowsPlatformCommand.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Windows\Include\WindowsWindowsMessageHandler.hpp" />
     <ClInclude Include="Platform\Windows\Private\Include\WindowsDeferredMessage.hpp" />
     <ClInclude Include="Platform\Windows\Include\WindowsCursor.hpp" />
@@ -558,6 +569,10 @@
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UISlider.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIText.cpp" />
     <ClCompile Include="GameUtility\Base\Source\GUAssert.cpp" />
+    <ClCompile Include="GameUtility\Base\Source\GUUUID.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\Thread\Public\Source\GUSemaphore.cpp" />
     <ClCompile Include="GameUtility\Thread\Public\Source\GUThread.cpp" />
     <ClCompile Include="GameUtility\Thread\Public\Source\GUThreadPool.cpp" />
@@ -621,6 +636,10 @@
     <ClCompile Include="Platform\Windows\Source\WindowsCursor.cpp" />
     <ClCompile Include="Platform\Windows\Source\WIndowsError.cpp" />
     <ClCompile Include="Platform\Windows\Source\WindowsPlatformApplication.cpp" />
+    <ClCompile Include="Platform\Windows\Source\WindowsPlatformCommand.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Platform\Windows\Source\WindowsWindow.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Adapter.cpp" />
     <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12CommandAllocator.cpp" />
