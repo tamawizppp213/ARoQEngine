@@ -25,6 +25,7 @@
 
 // timer
 #include "GameUtility/Base/Include/GameTimer.hpp"
+#include "GameUtility/Base/Include/GUAssert.hpp"
 
 #include "MainGame/Core/Include/GameManager.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -66,6 +67,7 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 					  Platform commandクラスの作成
 	-----------------------------------------------------------------*/
 	_platformCommand = _platformApplication->MakeCommand();
+	gu::ErrorLogger::DebugCommand = _platformCommand;
 
 	/*---------------------------------------------------------------
 					  レンダリングエンジンの作成

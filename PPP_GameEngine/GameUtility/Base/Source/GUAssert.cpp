@@ -18,6 +18,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gu;
 
+std::shared_ptr<platform::core::PlatformCommand> ErrorLogger::DebugCommand = nullptr;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +84,10 @@ void ErrorLogger::OutputErrorLog(const char* expression, const char* fileName, c
 	{
 		errorLog.append(", ");
 		errorLog.append(descriptionFormat);
+		errorLog.append("\n");
+	}
+	else
+	{
 		errorLog.append("\n");
 	}
 

@@ -12,7 +12,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <Windows.h>
+#include "Platform/Core/Include/CorePlatformCommand.hpp"
+#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -40,10 +41,11 @@ namespace gu
 
 		/* @brief : 致命的でないバグに使用します. ブレークポイント発生後, 処理を止めません.*/
 		static bool EnsureFailed(const char* expression, const char* fileName, const int lineNumber, const char* format);
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		
+		static std::shared_ptr<platform::core::PlatformCommand> DebugCommand;
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -70,7 +72,7 @@ namespace gu
     {\
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, nullptr)) \
 		{                 \
-			DebugBreak(); \
+			if(gu::ErrorLogger::DebugCommand){gu::ErrorLogger::DebugCommand->PutDebugBreak();} \
 		}\
     }
 #endif
@@ -104,7 +106,7 @@ namespace gu
     {\
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, nullptr)) \
 		{                 \
-			DebugBreak(); \
+			if(gu::ErrorLogger::DebugCommand){gu::ErrorLogger::DebugCommand->PutDebugBreak();} \
 		}\
     }
 #endif
@@ -114,7 +116,7 @@ namespace gu
 	{\
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, format)) \
 		{                 \
-			DebugBreak(); \
+			if(gu::ErrorLogger::DebugCommand){gu::ErrorLogger::DebugCommand->PutDebugBreak();} \
 		}\
     }
 #endif
