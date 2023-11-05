@@ -47,6 +47,9 @@ namespace platform::core
 		virtual void PutDebugBreak() const = 0;
 
 #pragma endregion Debugging Command
+#pragma region Event Command
+
+#pragma endregion Event Command
 		/*----------------------------------------------------------------------
 		*  @brief : This function issues the UUID which specifies the object.
 		/*----------------------------------------------------------------------*/
