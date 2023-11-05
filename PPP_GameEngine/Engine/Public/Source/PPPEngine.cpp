@@ -67,7 +67,6 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 					  Platform commandクラスの作成
 	-----------------------------------------------------------------*/
 	_platformCommand = _platformApplication->MakeCommand();
-	gu::ErrorLogger::DebugCommand = _platformCommand;
 
 	/*---------------------------------------------------------------
 					  レンダリングエンジンの作成

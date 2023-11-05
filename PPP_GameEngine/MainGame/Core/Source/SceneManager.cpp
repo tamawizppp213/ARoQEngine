@@ -20,10 +20,10 @@
 #include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
 #include "MainGame/Sample/Include/SampleCollisionDetection.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -36,6 +36,7 @@ void SceneManager::StartUp(PPPEnginePtr& engine, const std::shared_ptr<GameTimer
 
 	_engine = engine;
 	_gameTimer = gameTimer;
+
 	PushScene(new sample::SampleColorChange());
 	CallSceneInitialize(gameTimer);
 }

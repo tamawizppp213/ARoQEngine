@@ -2,18 +2,18 @@
 ///             @file   Assert.hpp
 ///             @brief  エラーを表示するために使用するクラス. 参考はUnreal engineを使用
 ///                     Check, Verify, Ensureがあります. 
+///                     Windowsのみ現状止まります.
 ///             @author Toide Yutaro
 ///             @date   2023_10_25
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef ASSERT_HPP
-#define ASSERT_HPP
+#ifndef GU_ASSERT_HPP
+#define GU_ASSERT_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "Platform/Core/Include/CorePlatformCommand.hpp"
-#include <memory>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,10 +42,11 @@ namespace gu
 		/* @brief : 致命的でないバグに使用します. ブレークポイント発生後, 処理を止めません.*/
 		static bool EnsureFailed(const char* expression, const char* fileName, const int lineNumber, const char* format);
 		
+		// デバッグ用にブレークポイントを追加します
+		static void PutDebugBreak();
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		static std::shared_ptr<platform::core::PlatformCommand> DebugCommand;
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -72,7 +73,7 @@ namespace gu
     {\
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, nullptr)) \
 		{                 \
-			if(gu::ErrorLogger::DebugCommand){gu::ErrorLogger::DebugCommand->PutDebugBreak();} \
+			gu::ErrorLogger::PutDebugBreak();\
 		}\
     }
 #endif
@@ -106,7 +107,7 @@ namespace gu
     {\
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, nullptr)) \
 		{                 \
-			if(gu::ErrorLogger::DebugCommand){gu::ErrorLogger::DebugCommand->PutDebugBreak();} \
+			gu::ErrorLogger::PutDebugBreak(); \
 		}\
     }
 #endif
@@ -116,7 +117,7 @@ namespace gu
 	{\
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, format)) \
 		{                 \
-			if(gu::ErrorLogger::DebugCommand){gu::ErrorLogger::DebugCommand->PutDebugBreak();} \
+			gu::ErrorLogger::PutDebugBreak(); \
 		}\
     }
 #endif

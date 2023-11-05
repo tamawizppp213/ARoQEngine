@@ -47,7 +47,17 @@ void PlatformCommand::PutDebugBreak() const
 }
 
 #pragma endregion Debugging Command
-
+/****************************************************************************
+*                       IssueUUID
+*************************************************************************//**
+*  @fn        gu::UUID PlatformCommand::IssueUUID()
+*
+*  @brief     オブジェクトを特定するUUIDを発行します. 
+*
+* 　@param[in] void
+*
+*  @return 　　gu::UUID
+*****************************************************************************/
 gu::UUID PlatformCommand::IssueUUID()
 {
 	gu::UUID uuid(0, 0, 0, 0);

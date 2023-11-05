@@ -10,15 +10,19 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/GUAssert.hpp"
-#include <Windows.h>
 #include <iostream>
 #include <string>
+
+// platformñàÇÃèàóù
+#if defined(_WIN32) || defined(_WIN64)
+#include <Windows.h>
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gu;
 
-std::shared_ptr<platform::core::PlatformCommand> ErrorLogger::DebugCommand = nullptr;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -91,6 +95,19 @@ void ErrorLogger::OutputErrorLog(const char* expression, const char* fileName, c
 		errorLog.append("\n");
 	}
 
+#if defined(_WIN32) || defined(_WIN64)
 	OutputDebugStringA(errorLog.c_str());
+#else
+	std::cout << errorLog << std::endl;
+#endif
+}
+
+void ErrorLogger::PutDebugBreak()
+{
+#if defined(_WIN32) || defined(_WIN64)
+	DebugBreak();
+#else
+
+#endif
 }
 #pragma endregion Main Function
