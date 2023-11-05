@@ -1,17 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUQueue.hpp
-///             @brief  通常のキューです (現状スレッドセーフではありませんので、注意してください)
+///             @file   GUStack.hpp
+///             @brief  stack
 ///             @author toide
-///             @date   2023/11/05 15:07:26
+///             @date   2023/11/06 0:17:31
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GU_QUEUE_HPP
-#define GU_QUEUE_HPP
+#ifndef GU_STACK_HPP
+#define GU_STACK_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../../Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/ClassUtility.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,25 +23,19 @@
 
 namespace gu
 {
-	enum class QueueMode
-	{
-		MPSC, //Multiple-producers, single-consumer queue.
-		SPSC, //Single-producers, single-consumer queue.
-	};
-
 	/****************************************************************************
-	*				  			   Queue
+	*				  			   GUStack
 	*************************************************************************//**
-	*  @class     Queue
-	*  @brief     キュー
+	*  @class     GUStack
+	*  @brief     temp
 	*****************************************************************************/
-	template<class ElementType, QueueMode Mode = QueueMode::SPSC>
-	class Queue : public NonCopyable
+	template<class ElementType>
+	class Stack : public NonCopyable
 	{
 	private:
 		struct Node
 		{
-			Node*       Next;
+			Node* Next;
 			ElementType Element;
 
 			Node() : Next(nullptr) {};
@@ -48,9 +43,6 @@ namespace gu
 			explicit Node(const ElementType&& element) : Next(nullptr), Element(element) {};
 		};
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
 		/*-------------------------------------------------------------------
 		-           @brief : Add the element to the queue head.
 		---------------------------------------------------------------------*/
@@ -61,40 +53,34 @@ namespace gu
 		-           @brief : Remove the element to the queue tail.
 		---------------------------------------------------------------------*/
 		bool Pop();
-		
+
 		/*-------------------------------------------------------------------
 		-           @brief : Clear the all queue
 		---------------------------------------------------------------------*/
 		inline void Clear() { while (Pop()); }
 
 		/*-------------------------------------------------------------------
-		-           @brief : return the queue front (=_tail) element
-		---------------------------------------------------------------------*/
-		inline        ElementType& Front()       { return _tail->Element; }
-		inline const  ElementType& Front() const { return _tail->Element; }
-
-		/*-------------------------------------------------------------------
 		-           @brief : return the queue back (=_head) element
 		---------------------------------------------------------------------*/
-		inline       ElementType& Back()       { return _head->Element; }
-		inline const ElementType& Back() const { return _head->Element; }
+		inline       ElementType& Top() { return _head->Element; }
+		inline const ElementType& Top() const { return _head->Element; }
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		inline bool IsEmpty() const { return _queueSize <= 0; }
+		inline bool IsEmpty() const { return _stackSize <= 0; }
 
 		/*-------------------------------------------------------------------
 		-           @brief : return the queue size
 		---------------------------------------------------------------------*/
-		inline int Size() { return _queueSize; }
+		inline int Size() { return _stackSize; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Queue() : _head(nullptr), _tail(nullptr) {};
+		Stack() : _head(nullptr){};
 
-		~Queue()
+		~Stack()
 		{
 			Clear();
 		}
@@ -107,15 +93,14 @@ namespace gu
 		**                Private Member Variables
 		*****************************************************************************/
 		Node* _head = nullptr; // 入れる場所の先頭ノード
-		Node* _tail = nullptr; // 押し出す場所の先頭ノード
-		int _queueSize = 0;
+		int _stackSize = 0;
 	};
 
 	/*-------------------------------------------------------------------
-	-           @brief : キューの先頭に要素を追加します.
+	-           @brief : スタックの先頭に要素を追加します.
 	---------------------------------------------------------------------*/
-	template<class ElementType, QueueMode Mode>
-	bool Queue<ElementType, Mode>::Push(const ElementType& element)
+	template<class ElementType>
+	bool Stack<ElementType>::Push(const ElementType& element)
 	{
 		Node* newNode = new Node(element);
 
@@ -124,96 +109,57 @@ namespace gu
 		/*-------------------------------------------------------------------
 		-           Push処理の実装
 		---------------------------------------------------------------------*/
-		Node* oldHead = nullptr;
-		if (Mode == QueueMode::MPSC)
-		{
-			// ノードをつける
-			oldHead = _head;
-			_head = newNode;
-			oldHead->Next = newNode;
-		}
-		else
-		{
-			// ノードをつける
-			oldHead = _head;
-			_head   = newNode;
+		Node* oldHead = _head;
+		_head = newNode;
+		_head->Next = oldHead;
 
-			if (oldHead)
-			{
-				oldHead->Next = newNode;
-			}
-			else
-			{
-				_tail = _head;
-			}
-		}
+		_stackSize++;
 
-		_queueSize++;
-	}
-
-	template<class ElementType, QueueMode Mode>
-	bool Queue<ElementType, Mode>::Push(const ElementType&& element)
-	{
-		Node* newNode = new Node(element);
-
-		if (newNode == nullptr) { return false; }
-
-		/*-------------------------------------------------------------------
-		-           Push処理の実装
-		---------------------------------------------------------------------*/
-		Node* oldHead = nullptr;
-		if (Mode == QueueMode::MPSC)
-		{
-			// ノードをつける
-			oldHead = _head;
-			_head = newNode;
-			oldHead->Next = newNode;
-		}
-		else
-		{
-			// ノードをつける
-			oldHead = _head;
-			_head = newNode;
-
-			if (oldHead)
-			{
-				oldHead->Next = newNode;
-			}
-			else
-			{
-				_tail = _head;
-			}
-		}
-
-		_queueSize++;
 	}
 
 	/*-------------------------------------------------------------------
-	-           @brief : キューの終端の要素を削除します
+	-           @brief : スタックの先頭に要素を追加します.
 	---------------------------------------------------------------------*/
-	template<class ElementType, QueueMode Mode>
-	bool Queue<ElementType, Mode>::Pop()
+	template<class ElementType>
+	bool Stack<ElementType>::Push(const ElementType&& element)
 	{
-		if (_tail == nullptr) { return false; }
+		Node* newNode = new Node(element);
+
+		if (newNode == nullptr) { return false; }
 
 		/*-------------------------------------------------------------------
-		-           Pop処理の実装
+		-           Push処理の実装
 		---------------------------------------------------------------------*/
-		// 削除するノードの保持
-		Node* oldTail = _tail;
+		Node* oldHead = _head;
+		_head = newNode;
+		_head->Next = oldHead;
 
-		// 削除後に出てくるノードの取り出し
-		Node* popNode = _tail->Next;
+		_stackSize++;
 
-		// 次のノードを交換する
-		_tail = popNode; 
+	}
+
+	/*-------------------------------------------------------------------
+	-           @brief : スタックの終端の要素を削除します
+	---------------------------------------------------------------------*/
+	template<class ElementType>
+	bool Stack<ElementType>::Pop()
+	{
+		if (_head == nullptr) { return false; }
+
+		/*-------------------------------------------------------------------
+		-           pop処理の実装
+		---------------------------------------------------------------------*/
+		Node* oldTail = _head;
+		Node* popNode = _head->Next;
+		_head = popNode;
 
 		/*-------------------------------------------------------------------
 		-           要素の削除
 		---------------------------------------------------------------------*/
 		delete oldTail;
-		_queueSize--;
+		_stackSize--;
 		return true;
 	}
 }
+
 #endif
