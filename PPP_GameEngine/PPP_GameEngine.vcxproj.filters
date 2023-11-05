@@ -39,9 +39,6 @@
     <ClInclude Include="GameUtility\Math\Include\GMQuaternion.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Math\Include\GMQueue.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GameUtility\Math\Include\GMScalar.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -1021,6 +1018,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUList.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUQueue.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

@@ -364,7 +364,6 @@
     <ClInclude Include="GameUtility\Math\Include\GMMath.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMMatrix.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMQuaternion.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMQueue.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMScalar.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMSearch.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMSimdMath.hpp" />
