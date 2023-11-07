@@ -29,9 +29,10 @@ namespace gu
 	using uint16 = unsigned short int;
 	using uint32 = unsigned int;
 	using uint64 = unsigned long long;
-	using ansiChar = char;    // 1bitが符号で7bit分の文字が割り当てられる
-	using wideChar = wchar_t; // プラットフォームによってサイズが異なるワイド文字
-	using utf8Char = unsigned char;
-
+	using char8    = char;
+	using char16   = char16_t; // literal "u"
+	using char32   = char32_t; // literal "U"
+	using wchar    = wchar_t;  // literal "L"
+	using u8char   = unsigned char; // literal "u8" 
 }
 #endif
