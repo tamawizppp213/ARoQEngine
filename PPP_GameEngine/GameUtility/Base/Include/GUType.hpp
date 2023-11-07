@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   TemplateText.hpp
-///             @brief  TemplateText
+///             @file   GUType.hpp
+///             @brief  primitiveな型の定義です
 ///             @author Toide Yutaro
-///             @date   2022_03_11
+///             @date   2023_11_08
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GM_TYPE_DEF
-#define GM_TYPE_DEF
+#ifndef GU_TYPE
+#define GU_TYPE
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -19,15 +19,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                           Type def
 //////////////////////////////////////////////////////////////////////////////////
-namespace gm
+namespace gu
 {
 	using int8   = signed char;
-	using int16  = short;
-	using int32  = int;
-	using int64  = long long;
+	using int16  = signed short int;
+	using int32  = signed int;
+	using int64  = signed long long;
 	using uint8  = unsigned char;
-	using uint16 = unsigned short;
+	using uint16 = unsigned short int;
 	using uint32 = unsigned int;
 	using uint64 = unsigned long long;
+	using ansiChar = char;    // 1bitが符号で7bit分の文字が割り当てられる
+	using wideChar = wchar_t; // プラットフォームによってサイズが異なるワイド文字
+	using utf8Char = unsigned char;
+
 }
 #endif

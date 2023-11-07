@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../../Math/Include/GMTypeDef.hpp"
+#include "GUType.hpp"
 #include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -57,17 +57,17 @@ namespace gu
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		gm::uint32 A = 0; // First component
-		gm::uint32 B = 0; // Second component
-		gm::uint32 C = 0; // Third component
-		gm::uint32 D = 0; // Fourth component
+		gu::uint32 A = 0; // First component
+		gu::uint32 B = 0; // Second component
+		gu::uint32 C = 0; // Third component
+		gu::uint32 D = 0; // Fourth component
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		UUID() = default;
 
-		UUID(const gm::uint32 a, const gm::uint32 b, const gm::uint32 c, const gm::uint32 d)
+		UUID(const gu::uint32 a, const gu::uint32 b, const gu::uint32 c, const gu::uint32 d)
 			: A(a), B(b), C(c), D(d){ }
 
 		bool operator ==(const UUID& rhs) const noexcept
@@ -80,8 +80,8 @@ namespace gu
 		}
 
 		// GUIDのコンポーネントにIndexから直接アクセスできるようにする.
-		gm::uint32& operator[](const gm::uint32 index);
-		const gm::uint32& operator[](const gm::uint32 index) const;
+		gu::uint32& operator[](const gu::uint32 index);
+		const gu::uint32& operator[](const gu::uint32 index) const;
 	protected:
 		/****************************************************************************
 		**                Protected Function

@@ -11,12 +11,15 @@
 #include "../Include/GUUUID.hpp"
 #include "../Include/GUAssert.hpp"
 #include <vector>
+
+#if defined(_WIN32) || defined(_WIN64)
 #include <Windows.h>
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gu;
-using namespace gm;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
@@ -56,7 +59,7 @@ gu::UUID gu::UUID::Create()
 #if defined(_WIN32) || defined(_WIN64)
 	Verifyf(CoCreateGuid((GUID*)&result) == S_OK, "Failed to create guid.");
 #else
-	OutputDebugStringA("Œ»ÝGUID¶¬‚É‚Í–¢‘Î‰ž‚ÌOS‚Å‚·.\n");
+	printf("Œ»ÝGUID¶¬‚É‚Í–¢‘Î‰ž‚ÌOS‚Å‚·.\n");
 #endif
 
 	return result;
@@ -85,7 +88,7 @@ void gu::UUID::AppendString(std::string& string, const UUIDFormat format)
 		}
 		default:
 		{
-			OutputDebugStringA("Œ»Ý‚Í–¢‘Î‰ž‚ÌŒ`Ž®‚Å‚·\n");
+			printf("Œ»Ý‚Í–¢‘Î‰ž‚ÌŒ`Ž®‚Å‚·\n");
 			return;
 		}	
 	}
@@ -122,7 +125,7 @@ uint32& gu::UUID::operator[](const uint32 index)
 	else                 { return D; }
 }
 
-const gm::uint32& gu::UUID::operator[](const gm::uint32 index) const
+const gu::uint32& gu::UUID::operator[](const gu::uint32 index) const
 {
 	Check(index >= 0);
 	Check(index <  4);

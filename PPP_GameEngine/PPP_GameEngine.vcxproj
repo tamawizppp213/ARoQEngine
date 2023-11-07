@@ -373,7 +373,7 @@
     <ClInclude Include="GameUtility\Math\Include\GMSimdMath.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMSort.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMTransform.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMTypeDef.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUType.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVector.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVertex.hpp" />
