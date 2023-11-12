@@ -17,18 +17,22 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+namespace gu
+{
+	enum class SharedPointerThreadMode : uint8
+	{
+		NotThreadSafe = 0,
+		ThreadSafe = 1
+	};
+}
 
+#define SHARED_POINTER_DEFAULT_THREAD_MODE (SharedPointerThreadMode::NotThreadSafe)
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
 namespace gu
 {
-	enum class SharedPointerThreadMode : uint8
-	{
-		NotThreadSafe = 0,
-		ThreadSafe    = 1, // 今後検討
-	};
 
 	namespace details
 	{
@@ -36,9 +40,9 @@ namespace gu
 		*				  			   SharedPointerReference
 		*************************************************************************//**
 		*  @class     SharedPointerReference
-		*  @brief     temp
+		*  @brief     Shared pointerの参照カウントを保持するためのクラス
 		*****************************************************************************/
-		template<SharedPointerThreadMode Mode = SharedPointerThreadMode::ThreadSafe>
+		template<SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
 		class SharedReferencer
 		{
 		public:
@@ -51,7 +55,7 @@ namespace gu
 			void Add();
 
 			/*----------------------------------------------------------------------
-			*  @brief : Increment the reference count.
+			*  @brief : Decrement the reference count.
 			/*----------------------------------------------------------------------*/
 			void Release();
 
@@ -93,6 +97,8 @@ namespace gu
 				std::atomic<int32>, int32> _referenceCount = 1;
 		};
 
+
+#pragma region SharedReferencer Implement
 		/*----------------------------------------------------------------------
 		*  @brief : 参照カウントを増やす
 		/*----------------------------------------------------------------------*/
@@ -142,6 +148,7 @@ namespace gu
 				return _referenceCount == 1;
 			}
 		}
+#pragma endregion SharedReferencer Implement
 	}
 }
 #endif

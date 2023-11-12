@@ -82,7 +82,6 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 	-      Create logical device
 	---------------------------------------------------------------------*/
 	_device = _adapter->CreateDevice();
-
 	/*-------------------------------------------------------------------
 	-      Get command queue (Graphics, compute, copy command queue )
 	---------------------------------------------------------------------*/

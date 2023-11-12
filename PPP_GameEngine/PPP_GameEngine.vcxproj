@@ -229,7 +229,23 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUAssert.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUSharedPointer.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUString.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUUUID.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUWeakPointer.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Include\SharedReferencer.hpp">
       <SubType>
       </SubType>
     </ClInclude>
