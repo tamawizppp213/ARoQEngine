@@ -19,3 +19,13 @@ using namespace platform;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 /////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
+CoreWindowMessageHandler::CoreWindowMessageHandler()
+{
+
+}
+CoreWindowMessageHandler::~CoreWindowMessageHandler()
+{
+
+}
+#pragma endregion Constructor and Destructor

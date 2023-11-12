@@ -83,7 +83,7 @@ namespace gu
 
 		SharedPointer(decltype(__nullptr)) : _pointer(nullptr), _referenceCount(nullptr) {};
 
-		~SharedPointer() 
+		virtual ~SharedPointer() 
 		{
 			Reset(); 
 		}

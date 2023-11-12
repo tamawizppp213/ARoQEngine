@@ -27,6 +27,17 @@ using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
+CoreWindow::CoreWindow() : core::CoreWindow()
+{
+
+}
+
+CoreWindow::~CoreWindow()
+{
+
+}
+#pragma endregion Constructor and Destructor
 #pragma region Main Function
 void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc)
 {

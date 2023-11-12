@@ -86,7 +86,7 @@ public:
 	*****************************************************************************/
 	PPPEngine() = default;
 
-	virtual ~PPPEngine() = default;
+	virtual ~PPPEngine();
 
 protected:
 	/****************************************************************************
@@ -113,6 +113,7 @@ protected:
 	/* @brief : 全てのスレッドが停止要求を行ったか*/
 	std::atomic_bool _isStoppedAllThreads = false;
 
+	bool _hasShutdown = false;
 #pragma endregion      Common
 
 #pragma region Main Thread

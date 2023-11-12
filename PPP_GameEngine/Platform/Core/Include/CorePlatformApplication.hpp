@@ -67,13 +67,12 @@ namespace platform::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		PlatformApplication() = default;
-
-		virtual ~PlatformApplication() { _messageHandler.Reset(); }
+		virtual ~PlatformApplication();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		PlatformApplication();
 
 		/****************************************************************************
 		**                Protected Member Variables

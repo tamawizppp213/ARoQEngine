@@ -19,9 +19,23 @@ using namespace platform;
 //                              Implement
 /////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
+CoreWindow::CoreWindow()
+{
+
+}
+
+CoreWindow::CoreWindow(const WindowMode windowMode) : _windowMode(windowMode)
+{
+
+}
+
 CoreWindow::CoreWindow(const CoreWindowDesc& desc)
 {
 	_activationPolicy = desc.ActivationPolicy;
 	_windowMode       = desc.WindowMode;
+}
+CoreWindow::~CoreWindow()
+{
+
 }
 #pragma endregion Constructor and Destructor

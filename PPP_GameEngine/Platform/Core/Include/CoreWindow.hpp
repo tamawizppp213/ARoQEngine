@@ -83,11 +83,11 @@ namespace platform::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		CoreWindow() = default;
+		CoreWindow();
 
-		~CoreWindow() = default;
+		~CoreWindow();
 
-		CoreWindow(const WindowMode windowMode) : _windowMode(windowMode) {};
+		CoreWindow(const WindowMode windowMode);
 
 		CoreWindow(const CoreWindowDesc& desc);
 

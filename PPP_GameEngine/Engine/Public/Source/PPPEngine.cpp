@@ -39,12 +39,18 @@ using namespace platform::core;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
+PPPEngine::~PPPEngine()
+{
+	ShutDown();
+}
 
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function
 void PPPEngine::StartUp(const StartUpParameters& setting)
 {
+	_hasShutdown = false;
+
 	/*---------------------------------------------------------------
 					  Timer
 	-----------------------------------------------------------------*/
@@ -152,6 +158,8 @@ void PPPEngine::ExecuteRenderThread()
 
 void PPPEngine::ShutDown()
 {
+	if (_hasShutdown) { return; }
+
 	// スレッドの破棄
 	_engineThreadManager.reset();
 
@@ -160,6 +168,11 @@ void PPPEngine::ShutDown()
 	
 	// グラフィックエンジンの破棄
 	_graphicsEngine->ShutDown();
+
+
+	_mainWindow.Reset();
+	_platformCommand.Reset();
+	_platformApplication.Reset();
 
 }
 #pragma endregion Main Function

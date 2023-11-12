@@ -56,13 +56,13 @@ namespace platform::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		virtual ~CoreWindowMessageHandler() = default;
+		virtual ~CoreWindowMessageHandler();
 
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		CoreWindowMessageHandler() = default;
+		CoreWindowMessageHandler();
 
 		/****************************************************************************
 		**                Protected Member Variables

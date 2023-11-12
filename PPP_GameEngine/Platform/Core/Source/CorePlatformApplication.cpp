@@ -21,6 +21,15 @@ using namespace platform;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 /////////////////////////////////////////////////////////////////////////////////
+PlatformApplication::PlatformApplication()
+{
+
+}
+PlatformApplication::~PlatformApplication()
+{
+	_messageHandler.Reset(); 
+}
+
 gu::SharedPointer<PlatformApplication> PlatformApplication::Create(const PlatformType type)
 {
 	switch (type)
