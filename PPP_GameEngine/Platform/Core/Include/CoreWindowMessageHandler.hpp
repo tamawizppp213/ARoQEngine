@@ -12,9 +12,9 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "CoreCommonState.hpp"
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <cstdint>
-#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ namespace platform::core
 	class CoreWindowMessageHandler : public NonCopyable
 	{
 	protected:
-		using CoreWindowPtr = std::shared_ptr<core::CoreWindow>;
+		using CoreWindowPtr = gu::SharedPointer<core::CoreWindow>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -56,7 +56,7 @@ namespace platform::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-
+		virtual ~CoreWindowMessageHandler() = default;
 
 	protected:
 		/****************************************************************************
@@ -64,7 +64,6 @@ namespace platform::core
 		*****************************************************************************/
 		CoreWindowMessageHandler() = default;
 
-		virtual ~CoreWindowMessageHandler() = default;
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

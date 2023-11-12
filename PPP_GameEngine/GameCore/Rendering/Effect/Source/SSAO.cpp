@@ -77,7 +77,7 @@ SSAO::~SSAO()
 #pragma region Main Function
 void SSAO::OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight)
 {
-	std::cout << "–¢ŽÀ‘•" << std::endl;
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 
 void SSAO::Draw(const ResourceViewPtr& scene)
@@ -266,7 +266,7 @@ void SSAO::PrepareRandomTexture(const std::wstring& name)
 {
 	const auto device   = _engine->GetDevice();
 	const auto metaData = GPUTextureMetaData::Texture2D(256, 256, PixelFormat::R8G8B8A8_UNORM);
-	const auto texture  = device->CreateTexture(metaData, L"Random");
+	const auto texture  = device->CreateTexture(metaData, name + L"Random");
 	const auto pixel    = new RGBA[256 * 256];
 	Random<float> random;
 	random.SetRange(0.0f, 1.0f);

@@ -36,7 +36,7 @@ namespace gc::rendering
 		hlsl::float3 Direction  = hlsl::float3(1, 1, 1);
 		hlsl::float1 Brightness = 1.0f;
 		hlsl::float3 Color      = hlsl::float3(1, 1, 1);
-		int          IsUse      = 0.0f;
+		int          IsUse      = 0;
 	};
 
 	struct PointLightData : public LightData

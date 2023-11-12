@@ -62,7 +62,7 @@ namespace gc::audio
 		virtual bool SetUp(const AudioClipPtr& audioClip, const SoundType soundType, const float volume = 1.0f);
 
 		/* @brief : This function is used to perform a fade.*/
-		virtual void Update(const float deltaTime);
+		virtual void Update([[maybe_unused]]const float deltaTime);
 
 		/* @brief : Play sound. (Playback from the beginning at any time)
 		            ("loopIntervalSeconds equals 0.0f" means "Playback to end at 0.0f")*/

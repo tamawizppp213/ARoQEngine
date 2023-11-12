@@ -21,14 +21,14 @@ using namespace platform;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 /////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<PlatformApplication> PlatformApplication::Create(const PlatformType type)
+gu::SharedPointer<PlatformApplication> PlatformApplication::Create(const PlatformType type)
 {
 	switch (type)
 	{
 		case PlatformType::Windows:
 		{
 			#if PLATFORM_OS_WINDOWS
-			return std::make_shared<windows::PlatformApplication>();
+			return gu::StaticPointerCast<PlatformApplication>(gu::MakeShared<platform::windows::PlatformApplication>());
 			#endif
 		}
 		default:
@@ -38,10 +38,10 @@ std::shared_ptr<PlatformApplication> PlatformApplication::Create(const PlatformT
 	}
 }
 
-std::shared_ptr<PlatformApplication> PlatformApplication::Create()
+gu::SharedPointer<PlatformApplication> PlatformApplication::Create()
 {
 #if PLATFORM_OS_WINDOWS
-	return std::make_shared<windows::PlatformApplication>();
+	return gu::StaticPointerCast<PlatformApplication>(gu::MakeShared<windows::PlatformApplication>());
 #else
 	OutputDebugStringA("platform application is nullptr");
 	return nullptr;

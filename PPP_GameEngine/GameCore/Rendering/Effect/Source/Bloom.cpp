@@ -115,7 +115,7 @@ void Bloom::Draw()
 }
 void Bloom::OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight)
 {
-
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 /****************************************************************************
 *                          UpdateBloomPower
@@ -198,7 +198,7 @@ void Bloom::PrepareResourceView(const std::wstring& name)
 	if (!_luminanceSRV || !_luminanceUAV)
 	{
 		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess);
-		const auto texture = device->CreateTexture(metaData);
+		const auto texture = device->CreateTexture(metaData,name+L"Luminance");
 		_luminanceSRV = device->CreateResourceView(ResourceViewType::Texture  , texture, nullptr);
 		_luminanceUAV = device->CreateResourceView(ResourceViewType::RWTexture, texture, nullptr);
 	}

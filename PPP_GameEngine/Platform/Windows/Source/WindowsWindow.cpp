@@ -23,19 +23,19 @@
 
 using namespace platform;
 using namespace platform::windows;
-
+using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Main Function
-void CoreWindow::Create(const std::shared_ptr<core::PlatformApplication>& application, const core::CoreWindowDesc& desc)
+void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc)
 {
 	/*-----------------------------------------------------------------
 					   Prepare 
 	--------------------------------------------------------------------*/
 	assert(("application is nullptr", application));
 
-	const auto windowsApplication = std::static_pointer_cast<windows::PlatformApplication>(application);
+	const auto windowsApplication = StaticPointerCast<windows::PlatformApplication>(application);
 
 	/*-----------------------------------------------------------------
 				desc‚Ì“o˜^
@@ -114,7 +114,7 @@ void CoreWindow::Create(const std::shared_ptr<core::PlatformApplication>& applic
 		NULL, // parent window
 		NULL, // menu handler 
 		windowsApplication->GetWindowsInstanceHandle(), // instance handler 
-		windowsApplication.get()  // additional expansion area
+		windowsApplication.Get()  // additional expansion area
 	);
 
 	if (_hwnd == NULL)

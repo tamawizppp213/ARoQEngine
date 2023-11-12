@@ -284,8 +284,8 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 {
 	if (!(_width != newWidth || _height != newHeight)) { return; }
 
-	Screen::SetScreenWidth(newWidth);
-	Screen::SetScreenHeight(newHeight);
+	Screen::SetScreenWidth((int)newWidth);
+	Screen::SetScreenHeight((int)newHeight);
 	SetFrameBuffers((int)newWidth, (int)newHeight);
 
 	_swapchain->Resize(newWidth, newHeight);
@@ -293,7 +293,7 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 	/*-------------------------------------------------------------------
 	-          Wait Graphics Queue
 	---------------------------------------------------------------------*/
-	const auto previousFrame    = _currentFrameIndex;
+	const std::uint32_t previousFrame = _currentFrameIndex;
 	_commandQueues[CommandListType::Graphics]->Signal(_fence, ++_fenceValue);
 	_fence->Wait(_fenceValue);
 

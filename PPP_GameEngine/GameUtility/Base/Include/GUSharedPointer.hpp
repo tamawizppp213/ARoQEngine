@@ -83,7 +83,7 @@ namespace gu
 
 		SharedPointer(decltype(__nullptr)) : _pointer(nullptr), _referenceCount(nullptr) {};
 
-		virtual ~SharedPointer() 
+		~SharedPointer() 
 		{
 			Reset(); 
 		}
@@ -132,6 +132,7 @@ namespace gu
 			: _pointer(pointer), _referenceCount(reference)
 		{
 			AddReference();
+
 		};
 
 		template<class OtherType>
@@ -175,10 +176,12 @@ namespace gu
 
 
 	/****************************************************************************
-	*				  			   GUSharedPointer
+	*				  			   EnableSharedFromThis
 	*************************************************************************//**
-	*  @class     GUSharedPointer
-	*  @brief     temp
+	*  @class     EnableSharedFromThis
+	*  @brief     自分自身のクラスからスマートポインタの参照を渡すときに使用します. 
+	*             現在, MakeShared時, インタフェース部分に(platform::coreとかに継承)継承を入れると認識しない場合があります. 
+	*             そのため, MakeSharedを実際に適用するクラス(platform::windowsに継承)に直接継承を入れるようにしてください.
 	*****************************************************************************/
 	template<class ElementType, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
 	class EnableSharedFromThis
@@ -252,7 +255,7 @@ namespace gu
 	SharedPointer<ElementType, Mode> MakeShared(Arguments... arguments)
 	{
 		auto pointer = SharedPointer<ElementType, Mode>(new ElementType(arguments...));
-		if constexpr(std::is_base_of_v<EnableSharedFromThis<ElementType>, ElementType>)
+		if constexpr(std::derived_from<ElementType,gu::EnableSharedFromThis<ElementType,Mode>>)
 		{
 			pointer->SetWeakPointer(pointer);
 		}

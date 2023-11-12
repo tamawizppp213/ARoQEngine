@@ -557,7 +557,7 @@ PrimitiveMesh PrimitiveMeshGenerator::Torus(float majorRadius, float minorRadius
         const float sinMajor = Sin(majorPosition);
         float minorPosition = 0.0f;
 
-        for (int j = 0; j < numMinor; ++j) {
+        for (std::uint32_t j = 0; j < numMinor; ++j) {
             float cosMinor = Cos(minorPosition);
             float sinMinor = Sin(minorPosition);
 

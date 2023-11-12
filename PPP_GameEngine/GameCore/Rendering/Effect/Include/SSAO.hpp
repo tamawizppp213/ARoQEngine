@@ -51,7 +51,7 @@ namespace gc
 		/* @brief : SSAO setting : Define radius, attenuated shapness, fade view space value from start to end.*/
 		struct SSAOSetting
 		{
-			hlsl::float2 TextureSize    = gm::Float2(Screen::GetScreenWidth(), Screen::GetScreenHeight());
+			hlsl::float2 TextureSize    = gm::Float2((float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight());
 			hlsl::float1 Radius         = 1.5f;
 			hlsl::float1 Sharpness      = 4.0f;
 			hlsl::float1 FadeStart      = 0.2f;  // view space

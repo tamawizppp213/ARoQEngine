@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Core/Include/CoreWindow.hpp"
 #include <Windows.h>
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ namespace platform::windows
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Create(const std::shared_ptr<core::PlatformApplication>& application, const core::CoreWindowDesc& desc);
+		void Create(const gu::SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc);
 
 		/* @brief : Visibleでなかった場合にウィンドウを表示します.*/
 		bool Show() override;
@@ -84,6 +84,9 @@ namespace platform::windows
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		CoreWindow() = default;
+
+		~CoreWindow() = default;
 
 	protected:
 		/****************************************************************************

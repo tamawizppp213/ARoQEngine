@@ -37,7 +37,7 @@ Dof::Dof(const LowLevelGraphicsEnginePtr& engine,
 	if (addName != L"") { name = addName; name += L"::"; }
 	name += L"Dof::";
 
-	PrepareRenderBuffer(width, height);
+	PrepareRenderBuffer((size_t)width, (size_t)height);
 	PrepareBlurParameterBuffer(width, height, radius, name);
 	PrepareClipSizeBuffer(nearClip, farClip, name);
 	PreparePipelineState(name);
@@ -56,7 +56,7 @@ Dof::~Dof()
 
 void Dof::OnResize(float newWidth, float newHeight)
 {
-	
+	printf("width: %f, height: %f\n", newWidth, newHeight);
 }
 /****************************************************************************
 *							Draw

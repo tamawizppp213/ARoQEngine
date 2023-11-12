@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace platform;
 using namespace platform::windows;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
@@ -28,7 +29,7 @@ static constexpr LPCWSTR g_ApplicationName = L"Game Window";
 
 namespace
 {
-	std::shared_ptr<windows::CoreWindow> FindWindowByHWND(const std::vector<std::shared_ptr<windows::CoreWindow>>& searchWindows, HWND handle)
+	gu::SharedPointer<windows::CoreWindow> FindWindowByHWND(const std::vector<gu::SharedPointer<windows::CoreWindow>>& searchWindows, HWND handle)
 	{
 		for (int i = 0; i < searchWindows.size(); ++i)
 		{
@@ -61,7 +62,7 @@ PlatformApplication::PlatformApplication() : core::PlatformApplication()
 	/*---------------------------------------------------------------
 					Create message handler
 	-----------------------------------------------------------------*/
-	_messageHandler = std::make_shared<windows::CoreWindowMessageHandler>();
+	_messageHandler = gu::MakeShared<windows::CoreWindowMessageHandler>();
 }
 
 PlatformApplication::~PlatformApplication()
@@ -145,9 +146,9 @@ bool PlatformApplication::RegisterWindowClass()
 *
 *  @return    std::shared_ptr<core::CoreWindow>
 *****************************************************************************/
-std::shared_ptr<core::CoreWindow> PlatformApplication::MakeWindow()
+SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
 {
-	return std::make_shared<windows::CoreWindow>();
+	return MakeShared<windows::CoreWindow>();
 }
 
 /****************************************************************************
@@ -161,9 +162,9 @@ std::shared_ptr<core::CoreWindow> PlatformApplication::MakeWindow()
 *
 *  @return    std::shared_ptr<core::PlatformCommand>
 *****************************************************************************/
-std::shared_ptr<core::PlatformCommand> PlatformApplication::MakeCommand()
+SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 {
-	return std::make_shared<windows::PlatformCommand>();
+	return MakeShared<windows::PlatformCommand>();
 }
 
 /****************************************************************************
@@ -178,14 +179,14 @@ std::shared_ptr<core::PlatformCommand> PlatformApplication::MakeCommand()
 *
 *  @return    void
 *****************************************************************************/
-void PlatformApplication::SetUpWindow(const std::shared_ptr<core::CoreWindow>& window, const core::CoreWindowDesc& desc)
+void PlatformApplication::SetUpWindow(const SharedPointer<core::CoreWindow>& window, const core::CoreWindowDesc& desc)
 {
-	assert(("window is nullptr", window != nullptr));
+	assert(("window is nullptr", window));
 
-	_windows.push_back(std::static_pointer_cast<windows::CoreWindow>(window));
+	_windows.push_back(StaticPointerCast<windows::CoreWindow>(window));
 	
-	const auto windowsCoreWindow = std::static_pointer_cast<windows::CoreWindow>(window);
-	windowsCoreWindow->Create(shared_from_this(), desc);
+	const auto windowsCoreWindow = StaticPointerCast<windows::CoreWindow>(window);
+	windowsCoreWindow->Create(SharedFromThis(), desc);
 }
 
 /****************************************************************************
@@ -257,7 +258,7 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 	const auto window      = FindWindowByHWND(_windows, message.WindowHandle);
 	const auto messageCode = message.MessageCode;
 
-	if (window == nullptr) { return 0; }
+	if (!window) { return 0; }
 
 	switch (messageCode)
 	{
@@ -340,7 +341,7 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 		--------------------------------------------------------------------*/
 		case WM_CLOSE:
 		{
-			_messageHandler->OnWindowClosed(window);
+			_messageHandler->OnWindowClosed(gu::StaticPointerCast<core::CoreWindow>(window));
 			return 0;
 		}
 		/*-----------------------------------------------------------------

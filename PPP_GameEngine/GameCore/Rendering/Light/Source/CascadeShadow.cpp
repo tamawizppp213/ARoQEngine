@@ -171,7 +171,7 @@ void CascadeShadow::Update(const std::shared_ptr<GameTimer>& gameTimer, const gm
 	---------------------------------------------------------------------*/
 	// camera update (‚Æ‚è‚ ‚¦‚¸Directional Light ‘z’è‚Ås‚Á‚Ä‚Ü‚·)
 	const auto cameraPosition = Float3(-direction.x, -direction.y, -direction.z);
-	_lightCamera->SetOrthoLens(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _lightCamera->GetNearZ(), _lightCamera->GetFarZ());
+	_lightCamera->SetOrthoLens((float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight(), _lightCamera->GetNearZ(), _lightCamera->GetFarZ());
 	_lightCamera->LookAt(cameraPosition, Float3(0, 0, 0), _lightCamera->GetUp3f());
 	_lightCamera->Update(gameTimer);
 

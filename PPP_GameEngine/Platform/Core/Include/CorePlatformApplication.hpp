@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "CoreCommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,22 +34,22 @@ namespace platform::core
 	*  @class     PlatformApplication
 	*  @brief     This class is the window list manager.
 	*****************************************************************************/
-	class PlatformApplication : public NonCopyable, public std::enable_shared_from_this<PlatformApplication>
+	class PlatformApplication 
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : This application creator is determined in according to platform macro*/
-		static std::shared_ptr<PlatformApplication> Create();
+		static gu::SharedPointer<PlatformApplication> Create();
 
-		static std::shared_ptr<PlatformApplication> Create(const core::PlatformType type);
+		static gu::SharedPointer<PlatformApplication> Create(const core::PlatformType type);
 
-		virtual std::shared_ptr<CoreWindow> MakeWindow() = 0;
+		virtual gu::SharedPointer<CoreWindow> MakeWindow() = 0;
 
-		virtual std::shared_ptr<PlatformCommand> MakeCommand() = 0;
+		virtual gu::SharedPointer<PlatformCommand> MakeCommand() = 0;
 		
-		virtual void SetUpWindow(const std::shared_ptr<CoreWindow>& window, const CoreWindowDesc& desc) = 0;
+		virtual void SetUpWindow(const gu::SharedPointer<CoreWindow>& window, const CoreWindowDesc& desc) = 0;
 
 		/* @brief : This function pumps window message, when you are returned the true, you accept the message. */
 		virtual bool PumpMessage() = 0;
@@ -69,7 +69,7 @@ namespace platform::core
 		*****************************************************************************/
 		PlatformApplication() = default;
 
-		virtual ~PlatformApplication() = default;
+		virtual ~PlatformApplication() { _messageHandler.Reset(); }
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -78,7 +78,7 @@ namespace platform::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<CoreWindowMessageHandler> _messageHandler = nullptr;
+		gu::SharedPointer<CoreWindowMessageHandler> _messageHandler = nullptr;
 	};
 }
 #endif

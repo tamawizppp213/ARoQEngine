@@ -129,8 +129,8 @@ Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const N
 		switch (type)
 		{
 			using enum CoordinateType;
-			case Screen : { _images[i].CreateInScreenSpace(centerPosition, info.SizePerDigit, u, v, info.Color); }
-			case NDC    : { _images[i].CreateInNDCSpace    (centerPosition, info.SizePerDigit, u, v, info.Color); }
+			case Screen : { _images[i].CreateInScreenSpace(centerPosition, info.SizePerDigit, u, v, info.Color); break;}
+			case NDC    : { _images[i].CreateInNDCSpace    (centerPosition, info.SizePerDigit, u, v, info.Color); break;}
 			default: 
 				throw std::runtime_error("Choice wrong type");
 		}

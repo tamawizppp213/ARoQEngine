@@ -92,7 +92,7 @@ ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEngin
 *****************************************************************************/
 void ColorChange::OnResize(int newWidth, int newHeight)
 {
-
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 /****************************************************************************
 *							Draw

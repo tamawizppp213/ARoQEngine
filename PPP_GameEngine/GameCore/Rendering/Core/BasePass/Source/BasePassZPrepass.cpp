@@ -54,7 +54,7 @@ ZPrepass::~ZPrepass()
 #pragma region Main Function
 void ZPrepass::OnResize(const std::uint32_t width, const std::uint32_t height)
 {
-
+	printf("width: %d, height: %d\n", width, height);
 }
 
 /****************************************************************************
@@ -85,7 +85,7 @@ void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 	commandList->SetResourceLayout(_resourceLayout);
 	commandList->SetGraphicsPipeline(_pipeline);
 	scene->Bind(commandList, 0); // scene constants
-	for (const auto gameModel : _gameModels)
+	for (const auto& gameModel : _gameModels)
 	{
 		gameModel->Draw(false);
 	}

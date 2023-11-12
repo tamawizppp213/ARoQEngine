@@ -98,7 +98,7 @@ void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const Reso
 
 	vertexBuffer->CopyStart();
 	// _maxWritableUICount - _totalImageCount is c‚è‚Ì“o˜^‚Å‚«‚é”
-	for (std::uint32_t i = 0; i < std::min<std::uint32_t>(images.size(), _maxWritableUICount - _totalImageCount); ++i)
+	for (std::uint32_t i = 0; i < std::min<std::uint32_t>((std::uint32_t)images.size(), _maxWritableUICount - _totalImageCount); ++i)
 	{
 		vertexBuffer->CopyTotalData(images[i]->GetVertices(), 4, (i + _totalImageCount) * oneRectVertexCount);
 	}
@@ -135,7 +135,7 @@ void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const Res
 
 	vertexBuffer->CopyStart();
 	// _maxWritableUICount - _totalImageCount is c‚è‚Ì“o˜^‚Å‚«‚é”
-	for (std::uint32_t i = 0; i < std::min<std::uint32_t>(images.size(), _maxWritableUICount - _totalImageCount); ++i)
+	for (std::uint32_t i = 0; i < std::min<std::uint32_t>((std::uint32_t)images.size(), _maxWritableUICount - _totalImageCount); ++i)
 	{
 		vertexBuffer->CopyTotalData(images[i].GetVertices(), 4, (i + _totalImageCount) * oneRectVertexCount);
 	}

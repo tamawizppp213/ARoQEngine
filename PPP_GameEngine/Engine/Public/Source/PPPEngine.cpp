@@ -53,7 +53,7 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 	/*---------------------------------------------------------------
 					  Platform Applicationの作成
 	-----------------------------------------------------------------*/
-	_platformApplication = PlatformApplication::Create(PlatformType::Windows);
+	_platformApplication = PlatformApplication::Create();
 
 	/*---------------------------------------------------------------
 					  ウィンドウクラスの作成

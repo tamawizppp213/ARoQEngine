@@ -32,20 +32,20 @@ namespace platform::windows
 	*  @class     PlatformApplication
 	*  @brief     ウィンドウを管理し, メッセージループを管理するクラス
 	*****************************************************************************/
-	class PlatformApplication : public platform::core::PlatformApplication
+	class PlatformApplication : public platform::core::PlatformApplication, public gu::EnableSharedFromThis<PlatformApplication>
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : 新規のウィンドウインスタンスを作成します. ここではセットアップは行いません*/
-		std::shared_ptr<core::CoreWindow> MakeWindow() override;
+		gu::SharedPointer<core::CoreWindow> MakeWindow() override;
 
 		/* @brief : 新規でコマンドをまとめたクラスのインスタンスを作成します.*/
-		std::shared_ptr<core::PlatformCommand> MakeCommand() override;
+		gu::SharedPointer<core::PlatformCommand> MakeCommand() override;
 
 		/* @brief : 指定のウィンドウを実際に作成するまで行います. セットアップも行います*/
-		void SetUpWindow(const std::shared_ptr<core::CoreWindow>& window, const core::CoreWindowDesc& desc) override;
+		void SetUpWindow(const gu::SharedPointer<core::CoreWindow>& window, const core::CoreWindowDesc& desc) override;
 
 		/* @brief : メッセージを出します. この関数は仮想キーメッセージが受け取られ, それをメッセージ形式に変換した時にtrueを返します*/
 		bool PumpMessage() override;
@@ -90,7 +90,7 @@ namespace platform::windows
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		std::vector<std::shared_ptr<windows::CoreWindow>> _windows = {};
+		std::vector<gu::SharedPointer<windows::CoreWindow>> _windows = {};
 
 		std::vector<DeferredMessage> _messageList = {};
 

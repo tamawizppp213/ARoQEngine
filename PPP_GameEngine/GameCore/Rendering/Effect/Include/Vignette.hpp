@@ -80,7 +80,7 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareBuffer(const VignetteSettings& setting, const std::wstring& addName);
+		void PrepareBuffer(const std::wstring& addName);
 
 		void PreparePipelineState(const std::wstring& addName) override;
 

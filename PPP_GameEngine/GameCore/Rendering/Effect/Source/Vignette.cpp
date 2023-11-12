@@ -54,7 +54,7 @@ Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettin
 	-           Prepare Pipeline
 	---------------------------------------------------------------------*/
 	PrepareVertexAndIndexBuffer(name);
-	PrepareBuffer(settings, name);
+	PrepareBuffer(name);
 	PreparePipelineState(name);
 	PrepareResourceView();
 }
@@ -63,7 +63,7 @@ Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettin
 #pragma region Main Function
 void Vignette::OnResize(int newWidth, int newHeight)
 {
-
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 
 void Vignette::Draw()
@@ -94,7 +94,7 @@ void Vignette::Draw()
 
 #pragma region Set up function
 
-void Vignette::PrepareBuffer(const VignetteSettings& settings, const std::wstring& name)
+void Vignette::PrepareBuffer(const std::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(VignetteSettings), 1);

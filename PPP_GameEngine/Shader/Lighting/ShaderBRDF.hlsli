@@ -102,8 +102,8 @@ float DiffuseBRDF_Normalized_Lambert()
 float DiffuseBRDF_Disney(const float normalDotEye, const float normalDotLight, const float lightDotHalf, const float roughness)
 {
     const float  F90          = 0.5f + 2.0f * roughness * pow(lightDotHalf, 2.0f); // Œõ‚ª•½s‚É“ü‚Á‚Ä‚«‚½‚Æ‚«‚Ì”½Ë—¦
-    const float3 lightScatter = Fresnel_Schlick(normalDotLight, F90, 1.0f);        // •½s‚É“ü‚Á‚Ä‚«‚½‚Æ‚«‚É‚àŠgU‚Ì‰e‹¿‚ªo‚é‚æ‚¤‚É‚µ‚Ä‚é
-    const float3 toEyeScatter = Fresnel_Schlick(normalDotEye  , F90, 1.0f);
+    const float lightScatter = Fresnel_Schlick(normalDotLight, F90, 1.0f);        // •½s‚É“ü‚Á‚Ä‚«‚½‚Æ‚«‚É‚àŠgU‚Ì‰e‹¿‚ªo‚é‚æ‚¤‚É‚µ‚Ä‚é
+    const float toEyeScatter = Fresnel_Schlick(normalDotEye, F90, 1.0f);
     return lightScatter * toEyeScatter * (1.0f / PI);
 }
 

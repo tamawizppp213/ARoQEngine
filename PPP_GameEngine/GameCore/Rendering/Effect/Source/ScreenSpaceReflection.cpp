@@ -70,7 +70,7 @@ ScreenSpaceReflection::ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& en
 #pragma region Main Function
 void ScreenSpaceReflection::OnResize(int newWidth, int newHeight)
 {
-
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 
 void ScreenSpaceReflection::Draw(const ResourceViewPtr& scene)
@@ -119,6 +119,7 @@ void ScreenSpaceReflection::PrepareBuffer(const SSRSettings& settings, const std
 	/*-------------------------------------------------------------------
 	-			Set Information
 	---------------------------------------------------------------------*/
+	_settings = settings;
 	buffer->Pack(&_settings, nullptr);
 	_settingsView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 }

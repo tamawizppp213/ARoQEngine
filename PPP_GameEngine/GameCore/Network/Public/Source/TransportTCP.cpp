@@ -153,7 +153,7 @@ bool TransportTCP::Connect(const IPAddress& address, const std::uint32_t port)
 	/*-------------------------------------------------------------------
 	-                 Connect
 	---------------------------------------------------------------------*/
-	_socket->Connect(address, port);
+	_socket->Connect(address, (std::uint16_t)port);
 	_isConnected = true;
 	OutputDebugStringA("Connection Success");
 

@@ -86,7 +86,7 @@ namespace gc::rendering
 
 		GBuffer(const LowLevelGraphicsEnginePtr& engine,
 			const GBufferDesc& desc = GBufferDesc(),
-			const std::wstring& addName = L"");
+			[[maybe_unused]]const std::wstring& addName = L"");
 
 		virtual ~GBuffer();
 

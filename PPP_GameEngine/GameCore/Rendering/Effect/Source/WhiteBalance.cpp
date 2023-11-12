@@ -66,7 +66,7 @@ WhiteBalance::WhiteBalance(const LowLevelGraphicsEnginePtr& engine, const float 
 #pragma region Main Function
 void WhiteBalance::OnResize(int newWidth, int newHeight)
 {
-
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 
 void WhiteBalance::Draw()
@@ -108,6 +108,7 @@ void WhiteBalance::PrepareBuffer(const WhiteBalanceSettings& settings, const std
 	/*-------------------------------------------------------------------
 	-			Set Information
 	---------------------------------------------------------------------*/
+	_settings = settings;
 	buffer->Pack(&_settings, nullptr);
 	_resourceViews.push_back(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }

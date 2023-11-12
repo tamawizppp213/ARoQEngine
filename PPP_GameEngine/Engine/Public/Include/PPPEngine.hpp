@@ -15,6 +15,7 @@
 #include "EngineThreadManager.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -43,9 +44,9 @@ namespace gc
 class PPPEngine : public NonCopyable
 {
 protected:
-	using PlatformApplicationPtr    = std::shared_ptr<platform::core::PlatformApplication>;
-	using CoreWindowPtr             = std::shared_ptr<platform::core::CoreWindow>;
-	using PlatformCommandPtr        = std::shared_ptr<platform::core::PlatformCommand>;
+	using PlatformApplicationPtr    = gu::SharedPointer<platform::core::PlatformApplication>;
+	using CoreWindowPtr             = gu::SharedPointer<platform::core::CoreWindow>;
+	using PlatformCommandPtr        = gu::SharedPointer<platform::core::PlatformCommand>;
 	using EngineThreadManagerPtr    = std::shared_ptr<engine::core::EngineThreadManager>;
 	using GameTimerPtr              = std::shared_ptr<GameTimer>;
 	using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;

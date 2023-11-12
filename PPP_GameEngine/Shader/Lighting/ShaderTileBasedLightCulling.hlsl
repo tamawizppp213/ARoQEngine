@@ -141,8 +141,8 @@ void CreatePointLightIndexArrayInTile(const uint groupIndex, const float4 frustu
 	    ---------------------------------------------------------------------*/
         bool inFrustum = true;
         
-        const float4 positionWorld = mul(World, float4(light.Position, 1.0f));
-        const float4 positionView  = (mul(View, positionWorld).xyz, 1.0f);     // ì‡êœópÇ…float4Ç…ÇµÇƒÇÈ
+        const float4 positionWorld = float4(mul(World, float4(light.Position, 1.0f)));
+        const float4 positionView  = float4(mul(View, positionWorld).xyz, 1.0f);     // ì‡êœópÇ…float4Ç…ÇµÇƒÇÈ
         for(uint i = 0; i < 6; ++i)
         {
             const float d = dot(frustumPlanes[i], positionView);

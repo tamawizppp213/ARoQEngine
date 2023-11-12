@@ -50,7 +50,7 @@ GBuffer::~GBuffer()
 #pragma region Main Function
 void GBuffer::OnResize(const std::uint32_t width, const std::uint32_t height)
 {
-
+	printf("width: %d, height: %d\n", width, height);
 }
 
 void GBuffer::Draw(const GPUResourceViewPtr& scene)
@@ -70,7 +70,7 @@ void GBuffer::Draw(const GPUResourceViewPtr& scene)
 	commandList->SetResourceLayout(_resourceLayout);
 	commandList->SetGraphicsPipeline(_pipeline);
 	scene->Bind(commandList, 0);
-	for (const auto gameModel : _gameModels)
+	for (const auto& gameModel : _gameModels)
 	{
 		gameModel->Draw(true);
 	}
@@ -180,9 +180,9 @@ void GBuffer::PrepareFrameBuffers(const std::wstring& name)
 		auto depthInfo  = GPUTextureMetaData::DepthStencil(_desc.Width, _desc.Height, PixelFormat::D32_FLOAT, depthClearColor);
 		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 		std::vector<TexturePtr> renderTexture(_desc.BufferCount);
-		for (size_t i = 0; i < _desc.BufferCount; ++i)
+		for (size_t j = 0; j < _desc.BufferCount; ++j)
 		{
-			renderTexture[i] = device->CreateTexture(renderInfo, name + L"RenderTarget");
+			renderTexture[j] = device->CreateTexture(renderInfo, name + L"RenderTarget");
 		}
 		const auto depthTexture = device->CreateTexture(depthInfo, name + L"DepthStencil");
 

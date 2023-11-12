@@ -38,7 +38,7 @@ namespace platform::windows
 		*****************************************************************************/
 		bool OnWindowActivationChanged(const CoreWindowPtr& window, const core::ActivationType type)override;
 
-		bool OnWindowClosed(const CoreWindowPtr& window) override;
+		bool OnWindowClosed(const gu::SharedPointer<core::CoreWindow>& window) override;
 
 		bool OnSizeChanged(const std::uint32_t width, const std::uint32_t height) override;
 		/****************************************************************************

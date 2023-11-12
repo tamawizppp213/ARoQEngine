@@ -66,6 +66,7 @@ AudioClipCache::AudioClipPtr AudioClipCache::Load(const std::wstring& filePath)
 
 		// regist audio clip to the audioClipList;
 		_audioClipList[hashCode] = std::move(audioClip);
+		return _audioClipList[hashCode];
 	}
 }
 

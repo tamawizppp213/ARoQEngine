@@ -475,7 +475,7 @@ void RHICommandList::TransitionResourceStates(const std::vector<std::shared_ptr<
 			resources[i]->TransitionResourceState(afters[i]);
 		}
 	}
-	_commandList->ResourceBarrier(barriers.size(), barriers.data());
+	_commandList->ResourceBarrier((UINT)barriers.size(), barriers.data());
 }
 
 #pragma endregion Transition Resource State
