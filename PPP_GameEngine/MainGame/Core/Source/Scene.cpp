@@ -9,6 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Core/Include/Scene.hpp"
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +27,7 @@ Scene::~Scene()
 
 }
 #pragma region Public Function
-void Scene::Initialize(const std::shared_ptr<PPPEngine>& engine,const std::shared_ptr<GameTimer>& gameTimer)
+void Scene::Initialize(const gu::SharedPointer<PPPEngine>& engine,const std::shared_ptr<GameTimer>& gameTimer)
 {
 	_gameTimer = gameTimer;
 	_pppEngine = engine;

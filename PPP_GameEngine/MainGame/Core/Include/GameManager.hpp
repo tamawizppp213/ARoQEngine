@@ -41,7 +41,7 @@ public:
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	std::shared_ptr<PPPEngine> GetEngine() const { return _engine; }
+	gu::SharedPointer<PPPEngine> GetEngine() const { return _engine; }
 	std::shared_ptr<LowLevelGraphicsEngine> GetGraphicsEngine() { return _engine->GetLowLevelGraphics(); }
 	/****************************************************************************
 	**                Constructor and Destructor
@@ -72,7 +72,7 @@ private:
 	**                Private Member Variables
 	*****************************************************************************/
 	SceneManager& _sceneManager = SceneManager::Instance();
-	std::shared_ptr<PPPEngine> _engine = nullptr;
+	gu::SharedPointer<PPPEngine> _engine = nullptr;
 	HWND _mainWindow = nullptr;
 };
 #endif

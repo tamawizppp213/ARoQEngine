@@ -42,7 +42,7 @@ SampleText::~SampleText()
 *  @param[in] const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleText::Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleText::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

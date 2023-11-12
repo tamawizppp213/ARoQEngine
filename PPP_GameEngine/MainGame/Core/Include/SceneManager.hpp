@@ -13,6 +13,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "Scene.hpp"
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <memory>
 #include <stack>
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +36,7 @@ class SceneManager
 	using SceneUniquePtr = std::unique_ptr<Scene>;
 	using ScenePtr       = Scene*;
 	using GameTimerPtr   = std::shared_ptr<GameTimer>;
-	using PPPEnginePtr = std::shared_ptr<PPPEngine>;
+	using PPPEnginePtr   = gu::SharedPointer<PPPEngine>;
 public:
 	/****************************************************************************
 	**                Public Function
@@ -81,7 +82,7 @@ private:
 	*****************************************************************************/
 	std::stack<SceneUniquePtr> _currentScene;
 	GameTimerPtr _gameTimer = nullptr;
-	std::shared_ptr<PPPEngine> _engine;
+	PPPEnginePtr _engine = nullptr;
 };
 
 #endif

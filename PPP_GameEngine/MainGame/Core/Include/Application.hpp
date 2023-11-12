@@ -11,10 +11,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GameTimer.hpp"
 #include "GameCore/Input/Include/GameInput.hpp"
 #include "GameManager.hpp"
-
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -30,7 +30,7 @@
 *  @class     Application
 *  @brief     Create Main Window Class
 *****************************************************************************/
-class Application final
+class Application final : public NonCopyAndMove
 {
 public:
 	/****************************************************************************
@@ -52,10 +52,6 @@ public:
 		static Application application;
 		return application;
 	}
-	Application(const Application&)            = delete;
-	Application& operator=(const Application&) = delete;
-	Application(Application&&)                 = delete;
-	Application& operator=(Application&&)      = delete;
 private:
 	/****************************************************************************
 	**                Private Function
@@ -67,7 +63,6 @@ private:
 	/****************************************************************************
 	**                Private Member Variables
 	*****************************************************************************/
-	std::shared_ptr<GameTimer> _gameTimer = nullptr;
 	GameInput& _gameInput             = GameInput::Instance();
 	GameManager& _gameManager         = GameManager::Instance();
 	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::DirectX12;

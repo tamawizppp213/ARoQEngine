@@ -21,7 +21,7 @@ using namespace gc::core;
 //////////////////////////////////////////////////////////////////////////////////
 void GameManager::GameStart(const engine::setting::StartUpParameters& parameters)
 {
-	_engine = std::make_shared<PPPEngine>();
+	_engine = gu::MakeShared<PPPEngine>();
 	_engine->StartUp(parameters);
 	_sceneManager.StartUp(_engine, _engine->GetMainThreadTimer());
 }

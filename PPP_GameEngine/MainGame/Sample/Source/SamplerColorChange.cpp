@@ -54,7 +54,7 @@ SampleColorChange::~SampleColorChange()
 *  @param[in]  const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleColorChange::Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleColorChange::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

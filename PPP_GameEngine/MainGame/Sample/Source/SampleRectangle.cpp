@@ -42,7 +42,7 @@ SampleRectangle::~SampleRectangle()
 *  @param[in]  const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleRectangle::Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleRectangle::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

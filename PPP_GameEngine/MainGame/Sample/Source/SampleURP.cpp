@@ -57,7 +57,7 @@ SampleURP::~SampleURP()
 * 
 *  @return    void
 *****************************************************************************/
-void SampleURP::Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleURP::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }

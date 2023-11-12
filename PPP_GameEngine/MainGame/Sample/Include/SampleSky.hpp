@@ -42,7 +42,7 @@ namespace sample
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<PPPEngine>& engine, const GameTimerPtr& gameTimer) override;
+		void Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer) override;
 		void Update   () override;
 		void Draw     () override;
 		void Terminate() override;

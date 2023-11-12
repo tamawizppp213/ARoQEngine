@@ -251,8 +251,7 @@ namespace gu
 	template<class ElementType, SharedPointerThreadMode Mode = SharedPointerThreadMode::NotThreadSafe, class... Arguments>
 	SharedPointer<ElementType, Mode> MakeShared(Arguments... arguments)
 	{
-		auto test = new ElementType(arguments...);
-		auto pointer = SharedPointer<ElementType, Mode>(test);
+		auto pointer = SharedPointer<ElementType, Mode>(new ElementType(arguments...));
 		if constexpr(std::is_base_of_v<EnableSharedFromThis<ElementType>, ElementType>)
 		{
 			pointer->SetWeakPointer(pointer);
