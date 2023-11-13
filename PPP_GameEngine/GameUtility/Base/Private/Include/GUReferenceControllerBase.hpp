@@ -131,7 +131,7 @@ namespace gu
 			/*----------------------------------------------------------------------
 			*  @brief : Destroy ElementType*(template) resource
 			/*----------------------------------------------------------------------*/
-			virtual void DestroyResource() = 0;
+			virtual void Dispose() = 0;
 
 			/*----------------------------------------------------------------------
 			*  @brief : Destroy pointer
