@@ -74,7 +74,7 @@ namespace gc::rendering
 		*****************************************************************************/
 		std::wstring CreateFileDirectoryAndPath(const size_t index = 0);
 
-		std::wstring GetCurrentDataTime();
+		std::wstring GetCurrentDateTime();
 		
 		bool IsTriggerPrintScreenKey();
 

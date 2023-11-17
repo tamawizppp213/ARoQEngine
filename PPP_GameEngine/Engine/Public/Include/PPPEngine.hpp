@@ -69,7 +69,7 @@ public:
 	*****************************************************************************/
 	LowLevelGraphicsEnginePtr GetLowLevelGraphics() const noexcept { return _graphicsEngine; }
 	
-	PlatformApplicationPtr GetPlatformApplication() const noexcept { return _platformApplication; }
+	gu::SharedPointer<platform::core::PlatformApplication> GetPlatformApplication() const noexcept { return _platformApplication; }
 
 	CoreWindowPtr GetWindow() const noexcept { return _mainWindow; }
 
@@ -99,7 +99,7 @@ protected:
 #pragma region Variables
 #pragma region Common 
 	/* @brief : ウィンドウを管理するクラス*/
-	PlatformApplicationPtr _platformApplication = nullptr;
+	gu::SharedPointer<platform::core::PlatformApplication>  _platformApplication = nullptr;
 
 	/* @brief : メインウィンドウ*/
 	CoreWindowPtr _mainWindow = nullptr;

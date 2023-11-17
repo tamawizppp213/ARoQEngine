@@ -198,7 +198,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	}
 
 	_totalHeapCount = totalHeapCount;
-	_resourceAllocator.SetResourceAllocator(totalHeapCount, _descriptorPool);
+	_resourceAllocator.SetResourceAllocator((std::uint32_t)totalHeapCount, _descriptorPool);
 }
 
 void RHIDescriptorHeap::Reset(const ResetFlag flag)

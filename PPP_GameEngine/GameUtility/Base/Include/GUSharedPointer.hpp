@@ -11,7 +11,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Private/Include/SharedReferencer.hpp"
 #include "GUWeakPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -29,11 +28,9 @@ namespace gu
 	*  @class     GUSharedPointer
 	*  @brief     temp
 	*****************************************************************************/
-	template<class ElementType, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
-	class SharedPointer
+	template<class ElementType,  SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
+	class SharedPointer : public ObserverPointerBase<ElementType, Mode>
 	{
-	private:
-		using BaseType = ElementType;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -41,37 +38,11 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  @brief : Release the pointer and decrement the reference counter.
 		/*----------------------------------------------------------------------*/
-		void Reset();
-
-		/*----------------------------------------------------------------------
-		*  @brief : Add the reference count
-		/*----------------------------------------------------------------------*/
-		inline void AddReference() { _referenceCount->Add(); }
+		__forceinline void Reset() { ReleaseSharedReference(); }
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		/*----------------------------------------------------------------------
-		*  @brief : Returns the object referenced by this pointer
-		/*----------------------------------------------------------------------*/
-		[[nodiscard]] __forceinline ElementType* Get() const { return _pointer; }
-
-		/*----------------------------------------------------------------------
-		*  @brief : Checks to see if this shared pointer is actually pointing to an object
-		/*----------------------------------------------------------------------*/
-		[[nodiscard]] __forceinline bool IsValid() const { return _pointer != nullptr; }
-
-		/*----------------------------------------------------------------------
-		*  @brief : Has the reference count is 1
-		/*----------------------------------------------------------------------*/
-		__forceinline bool IsUnique() const { return _referenceCount && _referenceCount->IsUnique(); }
-
-		/*----------------------------------------------------------------------
-		*  @brief : Return the reference count 
-		/*----------------------------------------------------------------------*/
-		__forceinline const int32 GetReferenceCount() const { return _referenceCount ? _referenceCount->GetReferenceCount() : 0; }
-		
-		[[nodiscard]] __forceinline details::SharedReferencer<Mode>* GetRawSharedReferencer() const { return _referenceCount; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -79,37 +50,90 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  Constructs an empty shared pointer.
 		/*----------------------------------------------------------------------*/
-		SharedPointer() = default;
+		SharedPointer() : ObserverPointerBase<ElementType, Mode>() {};
 
-		SharedPointer(decltype(__nullptr)) : _pointer(nullptr), _referenceCount(nullptr) {};
-
-		virtual ~SharedPointer() 
-		{
-			Reset(); 
-		}
-
-		explicit SharedPointer(ElementType* pointer) : _pointer(pointer), _referenceCount(new details::SharedReferencer<Mode>()) {};
-
-		SharedPointer(const SharedPointer& right) : _pointer(right._pointer), _referenceCount(right._referenceCount)
-		{
-			AddReference();
-		}
-
-		SharedPointer& operator=(const SharedPointer& right);
+		SharedPointer(decltype(__nullptr)) : ObserverPointerBase<ElementType, Mode>() {};
 
 		/*----------------------------------------------------------------------
-		*  Move Constructs a weak pointer from a weak pointer of another type.
-		*  This constructor is intended to allow derived - to - base conversions
+		*  Destructor 
 		/*----------------------------------------------------------------------*/
-		SharedPointer(SharedPointer&& right) noexcept : _pointer(right._pointer), _referenceCount(right._referenceCount)
+		~SharedPointer() { Reset(); }
+
+		/*----------------------------------------------------------------------
+		*  Constructs a new shared pointer from the raw pointer 
+		/*----------------------------------------------------------------------*/
+		template<class OtherType>
+		explicit SharedPointer(OtherType* pointer) 
+			: ObserverPointerBase<ElementType, Mode>(pointer) {};
+		
+		/*----------------------------------------------------------------------
+		*  Constructs a new shared pointer from the raw pointer
+		/*----------------------------------------------------------------------*/
+		explicit SharedPointer(ElementType* pointer) 
+			:ObserverPointerBase<ElementType, Mode>(pointer) {};
+
+		/*----------------------------------------------------------------------
+		*  Constructs a new shared pointer from the raw pointer with the custom deleter
+		/*----------------------------------------------------------------------*/
+		template<class Deleter>
+		SharedPointer(ElementType* pointer, Deleter deleter)
+			: ObserverPointerBase<ElementType, Mode>(pointer, deleter) {};
+
+		/*----------------------------------------------------------------------
+		*  Constructs a new shared pointer from the raw pointer with the custom deleter
+		/*----------------------------------------------------------------------*/
+		template<class OtherType, class Deleter>
+		SharedPointer(OtherType* pointer, Deleter deleter) : ObserverPointerBase<ElementType>(pointer, deleter) {};
+
+		/*----------------------------------------------------------------------
+		*  Constructs a shared pointer from the weak pointer
+		/*----------------------------------------------------------------------*/
+		explicit SharedPointer(const WeakPointer<ElementType,Mode>& pointer) : ObserverPointerBase<ElementType, Mode>(pointer)
 		{
-			right._pointer = nullptr; right._referenceCount = nullptr;
+			AddSharedReference();
+			AddObserverReference();
 		}
 
-		SharedPointer& operator=(SharedPointer&& right) noexcept
+		/*----------------------------------------------------------------------
+		*  Copy constructs a shared pointer from the same type shared pointer,
+		/*----------------------------------------------------------------------*/
+		SharedPointer(const SharedPointer<ElementType,Mode>& pointer) 
+			: ObserverPointerBase<ElementType, Mode>(pointer)
 		{
-			_pointer = right._pointer; _referenceCount = right._referenceCount;
-			right._pointer = nullptr; right._referenceCount = nullptr;
+			AddSharedReference();
+			AddObserverReference();
+		}
+
+		/*----------------------------------------------------------------------
+		*  Copy constructs a shared pointer from the other type shared pointer,
+		/*----------------------------------------------------------------------*/
+		template<class OtherType>
+		SharedPointer(const SharedPointer<OtherType, Mode>& pointer) 
+			: ObserverPointerBase<ElementType, Mode>(pointer)
+		{
+			AddSharedReference();
+			AddObserverReference();
+		}
+
+		/*----------------------------------------------------------------------
+		*  Copy constructs a shared pointer from the other type shared pointer,
+		/*----------------------------------------------------------------------*/
+		template<class OtherType>
+		SharedPointer& operator=(const SharedPointer<OtherType, Mode>& right) noexcept 
+		{
+			_elementPointer      = right._elementPointer;
+			_referenceController = right._referenceController;
+			AddSharedReference();
+			AddObserverReference();
+			return *this;
+		}
+
+		SharedPointer& operator=(const SharedPointer& right) noexcept
+		{
+			_elementPointer      = right._elementPointer;
+			_referenceController = right._referenceController;
+			AddSharedReference();
+			AddObserverReference();
 			return *this;
 		}
 
@@ -117,46 +141,25 @@ namespace gu
 		*  Move Constructs a weak pointer from a weak pointer of another type.
 		*  This constructor is intended to allow derived - to - base conversions
 		/*----------------------------------------------------------------------*/
-		template<class DerivedType> requires std::is_base_of_v<BaseType, DerivedType>
-		SharedPointer(SharedPointer<DerivedType, Mode>&& sharedPointer)
-			: _pointer(sharedPointer.Get()), _referenceCount(sharedPointer.GetRawSharedReferencer())
+		SharedPointer(SharedPointer&& pointer) : ObserverPointerBase<ElementType, Mode>(pointer) {};
+
+		SharedPointer& operator=(SharedPointer&& right) noexcept
 		{
-			sharedPointer._pointer = nullptr;
-			sharedPointer._referenceCount = nullptr;
+			_elementPointer = right._elementPointer; _referenceController = right._referenceController;
+			right._elementPointer = nullptr; right._referenceController = nullptr;
+			return *this;
 		}
 
 		/*----------------------------------------------------------------------
 		*  for static_pointer_cast. 
 		/*----------------------------------------------------------------------*/
-		SharedPointer(ElementType* pointer, details::SharedReferencer<Mode>* reference)
-			: _pointer(pointer), _referenceCount(reference)
+		SharedPointer(ElementType* pointer, details::ReferenceControllerBase<Mode>* referenceController)
+			: ObserverPointerBase<ElementType, Mode>(pointer, referenceController)
 		{
-			AddReference();
-
+			AddSharedReference();
+			AddObserverReference();
 		};
 
-		template<class OtherType>
-		SharedPointer(WeakPointer<OtherType, Mode>& weakPointer)
-		{
-			_pointer = (ElementType*)weakPointer.Get();
-			_referenceCount = weakPointer.GetRawSharedReferencer();
-			AddReference();
-		}
-		template<class OtherType>
-		SharedPointer(const WeakPointer<OtherType, Mode>& weakPointer)
-		{
-			_pointer = (ElementType*)weakPointer.Get();
-			_referenceCount = weakPointer.GetRawSharedReferencer();
-			AddReference();
-		}
-
-		[[nodiscard]] inline operator bool() const { return _pointer != nullptr; }
-
-		[[nodiscard]] inline ElementType* operator ->() const noexcept { return _pointer; }
-
-		[[nodiscard]] inline ElementType& operator* () noexcept { return *_pointer; }
-
-		[[nodiscard]] inline const ElementType& operator*() const noexcept { return *_pointer; }
 	private:
 		/****************************************************************************
 		**                Private Function
@@ -168,11 +171,20 @@ namespace gu
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		ElementType* _pointer = nullptr;
-
-		// Addreferenceのために外に逃がしておく
-		details::SharedReferencer<Mode>* _referenceCount = nullptr;
 	};
+
+
+	template<class ElementType1, class ElementType2>
+	const bool operator == (const SharedPointer<ElementType1>& left, const SharedPointer<ElementType2>& right) noexcept
+	{
+		return left.Get() == right.Get();
+	}
+
+	template<class ElementType1, class ElementType2>
+	const bool operator != (const SharedPointer<ElementType1>& left, const SharedPointer<ElementType2>& right) noexcept
+	{
+		return left.Get() != right.Get();
+	}
 
 
 	/****************************************************************************
@@ -230,22 +242,22 @@ namespace gu
 	template<class Element1, class Element2>
 	[[nodiscard]] SharedPointer<Element1> StaticPointerCast(const SharedPointer<Element2>& element)
 	{
-		return SharedPointer<Element1>(static_cast<Element1*>(element.Get()), element.GetRawSharedReferencer());
+		return SharedPointer<Element1>(static_cast<Element1*>(element.Get()), element.GetRawReferenceController());
 	}
 	template<class Element1, class Element2>
 	[[nodiscard]] SharedPointer<Element1> ConstPointerCast(const SharedPointer<Element2>& element)
 	{
-		return SharedPointer<Element1>(const_cast<Element1*>(element.Get()), element.GetRawSharedReferencer());
+		return SharedPointer<Element1>(const_cast<Element1*>(element.Get()), element.GetRawReferenceController());
 	}
 	template<class Element1, class Element2>
 	[[nodiscard]] SharedPointer<Element1> ReinterpretPointerCast(const SharedPointer<Element2>& element)
 	{
-		return SharedPointer<Element1>(reinterpret_cast<Element1*>(element.Get()), element.GetRawSharedReferencer());
+		return SharedPointer<Element1>(reinterpret_cast<Element1*>(element.Get()), element.GetRawReferenceController());
 	}
 	template<class Element1, class Element2>
 	[[nodiscard]] SharedPointer<Element1> DynamicPointerCast(const SharedPointer<Element2>& element)
 	{
-		return SharedPointer<Element1>(dynamic_cast<Element1*>(element.Get()), element.GetRawSharedReferencer());
+		return SharedPointer<Element1>(dynamic_cast<Element1*>(element.Get()), element.GetRawReferenceController());
 	}
 
 	/*----------------------------------------------------------------------
@@ -261,39 +273,6 @@ namespace gu
 		}
 		return pointer;
 	};
-
-	/*----------------------------------------------------------------------
-	*  @brief : ポインタを破棄して参照カウントを減らす
-	/*----------------------------------------------------------------------*/
-	template<class ElementType, SharedPointerThreadMode Mode>
-	void SharedPointer<ElementType, Mode>::Reset()
-	{
-		if (_referenceCount == nullptr) { return; }
-
-		_referenceCount->Release();
-		
-		if(_referenceCount->EnableDelete())
-		{
-			delete(_pointer);        _pointer = nullptr;
-			delete(_referenceCount); _referenceCount = nullptr;
-		}
-		else
-		{
-			_pointer        = nullptr;
-			_referenceCount = nullptr;
-		}
-	}
-
-	template<class ElementType, SharedPointerThreadMode Mode>
-	SharedPointer<ElementType, Mode>& SharedPointer<ElementType, Mode>::operator=(const SharedPointer<ElementType,Mode>& right)
-	{
-		if (*this == right) { return *this; }
-
-		_pointer        = right._pointer;
-		_referenceCount = right._referenceCount;
-		AddReference();
-		return *this;
-	}
 
 #pragma endregion Shared Pointer Implement
 

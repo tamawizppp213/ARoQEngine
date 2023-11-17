@@ -45,7 +45,7 @@ namespace gu
 		class ReferenceControllerBase
 		{
 		private:
-			using ReferenceCountType = std::conditional_t<Mode == SharedPointerThreadMode, std::atomic<int32>, int32>;
+			using ReferenceCountType = std::conditional_t<Mode == SharedPointerThreadMode::ThreadSafe, std::atomic<int32>, int32>;
 
 		public:
 			/****************************************************************************
@@ -197,7 +197,7 @@ namespace gu
 
 			if (_sharedReferenceCount == 0)
 			{
-				DestroyResource();
+				Dispose();
 			}
 		}
 
@@ -223,7 +223,7 @@ namespace gu
 		*  @brief : ‚Ù‚©‚ÌQÆ‚ğ‚Á‚Ä‚¢‚È‚¢‚©‚ğŠm”F‚·‚é
 		/*----------------------------------------------------------------------*/
 		template<SharedPointerThreadMode Mode>
-		__forceinline bool ReferenceControllerBase<Mode>::IsUnique() const
+		bool ReferenceControllerBase<Mode>::IsUnique() const
 		{
 			if constexpr (Mode == SharedPointerThreadMode::ThreadSafe)
 			{

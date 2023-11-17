@@ -398,7 +398,7 @@ float Masking_Abd_Shadowing_Function_EnvironmentMap(float3 normal, float toEye, 
 
 float3 ClearCoatTransmittance(float normalDotLight, float normalDotEye, float metallic, float3 baseColor)
 {
-    float transmittance = 1.0f;
+    float3 transmittance = 1.0f.xxx;
     
     /*-------------------------------------------------------------------
 	-            クリアコートの被覆率をメタルネスで定義 

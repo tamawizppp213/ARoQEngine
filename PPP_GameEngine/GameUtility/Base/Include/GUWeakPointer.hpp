@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Private/Include/SharedReferencer.hpp"
+#include "../Private/Include/GUObserverPointer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -32,43 +32,21 @@ namespace gu
 	*  @brief     参照カウントを増やさないポインタです
 	*****************************************************************************/
 	template<class ElementType, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
-	class WeakPointer
+	class WeakPointer : public ObserverPointerBase<ElementType, Mode>
 	{
-	private:
-		using BaseType = ElementType;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
-		*  @brief : Release the pointer
+		*  @brief : Release the observer pointer
 		/*----------------------------------------------------------------------*/
-		void Reset() { _pointer = nullptr; _referenceCount = nullptr; }
+		__forceinline void Reset() { ReleaseObserverReference(); }
+
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		/*----------------------------------------------------------------------
-		*  @brief : Returns the object referenced by this pointer
-		/*----------------------------------------------------------------------*/
-		[[nodiscard]] inline ElementType* Get() const { return _pointer; }
-
-		/*----------------------------------------------------------------------
-		*  @brief : Checks to see if this shared pointer is actually pointing to an object
-		/*----------------------------------------------------------------------*/
-		[[nodiscard]] inline bool IsValid() const { return _pointer != nullptr; }
-
-		/*----------------------------------------------------------------------
-		*  @brief : Has the reference count is 1
-		/*----------------------------------------------------------------------*/
-		inline bool IsUnique() const { return _referenceCount && _referenceCount->IsUnique(); }
-
-		/*----------------------------------------------------------------------
-		*  @brief : Return the reference count
-		/*----------------------------------------------------------------------*/
-		inline const int32 GetReferenceCount() const { return _referenceCount ? _referenceCount->GetReferenceCount() : 0; }
-
-		[[nodiscard]] inline details::SharedReferencer<Mode>* GetRawSharedReferencer() const { return _referenceCount; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -76,78 +54,65 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  Constructs an empty weak pointer.
 		/*----------------------------------------------------------------------*/
-		WeakPointer() = default;
+		WeakPointer() : ObserverPointerBase<ElementType, Mode>() {};
 
-		WeakPointer(decltype(__nullptr)) : _pointer(nullptr), _referenceCount(nullptr) {};
+		WeakPointer(decltype(__nullptr)) : ObserverPointerBase<ElementType, Mode>() {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a weak pointer from the shared pointer.
 		/*----------------------------------------------------------------------*/
+		explicit WeakPointer(const SharedPointer<ElementType, Mode>& pointer)
+			: ObserverPointerBase<ElementType, Mode>(pointer)
+		{
+			AddObserverReference();
+		}
+
+		/*----------------------------------------------------------------------
+		*  Constructs a weak pointer from the changable shared pointer.
+		/*----------------------------------------------------------------------*/
 		template<class OtherType>
-		WeakPointer(SharedPointer<OtherType, Mode>const& pointer) :
-			_pointer(pointer._pointer), _referenceCount(pointer._referenceCount){ };
+		explicit WeakPointer(const SharedPointer<OtherType, Mode>& pointer)
+			:ObserverPointerBase<ElementType, Mode>(pointer) { AddObserverReference(); }
+
+		/*----------------------------------------------------------------------
+		*  Copy constructs have the same weak pointer type
+		/*----------------------------------------------------------------------*/
+		WeakPointer(const WeakPointer& pointer)
+			:ObserverPointerBase<ElementType, Mode>(pointer) { AddObserverReference(); }
+
+		WeakPointer& operator = (const WeakPointer& pointer);
 		
+		/*----------------------------------------------------------------------
+		*  Copy constructs have the other pointer type
+		/*----------------------------------------------------------------------*/
 		template<class OtherType>
-		WeakPointer& operator=(SharedPointer<OtherType, Mode>const& pointer)
+		WeakPointer(const WeakPointer<OtherType>& pointer)
+			: ObserverPointerBase<ElementType, Mode>(pointer) { AddObserverReference(); }
+
+		template<class OtherType>
+		WeakPointer& operator = (const WeakPointer<OtherType>& pointer)
 		{
-			_pointer = pointer._pointer; _referenceCount = pointer._referenceCount;
+			_elementPointer      = pointer._elementPointer;
+			_referenceController = pointer._referenceController;
+			AddObserverReference();
 			return *this;
-		};
+		}
 
 		/*----------------------------------------------------------------------
-		*  Constructs a weak pointer from a weak pointer of another type.
-		*  This constructor is intended to allow derived - to - base conversions
+		*  Move constructs have the same weak pointer type
 		/*----------------------------------------------------------------------*/
-		template<class DerivedType> requires std::is_base_of_v<BaseType, DerivedType>
-		WeakPointer(WeakPointer<DerivedType, Mode>const& weakPointer)
-			: _pointer(weakPointer._pointer), _referenceCount(weakPointer._referenceCount){ };
+		WeakPointer(WeakPointer&& pointer) 
+			: ObserverPointerBase<ElementType, Mode>(pointer) {  }
 
 		/*----------------------------------------------------------------------
-		*  Move Constructs a weak pointer from a weak pointer of another type.
-		*  This constructor is intended to allow derived - to - base conversions
+		*  Move constructs have the other weak pointer type
 		/*----------------------------------------------------------------------*/
-		template<class DerivedType> requires std::is_base_of_v<BaseType, DerivedType>
-		WeakPointer(WeakPointer<DerivedType, Mode>&& weakPointer)
-			: _pointer(weakPointer._pointer), _referenceCount(weakPointer._referenceCount)
-		{
-			weakPointer._pointer        = nullptr;
-			weakPointer._referenceCount = nullptr;
-		}
+		template<class OtherType>
+		WeakPointer(WeakPointer<OtherType>&& pointer) 
+			: ObserverPointerBase<ElementType, Mode>(pointer){}
 
-		virtual ~WeakPointer() = default;
+		~WeakPointer(){ ReleaseObserverReference(); }
 
-		explicit WeakPointer(ElementType* pointer) : _pointer(pointer), _referenceCount(new details::SharedReferencer<Mode>()) {};
-
-		WeakPointer(const WeakPointer& right) : _pointer(right._pointer), _referenceCount(right._referenceCount) {};
-
-		WeakPointer& operator=(WeakPointer const& right)
-		{
-			if (this == right) { return *this; }
-
-			_pointer        = right._pointer;
-			_referenceCount = right._referenceCount;
-			return *this;
-		}
-
-		WeakPointer(WeakPointer&& right) : _pointer(right._pointer), _referenceCount(right._referenceCount)
-		{
-			right._pointer = nullptr; right._referenceCount = nullptr;
-		}
-
-		WeakPointer& operator=(WeakPointer&& right) noexcept
-		{
-			_pointer = right._pointer; _referenceCount = right._referenceCount;
-			right._pointer = nullptr; right._referenceCount = nullptr;
-			return *this;
-		}
-
-		[[nodiscard]] inline operator bool() const { return _pointer != nullptr; }
-
-		[[nodiscard]] inline ElementType* operator ->() const noexcept { return _pointer; }
-
-		[[nodiscard]] inline ElementType& operator* () noexcept { return *_pointer; }
-
-		[[nodiscard]] inline const ElementType& operator*() const noexcept { return *_pointer; }
 	private:
 		/****************************************************************************
 		**                Private Function
@@ -156,10 +121,20 @@ namespace gu
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		ElementType* _pointer = nullptr;
 
-		details::SharedReferencer<Mode>* _referenceCount = nullptr;
 	};
+
+	template<class ElementType, SharedPointerThreadMode Mode>
+	WeakPointer<ElementType, Mode>& WeakPointer<ElementType, Mode>::operator=(const WeakPointer<ElementType, Mode>& pointer)
+	{
+		if (*this == pointer) { return *this; }
+
+		_elementPointer      = pointer._elementPointer;
+		_referenceController = pointer._referenceController;
+		AddObserverReference();
+		return *this;
+	}
+
 }
 
 

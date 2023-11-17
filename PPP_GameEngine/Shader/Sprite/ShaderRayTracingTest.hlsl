@@ -41,7 +41,7 @@ void RayGeneration()
 	-             Shot ray from current pixel to -Z.  
 	---------------------------------------------------------------------*/
     // Determine each render pixel location (width and height)
-    const uint2 launchIndex = DispatchRaysIndex().xy;Å@
+    const uint2 launchIndex = DispatchRaysIndex().xy;
     // Acquire width and height values
     const float2 dimensions = float2(DispatchRaysDimensions().xy);
     const float2 d = (launchIndex.xy + 0.5f) / dimensions.xy * 2.0f - 1.0f;

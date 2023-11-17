@@ -57,7 +57,7 @@ CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const Casc
 	_shadowMaps.resize(SHADOW_MAP_COUNT);
 	for (size_t i = 0; i < _shadowMaps.size(); ++i)
 	{
-		_shadowMaps[i] = std::make_shared<rendering::ShadowMap>(_engine, desc.MaxResolution / pow(2, i), desc.MaxResolution / pow(2,i));
+		_shadowMaps[i] = std::make_shared<rendering::ShadowMap>(_engine, (std::uint32_t)(desc.MaxResolution / pow(2, i)), (std::uint32_t)(desc.MaxResolution / pow(2,i)));
 	}
 
 	PrepareResourceView (name);
@@ -97,7 +97,7 @@ void CascadeShadow::Draw(const std::shared_ptr<GameTimer>& gameTimer,const gm::F
 	/*-------------------------------------------------------------------
 	-               Draw shadow maps of the each resolution
 	---------------------------------------------------------------------*/
-	for (const auto shadowMap : _shadowMaps)
+	for (const auto& shadowMap : _shadowMaps)
 	{
 		// shadow map + gaussian blur
 		shadowMap->Draw(_lightCamera->GetResourceView());
@@ -120,7 +120,7 @@ void CascadeShadow::Add(const GameModelPtr& gameModel)
 {
 	if (!gameModel) { return; }
 
-	for (const auto shadowMap : _shadowMaps)
+	for (const auto& shadowMap : _shadowMaps)
 	{
 		shadowMap->Add(gameModel);
 	}

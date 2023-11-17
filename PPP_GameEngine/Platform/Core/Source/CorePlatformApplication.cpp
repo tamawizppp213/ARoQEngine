@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Core/Include/CorePlatformApplication.hpp"
 #include "../../Core/Include/CoreWindowMessageHandler.hpp"
+#include "../../Core/Include/CoreWindow.hpp"
 #include "../../Core/Include/CorePlatformMacros.hpp"
 #include "../../Windows/Include/WindowsPlatformApplication.hpp"
 #include <stdexcept>

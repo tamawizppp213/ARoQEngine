@@ -1032,10 +1032,19 @@
     <ClInclude Include="GameUtility\Base\Include\GUSharedPointer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\SharedReferencer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Include\GUReferenceControllerBase.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUWeakPointer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Include\GUSharedDeleter.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Include\GUReferenceController.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Include\GUObserverPointer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

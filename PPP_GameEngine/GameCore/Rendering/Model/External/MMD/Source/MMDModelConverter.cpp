@@ -175,8 +175,8 @@ void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFil
 		mesh = std::make_shared<Mesh>(model->_engine,
 			model->_totalMesh->GetVertexBuffers(),
 			model->_totalMesh->GetIndexBuffer(),
-			file.Materials[i].FaceIndicesCount,
-			indexOffset);
+			(std::uint64_t)file.Materials[i].FaceIndicesCount,
+			(std::uint32_t)indexOffset);
 
 		indexOffset += file.Materials[i].FaceIndicesCount;
 	}

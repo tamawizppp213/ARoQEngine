@@ -45,10 +45,15 @@ namespace gu
 			/****************************************************************************
 			**                Constructor and Destructor
 			*****************************************************************************/
-			explicit ReferenceController(ElementType* element, Deleter deleter)
+			ReferenceController() = default;
+
+			explicit ReferenceController(ElementType* element)
+				: _element(element), _deleter(Deleter()){ };
+
+			ReferenceController(ElementType* element, Deleter&& deleter) 
 				: _element(element), _deleter(deleter){ };
 
-			~ReferenceController() ~= default;
+			~ReferenceController() = default;
 
 		protected:
 			/****************************************************************************
@@ -68,7 +73,8 @@ namespace gu
 			**                Protected Member Variables
 			*****************************************************************************/
 			ElementType* _element = nullptr;
-			Deleter _deleter;
+			Deleter
+				_deleter;
 		};
 	}
 }

@@ -9,9 +9,9 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #ifdef _WIN32
-#include "../../Windows/Include/WindowsPlatformApplication.hpp"
 #include "../../Windows/Include/WindowsWindowsMessageHandler.hpp"
 #include "../../Windows/Include/WindowsWindow.hpp"
+#include "../../Windows/Include/WindowsPlatformApplication.hpp"
 #include "../../Windows/Include/WindowsPlatformCommand.hpp"
 #include "../../Core/Include/CoreCommonState.hpp"
 #include <cassert>
@@ -148,7 +148,7 @@ bool PlatformApplication::RegisterWindowClass()
 *****************************************************************************/
 SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
 {
-	return MakeShared<windows::CoreWindow>();
+	return StaticPointerCast<core::CoreWindow>(MakeShared<windows::CoreWindow>());
 }
 
 /****************************************************************************
@@ -164,7 +164,7 @@ SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
 *****************************************************************************/
 SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 {
-	return MakeShared<windows::PlatformCommand>();
+	return StaticPointerCast<core::PlatformCommand>(MakeShared<windows::PlatformCommand>());
 }
 
 /****************************************************************************
@@ -186,7 +186,7 @@ void PlatformApplication::SetUpWindow(const SharedPointer<core::CoreWindow>& win
 	_windows.push_back(StaticPointerCast<windows::CoreWindow>(window));
 	
 	const auto windowsCoreWindow = StaticPointerCast<windows::CoreWindow>(window);
-	windowsCoreWindow->Create(SharedFromThis(), desc);
+	windowsCoreWindow->Create(StaticPointerCast<core::PlatformApplication>(SharedFromThis()), desc);
 }
 
 /****************************************************************************

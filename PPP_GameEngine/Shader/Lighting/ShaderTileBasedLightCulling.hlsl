@@ -175,7 +175,7 @@ void CreateSpotLightIndexArrayInTile(const uint groupIndex, const float4 frustum
 	    ---------------------------------------------------------------------*/
         bool inFrustum = true;
         
-        const float4 positionView   = (mul(View, float4(light.Position, 1.0f)).xyz, 1.0f);     // “àÏ—p‚Éfloat4‚É‚µ‚Ä‚é
+        const float4 positionView   = float4(mul(View, float4(light.Position, 1.0f)).xyz, 1.0f);     // “àÏ—p‚Éfloat4‚É‚µ‚Ä‚é
         const float3 directionView  = mul(View, float4(light.Direction, 1.0f)).xyz;
         for(uint i = 0; i < 6; ++i)
         {

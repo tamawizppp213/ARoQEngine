@@ -141,8 +141,8 @@ void Bloom::PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t 
 	for (std::uint32_t i = 1; i < _countof(_gaussianBlur); ++i)
 	{
 		_gaussianBlur[i] = std::make_shared<GaussianBlur>(_engine, 
-			width / pow(2, i),
-			height / pow(2, i),
+			(std::uint32_t)(width / pow(2, i)),
+			(std::uint32_t)(height / pow(2, i)),
 			true,
 			name + L"GaussianBlur");
 	}
