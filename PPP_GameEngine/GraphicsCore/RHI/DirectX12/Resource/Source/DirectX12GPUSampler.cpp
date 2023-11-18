@@ -21,7 +21,7 @@ using namespace rhi::directX12;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 
-GPUSampler::GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo)
+GPUSampler::GPUSampler(const gu::SharedPointer<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo)
 	: core::GPUSampler(device, samplerInfo)
 {
 	_samplerDesc.Filter         = EnumConverter::Convert(samplerInfo.Filter);        // Sampling mode at magnification or shirinking of texture image.  

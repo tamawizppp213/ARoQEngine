@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIImage.hpp"
 #include "GameCore/Input/Include/Mouse.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <string>
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ namespace gc::ui
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Button(const std::shared_ptr<Mouse>& mouse);
+		Button(const gu::SharedPointer<Mouse>& mouse);
 
 		~Button();
 
@@ -74,7 +74,7 @@ namespace gc::ui
 		*****************************************************************************/
 		bool _isInteractive = true;
 		
-		std::shared_ptr<Mouse> _mouse = nullptr;
+		gu::SharedPointer<Mouse> _mouse = nullptr;
 	};
 }
 #endif

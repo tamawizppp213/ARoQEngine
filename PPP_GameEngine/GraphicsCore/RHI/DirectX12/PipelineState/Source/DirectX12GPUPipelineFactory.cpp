@@ -23,52 +23,52 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUPipelineFactory::GPUPipelineFactory(const std::shared_ptr<core::RHIDevice>& device)
+GPUPipelineFactory::GPUPipelineFactory(const gu::SharedPointer<core::RHIDevice>& device)
 	:core::GPUPipelineFactory(device)
 {
 
 }
 
-std::shared_ptr<core::GPUInputAssemblyState> GPUPipelineFactory::CreateInputAssemblyState(
+gu::SharedPointer<core::GPUInputAssemblyState> GPUPipelineFactory::CreateInputAssemblyState(
 	const std::vector<core::InputLayoutElement>& elements,
 	const core::PrimitiveTopology primitiveTopology)
 {
-	return std::static_pointer_cast<core::GPUInputAssemblyState>(
-		std::make_shared<directX12::GPUInputAssemblyState>(_device, elements, primitiveTopology));
+	return gu::StaticPointerCast<core::GPUInputAssemblyState>(
+		gu::MakeShared<directX12::GPUInputAssemblyState>(_device, elements, primitiveTopology));
 }
 
-std::shared_ptr<core::GPURasterizerState> GPUPipelineFactory::CreateRasterizerState(
+gu::SharedPointer<core::GPURasterizerState> GPUPipelineFactory::CreateRasterizerState(
 	const core::RasterizerProperty& rasterizerProperty)
 {
-	return std::static_pointer_cast<core::GPURasterizerState>(
-		std::make_shared<GPURasterizerState>(_device, rasterizerProperty));
+	return gu::StaticPointerCast<core::GPURasterizerState>(
+		gu::MakeShared<GPURasterizerState>(_device, rasterizerProperty));
 }
 
-std::shared_ptr<core::GPUDepthStencilState> GPUPipelineFactory::CreateDepthStencilState(
+gu::SharedPointer<core::GPUDepthStencilState> GPUPipelineFactory::CreateDepthStencilState(
 	const core::DepthStencilProperty& depthStencilProperty)
 {
-	return std::static_pointer_cast<core::GPUDepthStencilState>(
-		std::make_shared<GPUDepthStencilState>(_device,depthStencilProperty));
+	return gu::StaticPointerCast<core::GPUDepthStencilState>(
+		gu::MakeShared<GPUDepthStencilState>(_device,depthStencilProperty));
 }
 
-std::shared_ptr<core::GPUShaderState> GPUPipelineFactory::CreateShaderState()
+gu::SharedPointer<core::GPUShaderState> GPUPipelineFactory::CreateShaderState()
 {
-	return std::static_pointer_cast<core::GPUShaderState>(std::make_shared<GPUShaderState>(_device));
+	return gu::StaticPointerCast<core::GPUShaderState>(gu::MakeShared<GPUShaderState>(_device));
 }
 
-std::shared_ptr<core::GPUBlendState> GPUPipelineFactory::CreateBlendState(
+gu::SharedPointer<core::GPUBlendState> GPUPipelineFactory::CreateBlendState(
 	const std::vector<core::BlendProperty>& properties)
 {
-	return std::static_pointer_cast<core::GPUBlendState>(std::make_shared<GPUBlendState>(_device, properties));
+	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, properties));
 }
 
-std::shared_ptr<core::GPUBlendState> GPUPipelineFactory::CreateSingleBlendState(
+gu::SharedPointer<core::GPUBlendState> GPUPipelineFactory::CreateSingleBlendState(
 	const core::BlendProperty& blendProperty)
 {
-	return std::static_pointer_cast<core::GPUBlendState>(std::make_shared<GPUBlendState>(_device, blendProperty));
+	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, blendProperty));
 }
 
-std::shared_ptr<core::GPUBlendState> GPUPipelineFactory::CreateBlendState(const size_t numRenderTargets)
+gu::SharedPointer<core::GPUBlendState> GPUPipelineFactory::CreateBlendState(const size_t numRenderTargets)
 {
-	return std::static_pointer_cast<core::GPUBlendState>(std::make_shared<GPUBlendState>(_device, std::vector<rhi::core::BlendProperty>(numRenderTargets)));
+	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, std::vector<rhi::core::BlendProperty>(numRenderTargets)));
 }

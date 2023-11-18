@@ -35,21 +35,21 @@ namespace
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
-URP::URP(const LowLevelGraphicsEnginePtr& engine, const std::shared_ptr<GameTimer>& gameTimer) : IRenderPipeline(engine),
+URP::URP(const LowLevelGraphicsEnginePtr& engine, const gu::SharedPointer<GameTimer>& gameTimer) : IRenderPipeline(engine),
 _gameTimer(gameTimer)
 {
-	_zPrepass = std::make_shared<ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), L"URP");
+	_zPrepass = gu::MakeShared<ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), L"URP");
 
-	_gBuffer = std::make_shared<GBuffer>(engine, gc::rendering::GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
+	_gBuffer = gu::MakeShared<GBuffer>(engine, gc::rendering::GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
 
-	_ssao = std::make_shared<SSAO>(engine, _gBuffer->GetRenderedTextureView(1), _zPrepass->GetRenderedTextureView());
+	_ssao = gu::MakeShared<SSAO>(engine, _gBuffer->GetRenderedTextureView(1), _zPrepass->GetRenderedTextureView());
 	
 	const auto shadowDesc = gc::rendering::CascadeShadowDesc();
-	_cascadeShadowMap = std::make_shared<rendering::CascadeShadow>(_engine, shadowDesc, L"URP");
+	_cascadeShadowMap = gu::MakeShared<rendering::CascadeShadow>(_engine, shadowDesc, L"URP");
 
-	_uiRenderer = std::make_shared<ui::UIRenderer>(engine, L"URP", MAX_UI_COUNT);
+	_uiRenderer = gu::MakeShared<ui::UIRenderer>(engine, L"URP", MAX_UI_COUNT);
 
-	_directionalLights = std::make_shared<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
+	_directionalLights = gu::MakeShared<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
 
 	PrepareModelPipeline();
 }

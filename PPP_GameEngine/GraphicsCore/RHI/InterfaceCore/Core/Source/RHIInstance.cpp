@@ -25,12 +25,12 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-std::shared_ptr<RHIInstance> rhi::core::RHIInstance::CreateInstance(const rhi::core::APIVersion version, bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak)
+gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const rhi::core::APIVersion version, bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak)
 {
 	switch (version)
 	{
-		case APIVersion::DirectX12: { std::cout << "DirectX12" << std::endl; return std::make_shared<rhi::directX12::RHIInstance>(enableCPUDebugger,enableGPUDebugger, useGPUDebugBreak);}
-		case APIVersion::Vulkan:    { std::cout << "Vulkan"    << std::endl; return std::make_shared<rhi::vulkan::RHIInstance>(enableCPUDebugger, enableGPUDebugger, useGPUDebugBreak); }
+		case APIVersion::DirectX12: { std::cout << "DirectX12" << std::endl; return gu::MakeShared<rhi::directX12::RHIInstance>(enableCPUDebugger,enableGPUDebugger, useGPUDebugBreak);}
+		case APIVersion::Vulkan:    { std::cout << "Vulkan"    << std::endl; return gu::MakeShared<rhi::vulkan::RHIInstance>(enableCPUDebugger, enableGPUDebugger, useGPUDebugBreak); }
 		default: { throw std::runtime_error("Unknown API."); }
 	}
 }

@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/HLSLUtility.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -48,10 +48,10 @@ namespace gc::core
 	*****************************************************************************/
 	class GameWorldInfo : public NonCopyable
 	{
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using ConstantBufferPtr         = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ConstantBufferViewPtr     = std::shared_ptr<rhi::core::GPUResourceView>;
-		using GraphicsCommandListPtr    = std::shared_ptr<rhi::core::RHICommandList>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using ConstantBufferPtr         = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using ConstantBufferViewPtr     = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using GraphicsCommandListPtr    = gu::SharedPointer<rhi::core::RHICommandList>;
 
 	public:
 		/****************************************************************************

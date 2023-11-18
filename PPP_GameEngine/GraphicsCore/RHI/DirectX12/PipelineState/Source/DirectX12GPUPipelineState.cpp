@@ -30,23 +30,23 @@ using namespace rhi::directX12;
 void GPUGraphicsPipelineState::CompleteSetting()
 {
 	DeviceComPtr dxDevice = nullptr;
-	dxDevice = static_cast<RHIDevice*>(_device.get())->GetDevice();
+	dxDevice = static_cast<RHIDevice*>(_device.Get())->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-                      Set Descriptor
 	---------------------------------------------------------------------*/
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 	desc.PrimitiveTopologyType = EnumConverter::Convert1(_inputAssemblyState->GetPrimitiveTopology());
-	desc.pRootSignature        = _resourceLayout      ? static_cast<RHIResourceLayout*>(_resourceLayout.get())->GetRootSignature().Get() : nullptr;
-	desc.InputLayout           = _inputAssemblyState  ? static_cast<GPUInputAssemblyState*>(_inputAssemblyState.get())->GetLayout()            : D3D12_INPUT_LAYOUT_DESC();
-	desc.VS                    = _vertexShaderState   ? static_cast<GPUShaderState*>      (_vertexShaderState  .get())->GetShader()            : D3D12_SHADER_BYTECODE();
-	desc.PS                    = _pixelShaderState    ? static_cast<GPUShaderState*>      (_pixelShaderState   .get())->GetShader()            : D3D12_SHADER_BYTECODE();
-	desc.HS                    = _hullShaderState     ? static_cast<GPUShaderState*>      (_hullShaderState    .get())->GetShader()            : D3D12_SHADER_BYTECODE();
-	desc.DS                    = _domainShaderState   ? static_cast<GPUShaderState*>      (_domainShaderState  .get())->GetShader()            : D3D12_SHADER_BYTECODE();
-	desc.GS                    = _geometryShaderState ? static_cast<GPUShaderState*>      (_geometryShaderState.get())->GetShader()            : D3D12_SHADER_BYTECODE();
-	desc.DepthStencilState     = _depthStencilState   ? static_cast<GPUDepthStencilState*>(_depthStencilState  .get())->GetDepthStencilState() : D3D12_DEPTH_STENCIL_DESC();
-	desc.BlendState            = _blendState          ? static_cast<GPUBlendState*>       (_blendState         .get())->GetBlendState()        : D3D12_BLEND_DESC();
-	desc.RasterizerState       = _rasterizerState     ? static_cast<GPURasterizerState*>  (_rasterizerState    .get())->GetRasterizerState()   : D3D12_RASTERIZER_DESC();
+	desc.pRootSignature        = _resourceLayout      ? static_cast<RHIResourceLayout*>(_resourceLayout.Get())->GetRootSignature().Get() : nullptr;
+	desc.InputLayout           = _inputAssemblyState  ? static_cast<GPUInputAssemblyState*>(_inputAssemblyState.Get())->GetLayout()            : D3D12_INPUT_LAYOUT_DESC();
+	desc.VS                    = _vertexShaderState   ? static_cast<GPUShaderState*>      (_vertexShaderState  .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
+	desc.PS                    = _pixelShaderState    ? static_cast<GPUShaderState*>      (_pixelShaderState   .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
+	desc.HS                    = _hullShaderState     ? static_cast<GPUShaderState*>      (_hullShaderState    .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
+	desc.DS                    = _domainShaderState   ? static_cast<GPUShaderState*>      (_domainShaderState  .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
+	desc.GS                    = _geometryShaderState ? static_cast<GPUShaderState*>      (_geometryShaderState.Get())->GetShader()            : D3D12_SHADER_BYTECODE();
+	desc.DepthStencilState     = _depthStencilState   ? static_cast<GPUDepthStencilState*>(_depthStencilState  .Get())->GetDepthStencilState() : D3D12_DEPTH_STENCIL_DESC();
+	desc.BlendState            = _blendState          ? static_cast<GPUBlendState*>       (_blendState         .Get())->GetBlendState()        : D3D12_BLEND_DESC();
+	desc.RasterizerState       = _rasterizerState     ? static_cast<GPURasterizerState*>  (_rasterizerState    .Get())->GetRasterizerState()   : D3D12_RASTERIZER_DESC();
 	desc.Flags                 = D3D12_PIPELINE_STATE_FLAG_NONE;
 	desc.DSVFormat             = EnumConverter::Convert(_renderPass->GetDepthAttachment().has_value() ? _renderPass->GetDepthAttachment()->Format : core::PixelFormat::Unknown);
 	desc.IBStripCutValue       = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
@@ -72,9 +72,9 @@ void GPUGraphicsPipelineState::CompleteSetting()
 #pragma region Compute PSO
 void GPUComputePipelineState::CompleteSetting()
 {
-	const auto dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
-	const auto dxLayout = std::static_pointer_cast<directX12::RHIResourceLayout>(_resourceLayout);
-	const auto dxShader = std::static_pointer_cast<directX12::GPUShaderState>(_computeShaderState);
+	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
+	const auto dxLayout = gu::StaticPointerCast<directX12::RHIResourceLayout>(_resourceLayout);
+	const auto dxShader = gu::StaticPointerCast<directX12::GPUShaderState>(_computeShaderState);
 
 	/*-------------------------------------------------------------------
 	-                      Set Descriptor

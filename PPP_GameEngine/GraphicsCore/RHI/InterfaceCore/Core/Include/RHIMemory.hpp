@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ namespace rhi::core
 
 		virtual ~RHIMemory() = default;
 
-		explicit RHIMemory(const std::shared_ptr<RHIDevice>& device, const MemoryHeap memoryHeapType, const std::uint64_t memorySize) 
+		explicit RHIMemory(const gu::SharedPointer<RHIDevice>& device, const MemoryHeap memoryHeapType, const std::uint64_t memorySize) 
 			: _device(device), _memoryType(memoryHeapType), _memorySize(memorySize) {};
 		
 		/****************************************************************************
@@ -66,7 +66,7 @@ namespace rhi::core
 
 		std::uint64_t _memorySize = 0;
 
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 	};
 }
 

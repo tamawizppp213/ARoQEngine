@@ -24,7 +24,7 @@ using namespace rhi::directX12;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIDescriptorHeap::RHIDescriptorHeap(const std::shared_ptr<core::RHIDevice>& device)
+RHIDescriptorHeap::RHIDescriptorHeap(const gu::SharedPointer<core::RHIDevice>& device)
 	: core::RHIDescriptorHeap(device)
 {
 
@@ -42,16 +42,16 @@ RHIDescriptorHeap::~RHIDescriptorHeap()
 /****************************************************************************
 *                     Allocate
 *************************************************************************//**
-*  @fn        RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+*  @fn        RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 *
 *  @brief     Allocate view.Return descriptor index(only use resourceLayout in vulkan api
 *
 *  @param[in] const core::DescriptorHeapType heapType
-*  @param[in] const std::shared_ptr<core::RHIResourceLayout>& resourceLayout
+*  @param[in] const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout
 *
 *  @return Å@Å@DescriptorID
 *****************************************************************************/
-RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 {
 	/*-------------------------------------------------------------------
 	-			     Check heap type
@@ -131,7 +131,7 @@ void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t
 *****************************************************************************/
 void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
 {
-	const auto dxDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
+	const auto dxDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-	Count total descriptor size and Check Heap Type (CBV or SRV or UAV)

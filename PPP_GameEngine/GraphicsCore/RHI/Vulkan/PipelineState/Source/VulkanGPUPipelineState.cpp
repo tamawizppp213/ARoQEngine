@@ -29,9 +29,9 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Graphics Pipeline State
 GPUGraphicsPipelineState::GPUGraphicsPipelineState(
-	const std::shared_ptr<core::RHIDevice>& device,
-	const std::shared_ptr<core::RHIRenderPass>& renderPass,
-	const std::shared_ptr<core::RHIResourceLayout>& layout) : core::GPUGraphicsPipelineState(device, renderPass, layout)
+	const gu::SharedPointer<core::RHIDevice>& device,
+	const gu::SharedPointer<core::RHIRenderPass>& renderPass,
+	const gu::SharedPointer<core::RHIResourceLayout>& layout) : core::GPUGraphicsPipelineState(device, renderPass, layout)
 {
 
 }
@@ -39,7 +39,7 @@ GPUGraphicsPipelineState::GPUGraphicsPipelineState(
 GPUGraphicsPipelineState::~GPUGraphicsPipelineState()
 {
 	VkDevice vkDevice = nullptr;
-	vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
+	vkDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 
 	vkDestroyPipeline(vkDevice, _pipeline, nullptr);
 	_dynamicStates.clear(); _dynamicStates.shrink_to_fit();
@@ -50,22 +50,22 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	/*-------------------------------------------------------------------
 	-           Set vk resources 
 	---------------------------------------------------------------------*/
-	const auto vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
+	const auto vkDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 
-	const auto vkInputAssemblyState = std::static_pointer_cast<vulkan::GPUInputAssemblyState>(_inputAssemblyState);
-	const auto vkRasterizerState    = std::static_pointer_cast<vulkan::GPURasterizerState>(_rasterizerState);
-	const auto vkDepthStencilState  = std::static_pointer_cast<vulkan::GPUDepthStencilState>(_depthStencilState);
-	const auto vkBlendState         = std::static_pointer_cast<vulkan::GPUBlendState>(_blendState);
+	const auto vkInputAssemblyState = gu::StaticPointerCast<vulkan::GPUInputAssemblyState>(_inputAssemblyState);
+	const auto vkRasterizerState    = gu::StaticPointerCast<vulkan::GPURasterizerState>(_rasterizerState);
+	const auto vkDepthStencilState  = gu::StaticPointerCast<vulkan::GPUDepthStencilState>(_depthStencilState);
+	const auto vkBlendState         = gu::StaticPointerCast<vulkan::GPUBlendState>(_blendState);
 
 	/*-------------------------------------------------------------------
 	-           Add shader 
 	---------------------------------------------------------------------*/
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStates = {};
-	if (_vertexShaderState)   { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_vertexShaderState)  ->GetStage()); }
-	if (_pixelShaderState)    { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_pixelShaderState)   ->GetStage()); }
-	if (_geometryShaderState) { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_geometryShaderState)->GetStage()); }
-	if (_hullShaderState)     { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_hullShaderState)    ->GetStage()); }
-	if (_domainShaderState)   { shaderStates.push_back(std::static_pointer_cast<vulkan::GPUShaderState>(_domainShaderState)  ->GetStage()); }
+	if (_vertexShaderState)   { shaderStates.push_back(gu::StaticPointerCast<vulkan::GPUShaderState>(_vertexShaderState)  ->GetStage()); }
+	if (_pixelShaderState)    { shaderStates.push_back(gu::StaticPointerCast<vulkan::GPUShaderState>(_pixelShaderState)   ->GetStage()); }
+	if (_geometryShaderState) { shaderStates.push_back(gu::StaticPointerCast<vulkan::GPUShaderState>(_geometryShaderState)->GetStage()); }
+	if (_hullShaderState)     { shaderStates.push_back(gu::StaticPointerCast<vulkan::GPUShaderState>(_hullShaderState)    ->GetStage()); }
+	if (_domainShaderState)   { shaderStates.push_back(gu::StaticPointerCast<vulkan::GPUShaderState>(_domainShaderState)  ->GetStage()); }
 	
 	/*-------------------------------------------------------------------
 	-           Set up Viewport
@@ -135,8 +135,8 @@ void GPUGraphicsPipelineState::CompleteSetting()
 		.pDepthStencilState  = _depthStencilState  ? &vkDepthStencilState ->GetDepthStencilState() : nullptr,
 		.pColorBlendState    = _blendState         ? &vkBlendState        ->GetBlendState()        : nullptr,
 		.pDynamicState       = &dynamicStateInfo,
-		.layout              = std::static_pointer_cast<vulkan::RHIResourceLayout>(_resourceLayout)->GetLayout(),
-		.renderPass          = std::static_pointer_cast<vulkan::RHIRenderPass>(_renderPass)->GetRenderPass(),
+		.layout              = gu::StaticPointerCast<vulkan::RHIResourceLayout>(_resourceLayout)->GetLayout(),
+		.renderPass          = gu::StaticPointerCast<vulkan::RHIRenderPass>(_renderPass)->GetRenderPass(),
 		.subpass             = 0,
 		.basePipelineHandle  = nullptr,
 		.basePipelineIndex   = 0
@@ -153,7 +153,7 @@ void GPUGraphicsPipelineState::CompleteSetting()
 
 void GPUGraphicsPipelineState::SetName(const std::wstring& name)
 {
-	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_PIPELINE, reinterpret_cast<std::uint64_t>(_pipeline));
 }
 #pragma endregion Graphcis Pipeline State
@@ -166,8 +166,8 @@ void GPUComputePipelineState::CompleteSetting()
 	/*-------------------------------------------------------------------
 	-           Add shader
 	---------------------------------------------------------------------*/
-	const auto vkDevice    = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
-	const auto shaderState = std::static_pointer_cast<vulkan::GPUShaderState>(_computeShaderState)->GetStage();
+	const auto vkDevice    = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
+	const auto& shaderState = gu::StaticPointerCast<vulkan::GPUShaderState>(_computeShaderState)->GetStage();
 
 	/*-------------------------------------------------------------------
 	-           Create compute pipeline 
@@ -178,7 +178,7 @@ void GPUComputePipelineState::CompleteSetting()
 		.pNext              = nullptr,
 		.flags              = 0,
 		.stage              = shaderState,
-		.layout             = std::static_pointer_cast<vulkan::RHIResourceLayout>(_resourceLayout)->GetLayout(),
+		.layout             = gu::StaticPointerCast<vulkan::RHIResourceLayout>(_resourceLayout)->GetLayout(),
 		.basePipelineHandle = nullptr,
 		.basePipelineIndex  = 0
 	};
@@ -191,7 +191,7 @@ void GPUComputePipelineState::CompleteSetting()
 
 void GPUComputePipelineState::SetName(const std::wstring& name)
 {
-	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_PIPELINE, reinterpret_cast<std::uint64_t>(_pipeline));
 }
 #pragma endregion Compute Pipeline State

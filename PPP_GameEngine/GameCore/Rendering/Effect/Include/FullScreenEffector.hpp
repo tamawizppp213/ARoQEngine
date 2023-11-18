@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
 #include <string>
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,12 +42,12 @@ namespace gc
 	class IFullScreenEffector : public NonCopyable
 	{
 	protected:
-		using VertexBufferPtr           = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr            = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ResourceLayoutPtr         = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
-		using PipelineStatePtr          = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using VertexBufferPtr           = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using IndexBufferPtr            = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
 		**                Public Function

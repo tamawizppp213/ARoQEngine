@@ -23,8 +23,8 @@ EngineThreadManager::EngineThreadManager()
 {
 	_threadPools.resize(static_cast<int>(ThreadPoolType::CountOf));
 
-	_threadPools[(int)ThreadPoolType::RenderMain] = std::make_shared<ThreadPool>(1);
-	_threadPools[(int)ThreadPoolType::UpdateMain] = std::make_shared<ThreadPool>(1);
+	_threadPools[(int)ThreadPoolType::RenderMain] = gu::MakeShared<ThreadPool>(1);
+	_threadPools[(int)ThreadPoolType::UpdateMain] = gu::MakeShared<ThreadPool>(1);
 }
 
 EngineThreadManager::~EngineThreadManager()

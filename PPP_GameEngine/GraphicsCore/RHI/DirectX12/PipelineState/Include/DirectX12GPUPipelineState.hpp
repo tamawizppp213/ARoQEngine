@@ -54,9 +54,9 @@ namespace rhi::directX12
 		~GPUGraphicsPipelineState() = default;
 		
 		explicit GPUGraphicsPipelineState(
-			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr<core::RHIRenderPass>&renderPass,
-			const std::shared_ptr<core::RHIResourceLayout>& layout) : core::GPUGraphicsPipelineState(device, renderPass,layout){};
+			const gu::SharedPointer<core::RHIDevice>& device,
+			const gu::SharedPointer<core::RHIRenderPass>&renderPass,
+			const gu::SharedPointer<core::RHIResourceLayout>& layout) : core::GPUGraphicsPipelineState(device, renderPass,layout){};
 	
 	protected:
 		/****************************************************************************
@@ -98,8 +98,8 @@ namespace rhi::directX12
 		~GPUComputePipelineState() = default;
 		
 		explicit GPUComputePipelineState(
-			const std::shared_ptr<core::RHIDevice>& device,
-		const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) : core::GPUComputePipelineState(device, layout){};
+			const gu::SharedPointer<core::RHIDevice>& device,
+		const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) : core::GPUComputePipelineState(device, layout){};
 	
 	protected:
 		/****************************************************************************

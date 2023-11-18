@@ -40,10 +40,10 @@ namespace sample
 	*****************************************************************************/
 	class SampleURP : public Scene
 	{
-		using RendererPtr = std::shared_ptr<gc::URP>;
-		using SkyDomePtr  = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr   = std::shared_ptr<gc::Camera>;
-		using ModelPtr    = std::shared_ptr<gc::core::GameModel>;
+		using RendererPtr = gu::SharedPointer<gc::URP>;
+		using SkyDomePtr  = gu::SharedPointer<gc::SkyDome>;
+		using CameraPtr   = gu::SharedPointer<gc::Camera>;
+		using ModelPtr    = gu::SharedPointer<gc::core::GameModel>;
 	public:
 		/****************************************************************************
 		**                Public Function

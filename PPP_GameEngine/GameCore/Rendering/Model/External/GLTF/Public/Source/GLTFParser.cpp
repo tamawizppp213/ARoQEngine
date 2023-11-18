@@ -76,11 +76,11 @@ void GLTFFile::Load(const std::string& filePath)
 	-                      Prepare Resource Reader
 	---------------------------------------------------------------------*/
 	std::string manifest = "";
-	std::unique_ptr<StreamReader>          streamReader   = std::make_unique<StreamReader>();
+	std::unique_ptr<StreamReader>          streamReader = std::make_unique<StreamReader>();
 	std::unique_ptr<GLTFResourceReader>    resourceReader = nullptr;
 	if (extension == "gltf")
 	{
-		auto gltfStream         = streamReader->GetInputStream(filePath);
+		auto gltfStream = streamReader->GetInputStream(filePath);
 		auto gltfResourceReader = std::make_unique<GLTFResourceReader>(std::move(streamReader));
 
 		std::stringstream manifestStream;
@@ -89,12 +89,12 @@ void GLTFFile::Load(const std::string& filePath)
 
 		resourceReader = std::move(gltfResourceReader);
 	}
-	else if(extension == "glb")
+	else if (extension == "glb")
 	{
-		auto glbStream         = streamReader->GetInputStream(filePath);
+		auto glbStream = streamReader->GetInputStream(filePath);
 		auto glbResourceReader = std::make_unique<GLBResourceReader>(std::move(streamReader), std::move(glbStream));
 
-		manifest       = glbResourceReader->GetJson();
+		manifest = glbResourceReader->GetJson();
 		resourceReader = std::move(glbResourceReader);
 	}
 	else
@@ -110,7 +110,7 @@ void GLTFFile::Load(const std::string& filePath)
 		Document = Deserialize(manifest);
 		resourceReader = std::move(resourceReader);
 	}
-	catch(const detail::error::GLTFException& exception)
+	catch (const detail::error::GLTFException& exception)
 	{
 		throw std::runtime_error(exception.what());
 	}
@@ -128,7 +128,7 @@ void GLTFFile::Save(const std::string& filePath, SerializeFlags flags)
 	-                      Prepare Resource Reader
 	---------------------------------------------------------------------*/
 	std::string manifest = "";
-	std::unique_ptr<StreamWriter>          streamWriter   = std::make_unique<StreamWriter>();
+	std::unique_ptr<StreamWriter>          streamWriter = std::make_unique<StreamWriter>();
 	std::unique_ptr<GLTFResourceWriter>    resourceWriter = nullptr;
 	if (extension == "gltf")
 	{

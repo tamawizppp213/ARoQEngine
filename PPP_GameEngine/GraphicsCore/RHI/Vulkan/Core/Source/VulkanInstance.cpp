@@ -255,14 +255,14 @@ RHIInstance::~RHIInstance()
 /****************************************************************************
 *                     EnumrateAdapters
 *************************************************************************//**
-*  @fn        std::vector<std::shared_ptr<core::RHIAdapter>> EnumrateAdapters()
+*  @fn        std::vector<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
 *  @brief     Return all availablle adapter lists
 *  @param[in] void
-*  @return 　　std::vector<std::shared_ptr<core::RHIAdapter>> 
+*  @return 　　std::vector<gu::SharedPointer<core::RHIAdapter>> 
 *****************************************************************************/
-std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
 {
-	std::vector<std::shared_ptr<core::RHIDisplayAdapter>> adapterLists = {};
+	std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
 	/*-------------------------------------------------------------------
 	-               Acquire physical devices
@@ -274,19 +274,19 @@ std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapt
 	---------------------------------------------------------------------*/
 	for (const auto& device : devices)
 	{
-		adapterLists.emplace_back(std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(), device));
+		adapterLists.emplace_back(gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), device));
 	}
 	return adapterLists;
 }
 /****************************************************************************
 *                     SearchHighPerformanceAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 *  @brief     Return discrete GPU adapter. not found : first adapter
 *  @param[in] void
-*  @return 　　std::shared_ptr<core::RHIAdapter>
+*  @return 　　gu::SharedPointer<core::RHIAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 {
 	return SearchAdapter(VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
 }
@@ -294,12 +294,12 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapt
 /****************************************************************************
 *                     SearchMinimumPowerAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 *  @brief     Return integrated GPU adapter. not found : first adapter
 *  @param[in] void
-*  @return 　　std::shared_ptr<core::RHIAdapter>
+*  @return 　　gu::SharedPointer<core::RHIAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 {
 	return SearchAdapter(VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU);
 }
@@ -307,18 +307,18 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter(
 /****************************************************************************
 *                     SearchAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
 *  @brief     Return proper GPU adapte. not found : first found adapter 
 *  @param[in] void
-*  @return 　　std::shared_ptr<core::RHIAdapter>
+*  @return 　　gu::SharedPointer<core::RHIAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
 {
 	const auto& devices = EnumratePhysicalDevices();
 	if (devices.size() == 0) { return nullptr; }
 
 	// 必要となるものがなければ最初に見つけたAdapterを渡す. 
-	std::shared_ptr<core::RHIDisplayAdapter> adapter = std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(), devices[0]);
+	gu::SharedPointer<core::RHIDisplayAdapter> adapter = gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), devices[0]);
 	for (int i = 1; i < devices.size(); ++i)
 	{
 		/*-------------------------------------------------------------------
@@ -331,7 +331,7 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhys
 		---------------------------------------------------------------------*/
 		if (properties.deviceType == deviceType)
 		{
-			adapter = std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(), devices[i]); break;
+			adapter = gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), devices[i]); break;
 		}
 	}
 

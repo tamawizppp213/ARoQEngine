@@ -57,17 +57,17 @@ namespace
 }
 
 #pragma region Constructor and Destructor
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name)
 	: core::GPUTexture(device, metaData, name)
 {
 	Prepare();
 }
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const std::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const std::wstring& name)
 	: core::GPUTexture(device, name)
 {
 	_memory = nullptr;
 }
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const std::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const std::wstring& name)
 	: core::GPUTexture(device, metaData, name), _image(image)
 {
 	_memory = nullptr;
@@ -75,7 +75,7 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 GPUTexture::~GPUTexture()
 {
 	VkDevice vkDevice = nullptr;
-	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 
 	if (_memory)
 	{
@@ -89,16 +89,16 @@ GPUTexture::~GPUTexture()
 /****************************************************************************
 *                     Load
 *************************************************************************//**
-*  @fn        void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)
+*  @fn        void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 *
 *  @brief     Load texture
 *
 *  @param[in] const std::wstring& filePath
-*  @param[in] const std::shared_ptr<core::RHICommandList> graphics type commandList
+*  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *
 *  @return Å@Å@void
 *****************************************************************************/
-void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)
+void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 {
 #ifdef _DEBUG
 	assert(_device);
@@ -106,8 +106,8 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	assert(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
 #endif
 
-	const auto& vkDevice      = static_cast<vulkan::RHIDevice*>(_device.get())->GetDevice();
-	const auto vkCommandList = static_cast<vulkan::RHICommandList*>(commandList.get())->GetCommandList();
+	const auto& vkDevice      = static_cast<vulkan::RHIDevice*>(_device.Get())->GetDevice();
+	const auto vkCommandList = static_cast<vulkan::RHICommandList*>(commandList.Get())->GetCommandList();
 
 	/*-------------------------------------------------------------------
 	-                Choose Extension and Load Texture Data
@@ -196,10 +196,10 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 		.imageExtent       = {(std::uint32_t)_metaData.Width, (std::uint32_t)_metaData.Height, (std::uint32_t)GetDepth()}
 	};
 
-	const auto vkBuffer      = std::static_pointer_cast<vulkan::GPUBuffer>(_stagingBuffer)->GetBuffer();
-	commandList->TransitionResourceState(shared_from_this(), core::ResourceState::CopyDestination);
+	const auto vkBuffer      = gu::StaticPointerCast<vulkan::GPUBuffer>(_stagingBuffer)->GetBuffer();
+	commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopyDestination);
 	vkCmdCopyBufferToImage(vkCommandList, vkBuffer, _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
-	commandList->TransitionResourceState(shared_from_this(), core::ResourceState::GeneralRead);
+	commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::GeneralRead);
 
 }
 #pragma endregion Main Function
@@ -218,7 +218,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 void GPUTexture::Prepare()
 {
 	VkDevice vkDevice = nullptr;
-	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-               Set Texture View Desc
@@ -267,7 +267,7 @@ void GPUTexture::Prepare()
 		.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 		.pNext           = nullptr,
 		.allocationSize  = memoryRequirement.size,
-		.memoryTypeIndex = std::static_pointer_cast<vulkan::RHIDevice>(_device)
+		.memoryTypeIndex = gu::StaticPointerCast<vulkan::RHIDevice>(_device)
 		->GetMemoryTypeIndex(memoryRequirement.memoryTypeBits, EnumConverter::Convert(_metaData.HeapType))
 	};
 	
@@ -296,7 +296,7 @@ void GPUTexture::Prepare()
 *****************************************************************************/
 void GPUTexture::SetName(const std::wstring& name)
 {
-	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_IMAGE, reinterpret_cast<std::uint64_t>(_image));
 }
 #pragma endregion Debug

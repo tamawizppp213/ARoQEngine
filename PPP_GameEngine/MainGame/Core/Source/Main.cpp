@@ -25,7 +25,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     /********************************************
     **         Check MemoryLeaks
     *********************************************/
-    _CrtDumpMemoryLeaks();
     exit(EXIT_SUCCESS);
 }
 

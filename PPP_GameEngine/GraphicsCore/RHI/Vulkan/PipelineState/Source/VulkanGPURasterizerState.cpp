@@ -18,7 +18,7 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPURasterizerState::GPURasterizerState(const std::shared_ptr<core::RHIDevice>& device, const rhi::core::RasterizerProperty& rasterizerProperty)
+GPURasterizerState::GPURasterizerState(const gu::SharedPointer<core::RHIDevice>& device, const rhi::core::RasterizerProperty& rasterizerProperty)
 	: rhi::core::GPURasterizerState(device, rasterizerProperty )
 {
 	_rasterizerState.sType                   = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;

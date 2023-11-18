@@ -28,7 +28,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-void SceneManager::StartUp(PPPEnginePtr& engine, const std::shared_ptr<GameTimer>& gameTimer)
+void SceneManager::StartUp(PPPEnginePtr& engine, const gu::SharedPointer<GameTimer>& gameTimer)
 {
 	// debug log
 	Checkf(engine, "engine is nullptr.");

@@ -64,7 +64,7 @@ SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& norma
 	PrepareVertexAndIndexBuffer(name);
 	PreparePipelineState(name);
 
-	_gaussianBlur = std::make_shared<gc::GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), false);
+	_gaussianBlur = gu::MakeShared<gc::GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), false);
 }
 
 SSAO::~SSAO()

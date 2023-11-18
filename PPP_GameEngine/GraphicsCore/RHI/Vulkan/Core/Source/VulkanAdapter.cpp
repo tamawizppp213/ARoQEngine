@@ -22,10 +22,10 @@ using namespace rhi::vulkan;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const VkPhysicalDevice physicalDevice)
+RHIDisplayAdapter::RHIDisplayAdapter(const gu::SharedPointer<core::RHIInstance>& instance, const VkPhysicalDevice physicalDevice)
 	: core::RHIDisplayAdapter(instance), _physicalDevice(physicalDevice)
 {
-	assert(("instance is nullptr", _instance));
+	Checkf(_instance,"instance is nullptr");
 
 	const auto adapterProperties = GetProperties();
 	const auto memoryProperties  = GetMemoryProperties();
@@ -49,7 +49,7 @@ RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& i
 	_physicalDeviceInfo.MemoryProperties      = GetMemoryProperties();
 	_physicalDeviceInfo.QueueFamilyProperties = GetQueueFamilyProperties();
 	
-	const auto vkInstance = std::static_pointer_cast<vulkan::RHIInstance>(instance);
+	const auto vkInstance = gu::StaticPointerCast<vulkan::RHIInstance>(instance);
 	if (vkInstance->MeetRequiredVersion(1, 2))
 	{
 		// set up linked list (Features)
@@ -87,9 +87,9 @@ RHIDisplayAdapter::~RHIDisplayAdapter()
 #pragma endregion Constructor and Destructor 
 
 #pragma region Public Function
-std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice()
+gu::SharedPointer<core::RHIDevice> RHIDisplayAdapter::CreateDevice()
 {
-	return std::make_shared<RHIDevice>(shared_from_this());
+	return gu::MakeShared<RHIDevice>(SharedFromThis());
 }
 
 /****************************************************************************

@@ -42,9 +42,9 @@ namespace gc::rendering
 	class ShadowMap : public NonCopyable
 	{
 	protected:
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using GameModelPtr              = std::shared_ptr<gc::core::GameModel>;
-		using GaussianBlurPtr           = std::shared_ptr<gc::GaussianBlur>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using GameModelPtr              = gu::SharedPointer<gc::core::GameModel>;
+		using GaussianBlurPtr           = gu::SharedPointer<gc::GaussianBlur>;
 	public:
 		/****************************************************************************
 		**                Public Function

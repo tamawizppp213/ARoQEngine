@@ -48,7 +48,7 @@ namespace rhi::vulkan
 		~RHIMemory() = default;
 
 		explicit RHIMemory(
-			const std::shared_ptr<core::RHIDevice>& device, 
+			const gu::SharedPointer<core::RHIDevice>& device, 
 			const core::MemoryHeap heapType,
 			const std::uint64_t size, 
 			std::uint32_t typeBits);

@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Math/Include/GMVector.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -38,9 +38,9 @@ namespace gc::ui
 	*****************************************************************************/
 	class Font: public NonCopyable
 	{
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using TexturePtr      = std::shared_ptr<rhi::core::GPUTexture>;
-		using ResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using TexturePtr      = gu::SharedPointer<rhi::core::GPUTexture>;
+		using ResourceViewPtr = gu::SharedPointer<rhi::core::GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -61,7 +61,7 @@ namespace gc::ui
 		TexturePtr GetFontTexture() const noexcept;
 
 		/* @brief : Call load function. (Has existed texture view pointer)*/
-		bool HasLoaded() const noexcept { return _textureView != nullptr; }
+		bool HasLoaded() const noexcept { return !_textureView; }
 		
 		/* @brief : Each character pixel size*/
 		const gm::Float2& GetPixelPerChar() const { return _pixelPerChar; }

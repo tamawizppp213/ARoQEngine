@@ -32,9 +32,9 @@ RHICommandAllocator::~RHICommandAllocator()
 	if (_commandAllocator) { _commandAllocator.Reset(); }
 }
 
-RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::wstring& name) : rhi::core::RHICommandAllocator(device, type)
+RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::wstring& name) : rhi::core::RHICommandAllocator(device, type)
 {
-	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
+	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get())->GetDevice();
 
 	ThrowIfFailed(dxDevice->CreateCommandAllocator(
 		EnumConverter::Convert(type),              // Enable to execute all command 

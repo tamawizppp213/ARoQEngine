@@ -45,13 +45,13 @@ namespace sample
 	*****************************************************************************/
 	class SampleUI : public Scene
 	{
-		using UIRendererPtr       = std::shared_ptr<gc::ui::UIRenderer>;
-		using ImagePtr            = std::shared_ptr<gc::ui::Image>;
-		using ButtonPtr           = std::shared_ptr<gc::ui::Button>;
-		using SliderPtr           = std::shared_ptr<gc::ui::Slider>;
-		using FontPtr             = std::shared_ptr<gc::ui::Font>;
-		using GPUResourceCachePtr = std::shared_ptr<rhi::core::GPUResourceCache>;
-		using GPUResourceViewPtr  = std::shared_ptr<rhi::core::GPUResourceView>;
+		using UIRendererPtr       = gu::SharedPointer<gc::ui::UIRenderer>;
+		using ImagePtr            = gu::SharedPointer<gc::ui::Image>;
+		using ButtonPtr           = gu::SharedPointer<gc::ui::Button>;
+		using SliderPtr           = gu::SharedPointer<gc::ui::Slider>;
+		using FontPtr             = gu::SharedPointer<gc::ui::Font>;
+		using GPUResourceCachePtr = gu::SharedPointer<rhi::core::GPUResourceCache>;
+		using GPUResourceViewPtr  = gu::SharedPointer<rhi::core::GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Public Function

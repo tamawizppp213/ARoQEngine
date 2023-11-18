@@ -83,7 +83,7 @@ void GameActor::UpdateChild(const float deltaTime)
 	{
 		if (child->GetType() == ObjectType::Static) { continue; }
 
-		const auto actorChild = std::static_pointer_cast<GameActor>(child);
+		const auto actorChild = gu::StaticPointerCast<GameActor>(child);
 		actorChild->Update(deltaTime, true);
 	}
 }

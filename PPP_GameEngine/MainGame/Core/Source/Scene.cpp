@@ -24,12 +24,12 @@ Scene::Scene()
 }
 Scene::~Scene()
 {
-	_gameTimer.reset();
-	_engine.reset();
+	_gameTimer.Reset();
+	_engine.Reset();
 	_pppEngine.Reset();
 }
 #pragma region Public Function
-void Scene::Initialize(const gu::SharedPointer<PPPEngine>& engine,const std::shared_ptr<GameTimer>& gameTimer)
+void Scene::Initialize(const gu::SharedPointer<PPPEngine>& engine,const gu::SharedPointer<GameTimer>& gameTimer)
 {
 	_gameTimer = gameTimer;
 	_pppEngine = engine;

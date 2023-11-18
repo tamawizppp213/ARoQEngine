@@ -50,7 +50,7 @@ namespace rhi::directX12
 
 		~GPUSampler() = default;
 
-		explicit GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
+		explicit GPUSampler(const gu::SharedPointer<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
 	
 	protected:
 		/****************************************************************************

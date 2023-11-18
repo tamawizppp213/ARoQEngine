@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ namespace rhi::core
 		
 		virtual ~GPUSampler() = default;
 		
-		explicit GPUSampler(const std::shared_ptr<RHIDevice>& device, const SamplerInfo& samplerInfo) : _device(device), _samplerInfo(samplerInfo) {};
+		explicit GPUSampler(const gu::SharedPointer<RHIDevice>& device, const SamplerInfo& samplerInfo) : _device(device), _samplerInfo(samplerInfo) {};
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -81,7 +81,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 		SamplerInfo _samplerInfo = {};
 	};
 }

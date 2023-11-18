@@ -62,11 +62,11 @@ namespace gc::rendering
 	class CascadeShadow : public NonCopyable
 	{
 	protected:
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using GameModelPtr              = std::shared_ptr<gc::core::GameModel>;
-		using CameraPtr                 = std::shared_ptr<gc::Camera>;
-		using ShadowMapPtr              = std::shared_ptr<ShadowMap>;
-		using GameWorldInfoPtr          = std::shared_ptr<gc::core::GameWorldInfo>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using GameModelPtr              = gu::SharedPointer<gc::core::GameModel>;
+		using CameraPtr                 = gu::SharedPointer<gc::Camera>;
+		using ShadowMapPtr              = gu::SharedPointer<ShadowMap>;
+		using GameWorldInfoPtr          = gu::SharedPointer<gc::core::GameWorldInfo>;
 
 	public:
 
@@ -74,7 +74,7 @@ namespace gc::rendering
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Directional Light‚ð‘z’è‚µ‚½Shadow‚Ì•`‰æ*/
-		void Draw(const std::shared_ptr<GameTimer>& gameTimer, const gm::Float3& direction);
+		void Draw(const gu::SharedPointer<GameTimer>& gameTimer, const gm::Float3& direction);
 
 		void Add(const GameModelPtr& gameMode);
 
@@ -99,7 +99,7 @@ namespace gc::rendering
 		*****************************************************************************/
 		void PrepareResourceView(const std::wstring& name);
 
-		void Update(const std::shared_ptr<GameTimer>& gameTimer, const gm::Float3& direction);
+		void Update(const gu::SharedPointer<GameTimer>& gameTimer, const gm::Float3& direction);
 
 		/****************************************************************************
 		**                Protected Member Variables

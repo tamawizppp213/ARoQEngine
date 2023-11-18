@@ -45,7 +45,7 @@ namespace rhi::directX12
 		**                Constructor and Destructor
 		*****************************************************************************/
 		explicit GPUDepthStencilState(
-			const std::shared_ptr<rhi::core::RHIDevice>& device,
+			const gu::SharedPointer<rhi::core::RHIDevice>& device,
 			const core::DepthStencilProperty& depthStencilProperty
 		);
 

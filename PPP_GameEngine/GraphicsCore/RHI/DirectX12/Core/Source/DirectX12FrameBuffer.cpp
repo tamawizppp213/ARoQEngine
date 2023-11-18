@@ -29,13 +29,13 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
+RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
 	: core::RHIFrameBuffer(device, renderPass, renderTargets, depthStencil)
 {
 	Prepare();
 }
 
-RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil)
+RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil)
 	: core::RHIFrameBuffer(device, renderPass, renderTarget, depthStencil)
 {
 	Prepare();
@@ -43,14 +43,15 @@ RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, c
 
 RHIFrameBuffer::~RHIFrameBuffer()
 {
-	_renderTargetViews.clear(); _renderTargetViews.shrink_to_fit();
-	_renderTargetSRVs.clear(); _renderTargetSRVs.shrink_to_fit();
-	_renderTargetUAVs.clear(); _renderTargetUAVs.shrink_to_fit();
-	_renderTargets    .clear(); _renderTargets    .shrink_to_fit();
-	if (_renderTargetHeap) { _renderTargetHeap.reset(); }
-	if (_depthStencilHeap) { _depthStencilHeap.reset(); }
+	Dispose();
 }
 
+void RHIFrameBuffer::Dispose()
+{
+	if (_renderTargetHeap) { _renderTargetHeap.Reset(); }
+	if (_depthStencilHeap) { _depthStencilHeap.Reset(); }
+	core::RHIFrameBuffer::Dispose();
+}
 #pragma endregion Constructor and Destructor
 
 #pragma region Prepare
@@ -67,7 +68,7 @@ RHIFrameBuffer::~RHIFrameBuffer()
 *****************************************************************************/
 void RHIFrameBuffer::Prepare()
 {
-	const auto rhiDevice = std::static_pointer_cast<directX12::RHIDevice>(_device);
+	const auto rhiDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device);
 	const auto dxDevice  = rhiDevice->GetDevice();
 
 	/*-------------------------------------------------------------------
@@ -75,7 +76,7 @@ void RHIFrameBuffer::Prepare()
 	---------------------------------------------------------------------*/
 	if (!_renderTargetHeap) // device default heap
 	{
-		_renderTargetHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(rhiDevice->GetDefaultHeap(core::DescriptorHeapType::RTV));
+		_renderTargetHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(rhiDevice->GetDefaultHeap(core::DescriptorHeapType::RTV));
 		_renderTargetHeap->GetHeap()->SetName(L"DirectX12::RenderTargetHeap");
 		_rtvSize = dxDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	}
@@ -85,7 +86,7 @@ void RHIFrameBuffer::Prepare()
 	---------------------------------------------------------------------*/
 	if (!_depthStencilHeap) // device default heap
 	{
-		_depthStencilHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(rhiDevice->GetDefaultHeap(core::DescriptorHeapType::DSV));
+		_depthStencilHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(rhiDevice->GetDefaultHeap(core::DescriptorHeapType::DSV));
 		_depthStencilHeap->GetHeap()->SetName(L"DirectX12::DepthStencilHeap");
 		_dsvSize = dxDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	}
@@ -107,7 +108,7 @@ void RHIFrameBuffer::Prepare()
 	/*-------------------------------------------------------------------
 	-				 Set Depth / Stencil Descriptor
 	---------------------------------------------------------------------*/
-	if (_depthStencil != nullptr)
+	if (_depthStencil)
 	{
 		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil, _depthStencil, nullptr);
 		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _depthStencil,  nullptr);

@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -37,8 +37,8 @@ namespace rhi::core
 	class RayTracingShaderTable : public NonCopyable
 	{
 	protected:
-		using DevicePtr = std::shared_ptr<rhi::core::RHIDevice>;
-		using ShaderPtr = std::shared_ptr<rhi::core::GPUShaderState>;
+		using DevicePtr = gu::SharedPointer<rhi::core::RHIDevice>;
+		using ShaderPtr = gu::SharedPointer<rhi::core::GPUShaderState>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -47,7 +47,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		std::shared_ptr<GPUBuffer> GetBuffer() const noexcept { return _buffer; }
+		gu::SharedPointer<GPUBuffer> GetBuffer() const noexcept { return _buffer; }
 
 		std::int32_t GetRayGenerationShaderCount() const { return _rayGenerationShaderCount; }
 
@@ -76,9 +76,9 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 
-		std::shared_ptr<GPUBuffer> _buffer = nullptr;
+		gu::SharedPointer<GPUBuffer> _buffer = nullptr;
 
 		std::vector<ShaderPtr> _shaderList = {};
 

@@ -36,7 +36,7 @@ namespace
 bool GLTFConverter::Load(const std::wstring& filePath, GameModelPtr model)
 {
 	if (model == nullptr) { OutputDebugStringA("model is nullptr.");  return false; }
-	if (model->_engine == nullptr) { OutputDebugStringA("engine is nullptr"); return false; }
+	if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }
 
 	/*-------------------------------------------------------------------
 	-            PMXFile Load

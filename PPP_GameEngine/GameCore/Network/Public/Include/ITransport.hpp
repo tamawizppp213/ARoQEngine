@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <WinSock2.h>
 #include <vector>
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,8 +36,8 @@ namespace gc
 	class ITransport: public NonCopyable
 	{
 	protected :
-		using PacketQueuePtr = std::shared_ptr<PacketQueue>;
-		using SocketPtr      = std::shared_ptr<Socket>;
+		using PacketQueuePtr = gu::SharedPointer<PacketQueue>;
+		using SocketPtr      = gu::SharedPointer<Socket>;
 	public:
 		/****************************************************************************
 		**                Public Function

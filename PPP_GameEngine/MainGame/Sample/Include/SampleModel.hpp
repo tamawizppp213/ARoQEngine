@@ -41,10 +41,10 @@ namespace sample
 	*****************************************************************************/
 	class SampleModel : public Scene
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr = std::shared_ptr<gc::Camera>;
-		using ModelPtr = std::shared_ptr<gc::core::GameModel>;
-		using DofPtr   = std::shared_ptr<gc::Dof>;
+		using SkyDomePtr = gu::SharedPointer<gc::SkyDome>;
+		using CameraPtr = gu::SharedPointer<gc::Camera>;
+		using ModelPtr = gu::SharedPointer<gc::core::GameModel>;
+		using DofPtr   = gu::SharedPointer<gc::Dof>;
 	public:
 		/****************************************************************************
 		**                Public Function

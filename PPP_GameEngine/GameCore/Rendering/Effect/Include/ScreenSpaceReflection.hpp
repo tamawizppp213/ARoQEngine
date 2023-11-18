@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "FullScreenEffector.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,12 +41,12 @@ namespace gc
 	class ScreenSpaceReflection : public NonCopyable
 	{
 	protected:
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
-		using PipelineStatePtr          = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using VertexBufferPtr           = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr            = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ResourceLayoutPtr         = std::shared_ptr<rhi::core::RHIResourceLayout>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+		using VertexBufferPtr           = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using IndexBufferPtr            = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
 	public:
 		/****************************************************************************
 		**                Public Function

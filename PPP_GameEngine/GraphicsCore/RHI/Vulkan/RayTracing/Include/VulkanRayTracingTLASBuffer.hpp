@@ -35,7 +35,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Build(const std::shared_ptr<core::RHICommandList>& commandList) override {};
+		void Build(const gu::SharedPointer<core::RHICommandList>& commandList) override {};
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -45,8 +45,8 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		TLASBuffer() = default;
 		~TLASBuffer();
-		TLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
-			const std::vector<std::shared_ptr<core::ASInstance>>& blasBuffers,
+		TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
+			const std::vector<gu::SharedPointer<core::ASInstance>>& blasBuffers,
 			const core::BuildAccelerationStructureFlags flags);
 	protected:
 		/****************************************************************************

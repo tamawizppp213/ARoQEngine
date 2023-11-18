@@ -24,12 +24,12 @@ using namespace rhi;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::wstring& name) 
+RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::wstring& name) 
 	: core::RHICommandAllocator(device, type)
 {
-	assert(("device is nullptr.", device));
+	Checkf(device, "device is nullptr.");
 
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	
 	const VkCommandPoolCreateInfo createInfo = 
 	{
@@ -49,7 +49,7 @@ RHICommandAllocator::RHICommandAllocator(const std::shared_ptr<core::RHIDevice>&
 
 RHICommandAllocator::~RHICommandAllocator()
 {
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	
 	if (_commandPool) 
 	{
@@ -71,7 +71,7 @@ RHICommandAllocator::~RHICommandAllocator()
 *****************************************************************************/
 void RHICommandAllocator::CleanUp()
 {
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	if (vkResetCommandPool(vkDevice->GetDevice(), _commandPool, VkCommandPoolResetFlagBits::VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to reset command pool");
@@ -92,7 +92,7 @@ void RHICommandAllocator::CleanUp()
 *****************************************************************************/
 void RHICommandAllocator::Trim(const VkCommandPoolTrimFlags flags)
 {
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	vkTrimCommandPool(vkDevice->GetDevice(), _commandPool, flags);
 }
 
@@ -109,6 +109,6 @@ void RHICommandAllocator::Trim(const VkCommandPoolTrimFlags flags)
 *****************************************************************************/
 void RHICommandAllocator::SetName(const std::wstring& name)
 {
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	vkDevice->SetVkResourceName(name, VK_OBJECT_TYPE_COMMAND_POOL, reinterpret_cast<std::uint64_t>(_commandPool));
 }

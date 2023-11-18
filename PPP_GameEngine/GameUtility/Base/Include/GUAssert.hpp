@@ -84,7 +84,7 @@ namespace gu
 	{\
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, format)) \
 		{                 \
-			DebugBreak(); \
+			gu::ErrorLogger::PutDebugBreak(); \
 		}\
     }
 #endif
@@ -103,7 +103,7 @@ namespace gu
 			Verify : Debug‚¾‚ë‚¤‚ªRelease‚¾‚ë‚¤‚ª®‚ªfalse‚É‚È‚Á‚½‚çÀs‚ğ’â~‚µ‚Ü‚·.
 	-----------------------------------------------------------------*/
 #ifndef Verify 
-	#define Verify(expression)\
+	#define Confirm(expression)\
     {\
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, nullptr)) \
 		{                 \
@@ -113,7 +113,7 @@ namespace gu
 #endif
 #ifndef Verifyf
 	// Vefifyf‚Å‚Í’Êí‚Ì®•]‰¿‚É‰Á‚¦, ƒGƒ‰[•¶Í‚ğ’Ç‰Á‚µ‚Ä‚­‚ê‚Ü‚·. 
-	#define Verifyf(expression, format)\
+	#define Confirmf(expression, format)\
 	{\
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, format)) \
 		{                 \
@@ -132,7 +132,7 @@ namespace gu
     {\
 		if(!(expression) && gu::ErrorLogger::EnsureFailed(#expression, __FILE__, __LINE__, nullptr)) \
 		{                 \
-			DebugBreak(); \
+			gu::ErrorLogger::PutDebugBreak(); \
 		}\
     }
 #endif
@@ -143,7 +143,7 @@ namespace gu
 	{\
 		if(!(expression) && gu::ErrorLogger::EnsureVerifyFailed(#expression, __FILE__, __LINE__, format)) \
 		{                 \
-			DebugBreak(); \
+			gu::ErrorLogger::PutDebugBreak(); \
 		}\
     }
 #endif

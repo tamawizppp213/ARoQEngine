@@ -27,9 +27,9 @@ RHICommandQueue::~RHICommandQueue()
 	
 }
 
-RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex, const std::wstring& name) : rhi::core::RHICommandQueue(device, type)
+RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex, const std::wstring& name) : rhi::core::RHICommandQueue(device, type)
 {
-	const auto vkDevice = std::static_pointer_cast<RHIDevice>(device);
+	const auto vkDevice = gu::StaticPointerCast<RHIDevice>(device);
 	_queueFamilyIndex = queueFamilyIndex;
 	_queueIndex       = queueIndex;
 	vkGetDeviceQueue(vkDevice->GetDevice(), _queueFamilyIndex, _queueIndex, &_queue);
@@ -42,19 +42,19 @@ RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& de
 /****************************************************************************
 *							Wait
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
+*  @fn        void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
 * 
 *  @brief     Used to wait for another Command queue to complete execution. (in GPU)
 * 
-*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 * 
 *  @param[in] std::uint64_t value
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value)
+void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value)
 {
-	const auto& vkFence = std::static_pointer_cast<RHIFence>(fence);
+	const auto& vkFence = gu::StaticPointerCast<RHIFence>(fence);
 
 	/*-------------------------------------------------------------------
 	-               Set up timeline submit info
@@ -90,20 +90,20 @@ void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, const s
 /****************************************************************************
 *							Signal
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
+*  @fn        void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
 *
 *  @brief     Update value when the Command Queue execution completes.
 *             GPU内で処理が完結します.　
 *
-*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *
 *  @param[in] std::uint64_t value
 *
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value)
+void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value)
 {
-	const auto& vkFence = std::static_pointer_cast<RHIFence>(fence);
+	const auto& vkFence = gu::StaticPointerCast<RHIFence>(fence);
 
 	/*-------------------------------------------------------------------
 	-               Set up timeline submit info
@@ -136,16 +136,16 @@ void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, const
 /****************************************************************************
 *							Execute
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists)
+*  @fn        void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 *
 *  @brief     Execute command list contents. normally set graphics, compute, transfer commandlist
 *             All CommandLists to be assigned must be Closed.
 *
-*  @param[in] const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists
+*  @param[in] const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists
 *
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists)
+void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 {
 	if (commandLists.empty()) { return; }
 
@@ -156,7 +156,7 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 	std::vector<VkCommandBuffer> vkLists;
 	for (auto& commandList : commandLists)
 	{
-		vkLists.push_back(std::static_pointer_cast<rhi::vulkan::RHICommandList>(commandList)->GetCommandList());
+		vkLists.push_back(gu::StaticPointerCast<rhi::vulkan::RHICommandList>(commandList)->GetCommandList());
 	}
 
 	/*-------------------------------------------------------------------
@@ -185,7 +185,7 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 
 void RHICommandQueue::SetName(const std::wstring& name)
 {
-	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_QUEUE, reinterpret_cast<std::uint64_t>(_queue));
 }
 #pragma endregion Public Function

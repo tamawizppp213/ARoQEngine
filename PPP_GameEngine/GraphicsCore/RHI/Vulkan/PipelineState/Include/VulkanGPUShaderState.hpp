@@ -57,7 +57,7 @@ namespace rhi::vulkan
 		~GPUShaderState();
 		
 		explicit GPUShaderState(
-			const std::shared_ptr<core::RHIDevice>& device) : core::GPUShaderState(device){};
+			const gu::SharedPointer<core::RHIDevice>& device) : core::GPUShaderState(device){};
 	
 	protected:
 		/****************************************************************************

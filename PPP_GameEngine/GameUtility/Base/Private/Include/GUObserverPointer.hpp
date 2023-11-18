@@ -124,7 +124,7 @@ namespace gu
 		*  Changable copy constructs
 		/*----------------------------------------------------------------------*/
 		template<class OtherType>
-		ObserverPointerBase(const ObserverPointerBase<OtherType>& pointer) : _elementPointer(pointer._elementPointer), _referenceController(pointer._referenceController) {};
+		ObserverPointerBase(const ObserverPointerBase<OtherType,Mode>& pointer) : _elementPointer(pointer._elementPointer), _referenceController(pointer._referenceController) {};
 
 		/*----------------------------------------------------------------------
 		*  Move constructs
@@ -140,7 +140,7 @@ namespace gu
 		*  Changable move constructs
 		/*----------------------------------------------------------------------*/
 		template<class OtherType>
-		ObserverPointerBase(ObserverPointerBase<OtherType>&& pointer) noexcept :
+		ObserverPointerBase(ObserverPointerBase<OtherType,Mode>&& pointer) noexcept :
 			_elementPointer(pointer._elementPointer), _referenceController(pointer._referenceController)
 		{
 			pointer._elementPointer      = nullptr;
@@ -171,7 +171,7 @@ namespace gu
 			{ 
 				_referenceController->ReleaseSharedReference(); 
 				ReleaseObserverReference();
-			} 
+			}
 		}
 
 		/*----------------------------------------------------------------------
@@ -183,8 +183,7 @@ namespace gu
 			
 			_referenceController->ReleaseObserverReference(); 
 
-			if (_referenceController->GetSharedReferenceCount() == 0 &&
-				_referenceController->GetObserverReferenceCount() == 0)
+			if (_referenceController->GetSharedReferenceCount() == 0)
 			{
 				delete _referenceController;
 				_referenceController = nullptr;

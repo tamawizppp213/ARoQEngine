@@ -35,7 +35,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Build(const std::shared_ptr<core::RHICommandList>& commandList) override;
+		void Build(const gu::SharedPointer<core::RHICommandList>& commandList) override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -45,10 +45,10 @@ namespace rhi::directX12
 		*****************************************************************************/
 		TLASBuffer() = default;
 		~TLASBuffer();
-		TLASBuffer(const std::shared_ptr<core::RHIDevice>& device, 
-			const std::vector<std::shared_ptr<core::ASInstance>>& asInstance,
+		TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device, 
+			const std::vector<gu::SharedPointer<core::ASInstance>>& asInstance,
 			const core::BuildAccelerationStructureFlags flags,
-			const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
+			const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr);
 	protected:
 		/****************************************************************************
 		**                Protected Function

@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMTransform.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ namespace physics::core
 
 		gm::Quaternion GetRotation() const { return _orientation; }
 
-		std::shared_ptr<physics::geometry::IGeometry> GetGeometry() const noexcept { return _geometry; }
+		gu::SharedPointer<physics::geometry::IGeometry> GetGeometry() const noexcept { return _geometry; }
 
 		/* @brief : Set the actors world space transform.
 		   Holds the world position as the Vector3 and orientation as the quaternion.*/
@@ -88,14 +88,14 @@ namespace physics::core
 		
 		void SetPosition(const gm::Vector3& position) { _position = position; }
 
-		void SetGeometry(const std::shared_ptr<physics::geometry::IGeometry>& geometry) { _geometry = geometry; }
+		void SetGeometry(const gu::SharedPointer<physics::geometry::IGeometry>& geometry) { _geometry = geometry; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		explicit PhysicsActor(const ActorFlags flags) : _actorType(ActorType::Primitive), _actorFlags(flags) {};
 
-		PhysicsActor(const std::shared_ptr<physics::geometry::IGeometry>& geometry,
+		PhysicsActor(const gu::SharedPointer<physics::geometry::IGeometry>& geometry,
 			const gm::Vector3& worldPosition,
 			const gm::Quaternion& rotation = gm::Quaternion(),
 			const ActorFlags flags = ActorFlags::None);
@@ -124,7 +124,7 @@ namespace physics::core
 		ActorFlags _actorFlags = ActorFlags::None;
 
 		/* Holds the geometry (don't have the positition.)*/
-		std::shared_ptr<physics::geometry::IGeometry> _geometry = nullptr;
+		gu::SharedPointer<physics::geometry::IGeometry> _geometry = nullptr;
 	};
 }
 #endif

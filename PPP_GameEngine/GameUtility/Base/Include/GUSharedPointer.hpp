@@ -38,7 +38,12 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  @brief : Release the pointer and decrement the reference counter.
 		/*----------------------------------------------------------------------*/
-		__forceinline void Reset() { ReleaseSharedReference(); }
+		__forceinline void Reset() 
+		{
+			ReleaseSharedReference(); 
+			_referenceController = nullptr;
+			_elementPointer = nullptr;
+		}
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -50,14 +55,17 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  Constructs an empty shared pointer.
 		/*----------------------------------------------------------------------*/
-		SharedPointer() : ObserverPointerBase<ElementType, Mode>() {};
+		SharedPointer() : ObserverPointerBase<ElementType, Mode>() { };
 
 		SharedPointer(decltype(__nullptr)) : ObserverPointerBase<ElementType, Mode>() {};
 
 		/*----------------------------------------------------------------------
 		*  Destructor 
 		/*----------------------------------------------------------------------*/
-		~SharedPointer() { Reset(); }
+		~SharedPointer()
+		{
+			Reset();
+		}
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new shared pointer from the raw pointer 
@@ -70,7 +78,7 @@ namespace gu
 		*  Constructs a new shared pointer from the raw pointer
 		/*----------------------------------------------------------------------*/
 		explicit SharedPointer(ElementType* pointer) 
-			:ObserverPointerBase<ElementType, Mode>(pointer) {};
+			:ObserverPointerBase<ElementType, Mode>(pointer) { };
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new shared pointer from the raw pointer with the custom deleter
@@ -83,7 +91,7 @@ namespace gu
 		*  Constructs a new shared pointer from the raw pointer with the custom deleter
 		/*----------------------------------------------------------------------*/
 		template<class OtherType, class Deleter>
-		SharedPointer(OtherType* pointer, Deleter deleter) : ObserverPointerBase<ElementType>(pointer, deleter) {};
+		SharedPointer(OtherType* pointer, Deleter deleter) : ObserverPointerBase<ElementType, Mode>(pointer, deleter) {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a shared pointer from the weak pointer
@@ -141,7 +149,11 @@ namespace gu
 		*  Move Constructs a weak pointer from a weak pointer of another type.
 		*  This constructor is intended to allow derived - to - base conversions
 		/*----------------------------------------------------------------------*/
-		SharedPointer(SharedPointer&& pointer) : ObserverPointerBase<ElementType, Mode>(pointer) {};
+		SharedPointer(SharedPointer&& right) noexcept 
+		{
+			_elementPointer = right._elementPointer; _referenceController = right._referenceController;
+			right._elementPointer = nullptr; right._referenceController = nullptr;
+		};
 
 		SharedPointer& operator=(SharedPointer&& right) noexcept
 		{
@@ -174,14 +186,14 @@ namespace gu
 	};
 
 
-	template<class ElementType1, class ElementType2>
-	const bool operator == (const SharedPointer<ElementType1>& left, const SharedPointer<ElementType2>& right) noexcept
+	template<class ElementType1, class ElementType2, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
+	const bool operator == (const SharedPointer<ElementType1,Mode>& left, const SharedPointer<ElementType2, Mode>& right) noexcept
 	{
 		return left.Get() == right.Get();
 	}
 
-	template<class ElementType1, class ElementType2>
-	const bool operator != (const SharedPointer<ElementType1>& left, const SharedPointer<ElementType2>& right) noexcept
+	template<class ElementType1, class ElementType2, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
+	const bool operator != (const SharedPointer<ElementType1, Mode>& left, const SharedPointer<ElementType2,Mode>& right) noexcept
 	{
 		return left.Get() != right.Get();
 	}
@@ -239,31 +251,31 @@ namespace gu
 	/*----------------------------------------------------------------------
 	*  Cast function
 	/*----------------------------------------------------------------------*/
-	template<class Element1, class Element2>
-	[[nodiscard]] SharedPointer<Element1> StaticPointerCast(const SharedPointer<Element2>& element)
+	template<class Element1, class Element2, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
+	[[nodiscard]] SharedPointer<Element1, Mode> StaticPointerCast(const SharedPointer<Element2, Mode>& element)
 	{
-		return SharedPointer<Element1>(static_cast<Element1*>(element.Get()), element.GetRawReferenceController());
+		return SharedPointer<Element1, SHARED_POINTER_DEFAULT_THREAD_MODE>(static_cast<Element1*>(element.Get()), element.GetRawReferenceController());
 	}
-	template<class Element1, class Element2>
-	[[nodiscard]] SharedPointer<Element1> ConstPointerCast(const SharedPointer<Element2>& element)
+	template<class Element1, class Element2, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
+	[[nodiscard]] SharedPointer<Element1, Mode> ConstPointerCast(const SharedPointer<Element2, Mode>& element)
 	{
-		return SharedPointer<Element1>(const_cast<Element1*>(element.Get()), element.GetRawReferenceController());
+		return SharedPointer<Element1, Mode>(const_cast<Element1*>(element.Get()), element.GetRawReferenceController());
 	}
-	template<class Element1, class Element2>
-	[[nodiscard]] SharedPointer<Element1> ReinterpretPointerCast(const SharedPointer<Element2>& element)
+	template<class Element1, class Element2, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
+	[[nodiscard]] SharedPointer<Element1, Mode> ReinterpretPointerCast(const SharedPointer<Element2,Mode>& element)
 	{
-		return SharedPointer<Element1>(reinterpret_cast<Element1*>(element.Get()), element.GetRawReferenceController());
+		return SharedPointer<Element1,Mode>(reinterpret_cast<Element1*>(element.Get()), element.GetRawReferenceController());
 	}
-	template<class Element1, class Element2>
-	[[nodiscard]] SharedPointer<Element1> DynamicPointerCast(const SharedPointer<Element2>& element)
+	template<class Element1, class Element2, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
+	[[nodiscard]] SharedPointer<Element1,Mode> DynamicPointerCast(const SharedPointer<Element2,Mode>& element)
 	{
-		return SharedPointer<Element1>(dynamic_cast<Element1*>(element.Get()), element.GetRawReferenceController());
+		return SharedPointer<Element1,Mode>(dynamic_cast<Element1*>(element.Get()), element.GetRawReferenceController());
 	}
 
 	/*----------------------------------------------------------------------
 	*  @brief :  return the new shared pointer
 	/*----------------------------------------------------------------------*/
-	template<class ElementType, SharedPointerThreadMode Mode = SharedPointerThreadMode::NotThreadSafe, class... Arguments>
+	template<class ElementType, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE, class... Arguments>
 	SharedPointer<ElementType, Mode> MakeShared(Arguments... arguments)
 	{
 		auto pointer = SharedPointer<ElementType, Mode>(new ElementType(arguments...));

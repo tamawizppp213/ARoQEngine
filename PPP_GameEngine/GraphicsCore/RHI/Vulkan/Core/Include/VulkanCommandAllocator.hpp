@@ -56,7 +56,7 @@ namespace rhi::vulkan
 
 		// for vulkan constructor
 		explicit RHICommandAllocator(
-			const std::shared_ptr<rhi::core::RHIDevice>& device, 
+			const gu::SharedPointer<rhi::core::RHIDevice>& device, 
 			const core::CommandListType type, 
 			const std::uint32_t queueFamilyIndex,
 			const std::wstring& name);

@@ -54,7 +54,7 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 	/*---------------------------------------------------------------
 					  Timer
 	-----------------------------------------------------------------*/
-	_mainThreadTimer = std::make_shared<GameTimer>();
+	_mainThreadTimer = gu::MakeShared<GameTimer>();
 
 	/*---------------------------------------------------------------
 					  Platform Applicationの作成
@@ -77,7 +77,7 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 	/*---------------------------------------------------------------
 					  レンダリングエンジンの作成
 	-----------------------------------------------------------------*/
-	_graphicsEngine = std::make_shared<LowLevelGraphicsEngine>();
+	_graphicsEngine = gu::MakeShared<LowLevelGraphicsEngine>();
 	_graphicsEngine->StartUp(setting.GraphicsSettings.APIversion, _mainWindow->GetWindowHandle(), _platformApplication->GetInstanceHandle());
 
 
@@ -89,7 +89,7 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 	/*---------------------------------------------------------------
 					  スレッドの管理
 	-----------------------------------------------------------------*/
-	_engineThreadManager = std::make_unique<EngineThreadManager>();
+	_engineThreadManager = gu::MakeShared<EngineThreadManager>();
 	_isStoppedAllThreads.store(false); // falseを書き込み
 
 	_engineThreadManager->GetUpdateMainThread()->Submit([&]() { this->ExecuteUpdateThread(); });
@@ -161,7 +161,7 @@ void PPPEngine::ShutDown()
 	if (_hasShutdown) { return; }
 
 	// スレッドの破棄
-	_engineThreadManager.reset();
+	_engineThreadManager.Reset();
 
 	// 入力デバイスの破棄
 	GameInput::Instance().Finalize();

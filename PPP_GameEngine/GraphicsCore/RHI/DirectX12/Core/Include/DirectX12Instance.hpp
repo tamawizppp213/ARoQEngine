@@ -29,7 +29,7 @@ namespace rhi::directX12
 	*  @class     RHIInstance
 	*  @brief     Select device api and select display adapter
 	*****************************************************************************/
-	class RHIInstance : public core::RHIInstance
+	class RHIInstance : public core::RHIInstance, public gu::EnableSharedFromThis<RHIInstance >
 	{
 	public:
 
@@ -37,13 +37,13 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		/* directX12 : (High) xGPU, dGPU iGPU (Low) selected*/
-		std::shared_ptr<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		gu::SharedPointer<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
 		
 		/* directX12 : (Low) iGPU, dGPU xGPU (High)*/
-		std::shared_ptr<core::RHIDisplayAdapter> SearchMinimumPowerAdapter ()override;
+		gu::SharedPointer<core::RHIDisplayAdapter> SearchMinimumPowerAdapter ()override;
 		
 		/* return all available display adapter*/
-		std::vector<std::shared_ptr<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
 		
 		/* OutputDebugString : adapter list*/
 		void LogAdapters() override;
@@ -78,7 +78,7 @@ namespace rhi::directX12
 		void EnabledGPUClashDebuggingModes(); 
 
 		/* @brief : Select High performance or minimum power ( (High) xGPU, dGPU iGPU (Low))*/
-		std::shared_ptr<core::RHIDisplayAdapter> SearchAdapter(const DXGI_GPU_PREFERENCE preference);
+		gu::SharedPointer<core::RHIDisplayAdapter> SearchAdapter(const DXGI_GPU_PREFERENCE preference);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

@@ -57,7 +57,7 @@ gu::UUID gu::UUID::Create()
 	gu::UUID result(0, 0, 0, 0);
 
 #if defined(_WIN32) || defined(_WIN64)
-	Verifyf(CoCreateGuid((GUID*)&result) == S_OK, "Failed to create guid.");
+	Confirmf(CoCreateGuid((GUID*)&result) == S_OK, "Failed to create guid.");
 #else
 	printf("Œ»İGUID¶¬‚É‚Í–¢‘Î‰‚ÌOS‚Å‚·.\n");
 #endif

@@ -43,13 +43,13 @@ namespace sample
 	*****************************************************************************/
 	class SampleColorChange : public Scene
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr  = std::shared_ptr<gc::Camera>;
-		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
-		using GaussianBlurPtr = std::shared_ptr<gc::GaussianBlur>;
-		using MosaicPtr = std::shared_ptr<gc::Mosaic>;
-		using VignettePtr = std::shared_ptr<gc::Vignette>;
-		using WhiteBalancePtr = std::shared_ptr<gc::WhiteBalance>;
+		using SkyDomePtr = gu::SharedPointer<gc::SkyDome>;
+		using CameraPtr  = gu::SharedPointer<gc::Camera>;
+		using ColorChangePtr  = gu::SharedPointer<gc::ColorChange>;
+		using GaussianBlurPtr = gu::SharedPointer<gc::GaussianBlur>;
+		using MosaicPtr = gu::SharedPointer<gc::Mosaic>;
+		using VignettePtr = gu::SharedPointer<gc::Vignette>;
+		using WhiteBalancePtr = gu::SharedPointer<gc::WhiteBalance>;
 		
 	public:
 		/****************************************************************************

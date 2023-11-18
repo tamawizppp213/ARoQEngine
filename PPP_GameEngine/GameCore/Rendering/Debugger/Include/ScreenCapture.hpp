@@ -14,7 +14,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <vector>
 #include <string>
 //////////////////////////////////////////////////////////////////////////////////
@@ -43,10 +43,10 @@ namespace gc::rendering
 	class ScreenCapture : public NonCopyable
 	{
 	protected:
-		using KeyboardPtr    = std::shared_ptr<Keyboard>;
-		using TexturePtr     = std::shared_ptr<rhi::core::GPUTexture>;
-		using FrameBufferPtr = std::shared_ptr<rhi::core::RHIFrameBuffer>;
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using KeyboardPtr    = gu::SharedPointer<Keyboard>;
+		using TexturePtr     = gu::SharedPointer<rhi::core::GPUTexture>;
+		using FrameBufferPtr = gu::SharedPointer<rhi::core::RHIFrameBuffer>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
 		**                Public Function

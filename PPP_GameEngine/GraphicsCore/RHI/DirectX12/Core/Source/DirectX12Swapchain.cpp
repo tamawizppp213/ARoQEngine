@@ -30,7 +30,7 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
+RHISwapchain::RHISwapchain(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandQueue>& queue,
 	const core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR) 
 	: core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
 
@@ -38,7 +38,7 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	SetUp();
 }
 
-RHISwapchain::RHISwapchain(const std::shared_ptr<core::RHIDevice>& device, const core::SwapchainDesc& desc) : rhi::core::RHISwapchain(device, desc)
+RHISwapchain::RHISwapchain(const gu::SharedPointer<core::RHIDevice>& device, const core::SwapchainDesc& desc) : rhi::core::RHISwapchain(device, desc)
 {
 	SetUp();
 }
@@ -76,7 +76,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
-	for (auto& buffer : _backBuffers) { buffer.reset(); }
+	for (auto& buffer : _backBuffers) { buffer.Reset(); }
 	ThrowIfFailed(_swapchain->ResizeBuffers(
 		static_cast<UINT>(_desc.FrameBufferCount),
 		static_cast<UINT>(_desc.WindowInfo.Width),
@@ -99,20 +99,20 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 
 		info.State = core::ResourceState::Present;
 
-		_backBuffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
+		_backBuffers[index] = gu::MakeShared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
 	}
 	
 }
 /****************************************************************************
 *							PrepareNextImage
 *************************************************************************//**
-*  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
+*  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
 *  @brief     NextImageの準備が完了したときSignalを発行し, 次のframe Indexを返す. 
-*  @param[in] const std::shared_ptr<core::RHIFence>
+*  @param[in] const gu::SharedPointer<core::RHIFence>
 *  @param[in] std::uint64_t signalValue (Normally : ++fenceValueを代入)
 *  @return 　　std::uint32_t Backbuffer index
 *****************************************************************************/
-std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
+std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
 {
 	std::uint32_t frameIndex = _swapchain->GetCurrentBackBufferIndex();
 	_desc.CommandQueue->Signal(fence, signalValue);
@@ -123,11 +123,11 @@ std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFenc
 *************************************************************************//**
 *  @fn        void RHISwapchain::Present()
 *  @brief     Display front buffer
-*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *  @param[in] std::uint64_t waitValue
 *  @return 　　void
 *****************************************************************************/
-void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue)
+void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue)
 {
 	/*synchronization between command queue */
 	_desc.CommandQueue->Wait(fence, waitValue);
@@ -174,9 +174,9 @@ void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 *****************************************************************************/
 void RHISwapchain::SetUp()
 {
-	const auto rhiDevice  = std::static_pointer_cast<RHIDevice>(_device);
+	const auto rhiDevice  = gu::StaticPointerCast<RHIDevice>(_device);
 	const auto dxDevice   = rhiDevice->GetDevice();
-	const auto dxQueue    = std::static_pointer_cast<RHICommandQueue>(_desc.CommandQueue)->GetCommandQueue();
+	const auto dxQueue    = gu::StaticPointerCast<RHICommandQueue>(_desc.CommandQueue)->GetCommandQueue();
 	const auto dxInstance = static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance());
 	const auto factory    = dxInstance->GetFactory();
 
@@ -297,7 +297,7 @@ void RHISwapchain::SetUp()
 			core::ResourceUsage::RenderTarget);
 		info.State = core::ResourceState::Common;
 
-		_backBuffers[i] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
+		_backBuffers[i] = gu::MakeShared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
 	}
 
 }

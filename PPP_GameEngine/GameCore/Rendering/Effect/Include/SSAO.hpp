@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/HLSLUtility.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <string>
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
@@ -69,13 +69,13 @@ namespace gc
 			bool          IsHorizontal = false;
 		};
 
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
-		using PipelineStatePtr          = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using ResourceLayoutPtr         = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using VertexBufferPtr           = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr            = std::shared_ptr<rhi::core::GPUBuffer>;
-		using GaussianBlurPtr           = std::shared_ptr<gc::GaussianBlur>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using VertexBufferPtr           = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using IndexBufferPtr            = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using GaussianBlurPtr           = gu::SharedPointer<gc::GaussianBlur>;
 	public:
 		/****************************************************************************
 		**                Public Function

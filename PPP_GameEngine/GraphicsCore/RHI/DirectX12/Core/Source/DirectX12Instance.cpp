@@ -73,16 +73,16 @@ RHIInstance::~RHIInstance()
 /****************************************************************************
 *                     SearchHighPerformanceAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 * 
 *  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの多いものから 
 *             (High) xGPU, dGPU iGPU (Low) selected
 * 
 *  @param[in] void
 * 
-*  @return 　　std::shared_ptr<core::RHIDisplayAdapter>
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 {
 	return SearchAdapter(DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
 }
@@ -90,16 +90,16 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapt
 /****************************************************************************
 *                     SearchMinimumPowerAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 * 
 *  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの少ないものから
 *             (Low) iGPU, dGPU xGPU (High)
 * 
 *  @param[in] void
 * 
-*  @return 　　std::shared_ptr<core::RHIDisplayAdapter>
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 {
 	return SearchAdapter(DXGI_GPU_PREFERENCE_MINIMUM_POWER);
 }
@@ -107,15 +107,15 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter(
 /****************************************************************************
 *                     SearchAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
 * 
 *  @brief     Search Proper Physical Device Adapter
 * 
 *  @param[in] const DXGI_GPU_PREFERENCE preference (high performance or minimum power)
 * 
-*  @return 　　std::shared_ptr<core::RHIDisplayAdapter>
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
 {
 	AdapterComPtr adapter = nullptr;
 
@@ -139,23 +139,23 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_G
 	}
 #endif
 
-	return std::make_shared<RHIDisplayAdapter>(shared_from_this(), adapter);
+	return gu::MakeShared<RHIDisplayAdapter>(SharedFromThis(), adapter);
 }
 
 /****************************************************************************
 *                     EnumrateAdapters
 *************************************************************************//**
-*  @fn        std::vector<std::shared_ptr<core::RHIAdapter>> EnumrateAdapters()
+*  @fn        std::vector<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
 * 
 *  @brief     Return all availablle adapter lists
 * 
 *  @param[in] void
 * 
-*  @return 　　std::vector<std::shared_ptr<core::RHIAdapter>>
+*  @return 　　std::vector<gu::SharedPointer<core::RHIAdapter>>
 *****************************************************************************/
-std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
 {
-	std::vector<std::shared_ptr<core::RHIDisplayAdapter>> adapterLists = {};
+	std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
 	/*-------------------------------------------------------------------
 	-                  Define Proceed next adapter function
@@ -175,7 +175,9 @@ std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapt
 	AdapterComPtr adapter = nullptr;
 	for (int i = 0; ProceedNextAdapter(i, adapter) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
-		adapterLists.emplace_back(std::make_shared<RHIDisplayAdapter>(shared_from_this(), adapter));
+		const auto thisInstance = SharedFromThis();
+		const auto rhiAdapter = gu::MakeShared<RHIDisplayAdapter>(thisInstance, adapter);
+		adapterLists.emplace_back(rhiAdapter);
 		adapter.Reset(); // memory leakに対処
 	}
 
@@ -195,7 +197,7 @@ std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapt
 *****************************************************************************/
 void RHIInstance::LogAdapters()
 {
-	auto adapterList = EnumrateAdapters();
+	auto& adapterList = EnumrateAdapters();
 	for (auto& adapter : adapterList)
 	{
 		adapter->PrintInfo();

@@ -137,15 +137,15 @@ namespace
 
 #pragma region Constructor and Destructor
 RHISwapchain::RHISwapchain(
-	const std::shared_ptr<rhi::core::RHIDevice>& device, 
-	const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue, 
+	const gu::SharedPointer<rhi::core::RHIDevice>& device, 
+	const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue, 
 	const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat,
 	const size_t frameBufferCount, std::uint32_t vsync, bool isValidHDR) : rhi::core::RHISwapchain(device, commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
 {
 	SetUp();
 }
 
-RHISwapchain::RHISwapchain(const std::shared_ptr<core::RHIDevice>& device, const core::SwapchainDesc& desc)
+RHISwapchain::RHISwapchain(const gu::SharedPointer<core::RHIDevice>& device, const core::SwapchainDesc& desc)
 	: rhi::core::RHISwapchain(device, desc.CommandQueue, desc.WindowInfo, desc.PixelFormat, desc.FrameBufferCount, desc.VSync, desc.IsValidHDR)
 {
 	SetUp();
@@ -153,8 +153,8 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<core::RHIDevice>& device, const
 
 RHISwapchain::~RHISwapchain()
 {
-	const auto vkDevice  = std::static_pointer_cast<vulkan::RHIDevice>(_device);
-	const auto vkAdapter = std::static_pointer_cast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
+	const auto vkDevice  = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
+	const auto vkAdapter = gu::StaticPointerCast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
 	_vkImages.clear(); _vkImages.shrink_to_fit();
 	if (_renderingFinishedSemaphore) 
 	{ 
@@ -189,8 +189,8 @@ RHISwapchain::~RHISwapchain()
 *****************************************************************************/
 void RHISwapchain::SetUp()
 {
-	const auto vkDevice   = std::static_pointer_cast<vulkan::RHIDevice>(_device);
-	const auto vkAdapter  = std::static_pointer_cast<vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
+	const auto vkDevice   = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
+	const auto vkAdapter  = gu::StaticPointerCast<vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
 	const auto vkInstance = static_cast<vulkan::RHIInstance*>(vkAdapter->GetInstance());
 	
 	/*-------------------------------------------------------------------
@@ -242,16 +242,16 @@ void RHISwapchain::SetUp()
 /****************************************************************************
 *							PrepareNextImage
 *************************************************************************//**
-*  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
+*  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
 *  @brief     When NextImage is ready, Signal is issued and the next frame Index is returned.
-*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *  @param[in] std::uint64_t signalValue (Normally : ++fenceValueを代入)
 *  @return 　　std::uint32_t back buffer index
 *****************************************************************************/
-std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
+std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
 {
-	const auto vkFence  = std::static_pointer_cast<vulkan::RHIFence>(fence);
-	const auto vkQueue  = std::static_pointer_cast<vulkan::RHICommandQueue>(_desc.CommandQueue);
+	const auto vkFence  = gu::StaticPointerCast<vulkan::RHIFence>(fence);
+	const auto vkQueue  = gu::StaticPointerCast<vulkan::RHICommandQueue>(_desc.CommandQueue);
 	UpdateCurrentFrameIndex();
 
 	/*-------------------------------------------------------------------
@@ -294,14 +294,14 @@ std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFenc
 *************************************************************************//**
 *  @fn        void RHISwapchain::Present()
 *  @brief     Display front buffer
-*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *  @param[in] std::uint64_t waitValue
 *  @return 　　void
 *****************************************************************************/
-void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t waitValue)
+void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t waitValue)
 {
-	const auto vkFence = std::static_pointer_cast<vulkan::RHIFence>(fence);
-	const auto vkQueue = std::static_pointer_cast<vulkan::RHICommandQueue>(_desc.CommandQueue);
+	const auto vkFence = gu::StaticPointerCast<vulkan::RHIFence>(fence);
+	const auto vkQueue = gu::StaticPointerCast<vulkan::RHICommandQueue>(_desc.CommandQueue);
 
 	/*-------------------------------------------------------------------
 	-          Set up timeline semaphore submit info
@@ -385,8 +385,8 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-         Destroy swapchain and present semaphore
 	---------------------------------------------------------------------*/
-	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device).get()->GetDevice();
-	for (auto& buffer : _backBuffers) { buffer.reset(); }
+	const auto vkDevice = gu::StaticPointerCast<rhi::vulkan::RHIDevice>(_device).Get()->GetDevice();
+	for (auto& buffer : _backBuffers) { buffer.Reset(); }
 	vkDestroySwapchainKHR(vkDevice, _swapchain, nullptr);
 	vkDestroySemaphore(vkDevice, _imageAvailableSemaphore, nullptr);
 	vkDestroySemaphore(vkDevice, _renderingFinishedSemaphore, nullptr);
@@ -419,8 +419,8 @@ size_t RHISwapchain::GetCurrentBufferIndex() const
 *****************************************************************************/
 void RHISwapchain::InitializeSwapchain()
 {
-	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device);
-	const auto vkAdapter = std::static_pointer_cast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
+	const auto vkDevice = gu::StaticPointerCast<rhi::vulkan::RHIDevice>(_device);
+	const auto vkAdapter = gu::StaticPointerCast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
 
 	/*-------------------------------------------------------------------
 	-               Acquire Surface infomation
@@ -511,7 +511,7 @@ void RHISwapchain::InitializeSwapchain()
 
 		info.State = core::ResourceState::Common;
 
-		_backBuffers[index] = std::make_shared<vulkan::GPUTexture>(_device, info, _vkImages[index]);
+		_backBuffers[index] = gu::MakeShared<vulkan::GPUTexture>(_device, info, _vkImages[index]);
 	}
 
 	// もしかしたらここにCommandListのClose処理が入るかも.
@@ -539,12 +539,12 @@ void RHISwapchain::InitializeSwapchain()
 *****************************************************************************/
 void RHISwapchain::UpdateCurrentFrameIndex()
 {
-	const auto vkDevice       = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device);
+	const auto vkDevice       = gu::StaticPointerCast<rhi::vulkan::RHIDevice>(_device);
 	
 	/*-------------------------------------------------------------------
 	-               Get next frame buffer index
 	---------------------------------------------------------------------*/
-	auto result = vkAcquireNextImageKHR(vkDevice.get()->GetDevice(), _swapchain, UINT64_MAX, _imageAvailableSemaphore, VK_NULL_HANDLE, &_currentBufferIndex);
+	auto result = vkAcquireNextImageKHR(vkDevice.Get()->GetDevice(), _swapchain, UINT64_MAX, _imageAvailableSemaphore, VK_NULL_HANDLE, &_currentBufferIndex);
 	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
 		throw std::runtime_error("failed to go to next frame");
@@ -565,7 +565,7 @@ void RHISwapchain::UpdateCurrentFrameIndex()
 *****************************************************************************/
 VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& formats)
 {
-	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device);
+	const auto vkDevice = gu::StaticPointerCast<rhi::vulkan::RHIDevice>(_device);
 
 	for (const auto& format : formats)
 	{

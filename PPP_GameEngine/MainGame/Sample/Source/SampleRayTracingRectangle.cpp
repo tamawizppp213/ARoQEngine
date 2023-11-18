@@ -99,10 +99,10 @@ void SampleRayTracingRectangle::Draw()
 *****************************************************************************/
 void SampleRayTracingRectangle::Terminate()
 {
-	if (_resourceLayout) { _resourceLayout.reset(); }
-	if (_pipelineState) { _pipelineState.reset(); }
-	if (_indexBuffer ) { _indexBuffer.reset(); }
-	if (_vertexBuffer) { _vertexBuffer.reset(); }
+	if (_resourceLayout) { _resourceLayout.Reset(); }
+	if (_pipelineState) { _pipelineState.Reset(); }
+	if (_indexBuffer ) { _indexBuffer.Reset(); }
+	if (_vertexBuffer) { _vertexBuffer.Reset(); }
 }
 #pragma endregion Public Function
 

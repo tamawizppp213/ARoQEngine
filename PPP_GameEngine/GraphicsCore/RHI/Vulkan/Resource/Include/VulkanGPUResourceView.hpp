@@ -35,7 +35,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index, const std::shared_ptr<core::RHIResourceLayout>& layout = nullptr) override;
+		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index, const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -51,9 +51,9 @@ namespace rhi::vulkan
 		
 		~GPUResourceView();
 		
-		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
+		explicit GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr);
 		
-		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
+		explicit GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr);
 	private:
 		/****************************************************************************
 		**                Private Function
@@ -62,7 +62,7 @@ namespace rhi::vulkan
 		void CreateImageView();
 		void CreateBufferView();
 
-		const std::shared_ptr<vulkan::RHIDescriptorHeap> SelectDescriptorHeap(const core::ResourceViewType type);
+		const gu::SharedPointer<vulkan::RHIDescriptorHeap> SelectDescriptorHeap(const core::ResourceViewType type);
 
 		VkImageAspectFlags GetImageAspectFlags(const VkFormat format);
 		/****************************************************************************

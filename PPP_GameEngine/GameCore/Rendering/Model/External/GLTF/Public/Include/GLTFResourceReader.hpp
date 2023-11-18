@@ -83,7 +83,7 @@ namespace gltf
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GLTFResourceReader(std::shared_ptr<const detail::IStreamReader> streamReader) : GLTFResourceReader(detail::MakeStreamReaderCache <detail::StreamReaderCacheLRU>(std::move(streamReader), 16U)){}
+		GLTFResourceReader(std::shared_ptr<const detail::IStreamReader> streamReader) : GLTFResourceReader(detail::MakeStreamReaderCache<detail::StreamReaderCacheLRU>(std::move(streamReader), 16U)){}
 		GLTFResourceReader(std::unique_ptr<detail::IStreamReaderCache> streamCache) : _streamReaderCache(std::move(streamCache)){}
 		GLTFResourceReader(GLTFResourceReader&&) = default;
 		virtual ~GLTFResourceReader() = default;
@@ -207,7 +207,7 @@ namespace gltf
 		**                Constructor and Destructor
 		*****************************************************************************/
 		GLBResourceReader(std::shared_ptr<const detail::IStreamReader> streamReader, std::shared_ptr<std::istream> glbStream);
-		GLBResourceReader(std::unique_ptr<detail::IStreamReaderCache>  streamCache , std::shared_ptr<std::istream> glbStream);
+		GLBResourceReader(std::unique_ptr<detail::IStreamReaderCache>  streamCache, std::shared_ptr<std::istream> glbStream);
 	private:
 		/****************************************************************************
 		**                Private Function

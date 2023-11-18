@@ -25,10 +25,10 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIMemory::RHIMemory(const std::shared_ptr<core::RHIDevice>& device, const core::MemoryHeap heapType, const std::uint64_t memorySize, std::uint32_t memoryTypeBits)
+RHIMemory::RHIMemory(const gu::SharedPointer<core::RHIDevice>& device, const core::MemoryHeap heapType, const std::uint64_t memorySize, std::uint32_t memoryTypeBits)
 	: core::RHIMemory(device, heapType, memorySize)
 {
-	const auto dxDevice = std::static_pointer_cast<directX12::RHIDevice>(device)->GetDevice();
+	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(device)->GetDevice();
 	const D3D12_HEAP_DESC desc =
 	{
 		.SizeInBytes = memorySize,

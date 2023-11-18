@@ -29,13 +29,13 @@ RHIResourceLayout::~RHIResourceLayout()
 {
 	if (_rootSignature) { _rootSignature.Reset(); }
 }
-RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
 	: core::RHIResourceLayout(device, elements, samplers, constant32Bits)
 {
 	SetUp();
 	SetName(name);
 }
-RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
 	: core::RHIResourceLayout(device, element, sampler, constant32Bits)
 {
 	SetUp();
@@ -56,7 +56,7 @@ RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& dev
 *****************************************************************************/
 void RHIResourceLayout::SetUp()
 {
-	DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
+	DeviceComPtr dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
 
 	std::vector<D3D12_DESCRIPTOR_RANGE>    ranges(_elements.size());
 	std::vector<D3D12_SHADER_VISIBILITY>   visibilities(_elements.size());
@@ -80,7 +80,7 @@ void RHIResourceLayout::SetUp()
 	---------------------------------------------------------------------*/
 	for (auto& sampler : _samplers)
 	{
-		auto& samplerInfo = static_cast<rhi::directX12::GPUSampler*>(sampler.Sampler.get())->GetSamplerDesc();
+		auto& samplerInfo = static_cast<rhi::directX12::GPUSampler*>(sampler.Sampler.Get())->GetSamplerDesc();
 		samplerInfo.ShaderVisibility = EnumConverter::Convert(sampler.Visibility);
 		samplerInfo.ShaderRegister   = static_cast<UINT>(sampler.Binding);
 		samplerInfo.RegisterSpace    = static_cast<UINT>(sampler.RegisterSpace);

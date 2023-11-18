@@ -18,17 +18,17 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-RayTracingGeometry::RayTracingGeometry(const std::shared_ptr<RHIDevice>& device,
+RayTracingGeometry::RayTracingGeometry(const gu::SharedPointer<RHIDevice>& device,
 	const RayTracingGeometryFlags flags,
-	const std::shared_ptr<GPUBuffer>& vertexBuffer,
-	const std::shared_ptr<GPUBuffer>& indexBuffer)
+	const gu::SharedPointer<GPUBuffer>& vertexBuffer,
+	const gu::SharedPointer<GPUBuffer>& indexBuffer)
 	: _device(device), _geometryFlags(flags), _vertexBuffer(vertexBuffer), _indexBuffer(indexBuffer)
 {
 	if (vertexBuffer->GetBufferType() != BufferType::Vertex)
 	{
 		throw std::runtime_error("Different buffer type (vertex buffer). Please set vertex buffer");
 	}
-	if (indexBuffer != nullptr)
+	if (indexBuffer)
 	{
 		if (indexBuffer->GetBufferType() != BufferType::Index)
 		{

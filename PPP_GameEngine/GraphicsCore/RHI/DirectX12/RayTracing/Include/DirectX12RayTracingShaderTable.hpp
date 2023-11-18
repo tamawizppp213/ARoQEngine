@@ -43,7 +43,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		RayTracingShaderTable(const std::shared_ptr<rhi::core::RHIDevice>& device);
+		RayTracingShaderTable(const gu::SharedPointer<rhi::core::RHIDevice>& device);
 
 	protected:
 		/****************************************************************************

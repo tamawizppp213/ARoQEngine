@@ -37,10 +37,10 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
-		std::uint32_t PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue) override;
+		std::uint32_t PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue) override;
 		
 		/* @brief : Display front buffer */
-		void Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue) override ;
+		void Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue) override ;
 		
 		/* @brief : Resize screen size. Rebuild everything once and update again.*/
 		void Resize(const size_t width, const size_t height) override ;
@@ -63,15 +63,15 @@ namespace rhi::directX12
 		~RHISwapchain();
 		
 		explicit RHISwapchain(
-			const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
+			const gu::SharedPointer<rhi::core::RHIDevice>& device,
+			const gu::SharedPointer<rhi::core::RHICommandQueue>& queue,
 			const rhi::core::WindowInfo& windowInfo,
 			const rhi::core::PixelFormat& piexlFormat,
 			const size_t frameBufferCount = 3, const std::uint32_t vsync = 0,
 			const bool isValidHDR = true);
 
 		explicit RHISwapchain(
-			const std::shared_ptr<rhi::core::RHIDevice>& device,
+			const gu::SharedPointer<rhi::core::RHIDevice>& device,
 			const core::SwapchainDesc& desc);
 	protected:
 		/****************************************************************************

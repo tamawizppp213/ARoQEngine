@@ -337,17 +337,22 @@ void LowLevelGraphicsEngine::ShutDown()
 	/*-------------------------------------------------------------------
 	-      Clear render resouces
 	---------------------------------------------------------------------*/
-	if (_swapchain) { _swapchain.reset(); }
+	if (_swapchain) { _swapchain.Reset(); }
 	
+	for (auto& frameBuffer : _frameBuffers)
+	{
+		frameBuffer->Dispose();
+		frameBuffer.Reset();
+	}
 	_frameBuffers.clear(); 
 	_frameBuffers.shrink_to_fit();
 
-	if (_renderPass) { _renderPass.reset(); }
+	if (_renderPass) { _renderPass.Reset(); }
 
 	/*-------------------------------------------------------------------
 	-      Clear command list
 	---------------------------------------------------------------------*/
-	if (_fence) { _fence.reset(); }
+	if (_fence) { _fence.Reset(); }
 	
 	_commandLists.clear(); 
 
@@ -357,9 +362,9 @@ void LowLevelGraphicsEngine::ShutDown()
 	-      Clear Device resources
 	---------------------------------------------------------------------*/
 	_device->Destroy();
-	if (_device)    { _device.reset(); }
-	if (_adapter)   { _adapter.reset(); }
-	if (_instance)  { _instance.reset(); }
+	if (_device)    { _device.Reset(); }
+	if (_adapter)   { _adapter.Reset(); }
+	if (_instance)  { _instance.Reset(); }
 
 	_hasCalledShutDown = true;
 }
@@ -394,6 +399,7 @@ void LowLevelGraphicsEngine::SetUpHeap()
 
 void LowLevelGraphicsEngine::SetUpFence()
 {
+	if (_fence) { _fence.Reset(); }
 	_fence = _device->CreateFence();
 	_fenceValue = 0;
 }
@@ -467,6 +473,7 @@ void LowLevelGraphicsEngine::SetFrameBuffers(const int width, const int height, 
 		/*-------------------------------------------------------------------
 		-      Create Frame Buffer
 		---------------------------------------------------------------------*/
+		if (_frameBuffers[i]) { _frameBuffers[i].Reset(); }
 		_frameBuffers[i] = _device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
 	}
 }

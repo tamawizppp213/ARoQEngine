@@ -36,7 +36,7 @@ namespace gc::core
 	class GameActor : public GameObject
 	{
 	protected:
-		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
+		using GPUResourceViewPtr = gu::SharedPointer<rhi::core::GPUResourceView>;
 
 	public:
 		/****************************************************************************

@@ -41,11 +41,11 @@ namespace gc
 	*****************************************************************************/
 	class Bloom : public NonCopyable
 	{
-		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using PipelineStatePtr = std::shared_ptr<rhi::core::GPUComputePipelineState>;
-		using GaussianBlurPtr = std::shared_ptr<GaussianBlur>;
-		using ResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using ResourceLayoutPtr = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using PipelineStatePtr = gu::SharedPointer<rhi::core::GPUComputePipelineState>;
+		using GaussianBlurPtr = gu::SharedPointer<GaussianBlur>;
+		using ResourceViewPtr = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
 		**                Public Function

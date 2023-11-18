@@ -159,13 +159,13 @@ void SampleURP::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Camera
 	---------------------------------------------------------------------*/
-	_camera = std::make_shared<Camera>(_engine);
+	_camera = gu::MakeShared<Camera>(_engine);
 	_camera->SetPosition(0.0f, 10.0f, -20.0f);
 
 	/*-------------------------------------------------------------------
 	-           Skybox
 	---------------------------------------------------------------------*/
-	_skybox = std::make_shared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
+	_skybox = gu::MakeShared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
 	
 	/*-------------------------------------------------------------------
 	-           Model
@@ -177,7 +177,7 @@ void SampleURP::LoadMaterials()
 	PBRMaterial pbrMaterial = {};
 	pbrMaterial.Diffuse = gm::Float4(1.0f, 1.0f, 1.0f, 1);
 	pbrMaterial.Roughness = 1.0f;
-	const auto material = std::make_shared<Material>(_engine, GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1));
+	const auto material = gu::MakeShared<Material>(_engine, GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1));
 	material->PackMaterial(&pbrMaterial);
 
 	_floor = GameObject::Create<GameModel>(_engine);
@@ -187,7 +187,7 @@ void SampleURP::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Universal Rendering Pipeline
 	---------------------------------------------------------------------*/
-	_renderer = std::make_shared<gc::URP>(_engine, _gameTimer);
+	_renderer = gu::MakeShared<gc::URP>(_engine, _gameTimer);
 	_renderer->SetSceneView(_camera->GetResourceView());
 	_renderer->Add(Forward, _model);
 	_renderer->Add(Forward, _floor);

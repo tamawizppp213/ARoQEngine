@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -42,11 +42,11 @@ namespace gc
 	class IRenderPipeline : public NonCopyable
 	{
 	protected:
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
-		using ResourceLayoutPtr         = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using PipelineStatePtr          = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using GameModelPtr              = std::shared_ptr<gc::core::GameModel>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+		using GameModelPtr              = gu::SharedPointer<gc::core::GameModel>;
 	
 	public:
 		/****************************************************************************

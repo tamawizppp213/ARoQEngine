@@ -36,7 +36,8 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		
+		void Dispose() override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -59,9 +60,9 @@ namespace rhi::directX12
 
 		~RHIFrameBuffer();
 
-		explicit RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass,  const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil);
+		explicit RHIFrameBuffer(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass,  const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil);
 		
-		explicit RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>&renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil);
+		explicit RHIFrameBuffer(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>&renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil);
 	
 	protected:
 		/****************************************************************************
@@ -71,8 +72,8 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<directX12::RHIDescriptorHeap> _renderTargetHeap = nullptr;
-		std::shared_ptr<directX12::RHIDescriptorHeap> _depthStencilHeap = nullptr;
+		gu::SharedPointer<directX12::RHIDescriptorHeap> _renderTargetHeap = nullptr;
+		gu::SharedPointer<directX12::RHIDescriptorHeap> _depthStencilHeap = nullptr;
 		size_t _rtvSize = 0;
 		size_t _dsvSize = 0;
 	private: 

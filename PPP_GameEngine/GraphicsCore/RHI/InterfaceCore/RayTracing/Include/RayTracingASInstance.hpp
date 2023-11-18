@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		std::shared_ptr<BLASBuffer> GetBLASBuffer() const noexcept { return _blasBuffer; }
+		gu::SharedPointer<BLASBuffer> GetBLASBuffer() const noexcept { return _blasBuffer; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -54,8 +54,8 @@ namespace rhi::core
 		*****************************************************************************/
 		ASInstance() = default;
 		~ASInstance() = default;
-		ASInstance(const std::shared_ptr<RHIDevice>& device,
-			const std::shared_ptr<BLASBuffer>& blasBuffer,
+		ASInstance(const gu::SharedPointer<RHIDevice>& device,
+			const gu::SharedPointer<BLASBuffer>& blasBuffer,
 			const gm::Float3x4& blasTransform,
 			const std::uint32_t instanceID, 
 			const std::uint32_t instanceContributionToHitGroupIndex,
@@ -66,8 +66,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<BLASBuffer> _blasBuffer = nullptr;
-		std::shared_ptr<RHIDevice> _device      = nullptr;
+		gu::SharedPointer<BLASBuffer> _blasBuffer = nullptr;
+		gu::SharedPointer<RHIDevice> _device      = nullptr;
 	};
 }
 #endif

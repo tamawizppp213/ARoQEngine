@@ -26,7 +26,7 @@ using namespace rhi;
 RHIResourceLayout::~RHIResourceLayout()
 {
 	VkDevice vkDevice = nullptr;
-	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 
 	vkDestroyPipelineLayout(vkDevice, _pipelineLayout, nullptr);
 	for (auto& setLayout : _descriptorSetLayouts)
@@ -35,14 +35,14 @@ RHIResourceLayout::~RHIResourceLayout()
 	}
 }
 
-RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constants, const std::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constants, const std::wstring& name)
 	:core::RHIResourceLayout(device, elements, samplers, constants)
 {
 	SetUp();
 	SetName(name);
 }
 
-RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant, const std::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant, const std::wstring& name)
 	: core::RHIResourceLayout(device, element, sampler, constant)
 {
 	SetUp();
@@ -62,7 +62,7 @@ RHIResourceLayout::RHIResourceLayout(const std::shared_ptr<core::RHIDevice>& dev
 void RHIResourceLayout::SetUp()
 {
 	VkDevice vkDevice = nullptr;
-	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-                 Find the max register space
@@ -100,7 +100,7 @@ void RHIResourceLayout::SetUp()
 			.descriptorType     = VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLER,
 			.descriptorCount    = 1,
 			.stageFlags         = VkShaderStageFlags(EnumConverter::Convert(sampler.Visibility)),
-			.pImmutableSamplers = &std::static_pointer_cast<vulkan::GPUSampler>(sampler.Sampler)->GetSampler()
+			.pImmutableSamplers = &gu::StaticPointerCast<vulkan::GPUSampler>(sampler.Sampler)->GetSampler()
 		};
 		
 
@@ -159,7 +159,7 @@ void RHIResourceLayout::SetUp()
 
 void RHIResourceLayout::SetName(const std::wstring& name)
 {
-	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_PIPELINE_LAYOUT, reinterpret_cast<std::uint64_t>(_pipelineLayout));
 }
 #pragma endregion SetUp Function

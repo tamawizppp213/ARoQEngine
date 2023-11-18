@@ -48,13 +48,13 @@ GaussianBlur::~GaussianBlur()
 {
 	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
 	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
-	_computePipeline.reset();
-	_xBlur.Pipeline.reset();
-	_yBlur.Pipeline.reset();
-	for (auto& u : _unorderedResourceViews) { u.reset(); }
-	for (auto& s : _shaderResourceViews   ) { s.reset(); }
-	_textureSizeView.reset();
-	_blurParameterView.reset();
+	_computePipeline.Reset();
+	_xBlur.Pipeline.Reset();
+	_yBlur.Pipeline.Reset();
+	for (auto& u : _unorderedResourceViews) { u.Reset(); }
+	for (auto& s : _shaderResourceViews   ) { s.Reset(); }
+	_textureSizeView.Reset();
+	_blurParameterView.Reset();
 }
 GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS, const std::wstring& addName)
 	: _engine(engine), _useCS(useCS)

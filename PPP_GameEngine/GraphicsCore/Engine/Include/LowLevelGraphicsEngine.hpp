@@ -46,11 +46,11 @@ namespace rhi::core
 class LowLevelGraphicsEngine final : public NonCopyable
 {
 protected:
-	using InstancePtr    = std::shared_ptr<rhi::core::RHIInstance>;
-	using AdapterPtr     = std::shared_ptr<rhi::core::RHIDisplayAdapter>;
-	using DevicePtr      = std::shared_ptr<rhi::core::RHIDevice>;
-	using CommandListPtr = std::shared_ptr<rhi::core::RHICommandList>;
-	using CommandQueuePtr = std::shared_ptr<rhi::core::RHICommandQueue>;
+	using InstancePtr    = gu::SharedPointer<rhi::core::RHIInstance>;
+	using AdapterPtr     = gu::SharedPointer<rhi::core::RHIDisplayAdapter>;
+	using DevicePtr      = gu::SharedPointer<rhi::core::RHIDevice>;
+	using CommandListPtr = gu::SharedPointer<rhi::core::RHICommandList>;
+	using CommandQueuePtr = gu::SharedPointer<rhi::core::RHICommandQueue>;
 
 public:
 	/****************************************************************************
@@ -99,20 +99,20 @@ public:
 	CommandQueuePtr GetCommandQueue(const rhi::core::CommandListType type) const noexcept { return _commandQueues.at(type); }
 
 	/* @brief : Default RenderPass*/
-	std::shared_ptr<rhi::core::RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
+	gu::SharedPointer<rhi::core::RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
 
 	/* @brief : Non clear render pass*/
-	std::shared_ptr<rhi::core::RHIRenderPass> GetDrawContinueRenderPass() const noexcept { return _drawContinueRenderPass; }
+	gu::SharedPointer<rhi::core::RHIRenderPass> GetDrawContinueRenderPass() const noexcept { return _drawContinueRenderPass; }
 
 	/* @brief : Frame buffer*/
-	std::shared_ptr<rhi::core::RHIFrameBuffer> GetFrameBuffer(const std::uint32_t frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
+	gu::SharedPointer<rhi::core::RHIFrameBuffer> GetFrameBuffer(const std::uint32_t frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
 
 	/* @brief : Return Current Frame Index*/
 	std::uint32_t   GetCurrentFrameIndex() const { return _currentFrameIndex; }
 
 	rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
 
-	std::shared_ptr<rhi::core::RHISwapchain> GetSwapchain() const noexcept { return _swapchain; }
+	gu::SharedPointer<rhi::core::RHISwapchain> GetSwapchain() const noexcept { return _swapchain; }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -147,22 +147,22 @@ protected:
 	DevicePtr  _device = nullptr;
 
 	/* @ brief : Command queue (graphics, compute, transfer)*/
-	std::map<rhi::core::CommandListType, std::shared_ptr<rhi::core::RHICommandQueue>> _commandQueues;
+	std::map<rhi::core::CommandListType, gu::SharedPointer<rhi::core::RHICommandQueue>> _commandQueues;
 
 	/* @brief : Command List*/
 	std::map<rhi::core::CommandListType, CommandListPtr> _commandLists;
 
 	/* @ brief : CPU-GPU synchronization*/
-	std::shared_ptr<rhi::core::RHIFence> _fence = nullptr;
+	gu::SharedPointer<rhi::core::RHIFence> _fence = nullptr;
 	std::uint64_t _fenceValue = 0;  // current frame fence value
 	
 	/* @brief : Rendering swapchain*/
-	std::shared_ptr<rhi::core::RHISwapchain> _swapchain = nullptr;
+	gu::SharedPointer<rhi::core::RHISwapchain> _swapchain = nullptr;
 	
 	/* @brief : Default rendering pass*/
-	std::shared_ptr<rhi::core::RHIRenderPass> _renderPass = { nullptr }; 
-	std::shared_ptr<rhi::core::RHIRenderPass> _drawContinueRenderPass = nullptr;
-	std::vector<std::shared_ptr<rhi::core::RHIFrameBuffer>> _frameBuffers = { nullptr };
+	gu::SharedPointer<rhi::core::RHIRenderPass> _renderPass = { nullptr }; 
+	gu::SharedPointer<rhi::core::RHIRenderPass> _drawContinueRenderPass = nullptr;
+	std::vector<gu::SharedPointer<rhi::core::RHIFrameBuffer>> _frameBuffers = { nullptr };
 	
 	/* @brief : current frame index*/
 	std::uint32_t _currentFrameIndex = 0;

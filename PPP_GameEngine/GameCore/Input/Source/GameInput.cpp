@@ -23,9 +23,9 @@ bool GameInput::Initialize(void* hInstance, void* hwnd)
 {
 	bool result = true;
 
-	_keyboard = std::make_shared<Keyboard>();
-	_mouse    = std::make_shared<Mouse>();
-	_gamePad  = std::make_shared<GamePad>();
+	_keyboard = gu::MakeShared<Keyboard>();
+	_mouse    = gu::MakeShared<Mouse>();
+	_gamePad  = gu::MakeShared<GamePad>();
 
 	result = DInputInitialize((HINSTANCE)hInstance);
 	result = _keyboard->Initialize(_dInput, (HINSTANCE)hInstance, (HWND)hwnd);

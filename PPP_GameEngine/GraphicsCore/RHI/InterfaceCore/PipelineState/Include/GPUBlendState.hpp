@@ -62,9 +62,9 @@ namespace rhi::core
 
 		virtual ~GPUBlendState();
 
-		explicit GPUBlendState(const std::shared_ptr<RHIDevice>& device, const std::vector<BlendProperty>& properties) : GPUState(device), _blendProperties(properties), _isIndependentBlendEnable(true) {};
+		explicit GPUBlendState(const gu::SharedPointer<RHIDevice>& device, const std::vector<BlendProperty>& properties) : GPUState(device), _blendProperties(properties), _isIndependentBlendEnable(true) {};
 		
-		explicit GPUBlendState(const std::shared_ptr<RHIDevice>& device, const BlendProperty& blendProperty) : GPUState(device)
+		explicit GPUBlendState(const gu::SharedPointer<RHIDevice>& device, const BlendProperty& blendProperty) : GPUState(device)
 		{
 			_blendProperties.push_back(blendProperty);
 			_isIndependentBlendEnable = false;

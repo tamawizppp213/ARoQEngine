@@ -47,12 +47,12 @@ protected:
 	using PlatformApplicationPtr    = gu::SharedPointer<platform::core::PlatformApplication>;
 	using CoreWindowPtr             = gu::SharedPointer<platform::core::CoreWindow>;
 	using PlatformCommandPtr        = gu::SharedPointer<platform::core::PlatformCommand>;
-	using EngineThreadManagerPtr    = std::shared_ptr<engine::core::EngineThreadManager>;
-	using GameTimerPtr              = std::shared_ptr<GameTimer>;
-	using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-	using RenderPipelinePtr         = std::shared_ptr<gc::IRenderPipeline>;
-	using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
-	using CameraPtr                 = std::shared_ptr<gc::Camera>;
+	using EngineThreadManagerPtr    = gu::SharedPointer<engine::core::EngineThreadManager>;
+	using GameTimerPtr              = gu::SharedPointer<GameTimer>;
+	using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+	using RenderPipelinePtr         = gu::SharedPointer<gc::IRenderPipeline>;
+	using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
+	using CameraPtr                 = gu::SharedPointer<gc::Camera>;
 public:
 	/****************************************************************************
 	**                Public Function

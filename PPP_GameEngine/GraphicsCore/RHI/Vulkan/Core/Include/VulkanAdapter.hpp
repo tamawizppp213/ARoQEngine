@@ -29,7 +29,7 @@ namespace rhi::vulkan
 	*  @class     RHIAdapter
 	*  @brief     Physical Device (Adapter)  Describe gpu information
 	*****************************************************************************/
-	class RHIDisplayAdapter : public rhi::core::RHIDisplayAdapter
+	class RHIDisplayAdapter : public rhi::core::RHIDisplayAdapter, public gu::EnableSharedFromThis<RHIDisplayAdapter>
 	{
 	public:
 		struct PhysicalDeviceInfo
@@ -56,7 +56,7 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		/* return logical device shared pointer. frame count is used for the command allocators*/
-		std::shared_ptr<core::RHIDevice> CreateDevice() override;
+		gu::SharedPointer<core::RHIDevice> CreateDevice() override;
 		
 		/* Describe physical device name and spec(future work) */
 		void PrintInfo() override; 
@@ -100,7 +100,7 @@ namespace rhi::vulkan
 		
 		~RHIDisplayAdapter();
 		
-		RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const VkPhysicalDevice physicalDevice);
+		RHIDisplayAdapter(const gu::SharedPointer<core::RHIInstance>& instance, const VkPhysicalDevice physicalDevice);
 	
 	protected:
 		/****************************************************************************

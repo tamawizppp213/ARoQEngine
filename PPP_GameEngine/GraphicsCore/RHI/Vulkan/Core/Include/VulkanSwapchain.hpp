@@ -41,10 +41,10 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
-		std::uint32_t PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue) override;
+		std::uint32_t PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue) override;
 		
 		/* @brief : Display front buffer*/
-		void Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue) override ;
+		void Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue) override ;
 		
 		/* @brief : Resize screen size. Rebuild everything once and update again.*/
 		void Resize(const size_t width, const size_t height) override ;
@@ -64,13 +64,13 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		RHISwapchain() = default;
 
-		explicit RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device,
-			const std::shared_ptr<rhi::core::RHICommandQueue>& commandQueue,
+		explicit RHISwapchain(const gu::SharedPointer<rhi::core::RHIDevice>& device,
+			const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue,
 			const core::WindowInfo& windowInfo,
 			const core::PixelFormat& pixelFormat,
 			const size_t frameBufferCount = 3,std::uint32_t vsync = 0, bool isValidHDR = true);
 
-		explicit RHISwapchain(const std::shared_ptr<core::RHIDevice>& device,
+		explicit RHISwapchain(const gu::SharedPointer<core::RHIDevice>& device,
 			const core::SwapchainDesc& desc);
 
 		~RHISwapchain();

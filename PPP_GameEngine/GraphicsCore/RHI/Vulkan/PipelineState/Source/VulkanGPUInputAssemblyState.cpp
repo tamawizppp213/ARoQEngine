@@ -20,7 +20,7 @@ using namespace rhi::vulkan;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 rhi::vulkan::GPUInputAssemblyState::GPUInputAssemblyState(
-	const std::shared_ptr<core::RHIDevice>& device,
+	const gu::SharedPointer<core::RHIDevice>& device,
 	const std::vector<core::InputLayoutElement>& elements,
 	const core::PrimitiveTopology primitiveTopology
 ) : core::GPUInputAssemblyState(device, elements, primitiveTopology)

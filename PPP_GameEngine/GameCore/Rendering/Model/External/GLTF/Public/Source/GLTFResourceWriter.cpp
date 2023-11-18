@@ -35,7 +35,7 @@ namespace
 }
 #pragma region GLTFResourceWriter
 GLTFResourceWriter::GLTFResourceWriter(std::shared_ptr<const detail::IStreamWriter> streamWriter)
-	: GLTFResourceWriter(detail::MakeStreamWriterCache<StreamWriterCacheLRU>(std::move(streamWriter), 16U))
+	: GLTFResourceWriter(detail::MakeStreamWriterCache<StreamWriterCacheLRU>(streamWriter, 16U))
 {
 
 }
@@ -74,17 +74,17 @@ GLBResourceWriter::GLBResourceWriter(std::shared_ptr<const detail::IStreamWriter
 
 }
 GLBResourceWriter::GLBResourceWriter(std::shared_ptr<const detail::IStreamWriter> streamWriter, std::unique_ptr<std::iostream> tempBufferStream)
-	: GLTFResourceWriter(std::move(streamWriter)), _stream(std::move(tempBufferStream))
+    : GLTFResourceWriter(std::move(streamWriter)), _stream(std::move(tempBufferStream))
 {
 
 }
 GLBResourceWriter::GLBResourceWriter(std::unique_ptr<detail::IStreamWriterCache> streamCache)
-	: GLBResourceWriter(std::move(streamCache), std::make_unique<std::stringstream>())
+    : GLBResourceWriter(std::move(streamCache), std::make_unique<std::stringstream>())
 {
 
 }
 GLBResourceWriter::GLBResourceWriter(std::unique_ptr<detail::IStreamWriterCache> streamCache, std::unique_ptr<std::iostream> tempBufferStream)
-	: GLTFResourceWriter(std::move(streamCache)), _stream(std::move(tempBufferStream))
+    : GLTFResourceWriter(std::move(streamCache)), _stream(std::move(tempBufferStream))
 {
 
 }

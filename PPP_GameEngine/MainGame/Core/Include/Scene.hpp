@@ -31,7 +31,7 @@
 class Scene
 {
 protected:
-	using GameTimerPtr = std::shared_ptr<GameTimer>;
+	using GameTimerPtr = gu::SharedPointer<GameTimer>;
 	using PPPEnginePtr = gu::SharedPointer<PPPEngine>;
 public:
 	/****************************************************************************
@@ -63,7 +63,7 @@ protected:
 	**                Protected Member Variables
 	*****************************************************************************/
 	PPPEnginePtr _pppEngine = nullptr;
-	std::shared_ptr<LowLevelGraphicsEngine> _engine;
+	gu::SharedPointer<LowLevelGraphicsEngine> _engine;
 
 	// @brief: keyboard + mouse + gamePad manager
 	GameInput& _gameInput = GameInput::Instance();

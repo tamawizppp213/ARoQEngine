@@ -36,10 +36,10 @@ namespace sample
 	*****************************************************************************/
 	class SampleRectangle : public Scene
 	{
-		using VertexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		using VertexBufferPtr   = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using IndexBufferPtr    = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using ResourceLayoutPtr = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using PipelineStatePtr  = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
 	public:
 		/****************************************************************************
 		**                Public Function

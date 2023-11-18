@@ -61,7 +61,7 @@ void PlatformCommand::PutDebugBreak() const
 gu::UUID PlatformCommand::IssueUUID()
 {
 	gu::UUID uuid(0, 0, 0, 0);
-	Verifyf(CoCreateGuid((GUID*)&uuid) == S_OK, "failed to create uuid");
+	Confirmf(CoCreateGuid((GUID*)&uuid) == S_OK, "failed to create uuid");
 	return uuid;
 }
 #pragma endregion Main Function

@@ -35,7 +35,7 @@ class SceneManager
 {
 	using SceneUniquePtr = std::unique_ptr<Scene>;
 	using ScenePtr       = Scene*;
-	using GameTimerPtr   = std::shared_ptr<GameTimer>;
+	using GameTimerPtr   = gu::SharedPointer<GameTimer>;
 	using PPPEnginePtr   = gu::SharedPointer<PPPEngine>;
 public:
 	/****************************************************************************

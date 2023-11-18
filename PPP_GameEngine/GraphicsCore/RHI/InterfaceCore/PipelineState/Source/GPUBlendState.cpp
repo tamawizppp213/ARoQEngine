@@ -22,5 +22,5 @@ using namespace rhi::core;
 rhi::core::GPUBlendState::~GPUBlendState()
 {
 	_blendProperties.clear(); _blendProperties.shrink_to_fit();
-	_device.reset();
+	_device.Reset();
 }

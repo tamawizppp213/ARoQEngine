@@ -39,7 +39,7 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Allocate view. Return descriptor index*/
-		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;
+		DescriptorID Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override;
 		
 		/* @brief : Free offset ID*/
 		void Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex) override;
@@ -70,7 +70,7 @@ namespace rhi::vulkan
 		
 		~RHIDescriptorHeap();
 		
-		explicit RHIDescriptorHeap(const std::shared_ptr<core::RHIDevice>& device);
+		explicit RHIDescriptorHeap(const gu::SharedPointer<core::RHIDevice>& device);
 	
 	protected:
 		/****************************************************************************

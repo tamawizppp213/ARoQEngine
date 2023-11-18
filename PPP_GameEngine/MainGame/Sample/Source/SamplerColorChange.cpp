@@ -35,7 +35,7 @@ using namespace gc;
 //////////////////////////////////////////////////////////////////////////////////
 namespace
 {
-	std::shared_ptr<gc::rendering::ScreenCapture> _capture = nullptr;
+	gu::SharedPointer<gc::rendering::ScreenCapture> _capture = nullptr;
 }
 SampleColorChange::SampleColorChange()
 {
@@ -121,6 +121,14 @@ void SampleColorChange::Draw()
 *****************************************************************************/
 void SampleColorChange::Terminate()
 {
+	if (_skybox) { _skybox.Reset(); }
+	if (_camera) { _camera.Reset(); }
+	_colorChanges.clear(); _colorChanges.shrink_to_fit();
+	if (_gaussianBlur) { _gaussianBlur.Reset(); }
+	if (_mosaic) { _mosaic.Reset(); }
+	if (_vignette) { _vignette.Reset(); }
+	if (_whiteBalance) { _whiteBalance.Reset(); }
+
 
 }
 #pragma endregion Public Function
@@ -147,23 +155,23 @@ void SampleColorChange::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Camera
 	---------------------------------------------------------------------*/
-	_camera = std::make_shared<Camera>(_engine);
+	_camera = gu::MakeShared<Camera>(_engine);
 	_camera->SetPosition(0.0f, 10.0f, -20.0f);
 	/*-------------------------------------------------------------------
 	-           Skybox
 	---------------------------------------------------------------------*/
-	_skybox = std::make_shared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
+	_skybox = gu::MakeShared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
 	/*-------------------------------------------------------------------
 	-           Color Changes
 	---------------------------------------------------------------------*/
 	_colorChanges.resize(5);
 	for (size_t i = 0; i < _colorChanges.size(); ++i)
 	{
-		_colorChanges[i] = std::make_shared<ColorChange>((ColorChangeType)(i + 1), _engine);
+		_colorChanges[i] = gu::MakeShared<ColorChange>((ColorChangeType)(i + 1), _engine);
 	}
-	_gaussianBlur = std::make_shared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), true);
+	_gaussianBlur = gu::MakeShared<GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), true);
 
-	_mosaic = std::make_shared<Mosaic>(_engine, 20.0f);
+	_mosaic = gu::MakeShared<Mosaic>(_engine, 20.0f);
 
 	const VignetteSettings vignetteSettings =
 	{
@@ -172,10 +180,10 @@ void SampleColorChange::LoadMaterials()
 		.Intensity = 1.0f,
 		.Smoothness = 1.0f
 	};
-	_vignette = std::make_shared<Vignette>(_engine, vignetteSettings);
+	_vignette = gu::MakeShared<Vignette>(_engine, vignetteSettings);
 
-	_whiteBalance = std::make_shared<WhiteBalance>(_engine, 1.0f, 0.0f);
-	_capture = std::make_shared<gc::rendering::ScreenCapture>(_engine, _gameInput.GetKeyboard());
+	_whiteBalance = gu::MakeShared<WhiteBalance>(_engine, 1.0f, 0.0f);
+	_capture = gu::MakeShared<gc::rendering::ScreenCapture>(_engine, _gameInput.GetKeyboard());
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

@@ -50,7 +50,7 @@ namespace rhi::vulkan
 		
 		~GPUInputAssemblyState() = default;
 		
-		explicit GPUInputAssemblyState(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::vector<core::InputLayoutElement>& elements,
+		explicit GPUInputAssemblyState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::vector<core::InputLayoutElement>& elements,
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList);
 
 	protected:

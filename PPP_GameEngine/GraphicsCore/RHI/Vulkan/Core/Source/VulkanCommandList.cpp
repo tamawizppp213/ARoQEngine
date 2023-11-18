@@ -29,11 +29,11 @@ using namespace rhi;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHICommandList::RHICommandList(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHICommandAllocator>& allocator, const std::wstring& name): 
+RHICommandList::RHICommandList(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHICommandAllocator>& allocator, const std::wstring& name): 
 	core::RHICommandList(device, allocator)
 {
-	VkDevice      vkDevice    = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
-	VkCommandPool vkAllocator = std::static_pointer_cast<vulkan::RHICommandAllocator>(_commandAllocator)->GetCommandAllocator();
+	VkDevice      vkDevice    = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
+	VkCommandPool vkAllocator = gu::StaticPointerCast<vulkan::RHICommandAllocator>(_commandAllocator)->GetCommandAllocator();
 
 	VkCommandBufferAllocateInfo allocateInfo = {};
 	allocateInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -53,8 +53,8 @@ RHICommandList::RHICommandList(const std::shared_ptr<core::RHIDevice>& device, c
 
 RHICommandList::~RHICommandList()
 {
-	VkDevice      vkDevice    = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
-	VkCommandPool vkAllocator = std::static_pointer_cast<vulkan::RHICommandAllocator>(_commandAllocator)->GetCommandAllocator();
+	VkDevice      vkDevice    = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
+	VkCommandPool vkAllocator = gu::StaticPointerCast<vulkan::RHICommandAllocator>(_commandAllocator)->GetCommandAllocator();
 	vkFreeCommandBuffers(vkDevice, vkAllocator, 1, &_commandBuffer);
 
 }
@@ -112,10 +112,10 @@ void RHICommandList::EndRecording()
 	_beginRenderPass = false;
 }
 
-void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer)
+void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer)
 {
-	const auto vkRenderPass  = std::static_pointer_cast<vulkan::RHIRenderPass>(renderPass);
-	const auto vkFrameBuffer = std::static_pointer_cast<vulkan::RHIFrameBuffer>(frameBuffer);
+	const auto vkRenderPass  = gu::StaticPointerCast<vulkan::RHIRenderPass>(renderPass);
+	const auto vkFrameBuffer = gu::StaticPointerCast<vulkan::RHIFrameBuffer>(frameBuffer);
 	/*-------------------------------------------------------------------
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
@@ -249,37 +249,37 @@ void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology
 {
 	vkCmdSetPrimitiveTopology(_commandBuffer, EnumConverter::Convert(topology));
 }
-void RHICommandList::SetResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+void RHICommandList::SetResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 {
-	_resourceLayout = std::static_pointer_cast<vulkan::RHIResourceLayout>(resourceLayout);
+	_resourceLayout = gu::StaticPointerCast<vulkan::RHIResourceLayout>(resourceLayout);
 }
-void RHICommandList::SetGraphicsPipeline(const std::shared_ptr<core::GPUGraphicsPipelineState>& pipelineState)
+void RHICommandList::SetGraphicsPipeline(const gu::SharedPointer<core::GPUGraphicsPipelineState>& pipelineState)
 {
-	vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, std::static_pointer_cast<vulkan::GPUGraphicsPipelineState>(pipelineState)->GetPipeline());
+	vkCmdBindPipeline(_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, gu::StaticPointerCast<vulkan::GPUGraphicsPipelineState>(pipelineState)->GetPipeline());
 }
 
-void RHICommandList::SetVertexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer)
+void RHICommandList::SetVertexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer)
 {
-	auto vkBuffer = std::static_pointer_cast<vulkan::GPUBuffer>(buffer)->GetBuffer();
+	auto vkBuffer = gu::StaticPointerCast<vulkan::GPUBuffer>(buffer)->GetBuffer();
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(_commandBuffer, 0, 1, &vkBuffer, offsets);
 }
-void RHICommandList::SetVertexBuffers(const std::vector<std::shared_ptr<core::GPUBuffer>>& buffers, const size_t startSlot)
+void RHICommandList::SetVertexBuffers(const std::vector<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot)
 {
 	auto vkBuffers = std::vector<VkBuffer>(buffers.size());
 	auto offsets   = std::vector<VkDeviceSize>(buffers.size(), 0);
 
 	for (size_t i = 0; i < vkBuffers.size(); ++i)
 	{
-		vkBuffers[i] = std::static_pointer_cast<vulkan::GPUBuffer>(buffers[i])->GetBuffer();
+		vkBuffers[i] = gu::StaticPointerCast<vulkan::GPUBuffer>(buffers[i])->GetBuffer();
 	}
 
 	vkCmdBindVertexBuffers(_commandBuffer, static_cast<std::uint32_t>(startSlot), 
 		static_cast<std::uint32_t>(vkBuffers.size()), vkBuffers.data(), offsets.data());
 }
-void RHICommandList::SetIndexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType)
+void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType)
 {
-	const auto vkBuffer = std::static_pointer_cast<vulkan::GPUBuffer>(buffer)->GetBuffer();
+	const auto vkBuffer = gu::StaticPointerCast<vulkan::GPUBuffer>(buffer)->GetBuffer();
 	vkCmdBindIndexBuffer(_commandBuffer, vkBuffer, 0, EnumConverter::Convert(indexType));
 }
 #pragma endregion Graphics Command
@@ -287,16 +287,16 @@ void RHICommandList::SetIndexBuffer(const std::shared_ptr<core::GPUBuffer>& buff
 /****************************************************************************
 *                     TransitionResourceStates
 *************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceStates(const std::shared_ptr<core::GPUTexture>& textures, core::ResourceState afters)
+*  @fn        void RHICommandList::TransitionResourceStates(const gu::SharedPointer<core::GPUTexture>& textures, core::ResourceState afters)
 *
 *  @brief     Transition a single resource layout using barrier
 *
-*  @param[in] const std::shared_ptr<core::GPUTexture>& texture array,
+*  @param[in] const gu::SharedPointer<core::GPUTexture>& texture array,
 *  @param[in] core::ResourceState state array
 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after)
+void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after)
 {
 	TransitionResourceStates(1, &texture, &after);
 }
@@ -304,24 +304,24 @@ void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUText
 /****************************************************************************
 *                     TransitionResourceStates
 *************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
+*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
 *
 *  @brief     Transition resource layout using barrier
 *
 *  @param[in] const std::uint32_t numStates
-*  @param[in] const std::shared_ptr<core::GPUTexture>* texture array,
+*  @param[in] const gu::SharedPointer<core::GPUTexture>* texture array,
 *  @param[in] core::ResourceState* state array
 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
+void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
 {
 	if (numStates <= 0) { return; }
 
 	std::vector<VkImageMemoryBarrier> imageMemoryBarriers(numStates);
 	for (size_t i = 0; i < numStates; ++i)
 	{
-		const auto vkTexture = std::static_pointer_cast<vulkan::GPUTexture>(textures[i]);
+		const auto vkTexture = gu::StaticPointerCast<vulkan::GPUTexture>(textures[i]);
 
 		auto& imageMemoryBarrier               = imageMemoryBarriers[i];
 		imageMemoryBarrier.sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -374,7 +374,7 @@ VkAccessFlags RHICommandList::SelectVkAccessFlag(const VkImageLayout imageLayout
 #pragma region Property
 void RHICommandList::SetName(const std::wstring& name)
 {
-	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_COMMAND_BUFFER, reinterpret_cast<std::uint64_t>(_commandBuffer));
 }
 #pragma endregion Property

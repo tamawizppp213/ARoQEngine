@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -38,7 +38,7 @@ namespace rhi::core
 	struct SwapchainDesc
 	{
 	protected:
-		using CommandQueuePtr = std::shared_ptr<RHICommandQueue>;
+		using CommandQueuePtr = gu::SharedPointer<RHICommandQueue>;
 
 	public:
 		CommandQueuePtr CommandQueue     = nullptr;
@@ -52,7 +52,7 @@ namespace rhi::core
 
 		~SwapchainDesc()
 		{
-			if (CommandQueue) { CommandQueue.reset(); }
+			if (CommandQueue) { CommandQueue.Reset(); }
 		}
 	};
 
@@ -69,10 +69,10 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
-		virtual std::uint32_t PrepareNextImage(const std::shared_ptr<RHIFence>& fence, std::uint64_t signalValue) = 0;
+		virtual std::uint32_t PrepareNextImage(const gu::SharedPointer<RHIFence>& fence, std::uint64_t signalValue) = 0;
 		
 		/* @brief : Display front buffer*/
-		virtual void Present(const std::shared_ptr<RHIFence>& fence, std::uint64_t waitValue) = 0;
+		virtual void Present(const gu::SharedPointer<RHIFence>& fence, std::uint64_t waitValue) = 0;
 		
 		/* @brief : Resize screen size. Rebuild everything once and update again.*/
 		virtual void Resize(const size_t width, const size_t height) = 0;
@@ -97,7 +97,7 @@ namespace rhi::core
 		WindowInfo  GetWindowInfo () const noexcept { return _desc.WindowInfo; }
 
 		/* @brief : Return back buffer of the specified frame*/
-		std::shared_ptr<GPUTexture> GetBuffer(const size_t index) { return _backBuffers[index]; }
+		gu::SharedPointer<GPUTexture> GetBuffer(const size_t index) { return _backBuffers[index]; }
 		
 		/* @biref : Return back buffer's total frame count*/
 		size_t      GetBufferCount() const noexcept { return _backBuffers.size(); }
@@ -115,15 +115,15 @@ namespace rhi::core
 		virtual ~RHISwapchain()
 		{
 			_backBuffers.clear(); _backBuffers.shrink_to_fit();
-			if (_device)       { _device.reset(); }
+			if (_device)       { _device.Reset(); }
 		};
 
-		explicit RHISwapchain(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, size_t frameBufferCount = 3, std::uint32_t vsync = 0, bool isValidHDR = true)
+		explicit RHISwapchain(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, size_t frameBufferCount = 3, std::uint32_t vsync = 0, bool isValidHDR = true)
 		{
 			_device = device; _desc.CommandQueue = commandQueue; _desc.WindowInfo = windowInfo; _desc.PixelFormat = pixelFormat; _desc.VSync = vsync; _desc.FrameBufferCount = frameBufferCount; _desc.IsValidHDR = isValidHDR;
 		}
 
-		explicit RHISwapchain(const std::shared_ptr<RHIDevice>& device, const SwapchainDesc& desc):
+		explicit RHISwapchain(const gu::SharedPointer<RHIDevice>& device, const SwapchainDesc& desc):
 			_device(device), _desc(desc)
 		{
 			
@@ -132,9 +132,9 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice>       _device = nullptr;
+		gu::SharedPointer<RHIDevice>       _device = nullptr;
 		
-		std::vector<std::shared_ptr<GPUTexture>> _backBuffers; //[0] : render target 
+		std::vector<gu::SharedPointer<GPUTexture>> _backBuffers; //[0] : render target 
 		
 		SwapchainDesc _desc = {};
 

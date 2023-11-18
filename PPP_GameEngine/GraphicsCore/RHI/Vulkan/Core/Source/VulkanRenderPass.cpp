@@ -24,7 +24,7 @@ using namespace rhi;
 RHIRenderPass::~RHIRenderPass()
 {
 	VkDevice vkDevice = nullptr;
-	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 
 	if (_renderPass) 
 	{ 
@@ -33,12 +33,12 @@ RHIRenderPass::~RHIRenderPass()
 	}
 }
 
-RHIRenderPass::RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
 	: core::RHIRenderPass(device, colors, depth)
 {
 	Prepare();
 }
-RHIRenderPass::RHIRenderPass(const std::shared_ptr<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth)
+RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth)
 	: core::RHIRenderPass(device, color, depth)
 {
 	Prepare();
@@ -87,7 +87,7 @@ std::vector<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const
 
 void RHIRenderPass::SetName(const std::wstring& name)
 {
-	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_RENDER_PASS, reinterpret_cast<std::uint64_t>(_renderPass));
 }
 
@@ -96,7 +96,7 @@ void RHIRenderPass::SetName(const std::wstring& name)
 void rhi::vulkan::RHIRenderPass::Prepare()
 {
 	VkDevice vkDevice = nullptr;
-	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-                  Get attachment size (color + depth)

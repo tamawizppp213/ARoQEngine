@@ -30,20 +30,20 @@ namespace rhi::vulkan
 	*  @class     RHIInstance
 	*  @brief     Select device api and display adapter
 	*****************************************************************************/
-	class RHIInstance : public core::RHIInstance
+	class RHIInstance : public core::RHIInstance, public gu::EnableSharedFromThis<RHIInstance>
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		/* return all available display adapter*/
-		std::vector<std::shared_ptr<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
 		
 		/*vulkan : dGPU (not : first select gpu) */
-		std::shared_ptr<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		gu::SharedPointer<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
 		
 		/*vulkan : iGPU (not : first select gpu) */
-		std::shared_ptr<core::RHIDisplayAdapter> SearchMinimumPowerAdapter() override;
+		gu::SharedPointer<core::RHIDisplayAdapter> SearchMinimumPowerAdapter() override;
 		
 		/* OutputDebugString : adapter list*/
 		void LogAdapters() override;
@@ -80,7 +80,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		bool CheckValidationLayerSupport(); // check enable cpu and gpu debugger
 		
-		std::shared_ptr<core::RHIDisplayAdapter> SearchAdapter(const VkPhysicalDeviceType deviceType);
+		gu::SharedPointer<core::RHIDisplayAdapter> SearchAdapter(const VkPhysicalDeviceType deviceType);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

@@ -18,7 +18,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandAllocator.hpp"
 #include "DirectX12Core.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ namespace rhi::directX12
 		~RHICommandAllocator();
 
 		explicit RHICommandAllocator(
-			const std::shared_ptr<rhi::core::RHIDevice>& device, 
+			const gu::SharedPointer<rhi::core::RHIDevice>& device, 
 			const core::CommandListType type,
 			const std::wstring& name);
 

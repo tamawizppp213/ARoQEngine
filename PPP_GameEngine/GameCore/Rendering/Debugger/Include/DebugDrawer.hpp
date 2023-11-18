@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <vector>
 #include <string>
 //////////////////////////////////////////////////////////////////////////////////
@@ -51,13 +51,13 @@ namespace gc::rendering
 	class DebugDrawer : public NonCopyable
 	{
 	protected:
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using PipelineStatePtr   = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using ResourceLayoutPtr  = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
-		using TexturePtr         = std::shared_ptr<rhi::core::GPUTexture>;
-		using RenderPassPtr      = std::shared_ptr<rhi::core::RHIRenderPass>;
-		using GameModelPtr       = std::shared_ptr<gc::core::GameModel>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using PipelineStatePtr   = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+		using ResourceLayoutPtr  = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using GPUResourceViewPtr = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using TexturePtr         = gu::SharedPointer<rhi::core::GPUTexture>;
+		using RenderPassPtr      = gu::SharedPointer<rhi::core::RHIRenderPass>;
+		using GameModelPtr       = gu::SharedPointer<gc::core::GameModel>;
 	public:
 		/****************************************************************************
 		**                Public Function

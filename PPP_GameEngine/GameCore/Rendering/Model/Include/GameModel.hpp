@@ -35,11 +35,11 @@ namespace gc::core
 	*****************************************************************************/
 	class GameModel : public gc::core::GameActor
 	{
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using MeshPtr          = std::shared_ptr<Mesh>; // single mesh pointer
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using MeshPtr          = gu::SharedPointer<Mesh>; // single mesh pointer
 		using MeshArrayPtr     = std::vector<MeshPtr>; // material count array 
-		using MaterialPtr      = std::shared_ptr<Material>;
-		using GameWorldInfoPtr = std::shared_ptr<GameWorldInfo>;
+		using MaterialPtr      = gu::SharedPointer<Material>;
+		using GameWorldInfoPtr = gu::SharedPointer<GameWorldInfo>;
 	
 	public:
 		/****************************************************************************

@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Thread/Public/Include/GUThreadPool.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -46,7 +46,7 @@ namespace engine::core
 	class EngineThreadManager final : public NonCopyable
 	{
 	private :
-		using ThreadPoolPtr = std::shared_ptr<gu::ThreadPool>;
+		using ThreadPoolPtr = gu::SharedPointer<gu::ThreadPool>;
 	public:
 		/****************************************************************************
 		**                Public Function

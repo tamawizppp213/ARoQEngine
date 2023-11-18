@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GBufferDesc.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <vector>
 #include <string>
 
@@ -50,14 +50,14 @@ namespace gc::rendering
 	class GBuffer : public NonCopyable
 	{
 	protected:
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using GameModelPtr              = std::shared_ptr<gc::core::GameModel>;
-		using TexturePtr                = std::shared_ptr<rhi::core::GPUTexture>;
-		using ResourceLayoutPtr         = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using FrameBufferPtr            = std::shared_ptr<rhi::core::RHIFrameBuffer>;
-		using PipelineStatePtr          = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using RenderPassPtr             = std::shared_ptr<rhi::core::RHIRenderPass>;
-		using GPUResourceViewPtr        = std::shared_ptr<rhi::core::GPUResourceView>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using GameModelPtr              = gu::SharedPointer<gc::core::GameModel>;
+		using TexturePtr                = gu::SharedPointer<rhi::core::GPUTexture>;
+		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using FrameBufferPtr            = gu::SharedPointer<rhi::core::RHIFrameBuffer>;
+		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+		using RenderPassPtr             = gu::SharedPointer<rhi::core::RHIRenderPass>;
+		using GPUResourceViewPtr        = gu::SharedPointer<rhi::core::GPUResourceView>;
 	public:
 
 		/****************************************************************************

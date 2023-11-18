@@ -71,7 +71,7 @@ namespace rhi::core
 		~GPUInputAssemblyState() = default;
 
 		explicit GPUInputAssemblyState(
-			const std::shared_ptr<RHIDevice>& device,
+			const gu::SharedPointer<RHIDevice>& device,
 			const std::vector<InputLayoutElement>& elements,
 			const PrimitiveTopology primitiveTopology = PrimitiveTopology::TriangleList
 		) : GPUState(device), _elements(elements), _primitiveTopology(primitiveTopology)

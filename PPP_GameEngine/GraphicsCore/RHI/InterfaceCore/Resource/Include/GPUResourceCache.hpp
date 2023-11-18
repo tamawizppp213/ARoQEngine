@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <string>
 #include <map>
 //////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ namespace rhi::core
 	*****************************************************************************/
 	class GPUResourceCache : public NonCopyable
 	{
-		using GPUResourceViewPtr   = std::shared_ptr<core::GPUResourceView>;
+		using GPUResourceViewPtr   = gu::SharedPointer<core::GPUResourceView>;
 		using DescriptorID         = std::uint32_t;
 		using ShaderResourceViewID = std::uint32_t;
 	public:
@@ -51,7 +51,7 @@ namespace rhi::core
 
 		bool Find(const std::wstring& filePath);
 
-		//DescriptorID Regist(const std::shared_ptr<core::GPUResourceView>& view); 
+		//DescriptorID Regist(const gu::SharedPointer<core::GPUResourceView>& view); 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -59,8 +59,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUResourceCache(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHICommandList>& graphicsCommandList, 
-			const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) :
+		GPUResourceCache(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHICommandList>& graphicsCommandList, 
+			const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) :
 			_device(device), _commandList(graphicsCommandList), _customHeap(customHeap) { };
 
 		~GPUResourceCache() { _resourceViews.clear(); }
@@ -73,11 +73,11 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<core::RHIDevice>      _device      = nullptr;
+		gu::SharedPointer<core::RHIDevice>      _device      = nullptr;
 
-		std::shared_ptr<core::RHICommandList> _commandList = nullptr;
+		gu::SharedPointer<core::RHICommandList> _commandList = nullptr;
 
-		std::shared_ptr<RHIDescriptorHeap> _customHeap = nullptr;
+		gu::SharedPointer<RHIDescriptorHeap> _customHeap = nullptr;
 
 		std::map<std::uint64_t, GPUResourceViewPtr> _resourceViews;
 	};

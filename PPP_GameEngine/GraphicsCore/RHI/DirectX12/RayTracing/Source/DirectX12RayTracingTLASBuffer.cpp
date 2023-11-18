@@ -33,13 +33,13 @@ TLASBuffer::~TLASBuffer()
 {
 
 }
-TLASBuffer::TLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
-	const std::vector<std::shared_ptr<core::ASInstance>>& asInstance,
+TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
+	const std::vector<gu::SharedPointer<core::ASInstance>>& asInstance,
 	const core::BuildAccelerationStructureFlags flags,
-	const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
+	const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
 	: core::TLASBuffer(device, asInstance, flags, customHeap)
 {
-	const auto dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device);
+	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device);
 
 	const auto numInstance = static_cast<std::uint32_t>(asInstance.size());
 	/*-------------------------------------------------------------------
@@ -83,7 +83,7 @@ TLASBuffer::TLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
 	std::vector<D3D12_RAYTRACING_INSTANCE_DESC> dxDescs(numInstance);
 	for (std::uint64_t i = 0; i < numInstance; ++i)
 	{
-		dxDescs[i] = std::static_pointer_cast<directX12::ASInstance>(_asInstance[i])->GetDesc();
+		dxDescs[i] = gu::StaticPointerCast<directX12::ASInstance>(_asInstance[i])->GetDesc();
 	}
 
 	/*-------------------------------------------------------------------
@@ -101,15 +101,15 @@ TLASBuffer::TLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
 	-         Create TLAS
 	---------------------------------------------------------------------*/
 	_rayTracingASDesc.Inputs = inputs;
-	_rayTracingASDesc.Inputs.InstanceDescs             = std::static_pointer_cast<directX12::GPUBuffer>(_asInstanceDescsBuffer)->GetResource()->GetGPUVirtualAddress();   //Å@å„Ç≈èCê≥Ç∑ÇÈ
-	_rayTracingASDesc.ScratchAccelerationStructureData = std::static_pointer_cast<directX12::GPUBuffer>(_scratch)->GetResource()->GetGPUVirtualAddress();     // TLAS Scratch Buffer
-	_rayTracingASDesc.DestAccelerationStructureData    = std::static_pointer_cast<directX12::GPUBuffer>(_destination)->GetResource()->GetGPUVirtualAddress(); //äiî[êÊ
+	_rayTracingASDesc.Inputs.InstanceDescs             = gu::StaticPointerCast<directX12::GPUBuffer>(_asInstanceDescsBuffer)->GetResource()->GetGPUVirtualAddress();   //Å@å„Ç≈èCê≥Ç∑ÇÈ
+	_rayTracingASDesc.ScratchAccelerationStructureData = gu::StaticPointerCast<directX12::GPUBuffer>(_scratch)->GetResource()->GetGPUVirtualAddress();     // TLAS Scratch Buffer
+	_rayTracingASDesc.DestAccelerationStructureData    = gu::StaticPointerCast<directX12::GPUBuffer>(_destination)->GetResource()->GetGPUVirtualAddress(); //äiî[êÊ
 	
 }
 
 #pragma endregion Constructor and Destructor
 #pragma region Build Function
-void TLASBuffer::Build(const std::shared_ptr<core::RHICommandList>& commandList)
+void TLASBuffer::Build(const gu::SharedPointer<core::RHICommandList>& commandList)
 {
 	/*-------------------------------------------------------------------
 	-         Check Has Built 
@@ -119,9 +119,9 @@ void TLASBuffer::Build(const std::shared_ptr<core::RHICommandList>& commandList)
 	/*-------------------------------------------------------------------
 	-         Prepare dxResource
 	---------------------------------------------------------------------*/
-	const auto dxDevice      = std::static_pointer_cast<directX12::RHIDevice>(_device);
-	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList)->GetCommandList();
-	const auto dxTLASBuffer  = std::static_pointer_cast<directX12::GPUBuffer>(_destination);
+	const auto dxDevice      = gu::StaticPointerCast<directX12::RHIDevice>(_device);
+	const auto dxCommandList = gu::StaticPointerCast<directX12::RHICommandList>(commandList)->GetCommandList();
+	const auto dxTLASBuffer  = gu::StaticPointerCast<directX12::GPUBuffer>(_destination);
 
 	/*-------------------------------------------------------------------
 	-         Execute CommandList
@@ -138,7 +138,7 @@ void TLASBuffer::Build(const std::shared_ptr<core::RHICommandList>& commandList)
 	/*-------------------------------------------------------------------
 	-         Prepare Resource View
 	---------------------------------------------------------------------*/
-	_resourceView = dxDevice->CreateResourceView(core::ResourceViewType::AccelerationStructure, dxTLASBuffer, _customHeap);
+	//_resourceView = dxDevice->CreateResourceView(core::ResourceViewType::AccelerationStructure, dxTLASBuffer, _customHeap);
 
 	_hasBuilt = true;
 }

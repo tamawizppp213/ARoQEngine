@@ -22,7 +22,7 @@ using namespace gm;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-Button::Button(const std::shared_ptr<Mouse>& mouse)
+Button::Button(const gu::SharedPointer<Mouse>& mouse)
 	: _mouse(mouse)
 {
 

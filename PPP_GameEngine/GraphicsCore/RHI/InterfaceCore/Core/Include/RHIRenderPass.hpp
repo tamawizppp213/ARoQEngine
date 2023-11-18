@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <vector>
 #include <optional>
 //////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ namespace rhi::core
 			_depthClearValue  = depth;
 		}
 
-		bool Compatible(const std::shared_ptr<RHIFrameBuffer>& frameBuffer) const;
+		bool Compatible(const gu::SharedPointer<RHIFrameBuffer>& frameBuffer) const;
 		
 		/* @brief : Return multi sample count*/
 		MultiSample GetMaxSample() const noexcept { return _maxSample; }
@@ -97,13 +97,13 @@ namespace rhi::core
 			_colorAttachments.clear(); _colorAttachments.shrink_to_fit();
 		}
 
-		explicit RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const std::vector<Attachment>& colors, const std::optional<Attachment>& depth = std::nullopt);
+		explicit RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const std::vector<Attachment>& colors, const std::optional<Attachment>& depth = std::nullopt);
 		
-		explicit RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const Attachment& color, const std::optional<Attachment>& depth = std::nullopt);
+		explicit RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const Attachment& color, const std::optional<Attachment>& depth = std::nullopt);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 
 		/* Render Target Render Pass*/
 		std::vector<Attachment>    _colorAttachments = {};

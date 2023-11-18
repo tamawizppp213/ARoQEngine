@@ -36,9 +36,9 @@ namespace gc
 
 	class GaussianBlur : public NonCopyable
 	{
-		using BlurParameterPtr        = std::shared_ptr<rhi::core::GPUBuffer>;
-		using TextureSizeBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using BlurParameterPtr        = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using TextureSizeBufferPtr    = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 
 	protected:
 		struct BlurParameter

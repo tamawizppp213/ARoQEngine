@@ -60,13 +60,13 @@ namespace gc
 	*****************************************************************************/
 	class URP : public IRenderPipeline
 	{
-		using UIRendererPtr   = std::shared_ptr<ui::UIRenderer>;
-		using ZPrepassPtr     = std::shared_ptr<basepass::ZPrepass>;
-		using LightCullingPtr = std::shared_ptr<basepass::LightCulling>;
-		using GBufferPtr      = std::shared_ptr<basepass::GBuffer>; 
-		using SSAOPtr         = std::shared_ptr<SSAO>;
-		using ShadowMapPtr    = std::shared_ptr<rendering::CascadeShadow>;
-		using DirectionalLightPtr = std::shared_ptr<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>;
+		using UIRendererPtr   = gu::SharedPointer<ui::UIRenderer>;
+		using ZPrepassPtr     = gu::SharedPointer<basepass::ZPrepass>;
+		using LightCullingPtr = gu::SharedPointer<basepass::LightCulling>;
+		using GBufferPtr      = gu::SharedPointer<basepass::GBuffer>; 
+		using SSAOPtr         = gu::SharedPointer<SSAO>;
+		using ShadowMapPtr    = gu::SharedPointer<rendering::CascadeShadow>;
+		using DirectionalLightPtr = gu::SharedPointer<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -89,7 +89,7 @@ namespace gc
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		URP(const LowLevelGraphicsEnginePtr& engine, const std::shared_ptr<GameTimer>& gameTimer);
+		URP(const LowLevelGraphicsEnginePtr& engine, const gu::SharedPointer<GameTimer>& gameTimer);
 
 		~URP();
 
@@ -120,7 +120,7 @@ namespace gc
 
 		PipelineStatePtr _pipeline = nullptr;
 
-		std::shared_ptr<GameTimer> _gameTimer = nullptr;
+		gu::SharedPointer<GameTimer> _gameTimer = nullptr;
 
 		std::vector<GameModelPtr> _forwardModels  = {};
 

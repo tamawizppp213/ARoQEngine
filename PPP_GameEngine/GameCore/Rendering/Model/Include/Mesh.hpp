@@ -37,15 +37,15 @@ namespace gc::core
 	*****************************************************************************/
 	class Mesh : public NonCopyable
 	{
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 		using VertexBufferPtr  = BufferPtr;
 		using IndexBufferPtr   = BufferPtr;
-		using MaterialPtr      = std::shared_ptr<Material>;
+		using MaterialPtr      = gu::SharedPointer<Material>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Draw(const std::shared_ptr<rhi::core::RHICommandList>& graphicsCommandList, 
+		virtual void Draw(const gu::SharedPointer<rhi::core::RHICommandList>& graphicsCommandList, 
 			const std::uint32_t frameIndex);
 
 		/****************************************************************************

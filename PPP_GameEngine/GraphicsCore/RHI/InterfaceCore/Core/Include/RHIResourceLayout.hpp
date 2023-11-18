@@ -76,14 +76,14 @@ namespace rhi::core
 		}
 
 		explicit RHIResourceLayout(
-			const std::shared_ptr<RHIDevice>& device,
+			const gu::SharedPointer<RHIDevice>& device,
 			const std::vector<core::ResourceLayoutElement>& elements = {},
 			const std::vector<core::SamplerLayoutElement>&  samplers = {},
 			const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt
 		) : _device(device), _elements(elements), _samplers(samplers), _constant32Bits(constant32Bits){ };
 		
 		explicit RHIResourceLayout(
-			const std::shared_ptr<RHIDevice>& device, 
+			const gu::SharedPointer<RHIDevice>& device, 
 			const core::ResourceLayoutElement& element, 
 			const core::SamplerLayoutElement& sampler,
 			const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt
@@ -96,7 +96,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 		std::vector<core::ResourceLayoutElement> _elements       = {};
 		std::vector<core::SamplerLayoutElement>  _samplers       = {};
 		std::optional<core::Constant32Bits>      _constant32Bits = std::nullopt;

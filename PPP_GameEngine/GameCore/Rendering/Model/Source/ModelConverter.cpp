@@ -80,7 +80,7 @@ using namespace gc::core;
 //	void ModelConverterPMX::ConvertMaterial(MaterialBuffer& buffer, const pmx::PMXFile& file)
 //	{
 //		std::cout << file.Directory << std::endl;
-//		std::shared_ptr<UploadBuffer> uploadBuffer = buffer.GetBufferPtr();
+//		gu::SharedPointer<UploadBuffer> uploadBuffer = buffer.GetBufferPtr();
 //		uploadBuffer->CopyStart();
 //		
 //		

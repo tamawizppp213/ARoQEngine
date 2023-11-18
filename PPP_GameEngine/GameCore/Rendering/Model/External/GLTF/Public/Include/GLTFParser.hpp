@@ -26,7 +26,7 @@
 namespace gltf
 {
 	using namespace gm;
-	
+
 	class GLTFResourceReader;
 	class GLTFResourceWriter;
 	/****************************************************************************
@@ -41,7 +41,7 @@ namespace gltf
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Load(const std::string& filePath); 
+		void Load(const std::string& filePath);
 		void Save(const std::string& filePath, SerializeFlags flags = SerializeFlags::None); // ‚Ü‚¾Žg—p‚µ‚È‚¢‚Å‚­‚¾‚³‚¢
 		/****************************************************************************
 		**                Public Member Variables
@@ -61,7 +61,7 @@ namespace gltf
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		
+
 	};
 
 

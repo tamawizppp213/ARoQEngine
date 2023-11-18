@@ -30,7 +30,7 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 GPUShaderState::~GPUShaderState()
 {
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 	if (_module)
 	{
 		vkDestroyShaderModule(vkDevice, _module, nullptr);
@@ -166,7 +166,7 @@ void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring&
 	/*-------------------------------------------------------------------
 	-      Create a Vulkan shader module from the compilation result 
 	---------------------------------------------------------------------*/
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 	const VkShaderModuleCreateInfo shaderModuleInfo = 
 	{
 		.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,

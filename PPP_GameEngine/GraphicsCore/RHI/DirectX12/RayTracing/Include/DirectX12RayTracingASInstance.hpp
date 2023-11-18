@@ -41,15 +41,15 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		const D3D12_RAYTRACING_INSTANCE_DESC& GetDesc() { return _instanceDesc; }
-		const std::shared_ptr<directX12::BLASBuffer> GetDxBLASBuffer() const noexcept { return std::static_pointer_cast<directX12::BLASBuffer>(_blasBuffer); }
+		const gu::SharedPointer<directX12::BLASBuffer> GetDxBLASBuffer() const noexcept { return gu::StaticPointerCast<directX12::BLASBuffer>(_blasBuffer); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		ASInstance() = default;
 		~ASInstance();
 		ASInstance(
-			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr<core::BLASBuffer>& blasBuffer,
+			const gu::SharedPointer<core::RHIDevice>& device,
+			const gu::SharedPointer<core::BLASBuffer>& blasBuffer,
 			const gm::Float3x4& blasTransform,
 			const std::uint32_t instanceID,
 			const std::uint32_t instanceContributionToHitGroupIndex,

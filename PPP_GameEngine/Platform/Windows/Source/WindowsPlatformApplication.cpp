@@ -138,13 +138,13 @@ bool PlatformApplication::RegisterWindowClass()
 /****************************************************************************
 *                     MakeWindow
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::CoreWindow> PlatformApplication::MakeWindow()
+*  @fn        gu::SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
 *
 *  @brief     新規のウィンドウインスタンスを作成します. ここではセットアップは行いません
 *
 *  @param[in] void
 *
-*  @return    std::shared_ptr<core::CoreWindow>
+*  @return    gu::SharedPointer<core::CoreWindow>
 *****************************************************************************/
 SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
 {
@@ -154,13 +154,13 @@ SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
 /****************************************************************************
 *                     MakeCommand
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::PlatformCommand> PlatformApplication::MakeCommand()
+*  @fn        gu::SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 *
 *  @brief     新規でコマンドをまとめたクラスのインスタンスを作成します.
 *
 *  @param[in] void
 *
-*  @return    std::shared_ptr<core::PlatformCommand>
+*  @return    gu::SharedPointer<core::PlatformCommand>
 *****************************************************************************/
 SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 {
@@ -170,11 +170,11 @@ SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 /****************************************************************************
 *                     SetUpWindow
 *************************************************************************//**
-*  @fn        void PlatformApplication::SetUpWindow(const std::shared_ptr<core::CoreWindow>& window, const core::CoreWindowDesc& desc)
+*  @fn        void PlatformApplication::SetUpWindow(const gu::SharedPointer<core::CoreWindow>& window, const core::CoreWindowDesc& desc)
 *
 *  @brief     指定のウィンドウを実際に作成するまで行います. セットアップも行います
 *
-*  @param[in] const std::shared_ptr<core::CoreWindow>& window, 特定のウィンドウ
+*  @param[in] const gu::SharedPointer<core::CoreWindow>& window, 特定のウィンドウ
 *  @param[in] const core:CoreWidowDesc& desc, 設定
 *
 *  @return    void

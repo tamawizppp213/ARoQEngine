@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <string>
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,11 +41,11 @@ namespace gc
 	*****************************************************************************/
 	class Sobel
 	{
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using ResourceLayoutPtr    = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using ResourceViewPtr      = std::shared_ptr<rhi::core::GPUResourceView>;
-		using BufferPtr            = std::shared_ptr<rhi::core::GPUBuffer>;
-		using PipelineStatePtr     = std::shared_ptr<rhi::core::GPUComputePipelineState>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using ResourceLayoutPtr    = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using ResourceViewPtr      = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using BufferPtr            = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using PipelineStatePtr     = gu::SharedPointer<rhi::core::GPUComputePipelineState>;
 	protected:
 		struct OutlineInfo
 		{

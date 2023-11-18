@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSharedPointer.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -44,7 +44,7 @@ namespace gc::basepass
 	struct LightCullingDesc
 	{
 		std::uint64_t LightCounts[CullingLightType::CountOf]={0};
-		std::shared_ptr<ZPrepass> ZPrepass = nullptr;
+		gu::SharedPointer<ZPrepass> ZPrepass = nullptr;
 	};
 
 	/****************************************************************************
@@ -56,12 +56,12 @@ namespace gc::basepass
 	class LightCulling : public NonCopyable
 	{
 	protected:
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using ZPrepassPtr               = std::shared_ptr<ZPrepass>;
-		using BufferPtr                 = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
-		using ResourceLayoutPtr         = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using PipelineStatePtr          = std::shared_ptr<rhi::core::GPUComputePipelineState>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using ZPrepassPtr               = gu::SharedPointer<ZPrepass>;
+		using BufferPtr                 = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUComputePipelineState>;
 	public:
 		/****************************************************************************
 		**                Public Function

@@ -21,11 +21,11 @@ using namespace rhi;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFence::RHIFence(const std::shared_ptr<core::RHIDevice>& device, const std::uint64_t initialValue, const std::wstring& name)
+RHIFence::RHIFence(const gu::SharedPointer<core::RHIDevice>& device, const std::uint64_t initialValue, const std::wstring& name)
 	: core::RHIFence(device)
 {
 	VkDevice vkDevice = nullptr;
-	vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
+	vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.Get())->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-   Set up semaphore type create info (TimelineInfo)
@@ -58,7 +58,7 @@ RHIFence::RHIFence(const std::shared_ptr<core::RHIDevice>& device, const std::ui
 
 RHIFence::~RHIFence()
 {
-	const auto vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
+	const auto vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.Get())->GetDevice();
 	if (_timelineSemaphore) 
 	{
 		vkDestroySemaphore(vkDevice, _timelineSemaphore, nullptr); 
@@ -81,7 +81,7 @@ RHIFence::~RHIFence()
 *****************************************************************************/
 std::uint64_t RHIFence::GetCompletedValue()
 {
-	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
+	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.Get())->GetDevice();
 
 	std::uint64_t value = 0;
 	if (vkGetSemaphoreCounterValue(vkDevice, _timelineSemaphore, &value) != VK_SUCCESS)
@@ -105,7 +105,7 @@ std::uint64_t RHIFence::GetCompletedValue()
 *****************************************************************************/
 void RHIFence::Wait(const std::uint64_t value)
 {
-	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
+	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.Get())->GetDevice();
 
 	const VkSemaphoreWaitInfo waitInfo = 
 	{
@@ -126,7 +126,7 @@ void RHIFence::Wait(const std::uint64_t value)
 /****************************************************************************
 *                     Signal
 *************************************************************************//**
-*  @fn        void RHIFence::Signal(const std::shared_ptr<rhi::core::RHICommandQueue>& queue)
+*  @fn        void RHIFence::Signal(const gu::SharedPointer<rhi::core::RHICommandQueue>& queue)
 * 
 *  @brief     @brief: Set fence value from CPU side. (in case RHICommandQueue::Signal -> Set fence value from GPU side)
 * 
@@ -136,7 +136,7 @@ void RHIFence::Wait(const std::uint64_t value)
 *****************************************************************************/
 void RHIFence::Signal(const std::uint64_t value)
 {
-	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.get())->GetDevice();
+	VkDevice vkDevice = static_cast<rhi::vulkan::RHIDevice*>(_device.Get())->GetDevice();
 
 	const VkSemaphoreSignalInfo signalInfo = 
 	{
@@ -156,7 +156,7 @@ void RHIFence::Signal(const std::uint64_t value)
 #pragma region Property
 void RHIFence::SetName(const std::wstring& name)
 {
-	const auto device = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_SEMAPHORE, reinterpret_cast<std::uint64_t>(_timelineSemaphore));
 }
 

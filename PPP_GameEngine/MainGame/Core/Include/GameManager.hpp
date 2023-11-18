@@ -42,7 +42,7 @@ public:
 	**                Public Member Variables
 	*****************************************************************************/
 	gu::SharedPointer<PPPEngine> GetEngine() const { return _engine; }
-	std::shared_ptr<LowLevelGraphicsEngine> GetGraphicsEngine() { return _engine->GetLowLevelGraphics(); }
+	gu::SharedPointer<LowLevelGraphicsEngine> GetGraphicsEngine() { return _engine->GetLowLevelGraphics(); }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/

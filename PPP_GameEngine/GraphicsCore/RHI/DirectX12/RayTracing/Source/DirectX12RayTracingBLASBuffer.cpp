@@ -28,13 +28,13 @@ BLASBuffer::~BLASBuffer()
 {
 
 }
-BLASBuffer::BLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
-	//const std::shared_ptr<core::GPUBuffer>& source,
-	const std::vector<std::shared_ptr<core::RayTracingGeometry>>& geometryDesc,
+BLASBuffer::BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
+	//const gu::SharedPointer<core::GPUBuffer>& source,
+	const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
 	const core::BuildAccelerationStructureFlags flags)
 	: core::BLASBuffer(device, geometryDesc, flags)
 {
-	const auto dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device);
+	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device);
 
 	/*-------------------------------------------------------------------
 	-         Push backs directX12 GeometryDesc
@@ -42,7 +42,7 @@ BLASBuffer::BLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
 	std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> dxGeometryDesc = {};
 	for (const auto& desc : _geometryDescs)
 	{
-		dxGeometryDesc.emplace_back(std::static_pointer_cast<directX12::RayTracingGeometry>(desc)->GetDesc());
+		dxGeometryDesc.emplace_back(gu::StaticPointerCast<directX12::RayTracingGeometry>(desc)->GetDesc());
 	}
 
 	/*-------------------------------------------------------------------
@@ -86,12 +86,12 @@ BLASBuffer::BLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
 	---------------------------------------------------------------------*/
 	_rayTracingASDesc.Inputs = inputs;
 	//_rayTracingASDesc.SourceAccelerationStructureData  = std::static_pointer_cast<directX12::GPUBuffer>(_source)->GetResource()->GetGPUVirtualAddress();
-	_rayTracingASDesc.ScratchAccelerationStructureData = std::static_pointer_cast<directX12::GPUBuffer>(_scratch)->GetResource()->GetGPUVirtualAddress();
-	_rayTracingASDesc.DestAccelerationStructureData    = std::static_pointer_cast<directX12::GPUBuffer>(_destination)->GetResource()->GetGPUVirtualAddress();
+	_rayTracingASDesc.ScratchAccelerationStructureData = gu::StaticPointerCast<directX12::GPUBuffer>(_scratch)->GetResource()->GetGPUVirtualAddress();
+	_rayTracingASDesc.DestAccelerationStructureData    = gu::StaticPointerCast<directX12::GPUBuffer>(_destination)->GetResource()->GetGPUVirtualAddress();
 }
 #pragma endregion Constructor and Destructor
 #pragma region Build Function
-void BLASBuffer::Build(const std::shared_ptr<core::RHICommandList>& commandList)
+void BLASBuffer::Build(const gu::SharedPointer<core::RHICommandList>& commandList)
 {
 	/*-------------------------------------------------------------------
 	-         Check Has Built 
@@ -101,9 +101,9 @@ void BLASBuffer::Build(const std::shared_ptr<core::RHICommandList>& commandList)
 	/*-------------------------------------------------------------------
 	-         Prepare dxResource
 	---------------------------------------------------------------------*/
-	const auto dxDevice      = std::static_pointer_cast<directX12::RHIDevice>(_device);
-	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList)->GetCommandList();
-	const auto dxTLASBuffer  = std::static_pointer_cast<directX12::GPUBuffer>(_destination);
+	const auto dxDevice      = gu::StaticPointerCast<directX12::RHIDevice>(_device);
+	const auto dxCommandList = gu::StaticPointerCast<directX12::RHICommandList>(commandList)->GetCommandList();
+	const auto dxTLASBuffer  = gu::StaticPointerCast<directX12::GPUBuffer>(_destination);
 
 	/*-------------------------------------------------------------------
 	-         Execute CommandList

@@ -18,7 +18,7 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-RHIRenderPass::RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const std::vector<Attachment>& colors, const std::optional<Attachment>& depth)
+RHIRenderPass::RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const std::vector<Attachment>& colors, const std::optional<Attachment>& depth)
 	: _device(device), _colorAttachments(colors), _depthAttachment(depth), _depthClearValue(ClearValue())
 {
 	_colorClearValues = std::vector<ClearValue>(colors.size(), ClearValue());
@@ -36,7 +36,7 @@ RHIRenderPass::RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const std
 
 	_maxSample = static_cast<core::MultiSample>(maxSample);
 }
-RHIRenderPass::RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const Attachment& color, const std::optional<Attachment>& depth)
+RHIRenderPass::RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const Attachment& color, const std::optional<Attachment>& depth)
 	: _device(device), _colorAttachments(std::vector<Attachment>{color}), _depthAttachment(depth)
 {
 	_colorClearValues = std::vector<ClearValue>(1, ClearValue());
@@ -55,12 +55,12 @@ RHIRenderPass::RHIRenderPass(const std::shared_ptr<RHIDevice>& device, const Att
 	_maxSample = static_cast<core::MultiSample>(maxSample);
 }
 
-bool RHIRenderPass::Compatible(const std::shared_ptr<RHIFrameBuffer>& frameBuffer) const
+bool RHIRenderPass::Compatible(const gu::SharedPointer<RHIFrameBuffer>& frameBuffer) const
 {
 	// the number of color attachments should greater than the number of render targets
 			// the depth attachment can not be null when the depth stencil is existed.
 	if (_colorAttachments.size() < frameBuffer->GetRenderTargetSize()) return false;
-	if (!_depthAttachment.has_value() && frameBuffer->GetDepthStencil() != nullptr) return false;
+	if (!_depthAttachment.has_value() && frameBuffer->GetDepthStencil()) return false;
 
 	return true;
 }

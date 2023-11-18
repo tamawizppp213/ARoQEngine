@@ -34,26 +34,26 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		std::shared_ptr<core::GPUInputAssemblyState> CreateInputAssemblyState(
+		gu::SharedPointer<core::GPUInputAssemblyState> CreateInputAssemblyState(
 			const std::vector<core::InputLayoutElement>& elements,
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList) override;
 
-		std::shared_ptr<core::GPURasterizerState> CreateRasterizerState(
+		gu::SharedPointer<core::GPURasterizerState> CreateRasterizerState(
 			const core::RasterizerProperty& rasterizerProperty) override;
 
-		std::shared_ptr<core::GPUDepthStencilState> CreateDepthStencilState(
+		gu::SharedPointer<core::GPUDepthStencilState> CreateDepthStencilState(
 			const core::DepthStencilProperty& depthStencilProperty) override;
 
-		std::shared_ptr<core::GPUShaderState> CreateShaderState() override;
+		gu::SharedPointer<core::GPUShaderState> CreateShaderState() override;
 
-		std::shared_ptr<core::GPUBlendState> CreateBlendState(
+		gu::SharedPointer<core::GPUBlendState> CreateBlendState(
 			const std::vector<core::BlendProperty>& properties = { core::BlendProperty() }) override;
 
-		std::shared_ptr<core::GPUBlendState> CreateSingleBlendState(
+		gu::SharedPointer<core::GPUBlendState> CreateSingleBlendState(
 			const core::BlendProperty& blendProperty = core::BlendProperty()
 		) override;
 
-		virtual std::shared_ptr<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets)override;
+		virtual gu::SharedPointer<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets)override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -63,7 +63,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		GPUPipelineFactory() = default;
 
-		explicit GPUPipelineFactory(const std::shared_ptr<core::RHIDevice>& device);
+		explicit GPUPipelineFactory(const gu::SharedPointer<core::RHIDevice>& device);
 
 		~GPUPipelineFactory() = default;
 	protected:
