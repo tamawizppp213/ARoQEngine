@@ -39,11 +39,6 @@ RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const
 
 RHIFrameBuffer::~RHIFrameBuffer()
 {
-	
-}
-
-void RHIFrameBuffer::Dispose()
-{
 	if (_depthStencilSRV) { _depthStencilSRV.Reset(); }
 	if (_depthStencilView){ _depthStencilView.Reset();}
 	if (_depthStencil) { _depthStencil.Reset(); }
@@ -55,8 +50,8 @@ void RHIFrameBuffer::Dispose()
 
 	if (_renderPass) { _renderPass.Reset(); }
 	if (_device) { _device.Reset(); }
-
 }
+
 #pragma endregion Constructor and Destructor
 #pragma region Prepare
 void RHIFrameBuffer::CheckResourceFormat()

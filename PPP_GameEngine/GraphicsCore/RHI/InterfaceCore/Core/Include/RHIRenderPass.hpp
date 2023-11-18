@@ -95,6 +95,8 @@ namespace rhi::core
 			_depthAttachment.reset();
 			_colorClearValues.clear(); _colorClearValues.shrink_to_fit();
 			_colorAttachments.clear(); _colorAttachments.shrink_to_fit();
+
+			if (_device) { _device.Reset(); }
 		}
 
 		explicit RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const std::vector<Attachment>& colors, const std::optional<Attachment>& depth = std::nullopt);

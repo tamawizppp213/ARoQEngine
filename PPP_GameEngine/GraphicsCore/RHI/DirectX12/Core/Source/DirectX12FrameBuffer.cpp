@@ -43,15 +43,10 @@ RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 
 RHIFrameBuffer::~RHIFrameBuffer()
 {
-	Dispose();
-}
-
-void RHIFrameBuffer::Dispose()
-{
 	if (_renderTargetHeap) { _renderTargetHeap.Reset(); }
 	if (_depthStencilHeap) { _depthStencilHeap.Reset(); }
-	core::RHIFrameBuffer::Dispose();
 }
+
 #pragma endregion Constructor and Destructor
 
 #pragma region Prepare

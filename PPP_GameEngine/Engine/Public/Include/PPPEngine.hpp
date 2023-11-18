@@ -16,7 +16,6 @@
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSharedPointer.hpp"
-#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

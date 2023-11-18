@@ -53,7 +53,7 @@ namespace rhi::core
 		**                Protected Function
 		*****************************************************************************/
 		ASInstance() = default;
-		~ASInstance() = default;
+		virtual ~ASInstance() = default;
 		ASInstance(const gu::SharedPointer<RHIDevice>& device,
 			const gu::SharedPointer<BLASBuffer>& blasBuffer,
 			const gm::Float3x4& blasTransform,

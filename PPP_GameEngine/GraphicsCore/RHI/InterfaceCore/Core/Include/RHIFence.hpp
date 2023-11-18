@@ -59,7 +59,7 @@ namespace rhi::core
 
 		explicit RHIFence(const gu::SharedPointer<RHIDevice>& device) { _device = device; }
 		
-		~RHIFence() = default;
+		virtual ~RHIFence() { if (_device) { _device.Reset(); } }
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

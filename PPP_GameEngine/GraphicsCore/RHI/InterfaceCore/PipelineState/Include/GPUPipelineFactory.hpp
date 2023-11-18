@@ -81,7 +81,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		virtual ~GPUPipelineFactory() = default;
+		virtual ~GPUPipelineFactory() { if (_device) { _device.Reset(); } }
 		
 		explicit GPUPipelineFactory(const gu::SharedPointer<RHIDevice>& device) : _device(device) {};
 		

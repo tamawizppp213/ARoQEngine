@@ -63,7 +63,7 @@ namespace rhi::core
 			const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) :
 			_device(device), _commandList(graphicsCommandList), _customHeap(customHeap) { };
 
-		~GPUResourceCache() { _resourceViews.clear(); }
+		virtual ~GPUResourceCache() { _resourceViews.clear(); }
 
 	protected:
 		/****************************************************************************

@@ -60,7 +60,10 @@ namespace rhi::core
 		*****************************************************************************/
 		GPUResource() = default;
 
-		~GPUResource() = default;
+		virtual ~GPUResource()
+		{
+			if (_device) { _device.Reset(); }
+		}
 
 		explicit GPUResource(const gu::SharedPointer<RHIDevice>& device) : _device(device) {};
 		

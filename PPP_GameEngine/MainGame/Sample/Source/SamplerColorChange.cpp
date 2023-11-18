@@ -100,14 +100,13 @@ void SampleColorChange::Draw()
 	/*-------------------------------------------------------------------
 	-             Use effects
 	---------------------------------------------------------------------*/
-	//_colorChanges[_colorIndex]->Draw();
-	//_capture->Capture(_engine->GetFrameBuffer(frameIndex)->GetRenderTarget());
+	_colorChanges[_colorIndex]->Draw();
+	_capture->Capture(_engine->GetFrameBuffer(frameIndex)->GetRenderTarget());
 	
 	if (_useWhiteBalance) { _whiteBalance->Draw(); }
 	if (_useVignette) { _vignette->Draw(); }
 	if (_useBlur)   { _gaussianBlur->Draw(frameBuffer); }
 	if (_useMosaic) { _mosaic->Draw(); }
-	
 
 	_engine->EndDrawFrame();
 }

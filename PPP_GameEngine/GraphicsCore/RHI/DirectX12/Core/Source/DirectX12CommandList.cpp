@@ -182,6 +182,9 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 	if (_device->IsSupportedRenderPass()) { BeginRenderPassImpl(gu::StaticPointerCast<directX12::RHIRenderPass>(renderPass), gu::StaticPointerCast<directX12::RHIFrameBuffer>(frameBuffer)); }
 	else                                  { OMSetFrameBuffer   (gu::StaticPointerCast<directX12::RHIRenderPass>(renderPass), gu::StaticPointerCast<directX12::RHIFrameBuffer>(frameBuffer)); }
 
+	// 参照カウントが無限に増えつつけるバグ対応に使用しました.
+	if (_renderPass ) { _renderPass.Reset(); }
+	if (_frameBuffer) { _frameBuffer.Reset(); }
 	_renderPass  = renderPass;
 	_frameBuffer = frameBuffer;
 	_beginRenderPass = true;
@@ -539,15 +542,13 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 	/*-------------------------------------------------------------------
 	-          Get frame buffer resources
 	---------------------------------------------------------------------*/
-	auto renderTargets = frameBuffer->GetRenderTargets();
-	auto depthStencil  = frameBuffer->GetDepthStencil();
 	const bool hasRTV  = frameBuffer->GetRenderTargetSize() != 0;
 	const bool hasDSV  = frameBuffer->GetDepthStencil();
 	/*-------------------------------------------------------------------
 	-          Set CPU rtv and dsv descriptor handle
 	---------------------------------------------------------------------*/
 	// render target 
-	std::vector<D3D12_RENDER_PASS_RENDER_TARGET_DESC> rtvDescs(renderTargets.size());
+	std::vector<D3D12_RENDER_PASS_RENDER_TARGET_DESC> rtvDescs(frameBuffer->GetRenderTargetSize());
 	for (size_t i = 0; i < rtvDescs.size(); ++i)
 	{
 		// get rtv handle

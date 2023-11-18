@@ -72,7 +72,7 @@ namespace rhi::core
 		{
 			_elements.clear(); _elements.shrink_to_fit();
 			_samplers.clear(); _samplers.shrink_to_fit();
-
+			if (_device) { _device.Reset(); }
 		}
 
 		explicit RHIResourceLayout(

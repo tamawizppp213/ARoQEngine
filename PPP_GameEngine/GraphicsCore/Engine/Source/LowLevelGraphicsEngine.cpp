@@ -341,7 +341,6 @@ void LowLevelGraphicsEngine::ShutDown()
 	
 	for (auto& frameBuffer : _frameBuffers)
 	{
-		frameBuffer->Dispose();
 		frameBuffer.Reset();
 	}
 	_frameBuffers.clear(); 

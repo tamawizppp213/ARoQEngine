@@ -36,7 +36,6 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Dispose() override;
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -78,6 +77,7 @@ namespace rhi::directX12
 		size_t _dsvSize = 0;
 	private: 
 		void Prepare();
+
 	};
 }
 #endif
