@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   GUSharedPointer.hpp
-///             @brief  shared pointer ‚â‚é‚±‚Æstatic_pointer_cast‚Æshared_from_this
+///             @brief  Shared pointer
 ///             @author toide
 ///             @date   2023/11/08 23:39:22
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@ namespace gu
 	*				  			   GUSharedPointer
 	*************************************************************************//**
 	*  @class     GUSharedPointer
-	*  @brief     temp
+	*  @brief     if the reference count is 0, the resource ownered by this will destroy.
 	*****************************************************************************/
 	template<class ElementType,  SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
 	class SharedPointer : public ObserverPointerBase<ElementType, Mode>
