@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
-#include "GameUtility/Base/Include/GUSharedPointer.hpp"
+#include "GameUtility/Base/Include/GUMemory.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

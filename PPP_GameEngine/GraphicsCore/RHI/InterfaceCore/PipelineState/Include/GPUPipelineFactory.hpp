@@ -14,7 +14,7 @@
 #include "../../Core/Include/RHICommonState.hpp"
 #include "../../Core/Include/RHIResourceLayoutElement.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include "GameUtility/Base/Include/GUSharedPointer.hpp"
+#include "GameUtility/Base/Include/GUMemory.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

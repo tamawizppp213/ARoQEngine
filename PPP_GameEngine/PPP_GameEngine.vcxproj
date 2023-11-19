@@ -229,7 +229,7 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUAssert.hpp" />
-    <ClInclude Include="GameUtility\Base\Include\GUSharedPointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Include\GUSharedPointer.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -237,11 +237,15 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Include\GUUniquePointer.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUUUID.hpp">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Include\GUWeakPointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Include\GUWeakPointer.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -343,7 +347,7 @@
     <ClInclude Include="GameUtility\Base\Include\ClassUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
-    <ClInclude Include="GameUtility\Base\Include\Memory.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUMemory.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Screen.hpp" />
     <ClInclude Include="GameUtility\Base\Include\ValueRange.hpp" />
     <ClInclude Include="GameUtility\File\External\rapidjson\allocators.h" />

@@ -1,20 +1,19 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GLTFIStreamReader.hpp
-///             @brief  Stream Reader Interface
-///             @author Copyright (c) Microsoft Corporation. All rights reserved.Licensed under the MIT License.
-///                     Partially edit by Toide
-///             @date   2022_05_23  
+///             @file   Memory.hpp
+///             @brief  Memory
+///             @author Toide Yutaro
+///             @date   2022_03_16
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GLTF_ISTREAM_READER_HPP
-#define GLTF_ISTREAM_READER_HPP
+#ifndef GU_MEMORY_HPP
+#define GU_MEMORY_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <istream>
-#include "GameUtility/Base/Include/GUMemory.hpp"
-#include <string>
+#include "../Private/Include/GUSharedPointer.hpp"
+#include "../Private/Include/GUWeakPointer.hpp"
+#include "../Private/Include/GUUniquePointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,17 +21,5 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gltf
-{
-	namespace detail
-	{
 
-		class IStreamReader
-		{
-		public:
-			virtual ~IStreamReader() = default;
-			virtual std::shared_ptr<std::istream> GetInputStream(const std::string& fileName) const = 0;
-		};
-	}
-}
 #endif

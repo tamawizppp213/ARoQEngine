@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/HLSLUtility.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
-#include "GameUtility/Base/Include/GUSharedPointer.hpp"
+#include "GameUtility/Base/Include/GUMemory.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

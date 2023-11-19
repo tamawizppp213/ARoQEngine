@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUSharedPointer.hpp
+///             @file   GUMemory.hpp
 ///             @brief  Shared pointer
 ///             @author toide
 ///             @date   2023/11/08 23:39:22
@@ -146,8 +146,7 @@ namespace gu
 		}
 
 		/*----------------------------------------------------------------------
-		*  Move Constructs a weak pointer from a weak pointer of another type.
-		*  This constructor is intended to allow derived - to - base conversions
+		*  Move Constructs a shared pointer
 		/*----------------------------------------------------------------------*/
 		SharedPointer(SharedPointer&& right) noexcept 
 		{

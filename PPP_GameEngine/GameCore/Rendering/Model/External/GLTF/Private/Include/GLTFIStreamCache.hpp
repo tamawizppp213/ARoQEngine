@@ -13,7 +13,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include <istream>
-#include "GameUtility/Base/Include/GUSharedPointer.hpp"
+#include "GameUtility/Base/Include/GUMemory.hpp"
 #include <ostream>
 #include <string>
 

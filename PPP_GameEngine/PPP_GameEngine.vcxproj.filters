@@ -123,7 +123,7 @@
     <ClInclude Include="GameCore\Core\Include\GameObject.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Include\Memory.hpp">
+    <ClInclude Include="GameUtility\Base\Include\GUMemory.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUType.hpp">
@@ -1029,13 +1029,13 @@
     <ClInclude Include="GameUtility\Base\Include\GUString.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Include\GUSharedPointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Include\GUSharedPointer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Base\Private\Include\GUReferenceControllerBase.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Include\GUWeakPointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Include\GUWeakPointer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Base\Private\Include\GUSharedDeleter.hpp">
@@ -1045,6 +1045,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Base\Private\Include\GUObserverPointer.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Include\GUUniquePointer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

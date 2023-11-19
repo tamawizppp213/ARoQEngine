@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "CoreCommonState.hpp"
-#include "GameUtility/Base/Include/GUSharedPointer.hpp"
+#include "GameUtility/Base/Include/GUMemory.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <cstdint>
 //////////////////////////////////////////////////////////////////////////////////
