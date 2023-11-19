@@ -229,7 +229,7 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUAssert.hpp" />
-    <ClInclude Include="GameUtility\Base\Private\Include\GUSharedPointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUSharedPointer.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -237,7 +237,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUUniquePointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUUniquePointer.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -245,23 +245,23 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUWeakPointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUWeakPointer.hpp">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUObserverPointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUObserverPointer.hpp">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUReferenceController.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUReferenceController.hpp">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUSharedDeleter.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUSharedDeleter.hpp">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUReferenceControllerBase.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUReferenceControllerBase.hpp">
       <SubType>
       </SubType>
     </ClInclude>

@@ -1029,25 +1029,25 @@
     <ClInclude Include="GameUtility\Base\Include\GUString.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUSharedPointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUSharedPointer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUReferenceControllerBase.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUReferenceControllerBase.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUWeakPointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUWeakPointer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUSharedDeleter.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUSharedDeleter.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUReferenceController.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUReferenceController.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUObserverPointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUObserverPointer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Private\Include\GUUniquePointer.hpp">
+    <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUUniquePointer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
