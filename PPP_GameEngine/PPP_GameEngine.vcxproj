@@ -229,6 +229,14 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUAssert.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUDateTime.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUTimeSpan.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUSharedPointer.hpp">
       <SubType>
       </SubType>
@@ -611,7 +619,15 @@
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UISlider.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIText.cpp" />
+    <ClCompile Include="GameUtility\Base\Source\GUDateTime.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUAssert.cpp" />
+    <ClCompile Include="GameUtility\Base\Source\GUTimeSpan.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUUUID.cpp">
       <SubType>
       </SubType>

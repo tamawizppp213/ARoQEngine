@@ -32,6 +32,7 @@
 using namespace rhi;
 using namespace rhi::directX12;
 using namespace DirectX;
+#pragma warning(disable: 4099)
 #ifdef _DEBUG
 #pragma comment(lib, "Pluguins/DirectXTex.lib")
 #else

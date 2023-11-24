@@ -1050,6 +1050,12 @@
     <ClInclude Include="GameUtility\Base\Private\Memory\Include\GUUniquePointer.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUDateTime.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUTimeSpan.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1683,6 +1689,12 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Platform\Windows\Source\WindowsPlatformCommand.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Source\GUDateTime.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Source\GUTimeSpan.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
