@@ -33,6 +33,12 @@ namespace gu
 	using char16   = char16_t; // literal "u"
 	using char32   = char32_t; // literal "U"
 	using wchar    = wchar_t;  // literal "L"
-	using u8char   = unsigned char; // literal "u8" 
+	using u8char   = unsigned char; // literal "u8"
+	
+#if defined(_WIN32) || defined(_WIN64)
+	using tchar = wchar;
+#else 
+	using tchar = char16;
+#endif
 }
 #endif
