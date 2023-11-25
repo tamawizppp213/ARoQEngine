@@ -63,7 +63,11 @@ namespace gu
 	}
 
 	using string  = std::string;
-	using wstring = std::wstring;
+#if NEED_WIDE_CHAR
+	using tstring = std::wstring;
+#else 
+	using tstring = std::u16string;
+#endif
 }
 
 #endif

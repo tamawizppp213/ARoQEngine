@@ -35,10 +35,15 @@ namespace gu
 	using wchar    = wchar_t;  // literal "L"
 	using u8char   = unsigned char; // literal "u8"
 	
+	// Ú“ª«‚Ì•ÏX‚ª•K—v‚Æ‚È‚è‚Ü‚·
 #if defined(_WIN32) || defined(_WIN64)
 	using tchar = wchar;
+	#define NEED_WIDE_CHAR (1)
+	#define TCHAR_TEXT(str) L ##str
 #else 
 	using tchar = char16;
+	#define NEED_WIDE_CHAR (0)
+	#define TCHAR_TEXT(str) u ##str
 #endif
 }
 #endif
