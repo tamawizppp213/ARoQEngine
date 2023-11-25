@@ -41,7 +41,7 @@ namespace platform::core
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : This function is called by window activation changed*/
-		virtual bool OnWindowActivationChanged(const CoreWindowPtr& window, const core::ActivationType type) = 0;
+		virtual bool OnWindowActivationChanged([[maybe_unused]]const CoreWindowPtr& window, [[maybe_unused]]const core::ActivationType type) = 0;
 
 		/* @brief : This function is called by window closed*/
 		virtual bool OnWindowClosed(const CoreWindowPtr& window) = 0;

@@ -14,7 +14,6 @@
 #include "GameUtility/Base/Include/Screen.hpp"
 #include <cassert>
 #include <stdexcept>
-
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +37,7 @@ CoreWindowMessageHandler::~CoreWindowMessageHandler()
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function
-bool CoreWindowMessageHandler::OnWindowActivationChanged(const CoreWindowPtr& window, const core::ActivationType type)
+bool CoreWindowMessageHandler::OnWindowActivationChanged([[maybe_unused]] const CoreWindowPtr& window, [[maybe_unused]] const core::ActivationType type)
 {
 	return true;
 }
