@@ -256,4 +256,21 @@
 #endif
 #pragma endregion SIMD
 
+#pragma region Platform Class
+#if PLATFORM_OS_WINDOWS 
+	#define PLATFORM_CLASS(className) platform::windows::className
+#elif PLATFORM_OS_ANDROID
+	#define PLATFORM_CLASS(className) platform::android::className
+#elif PLATFORM_OS_LINUX
+	#define PLATFORM_CLASS(className) platform::Linux::className
+#elif PLATFORM_OS_IOS
+	#define PLATFORM_CLASS(className) platform::ios::className
+#elif PLATFORM_OS_MAC
+	#define PLATFORM_CLASS(className) platform::mac::className
+#elif PLATFORM_OS_UNIX
+	#define PLATFORM_CLASS(className) platform::unix::className
+#elif PLATFORM_OS_FREEBSD
+	#define PLATFORM_CLASS(className) platform::freebsd::className
+#endif
+#pragma endregion Platform NameSpace
 #endif

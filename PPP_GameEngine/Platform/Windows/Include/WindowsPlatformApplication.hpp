@@ -8,10 +8,12 @@
 #ifndef WINDOWS_PLATFORM_APPLICATION_HPP
 #define WINDOWS_PLATFORM_APPLICATION_HPP
 
-#ifdef _WIN32
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "../../Core/Include/CorePlatformMacros.hpp"
+
+#if PLATFORM_OS_WINDOWS
 #include "../../Core/Include/CorePlatformApplication.hpp"
 #include "../Private/Include/WindowsDeferredMessage.hpp"
 #include <vector>

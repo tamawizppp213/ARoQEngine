@@ -8,10 +8,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#ifdef _WIN32
+#include "../../Windows/Include/WindowsPlatformApplication.hpp"
+#if PLATFORM_OS_WINDOWS
 #include "../../Windows/Include/WindowsWindowsMessageHandler.hpp"
 #include "../../Windows/Include/WindowsWindow.hpp"
-#include "../../Windows/Include/WindowsPlatformApplication.hpp"
 #include "../../Windows/Include/WindowsPlatformCommand.hpp"
 #include "../../Core/Include/CoreCommonState.hpp"
 #include <cassert>

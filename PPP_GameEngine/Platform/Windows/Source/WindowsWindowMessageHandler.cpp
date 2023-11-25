@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#ifdef _WIN32
 #include "../../Windows/Include/WindowsWindowsMessageHandler.hpp"
+#if PLATFORM_OS_WINDOWS
 #include "../../Windows/Include/WindowsWindow.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include <cassert>

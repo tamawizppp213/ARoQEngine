@@ -9,6 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/WindowsPlatformCommand.hpp"
+#if PLATFORM_OS_WINDOWS
 #include "GameUtility/Base/Include/GUAssert.hpp"
 #include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
@@ -65,3 +66,4 @@ gu::UUID PlatformCommand::IssueUUID()
 	return uuid;
 }
 #pragma endregion Main Function
+#endif

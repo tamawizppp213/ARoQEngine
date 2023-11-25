@@ -8,10 +8,12 @@
 #ifndef WINDOWS_WINDOW_HPP
 #define WINDOWS_WINDOW_HPP
 
-#ifdef _WIN32
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "../../Core/Include/CorePlatformMacros.hpp"
+
+#if PLATFORM_OS_WINDOWS
 #include "../../Core/Include/CoreWindow.hpp"
 #include <Windows.h>
 #include "GameUtility/Base/Include/GUMemory.hpp"

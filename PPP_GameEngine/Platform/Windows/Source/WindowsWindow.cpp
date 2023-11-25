@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#ifdef _WIN32
 #include "../../Windows/Include/WindowsWindow.hpp"
+#if PLATFORM_OS_WINDOWS
 #include "../../Windows/Include/WindowsPlatformApplication.hpp"
 #include "../../Windows/Include/WindowsError.hpp"
 #include <cassert>
