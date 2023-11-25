@@ -8,52 +8,30 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "../../Core/Include/CorePlatformMacros.hpp"
 #include "../../Core/Include/CorePlatformApplication.hpp"
 #include "../../Core/Include/CoreWindowMessageHandler.hpp"
 #include "../../Core/Include/CoreWindow.hpp"
-#include "../../Core/Include/CorePlatformMacros.hpp"
-#include "../../Windows/Include/WindowsPlatformApplication.hpp"
+#include PLATFORM_COMPILED_HEADER(../.., PlatformApplication.hpp)
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace platform::core;
 using namespace platform;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 /////////////////////////////////////////////////////////////////////////////////
-PlatformApplication::PlatformApplication()
+core::PlatformApplication::PlatformApplication()
 {
 
 }
-PlatformApplication::~PlatformApplication()
+core::PlatformApplication::~PlatformApplication()
 {
 	_messageHandler.Reset(); 
 }
 
-gu::SharedPointer<PlatformApplication> PlatformApplication::Create(const PlatformType type)
+gu::SharedPointer<core::PlatformApplication> core::PlatformApplication::Create()
 {
-	switch (type)
-	{
-		case PlatformType::Windows:
-		{
-			#if PLATFORM_OS_WINDOWS
-			return gu::StaticPointerCast<PlatformApplication>(gu::MakeShared<platform::windows::PlatformApplication>());
-			#endif
-		}
-		default:
-		{
-			throw std::runtime_error("Unknown platform");
-		}
-	}
-}
+	return gu::StaticPointerCast<core::PlatformApplication>(gu::MakeShared<PLATFORM_CLASS(PlatformApplication)>());
 
-gu::SharedPointer<PlatformApplication> PlatformApplication::Create()
-{
-#if PLATFORM_OS_WINDOWS
-	return gu::StaticPointerCast<PlatformApplication>(gu::MakeShared<windows::PlatformApplication>());
-#else
-	OutputDebugStringA("platform application is nullptr");
-	return nullptr;
-#endif
 }

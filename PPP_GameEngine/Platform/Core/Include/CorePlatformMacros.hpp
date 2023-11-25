@@ -258,19 +258,35 @@
 
 #pragma region Platform Class
 #if PLATFORM_OS_WINDOWS 
-	#define PLATFORM_CLASS(className) platform::windows::className
+	#define PLATFORM_CLASS(className) platform::windows::##className
+	#define PLATFORM_NAME Windows
 #elif PLATFORM_OS_ANDROID
-	#define PLATFORM_CLASS(className) platform::android::className
+	#define PLATFORM_CLASS(className) platform::android::##className
+	#define PLATFORM_NAME Android
 #elif PLATFORM_OS_LINUX
-	#define PLATFORM_CLASS(className) platform::Linux::className
+	#define PLATFORM_CLASS(className) platform::Linux::##className
+	#define PLATFORM_NAME Linux
 #elif PLATFORM_OS_IOS
-	#define PLATFORM_CLASS(className) platform::ios::className
+	#define PLATFORM_CLASS(className) platform::ios::##className
+	#define PLATFORM_NAME IOS
 #elif PLATFORM_OS_MAC
-	#define PLATFORM_CLASS(className) platform::mac::className
+	#define PLATFORM_CLASS(className) platform::mac::##className
+	#define PLATFORM_NAME MAC
 #elif PLATFORM_OS_UNIX
-	#define PLATFORM_CLASS(className) platform::unix::className
+	#define PLATFORM_CLASS(className) platform::unix::##className
+	#define PLATFORM_NAME Unix
 #elif PLATFORM_OS_FREEBSD
-	#define PLATFORM_CLASS(className) platform::freebsd::className
+	#define PLATFORM_CLASS(className) platform::freebsd::##className
+	#define PLATFORM_NAME FreeBSD
+#else
+	#define PLATFORM_CLASS(className) platform::core::##className
+	#define PLATFORM_NAME Core
 #endif
+
+#define PREPROCESSOR_TO_STRING_INNER(str) #str
+#define PREPROCESSOR_TO_STRING(str) PREPROCESSOR_TO_STRING_INNER(str)
+#define PREPROCESSOR_JOIN_INNER(left, right) left##right
+#define PREPROCESSOR_JOIN(left, right) PREPROCESSOR_JOIN_INNER(left, right)
+#define PLATFORM_COMPILED_HEADER(preDirectory, commonHeaderName) PREPROCESSOR_TO_STRING(preDirectory/PLATFORM_NAME/Include/PREPROCESSOR_JOIN(PLATFORM_NAME,commonHeaderName)) 
 #pragma endregion Platform NameSpace
 #endif

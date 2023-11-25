@@ -43,8 +43,6 @@ namespace platform::core
 		/* @brief : This application creator is determined in according to platform macro*/
 		static gu::SharedPointer<PlatformApplication> Create();
 
-		static gu::SharedPointer<PlatformApplication> Create(const core::PlatformType type);
-
 		virtual gu::SharedPointer<CoreWindow> MakeWindow() = 0;
 
 		virtual gu::SharedPointer<PlatformCommand> MakeCommand() = 0;
