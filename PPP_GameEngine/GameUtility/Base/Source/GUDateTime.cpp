@@ -12,6 +12,7 @@
 #include "../Include/GUAssert.hpp"
 #include <stdexcept>
 #include <math.h>
+#include <vector>
 
 // platformñàÇÃèàóù
 #if defined(_WIN32) || defined(_WIN64)
@@ -26,6 +27,18 @@ using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
+namespace
+{
+	template <typename ... Args>
+	std::string Format(const std::string& fmt, Args ... args)
+	{
+		size_t len = std::snprintf(nullptr, 0, fmt.c_str(), args ...);
+		std::vector<char> buf(len + 1);
+		std::snprintf(&buf[0], len + 1, fmt.c_str(), args ...);
+		return std::string(&buf[0], &buf[0] + len);
+	}
+}
+
 #pragma region Constructor and Destructor 
 DateTime::DateTime(const int32 year, const int32 month, const int32 day,
 	const int32 hour, const int32 minute, const int32 second, const int32 millisecond)
@@ -295,5 +308,50 @@ int32 DateTime::GetMonth() const
 	int32 year = 0, month = 0, day = 0;
 	GetDate(year, month, day);
 	return month;
+}
+
+gu::string DateTime::ToString() const
+{
+	return ToString("%Y.%m.%d-%H.%M.%S");
+}
+
+gu::string DateTime::ToString(const gu::char8* format) const
+{
+	gu::string result;
+
+	int32 year = 0, month = 0, day = 0;
+	GetDate(year, month, day);
+
+	while (*format != ('\0'))
+	{
+		if ((*format == '%') && (*++format != '\0'))
+		{
+			switch (*format)
+			{
+				case 'a': result += IsAM() ? "am" : "pm"; break;
+				case 'A': result += IsAM() ? "AM" : "PM"; break;
+				case 'D': result += Format("%03i", GetDayOfYear()); break;
+				case 'd': result += Format("%02i", day); break;
+				case 'm': result += Format("%02i", month); break;
+				case 'y': result += Format("%02i", year % 100); break;
+				case 'Y': result += Format("%04i", year); break;
+				case 'h': result += Format("%02i", GetHour12()); break;
+				case 'H': result += Format("%02i", GetHour()); break;
+				case 'M': result += Format("%02i", GetMinute()); break;
+				case 'S': result += Format("%02i", GetSecond()); break;
+				case 's': result += Format("%03i", GetMillisecond()); break;
+				default:
+					result += *format;
+			}
+		}
+		else
+		{
+			result += *format;
+		}
+
+		++format;
+	}
+
+	return result;
 }
 #pragma endregion Main Function

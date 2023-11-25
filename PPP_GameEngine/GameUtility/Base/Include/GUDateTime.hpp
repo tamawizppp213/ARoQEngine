@@ -226,8 +226,11 @@ namespace gu
 		{
 			return DateTime(1970, 1, 1) + TimeSpan(int64(unixTime * TimeSpan::TICKS_PER_SECOND));
 		}
-
-
+		/*----------------------------------------------------------------------
+		*  @brief : •¶Žš—ñ‚ð•Ô‚·
+		/*----------------------------------------------------------------------*/
+		gu::string ToString() const;
+		gu::string ToString(const char8* format) const;
 
 		__forceinline DateTime operator +(const TimeSpan& right) const { return DateTime(_ticks + right.GetTicks()); }
 		

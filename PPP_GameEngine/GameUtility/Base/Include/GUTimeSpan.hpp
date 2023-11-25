@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GUType.hpp"
-
+#include "GUString.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,10 +42,10 @@ namespace gu
 		double GetTotalMilliseconds() const { return ((double)_ticks / TICKS_PER_MILLISECOND); }
 		double GetTotalMicroseconds() const { return ((double)_ticks / TICKS_PER_MICROSECOND); };
 
-		static TimeSpan FromSeconds(const double seconds);
-		static TimeSpan FromMinutes(const double minutes);
-		static TimeSpan FromHours  (const double hours);
-		static TimeSpan FromDays   (const double days);
+		static TimeSpan CreateFromSeconds(const double seconds);
+		static TimeSpan CreateFromMinutes(const double minutes);
+		static TimeSpan CreateFromHours  (const double hours);
+		static TimeSpan CreateFromDays   (const double days);
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -65,6 +65,7 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*							Getter
 		/*----------------------------------------------------------------------*/
+		__forceinline int32  GetFractionMicrosecond() const { return (int32)((_ticks & TICKS_PER_SECOND) / TICKS_PER_MICROSECOND); }
 		__forceinline int32  GetFractionMillisecond() const {return (int32)((_ticks % TICKS_PER_SECOND) / TICKS_PER_MILLISECOND);}
 		__forceinline int32  GetFractionNanosecond() const {return (int32)((_ticks % TICKS_PER_SECOND) * NANOSECONDS_PER_TICK);}
 		__forceinline int32  GetFractionTicks() const { return (int32)(_ticks % TICKS_PER_SECOND); }
@@ -78,6 +79,16 @@ namespace gu
 		*				Get Duration from start in unit of 100 nanoseconds
 		/*----------------------------------------------------------------------*/
 		__forceinline TimeSpan GetDuration() const { return TimeSpan(_ticks >= 0 ? _ticks : -_ticks); }
+
+		__forceinline bool IsZero() const { return (_ticks == 0); }
+
+		/*----------------------------------------------------------------------
+		*	@brief : Return the string representation of this time span using default format
+		*            p[d.]hh:mm:ss.fff
+		/*----------------------------------------------------------------------*/
+		gu::string ToString() const;
+
+		gu::string ToString(const gu::char8* format) const;
 
 		/****************************************************************************
 		**                Constructor and Destructor
