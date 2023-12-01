@@ -10,6 +10,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Windows/Include/WindowsCursor.hpp"
 #if PLATFORM_OS_WINDOWS
+#include "../../Windows/Include/WindowsError.hpp"
+#include "GameUtility/Base/Include/GUAssert.hpp"
+#include "GameUtility/Math/Include/GMColor.hpp"
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,6 +27,18 @@ using namespace platform::windows;
 ICursor::ICursor(const core::CursorType type) : core::ICursor(type)
 {
 	SetType(type);
+}
+
+ICursor::ICursor(const gu::char8* filePath) : core::ICursor(core::CursorType::Original)
+{
+	const auto handle = (HCURSOR)CreateCursorFromFile(filePath);
+
+	if (handle == nullptr)
+	{
+		ErrorLogger::Log(nullptr);
+	}
+
+	_cursor = handle;
 }
 
 ICursor::~ICursor()
@@ -65,6 +81,100 @@ void ICursor::Hide()
 }
 
 /****************************************************************************
+*                     Lock
+*************************************************************************//**
+*  @fn        void ICursor::Lock(core::Rectangle* rectangle)
+*
+*  @brief     カーソルを領域内だけでしか動かせないようにします
+*
+*  @param[in] core::Rectangle* rectangle pointer
+*
+*  @return    bool
+*****************************************************************************/
+bool ICursor::Lock(core::Rectangle* rectangle)
+{
+	::ClipCursor(reinterpret_cast<RECT*>(rectangle));
+	return ErrorLogger::Succeed();
+}
+
+/****************************************************************************
+*                     CreateCursorFromFile
+*************************************************************************//**
+*  @fn        void* ICursor::CreateCursorFromFile(const gu::char8* filePath, const gm::Float2 inHotSpot)
+*
+*  @brief     ファイルを読み込んでカーソルを使用します. 
+*             現在.curのみ受付可能です. 
+*
+*  @param[in] const gu::char8* filePath
+*  @param[in] const gm::Float2 inHotSpot
+*
+*  @return    bool
+*****************************************************************************/
+void* ICursor::CreateCursorFromFile(const gu::char8* filePath)
+{
+	// pixelが0担っているのは実際のリソースの高さを使用するためです. 
+	return (HCURSOR)LoadImageA(nullptr, filePath, IMAGE_CURSOR, 0, 0, LR_LOADFROMFILE);
+}
+
+/****************************************************************************
+*                     CreateCursorFromRGBABuffer
+*************************************************************************//**
+*  @fn        void* ICursor::CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int32 width, const gu::int32 height)
+*
+*  @brief     RGBAの構造体から直接アイコンを作成します
+*
+*  @param[in] const gu::RGBA* pixels
+*  @param[in] const gu::int32 pixel width
+*  @param[in] const gu::int32 pixel height
+*
+*  @return    void*
+*****************************************************************************/
+void* ICursor::CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int32 width, const gu::int32 height)
+{
+	Check(width > 0);
+	Check(height > 0);
+
+	std::vector<gm::BGRA>  bgraPixels(width * height);
+	std::vector<gu::uint8> maskPixels(width * height);
+
+	/*---------------------------------------------------------------
+			BGRA情報に変換
+	-----------------------------------------------------------------*/
+	for (int i = 0; i < bgraPixels.size(); ++i)
+	{
+		bgraPixels[i] = gm::BGRA(pixels[i].B, pixels[i].G, pixels[i].R, pixels[i].A);
+		maskPixels[i] = 255;
+	}
+
+	/*---------------------------------------------------------------
+			ビットマップの作成
+	-----------------------------------------------------------------*/
+	const auto cursorColor = ::CreateBitmap(width, height, 1, 32, bgraPixels.data());
+	const auto cursorMask  = ::CreateBitmap(width, height, 1, 8, maskPixels.data());
+
+	ICONINFO iconInfo =
+	{
+		.fIcon = false,
+		.xHotspot = 0,
+		.yHotspot = 0,
+		.hbmMask  = cursorMask,
+		.hbmColor = cursorColor
+	};
+
+	const auto cursorHandle = ::CreateIconIndirect(&iconInfo);
+
+	/*---------------------------------------------------------------
+			終了処理
+	-----------------------------------------------------------------*/
+	::DeleteObject(cursorColor);
+	::DeleteObject(cursorMask);
+
+	bgraPixels.clear(); bgraPixels.shrink_to_fit();
+	maskPixels.clear(); maskPixels.shrink_to_fit();
+	return nullptr;
+}
+
+/****************************************************************************
 *                     GetType
 *************************************************************************//**
 *  @fn        core::CursorType ICursor::GetType() const 
@@ -78,6 +188,50 @@ void ICursor::Hide()
 core::CursorType ICursor::GetType() const 
 {
 	return _type;
+}
+
+/****************************************************************************
+*                     GetSize
+*************************************************************************//**
+*  @fn        void ICursor::GetSize(gu::int32& width, gu::int32& height) const
+*
+*  @brief     Return cursor size
+*
+*  @param[out] gu::int32& width
+*  @param[out] gu::int32& height
+*
+*  @return    void
+*****************************************************************************/
+void ICursor::GetSize(gu::int32& width, gu::int32& height) const
+{
+	ICONINFO iconInfo = {};
+
+	/*---------------------------------------------------------------
+			アイコンの情報を取得します
+	-----------------------------------------------------------------*/
+	if (!GetIconInfo((HICON)_cursor, &iconInfo)) { width = 0; height = 0; return; }
+
+	/*---------------------------------------------------------------
+			アイコンのサイズを取得します
+	-----------------------------------------------------------------*/
+	BITMAP bitmap = {};
+	if (GetObject(iconInfo.hbmMask, sizeof(bitmap), &bitmap) == sizeof(bitmap))
+	{
+		width  = bitmap.bmWidth;
+
+		// モノクロアイコンの場合, 上部にANDマスク, 下部にXORマスクがついている関係でアイコンの高さの2倍を示すことになります.
+		// https://learn.microsoft.com/ja-jp/windows/win32/api/winuser/ns-winuser-iconinfo
+		height = iconInfo.hbmColor ? bitmap.bmHeight : bitmap.bmHeight / 2;
+	}
+	if (iconInfo.hbmMask)
+	{
+		DeleteObject(iconInfo.hbmMask);
+	}
+	if (iconInfo.hbmColor)
+	{
+		DeleteObject(iconInfo.hbmColor);
+	}
+	
 }
 
 /****************************************************************************
@@ -189,7 +343,7 @@ gm::Float2 ICursor::GetPosition() const
 *
 *  @return    void
 *****************************************************************************/
-void ICursor::SetPosition(const std::int32_t x, const std::int32_t y) const 
+void ICursor::SetPosition(const gu::int32 x, const gu::int32 y) const 
 {
 	::SetCursorPos(x, y);
 }

@@ -12,12 +12,16 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "CoreCommonState.hpp"
+#include "GameUtility/Base/Include/GUType.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <cstdint>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+namespace gm
+{
+	struct RGBA;
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
@@ -37,19 +41,57 @@ namespace platform::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/*---------------------------------------------------------------
+			@brief : Show the cursor pointer
+		-----------------------------------------------------------------*/
 		virtual void Show() = 0;
 
+		/*---------------------------------------------------------------
+			@brief : Hide the cursor pointer
+		-----------------------------------------------------------------*/
 		virtual void Hide() = 0;
 
+		/*---------------------------------------------------------------
+			@brief : Locked the cursor to the passed in bounds
+		-----------------------------------------------------------------*/
+		virtual bool Lock(Rectangle* rectangle) = 0;
+
+		/*---------------------------------------------------------------
+			@brief : Return the suport to create cursor from the file
+			         currently .cur only usable.
+		-----------------------------------------------------------------*/
+		virtual void* CreateCursorFromFile([[maybe_unused]]const gu::char8* filePath) { return nullptr; }
+
+		/*---------------------------------------------------------------
+			@brief : Create new cursor icon from rgba buffer
+		-----------------------------------------------------------------*/
+		virtual void* CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int32 width, const gu::int32 height) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		virtual gm::Float2  GetPosition() const = 0;
+		/*---------------------------------------------------------------
+			@brief : Return the cursor position in (x, y) pixel
+		-----------------------------------------------------------------*/
+		virtual gm::Float2 GetPosition() const = 0;
 		
-		virtual CursorType  GetType() const = 0;
+		/*---------------------------------------------------------------
+			@brief : Return the cursor look type
+		-----------------------------------------------------------------*/
+		virtual CursorType GetType() const = 0;
 
-		virtual void SetPosition(const std::int32_t x, const std::int32_t y) const = 0;
+		/*---------------------------------------------------------------
+			@brief : Return the cursor size
+		-----------------------------------------------------------------*/
+		virtual void GetSize(gu::int32& width, gu::int32& height) const = 0;
 
+		/*---------------------------------------------------------------
+			@brief : Set the cursor position in (x, y) pixel
+		-----------------------------------------------------------------*/
+		virtual void SetPosition(const gu::int32 x, const gu::int32 y) const = 0;
+
+		/*---------------------------------------------------------------
+			@brief : Set the cursor look type
+		-----------------------------------------------------------------*/
 		virtual void SetType(const CursorType type) = 0;
 		
 		/****************************************************************************

@@ -28,6 +28,7 @@
 #include "GameUtility/Base/Include/GUAssert.hpp"
 
 #include "MainGame/Core/Include/GameManager.hpp"
+#include "Platform/Windows/Include/WindowsCursor.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +69,7 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 	_platformApplication->SetUpWindow(_mainWindow, setting.WindowSettings);
 
 	if (!_mainWindow->Show()) { printf("failed to show window\n"); }
-
+	
 	/*---------------------------------------------------------------
 					  Platform commandÉNÉâÉXÇÃçÏê¨
 	-----------------------------------------------------------------*/

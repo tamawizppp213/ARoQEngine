@@ -43,17 +43,18 @@ namespace platform::core
 	*****************************************************************************/
 	enum class CursorType
 	{
-		None, 
-		Default,
-		TextEditBeam,
-		ResizeLeftRight,
-		ResizeUpDown,
-		ResizeSouthEast,
-		ResizeSouthWest,
-		CardinalCross,
-		Crosshairs,
-		Hand,
-		Prohibit,
+		None,            // Causes no mouse cursor to be visible.
+		Default,         // arrow cursor
+		TextEditBeam,    // text edit beam
+		ResizeLeftRight, // resize horizontal
+		ResizeUpDown,    // resize vertical
+		ResizeSouthEast, // resize diagonal
+		ResizeSouthWest, // resize other diagonal
+		CardinalCross,   // move item
+		Crosshairs,      // target cross
+		Hand,            // hand cursor
+		Prohibit,        // prohibit
+		Original,        // your original cursor
 		CountOf,
 	};
 
@@ -124,7 +125,14 @@ namespace platform::core
 		ActivationPolicy ActivationPolicy = ActivationPolicy::FirstOnlyShow;
 		WindowMode       WindowMode       = WindowMode::Windowed;
 	};
-
+	
+	struct Rectangle
+	{
+		long Left   = 0;
+		long Top    = 0;
+		long Right  = 0;
+		long Bottom = 0;
+	};
 #pragma endregion Window
 }
 
