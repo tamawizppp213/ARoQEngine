@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
 #include "DirectX12Core.hpp"
-#include "GameUtility/Base/Include/GUMemory.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

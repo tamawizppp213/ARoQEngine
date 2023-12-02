@@ -15,7 +15,7 @@
 #include "GameUtility/Math/Include/GMTransform.hpp"
 #include <string>
 #include <vector>
-#include "GameUtility/Base/Include/GUMemory.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

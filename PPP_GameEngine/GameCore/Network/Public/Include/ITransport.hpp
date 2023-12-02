@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <WinSock2.h>
 #include <vector>
-#include "GameUtility/Base/Include/GUMemory.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

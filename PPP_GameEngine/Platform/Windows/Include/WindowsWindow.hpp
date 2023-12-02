@@ -16,7 +16,7 @@
 #if PLATFORM_OS_WINDOWS
 #include "../../Core/Include/CoreWindow.hpp"
 #include <Windows.h>
-#include "GameUtility/Base/Include/GUMemory.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

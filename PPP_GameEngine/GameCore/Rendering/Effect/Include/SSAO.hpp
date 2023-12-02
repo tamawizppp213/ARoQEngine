@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/HLSLUtility.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-#include "GameUtility/Base/Include/GUMemory.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <string>
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////

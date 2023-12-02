@@ -17,7 +17,7 @@
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "LightType.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include "GameUtility/Base/Include/GUMemory.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <vector>
 #include <numeric>
 

@@ -14,7 +14,7 @@
 #include "Engine/Public/Include/PPPEngine.hpp"
 #include "GameCore/Input/Include/GameInput.hpp"
 #include "GameUtility/Base/Include/GameTimer.hpp"
-#include "GameUtility/Base/Include/GUMemory.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

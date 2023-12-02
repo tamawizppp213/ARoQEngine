@@ -363,7 +363,7 @@
     <ClInclude Include="GameUtility\Base\Include\ClassUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
-    <ClInclude Include="GameUtility\Base\Include\GUMemory.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUSmartPointer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Screen.hpp" />
     <ClInclude Include="GameUtility\Base\Include\ValueRange.hpp" />
     <ClInclude Include="GameUtility\File\External\rapidjson\allocators.h" />
