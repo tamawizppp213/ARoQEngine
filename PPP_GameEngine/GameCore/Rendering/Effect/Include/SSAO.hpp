@@ -14,19 +14,24 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/HLSLUtility.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <string>
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
+namespace gc
+{
+	class GaussianBlur;
+};
 namespace rhi::core
 {
 	class GPUBuffer;
 	class GPUResourceView;
 	class RHIResourceLayout;
 	class GPUGraphicsPipelineState;
+
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
@@ -46,11 +51,11 @@ namespace gc
 		/* @brief : SSAO setting : Define radius, attenuated shapness, fade view space value from start to end.*/
 		struct SSAOSetting
 		{
-			hlsl::float2 TextureSize    = gm::Float2(Screen::GetScreenWidth(), Screen::GetScreenHeight());
-			hlsl::float1 Radius         = 0.5f;
+			hlsl::float2 TextureSize    = gm::Float2((float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight());
+			hlsl::float1 Radius         = 1.5f;
 			hlsl::float1 Sharpness      = 4.0f;
 			hlsl::float1 FadeStart      = 0.2f;  // view space
-			hlsl::float1 FadeEnd        = 1.0f;    // view space
+			hlsl::float1 FadeEnd        = 500.0f; // view space
 			hlsl::float1 SurfaceEpsilon = 0.05f;
 			int          Padding     = 0;
 			hlsl::float4 Offsets[14] = {}; // SSAOèâä˙âªéûÇ…ê∂ê¨Ç∑ÇÈÇΩÇﬂ, ê›íËïsóvÇ≈Ç∑. 8 cube corners + 6 centers of cube faces
@@ -64,12 +69,13 @@ namespace gc
 			bool          IsHorizontal = false;
 		};
 
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
-		using PipelineStatePtr          = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using ResourceLayoutPtr         = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using VertexBufferPtr           = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr            = std::shared_ptr<rhi::core::GPUBuffer>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using VertexBufferPtr           = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using IndexBufferPtr            = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using GaussianBlurPtr           = gu::SharedPointer<gc::GaussianBlur>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -127,6 +133,7 @@ namespace gc
 		ResourceViewPtr  _blurHorizontalModeView = nullptr;
 		ResourceViewPtr  _blurVerticalModeView   = nullptr;
 		PipelineStatePtr _blurPipeline = nullptr;
+		GaussianBlurPtr _gaussianBlur = nullptr;
 
 		/* @brief : This value is used when the ssao settings set function is called.*/
 		bool _isUpdated = false;

@@ -316,7 +316,7 @@ namespace gm
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void SetDistribution(int count, double probability)
+		void SetDistribution(double probability)
 		{
 			if (0.0 > probability) { probability = 0.0; }
 			if (1.0 < probability) { probability = 1.0; }

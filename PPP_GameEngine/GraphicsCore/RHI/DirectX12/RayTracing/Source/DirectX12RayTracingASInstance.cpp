@@ -27,8 +27,8 @@ ASInstance::~ASInstance()
 
 }
 ASInstance::ASInstance(
-	const std::shared_ptr<core::RHIDevice>& device,
-	const std::shared_ptr<core::BLASBuffer>& blasBuffer,
+	const gu::SharedPointer<core::RHIDevice>& device,
+	const gu::SharedPointer<core::BLASBuffer>& blasBuffer,
 	const gm::Float3x4& blasTransform,
 	const std::uint32_t instanceID,
 	const std::uint32_t instanceContributionToHitGroupIndex,
@@ -36,7 +36,7 @@ ASInstance::ASInstance(
 	const core::RayTracingInstanceFlags flags)
 	: core::ASInstance(device, blasBuffer, blasTransform, instanceID, instanceContributionToHitGroupIndex, instanceMask, flags)
 {
-	const auto dxBLASBuffer = std::static_pointer_cast<directX12::BLASBuffer>(_blasBuffer);
+	const auto dxBLASBuffer = gu::StaticPointerCast<directX12::BLASBuffer>(_blasBuffer);
 
 	std::memcpy(_instanceDesc.Transform, &blasTransform, sizeof(_instanceDesc.Transform));
 	_instanceDesc.InstanceID            = instanceID;

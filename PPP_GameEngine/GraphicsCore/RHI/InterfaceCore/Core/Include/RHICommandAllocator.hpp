@@ -18,8 +18,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
-#include <cassert>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Base/Include/GUAssert.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -66,16 +66,16 @@ namespace rhi::core
 
 		virtual ~RHICommandAllocator() = default;
 
-		explicit RHICommandAllocator(const std::shared_ptr<RHIDevice>& device, const core::CommandListType commandListType) 
+		explicit RHICommandAllocator(const gu::SharedPointer<RHIDevice>& device, const core::CommandListType commandListType)
 			: _device(device),  _commandListType(commandListType) 
 		{
-			assert(("device is nullptr.\n", _device));
+			Checkf(_device, "device is nullptr.\n");
 		};
 		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 
 		CommandListType   _commandListType = core::CommandListType::Unknown;
 	};

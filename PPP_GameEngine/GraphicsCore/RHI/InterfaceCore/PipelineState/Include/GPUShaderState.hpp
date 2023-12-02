@@ -70,7 +70,7 @@ namespace rhi::core
 		~GPUShaderState() = default;
 
 		explicit GPUShaderState(
-			const std::shared_ptr<core::RHIDevice>& device) : GPUState(device){};
+			const gu::SharedPointer<core::RHIDevice>& device) : GPUState(device){};
 
 		/****************************************************************************
 		**                Protected Function

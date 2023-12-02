@@ -19,6 +19,7 @@
 #include "../Include/DirectX12RenderPass.hpp"
 #include "../Include/DirectX12ResourceLayout.hpp"
 #include "../Include/DirectX12FrameBuffer.hpp"
+#include "../Include//DirectX12Instance.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
@@ -47,7 +48,6 @@ using namespace Microsoft::WRL;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-
 #pragma region Constructor and Destructor
 RHIDevice::RHIDevice()
 {
@@ -56,37 +56,58 @@ RHIDevice::RHIDevice()
 
 RHIDevice::~RHIDevice()
 {
-
-#ifdef _DEBUG
-	if (_device) { ReportLiveObjects(); };
-#endif
-
-	Destroy();
+	if (_device) { Destroy(); }
 }
 
-RHIDevice::RHIDevice(const std::shared_ptr<core::RHIDisplayAdapter>& adapter) :
+RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter) :
 	core::RHIDevice(adapter)
 {
 	/*-------------------------------------------------------------------
 	-                   Create Logical Device
 	---------------------------------------------------------------------*/
 	ThrowIfFailed(D3D12CreateDevice(
-		static_pointer_cast<RHIDisplayAdapter>(_adapter)->GetAdapter().Get(),      // default adapter
+		gu::StaticPointerCast<RHIDisplayAdapter>(_adapter)->GetAdapter().Get(),      // default adapter
 		D3D_FEATURE_LEVEL_12_0, // minimum feature level
 		IID_PPV_ARGS(&_device)));
 
-	const auto gpuName    = adapter->GetName();
-	const auto deviceName = L"Device::" + unicode::ToWString(gpuName);
+	const auto& gpuName    = adapter->GetName();
+	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName);
 	_device->SetName(deviceName.c_str());
-	
+
+	/*-------------------------------------------------------------------
+	-                 Set gpu debug break
+	---------------------------------------------------------------------*/
+	SetGPUDebugBreak();
+
+	/*-------------------------------------------------------------------
+	-                   Find Highest support model
+	---------------------------------------------------------------------*/
+	FindHighestFeatureLevel();
+	FindHighestShaderModel();
+
+	/*-------------------------------------------------------------------
+	-                   Device node count
+	---------------------------------------------------------------------*/
+	_deviceNodeCount = _device->GetNodeCount();
+
 	/*-------------------------------------------------------------------
 	-                   Device Support Check
 	---------------------------------------------------------------------*/
 	CheckDXRSupport();
 	CheckVRSSupport();
+	CheckRenderPassSupport();
 	CheckMeshShadingSupport();
-	CheckHDRDisplaySupport(); // まだどのクラスに配置するか決めてないので未実装
-	
+	CheckMultiSampleQualityLevels();
+	CheckDepthBoundsTestSupport();
+	CheckResourceTiers();
+	CheckMaxHeapSize();
+	CheckBindlessSupport();
+	CheckStencilReferenceFromPixelShaderSupport();
+	CheckSamplerFeedbackSupport();
+	CheckAllowTearingSupport();
+	CheckWaveLaneSupport();
+	SetupDisplayHDRMetaData();
+	SetupDefaultCommandSignatures();
 }
 
 #pragma endregion Constructor and Destructor
@@ -109,17 +130,18 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	/*-------------------------------------------------------------------
 	-                   Create descriptor heap
 	---------------------------------------------------------------------*/
-	_defaultHeap[DefaultHeapType::CBV_SRV_UAV] = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
-	_defaultHeap[DefaultHeapType::RTV] = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
-	_defaultHeap[DefaultHeapType::DSV] = std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this());
+	_defaultHeap[DefaultHeapType::CBV_SRV_UAV] = gu::MakeShared<directX12::RHIDescriptorHeap>(SharedFromThis());
+	_defaultHeap[DefaultHeapType::RTV]         = gu::MakeShared<directX12::RHIDescriptorHeap>(SharedFromThis());
+	_defaultHeap[DefaultHeapType::DSV]         = gu::MakeShared<directX12::RHIDescriptorHeap>(SharedFromThis());
+	_defaultHeap[DefaultHeapType::Sampler]     = gu::MakeShared<directX12::RHIDescriptorHeap>(SharedFromThis());
 
 	/*-------------------------------------------------------------------
 	-                   Set up descriptor count
 	---------------------------------------------------------------------*/
 	std::map<core::DescriptorHeapType, size_t> heapInfoList;
-	heapInfoList[core::DescriptorHeapType::CBV] = heapCount.CBVDescCount;
-	heapInfoList[core::DescriptorHeapType::SRV] = heapCount.SRVDescCount;
-	heapInfoList[core::DescriptorHeapType::UAV] = heapCount.UAVDescCount;
+	heapInfoList[core::DescriptorHeapType::CBV]     = heapCount.CBVDescCount;
+	heapInfoList[core::DescriptorHeapType::SRV]     = heapCount.SRVDescCount;
+	heapInfoList[core::DescriptorHeapType::UAV]     = heapCount.UAVDescCount;
 
 	/*-------------------------------------------------------------------
 	-                   Allocate decsriptor heap
@@ -127,6 +149,8 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	_defaultHeap[DefaultHeapType::CBV_SRV_UAV]->Resize(heapInfoList);
 	_defaultHeap[DefaultHeapType::RTV]->Resize(core::DescriptorHeapType::RTV, heapCount.RTVDescCount);
 	_defaultHeap[DefaultHeapType::DSV]->Resize(core::DescriptorHeapType::DSV, heapCount.DSVDescCount);
+	_defaultHeap[DefaultHeapType::Sampler]->Resize(core::DescriptorHeapType::SAMPLER, heapCount.SamplerDescCount);
+
 }
 
 /****************************************************************************
@@ -145,159 +169,174 @@ void RHIDevice::Destroy()
 	/*-------------------------------------------------------------------
 	-              Clear default descriptor heap
 	---------------------------------------------------------------------*/
+	for (auto& heap : _defaultHeap)
+	{
+		if (heap.second) 
+		{ 
+			heap.second.Reset(); 
+		}
+	}
 	_defaultHeap.clear();
+
+	if (_drawIndexedIndirectCommandSignature) { _drawIndexedIndirectCommandSignature.Reset(); }
 
 
 	/*-------------------------------------------------------------------
 	-              Clear device
 	---------------------------------------------------------------------*/
-	if (_device) { _device.Reset(); }
+	if (_device) 
+	{ 
+#ifdef _DEBUG
+		ReportLiveObjects();
+#endif
+		_device.Reset(); 
+	}
 }
 
 #pragma endregion       Set up and Destroy
 
 #pragma region CreateResource
 
-std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
+gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
 {
-	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<directX12::RHIFrameBuffer>(shared_from_this(), renderPass, renderTargets, depthStencil));
+	return gu::StaticPointerCast<core::RHIFrameBuffer>(gu::MakeShared<directX12::RHIFrameBuffer>(SharedFromThis(), renderPass, renderTargets, depthStencil));
 }
 
-std::shared_ptr<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil)
+gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil)
 {
-	return std::static_pointer_cast<core::RHIFrameBuffer>(std::make_shared<directX12::RHIFrameBuffer>(shared_from_this(), renderPass, renderTarget, depthStencil));
+	return gu::StaticPointerCast<core::RHIFrameBuffer>(gu::MakeShared<directX12::RHIFrameBuffer>(SharedFromThis(), renderPass, renderTarget, depthStencil));
 }
 
-std::shared_ptr<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fenceValue, const std::wstring& name)
+gu::SharedPointer<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fenceValue, const std::wstring& name)
 {
 	// https://suzulang.com/stdshared_ptr%E3%81%A7this%E3%82%92%E4%BD%BF%E3%81%84%E3%81%9F%E3%81%84%E6%99%82%E3%81%AB%E6%B3%A8%E6%84%8F%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8/
-	return std::static_pointer_cast<core::RHIFence>(std::make_shared<directX12::RHIFence>(shared_from_this(), fenceValue, name));
+	return gu::StaticPointerCast<core::RHIFence>(gu::MakeShared<directX12::RHIFence>(SharedFromThis(), fenceValue, name));
 }
 
-std::shared_ptr<core::RHICommandList> RHIDevice::CreateCommandList(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator, const std::wstring& name)
+gu::SharedPointer<core::RHICommandList> RHIDevice::CreateCommandList(const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHICommandList>(std::make_shared<directX12::RHICommandList>(shared_from_this(),commandAllocator, name));
+	return gu::StaticPointerCast<core::RHICommandList>(gu::MakeShared<directX12::RHICommandList>(SharedFromThis(),commandAllocator, name));
 }
 
-std::shared_ptr<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type, const std::wstring& name)
+gu::SharedPointer<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHICommandQueue>(std::make_shared<directX12::RHICommandQueue>(shared_from_this(), type, name));
+	return gu::StaticPointerCast<core::RHICommandQueue>(gu::MakeShared<directX12::RHICommandQueue>(SharedFromThis(), type, name));
 }
 
-std::shared_ptr<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type, const std::wstring& name)
+gu::SharedPointer<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHICommandAllocator>(std::make_shared<directX12::RHICommandAllocator>(shared_from_this(), type, name));
+	return gu::StaticPointerCast<core::RHICommandAllocator>(gu::MakeShared<directX12::RHICommandAllocator>(SharedFromThis(), type, name));
 }
 
-std::shared_ptr<core::RHISwapchain> RHIDevice::CreateSwapchain(const std::shared_ptr<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR )
+gu::SharedPointer<core::RHISwapchain> RHIDevice::CreateSwapchain(const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR )
 {
-	return std::static_pointer_cast<core::RHISwapchain>(std::make_shared<directX12::RHISwapchain>(shared_from_this(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR));
+	return gu::StaticPointerCast<core::RHISwapchain>(gu::MakeShared<directX12::RHISwapchain>(SharedFromThis(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR));
 }
 
-std::shared_ptr<core::RHISwapchain>  RHIDevice::CreateSwapchain(const core::SwapchainDesc& desc)
+gu::SharedPointer<core::RHISwapchain>  RHIDevice::CreateSwapchain(const core::SwapchainDesc& desc)
 {
-	return std::static_pointer_cast<core::RHISwapchain>(std::make_shared<directX12::RHISwapchain>(shared_from_this(), desc));
+	return gu::StaticPointerCast<core::RHISwapchain>(gu::MakeShared<directX12::RHISwapchain>(SharedFromThis(), desc));
 }
 
-std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
+gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount)
 {
-	auto heapPtr = std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this()));
+	auto heapPtr = gu::StaticPointerCast<core::RHIDescriptorHeap>(gu::MakeShared<directX12::RHIDescriptorHeap>(SharedFromThis()));
 	heapPtr->Resize(heapType, maxDescriptorCount);
 	return heapPtr;
 }
 
-std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo)
+gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo)
 {
-	auto heapPtr = std::static_pointer_cast<core::RHIDescriptorHeap>(std::make_shared<directX12::RHIDescriptorHeap>(shared_from_this()));
+	auto heapPtr = gu::StaticPointerCast<core::RHIDescriptorHeap>(gu::MakeShared<directX12::RHIDescriptorHeap>(SharedFromThis()));
 	heapPtr->Resize(heapInfo);
 	return heapPtr;
 }
 
-std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
 {
-	return std::static_pointer_cast<core::RHIRenderPass>(std::make_shared<directX12::RHIRenderPass>(shared_from_this(), colors, depth));
+	return gu::StaticPointerCast<core::RHIRenderPass>(gu::MakeShared<directX12::RHIRenderPass>(SharedFromThis(), colors, depth));
 }
 
-std::shared_ptr<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth)
+gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth)
 {
-	return std::static_pointer_cast<core::RHIRenderPass>(std::make_shared<directX12::RHIRenderPass>(shared_from_this(), color, depth));
+	return gu::StaticPointerCast<core::RHIRenderPass>(gu::MakeShared<directX12::RHIRenderPass>(SharedFromThis(), color, depth));
 }
 
-std::shared_ptr<core::GPUGraphicsPipelineState> RHIDevice::CreateGraphicPipelineState(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+gu::SharedPointer<core::GPUGraphicsPipelineState> RHIDevice::CreateGraphicPipelineState(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 {
-	return std::static_pointer_cast<core::GPUGraphicsPipelineState>(std::make_shared<directX12::GPUGraphicsPipelineState>(shared_from_this(), renderPass, resourceLayout));
+	return gu::StaticPointerCast<core::GPUGraphicsPipelineState>(gu::MakeShared<directX12::GPUGraphicsPipelineState>(SharedFromThis(), renderPass, resourceLayout));
 }
 
-std::shared_ptr<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+gu::SharedPointer<core::GPUComputePipelineState> RHIDevice::CreateComputePipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 {
-	return std::static_pointer_cast<core::GPUComputePipelineState>(std::make_shared<directX12::GPUComputePipelineState>(shared_from_this(), resourceLayout));
+	return gu::StaticPointerCast<core::GPUComputePipelineState>(gu::MakeShared<directX12::GPUComputePipelineState>(SharedFromThis(), resourceLayout));
 }
 
-std::shared_ptr<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
+gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::RHIResourceLayout>(std::make_shared<directX12::RHIResourceLayout>(shared_from_this(), elements, samplers, constant32Bits, name));
+	return gu::StaticPointerCast<core::RHIResourceLayout>(gu::MakeShared<directX12::RHIResourceLayout>(SharedFromThis(), elements, samplers, constant32Bits, name));
 }
 
-std::shared_ptr<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
+gu::SharedPointer<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 {
-	return std::static_pointer_cast<core::GPUPipelineFactory>(std::make_shared<directX12::GPUPipelineFactory>(shared_from_this()));
+	return gu::StaticPointerCast<core::GPUPipelineFactory>(gu::MakeShared<directX12::GPUPipelineFactory>(SharedFromThis()));
 }
 
-std::shared_ptr<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
+gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
 {
-	return std::static_pointer_cast<core::GPUResourceView>(std::make_shared<directX12::GPUResourceView>(shared_from_this(), viewType, texture, customHeap));
+	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<directX12::GPUResourceView>(SharedFromThis(), viewType, texture, customHeap));
 }
 
-std::shared_ptr<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
+gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
 {
-	return std::static_pointer_cast<core::GPUResourceView>(std::make_shared<directX12::GPUResourceView>(shared_from_this(), viewType, buffer, customHeap));
+	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<directX12::GPUResourceView>(SharedFromThis(), viewType, buffer, customHeap));
 }
 
-std::shared_ptr<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerInfo& samplerInfo)
+gu::SharedPointer<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerInfo& samplerInfo)
 {
-	return std::static_pointer_cast<core::GPUSampler>(std::make_shared<directX12::GPUSampler>(shared_from_this(), samplerInfo));
+	return gu::StaticPointerCast<core::GPUSampler>(gu::MakeShared<directX12::GPUSampler>(SharedFromThis(), samplerInfo));
 }
 
-std::shared_ptr<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name)
+gu::SharedPointer<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::GPUBuffer>(std::make_shared<directX12::GPUBuffer>(shared_from_this(), metaData, name));
+	return gu::StaticPointerCast<core::GPUBuffer>(gu::MakeShared<directX12::GPUBuffer>(SharedFromThis(), metaData, name));
 }
 
-std::shared_ptr<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name)
+gu::SharedPointer<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name)
 {
-	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this(), metaData, name));
+	return gu::StaticPointerCast<core::GPUTexture>(gu::MakeShared<directX12::GPUTexture>(SharedFromThis(), metaData, name));
 }
 
-std::shared_ptr<core::GPUTexture> RHIDevice::CreateTextureEmpty()
+gu::SharedPointer<core::GPUTexture> RHIDevice::CreateTextureEmpty()
 {
-	return std::static_pointer_cast<core::GPUTexture>(std::make_shared<directX12::GPUTexture>(shared_from_this()));
+	return gu::StaticPointerCast<core::GPUTexture>(gu::MakeShared<directX12::GPUTexture>(SharedFromThis()));
 }
 
-//std::shared_ptr<core::GPURayTracingPipelineState> RHIDevice::CreateRayTracingPipelineState(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+//gu::SharedPointer<core::GPURayTracingPipelineState> RHIDevice::CreateRayTracingPipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 //{
 //	return nullptr;
 //}
-std::shared_ptr<core::RayTracingGeometry> RHIDevice::CreateRayTracingGeometry(const core::RayTracingGeometryFlags flags, const std::shared_ptr<core::GPUBuffer>& vertexBuffer, const std::shared_ptr<core::GPUBuffer>& indexBuffer)
+gu::SharedPointer<core::RayTracingGeometry> RHIDevice::CreateRayTracingGeometry(const core::RayTracingGeometryFlags flags, const gu::SharedPointer<core::GPUBuffer>& vertexBuffer, const gu::SharedPointer<core::GPUBuffer>& indexBuffer)
 {
-	return std::static_pointer_cast<core::RayTracingGeometry>(std::make_shared<directX12::RayTracingGeometry>(shared_from_this(), flags, vertexBuffer, indexBuffer));
+	return gu::StaticPointerCast<core::RayTracingGeometry>(gu::MakeShared<directX12::RayTracingGeometry>(SharedFromThis(), flags, vertexBuffer, indexBuffer));
 }
 
-std::shared_ptr<core::ASInstance> RHIDevice::CreateASInstance(
-	const std::shared_ptr<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform,
+gu::SharedPointer<core::ASInstance> RHIDevice::CreateASInstance(
+	const gu::SharedPointer<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform,
 	const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex,
 	const std::uint32_t instanceMask, const core::RayTracingInstanceFlags flags)
 {
-	return std::static_pointer_cast<core::ASInstance>(std::make_shared<directX12::ASInstance>(shared_from_this(), blasBuffer, blasTransform, instanceID, instanceContributionToHitGroupIndex, instanceMask, flags));
+	return gu::StaticPointerCast<core::ASInstance>(gu::MakeShared<directX12::ASInstance>(SharedFromThis(), blasBuffer, blasTransform, instanceID, instanceContributionToHitGroupIndex, instanceMask, flags));
 }
 
-std::shared_ptr<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const std::vector<std::shared_ptr<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
+gu::SharedPointer<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
 {
-	return std::static_pointer_cast<core::BLASBuffer>(std::make_shared<directX12::BLASBuffer>(shared_from_this(), geometryDesc, flags));
+	return gu::StaticPointerCast<core::BLASBuffer>(gu::MakeShared<directX12::BLASBuffer>(SharedFromThis(), geometryDesc, flags));
 }
 
-std::shared_ptr<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const std::vector<std::shared_ptr<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
+gu::SharedPointer<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
 {
-	return std::static_pointer_cast<core::TLASBuffer>(std::make_shared<directX12::TLASBuffer>(shared_from_this(), asInstances, flags));
+	return gu::StaticPointerCast<core::TLASBuffer>(gu::MakeShared<directX12::TLASBuffer>(SharedFromThis(), asInstances, flags));
 }
 #pragma endregion           Create Resource Function
 
@@ -332,23 +371,122 @@ void RHIDevice::ReportLiveObjects()
 /****************************************************************************
 *						CheckDXRSupport
 *************************************************************************//**
-*  @fn        void DirectX12::CheckDXRSupport
+*  @fn        void DirectX12::CheckDXRSupport()
+* 
 *  @brief     Check DXRSupport
+* 
 *  @param[in] void
+* 
 *  @return 　　void
+* 
+*  @details   Tier1_1の場合,　以下の内容が可能となります 
+　　　　　　　　　・ExecuteIndirectを介したDispatchRays呼び出しのサポート, RayQueryの使用
+* 　　　　　　　　・AddToStateObjectを介した既存の状態オブジェクトへの増分追加
+　　　　　　　　　・SkipTriangles, skip procedual primitivesのフラグの使用
+		 　　　　https://github.com/microsoft/DirectX-Specs/blob/master/d3d/Raytracing.md#d3d12_raytracing_tier　
+			   https://devblogs.microsoft.com/directx/dxr-1-1/　
 *****************************************************************************/
 void RHIDevice::CheckDXRSupport()
 {
 	D3D12_FEATURE_DATA_D3D12_OPTIONS5 options{};
 		
-	if (FAILED(_device->CheckFeatureSupport(
-		D3D12_FEATURE_D3D12_OPTIONS5, &options, UINT(sizeof(options))))) { return; }
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &options, UINT(sizeof(options))))) 
+	{
+		_isSupportedRayTracing = false;
+		return; 
+	}
 
+	_rayTracingTier        = options.RaytracingTier;
 	_isSupportedRayTracing = options.RaytracingTier   >= D3D12_RAYTRACING_TIER_1_0;
-	_isSupportedRenderPass = options.RenderPassesTier >= D3D12_RENDER_PASS_TIER_0;
 	_isSupportedRayQuery   = options.RaytracingTier   >= D3D12_RAYTRACING_TIER_1_1;
 }
 
+/****************************************************************************
+*						CheckRenderPassSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckRenderPassSupport()
+*
+*  @brief     Check render pass support
+*
+*  @param[in] void
+*
+*  @return 　　void
+*
+*  @details   Tier0 : レンダーパスは未実装, 一応ソフトウェアエミュレーションを介してのみ提供とは言っているので, サポート対象とはいたします. 
+*             Tier1 : Render Target, Depth Bufferの書き込みの高速化, しかし, UAVの書き込みはRenderPass内では効率的にはならないとのこと
+*             Tier2 : Render Target, Depth Bufferの書き込みの高速化, UAVの書き込みもOK
+*****************************************************************************/
+void RHIDevice::CheckRenderPassSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS5 options{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &options, UINT(sizeof(options)))))
+	{
+		_isSupportedRenderPass = false;
+		_renderPassTier        = D3D12_RENDER_PASS_TIER_0; 
+		return;
+	}
+
+	_isSupportedRenderPass = options.RenderPassesTier >= D3D12_RENDER_PASS_TIER_0;
+	_renderPassTier        = options.RenderPassesTier;
+}
+
+/****************************************************************************
+*						CheckSamplerFeedbackSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckSamplerFeedbackSupport()
+*
+*  @brief     Check sampelr feedback support
+*
+*  @param[in] void
+*
+*  @return 　　void
+*
+*  @details   Sampler feedbackは, テクスチャサンプリング情報と位置をキャプチャ, 記録するための機能. 
+*             https://microsoft.github.io/DirectX-Specs/d3d/SamplerFeedback.html
+*             Tier 0.9 : D3D12_TEXTURE_ADDRESS_MODE_WRAP, D3D12_TEXTURE_ADDRESS_MODE_CLAMPのみに対応する, mipmapも0のみ対応
+* 　　　　　　　 Tier 1.0 : 全てのTexture addressing modeで使用可能
+*****************************************************************************/
+void RHIDevice::CheckSamplerFeedbackSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS7 options{};
+
+	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS7, &options, UINT(sizeof(options)))))
+	{
+		_isSupportedSamplerFeedback = options.SamplerFeedbackTier >= D3D12_SAMPLER_FEEDBACK_TIER_0_9;
+		_samplerFeedbackTier        = options.SamplerFeedbackTier;
+	}
+	else
+	{
+		_isSupportedSamplerFeedback = false;
+		_samplerFeedbackTier        = D3D12_SAMPLER_FEEDBACK_TIER_NOT_SUPPORTED;
+	}
+
+}
+
+/****************************************************************************
+*						CheckBindlessSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckBindlessSupport()
+*
+*  @brief     Check bindless support
+*
+*  @param[in] void
+*
+*  @return 　　void
+*
+*  @details   通常はRootParameterを使って各リソースビューとグラフィックパイプラインの紐づけを行うが, 
+*             DescriptorHeapのインデックスだけを使ってバインドし, これらのインデクスを全てRootConstantに配置可能.
+*             https://rtarun9.github.io/blogs/bindless_rendering/
+*****************************************************************************/
+void RHIDevice::CheckBindlessSupport()
+{
+	if (GetMaxSupportedShaderModel() >= D3D_SHADER_MODEL_6_6 && _resourceBindingTier == D3D12_RESOURCE_BINDING_TIER_3)
+	{
+		_isSupportedBindless = true;
+		_bindlessResourceType = GetMaxSupportedFeatureLevel() <= D3D_FEATURE_LEVEL_11_1 ? core::BindlessResourceType::OnlyRayTracing : core::BindlessResourceType::AllShaderTypes;
+	}
+}
 /****************************************************************************
 *                     CheckVRSSupport
 *************************************************************************//**
@@ -359,25 +497,46 @@ void RHIDevice::CheckDXRSupport()
 *  @param[in] void
 * 
 *  @return 　　void
+* 
+*  @details   可変レートシェーディングは, 複数ピクセルの塊を1ピクセルとして計算する手法です. 
+*             Tier1はDrawCallごとに指定でき, 描画される対象に一律に適用します.
+*             Tier2はDrawCallだけでなく, プリミティブごと, タイルごとにも設定できるようになります. 
+*             共通して, 1x1, 1x2, 2x1, 2x2は全てのレベルでサポートされているものの, 2x4, 4x2, 4x4はAdditionalShadingRatesSupportedを確認する必要があります.
+*             https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/vrs
+*             https://sites.google.com/site/monshonosuana/directx%E3%81%AE%E8%A9%B1/directx%E3%81%AE%E8%A9%B1-%E7%AC%AC168%E5%9B%9E
 *****************************************************************************/
 void RHIDevice::CheckVRSSupport()
 {
 	D3D12_FEATURE_DATA_D3D12_OPTIONS6 options = {};
 	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS6, &options, sizeof(options))))
 	{
+		_variableRateShadingTier = options.VariableShadingRateTier;
+
+		if (_variableRateShadingTier != D3D12_VARIABLE_SHADING_RATE_TIER_NOT_SUPPORTED)
+		{
+			_isSupportedLargerVariableRateShadingSize = options.AdditionalShadingRatesSupported;
+		}
+
 		if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_1)
 		{
 			OutputDebugStringA("Gpu api: Variable Rate Shading Tier1 supported\n");
 			_isSupportedVariableRateShadingTier1 = true;
 			_isSupportedVariableRateShadingTier2 = false;
-			_variableRateShadingImageTileSize    = options.ShadingRateImageTileSize;
+			_variableRateShadingImageTileSize    = 1;    // Tier2のみの機能なので必要なし
 		}
 		else if (options.VariableShadingRateTier == D3D12_VARIABLE_SHADING_RATE_TIER_2)
 		{
 			OutputDebugStringA("Gpu api: Valiable Rate Shading Tier2 supported\n");
 			_isSupportedVariableRateShadingTier1 = true;
 			_isSupportedVariableRateShadingTier2 = true;
-			_variableRateShadingImageTileSize = options.ShadingRateImageTileSize;
+			_variableRateShadingImageTileSize = options.ShadingRateImageTileSize; // 8, 16, 32が返される
+		}
+		else
+		{
+			OutputDebugStringA("Gpu api: Variable Rate Shading not supported");
+			_isSupportedVariableRateShadingTier1 = false;
+			_isSupportedVariableRateShadingTier2 = false;
+			_variableRateShadingImageTileSize = 1;
 		}
 	}
 	else
@@ -385,6 +544,7 @@ void RHIDevice::CheckVRSSupport()
 		OutputDebugStringA("GpuApi : Variable Rate Shading note supported on current gpu hardware.\n");
 		_isSupportedVariableRateShadingTier1 = false;
 		_isSupportedVariableRateShadingTier2 = false;
+		_variableRateShadingImageTileSize = 1;
 	}
 }
 
@@ -393,29 +553,26 @@ void RHIDevice::CheckVRSSupport()
 *************************************************************************//**
 *  @fn        void DirectX12::CheckMultiSampleQualityLevels(void)
 * 
-*  @brief     Multi Sample Quality Levels for 4xMsaa (Anti-Alias)
+*  @brief     Multi Sample Quality Levels for Msaa (Anti-Alias)
 * 
 *  @param[in] void
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHIDevice::CheckMultiSampleQualityLevels(const core::PixelFormat format)
+void RHIDevice::CheckMultiSampleQualityLevels()
 {
-	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
-	msQualityLevels.Format           = DXGI_FORMAT_R16G16B16A16_FLOAT; // back buffer にした方がいいかと
-	msQualityLevels.SampleCount      = 4;
-	msQualityLevels.Flags            = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
-	msQualityLevels.NumQualityLevels = 0;
+	for (std::uint32_t sampleCount = DESIRED_MAX_MSAA_SAMPLE_COUNT; sampleCount > 0; sampleCount--)
+	{
+		D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
+		msQualityLevels.SampleCount = sampleCount;
 
-	ThrowIfFailed(_device->CheckFeatureSupport(
-		D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS,
-		&msQualityLevels,
-		sizeof(msQualityLevels)));
-
-	_4xMsaaQuality = msQualityLevels.NumQualityLevels;
-#ifdef _DEBUG
-	assert(_4xMsaaQuality > 0 && "Unexpected MSAA quality level.");
-#endif
+		if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels))))
+		{
+			_msaaQuality     = msQualityLevels.NumQualityLevels;
+			_maxMSAASampleCount = sampleCount;
+			break;
+		}
+	}
 }
 
 /****************************************************************************
@@ -423,42 +580,65 @@ void RHIDevice::CheckMultiSampleQualityLevels(const core::PixelFormat format)
 *************************************************************************//**
 *  @fn        void DirectX12::CheckHDRDisplaySupport()
 * 
-*  @brief     CheckHDRDisplaySupport()
+*  @brief     CheckHDRDisplaySupport()　https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
 * 
 *  @param[in] void
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHIDevice::CheckHDRDisplaySupport()
+void RHIDevice::SetupDisplayHDRMetaData()
 {
 	/*-------------------------------------------------------------------
 	-               Get display adapter
 	---------------------------------------------------------------------*/
-	const auto adapter = std::static_pointer_cast<directX12::RHIDisplayAdapter>(_adapter);
+	const auto adapter = gu::StaticPointerCast<directX12::RHIDisplayAdapter>(_adapter);
 	auto dxAdapter     = adapter->GetAdapter();
 
 	ComPtr<IDXGIOutput> output = nullptr;
 
-	std::uint32_t index = 0;
 	/*-------------------------------------------------------------------
 	-              Search EnableHDR output
 	---------------------------------------------------------------------*/
-	while (dxAdapter->EnumOutputs(index, output.GetAddressOf()) != DXGI_ERROR_NOT_FOUND)
+	for(std::uint32_t i = 0; dxAdapter->EnumOutputs(i, output.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
-		OutputComPtr currentOutput = nullptr;
-		output.As(&currentOutput);
-
-		DXGI_OUTPUT_DESC1 desc = {};
-		currentOutput->GetDesc1(&desc);
+#if DXGI_MAX_OUTPUT_INTERFACE >= 6
 		
-		if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020)
-		{
-			_isSupportedHDR = true;
-			output.Reset();
-			break;
-		}
+		OutputComPtr output6 = nullptr;
 
-		++index;
+		if (SUCCEEDED(output->QueryInterface(IID_PPV_ARGS(output6.GetAddressOf()))))
+		{
+			DXGI_OUTPUT_DESC1 desc = {};
+			output6->GetDesc1(&desc);
+
+			/*-------------------------------------------------------------------
+			-              IS HDR Enable Color Space
+			---------------------------------------------------------------------*/
+			if (desc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020)
+			{
+				_isSupportedHDR = true;
+
+				/*-------------------------------------------------------------------
+				-              Set up hdr display information
+				---------------------------------------------------------------------*/
+				_displayInfo = 
+				{
+					{desc.RedPrimary  [0], desc.RedPrimary  [1]},
+					{desc.GreenPrimary[0], desc.GreenPrimary[1]},
+					{desc.BluePrimary [0], desc.BluePrimary [1]},
+					{desc.WhitePoint  [0], desc.WhitePoint  [1]},
+					{desc.MinLuminance},
+					{desc.MaxLuminance},
+					{desc.MaxFullFrameLuminance},
+					{desc.DesktopCoordinates.left, desc.DesktopCoordinates.top, desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom},
+				};
+
+
+				output.Reset();
+				break;
+			}
+		}
+		
+#endif
 		output.Reset();
 	}
 
@@ -481,10 +661,301 @@ void RHIDevice::CheckMeshShadingSupport()
 	D3D12_FEATURE_DATA_D3D12_OPTIONS7 options{};
 
 	if (FAILED(_device->CheckFeatureSupport(
-		D3D12_FEATURE_D3D12_OPTIONS7, &options, UINT(sizeof(options))))) { return; }
+		D3D12_FEATURE_D3D12_OPTIONS7, &options, UINT(sizeof(options)))))
+	{
+		_isSupportedMeshShading = false; return;
+	}
+
 	_isSupportedMeshShading = options.MeshShaderTier >= D3D12_MESH_SHADER_TIER_1;
 }
 
+/****************************************************************************
+*                     CheckAllowTearingSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckAllowTearingSupport()
+*
+*  @brief     Allow tearing support
+*            
+*  @param[in] void
+*
+*  @return 　　void
+* 
+*  @details   可変レートのリフレッシュレートを使用するときに使用します. 
+*             画面のティアリング (準備できてないときにフリップ処理が入ってしまう画面のちらつき)が生じないように, 次のフレームの準備がおきるまで遅延をしてくれる機能です.
+*             ただし, VSyncは0にしてください. 
+*****************************************************************************/
+void RHIDevice::CheckAllowTearingSupport()
+{
+#if DXGI_MAX_FACTORY_INTERFACE >= 5
+	const auto dxInstance = static_cast<directX12::RHIInstance*>(_adapter->GetInstance());
+	const auto factory    = dxInstance->GetFactory();
+	
+	BOOL allowTearing = FALSE; // Boolはint型なので, boolだと×
+	if (SUCCEEDED(factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing))))
+	{
+		_isSupportedAllowTearing = allowTearing;
+	}
+	else
+	{
+		_isSupportedAllowTearing = false;
+	}
+#endif
+}
+
+/****************************************************************************
+*                     DepthBoundsTestSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckDepthBoundsTestSupport()
+*
+*  @brief      深度値が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させ, 範囲外ならば該当ピクセルを早期棄却する方法
+		　　　　 Deferred Renderingにおけるライトのaccumulation, Deferred RenderingにおけるCascaded Shadow Map, 被写界深度エフェクト, 遠景描画等に使用可能 
+*              https://microsoft.github.io/DirectX-Specs/d3d/DepthBoundsTest.html
+*              https://shikihuiku.wordpress.com/tag/depthboundstest/
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckDepthBoundsTestSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS2 options{};
+	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS2, &options, sizeof(options))))
+	{
+		_isSupportedDepthBoundsTest = options.DepthBoundsTestSupported;
+	}
+	else
+	{
+		_isSupportedDepthBoundsTest = false;
+	}
+}
+
+/****************************************************************************
+*                     CheckResourceTiers
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckResourceTiers()
+*
+*  @brief     パイプラインで使用可能なリソースの上限値を確認するために使用する
+* 　　　　　　　　
+*  @param[in] void
+*
+*  @return 　　void
+*  
+*  @details    大きく異なるのは以下の点です
+*             1. CBV : Tier 1, 2は14まで. Tier3 はDescripterHeapの最大数
+*             2. SRV : Tier 1は128まで. Tier2, 3はDescripterHeapの最大数
+*             3. UAV : Tier1は機能レベル 11.1+以上で64, それ以外で8, Tier2は64, Tier3はDescripterHeapの最大数
+*             4. Sampler : Tier1は16, それ以外で2048
+*             5. ヒープ内のDescripterの最大数 Tier1, 2は1,000,000、Tier3は無制限
+* 　　　　　　　　https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/hardware-support
+* 
+* 　　　　　　　　HeapTierの方では, バッファー, RenderTargetとDepthStencil, TargetStencil, 深度ステンシルテクスチャのレンダリングを同一ヒープで使用できるかを調べます
+* 　　　　　　　　Tier1が排他, Tier2が混在可能です.
+* 　　　　　　　　https://learn.microsoft.com/ja-jp/windows/win32/api/d3d12/ne-d3d12-d3d12_resource_heap_tier
+*****************************************************************************/
+void RHIDevice::CheckResourceTiers()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS options{};
+	
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options)))) { return; }
+	_resourceBindingTier = options.ResourceBindingTier;
+	_resourceHeapTier    = options.ResourceHeapTier;
+}
+
+/****************************************************************************
+*                     CheckStencilReferenceFromPixelShaderSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckStencilReferenceFromPixelShaderSupport()
+*
+*  @brief     ステンシルバッファの参照値をピクセルシェーダーで出力出来るようにします. 
+*             https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/shader-specified-stencil-reference-value
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckStencilReferenceFromPixelShaderSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS options{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options)))) { return; }
+	_isSupportedStencilReferenceFromPixelShader = options.PSSpecifiedStencilRefSupported != 0;
+}
+/****************************************************************************
+*                     CheckMaxHeapSize()
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckMaxHeapSize()
+*
+*  @brief     最大のHeap Sizeをセットします.
+* 
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckMaxHeapSize()
+{
+	if (_resourceBindingTier == D3D12_RESOURCE_BINDING_TIER_1)
+	{
+		_maxDescriptorHeapCount = D3D12_MAX_SHADER_VISIBLE_DESCRIPTOR_HEAP_SIZE_TIER_1;
+	}
+	else if (_resourceBindingTier == D3D12_RESOURCE_BINDING_TIER_2)
+	{
+		_maxDescriptorHeapCount = D3D12_MAX_SHADER_VISIBLE_DESCRIPTOR_HEAP_SIZE_TIER_2;
+	}
+	else if (_resourceBindingTier == D3D12_RESOURCE_BINDING_TIER_3)
+	{
+		_maxDescriptorHeapCount = D3D12_MAX_SHADER_VISIBLE_DESCRIPTOR_HEAP_SIZE_TIER_2;
+	}
+	else
+	{
+		_maxDescriptorHeapCount = D3D12_MAX_SHADER_VISIBLE_DESCRIPTOR_HEAP_SIZE_TIER_2;
+	}
+
+	_maxSamplerHeapCount = D3D12_MAX_SHADER_VISIBLE_SAMPLER_HEAP_SIZE;
+}
+/****************************************************************************
+*                     FindHighestFeatureLevel
+*************************************************************************//**
+*  @fn        void RHIDevice::FindHighestFeatureLevel()
+*
+*  @brief     Set up max feature level.
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::FindHighestFeatureLevel()
+{
+	const D3D_FEATURE_LEVEL featureLevels[] =
+	{
+#if D3D12_CORE_ENABLED
+		D3D_FEATURE_LEVEL_12_2,
+#endif
+		D3D_FEATURE_LEVEL_12_1,
+		D3D_FEATURE_LEVEL_12_0,
+		D3D_FEATURE_LEVEL_11_1,
+		D3D_FEATURE_LEVEL_11_0
+	};
+
+	D3D12_FEATURE_DATA_FEATURE_LEVELS featureLevelCaps = {};
+	featureLevelCaps.pFeatureLevelsRequested = featureLevels;
+	featureLevelCaps.NumFeatureLevels        = _countof(featureLevels);
+
+	/*-------------------------------------------------------------------
+	-               Feature Support Check
+	---------------------------------------------------------------------*/
+	ThrowIfFailed(_device->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS, &featureLevelCaps, sizeof(featureLevelCaps)));
+	_maxSupportedFeatureLevel = featureLevelCaps.MaxSupportedFeatureLevel;
+}
+
+/****************************************************************************
+*                     FindHighestShaderModel
+*************************************************************************//**
+*  @fn        void RHIDevice::FindHighestShaderModel()
+*
+*  @brief     Set up max shader model.
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::FindHighestShaderModel()
+{
+	const D3D_SHADER_MODEL shaderModels[] =
+	{
+#if D3D12_CORE_ENABLED
+		D3D_HIGHEST_SHADER_MODEL,
+		D3D_SHADER_MODEL_6_7,
+		D3D_SHADER_MODEL_6_6,
+#endif
+		D3D_SHADER_MODEL_6_5,
+		D3D_SHADER_MODEL_6_4,
+		D3D_SHADER_MODEL_6_3,
+		D3D_SHADER_MODEL_6_2,
+		D3D_SHADER_MODEL_6_1,
+		D3D_SHADER_MODEL_6_0,
+	};
+
+	D3D12_FEATURE_DATA_SHADER_MODEL featureShaderModel = {};
+	for (const auto shaderModel : shaderModels)
+	{
+		featureShaderModel.HighestShaderModel = shaderModel;
+
+		if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &featureShaderModel, sizeof(featureShaderModel))))
+		{
+			_maxSupportedShaderModel = featureShaderModel.HighestShaderModel;
+			return;
+		}
+	}
+}
+
+/****************************************************************************
+*                     CheckWaveLaneSupport
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckWaveLaneSupport()
+*
+*  @brief      HLSLで明示的にGPU上で複数スレッドの使用が可能となります.
+		       Wave : プロセッサ上の同時に実行されるスレッドの集合
+			   Lane : 個々のスレッド
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckWaveLaneSupport()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS1 options{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS1, &options, sizeof(options)))) { return; }
+	_isSupportedWaveLane = !!options.WaveOps;
+	_minWaveLaneCount    = options.WaveLaneCountMin;
+	_maxWaveLaneCount    = options.WaveLaneCountMax;
+}
+
+/****************************************************************************
+*                     CheckNative16bitOperation
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckNative16bitOperation()
+*
+*  @brief     16 bitのシェーダー操作が可能かどうかを調べます
+* 
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckNative16bitOperation()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS4 options{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS4, &options, sizeof(options)))) { return; }
+	_isSupported16bitOperation = !!options.Native16BitShaderOpsSupported;
+}
+
+/****************************************************************************
+*                     CheckAtomicOperation
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckAtomicOperation()
+*
+*  @brief     Wave用にAtomic操作が可能かどうかを調べます.
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckAtomicOperation()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS7 options7{};
+	D3D12_FEATURE_DATA_D3D12_OPTIONS9 options9{};
+	D3D12_FEATURE_DATA_D3D12_OPTIONS11 options11{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS7, &options7, sizeof(options7)))) { return; }
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS9, &options9, sizeof(options9)))) { return; }
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS11, &options11, sizeof(options11)))) { return; }
+
+	_isSupportedAtomicOperation = true;
+	_isSupportedAtomicInt64OnTypedResource             = !!options9.AtomicInt64OnTypedResourceSupported;
+	_isSupportedAtomicInt64OnGroupSharedSupported      = !!options9.AtomicInt64OnGroupSharedSupported;
+	_isSupportedInt64OnDescriptorHeapResourceSupported = !!options11.AtomicInt64OnDescriptorHeapResourceSupported;
+	_isSupportedAtomicUInt64 = _isSupportedAtomicInt64OnTypedResource && _isSupportedInt64OnDescriptorHeapResourceSupported;
+}
 #pragma endregion  Device Support Function
 
 #pragma region Property
@@ -507,15 +978,15 @@ void RHIDevice::SetName(const std::wstring& name)
 /****************************************************************************
 *                     GetDefaultHeap
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
+*  @fn        gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
 *
 *  @brief     Return descriptor heap (CBV, SRV, UAV, RTV, DSV)
 *
 *  @param[in] const core::DefaultHeapType
 *
-*  @return    std::shared_ptr<core::RHIDescriptorHeap>
+*  @return    gu::SharedPointer<core::RHIDescriptorHeap>
 *****************************************************************************/
-std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
+gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
 {
 	switch (heapType)
 	{
@@ -525,6 +996,71 @@ std::shared_ptr<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::D
 		case core::DescriptorHeapType::RTV: { return _defaultHeap[DefaultHeapType::RTV]; }
 		case core::DescriptorHeapType::DSV: { return _defaultHeap[DefaultHeapType::DSV]; }
 		default: { return nullptr;}
+	}
+}
+
+/****************************************************************************
+*                     SetGPUDebugBreak
+*************************************************************************//**
+*  @fn        void RHIDevice::SetGPUDebugBreak()
+*
+*  @brief     Set gpu debug break
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
+void RHIDevice::SetGPUDebugBreak()
+{
+	/*-------------------------------------------------------------------
+	-              GPU debug breakを使用するか
+	---------------------------------------------------------------------*/
+	const auto dxInstance = static_cast<rhi::directX12::RHIInstance*>(_adapter->GetInstance());
+	if (!dxInstance->UseGPUDebugBreak()) { return; }
+
+	/*-------------------------------------------------------------------
+	-              Info queueが存在しているか
+	---------------------------------------------------------------------*/
+	InfoQueuePtr infoQueue = nullptr;
+	_device.As(&infoQueue);
+
+	if (!infoQueue) { return; }
+
+	/*-------------------------------------------------------------------
+	-              深刻度の設定 (現在はerrorのみ対応いたします.)
+	---------------------------------------------------------------------*/
+	infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+}
+
+/****************************************************************************
+*                     SetupDefaultCommandSignatures
+*************************************************************************//**
+*  @fn        void RHIDevice::SetupDefaultCommandSignatures()
+*
+*  @brief     Set up command signatures
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
+void RHIDevice::SetupDefaultCommandSignatures()
+{
+	/*-------------------------------------------------------------------
+	-              ExecuteIndirect draw index command signatures
+	---------------------------------------------------------------------*/
+	{
+		D3D12_INDIRECT_ARGUMENT_DESC indirectArgumentDesc;
+		indirectArgumentDesc.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED;
+
+		const D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc =
+		{
+			.ByteStride = sizeof(D3D12_DRAW_INDEXED_ARGUMENTS),
+			.NumArgumentDescs = 1,
+			.pArgumentDescs = &indirectArgumentDesc,
+			.NodeMask = 0
+		};
+
+		ThrowIfFailed(_device->CreateCommandSignature(&commandSignatureDesc, nullptr, IID_PPV_ARGS(_drawIndexedIndirectCommandSignature.GetAddressOf())));
 	}
 }
 #pragma endregion Property

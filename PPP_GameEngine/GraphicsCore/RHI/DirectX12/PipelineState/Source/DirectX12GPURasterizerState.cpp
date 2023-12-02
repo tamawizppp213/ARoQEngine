@@ -18,7 +18,7 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPURasterizerState::GPURasterizerState(const std::shared_ptr<rhi::core::RHIDevice>& device, const rhi::core::RasterizerProperty& rasterizerProperty)
+GPURasterizerState::GPURasterizerState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::RasterizerProperty& rasterizerProperty)
 	: rhi::core::GPURasterizerState(device, rasterizerProperty)
 {
 	_rasterizerState.FillMode              = EnumConverter::Convert(_property.FillType);     // polygon filling mode

@@ -45,9 +45,9 @@ GameWorldInfo::GameWorldInfo(const LowLevelGraphicsEnginePtr& engine, const std:
 
 GameWorldInfo::~GameWorldInfo()
 {
-	_resourceView.reset();
-	_gameWorldConstants.reset();
-	_engine.reset();
+	_resourceView.Reset();
+	_gameWorldConstants.Reset();
+	_engine.Reset();
 }
 
 #pragma endregion Constructor and Destructor

@@ -19,23 +19,25 @@
 #include "MainGame/Sample/Include/SampleURP.hpp"
 #include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
 #include "MainGame/Sample/Include/SampleCollisionDetection.hpp"
+#include "GameUtility/Base/Include/GUAssert.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
-
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-void SceneManager::StartUp(LowLevelGraphicsEnginePtr engine, const std::shared_ptr<GameTimer>& gameTimer)
+void SceneManager::StartUp(PPPEnginePtr& engine, const gu::SharedPointer<GameTimer>& gameTimer)
 {
 	// debug log
-	assert(("engine is nullptr."   , engine));
-	assert(("gameTimer is nullptr.", gameTimer));
+	Checkf(engine, "engine is nullptr.");
+	Checkf(gameTimer, "gameTimer is nullptr.");
 
 	_engine = engine;
 	_gameTimer = gameTimer;
-	PushScene(new sample::SampleURP());
+
+	PushScene(new sample::SampleColorChange());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

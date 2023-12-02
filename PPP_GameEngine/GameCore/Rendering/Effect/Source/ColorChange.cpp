@@ -51,8 +51,8 @@ ColorChange::ColorChange()
 }
 ColorChange::~ColorChange()
 {
-	_pipeline.reset();
-	_resourceLayout.reset();
+	_pipeline.Reset();
+	_resourceLayout.Reset();
 	_resourceViews.clear(); _resourceViews.shrink_to_fit();
 	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
 	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
@@ -92,7 +92,7 @@ ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEngin
 *****************************************************************************/
 void ColorChange::OnResize(int newWidth, int newHeight)
 {
-
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 /****************************************************************************
 *							Draw

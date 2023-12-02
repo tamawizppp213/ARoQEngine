@@ -54,7 +54,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		RHIFence() = default;
 		
-		explicit RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint64_t initialValue = 0, const std::wstring& name = L"Fence");
+		explicit RHIFence(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::uint64_t initialValue = 0, const std::wstring& name = L"Fence");
 		
 		~RHIFence();
 	protected:

@@ -41,14 +41,14 @@ RHICommandList::~RHICommandList()
 	if (_commandList) { _commandList.Reset(); _commandList = nullptr; }
 }
 
-RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator, const std::wstring& name) : 
+RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, const std::wstring& name) : 
 	rhi::core::RHICommandList(device, commandAllocator)
 {
 	/*-------------------------------------------------------------------
 	-               Get device and command allocator
 	---------------------------------------------------------------------*/
-	const auto dxDevice     = static_cast<RHIDevice*>(_device.get())->GetDevice();
-	const auto rhiAllocator = std::static_pointer_cast<directX12::RHICommandAllocator>(_commandAllocator);
+	const auto dxDevice     = static_cast<RHIDevice*>(_device.Get())->GetDevice();
+	const auto rhiAllocator = gu::StaticPointerCast<directX12::RHICommandAllocator>(_commandAllocator);
 	const auto dxAllocator  = rhiAllocator->GetAllocator();
 
 	/*-------------------------------------------------------------------
@@ -89,11 +89,21 @@ RHICommandList::RHICommandList(const std::shared_ptr<rhi::core::RHIDevice>& devi
 void RHICommandList::BeginRecording(const bool stillMidFrame)
 {
 	/*-------------------------------------------------------------------
-	-          Reset command list and allocator
+	-        コマンドリストが記録可能状態だった場合, Resetすることが出来ない.
+	---------------------------------------------------------------------*/
+	if (IsOpen()) { return; }
+
+	/*-------------------------------------------------------------------
+	-        描画フレームの途中でなければCommandAllocatorのバッファを先頭に戻す.
 	---------------------------------------------------------------------*/
 	if (!stillMidFrame) { _commandAllocator->CleanUp(); } // command buffer clear
-	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
-	_isOpen = true;
+	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.Get())->GetAllocator().Get(), nullptr));
+	
+	/*-------------------------------------------------------------------
+	-        コマンドリストを記録可能状態に変更します
+	---------------------------------------------------------------------*/
+	_isOpen          = true;
+	_beginRenderPass = false;
 }
 
 /****************************************************************************
@@ -101,8 +111,7 @@ void RHICommandList::BeginRecording(const bool stillMidFrame)
 *************************************************************************//**
 *  @fn        void RHICommandList::EndRecording()
 *
-*  @brief     Call at end draw frame. Close executed command list.
-*              The command list is closed, it transits the executable state.
+*  @brief     コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
 * 
 *  @param[in] void
 *
@@ -110,36 +119,56 @@ void RHICommandList::BeginRecording(const bool stillMidFrame)
 *****************************************************************************/
 void RHICommandList::EndRecording()
 {
-	if (!_isOpen) { OutputDebugStringA("Already closed. \n");  return; }
+	/*-------------------------------------------------------------------
+	-      　既に閉じられているならこの後の処理は行わない
+	---------------------------------------------------------------------*/
+	if (IsClosed()) { OutputDebugStringA("Already closed. \n");  return; }
+	
+	/*-------------------------------------------------------------------
+	-      　記録状態からクローズ状態に以降する
+	---------------------------------------------------------------------*/
 	ThrowIfFailed(_commandList->Close());
+
+	/*-------------------------------------------------------------------
+	-      　終了処理
+	---------------------------------------------------------------------*/
 	_isOpen = false;
 	_beginRenderPass = false;
 }
 
-void RHICommandList::Reset(const std::shared_ptr<rhi::core::RHICommandAllocator>& commandAllocator)
+void RHICommandList::Reset(const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator)
 {
 	/*-------------------------------------------------------------------
-	-          Reset command list and allocator
+	-        コマンドリストが記録可能状態だった場合, Resetすることが出来ない.
+	---------------------------------------------------------------------*/
+	if (IsOpen()) { return; }
+
+	/*-------------------------------------------------------------------
+	-        コマンドリストが記録可能状態に変更する
 	---------------------------------------------------------------------*/
 	if (commandAllocator) { _commandAllocator = commandAllocator; }
-	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.get())->GetAllocator().Get(), nullptr));
-	_isOpen = false;
+	if (_commandAllocator) { ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.Get())->GetAllocator().Get(), nullptr)); }
+	
+	/*-------------------------------------------------------------------
+	-        コマンドリストを開いている状態にする
+	---------------------------------------------------------------------*/
+	_isOpen = true;
 	_beginRenderPass = false;
 }
 
 /****************************************************************************
 *                     BeginRenderPass
 *************************************************************************//**
-*  @fn        void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer)
+*  @fn        void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer)
 *
 *  @brief     Begin render pass and frame buffer.
 *
-*  @param[in] const std::shared_ptr<core::RHIRenderPass>& renderPass
-*  @param[in] const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer
+*  @param[in] const gu::SharedPointer<core::RHIRenderPass>& renderPass
+*  @param[in] const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer
 *
 *  @return    void
 *****************************************************************************/
-void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer)
+void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer)
 {
 	/*-------------------------------------------------------------------
 	-          Layout Transition (Present -> RenderTarget)
@@ -150,9 +179,12 @@ void RHICommandList::BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>&
 	/*-------------------------------------------------------------------
 	-          Select renderpass and frame buffer action
 	---------------------------------------------------------------------*/
-	if (_device->IsSupportedRenderPass()) { BeginRenderPassImpl(std::static_pointer_cast<directX12::RHIRenderPass>(renderPass), std::static_pointer_cast<directX12::RHIFrameBuffer>(frameBuffer)); }
-	else                                  { OMSetFrameBuffer   (std::static_pointer_cast<directX12::RHIRenderPass>(renderPass), std::static_pointer_cast<directX12::RHIFrameBuffer>(frameBuffer)); }
+	if (_device->IsSupportedRenderPass()) { BeginRenderPassImpl(gu::StaticPointerCast<directX12::RHIRenderPass>(renderPass), gu::StaticPointerCast<directX12::RHIFrameBuffer>(frameBuffer)); }
+	else                                  { OMSetFrameBuffer   (gu::StaticPointerCast<directX12::RHIRenderPass>(renderPass), gu::StaticPointerCast<directX12::RHIFrameBuffer>(frameBuffer)); }
 
+	// 参照カウントが無限に増えつつけるバグ対応に使用しました.
+	if (_renderPass ) { _renderPass.Reset(); }
+	if (_frameBuffer) { _frameBuffer.Reset(); }
 	_renderPass  = renderPass;
 	_frameBuffer = frameBuffer;
 	_beginRenderPass = true;
@@ -185,9 +217,16 @@ void RHICommandList::EndRenderPass()
 #pragma endregion Call Draw Frame
 
 #pragma region GPU Command
-void RHICommandList::SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptorHeap>& heap)
+void RHICommandList::SetDepthBounds(const float minDepth, const float maxDepth)
 {
-	const auto dxHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(heap);
+	if (_device->IsSupportedDepthBoundsTest())
+	{
+		_commandList->OMSetDepthBounds(minDepth, maxDepth);
+	}
+}
+void RHICommandList::SetDescriptorHeap(const gu::SharedPointer<core::RHIDescriptorHeap>& heap)
+{
+	const auto dxHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(heap);
 	_commandList->SetDescriptorHeaps(1, dxHeap->GetHeap().GetAddressOf());
 }
 /****************************************************************************
@@ -279,7 +318,7 @@ void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const
 	_commandList->RSSetScissorRects(1, &r);
 }
 
-void RHICommandList::SetVertexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer)
+void RHICommandList::SetVertexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer)
 {
 #if __DEBUG
 	// Is vertex buffer
@@ -288,7 +327,7 @@ void RHICommandList::SetVertexBuffer(const std::shared_ptr<core::GPUBuffer>& buf
 
 	// Set up vertex buffer view
 	D3D12_VERTEX_BUFFER_VIEW view = {
-		std::static_pointer_cast<directX12::GPUBuffer>(buffer)->GetResourcePtr()->GetGPUVirtualAddress(),
+		gu::StaticPointerCast<directX12::GPUBuffer>(buffer)->GetResourcePtr()->GetGPUVirtualAddress(),
 		static_cast<UINT>(buffer->GetTotalByteSize()),
 		static_cast<UINT>(buffer->GetElementByteSize())
 	};
@@ -296,27 +335,27 @@ void RHICommandList::SetVertexBuffer(const std::shared_ptr<core::GPUBuffer>& buf
 	_commandList->IASetVertexBuffers(0, 1, &view);
 }
 
-void RHICommandList::SetResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+void RHICommandList::SetResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 {
-	_commandList->SetGraphicsRootSignature(std::static_pointer_cast<directX12::RHIResourceLayout>(resourceLayout)->GetRootSignature().Get());
+	_commandList->SetGraphicsRootSignature(gu::StaticPointerCast<directX12::RHIResourceLayout>(resourceLayout)->GetRootSignature().Get());
 }
 
-void RHICommandList::SetComputeResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+void RHICommandList::SetComputeResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 {
-	_commandList->SetComputeRootSignature(std::static_pointer_cast<directX12::RHIResourceLayout>(resourceLayout)->GetRootSignature().Get());
+	_commandList->SetComputeRootSignature(gu::StaticPointerCast<directX12::RHIResourceLayout>(resourceLayout)->GetRootSignature().Get());
 }
 
-void RHICommandList::SetGraphicsPipeline(const std::shared_ptr<core::GPUGraphicsPipelineState>& pipelineState)
+void RHICommandList::SetGraphicsPipeline(const gu::SharedPointer<core::GPUGraphicsPipelineState>& pipelineState)
 {
 	SetPrimitiveTopology(pipelineState->GetInputAssemblyState()->GetPrimitiveTopology());
-	_commandList->SetPipelineState(std::static_pointer_cast<directX12::GPUGraphicsPipelineState>(pipelineState)->GetPipeline().Get());
+	_commandList->SetPipelineState(gu::StaticPointerCast<directX12::GPUGraphicsPipelineState>(pipelineState)->GetPipeline().Get());
 }
 
-void RHICommandList::SetComputePipeline(const std::shared_ptr<core::GPUComputePipelineState>& pipelineState)
+void RHICommandList::SetComputePipeline(const gu::SharedPointer<core::GPUComputePipelineState>& pipelineState)
 {
-	_commandList->SetPipelineState(std::static_pointer_cast<directX12::GPUComputePipelineState>(pipelineState)->GetPipeline().Get());
+	_commandList->SetPipelineState(gu::StaticPointerCast<directX12::GPUComputePipelineState>(pipelineState)->GetPipeline().Get());
 }
-void RHICommandList::SetVertexBuffers(const std::vector<std::shared_ptr<core::GPUBuffer>>& buffers, const size_t startSlot)
+void RHICommandList::SetVertexBuffers(const std::vector<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot)
 {
 	auto views = std::vector<D3D12_VERTEX_BUFFER_VIEW>(buffers.size());
 	for (size_t i = 0; i < views.size(); ++i)
@@ -324,7 +363,7 @@ void RHICommandList::SetVertexBuffers(const std::vector<std::shared_ptr<core::GP
 #if __DEBUG
 		assert(buffers[i]->GetUsage() == core::ResourceUsage::VertexBuffer);
 #endif
-		views[i].BufferLocation = std::static_pointer_cast<directX12::GPUBuffer>(buffers[i])->GetResourcePtr()->GetGPUVirtualAddress();
+		views[i].BufferLocation = gu::StaticPointerCast<directX12::GPUBuffer>(buffers[i])->GetResourcePtr()->GetGPUVirtualAddress();
 		views[i].SizeInBytes    = static_cast<UINT>(buffers[i]->GetTotalByteSize());
 		views[i].StrideInBytes  = static_cast<UINT>(buffers[i]->GetElementByteSize());
 	}
@@ -332,14 +371,14 @@ void RHICommandList::SetVertexBuffers(const std::vector<std::shared_ptr<core::GP
 	_commandList->IASetVertexBuffers(static_cast<UINT>(startSlot), static_cast<UINT>(views.size()), views.data());
 }
 
-void RHICommandList::SetIndexBuffer(const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType)
+void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType)
 {
 #if __DEBUG
 	assert(buffer->GetUsage() == core::ResourceUsage::IndexBuffer);
 #endif
 
 	D3D12_INDEX_BUFFER_VIEW view = {};
-	view.BufferLocation = std::static_pointer_cast<directX12::GPUBuffer>(buffer)->GetResourcePtr()->GetGPUVirtualAddress();
+	view.BufferLocation = gu::StaticPointerCast<directX12::GPUBuffer>(buffer)->GetResourcePtr()->GetGPUVirtualAddress();
 	view.SizeInBytes    = static_cast<UINT>(buffer->GetTotalByteSize());
 	view.Format         = EnumConverter::Convert(indexType);
 
@@ -350,9 +389,23 @@ void RHICommandList::DrawIndexed(std::uint32_t indexCount, std::uint32_t startIn
 {
 	_commandList->DrawIndexedInstanced(indexCount, 1, startIndexLocation, baseVertexLocation, 0);
 }
+
+
 void RHICommandList::DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation, std::uint32_t baseVertexLocation, std::uint32_t startInstanceLocation)
 {
 	_commandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+}
+
+void RHICommandList::DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const std::uint32_t drawCallCount)
+{
+	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device);
+	const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(argumentBuffer);
+	_commandList->ExecuteIndirect(dxDevice->GetDefaultDrawIndexedIndirectCommandSignature().Get(), drawCallCount, dxBuffer->GetResourcePtr(), 0, nullptr, 0);
+}
+
+void RHICommandList::DispatchMesh(const std::uint32_t threadGroupCountX, const std::uint32_t threadGroupCountY, const std::uint32_t threadGroupCountZ)
+{
+	_commandList->DispatchMesh(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
 
 void RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t threadGroupCountY, std::uint32_t threadGroupCountZ)
@@ -364,18 +417,18 @@ void RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t thr
 /****************************************************************************
 *                     TransitionResourceState
 *************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& textures, core::ResourceState afters)
+*  @fn        void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& textures, core::ResourceState afters)
 *
 *  @brief     Transition a single resource layout using barrier
 *
-*  @param[in] const std::shared_ptr<core::GPUTexture>& texture array,
+*  @param[in] const gu::SharedPointer<core::GPUTexture>& texture array,
 *  @param[in] core::ResourceState state array
 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after)
+void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after)
 {
-	BARRIER barrier = BARRIER::Transition(std::static_pointer_cast<directX12::GPUTexture>(texture)->GetResource().Get(),
+	BARRIER barrier = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(texture)->GetResource().Get(),
 		EnumConverter::Convert(texture->GetResourceState()), EnumConverter::Convert(after));
 	_commandList->ResourceBarrier(1, &barrier);
 	texture->TransitionResourceState(after);
@@ -384,22 +437,22 @@ void RHICommandList::TransitionResourceState(const std::shared_ptr<core::GPUText
 /****************************************************************************
 *                     TransitionResourceStates
 *************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
+*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
 *
 *  @brief     Transition resource layout using barrier
 *
 *  @param[in] const std::uint32_t numStates
-*  @param[in] const std::shared_ptr<core::GPUTexture>* texture array,
+*  @param[in] const gu::SharedPointer<core::GPUTexture>* texture array,
 *  @param[in] core::ResourceState* state array
 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters)
+void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
 {
 	std::vector<BARRIER> barriers = {};
 	for (std::uint32_t i = 0; i < numStates; ++i)
 	{
-		BARRIER barrier = BARRIER::Transition(std::static_pointer_cast<directX12::GPUTexture>(textures[i])->GetResource().Get(),
+		BARRIER barrier = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(textures[i])->GetResource().Get(),
 			EnumConverter::Convert(textures[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
 		textures[i]->TransitionResourceState(afters[i]);
 		barriers.emplace_back(barrier);
@@ -407,37 +460,37 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 	_commandList->ResourceBarrier(numStates, barriers.data());
 }
 
-void RHICommandList::TransitionResourceStates(const std::vector<std::shared_ptr<core::GPUResource>>& resources, core::ResourceState* afters)
+void RHICommandList::TransitionResourceStates(const std::vector<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters)
 {
 	std::vector<BARRIER> barriers(resources.size());
 	for (std::uint32_t i = 0; i < resources.size(); ++i)
 	{
 		if (resources[i]->IsTexture())
 		{
-			barriers[i] = BARRIER::Transition(std::static_pointer_cast<directX12::GPUTexture>(resources[i])->GetResource().Get(),
+			barriers[i] = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(resources[i])->GetResource().Get(),
 				EnumConverter::Convert(resources[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
 			resources[i]->TransitionResourceState(afters[i]);
 		}
 		else
 		{
-			barriers[i] = BARRIER::Transition(std::static_pointer_cast<directX12::GPUBuffer>(resources[i])->GetResource().Get(),
+			barriers[i] = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUBuffer>(resources[i])->GetResource().Get(),
 				EnumConverter::Convert(resources[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
 			resources[i]->TransitionResourceState(afters[i]);
 		}
 	}
-	_commandList->ResourceBarrier(barriers.size(), barriers.data());
+	_commandList->ResourceBarrier((UINT)barriers.size(), barriers.data());
 }
 
 #pragma endregion Transition Resource State
 #pragma region Copy 
-void RHICommandList::CopyResource(const std::shared_ptr<core::GPUTexture>& dest, const std::shared_ptr<core::GPUTexture>& source)
+void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source)
 {
-	CopyResource(std::static_pointer_cast<core::GPUResource>(dest), std::static_pointer_cast<core::GPUResource>(source));
+	CopyResource(gu::StaticPointerCast<core::GPUResource>(dest), gu::StaticPointerCast<core::GPUResource>(source));
 }
 
-void RHICommandList::CopyResource(const std::shared_ptr<core::GPUResource>& dest, const std::shared_ptr<core::GPUResource>& source)
+void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& dest, const gu::SharedPointer<core::GPUResource>& source)
 {
-	std::shared_ptr<core::GPUResource> resources[] = { dest, source };
+	gu::SharedPointer<core::GPUResource> resources[] = { dest, source };
 	rhi::core::ResourceState befores[] = { dest->GetResourceState()            , source->GetResourceState() };
 	rhi::core::ResourceState afters[] = { core::ResourceState::CopyDestination, core::ResourceState::CopySource };
 
@@ -446,20 +499,20 @@ void RHICommandList::CopyResource(const std::shared_ptr<core::GPUResource>& dest
 	if (dest->IsTexture() && source->IsTexture())
 	{
 		_commandList->CopyResource(
-			std::static_pointer_cast<directX12::GPUTexture>(dest)->GetResource().Get(),
-			std::static_pointer_cast<directX12::GPUTexture>(source)->GetResource().Get());
+			gu::StaticPointerCast<directX12::GPUTexture>(dest)->GetResource().Get(),
+			gu::StaticPointerCast<directX12::GPUTexture>(source)->GetResource().Get());
 	}
 	else if (dest->IsTexture() && !source->IsTexture())
 	{
 		_commandList->CopyResource(
-			std::static_pointer_cast<directX12::GPUTexture>(dest)->GetResource().Get(),
-			std::static_pointer_cast<directX12::GPUBuffer>(source)->GetResource().Get());
+			gu::StaticPointerCast<directX12::GPUTexture>(dest)->GetResource().Get(),
+			gu::StaticPointerCast<directX12::GPUBuffer>(source)->GetResource().Get());
 	}
 	else
 	{
 		_commandList->CopyResource(
-			std::static_pointer_cast<directX12::GPUBuffer>(dest)->GetResource().Get(),
-			std::static_pointer_cast<directX12::GPUBuffer>(source)->GetResource().Get());
+			gu::StaticPointerCast<directX12::GPUBuffer>(dest)->GetResource().Get(),
+			gu::StaticPointerCast<directX12::GPUBuffer>(source)->GetResource().Get());
 	}
 
 	TransitionResourceStates({ dest, source }, befores);
@@ -477,31 +530,29 @@ void RHICommandList::SetName(const std::wstring& name)
 /****************************************************************************
 *                     BeginRenderPassImpl
 *************************************************************************//**
-*  @fn        void RHICommandList::BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer)<directX12::RHIFrameBuffer>& frameBuffer)
+*  @fn        void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer)<directX12::RHIFrameBuffer>& frameBuffer)
 *  @brief     If you used render pass, this function is called. Set frame buffer (render target and depth stencil) to command buffer.
 *             When you use core::AttachmentLoad::Clear, color or depthStencil frame buffer is cleared.
-*  @param[in] const std::shared_ptr<directX12::RHIRenderPass>& renderPass
-*  @param[in] const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer
+*  @param[in] const gu::SharedPointer<directX12::RHIRenderPass>& renderPass
+*  @param[in] const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer)
+void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer)
 {
 	/*-------------------------------------------------------------------
 	-          Get frame buffer resources
 	---------------------------------------------------------------------*/
-	auto renderTargets = frameBuffer->GetRenderTargets();
-	auto depthStencil  = frameBuffer->GetDepthStencil();
 	const bool hasRTV  = frameBuffer->GetRenderTargetSize() != 0;
-	const bool hasDSV  = frameBuffer->GetDepthStencil() != nullptr;
+	const bool hasDSV  = frameBuffer->GetDepthStencil();
 	/*-------------------------------------------------------------------
 	-          Set CPU rtv and dsv descriptor handle
 	---------------------------------------------------------------------*/
 	// render target 
-	std::vector<D3D12_RENDER_PASS_RENDER_TARGET_DESC> rtvDescs(renderTargets.size());
+	std::vector<D3D12_RENDER_PASS_RENDER_TARGET_DESC> rtvDescs(frameBuffer->GetRenderTargetSize());
 	for (size_t i = 0; i < rtvDescs.size(); ++i)
 	{
 		// get rtv handle
-		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
+		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
 #ifdef _DEBUG
 		assert(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
 #endif
@@ -530,7 +581,7 @@ void RHICommandList::BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRen
 	if (hasDSV)
 	{
 		// get dsv handle
-		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
+		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
 
 #if __DEBUG
 		assert(view->GetResourceViewType() == core::ResourceViewType::DepthStencil);
@@ -560,14 +611,14 @@ void RHICommandList::BeginRenderPassImpl(const std::shared_ptr<directX12::RHIRen
 /****************************************************************************
 *                     OMSetFrameBuffer
 *************************************************************************//**
-*  @fn        void RHICommandList::OMSetFrameBuffer(const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer)
+*  @fn        void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer)
 *  @brief     If not used render pass, this function is called. Set frame buffer (render target and depth stencil) to command buffer.
 *             When you use core::AttachmentLoad::Clear, color or depthStencil frame buffer is cleared.
-*  @param[in] const std::shared_ptr<directX12::RHIRenderPass>& renderPass
-*  @param[in] const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer
+*  @param[in] const gu::SharedPointer<directX12::RHIRenderPass>& renderPass
+*  @param[in] const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::OMSetFrameBuffer(const std::shared_ptr<directX12::RHIRenderPass>& renderPass, const std::shared_ptr<directX12::RHIFrameBuffer>& frameBuffer)
+void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer)
 {
 	/*-------------------------------------------------------------------
 	-          Get frame buffer resources
@@ -575,14 +626,14 @@ void RHICommandList::OMSetFrameBuffer(const std::shared_ptr<directX12::RHIRender
 	auto renderTargets = frameBuffer->GetRenderTargets();
 	auto depthStencil  = frameBuffer->GetDepthStencil();
 	const bool hasRTV  = frameBuffer->GetRenderTargetSize() != 0;
-	const bool hasDSV  = frameBuffer->GetDepthStencil() != nullptr;
+	const bool hasDSV  = frameBuffer->GetDepthStencil();
 	/*-------------------------------------------------------------------
 	-          Set CPU rtv and dsv descriptor handle
 	---------------------------------------------------------------------*/
 	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvHandle(renderTargets.size());
 	for (size_t i = 0; i < rtvHandle.size(); ++i)
 	{
-		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
+		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
 
 #if _DEBUG
 		assert(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
@@ -593,7 +644,7 @@ void RHICommandList::OMSetFrameBuffer(const std::shared_ptr<directX12::RHIRender
 	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = {};
 	if (hasDSV)
 	{
-		const auto view = std::static_pointer_cast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
+		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
 #if _DEBUG
 		assert(view->GetResourceViewType() == core::ResourceViewType::DepthStencil);
 #endif

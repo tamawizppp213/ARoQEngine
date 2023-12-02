@@ -35,7 +35,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Build(const std::shared_ptr<core::RHICommandList>& commandList) override {};
+		void Build(const gu::SharedPointer<core::RHICommandList>& commandList) override {};
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -45,9 +45,9 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		BLASBuffer() = default;
 		~BLASBuffer() = default;
-		BLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
-			//const std::shared_ptr<core::GPUBuffer>& source,
-			const std::vector<std::shared_ptr<core::RayTracingGeometry>>& geometryDesc,
+		BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
+			//const gu::SharedPointer<core::GPUBuffer>& source,
+			const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
 			const core::BuildAccelerationStructureFlags flags);
 
 	protected:

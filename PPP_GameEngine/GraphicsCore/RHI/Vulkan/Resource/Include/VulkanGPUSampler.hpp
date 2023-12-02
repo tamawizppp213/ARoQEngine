@@ -47,7 +47,7 @@ namespace rhi::vulkan
 
 		~GPUSampler();
 
-		explicit GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
+		explicit GPUSampler(const gu::SharedPointer<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
 	
 	protected:
 		/****************************************************************************

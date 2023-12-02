@@ -33,8 +33,8 @@ namespace
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger):
-	core::RHIInstance(enableCPUDebugger, enableGPUDebugger)
+RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak):
+	core::RHIInstance(enableCPUDebugger, enableGPUDebugger, useGPUDebugBreak)
 {
 	/*-------------------------------------------------------------------
 	-                   Enable CPU and GPU Debugger
@@ -52,13 +52,19 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger):
 	ThrowIfFailed(CreateDXGIFactory1(IID_PPV_ARGS(&_factory)));
 #endif
 	
+	/*-------------------------------------------------------------------
+	-                   Create DRED
+	---------------------------------------------------------------------*/
+	EnabledGPUClashDebuggingModes();
+
+	printf("StartInstance\n");
 }
 
 RHIInstance::~RHIInstance()
 {
 	if (_factory) { _factory.Reset(); }
 
-	printf("DestroyInstance");
+	printf("DestroyInstance\n");
 }
 
 #pragma endregion Constructor and Destructor
@@ -67,16 +73,16 @@ RHIInstance::~RHIInstance()
 /****************************************************************************
 *                     SearchHighPerformanceAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 * 
 *  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの多いものから 
 *             (High) xGPU, dGPU iGPU (Low) selected
 * 
 *  @param[in] void
 * 
-*  @return 　　std::shared_ptr<core::RHIDisplayAdapter>
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 {
 	return SearchAdapter(DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE);
 }
@@ -84,16 +90,16 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapt
 /****************************************************************************
 *                     SearchMinimumPowerAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 * 
 *  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの少ないものから
 *             (Low) iGPU, dGPU xGPU (High)
 * 
 *  @param[in] void
 * 
-*  @return 　　std::shared_ptr<core::RHIDisplayAdapter>
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 {
 	return SearchAdapter(DXGI_GPU_PREFERENCE_MINIMUM_POWER);
 }
@@ -101,48 +107,66 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter(
 /****************************************************************************
 *                     SearchAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
 * 
 *  @brief     Search Proper Physical Device Adapter
 * 
 *  @param[in] const DXGI_GPU_PREFERENCE preference (high performance or minimum power)
 * 
-*  @return 　　std::shared_ptr<core::RHIDisplayAdapter>
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference)
 {
 	AdapterComPtr adapter = nullptr;
 
 	// (High) xGPU, dGPU iGPU (Low) selected
+#if DXGI_MAX_FACTORY_INTERFACE >= 6
 	if (_factory->EnumAdapterByGpuPreference(0, preference, IID_PPV_ARGS(&adapter)) == DXGI_ERROR_NOT_FOUND)
 	{
 		throw std::runtime_error("failed to search adapter");
 	}
+#else
+	for (UINT i = 0; _factory->EnumAdapters(i, (IDXGIAdapter**)adapter.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
+	{
+		DXGI_ADAPTER_DESC desc; adapter->GetDesc(&desc);
+		const bool isDiscreteGPU = desc.DedicatedVideoMemory != 0;
 
-	return std::make_shared<RHIDisplayAdapter>(shared_from_this(), adapter);
+		if ((preference == DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE &&  isDiscreteGPU) ||  
+			(preference == DXGI_GPU_PREFERENCE_MINIMUM_POWER    && !isDiscreteGPU))
+		{
+			break;
+		}
+	}
+#endif
+
+	return gu::MakeShared<RHIDisplayAdapter>(SharedFromThis(), adapter);
 }
 
 /****************************************************************************
 *                     EnumrateAdapters
 *************************************************************************//**
-*  @fn        std::vector<std::shared_ptr<core::RHIAdapter>> EnumrateAdapters()
+*  @fn        std::vector<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
 * 
 *  @brief     Return all availablle adapter lists
 * 
 *  @param[in] void
 * 
-*  @return 　　std::vector<std::shared_ptr<core::RHIAdapter>>
+*  @return 　　std::vector<gu::SharedPointer<core::RHIAdapter>>
 *****************************************************************************/
-std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
 {
-	std::vector<std::shared_ptr<core::RHIDisplayAdapter>> adapterLists = {};
+	std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
 	/*-------------------------------------------------------------------
 	-                  Define Proceed next adapter function
 	---------------------------------------------------------------------*/
 	auto ProceedNextAdapter = [&](std::uint32_t adapterIndex, AdapterComPtr& adapter)
 	{
+#if DXGI_MAX_FACTORY_INTERFACE >= 6
 		return _factory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter));
+#else
+		return _factory->EnumAdapters(adapterIndex, (IDXGIAdapter**)adapter.GetAddressOf());
+#endif
 	};
 
 	/*-------------------------------------------------------------------
@@ -151,8 +175,12 @@ std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapt
 	AdapterComPtr adapter = nullptr;
 	for (int i = 0; ProceedNextAdapter(i, adapter) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
-		adapterLists.emplace_back(std::make_shared<RHIDisplayAdapter>(shared_from_this(), adapter));
+		const auto thisInstance = SharedFromThis();
+		const auto rhiAdapter = gu::MakeShared<RHIDisplayAdapter>(thisInstance, adapter);
+		adapterLists.emplace_back(rhiAdapter);
+		adapter.Reset(); // memory leakに対処
 	}
+
 	return adapterLists;
 }
 
@@ -225,19 +253,83 @@ void RHIInstance::EnabledDebugLayer()
 *****************************************************************************/
 void RHIInstance::EnabledShaderBasedValidation()
 {
+#if D3D12_MAX_DEBUG_INTERFACE >= 3
 	DebugComPtr debugController;
-	ComPtr<ID3D12Debug3> debug3;
 
 	// Get Debugger
 	ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
-	ThrowIfFailed(debugController->QueryInterface(IID_PPV_ARGS(&debug3)));
 
 	/* Switch on GPU Debugger*/
-	debug3->SetEnableGPUBasedValidation(true);
+	debugController->SetEnableGPUBasedValidation(true);
 
 	/* Release Debug Pointer*/
 	debugController.Reset();
-	debug3.Reset();
+#endif
+}
+
+/****************************************************************************
+*                     EnabledGPUClashDebuggingModes
+*************************************************************************//**
+*  @fn        void RHIInstance::EnabledGPUClashDebuggingModes()
+*
+*  @brief     GPU Clashの解析を行うため,　予期しないデバイス削除エラーが検出された後にDREDデータにアクセスし, エラー原因を解析できるようにします.
+* 　　　　　　　　この関数はあくまで有効化するだけです.実際の検知は別で行います. 
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIInstance::EnabledGPUClashDebuggingModes()
+{
+	/*-------------------------------------------------------------------
+	-                Dred setting default
+	---------------------------------------------------------------------*/
+#ifdef  __ID3D12DeviceRemovedExtendedDataSettings_INTERFACE_DEFINED__
+	ComPtr<ID3D12DeviceRemovedExtendedDataSettings> dredSettings = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(dredSettings.GetAddressOf()))))
+	{
+		// Turn on AutoBreadCrumbs and Page Fault reporting.
+		dredSettings->SetAutoBreadcrumbsEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		dredSettings->SetPageFaultEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+
+		_useDRED = true;
+		OutputDebugStringA("dred enabled\n");
+	}
+	else
+	{
+		OutputDebugStringA(" DRED requested but interface was not found, hresult: %x. DRED only works on Windows 10 1903+.");
+	}
+#endif
+
+	/*-------------------------------------------------------------------
+	-                Dred setting 1
+	---------------------------------------------------------------------*/
+#ifdef  __ID3D12DeviceRemovedExtendedDataSettings1_INTERFACE_DEFINED__
+	ComPtr<ID3D12DeviceRemovedExtendedDataSettings1> dredSettings1 = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(dredSettings1.GetAddressOf()))))
+	{
+		dredSettings1->SetBreadcrumbContextEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		_useDREDContext = true;
+		OutputDebugStringA("dred breadcrumb context enabled\n");
+	}
+#endif
+
+	/*-------------------------------------------------------------------
+	-                Dred setting 2
+	---------------------------------------------------------------------*/
+#ifdef __ID3D12DeviceRemovedExtendedDataSettings2_INTERFACE_DEFINED__
+	ComPtr<ID3D12DeviceRemovedExtendedDataSettings2> dredSettings2 = nullptr;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(dredSettings2.GetAddressOf()))))
+	{
+		dredSettings2->SetBreadcrumbContextEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		dredSettings2->SetAutoBreadcrumbsEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		dredSettings2->SetPageFaultEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		dredSettings2->UseMarkersOnlyAutoBreadcrumbs(true);
+		_useDREDContext = true;
+		_useLightWeightDRED = true;
+		OutputDebugStringA("dred breadcrumb context enabled\n");
+	}
+#endif
 }
 #pragma endregion Debugger
 #pragma region Private Function

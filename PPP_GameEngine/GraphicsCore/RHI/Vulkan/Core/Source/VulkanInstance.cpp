@@ -32,7 +32,7 @@ namespace
 	*				  			CreateDebugUtilsMessengerEXT
 	*************************************************************************//**
 	*  @class     DestroyDebugUtilsMessengerEXT
-	*  @brief     Call free debug messenger
+	*  @brief     Define a callback to capture the messages
 	*****************************************************************************/
 	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 	{
@@ -134,8 +134,8 @@ namespace
 }
 
 #pragma region Constructor and Destructor
-RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger) 
-	:core::RHIInstance(enableCPUDebugger, enableGPUDebugger)
+RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak) 
+	:core::RHIInstance(enableCPUDebugger, enableGPUDebugger, useGPUDebugBreak)
 {
 	/*-------------------------------------------------------------------
 	-          Check validation support (in case enable CPU or GPU debugger)
@@ -161,6 +161,22 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger)
 	}
 	
 	/*-------------------------------------------------------------------
+	-               Acquire current api version 
+	---------------------------------------------------------------------*/
+	// find the instance version
+	std::uint32_t instanceVersion = VK_API_VERSION_1_0;
+	auto EnumrateInstanceVersion  = PFN_vkEnumerateInstanceVersion(vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion"));
+	if (EnumrateInstanceVersion)
+	{
+		EnumrateInstanceVersion(&instanceVersion);
+	}
+
+	// extract newest version info
+	_majorVersion = VK_VERSION_MAJOR(instanceVersion);
+	_minorVersion = VK_VERSION_MINOR(instanceVersion);
+	_patchVersion = VK_VERSION_PATCH(instanceVersion);
+
+	/*-------------------------------------------------------------------
 	-               Set Application Infomation
 	---------------------------------------------------------------------*/
 	const VkApplicationInfo applicationInfo =
@@ -171,7 +187,7 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger)
 		.applicationVersion = VK_MAKE_VERSION(1,0,0),             // application version (特に使用しない)
 		.pEngineName        = EngineName,                         // engine name
 		.engineVersion      = VK_MAKE_VERSION(1,0,0),             // engine version      (特に使用しない)
-		.apiVersion         = _vulkanAPIVersion,                  // newest version
+		.apiVersion         = VK_MAKE_VERSION(_majorVersion, _minorVersion, _patchVersion), // newest version
 	};
 
 	/*-------------------------------------------------------------------
@@ -239,14 +255,14 @@ RHIInstance::~RHIInstance()
 /****************************************************************************
 *                     EnumrateAdapters
 *************************************************************************//**
-*  @fn        std::vector<std::shared_ptr<core::RHIAdapter>> EnumrateAdapters()
+*  @fn        std::vector<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
 *  @brief     Return all availablle adapter lists
 *  @param[in] void
-*  @return 　　std::vector<std::shared_ptr<core::RHIAdapter>> 
+*  @return 　　std::vector<gu::SharedPointer<core::RHIAdapter>> 
 *****************************************************************************/
-std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
 {
-	std::vector<std::shared_ptr<core::RHIDisplayAdapter>> adapterLists = {};
+	std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
 	/*-------------------------------------------------------------------
 	-               Acquire physical devices
@@ -258,19 +274,19 @@ std::vector<std::shared_ptr<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapt
 	---------------------------------------------------------------------*/
 	for (const auto& device : devices)
 	{
-		adapterLists.emplace_back(std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(), device));
+		adapterLists.emplace_back(gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), device));
 	}
 	return adapterLists;
 }
 /****************************************************************************
 *                     SearchHighPerformanceAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 *  @brief     Return discrete GPU adapter. not found : first adapter
 *  @param[in] void
-*  @return 　　std::shared_ptr<core::RHIAdapter>
+*  @return 　　gu::SharedPointer<core::RHIAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 {
 	return SearchAdapter(VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
 }
@@ -278,12 +294,12 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapt
 /****************************************************************************
 *                     SearchMinimumPowerAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 *  @brief     Return integrated GPU adapter. not found : first adapter
 *  @param[in] void
-*  @return 　　std::shared_ptr<core::RHIAdapter>
+*  @return 　　gu::SharedPointer<core::RHIAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 {
 	return SearchAdapter(VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU);
 }
@@ -291,18 +307,18 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter(
 /****************************************************************************
 *                     SearchAdapter
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
+*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
 *  @brief     Return proper GPU adapte. not found : first found adapter 
 *  @param[in] void
-*  @return 　　std::shared_ptr<core::RHIAdapter>
+*  @return 　　gu::SharedPointer<core::RHIAdapter>
 *****************************************************************************/
-std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
+gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
 {
 	const auto& devices = EnumratePhysicalDevices();
 	if (devices.size() == 0) { return nullptr; }
 
 	// 必要となるものがなければ最初に見つけたAdapterを渡す. 
-	std::shared_ptr<core::RHIDisplayAdapter> adapter = std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(), devices[0]);
+	gu::SharedPointer<core::RHIDisplayAdapter> adapter = gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), devices[0]);
 	for (int i = 1; i < devices.size(); ++i)
 	{
 		/*-------------------------------------------------------------------
@@ -315,7 +331,7 @@ std::shared_ptr<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhys
 		---------------------------------------------------------------------*/
 		if (properties.deviceType == deviceType)
 		{
-			adapter = std::make_shared<vulkan::RHIDisplayAdapter>(shared_from_this(), devices[i]); break;
+			adapter = gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), devices[i]); break;
 		}
 	}
 
@@ -406,10 +422,7 @@ bool RHIInstance::CheckValidationLayerSupport()
 	/*-------------------------------------------------------------------
 	-                  Get Available Layers
 	---------------------------------------------------------------------*/
-	std::uint32_t layerCount = 0;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-	std::vector<VkLayerProperties> availableLayers(layerCount);
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+	const auto availableLayers = GetInstanceLayers();
 
 	/*-------------------------------------------------------------------
 	-                  Search Available Layers
@@ -425,7 +438,7 @@ bool RHIInstance::CheckValidationLayerSupport()
 	}
 
 	_instanceLayers.push_back("VK_LAYER_KHRONOS_shader_object");
-	_instanceLayers.push_back( "VK_LAYER_LUNARG_api_dump");
+	//_instanceLayers.push_back( "VK_LAYER_LUNARG_api_dump");
 
 	/* This implementation is used because it is not used in release build.*/
 	for (const char* layerName : _instanceLayers)
@@ -443,6 +456,115 @@ bool RHIInstance::CheckValidationLayerSupport()
 		if (!layerFound) { return false; }
 	}
 	return true;
+}
+
+std::vector<VkLayerProperties> RHIInstance::GetInstanceLayers() const
+{
+	std::uint32_t layerCount = 0;
+	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+	std::vector<VkLayerProperties> availableLayers(layerCount);
+	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+	return availableLayers;
+}
+
+/****************************************************************************
+*                     FillFilteredNameArray
+*************************************************************************//**
+*  @fn        VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
+			  const std::vector<VkLayerProperties>& properties,
+		      const std::vector<Entry>& requestedLayers)
+
+*  @brief     used: layer property name vector list. 
+* 
+*  @param[out] std::vector<std::string>& used : layer property name vector.
+*  @param[in]  std::vector<VkLayerProperties>properties : VkLayerProperty
+*  @param[in]  std::vector<Entry>& requestedLayer
+* 
+*  @return 　　VkResult
+*****************************************************************************/
+VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
+	const std::vector<VkLayerProperties>& properties,
+	const std::vector<Entry>& requestedLayers)
+{
+	/* This implementation is used because it is not used in release build.*/
+	// requested layerの中から, propertiesの名前を見つける.
+	for (const auto& layer : requestedLayers)
+	{
+		bool layerFound = false;
+		for (const auto& property : properties)
+		{
+			if (strcmp(layer.Name.c_str(), property.layerName) == 0)
+			{
+				layerFound = true;
+				break;
+			}
+		}
+
+		if (layerFound)
+		{
+			used.push_back(layer.Name);
+		}
+		else if (layer.Optional == false)
+		{
+			return VK_ERROR_LAYER_NOT_PRESENT;
+		}
+	}
+
+	return VK_SUCCESS;
+}
+
+/****************************************************************************
+*                     FillFilteredNameArray
+*************************************************************************//**
+*  @fn        VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
+			  const std::vector<VkLayerProperties>& properties,
+			  const std::vector<Entry>& requestedLayers)
+
+*  @brief     used: layer property name vector list.
+*
+*  @param[out] std::vector<std::string>& used : layer property name vector.
+*  @param[in]  std::vector<VkLayerProperties>properties : VkLayerProperty
+*  @param[in]  std::vector<Entry>& requestedLayer
+*  @param[out] std::vector<void*>& featureStructs
+*
+*  @return 　　VkResult
+*****************************************************************************/
+VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
+	const std::vector<VkExtensionProperties>& properties,
+	const std::vector<Entry>& requested,
+	std::vector<void*>& featureStructs)
+{
+	for (const auto& itr : requested)
+	{
+		bool found = false;
+		for (const auto& property : properties)
+		{
+			// 対象の名前とスペックが一致するかを調べる.
+			if (strcmp(itr.Name.c_str(), property.extensionName) == 0 &&
+				itr.Version == 0 || itr.Version == property.specVersion)
+			{
+				found = true;
+				break;
+			}
+		}
+
+		// feature struct push back
+		if (found)
+		{
+			used.push_back(itr.Name);
+			if (itr.FeatureStruct)
+			{
+				featureStructs.push_back(itr.FeatureStruct);
+			}
+		}
+		else if (!itr.Optional)
+		{
+			return VK_ERROR_EXTENSION_NOT_PRESENT;
+		}
+	}
+
+	return VK_SUCCESS;
 }
 
 /****************************************************************************

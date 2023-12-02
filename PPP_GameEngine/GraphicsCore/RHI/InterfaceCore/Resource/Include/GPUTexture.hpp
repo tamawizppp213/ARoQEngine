@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GPUResource.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace gm
 {
-	class RGBA;
+	struct RGBA;
 }
 
 namespace rhi::core
@@ -38,17 +38,17 @@ namespace rhi::core
 	*  @class     GPUTexture
 	*  @brief     Texture 
 	*****************************************************************************/
-	class GPUTexture : public GPUResource, public std::enable_shared_from_this<GPUTexture>
+	class GPUTexture : public GPUResource, public gu::EnableSharedFromThis<GPUTexture>
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Load(const std::wstring& filePath, const std::shared_ptr<RHICommandList>& commandList) = 0;
+		virtual void Load(const std::wstring& filePath, const gu::SharedPointer<RHICommandList>& commandList) = 0;
 
-		virtual void Save(const std::wstring& filePath, const std::shared_ptr<RHICommandList>& commandList, const std::shared_ptr<RHICommandQueue>& commandQueue) = 0;
+		virtual void Save(const std::wstring& filePath, const gu::SharedPointer<RHICommandList>& commandList, const gu::SharedPointer<RHICommandQueue>& commandQueue) = 0;
 
-		virtual void Write(const std::shared_ptr<RHICommandList>& commandList, const gm::RGBA* pixel) = 0;
+		virtual void Write(const gu::SharedPointer<RHICommandList>& commandList, const gm::RGBA* pixel) = 0;
 
 		void TransitionResourceState(const core::ResourceState after) override
 		{
@@ -124,13 +124,13 @@ namespace rhi::core
 
 		~GPUTexture() = default;
 
-		explicit GPUTexture(const std::shared_ptr<RHIDevice>& device, const std::wstring& name = L"Texture") : core::GPUResource(device) {};
-		explicit GPUTexture(const std::shared_ptr<RHIDevice>& device, const GPUTextureMetaData& metaData, const std::wstring& name): core::GPUResource(device), _metaData(metaData) {};
+		explicit GPUTexture(const gu::SharedPointer<RHIDevice>& device, [[maybe_unused]]const std::wstring& name = L"Texture") : core::GPUResource(device) {};
+		explicit GPUTexture(const gu::SharedPointer<RHIDevice>& device, const GPUTextureMetaData& metaData, [[maybe_unused]] const std::wstring& name): core::GPUResource(device), _metaData(metaData) {};
 		
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		virtual void Pack(const std::shared_ptr<core::RHICommandList>& commandList) = 0;
+		virtual void Pack(const gu::SharedPointer<core::RHICommandList>& commandList) = 0;
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

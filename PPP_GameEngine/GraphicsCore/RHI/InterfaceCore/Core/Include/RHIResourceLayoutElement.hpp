@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -76,14 +76,14 @@ namespace rhi::core
 		ShaderVisibility Visibility     = ShaderVisibility::All;
 		size_t           Binding        = 0;
 		size_t           RegisterSpace  = 0;
-		std::shared_ptr<GPUSampler> Sampler;
+		gu::SharedPointer<GPUSampler> Sampler;
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		SamplerLayoutElement() = default;
 
-		explicit SamplerLayoutElement(const std::shared_ptr<GPUSampler>& sampler, const size_t binding = 0, const size_t space = 0, const ShaderVisibility visibility = ShaderVisibility::All)
+		explicit SamplerLayoutElement(const gu::SharedPointer<GPUSampler>& sampler, const size_t binding = 0, const size_t space = 0, const ShaderVisibility visibility = ShaderVisibility::All)
 			: Visibility(visibility), Binding(binding), RegisterSpace(space), Sampler(sampler)
 		{
 		};

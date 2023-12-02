@@ -178,7 +178,7 @@ BlobComPtr GPUShaderState::DxCompile(const std::wstring& fileName, const std::ws
 		target.c_str(),
 		arguments.data(), static_cast<std::uint32_t>(arguments.size()),
 		dxcDefines.empty() ? nullptr : dxcDefines.data(),
-		dxcDefines.empty() ? 0 : dxcDefines.size(),
+		dxcDefines.empty() ? 0 : (UINT32)dxcDefines.size(),
 		dxcIncludeHandler.Get(),
 		&result
 	);

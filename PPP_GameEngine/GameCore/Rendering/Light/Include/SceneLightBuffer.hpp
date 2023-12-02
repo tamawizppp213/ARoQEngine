@@ -17,7 +17,7 @@
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "LightType.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <vector>
 #include <numeric>
 
@@ -42,9 +42,9 @@ namespace gc::rendering
 	class SceneLightBuffer : public NonCopyable
 	{
 	protected:
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using BufferPtr                 = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ResourceViewPtr           = std::shared_ptr<rhi::core::GPUResourceView>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using BufferPtr                 = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -52,7 +52,7 @@ namespace gc::rendering
 		/* @brief : Bind between the resource layout and GPU resource.*/
 		void BindLightData
 		(
-			const std::shared_ptr<rhi::core::RHICommandList>& graphicsCommandList,
+			const gu::SharedPointer<rhi::core::RHICommandList>& graphicsCommandList,
 			const std::uint32_t bindID
 		);
 
@@ -60,7 +60,7 @@ namespace gc::rendering
 		            This variable is basically limited by the Point lights and spot lights*/
 		void BindHitLightIDLists
 		(
-			const std::shared_ptr<rhi::core::RHICommandList>& commandList,
+			const gu::SharedPointer<rhi::core::RHICommandList>& commandList,
 			const std::uint32_t bindID
 		);
 
@@ -127,7 +127,7 @@ namespace gc::rendering
 	template<typename TLight> requires std::is_base_of_v<LightData, TLight>
 	void SceneLightBuffer<TLight>::BindLightData
 	(
-		const std::shared_ptr<rhi::core::RHICommandList>& commandList,
+		const gu::SharedPointer<rhi::core::RHICommandList>& commandList,
 		const std::uint32_t bindID)
 	{
 		/*-------------------------------------------------------------------
@@ -146,14 +146,14 @@ namespace gc::rendering
 
 	*  @brief     Bind UAV about the HitLightIDLists In Tile.
 	*
-	*  @param[in] const std::shared_ptr<rhi::core::RHICommandList>& graphics or compute commandList
+	*  @param[in] const gu::SharedPointer<rhi::core::RHICommandList>& graphics or compute commandList
 	*
 	*  @return Å@Å@void
 	*****************************************************************************/
 	template<typename TLight> requires std::is_base_of_v<LightData, TLight>
 	void SceneLightBuffer<TLight>::BindHitLightIDLists
 	(
-		const std::shared_ptr<rhi::core::RHICommandList>& commandList,
+		const gu::SharedPointer<rhi::core::RHICommandList>& commandList,
 		const std::uint32_t bindID)
 	{
 		if (!_hitLightIDListsInTile) { return; }

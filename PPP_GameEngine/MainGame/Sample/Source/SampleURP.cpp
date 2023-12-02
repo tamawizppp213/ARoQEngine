@@ -23,6 +23,7 @@
 #include "MainGame/Sample/Include/SampleColorChange.hpp"
 #include "MainGame/Core/Include/SceneManager.hpp"
 #include <iostream>
+#include "GameUtility/Base/Include/GUAssert.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +57,7 @@ SampleURP::~SampleURP()
 * 
 *  @return    void
 *****************************************************************************/
-void SampleURP::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleURP::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -110,8 +111,7 @@ void SampleURP::Draw()
 	commandList->SetViewportAndScissor(
 		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
 		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
-
-	_renderer->Draw(_camera->GetResourceView());
+	_renderer->Draw();
 	_skybox  ->Draw(_camera->GetResourceView());
 	_engine  ->EndDrawFrame();
 }
@@ -159,13 +159,13 @@ void SampleURP::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Camera
 	---------------------------------------------------------------------*/
-	_camera = std::make_shared<Camera>(_engine);
+	_camera = gu::MakeShared<Camera>(_engine);
 	_camera->SetPosition(0.0f, 10.0f, -20.0f);
 
 	/*-------------------------------------------------------------------
 	-           Skybox
 	---------------------------------------------------------------------*/
-	_skybox = std::make_shared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
+	_skybox = gu::MakeShared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
 	
 	/*-------------------------------------------------------------------
 	-           Model
@@ -177,7 +177,7 @@ void SampleURP::LoadMaterials()
 	PBRMaterial pbrMaterial = {};
 	pbrMaterial.Diffuse = gm::Float4(1.0f, 1.0f, 1.0f, 1);
 	pbrMaterial.Roughness = 1.0f;
-	const auto material = std::make_shared<Material>(_engine, GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1));
+	const auto material = gu::MakeShared<Material>(_engine, GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1));
 	material->PackMaterial(&pbrMaterial);
 
 	_floor = GameObject::Create<GameModel>(_engine);
@@ -187,14 +187,14 @@ void SampleURP::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Universal Rendering Pipeline
 	---------------------------------------------------------------------*/
-	_renderer = std::make_shared<gc::URP>(_engine, _gameTimer);
+	_renderer = gu::MakeShared<gc::URP>(_engine, _gameTimer);
+	_renderer->SetSceneView(_camera->GetResourceView());
 	_renderer->Add(Forward, _model);
 	_renderer->Add(Forward, _floor);
+	_pppEngine->SetRenderingPipeline(_renderer);
 
 	IESProfiler profiler;
 	profiler.Load(L"Resources/Test.IES");
-
-
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue
 	---------------------------------------------------------------------*/

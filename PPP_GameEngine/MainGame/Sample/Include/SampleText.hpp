@@ -43,16 +43,16 @@ namespace sample
 	*****************************************************************************/
 	class SampleText : public Scene
 	{
-		using UIRendererPtr = std::shared_ptr<gc::ui::UIRenderer>;
-		using TextPtr       = std::shared_ptr<gc::ui::Text>;
-		using FontPtr       = std::shared_ptr<gc::ui::Font>;
-		using GPUResourceCachePtr = std::shared_ptr<rhi::core::GPUResourceCache>;
-		using GPUResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
+		using UIRendererPtr = gu::SharedPointer<gc::ui::UIRenderer>;
+		using TextPtr       = gu::SharedPointer<gc::ui::Text>;
+		using FontPtr       = gu::SharedPointer<gc::ui::Font>;
+		using GPUResourceCachePtr = gu::SharedPointer<rhi::core::GPUResourceCache>;
+		using GPUResourceViewPtr = gu::SharedPointer<rhi::core::GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
+		void Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer) override;
 		void Update() override;
 		void Draw() override;
 		void Terminate() override;

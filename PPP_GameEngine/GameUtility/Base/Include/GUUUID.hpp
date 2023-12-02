@@ -1,95 +1,96 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GMQueue.hpp
-///             @brief  GM Simple Queue
-///             @author Toide Yutaro
-///             @date   2020_12_13
+///             @file   GUUUID.hpp
+///             @brief  Universally Unique Identifier
+///                     全てのResource中辛一いに識別するために使用されるラベル
+///             @author toide
+///             @date   2023/10/28 23:21:04
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GM_QUEUE_HPP
-#define GM_QUEUE_HPP
+#ifndef GUUUID_HPP
+#define GUUUID_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <vector>
-
+#include "GUType.hpp"
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         
+//                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gm
+
+namespace gu
 {
+	enum class UUIDFormat
+	{
+		Default // 00000000-00000000-00000000-00000000
+	};
+
 	/****************************************************************************
-	*				  			Queue
+	*				  			   UUID
 	*************************************************************************//**
-	*  @class     Queue
-	*  @brief     Simple Queue
+	*  @struct    UUID
+	*  @brief     オブジェクトを一意に特定するUniversally Unique Identifier (UUID)
 	*****************************************************************************/
-	template<typename T>
-	class Queue
+	struct UUID
 	{
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Reserve(int reserveNum)
-		{
-			_queue.reserve(reserveNum);
-		}
+		static UUID Create();
 
-		bool IsEmpty() const
-		{
-			return _startPosition == _queue.size();
-		}
+		// @brief : GUIDを無効化します. (ゼロに初期化する)
+		inline void Invalidate() { A = B = C = D = 0; }
 
-		void Enqueue(const T& data)
-		{
-			_queue.push_back(data);
-		}
+		// @brief : GUIDが有効かどうかを調べます. 
+		inline bool IsValid() const { return ((A | B | C | D) != 0); }
 
-		T& Dequeue()
-		{
-			_startPosition++;
-			return _queue[_startPosition-1];
-		}
+		// @brief : 文字列を後に追加します.
+		void AppendString(std::string& string, const UUIDFormat format);
 
-		T& Front()
-		{
-			return _queue[_startPosition];
-		}
-
-		int QueueCount()
-		{
-			return _queue.size() - _startPosition;
-		}
-
-		void Clear()
-		{
-			_queue.clear();
-			_startPosition = 0;
-		}
+		// @brief : 文字列を返します
+		std::string ToString(const UUIDFormat format);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		gu::uint32 A = 0; // First component
+		gu::uint32 B = 0; // Second component
+		gu::uint32 C = 0; // Third component
+		gu::uint32 D = 0; // Fourth component
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		UUID() = default;
 
+		UUID(const gu::uint32 a, const gu::uint32 b, const gu::uint32 c, const gu::uint32 d)
+			: A(a), B(b), C(c), D(d){ }
 
-	private:
+		bool operator ==(const UUID& rhs) const noexcept
+		{
+			return ((A ^ rhs.A) | (B ^ rhs.B) | (C ^ rhs.C) | (D ^ rhs.D)) == 0;
+		}
+		bool operator !=(const UUID& rhs) const noexcept
+		{
+			return ((A ^ rhs.A) | (B ^ rhs.B) | (C ^ rhs.C) | (D ^ rhs.D)) != 0;
+		}
+
+		// GUIDのコンポーネントにIndexから直接アクセスできるようにする.
+		gu::uint32& operator[](const gu::uint32 index);
+		const gu::uint32& operator[](const gu::uint32 index) const;
+	protected:
 		/****************************************************************************
-		**                Private Function
+		**                Protected Function
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<T> _queue;
-		int _startPosition = 0;
 	};
+
 }
 #endif

@@ -42,7 +42,7 @@ SampleRectangle::~SampleRectangle()
 *  @param[in]  const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleRectangle::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleRectangle::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -100,10 +100,10 @@ void SampleRectangle::Draw()
 *****************************************************************************/
 void SampleRectangle::Terminate()
 {
-	if (_resourceLayout) { _resourceLayout.reset(); }
-	if (_pipelineState) { _pipelineState.reset(); }
-	if (_indexBuffer ) { _indexBuffer.reset(); }
-	if (_vertexBuffer) { _vertexBuffer.reset(); }
+	if (_resourceLayout) { _resourceLayout.Reset(); }
+	if (_pipelineState) { _pipelineState.Reset(); }
+	if (_indexBuffer ) { _indexBuffer.Reset(); }
+	if (_vertexBuffer) { _vertexBuffer.Reset(); }
 }
 #pragma endregion Public Function
 

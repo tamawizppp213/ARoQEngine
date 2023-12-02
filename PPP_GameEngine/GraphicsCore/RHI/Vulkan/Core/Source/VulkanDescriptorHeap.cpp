@@ -22,11 +22,11 @@ using namespace rhi;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-RHIDescriptorHeap::RHIDescriptorHeap(const std::shared_ptr<core::RHIDevice>& device) : core::RHIDescriptorHeap(device){}
+RHIDescriptorHeap::RHIDescriptorHeap(const gu::SharedPointer<core::RHIDevice>& device) : core::RHIDescriptorHeap(device){}
 
 RHIDescriptorHeap::~RHIDescriptorHeap()
 {
-	const auto vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
+	const auto vkDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 	if (_descriptorPool)
 	{
 		vkDestroyDescriptorPool(vkDevice, _descriptorPool, nullptr);
@@ -37,35 +37,38 @@ RHIDescriptorHeap::~RHIDescriptorHeap()
 /****************************************************************************
 *                     Allocate
 *************************************************************************//**
-*  @fn        RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+*  @fn        RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 * 
 *  @brief     Allocate view. Return descriptor index
 * 
 *  @param[in] const core::DescriptorHeapType type
 * 
-*  @param[in] const std::shared_ptr<core::RHIResourceLayout>& resourceLayout
+*  @param[in] const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout
 * 
 *  @return 　　DescriptorID (std::uint32_t)
 *****************************************************************************/
-RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout)
+RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 {
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (_heapInfo.find(heapType) == _heapInfo.end()) { return static_cast<core::RHIDescriptorHeap::DescriptorID>(INVALID_ID); }
+	if (!_heapInfo.contains(heapType)) { throw std::runtime_error("Not include heap type"); }
 	
 	/*-------------------------------------------------------------------
 	-			     Set up descriptor set layout
 	---------------------------------------------------------------------*/
-	VkDevice   vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
-	const auto vkLayout = std::static_pointer_cast<vulkan::RHIResourceLayout>(resourceLayout);
+	if(!resourceLayout){ throw std::runtime_error("Resource layout is nullptr"); }
+	VkDevice   vkDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
+	const auto vkLayout = gu::StaticPointerCast<vulkan::RHIResourceLayout>(resourceLayout);
 
-	VkDescriptorSetAllocateInfo allocateInfo = {};
-	allocateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocateInfo.descriptorPool     = _descriptorPool;
-	allocateInfo.descriptorSetCount = static_cast<std::uint32_t>(vkLayout->GetDescriptorSetLayouts().size());
-	allocateInfo.pNext              = nullptr;
-	allocateInfo.pSetLayouts        = vkLayout->GetDescriptorSetLayouts().data();
+	const VkDescriptorSetAllocateInfo allocateInfo = 
+	{
+		.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+		.pNext              = nullptr,
+		.descriptorPool     = _descriptorPool,
+		.descriptorSetCount = static_cast<std::uint32_t>(vkLayout->GetDescriptorSetLayouts().size()),
+		.pSetLayouts        = vkLayout->GetDescriptorSetLayouts().data()
+	};
 	
 	/*-------------------------------------------------------------------
 	-			     Allocate descriptor set
@@ -82,6 +85,40 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 
 	return static_cast<core::RHIDescriptorHeap::DescriptorID>(_resourceAllocator.IssueID(descriptorSet));
 }
+
+/****************************************************************************
+*                     Free
+*************************************************************************//**
+*  @fn        void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex)
+*
+*  @brief     Free Resource allocator and heap
+*
+*  @param[in] const core::DescriptorHeapType heapType
+*  @param[in] const DescriptorID offsetID
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex)
+{
+	/*-------------------------------------------------------------------
+	-			     Check heap type
+	---------------------------------------------------------------------*/
+	if (!_heapInfo.contains(heapType)) { return; }
+
+	/*-------------------------------------------------------------------
+	-			     Free ID
+	---------------------------------------------------------------------*/
+	VkDevice vkDevice  = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
+	auto descriptorSet = _resourceAllocator.GetDescriptorSet(offsetIndex);
+	
+	if (vkFreeDescriptorSets(vkDevice, _descriptorPool, 1, &descriptorSet) != VK_SUCCESS)
+	{
+		throw std::runtime_error("failed to free descriptor set");
+	}
+	
+	_resourceAllocator.FreeID(offsetIndex); // resource view index in each heap.s
+}
+
 /****************************************************************************
 *                     Resize
 *************************************************************************//**
@@ -114,7 +151,7 @@ void RHIDescriptorHeap::Resize(const core::DescriptorHeapType heapType, const si
 *****************************************************************************/
 void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
 {
-	VkDevice vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
+	VkDevice vkDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-               Get descriptor pool size
@@ -123,46 +160,58 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	size_t totalHeapCount = 0;
 	for (auto& heapInfo : heapInfos)
 	{
-		VkDescriptorPoolSize poolSize = {};
-		poolSize.type            = EnumConverter::Convert(heapInfo.first);
-		poolSize.descriptorCount = static_cast<std::uint32_t>(heapInfo.second);
+		const VkDescriptorPoolSize poolSize = 
+		{
+			.type            = EnumConverter::Convert(heapInfo.first),
+			.descriptorCount = static_cast<std::uint32_t>(heapInfo.second)
+		};
 		poolSizes.emplace_back(poolSize);
 		totalHeapCount += poolSize.descriptorCount;
 	}
+	_heapInfo = heapInfos;
 
 	/*-------------------------------------------------------------------
 	-               Max descriptor size check
 	---------------------------------------------------------------------*/
-	if (_totalHeapCount > totalHeapCount) { return; }
+	if (_totalHeapCount > totalHeapCount) 
+	{ 
+		poolSizes.clear(); poolSizes.shrink_to_fit();
+		return; 
+	}
 
 	/*-------------------------------------------------------------------
 	-               Get descriptor heap create info
 	---------------------------------------------------------------------*/
-	VkDescriptorPoolCreateInfo createInfo = {};
-	createInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	createInfo.pNext         = nullptr;
-	createInfo.flags         = 0;
-	createInfo.poolSizeCount = static_cast<std::uint32_t>(poolSizes.size());
-	createInfo.pPoolSizes    = poolSizes.data();
-	createInfo.maxSets       = static_cast<std::uint32_t>(totalHeapCount);
+	const VkDescriptorPoolCreateInfo createInfo = 
+	{
+		.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+		.pNext         = nullptr,
+		.flags         = 0,
+		.maxSets       = static_cast<std::uint32_t>(totalHeapCount),
+		.poolSizeCount = static_cast<std::uint32_t>(poolSizes.size()),
+		.pPoolSizes    = poolSizes.data()
+	};
 
 	if (vkCreateDescriptorPool(vkDevice, &createInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create descriptor pool");
 	}
-	
 
 	_totalHeapCount = totalHeapCount;
-	_resourceAllocator.SetDescriptorPool(_descriptorPool);
+	_resourceAllocator.SetResourceAllocator((std::uint32_t)totalHeapCount, _descriptorPool);
 }
 
 void RHIDescriptorHeap::Reset(const ResetFlag flag)
 {
+	// ポインタのみ破棄
 	_resourceAllocator.ResetID();
 
+	/*-------------------------------------------------------------------
+	-              以下は中身を全て消す場合
+	---------------------------------------------------------------------*/
 	if (flag != ResetFlag::All) { return; }
 
-	VkDevice vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
+	VkDevice vkDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 	/*-------------------------------------------------------------------
 	-               Reset descriptor pool
 	---------------------------------------------------------------------*/

@@ -69,7 +69,7 @@ float CalculateShadowRate(
 const float2 shadowPixel  [SHADOW_MAP_COUNT],
 const float4 positionInLVP[SHADOW_MAP_COUNT])
 {
-    float4 shadowRatio = 0.0f;
+    float shadowRatio = 0.0f;
     
     for (int i = 0; i < SHADOW_MAP_COUNT; ++i)
     {

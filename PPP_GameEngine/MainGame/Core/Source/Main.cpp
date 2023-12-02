@@ -9,6 +9,8 @@ int main()
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCommandLine, _In_ int nShowCommand)
 #endif
 {   
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
     /********************************************
     **         Initialize
     *********************************************/
@@ -25,6 +27,5 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     **         Check MemoryLeaks
     *********************************************/
     exit(EXIT_SUCCESS);
-   
 }
 

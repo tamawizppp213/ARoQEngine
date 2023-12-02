@@ -42,7 +42,7 @@ SampleCollisionDetection::~SampleCollisionDetection()
 *  @param[in] const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleCollisionDetection::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleCollisionDetection::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -60,10 +60,10 @@ void SampleCollisionDetection::Update()
 	
 	// Sphere
 	{
-		const auto geometryA = std::make_shared<GeometrySphere>(0.5f);
-		const auto sphereA   = std::make_shared<PhysicsActor>(geometryA, Vector3(0,0,0));
-		const auto geometryB = std::make_shared<GeometrySphere>(0.5f);
-		const auto sphereB   = std::make_shared<PhysicsActor>(geometryB, Vector3(0.5f, 0.0f, 0.0f));
+		const auto geometryA = gu::MakeShared<GeometrySphere>(0.5f);
+		const auto sphereA   = gu::MakeShared<PhysicsActor>(geometryA, Vector3(0,0,0));
+		const auto geometryB = gu::MakeShared<GeometrySphere>(0.5f);
+		const auto sphereB   = gu::MakeShared<PhysicsActor>(geometryB, Vector3(0.5f, 0.0f, 0.0f));
 		if (detector.Intersects(sphereA, sphereB))
 		{
 			std::cout << "Sphere_vs_Sphere:" << "Hit" << std::endl;
@@ -72,10 +72,10 @@ void SampleCollisionDetection::Update()
 
 	// AABB_vs_AABB
 	{
-		const auto geometryA = std::make_shared<GeometryAABB>(0.5f, 0.5f, 0.5f);
-		const auto actorA    = std::make_shared<PhysicsActor>(geometryA, Vector3(0, 0, 0));
-		const auto geometryB = std::make_shared<GeometryAABB>(0.5f, 0.5f, 0.5f);
-		const auto actorB    = std::make_shared<PhysicsActor>(geometryB, Vector3(0.0f, 0.0f, 0.0f));
+		const auto geometryA = gu::MakeShared<GeometryAABB>(0.5f, 0.5f, 0.5f);
+		const auto actorA    = gu::MakeShared<PhysicsActor>(geometryA, Vector3(0, 0, 0));
+		const auto geometryB = gu::MakeShared<GeometryAABB>(0.5f, 0.5f, 0.5f);
+		const auto actorB    = gu::MakeShared<PhysicsActor>(geometryB, Vector3(0.0f, 0.0f, 0.0f));
 		if (detector.Intersects(actorA, actorB))
 		{
 			std::cout << "AABB_vs_AABB:" << "Hit" << std::endl;
@@ -84,10 +84,10 @@ void SampleCollisionDetection::Update()
 
 	// AABB_vs_Sphere
 	{
-		const auto geometryA = std::make_shared<GeometrySphere>(0.5f);
-		const auto actorA    = std::make_shared<PhysicsActor>(geometryA, Vector3(0.75f, 0.75f, 0));
-		const auto geometryB = std::make_shared<GeometryAABB>(0.5f, 0.5f, 0.5f);
-		const auto actorB    = std::make_shared<PhysicsActor>(geometryB, Vector3(0.0f, 0.0f, 0.0f));
+		const auto geometryA = gu::MakeShared<GeometrySphere>(0.5f);
+		const auto actorA    = gu::MakeShared<PhysicsActor>(geometryA, Vector3(0.75f, 0.75f, 0));
+		const auto geometryB = gu::MakeShared<GeometryAABB>(0.5f, 0.5f, 0.5f);
+		const auto actorB    = gu::MakeShared<PhysicsActor>(geometryB, Vector3(0.0f, 0.0f, 0.0f));
 		if (detector.Intersects(actorA, actorB))
 		{
 			std::cout << "Sphere_vs_AABB:" << "Hit" << std::endl;
@@ -96,10 +96,10 @@ void SampleCollisionDetection::Update()
 
 	// OBB_vs_Sphere
 	{
-		const auto geometryA = std::make_shared<GeometrySphere>(0.5f);
-		const auto actorA    = std::make_shared<PhysicsActor>(geometryA, Vector3(0.0f, 0.0f, 2.0f));
-		const auto geometryB = std::make_shared<GeometryOBB>(1.0f, 0.5f, 1.5f);
-		const auto actorB    = std::make_shared<PhysicsActor>(geometryB, Vector3(0.0f, 0.0f, 0.0f), Quaternion(Vector3(0,1,0.0f), GM_PI / 2.0f));
+		const auto geometryA = gu::MakeShared<GeometrySphere>(0.5f);
+		const auto actorA    = gu::MakeShared<PhysicsActor>(geometryA, Vector3(0.0f, 0.0f, 2.0f));
+		const auto geometryB = gu::MakeShared<GeometryOBB>(1.0f, 0.5f, 1.5f);
+		const auto actorB    = gu::MakeShared<PhysicsActor>(geometryB, Vector3(0.0f, 0.0f, 0.0f), Quaternion(Vector3(0,1,0.0f), GM_PI / 2.0f));
 		if (detector.Intersects(actorA, actorB))
 		{
 			std::cout << "Sphere_vs_OBB:" << "Hit" << std::endl;
@@ -108,10 +108,10 @@ void SampleCollisionDetection::Update()
 
 	// OBB_vs_OBB (Ç‹Çæ)
 	{
-		const auto geometryA = std::make_shared<GeometryOBB>(0.5f, 0.5f, 0.5f);
-		const auto actorA    = std::make_shared<PhysicsActor>(geometryA, Vector3(0, 0, 0));
-		const auto geometryB = std::make_shared<GeometryOBB>(0.5f, 0.5f, 0.5f);
-		const auto actorB    = std::make_shared<PhysicsActor>(geometryB, Vector3(1.0f, 0.0f, 0.0f), Quaternion(Vector3(0, 1, 0)));
+		const auto geometryA = gu::MakeShared<GeometryOBB>(0.5f, 0.5f, 0.5f);
+		const auto actorA    = gu::MakeShared<PhysicsActor>(geometryA, Vector3(0, 0, 0));
+		const auto geometryB = gu::MakeShared<GeometryOBB>(0.5f, 0.5f, 0.5f);
+		const auto actorB    = gu::MakeShared<PhysicsActor>(geometryB, Vector3(1.0f, 0.0f, 0.0f), Quaternion(Vector3(0, 1, 0)));
 		if (detector.Intersects(actorA, actorB))
 		{
 			std::cout << "OBB_vs_OBB:" << "Hit" << std::endl;

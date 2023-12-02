@@ -71,7 +71,7 @@ bool GamePad::Initialize()
 
 	if (dwResult != ERROR_SUCCESS)
 	{
-		OutputDebugStringW(L"Please connect at least one controller that supports xinput.");
+		OutputDebugStringW(L"Please connect at least one controller that supports xinput.\n");
 		//MessageBox(NULL, L"Please connect at least one controller that supports xinput.", L"Warning", MB_ICONWARNING);
 	}
 	XInputGetState(0, &_previousStates[0]);

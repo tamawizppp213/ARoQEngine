@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <map>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -50,8 +50,11 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Allocate view. Return descriptor index (only use resourceLayout in vulkan api : )*/
-		virtual DescriptorID Allocate(const DescriptorHeapType heapType, const std::shared_ptr<RHIResourceLayout>& resourceLayout) = 0;
+		virtual DescriptorID Allocate(const DescriptorHeapType heapType, const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0;
 		
+		/* @brief : Free offset ID*/
+		virtual void Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex) = 0;
+
 		/* @brief : Resize max view count size heap*/
 		virtual void Resize(const DescriptorHeapType type, const size_t viewCount) = 0;
 		/* @brief : Resize max view count size heap*/
@@ -75,7 +78,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		explicit RHIDescriptorHeap(const std::shared_ptr<RHIDevice>& device) : _device(device){};
+		explicit RHIDescriptorHeap(const gu::SharedPointer<RHIDevice>& device) : _device(device){};
 		
 		virtual ~RHIDescriptorHeap();
 
@@ -86,7 +89,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 		/* @brief : max total heap count (ex. CBV + SRV + UAV)*/
 		MaxDescriptorSize _totalHeapCount = 0;
 		/* @brief : max descriptor count in each descriptor heap type*/

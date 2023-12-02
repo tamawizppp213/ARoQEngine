@@ -23,13 +23,13 @@ GPUBlendState::~GPUBlendState()
 	_attachments.clear(); _attachments.shrink_to_fit();
 }
 
-GPUBlendState::GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties)
+GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties)
 	: rhi::core::GPUBlendState(device, blendProperties)
 {
 	Prepare();
 }
 
-GPUBlendState::GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty)
+GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty)
 	: rhi::core::GPUBlendState(device, blendProperty)
 {
 	Prepare();

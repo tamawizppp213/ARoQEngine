@@ -34,32 +34,32 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Create and return input assembly state pointer*/
-		std::shared_ptr<core::GPUInputAssemblyState> CreateInputAssemblyState(
+		gu::SharedPointer<core::GPUInputAssemblyState> CreateInputAssemblyState(
 			const std::vector<core::InputLayoutElement>& elements,
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList) override;
 
 		/* @brief : Create and return rasterizer state pointer*/
-		std::shared_ptr<core::GPURasterizerState> CreateRasterizerState(
+		gu::SharedPointer<core::GPURasterizerState> CreateRasterizerState(
 			const core::RasterizerProperty& rasterizerProperty) override;
 
 		/* @brief : Create and return depth stencil state pointer*/
-		std::shared_ptr<core::GPUDepthStencilState> CreateDepthStencilState(
+		gu::SharedPointer<core::GPUDepthStencilState> CreateDepthStencilState(
 			const core::DepthStencilProperty& depthStencilProperty) override;
 
 		/* @brief : Create and return shader state pointer*/
-		std::shared_ptr<core::GPUShaderState> CreateShaderState() override;
+		gu::SharedPointer<core::GPUShaderState> CreateShaderState() override;
 
 		/* @brief : Create and return multiple blend states pointer. */
-		std::shared_ptr<core::GPUBlendState> CreateBlendState(
+		gu::SharedPointer<core::GPUBlendState> CreateBlendState(
 			const std::vector<core::BlendProperty>& properties) override;
 
 		/* @brief : Create and return blend state pointer*/
-		std::shared_ptr<core::GPUBlendState> CreateSingleBlendState(
+		gu::SharedPointer<core::GPUBlendState> CreateSingleBlendState(
 			const core::BlendProperty& blendProperty
 		) override ;
 
 		/* @brief : Create and return input assembly state pointer*/
-		std::shared_ptr<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets)override;
+		gu::SharedPointer<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets)override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -69,7 +69,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		GPUPipelineFactory() = default;
 
-		explicit GPUPipelineFactory(const std::shared_ptr<core::RHIDevice>& device);
+		explicit GPUPipelineFactory(const gu::SharedPointer<core::RHIDevice>& device);
 
 		~GPUPipelineFactory() = default;
 	protected:

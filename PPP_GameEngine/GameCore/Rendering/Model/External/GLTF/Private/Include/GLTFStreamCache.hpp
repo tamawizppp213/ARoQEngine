@@ -90,8 +90,8 @@ namespace gltf
 			std::function<TStream(const std::string&)> _cacheFunction;
 		};
 
-		using StreamReaderCache = StreamCache<std::shared_ptr<std::istream>>;
-		using StreamWriterCache = StreamCache<std::shared_ptr<std::ostream>>;
+		using StreamReaderCache = StreamCache<gu::SharedPointer<std::istream>>;
+		using StreamWriterCache = StreamCache<gu::SharedPointer<std::ostream>>;
 
 		template<typename TStreamCache, typename ...TArgs>
 		std::unique_ptr<TStreamCache> MakeStreamReaderCache(std::shared_ptr<const IStreamReader> streamReader, TArgs&& ...args)

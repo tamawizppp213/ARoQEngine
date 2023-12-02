@@ -22,13 +22,13 @@ using namespace rhi::vulkan;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-BLASBuffer::BLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
-	//const std::shared_ptr<core::GPUBuffer>& source,
-	const std::vector<std::shared_ptr<core::RayTracingGeometry>>& geometryDesc,
+BLASBuffer::BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
+	//const gu::SharedPointer<core::GPUBuffer>& source,
+	const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
 	const core::BuildAccelerationStructureFlags flags)
 	: core::BLASBuffer(device, geometryDesc, flags)
 {
-	const auto vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 
 	/*-------------------------------------------------------------------
 	-         Push backs vulkan GeometryDesc
@@ -36,7 +36,7 @@ BLASBuffer::BLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
 	std::vector<VkAccelerationStructureGeometryKHR> vkGeometryDesc = {};
 	for (const auto& desc : _geometryDescs)
 	{
-		vkGeometryDesc.emplace_back(std::static_pointer_cast<vulkan::RayTracingGeometry>(desc)->GetDesc());
+		vkGeometryDesc.emplace_back(gu::StaticPointerCast<vulkan::RayTracingGeometry>(desc)->GetDesc());
 	}
 
 	/*-------------------------------------------------------------------

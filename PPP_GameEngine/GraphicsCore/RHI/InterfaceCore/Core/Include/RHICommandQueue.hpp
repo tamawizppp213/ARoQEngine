@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -45,14 +45,14 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Used to wait for another Command queue to complete execution. (in GPU)*/
-		virtual void Wait   (const std::shared_ptr<RHIFence>& fence, const std::uint64_t value) = 0;
+		virtual void Wait   (const gu::SharedPointer<RHIFence>& fence, const std::uint64_t value) = 0;
 		
 		/* @brief : Update the fence value (value) when the Command Queue execution completes.*/
-		virtual void Signal (const std::shared_ptr<RHIFence>& fence, const std::uint64_t value) = 0;
+		virtual void Signal (const gu::SharedPointer<RHIFence>& fence, const std::uint64_t value) = 0;
 		
 		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist
 		            All CommandLists to be assigned must be Closed.*/ 
-		virtual void Execute(const std::vector<std::shared_ptr<RHICommandList>>& commandLists) = 0;
+		virtual void Execute(const std::vector<gu::SharedPointer<RHICommandList>>& commandLists) = 0;
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -72,14 +72,14 @@ namespace rhi::core
 		
 		virtual ~RHICommandQueue() = default;
 		
-		explicit RHICommandQueue(const std::shared_ptr<RHIDevice>& device, const CommandListType type) :  _device(device), _commandListType(type) {};
+		explicit RHICommandQueue(const gu::SharedPointer<RHIDevice>& device, const CommandListType type) :  _device(device), _commandListType(type) {};
 		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		CommandListType  _commandListType = CommandListType::Unknown;
 
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 	};
 }
 #endif

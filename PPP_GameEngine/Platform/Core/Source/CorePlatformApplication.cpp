@@ -1,0 +1,37 @@
+//////////////////////////////////////////////////////////////////////////////////
+//              @file   WindowsError.cpp
+///             @brief  Log windows error code and error sentence for debugging
+///             @author Toide Yutaro
+///             @date   2023_09_13
+//////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////
+//                             Include
+//////////////////////////////////////////////////////////////////////////////////
+#include "../../Core/Include/CorePlatformMacros.hpp"
+#include "../../Core/Include/CorePlatformApplication.hpp"
+#include "../../Core/Include/CoreWindowMessageHandler.hpp"
+#include "../../Core/Include/CoreWindow.hpp"
+#include PLATFORM_COMPILED_HEADER(../.., PlatformApplication.hpp)
+#include <stdexcept>
+//////////////////////////////////////////////////////////////////////////////////
+//                              Define
+//////////////////////////////////////////////////////////////////////////////////
+using namespace platform;
+//////////////////////////////////////////////////////////////////////////////////
+//                              Implement
+/////////////////////////////////////////////////////////////////////////////////
+core::PlatformApplication::PlatformApplication()
+{
+
+}
+core::PlatformApplication::~PlatformApplication()
+{
+	_messageHandler.Reset(); 
+}
+
+gu::SharedPointer<core::PlatformApplication> core::PlatformApplication::Create()
+{
+	return gu::StaticPointerCast<core::PlatformApplication>(gu::MakeShared<PLATFORM_CLASS(PlatformApplication)>());
+
+}

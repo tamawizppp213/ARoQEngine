@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -57,13 +57,13 @@ namespace rhi::core
 		*****************************************************************************/
 		RHIFence() = default;
 
-		explicit RHIFence(const std::shared_ptr<RHIDevice>& device) { _device = device; }
+		explicit RHIFence(const gu::SharedPointer<RHIDevice>& device) { _device = device; }
 		
-		~RHIFence() = default;
+		virtual ~RHIFence() { if (_device) { _device.Reset(); } }
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 	};
 }
 #endif

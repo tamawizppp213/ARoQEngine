@@ -32,6 +32,7 @@
 using namespace rhi;
 using namespace rhi::directX12;
 using namespace DirectX;
+#pragma warning(disable: 4099)
 #ifdef _DEBUG
 #pragma comment(lib, "Pluguins/DirectXTex.lib")
 #else
@@ -63,16 +64,16 @@ namespace
 	}
 }
 
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const std::wstring& name) : core::GPUTexture(device, name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const std::wstring& name) : core::GPUTexture(device, name)
 {
 	
 }
 
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name)
 	: core::GPUTexture(device, metaData, name)
 {
 	
-	const auto dxDevice = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();
+	const auto dxDevice = static_cast<directX12::RHIDevice*>(_device.Get())->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-             Setting heap property
@@ -83,10 +84,16 @@ GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const cor
 	SetName(name);
 }
 
-GPUTexture::GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const std::wstring& name)
+GPUTexture::~GPUTexture()
+{
+	if (_stagingBuffer) { _stagingBuffer.Reset(); }
+	if (_resource) { _resource.Reset(); }
+}
+
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const std::wstring& name)
 	: core::GPUTexture(device, metaData, name), _resource(texture)
 {
-	const auto dxDevice     = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();
+	const auto dxDevice     = static_cast<directX12::RHIDevice*>(_device.Get())->GetDevice();
 	const auto dxDesc       = texture->GetDesc();
 	const auto allocateInfo = dxDevice->GetResourceAllocationInfo(0, 1, &dxDesc);
 
@@ -106,16 +113,16 @@ void GPUTexture::SetName(const std::wstring& name)
 /****************************************************************************
 *                     Load
 *************************************************************************//**
-*  @fn        void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)
+*  @fn        void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 *
 *  @brief     Load texture 
 *
 *  @param[in] const std::wstring& filePath
-*  @param[in] const std::shared_ptr<core::RHICommandList> graphics type commandList
+*  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList)
+void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 {
 
 #ifdef _DEBUG
@@ -124,8 +131,8 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	assert(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
 #endif
 
-	const auto dxDevice      = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();
-	const auto dxCommandList = static_cast<directX12::RHICommandList*>(commandList.get())->GetCommandList();
+	const auto dxDevice      = static_cast<directX12::RHIDevice*>(_device.Get())->GetDevice();
+	const auto dxCommandList = static_cast<directX12::RHICommandList*>(commandList.Get())->GetCommandList();
 
 	/*-------------------------------------------------------------------
 	-                Choose Extension and Load Texture Data
@@ -248,7 +255,7 @@ void GPUTexture::Load(const std::wstring& filePath, const std::shared_ptr<core::
 	_resource->SetName(fileName.c_str());
 }
 
-void GPUTexture::Write(const std::shared_ptr<core::RHICommandList>& commandList, const gm::RGBA* pixel)
+void GPUTexture::Write(const gu::SharedPointer<core::RHICommandList>& commandList, const gm::RGBA* pixel)
 {
 #ifdef _DEBUG
 	assert(commandList->GetType() == core::CommandListType::Graphics);
@@ -258,8 +265,8 @@ void GPUTexture::Write(const std::shared_ptr<core::RHICommandList>& commandList,
 	/*-------------------------------------------------------------------
 	-       Acquire directX12 resource.
 	---------------------------------------------------------------------*/
-	const auto dxDevice      = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();
-	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList);
+	const auto dxDevice      = static_cast<directX12::RHIDevice*>(_device.Get())->GetDevice();
+	const auto dxCommandList = gu::StaticPointerCast<directX12::RHICommandList>(commandList);
 
 	/*-------------------------------------------------------------------
 	-       Acquire the already set texture information, and convert directX12 resource data.
@@ -330,31 +337,31 @@ void GPUTexture::Write(const std::shared_ptr<core::RHICommandList>& commandList,
 	-                 Copy Texture Data
 	---------------------------------------------------------------------*/
 	const auto state = GetResourceState();
-	dxCommandList->TransitionResourceState(shared_from_this(), core::ResourceState::CopySource);
+	dxCommandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopySource);
 	UpdateSubresources(dxCommandList->GetCommandList().Get(), _resource.Get(), uploadBuffer.Get(), 0, 0, static_cast<UINT>(subResources.size()), subResources.data());
-	dxCommandList->TransitionResourceState(shared_from_this(), state);
+	dxCommandList->TransitionResourceState(SharedFromThis(), state);
 }
 
 /****************************************************************************
 *                     Save
 *************************************************************************//**
-*  @fn        void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<core::RHICommandQueue>& commandQueue)
+*  @fn        void GPUTexture::Save(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
 *
 *  @brief     Save the texture already stored in the GPU and record it to the specified file.
 *
 *  @param[in] const std::wstring& filePath
-*  @param[in] const std::shared_ptr<core::RHICommandList> graphics type commandList
-*  @param[in] const std::shared_ptr<core::RHICommandQueue> graphics type command queue
+*  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
+*  @param[in] const gu::SharedPointer<core::RHICommandQueue> graphics type command queue
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<core::RHICommandQueue>& commandQueue)
+void GPUTexture::Save(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
 {
 #ifdef _DEBUG
 	assert(commandList->GetType() == core::CommandListType::Graphics);
 	assert(commandQueue->GetType() == core::CommandListType::Graphics);
 #endif
-	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList);
+	const auto dxCommandList = gu::StaticPointerCast<directX12::RHICommandList>(commandList);
 	dxCommandList->EndRenderPass();
 
 	const TexMetadata dxMetaData =
@@ -385,16 +392,16 @@ void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::
 	auto metaData       = core::GPUBufferMetaData::UploadBuffer(core::PixelFormatSizeOf::Get(_metaData.PixelFormat), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
 	metaData.State      = core::ResourceState::CopyDestination;
 	const auto buffer   = _device->CreateBuffer(metaData);
-	const auto dxBuffer = std::static_pointer_cast<GPUBuffer>(buffer);
+	const auto dxBuffer = gu::StaticPointerCast<GPUBuffer>(buffer);
 
 	//Transition the resource if necessary
 	const auto state = GetResourceState();
-	dxCommandList->TransitionResourceState(shared_from_this(), core::ResourceState::CopySource);
+	dxCommandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopySource);
 
 	/*-------------------------------------------------------------------
 	-       Get the copy target location
 	---------------------------------------------------------------------*/
-	D3D12_PLACED_SUBRESOURCE_FOOTPRINT bufferFootprint;
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT bufferFootprint = {};
 	bufferFootprint.Offset = 0;
 	bufferFootprint.Footprint.Width    = static_cast<UINT>(image.width);
 	bufferFootprint.Footprint.Height   = static_cast<UINT>(image.height);
@@ -406,7 +413,7 @@ void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::
 	const auto copySrcLocation  = TEXTURE_COPY_LOCATION(_resource.Get(), 0);
 
 	dxCommandList->GetCommandList()->CopyTextureRegion(&copyDestLocation, 0, 0, 0, &copySrcLocation, nullptr);
-	dxCommandList->TransitionResourceState(shared_from_this(), state);
+	dxCommandList->TransitionResourceState(SharedFromThis(), state);
 
 	/*-------------------------------------------------------------------
 	-       Execute and Wait GPU
@@ -476,7 +483,7 @@ void GPUTexture::Save(const std::wstring& filePath, const std::shared_ptr<core::
 }
 
 #pragma endregion Public Function
-void GPUTexture::Pack(const std::shared_ptr<core::RHICommandList>& commandList)
+void GPUTexture::Pack(const gu::SharedPointer<core::RHICommandList>& commandList)
 {
 	
 }
@@ -489,13 +496,13 @@ void GPUTexture::Pack(const std::shared_ptr<core::RHICommandList>& commandList)
 *  @brief     Allocate texture buffer in GPU memory
 *
 *  @param[in] const std::wstring& filePath
-*  @param[in] const std::shared_ptr<core::RHICommandList> graphics type commandList
+*  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *
 *  @return 　　void
 *****************************************************************************/
 void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, bool isDiscreteGPU)
 {
-	const auto dxDevice = static_cast<directX12::RHIDevice*>(_device.get())->GetDevice();
+	const auto dxDevice = static_cast<directX12::RHIDevice*>(_device.Get())->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-             Setting heap property

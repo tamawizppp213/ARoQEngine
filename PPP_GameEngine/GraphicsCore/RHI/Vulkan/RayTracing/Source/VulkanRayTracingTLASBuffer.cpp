@@ -33,8 +33,8 @@ TLASBuffer::~TLASBuffer()
 {
 
 }
-TLASBuffer::TLASBuffer(const std::shared_ptr<core::RHIDevice>& device,
-	const std::vector<std::shared_ptr<core::ASInstance>>& asInstance,
+TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
+	const std::vector<gu::SharedPointer<core::ASInstance>>& asInstance,
 	const core::BuildAccelerationStructureFlags flags)
 	: core::TLASBuffer(device, asInstance, flags)
 {

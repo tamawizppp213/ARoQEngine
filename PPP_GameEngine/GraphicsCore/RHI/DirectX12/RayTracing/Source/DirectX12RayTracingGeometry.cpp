@@ -19,14 +19,14 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-RayTracingGeometry::RayTracingGeometry(const std::shared_ptr<core::RHIDevice>& device,
+RayTracingGeometry::RayTracingGeometry(const gu::SharedPointer<core::RHIDevice>& device,
 	const core::RayTracingGeometryFlags flags,
-	const std::shared_ptr<core::GPUBuffer>& vertexBuffer,
-	const std::shared_ptr<core::GPUBuffer>& indexBuffer) :  
+	const gu::SharedPointer<core::GPUBuffer>& vertexBuffer,
+	const gu::SharedPointer<core::GPUBuffer>& indexBuffer) :  
 	rhi::core::RayTracingGeometry(device, flags, vertexBuffer, indexBuffer)
 {
-	const auto dxVertexBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_vertexBuffer);
-	const auto dxIndexBuffer  = std::static_pointer_cast<directX12::GPUBuffer>(_indexBuffer);
+	const auto dxVertexBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(_vertexBuffer);
+	const auto dxIndexBuffer  = gu::StaticPointerCast<directX12::GPUBuffer>(_indexBuffer);
 	
 	_geometryDesc.Type  = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 	_geometryDesc.Flags = EnumConverter::Convert(flags);

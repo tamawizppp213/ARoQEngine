@@ -27,7 +27,7 @@ using namespace rhi::vulkan;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
+GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
 	: core::GPUBuffer(device, metaData, name)
 {
 #ifdef _DEBUG
@@ -39,7 +39,7 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core:
 
 GPUBuffer::~GPUBuffer()
 {
-	VkDevice vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	VkDevice vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 	if (_stagingMemory)      { vkFreeMemory(vkDevice, _stagingMemory, nullptr); }
 	if (_memory)             { vkFreeMemory(vkDevice, _memory, nullptr); }
 	if (_stagingBuffer) { vkDestroyBuffer(vkDevice, _stagingBuffer, nullptr); }
@@ -49,9 +49,9 @@ GPUBuffer::~GPUBuffer()
 #pragma endregion Constructor and Destructor
 
 #pragma region Map
-void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandList>& copyCommandList)
+void GPUBuffer::Pack(const void* data, const gu::SharedPointer<core::RHICommandList>& copyCommandList)
 {
-	const auto vkDevice = std::static_pointer_cast<rhi::vulkan::RHIDevice>(_device)->GetDevice();
+	const auto vkDevice = gu::StaticPointerCast<rhi::vulkan::RHIDevice>(_device)->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-           GPU only accessible 
@@ -92,7 +92,7 @@ void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandLis
 			.size      = _metaData.ByteSize
 		};
 
-		const auto vkCommandList = std::static_pointer_cast<vulkan::RHICommandList>(copyCommandList)->GetCommandList();
+		const auto vkCommandList = gu::StaticPointerCast<vulkan::RHICommandList>(copyCommandList)->GetCommandList();
 		vkCmdCopyBuffer(vkCommandList, _stagingBuffer, _buffer, 1, &copy);
 
 	}
@@ -125,7 +125,7 @@ void GPUBuffer::CopyStart()
 	assert(_metaData.IsCPUAccessible());
 #endif
 
-	VkDevice vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	VkDevice vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 	if (vkMapMemory(vkDevice, _memory, 0, VK_WHOLE_SIZE, 0, reinterpret_cast<void**>(&_mappedData)) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to vk map memory.");
@@ -188,7 +188,7 @@ void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const s
 *****************************************************************************/
 void GPUBuffer::CopyEnd()
 {
-	VkDevice vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	VkDevice vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 	vkUnmapMemory(vkDevice, _memory);
 }
 #pragma endregion   Map
@@ -206,7 +206,7 @@ void GPUBuffer::CopyEnd()
 *****************************************************************************/
 void GPUBuffer::SetName(const std::wstring& name)
 {
-	const auto vkDevice  = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto vkDevice  = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 
 	vkDevice->SetVkResourceName(name, VK_OBJECT_TYPE_BUFFER, reinterpret_cast<std::uint64_t>(_buffer));
 }
@@ -226,7 +226,7 @@ void GPUBuffer::SetName(const std::wstring& name)
 *****************************************************************************/
 void GPUBuffer::Prepare(VkBuffer& buffer, VkDeviceMemory& memory, VkMemoryPropertyFlags flags)
 {
-	VkDevice vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	VkDevice vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 
 	/*-------------------------------------------------------------------
 	-           Create Buffer
@@ -259,7 +259,7 @@ void GPUBuffer::Prepare(VkBuffer& buffer, VkDeviceMemory& memory, VkMemoryProper
 		.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
 		.pNext           = nullptr,
 		.allocationSize  = memoryRequirement.size,
-		.memoryTypeIndex = std::static_pointer_cast<vulkan::RHIDevice>(_device)
+		.memoryTypeIndex = gu::StaticPointerCast<vulkan::RHIDevice>(_device)
 		->GetMemoryTypeIndex(memoryRequirement.memoryTypeBits, flags)
 	};
 	

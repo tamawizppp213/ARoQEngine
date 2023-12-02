@@ -209,7 +209,7 @@ void GameTimer::Tick()
 * 
 *  @return    void
 *****************************************************************************/
-void GameTimer::AverageFrame(const HWND &hwnd)
+void GameTimer::AverageFrame(const void* hwnd)
 {
 	/*-------------------------------------------------------------------
 	-              Show Average Frame
@@ -240,7 +240,7 @@ void GameTimer::AverageFrame(const HWND &hwnd)
 		/*-------------------------------------------------------------------
 		-              Set WindowText
 		---------------------------------------------------------------------*/
-		SetWindowText(hwnd, windowText.c_str());
+		SetWindowText((HWND)hwnd, windowText.c_str());
 
 		/*-------------------------------------------------------------------
 		-              Reset for next average

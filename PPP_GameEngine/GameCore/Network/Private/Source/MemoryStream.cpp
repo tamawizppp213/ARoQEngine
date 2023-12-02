@@ -53,7 +53,7 @@ void MemoryStream::Seek(const std::int64_t offset, const SeekOrigin origin)
 	switch (origin)
 	{
 		case SeekOrigin::Begin: { _position = 0 + offset; break; }
-		case SeekOrigin::End:   { _position = _stream.size() - 1 - offset; }
+		case SeekOrigin::End: { _position = _stream.size() - 1 - offset; break; }
 		default:                { _position += offset; }
 	}
 
@@ -181,7 +181,7 @@ MemoryStream::DataSize MemoryStream::Read(std::vector<std::uint8_t>& destBuffer,
 	// proceed seekPosition by byteLength
 	_position += count;
 
-	return readByteCount;
+	return (MemoryStream::DataSize)readByteCount;
 }
 
 /****************************************************************************

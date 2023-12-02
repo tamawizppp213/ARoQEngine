@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include <vector>
 #include <string>
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,13 +41,13 @@ namespace gc
 	*****************************************************************************/
 	class SkyDome
 	{
-		using GPUResourceViewPtr  = std::shared_ptr<rhi::core::GPUResourceView>;
-		using VertexBufferPtr     = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr      = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ObjectConstantPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
-		using GraphicsPipelinePtr = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using ResourceLayoutPtr   = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using GPUResourceViewPtr  = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using VertexBufferPtr     = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using IndexBufferPtr      = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using ObjectConstantPtr   = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using GraphicsPipelinePtr = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+		using ResourceLayoutPtr   = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -69,7 +69,7 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareResourceView(const std::shared_ptr<rhi::core::GPUTexture>& texture);
+		void PrepareResourceView(const gu::SharedPointer<rhi::core::GPUTexture>& texture);
 		
 		void PreparePipelineState(const std::wstring& addName);
 		

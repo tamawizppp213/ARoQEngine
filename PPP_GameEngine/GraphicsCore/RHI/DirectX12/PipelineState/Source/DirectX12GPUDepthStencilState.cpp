@@ -18,7 +18,7 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUDepthStencilState::GPUDepthStencilState(const std::shared_ptr<rhi::core::RHIDevice>& device,
+GPUDepthStencilState::GPUDepthStencilState(const gu::SharedPointer<rhi::core::RHIDevice>& device,
 	const core::DepthStencilProperty& depthStencilProperty
 ) :
 	core::GPUDepthStencilState(device, depthStencilProperty)

@@ -40,13 +40,13 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		/* @ brief : Used to wait for another Command queue to complete execution. (in GPU)*/
-		void Wait(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
+		void Wait(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value) override;
 		
 		/* @ brief : Update the fence value (value) when the Command Queue execution completes.*/
-		void Signal(const std::shared_ptr<core::RHIFence>& fence, const std::uint64_t value) override;
+		void Signal(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value) override;
 		
 		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
-		void Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists) override;
+		void Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -66,7 +66,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		RHICommandQueue() = default;
 		
-		explicit RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex = 0, const std::wstring& name = L"");
+		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex = 0, const std::wstring& name = L"");
 		
 		~RHICommandQueue();
 	protected:

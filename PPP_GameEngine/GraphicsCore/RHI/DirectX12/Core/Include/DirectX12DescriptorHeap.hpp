@@ -41,9 +41,9 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		// @brief : Allocate view.Return descriptor index(only use resourceLayout in vulkan api :
-		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout = nullptr) override;
+		DescriptorID Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout = nullptr) override;
 		
-		void Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex);
+		void Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex) override;
 
 		/* @brief : Resize max view count size heap*/
 		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
@@ -79,7 +79,7 @@ namespace rhi::directX12
 		
 		~RHIDescriptorHeap();
 		
-		explicit RHIDescriptorHeap(const std::shared_ptr<core::RHIDevice>& device);
+		explicit RHIDescriptorHeap(const gu::SharedPointer<core::RHIDevice>& device);
 
 	protected:
 		/****************************************************************************

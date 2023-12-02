@@ -22,7 +22,7 @@ using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
 /* @brief : Text string constructor */
-Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const StringInfo& info)
+Text::Text(const CoordinateType type, const gu::SharedPointer<Font>& font, const StringInfo& info)
 	: _font(font)
 {
 	if (!font->HasLoaded()) { throw std::runtime_error("Font isn't read. You should read font."); }
@@ -83,7 +83,7 @@ Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const S
 }
 
 /* @brief : Text number constructor*/
-Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const NumberInfo& info)
+Text::Text(const CoordinateType type, const gu::SharedPointer<Font>& font, const NumberInfo& info)
 {
 #ifdef _DEBUG
 	assert(info.Digit >= 1);
@@ -129,8 +129,8 @@ Text::Text(const CoordinateType type, const std::shared_ptr<Font>& font, const N
 		switch (type)
 		{
 			using enum CoordinateType;
-			case Screen : { _images[i].CreateInScreenSpace(centerPosition, info.SizePerDigit, u, v, info.Color); }
-			case NDC    : { _images[i].CreateInNDCSpace    (centerPosition, info.SizePerDigit, u, v, info.Color); }
+			case Screen : { _images[i].CreateInScreenSpace(centerPosition, info.SizePerDigit, u, v, info.Color); break;}
+			case NDC    : { _images[i].CreateInNDCSpace    (centerPosition, info.SizePerDigit, u, v, info.Color); break;}
 			default: 
 				throw std::runtime_error("Choice wrong type");
 		}
@@ -144,7 +144,7 @@ Text::~Text()
 #pragma endregion Constructor and Destructor
 
 #pragma region Property
-const std::shared_ptr<rhi::core::GPUResourceView> Text::GetFontView() const noexcept
+const gu::SharedPointer<rhi::core::GPUResourceView> Text::GetFontView() const noexcept
 {
 	return _font->GetFontResourceView();
 }

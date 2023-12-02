@@ -24,9 +24,9 @@ using namespace rhi::directX12;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIDisplayAdapter::RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const AdapterComPtr& adapter) : core::RHIDisplayAdapter(instance),_adapter(adapter)
+RHIDisplayAdapter::RHIDisplayAdapter(const gu::SharedPointer<core::RHIInstance>& instance, const AdapterComPtr& adapter) : core::RHIDisplayAdapter(instance),_adapter(adapter)
 {
-	assert(("adapter is nullptr.\n", _adapter));
+	Checkf(_adapter, "adapter is nullptr.\n");
 
 	DXGI_ADAPTER_DESC desc = {}; adapter->GetDesc(&desc);
 	_name     = unicode::ToUtf8String(desc.Description);
@@ -45,17 +45,17 @@ RHIDisplayAdapter::~RHIDisplayAdapter()
 /****************************************************************************
 *                     CreateDevice
 *************************************************************************//**
-*  @fn        std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint32_t frameCount)
+*  @fn        gu::SharedPointer<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint32_t frameCount)
 * 
 *  @brief     Return directX12 logical device.
 * 
 *  @param[in] std::uint32_t frameCount
 * 
-*  @return    std::shared_ptr<core::RHIDevice> (directX12)
+*  @return    gu::SharedPointer<core::RHIDevice> (directX12)
 *****************************************************************************/
-std::shared_ptr<core::RHIDevice> RHIDisplayAdapter::CreateDevice()
+gu::SharedPointer<core::RHIDevice> RHIDisplayAdapter::CreateDevice()
 {
-	return std::make_shared<RHIDevice>(shared_from_this());
+	return gu::MakeShared<RHIDevice>(SharedFromThis());
 }
 #pragma endregion Factory
 

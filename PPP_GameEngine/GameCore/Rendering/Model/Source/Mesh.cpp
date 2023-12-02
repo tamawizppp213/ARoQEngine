@@ -26,7 +26,7 @@ using namespace rhi::core;
 Mesh::~Mesh()
 {
 	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
-	_indexBuffer.reset();
+	_indexBuffer.Reset();
 }
 
 Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const MaterialPtr& material, const std::wstring& addName)
@@ -87,12 +87,12 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const std::vector<VertexBuff
 * 
 *  @brief     Mesh Renderer must need. (ç≈í·å¿ÇÃDrawCall)
 * 
-*  @param[in] std::shared_ptr<RHICommandList>& graphicsCommandList
+*  @param[in] gu::SharedPointer<RHICommandList>& graphicsCommandList
 *  @param[in] std::uint32_t currentFrameIndex
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-void Mesh::Draw(const std::shared_ptr<RHICommandList>& commandList, const std::uint32_t frameIndex)
+void Mesh::Draw(const gu::SharedPointer<RHICommandList>& commandList, const std::uint32_t frameIndex)
 {
 #ifdef _DEBUG
 	assert(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);

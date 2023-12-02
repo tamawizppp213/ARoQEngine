@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "RHICommonState.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -31,23 +31,23 @@ namespace rhi::core
 	*  @class     RHIInstance
 	*  @brief     Select device api 
 	*****************************************************************************/
-	class RHIInstance : public NonCopyable, public std::enable_shared_from_this<RHIInstance>
+	class RHIInstance : public NonCopyable
 	{
 	public:
 		/* The CPU debugger and GPU debugger do not cause anything special when in Release mode.*/
 	    /* The GPU debugger impacts on the frame rate. default : off*/
-		static std::shared_ptr<RHIInstance> CreateInstance(const core::APIVersion version, bool enableCPUDebugger = true, bool enableGPUDebugger = false);
+		static gu::SharedPointer<RHIInstance> CreateInstance(const core::APIVersion version, bool enableCPUDebugger = true, bool enableGPUDebugger = false, bool useGPUDebugBreak = false);
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		/* directX12 : (High) xGPU, dGPU iGPU (Low), vulkan : dGPU (not : first select gpu) */
-		virtual std::shared_ptr <RHIDisplayAdapter> SearchHighPerformanceAdapter() = 0;
+		virtual gu::SharedPointer <RHIDisplayAdapter> SearchHighPerformanceAdapter() = 0;
 		
 		/* directX12 : (Low) iGPU, dGPU xGPU (High), vulkan : iGPU (not : first select gpu) */
-		virtual std::shared_ptr<RHIDisplayAdapter>  SearchMinimumPowerAdapter() = 0;
+		virtual gu::SharedPointer<RHIDisplayAdapter>  SearchMinimumPowerAdapter() = 0;
 		
 		/* return all available display adapter*/
-		virtual std::vector<std::shared_ptr<RHIDisplayAdapter>> EnumrateAdapters() = 0;
+		virtual std::vector<gu::SharedPointer<RHIDisplayAdapter>> EnumrateAdapters() = 0;
 		
 		/* OutputDebugString : adapter list*/
 		virtual void LogAdapters() = 0;
@@ -56,6 +56,7 @@ namespace rhi::core
 		*****************************************************************************/
 		const char* GetEngineName() const { return EngineName; }
 
+		bool UseGPUDebugBreak() const { return _useGPUDebugBreak; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -66,9 +67,10 @@ namespace rhi::core
 		*****************************************************************************/
 		RHIInstance() = default;
 
-		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger) :
+		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak) :
 			_enableCPUDebugger(enableCPUDebugger),
-			_enableGPUDebugger(enableGPUDebugger)
+			_enableGPUDebugger(enableGPUDebugger),
+			_useGPUDebugBreak(useGPUDebugBreak)
 		{
 		};
 
@@ -79,6 +81,7 @@ namespace rhi::core
 		*****************************************************************************/
 		bool _enableCPUDebugger = false; // debug only
 		bool _enableGPUDebugger = false; // debug only
+		bool _useGPUDebugBreak  = false; // debug only
 		const char* EngineName = "PPP_Engine";
 	};
 	

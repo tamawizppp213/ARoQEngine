@@ -25,7 +25,7 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 
 #pragma region Constructor and Destructor 
-RayTracingShaderTable::RayTracingShaderTable(const std::shared_ptr<rhi::core::RHIDevice>& device) 
+RayTracingShaderTable::RayTracingShaderTable(const gu::SharedPointer<rhi::core::RHIDevice>& device) 
 	: rhi::core::RayTracingShaderTable(device)
 {
 	const auto recordSize            = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;         // 32 byte
@@ -48,7 +48,7 @@ RayTracingShaderTable::RayTracingShaderTable(const std::shared_ptr<rhi::core::RH
 	/*-------------------------------------------------------------------
 	-         Bind buffer table to the Dispatch rays descriptor
 	---------------------------------------------------------------------*/
-	const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_buffer);
+	const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
 
 	auto eachRecordStartAddress = dxBuffer->GetResourcePtr()->GetGPUVirtualAddress();
 

@@ -48,7 +48,7 @@ SampleUI::~SampleUI()
 *  @param[in] const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleUI::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleUI::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -65,7 +65,7 @@ void SampleUI::Update()
 	Scene::Update();
 
 	_renderer->Clear();
-	_renderer->AddFrameObjects({ _button }, _resourceView);
+	_renderer->AddFrameObjects({ *_button }, _resourceView);
 	_renderer->AddFrameObjects({ _slider->GetRenderResource(Slider::BackGround).Image }, _slider->GetRenderResource(Slider::BackGround).ResourceView);
 	_renderer->AddFrameObjects({ _slider->GetRenderResource(Slider::Color).Image }, _slider->GetRenderResource(Slider::Color).ResourceView);
 }
@@ -103,8 +103,8 @@ void SampleUI::Draw()
 *****************************************************************************/
 void SampleUI::Terminate()
 {
-	_resourceView.reset();
-	_resourceCache.reset();
+	_resourceView.Reset();
+	_resourceCache.Reset();
 }
 #pragma endregion Public Function
 
@@ -131,28 +131,28 @@ void SampleUI::LoadMaterials()
 	-             SetUp Resources
 	---------------------------------------------------------------------*/
 	// Create Texture
-	_resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
+	_resourceCache = gu::MakeShared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
 	_resourceView = _resourceCache->Load(L"Resources/BackGround2.png");
 	_resourceCache->Load(L"Resources/Cubemap.jpg");
 
-	_font = std::make_shared<Font>(_engine, L"Resources/Font/GennokakuEnglish.png", gm::Float2(35.0f, 64.0f), 3325.0f);
+	_font = gu::MakeShared<Font>(_engine, L"Resources/Font/GennokakuEnglish.png", gm::Float2(35.0f, 64.0f), 3325.0f);
 
 	// button 
-	_button = std::make_shared<Button>(_gameInput.GetMouse());
+	_button = gu::MakeShared<Button>(_gameInput.GetMouse());
 	_button->CreateInNDCSpace({ 0,0,0 }, { 0.5f,0.5f });
 
 	// slider
-	_slider = std::make_shared<Slider>();
+	_slider = gu::MakeShared<Slider>();
 	_slider->CreateInNDCSpace({ -0.65f, 0.8f, 0.0f }, { 0.3f, 0.1f }, { 0, 1, 0.2f, 1.0f });
 	_slider->SetTexture(Slider::BackGround, _resourceCache->Load(L"Resources/Preset/DefaultSlider.png"));
 	_slider->SetTexture(Slider::Color     , _resourceCache->Load(L"Resources/Preset/NullAlbedoMap.png"));
 
 	// SliderÇÃílÇ™ïœÇÌÇ¡ÇΩéûÇÃèàóù
-	_slider->AddListener(std::make_shared<std::function<void(float)>>(DebugTest));
-	_slider->AddListener(std::make_shared<std::function<void(float)>>([&](float value) { return DebugSliderValue(value); }));
+	_slider->AddListener(gu::MakeShared<std::function<void(float)>>(DebugTest));
+	_slider->AddListener(gu::MakeShared<std::function<void(float)>>([&](float value) { return DebugSliderValue(value); }));
 
 	// Create UI Renderer
-	_renderer = std::make_unique<gc::ui::UIRenderer>(_engine);
+	_renderer = gu::MakeShared<gc::ui::UIRenderer>(_engine);
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

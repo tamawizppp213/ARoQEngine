@@ -14,6 +14,7 @@
 #include "../Include/Material.hpp"
 #include "../../../Core/Include/GameWorldInfo.hpp"
 #include "../External/MMD/Include/MMDModelConverter.hpp"
+#include "../External/GLTF/Public/Include/GLTFModelConverter.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
 #include <iostream>
@@ -92,7 +93,7 @@ void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
         }
     }
 
-    const auto mesh = std::make_shared<Mesh>(_engine, primitiveMesh, material);
+    const auto mesh = gu::MakeShared<Mesh>(_engine, primitiveMesh, material);
     _meshes.push_back(mesh);
     _totalMesh = mesh;
     
@@ -185,7 +186,7 @@ void GameModel::PrepareGameWorldBuffer()
 {
     if (_gameWorld) { return; }
 
-    _gameWorld = std::make_shared<GameWorldInfo>(_engine, 1);
+    _gameWorld = gu::MakeShared<GameWorldInfo>(_engine, 1);
 
 }
 #pragma endregion Set up

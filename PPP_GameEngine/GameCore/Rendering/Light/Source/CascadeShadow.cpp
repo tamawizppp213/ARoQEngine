@@ -53,11 +53,11 @@ CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const Casc
 	/*-------------------------------------------------------------------
 	-        Shadow map
 	---------------------------------------------------------------------*/
-	_lightCamera = std::make_shared<gc::Camera>(_engine);
+	_lightCamera = gu::MakeShared<gc::Camera>(_engine);
 	_shadowMaps.resize(SHADOW_MAP_COUNT);
 	for (size_t i = 0; i < _shadowMaps.size(); ++i)
 	{
-		_shadowMaps[i] = std::make_shared<rendering::ShadowMap>(_engine, desc.MaxResolution / pow(2, i), desc.MaxResolution / pow(2,i));
+		_shadowMaps[i] = gu::MakeShared<rendering::ShadowMap>(_engine, (std::uint32_t)(desc.MaxResolution / pow(2, i)), (std::uint32_t)(desc.MaxResolution / pow(2,i)));
 	}
 
 	PrepareResourceView (name);
@@ -83,7 +83,7 @@ CascadeShadow::~CascadeShadow()
 * 
 *  @return 　　void
 *****************************************************************************/
-void CascadeShadow::Draw(const std::shared_ptr<GameTimer>& gameTimer,const gm::Float3& direction)
+void CascadeShadow::Draw(const gu::SharedPointer<GameTimer>& gameTimer,const gm::Float3& direction)
 {
 #ifdef _DEBUG
 	assert(_engine);
@@ -97,7 +97,7 @@ void CascadeShadow::Draw(const std::shared_ptr<GameTimer>& gameTimer,const gm::F
 	/*-------------------------------------------------------------------
 	-               Draw shadow maps of the each resolution
 	---------------------------------------------------------------------*/
-	for (const auto shadowMap : _shadowMaps)
+	for (const auto& shadowMap : _shadowMaps)
 	{
 		// shadow map + gaussian blur
 		shadowMap->Draw(_lightCamera->GetResourceView());
@@ -120,7 +120,7 @@ void CascadeShadow::Add(const GameModelPtr& gameModel)
 {
 	if (!gameModel) { return; }
 
-	for (const auto shadowMap : _shadowMaps)
+	for (const auto& shadowMap : _shadowMaps)
 	{
 		shadowMap->Add(gameModel);
 	}
@@ -159,11 +159,11 @@ void CascadeShadow::PrepareResourceView(const std::wstring& name)
 *
 *  @brief     Move the directional light camera
 *
-*  @param[in] const std::shared_ptr<GameTimer>& gameTimer
+*  @param[in] const gu::SharedPointer<GameTimer>& gameTimer
 *
 *  @return 　　void
 *****************************************************************************/
-void CascadeShadow::Update(const std::shared_ptr<GameTimer>& gameTimer, const gm::Float3& direction)
+void CascadeShadow::Update(const gu::SharedPointer<GameTimer>& gameTimer, const gm::Float3& direction)
 {
 	/*-------------------------------------------------------------------
 	-              Update the light camera
@@ -171,7 +171,7 @@ void CascadeShadow::Update(const std::shared_ptr<GameTimer>& gameTimer, const gm
 	---------------------------------------------------------------------*/
 	// camera update (とりあえずDirectional Light 想定で行ってます)
 	const auto cameraPosition = Float3(-direction.x, -direction.y, -direction.z);
-	_lightCamera->SetOrthoLens(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _lightCamera->GetNearZ(), _lightCamera->GetFarZ());
+	_lightCamera->SetOrthoLens((float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight(), _lightCamera->GetNearZ(), _lightCamera->GetFarZ());
 	_lightCamera->LookAt(cameraPosition, Float3(0, 0, 0), _lightCamera->GetUp3f());
 	_lightCamera->Update(gameTimer);
 

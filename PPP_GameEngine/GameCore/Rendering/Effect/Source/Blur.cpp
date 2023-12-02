@@ -48,13 +48,13 @@ GaussianBlur::~GaussianBlur()
 {
 	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
 	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
-	_computePipeline.reset();
-	_xBlur.Pipeline.reset();
-	_yBlur.Pipeline.reset();
-	for (auto& u : _unorderedResourceViews) { u.reset(); }
-	for (auto& s : _shaderResourceViews   ) { s.reset(); }
-	_textureSizeView.reset();
-	_blurParameterView.reset();
+	_computePipeline.Reset();
+	_xBlur.Pipeline.Reset();
+	_yBlur.Pipeline.Reset();
+	for (auto& u : _unorderedResourceViews) { u.Reset(); }
+	for (auto& s : _shaderResourceViews   ) { s.Reset(); }
+	_textureSizeView.Reset();
+	_blurParameterView.Reset();
 }
 GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS, const std::wstring& addName)
 	: _engine(engine), _useCS(useCS)
@@ -123,12 +123,12 @@ void GaussianBlur::DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPt
 	/*-------------------------------------------------------------------
 	-               Bind
 	---------------------------------------------------------------------*/
-	_blurParameterView->Bind(commandList, 0);
-	_textureSizeView  ->Bind(commandList, 1);
-	sourceSRV->Bind(commandList, 2);
-	destUAV  ->Bind(commandList,  3);
-	_unorderedResourceViews[0]->Bind(commandList, 4);
-	_unorderedResourceViews[1]->Bind(commandList, 5);
+	_blurParameterView->Bind(commandList, 0, _resourceLayout);
+	_textureSizeView  ->Bind(commandList, 1, _resourceLayout);
+	sourceSRV->Bind(commandList, 2, _resourceLayout);
+	destUAV  ->Bind(commandList,  3, _resourceLayout);
+	_unorderedResourceViews[0]->Bind(commandList, 4, _resourceLayout);
+	_unorderedResourceViews[1]->Bind(commandList, 5, _resourceLayout);
 
 	commandList->SetComputePipeline(_computePipeline);
 	commandList->Dispatch((_textureSize.OriginalTexture[0] + THREAD - 1) / THREAD, (_textureSize.OriginalTexture[1] + THREAD - 1) / THREAD, 1);
@@ -164,14 +164,14 @@ void GaussianBlur::DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t
 	/*-------------------------------------------------------------------
 	-               Bind gpu resources
 	---------------------------------------------------------------------*/
-	_blurParameterView->Bind(commandList, 0);
-	_textureSizeView  ->Bind(commandList, 1);
+	_blurParameterView->Bind(commandList, 0, _resourceLayout);
+	_textureSizeView  ->Bind(commandList, 1, _resourceLayout);
 
 	/*-------------------------------------------------------------------
 	-               XBlur
 	---------------------------------------------------------------------*/
 	commandList->BeginRenderPass(_xBlur.RenderPass, _xBlur.FrameBuffer);
-	inputImage->Bind(commandList, 2);
+	inputImage->Bind(commandList, 2, _resourceLayout);
 	commandList->SetVertexBuffer(_xBlur.VB[currentFrame]);
 	commandList->SetIndexBuffer(_xBlur.IB[currentFrame]);
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -183,7 +183,7 @@ void GaussianBlur::DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t
 	---------------------------------------------------------------------*/
 	commandList->BeginRenderPass(_yBlur.RenderPass, _yBlur.FrameBuffer);
 	commandList->SetGraphicsPipeline(_yBlur.Pipeline);
-	_shaderResourceViews[0]->Bind(commandList, 2);
+	_shaderResourceViews[0]->Bind(commandList, 2, _resourceLayout);
 	commandList->SetVertexBuffer(_yBlur.VB[currentFrame]);
 	commandList->SetIndexBuffer(_yBlur.IB[currentFrame]);
 	commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);

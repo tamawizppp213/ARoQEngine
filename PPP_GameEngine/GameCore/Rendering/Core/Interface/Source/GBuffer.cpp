@@ -57,8 +57,8 @@ void GBuffer::Clear(const GameModelPtr& model)
 
 GBuffer::TexturePtr GBuffer::GetRenderedTexture(const std::uint32_t index) const noexcept
 {
-	const auto frameIndex = _engine->GetCurrentFrameIndex();
-	const auto frameBuffer = _frameBuffers[frameIndex];
+	const auto& frameIndex = _engine->GetCurrentFrameIndex();
+	const auto& frameBuffer = _frameBuffers[frameIndex];
 	if (index >= frameBuffer->GetRenderTargets().size()) { return nullptr; }
 
 	return frameBuffer->GetRenderTargets()[index];
@@ -66,8 +66,8 @@ GBuffer::TexturePtr GBuffer::GetRenderedTexture(const std::uint32_t index) const
 
 GBuffer::GPUResourceViewPtr GBuffer::GetRenderedTextureView(const std::uint32_t index) const noexcept
 {
-	const auto frameIndex = _engine->GetCurrentFrameIndex();
-	const auto frameBuffer = _frameBuffers[frameIndex];
+	const auto& frameIndex = _engine->GetCurrentFrameIndex();
+	const auto& frameBuffer = _frameBuffers[frameIndex];
 	if (index >= frameBuffer->GetRenderTargets().size()) { return nullptr; }
 
 	return frameBuffer->GetRenderTargetSRV(index);

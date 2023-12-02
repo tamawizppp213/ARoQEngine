@@ -32,8 +32,8 @@ Camera::Camera()
 
 Camera::~Camera()
 {
-	if (_resourceView) { _resourceView.reset(); }
-	if (_sceneConstantBuffer) { _sceneConstantBuffer.reset(); }
+	if (_resourceView) { _resourceView.Reset(); }
+	if (_sceneConstantBuffer) { _sceneConstantBuffer.Reset(); }
 }
 
 Camera::Camera(const LowLevelGraphicsEnginePtr& engine) : _engine(engine), _type(CameraType::Perspective)

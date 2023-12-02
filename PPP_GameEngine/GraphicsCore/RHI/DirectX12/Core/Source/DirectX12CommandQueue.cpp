@@ -30,14 +30,14 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& device, core::CommandListType type, const std::wstring& name) : rhi::core::RHICommandQueue(device, type)
+RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, core::CommandListType type, const std::wstring& name) : rhi::core::RHICommandQueue(device, type)
 {
 #ifdef _DEBUG
 	assert(device);
 	assert(type != core::CommandListType::Unknown);
 #endif
 
-	const auto dxDevice = static_cast<RHIDevice*>(device.get())->GetDevice();
+	const auto dxDevice = static_cast<RHIDevice*>(device.Get())->GetDevice();
 
 	D3D12_COMMAND_LIST_TYPE dxCommandListType = EnumConverter::Convert(_commandListType);
 
@@ -48,7 +48,7 @@ RHICommandQueue::RHICommandQueue(const std::shared_ptr<rhi::core::RHIDevice>& de
 	{
 		.Type     = dxCommandListType,                    // Enable to execute all command 
 		.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL,  // Command queue priority (今後変えるかも)
-		.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE,        // Default 
+		.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE,        // Timeoutは常に有効にしておく.
 		.NodeMask = 0                                     // Single GPU
 	};
 
@@ -69,53 +69,53 @@ RHICommandQueue::~RHICommandQueue()
 /****************************************************************************
 *							Wait
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
+*  @fn        void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
 * 
 *  @brief     Used to wait for another Command queue to complete execution. (in GPU)
 *             FenceのWaitはCPU側も処理が止まりますが, CommandQueueのWaitは, 指定したValue以上の値になるまで, GPU内のみで処理を止めることになります. 
 * 
-*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *  @param[in] std::uint64_t value
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Wait(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
+void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
 {
-	FenceComPtr dxFence = static_pointer_cast<RHIFence>(fence)->GetFence();
+	FenceComPtr dxFence = gu::StaticPointerCast<RHIFence>(fence)->GetFence();
 	ThrowIfFailed(_commandQueue->Wait(dxFence.Get(), value));
 }
 
 /****************************************************************************
 *							Signal
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
+*  @fn        void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
 * 
 *  @brief     Update value when the Command Queue execution completes.
 *             GPU内で処理が完結します.　
 * 
-*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 * 
 *  @param[in] std::uint64_t value
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Signal(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t value)
+void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
 {
-	FenceComPtr dxFence = static_pointer_cast<RHIFence>(fence)->GetFence();
+	FenceComPtr dxFence = gu::StaticPointerCast<RHIFence>(fence)->GetFence();
 	ThrowIfFailed(_commandQueue->Signal(dxFence.Get(), value));
 }
 /****************************************************************************
 *							Execute
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists)
+*  @fn        void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 * 
 *  @brief     Execute command list contents. normally set graphics, compute, transfer commandlist
 * 
-*  @param[in] const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists
+*  @param[in] const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICommandList>>& commandLists)
+void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 {
 	if (commandLists.empty()) { return; }
 
@@ -126,7 +126,7 @@ void RHICommandQueue::Execute(const std::vector<std::shared_ptr<rhi::core::RHICo
 	std::vector<ID3D12CommandList*> dxCommandLists;
 	for (auto& list : commandLists)
 	{
-		dxCommandLists.push_back(static_pointer_cast<rhi::directX12::RHICommandList>(list)->GetCommandList().Get());
+		dxCommandLists.push_back(gu::StaticPointerCast<rhi::directX12::RHICommandList>(list)->GetCommandList().Get());
 	}
 
 	/*-------------------------------------------------------------------

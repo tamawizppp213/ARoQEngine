@@ -67,7 +67,7 @@ Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, c
 #pragma region Main Function
 void Mosaic::OnResize(int newWidth, int newHeight)
 {
-
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 
 void Mosaic::Draw()

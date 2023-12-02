@@ -23,7 +23,7 @@ RayTracingShaderTable::~RayTracingShaderTable()
 {
 	_shaderList.clear(); _shaderList.shrink_to_fit();
 
-	_buffer.reset();
+	_buffer.Reset();
 }
 #pragma endregion Constructor and Destructor
 

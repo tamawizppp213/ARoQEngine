@@ -24,15 +24,15 @@ using namespace gm;
 
 namespace
 {
-	bool Sphere_vs_Sphere_Intersects (const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion = false);
-	bool Sphere_vs_AABB_Intersects   (const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion = false);
-	bool Sphere_vs_OBB_Intersects    (const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion = false);
-	bool AABB_vs_Sphere_Intersects   (const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion = false);
-	bool AABB_vs_AABB_Intersects     (const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion = false);
-	bool AABB_vs_OBB_Intersects      (const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion = false);
-	bool OBB_vs_Sphere_Intersects    (const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion = false);
-	bool OBB_vs_AABB_Intersects      (const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion = false);
-	bool OBB_vs_OBB_Intersects       (const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion = false);
+	bool Sphere_vs_Sphere_Intersects (const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion = false);
+	bool Sphere_vs_AABB_Intersects   (const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion = false);
+	bool Sphere_vs_OBB_Intersects    (const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion = false);
+	bool AABB_vs_Sphere_Intersects   (const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion = false);
+	bool AABB_vs_AABB_Intersects     (const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion = false);
+	bool AABB_vs_OBB_Intersects      (const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion = false);
+	bool OBB_vs_Sphere_Intersects    (const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion = false);
+	bool OBB_vs_AABB_Intersects      (const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion = false);
+	bool OBB_vs_OBB_Intersects       (const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion = false);
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -69,13 +69,13 @@ bool SimpleCollisionDetector::Intersects(const PhysicsActorPtr& first, const Phy
 namespace
 {
 
-	bool Sphere_vs_Sphere_Intersects(const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion)
+	bool Sphere_vs_Sphere_Intersects(const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion)
 	{
 		assert(first->GetGeometry()->GetGeometryType() == GeometryType::Sphere);
 		assert(second->GetGeometry()->GetGeometryType() == GeometryType::Sphere);
 
-		const auto geometryA = std::static_pointer_cast<GeometrySphere>(first->GetGeometry());
-		const auto geometryB = std::static_pointer_cast<GeometrySphere>(second->GetGeometry());
+		const auto geometryA = gu::StaticPointerCast<GeometrySphere>(first->GetGeometry());
+		const auto geometryB = gu::StaticPointerCast<GeometrySphere>(second->GetGeometry());
 
 		// sphere world position
 		const auto centerA = first->GetPosition();
@@ -102,23 +102,23 @@ namespace
 		return true;
 	}
 
-	bool Sphere_vs_AABB_Intersects(const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion)
+	bool Sphere_vs_AABB_Intersects(const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion)
 	{
 		return AABB_vs_Sphere_Intersects(second, first, useExtrusion);
 	}
 
-	bool Sphere_vs_OBB_Intersects(const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion)
+	bool Sphere_vs_OBB_Intersects(const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion)
 	{
 		return OBB_vs_Sphere_Intersects(second, first, useExtrusion);
 	}
 
-	bool AABB_vs_Sphere_Intersects(const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion)
+	bool AABB_vs_Sphere_Intersects(const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion)
 	{
 		assert(first ->GetGeometry()->GetGeometryType() == GeometryType::AABB);
 		assert(second->GetGeometry()->GetGeometryType() == GeometryType::Sphere);
 
-		const auto box    = std::static_pointer_cast<GeometryAABB>(first->GetGeometry());
-		const auto sphere = std::static_pointer_cast<GeometrySphere>(second->GetGeometry());
+		const auto box    = gu::StaticPointerCast<GeometryAABB>(first->GetGeometry());
+		const auto sphere = gu::StaticPointerCast<GeometrySphere>(second->GetGeometry());
 
 		// box config
 		const auto  boxCenter  = first->GetPosition();
@@ -155,14 +155,14 @@ namespace
 		return true;
 	}
 
-	bool AABB_vs_AABB_Intersects(const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion)
+	bool AABB_vs_AABB_Intersects(const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion)
 	{
 		assert(first ->GetGeometry()->GetGeometryType() == GeometryType::AABB);
 		assert(second->GetGeometry()->GetGeometryType() == GeometryType::AABB);
 
 		// AABB geometry
-		const auto geometryA = std::static_pointer_cast<GeometryAABB>(first->GetGeometry());
-		const auto geometryB = std::static_pointer_cast<GeometryAABB>(second->GetGeometry());
+		const auto geometryA = gu::StaticPointerCast<GeometryAABB>(first->GetGeometry());
+		const auto geometryB = gu::StaticPointerCast<GeometryAABB>(second->GetGeometry());
 
 		// centroid of the AABB
 		const auto centerA = first ->GetPosition();
@@ -188,19 +188,19 @@ namespace
 		return true;
 	}
 
-	bool AABB_vs_OBB_Intersects(const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion)
+	bool AABB_vs_OBB_Intersects(const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion)
 	{
 		return OBB_vs_AABB_Intersects(second, first, useExtrusion);
 	}
 
-	bool OBB_vs_Sphere_Intersects(const std::shared_ptr<PhysicsActor>& actorOBB, const std::shared_ptr<PhysicsActor>& actorSphere, const bool useExtrusion)
+	bool OBB_vs_Sphere_Intersects(const gu::SharedPointer<PhysicsActor>& actorOBB, const gu::SharedPointer<PhysicsActor>& actorSphere, const bool useExtrusion)
 	{
 		assert(actorOBB   ->GetGeometry()->GetGeometryType() == GeometryType::OBB);
 		assert(actorSphere->GetGeometry()->GetGeometryType() == GeometryType::Sphere);
 
 		// geometry
-		const auto geometryOBB    = std::static_pointer_cast<GeometryOBB>(actorOBB->GetGeometry());
-		const auto geometrySphere = std::static_pointer_cast<GeometrySphere>(actorSphere->GetGeometry());
+		const auto geometryOBB    = gu::StaticPointerCast<GeometryOBB>(actorOBB->GetGeometry());
+		const auto geometrySphere = gu::StaticPointerCast<GeometrySphere>(actorSphere->GetGeometry());
 
 		// sphere config
 		auto sphereCenter = actorSphere->GetPosition();
@@ -233,13 +233,13 @@ namespace
 		return distance2 <= sphereRadius * sphereRadius;
 	}
 
-	bool OBB_vs_AABB_Intersects(const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion)
+	bool OBB_vs_AABB_Intersects(const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion)
 	{
 		OBB_vs_OBB_Intersects(first, second);
 		return true;
 	}
 
-	bool OBB_vs_OBB_Intersects(const std::shared_ptr<PhysicsActor>& first, const std::shared_ptr<PhysicsActor>& second, const bool useExtrusion)
+	bool OBB_vs_OBB_Intersects(const gu::SharedPointer<PhysicsActor>& first, const gu::SharedPointer<PhysicsActor>& second, const bool useExtrusion)
 	{
 		using namespace DirectX;
 		assert(first ->GetGeometry()->GetGeometryType() == GeometryType::OBB);
@@ -247,8 +247,8 @@ namespace
 			   second->GetGeometry()->GetGeometryType() == GeometryType::AABB);
 
 		// geometry
-		const auto geometryA = std::static_pointer_cast<GeometryOBB>(first ->GetGeometry());
-		const auto geometryB = std::static_pointer_cast<GeometryOBB>(second->GetGeometry());
+		const auto geometryA = gu::StaticPointerCast<GeometryOBB>(first ->GetGeometry());
+		const auto geometryB = gu::StaticPointerCast<GeometryOBB>(second->GetGeometry());
 
 		// get orientation
 		const auto orientationA = first ->GetRotation();

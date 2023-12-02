@@ -48,7 +48,7 @@ namespace rhi::core
 	{
 		Unknown,    // For Initialize
 		Graphics,   // Graphics command list (directX12 api includes all command list type (use this) )
-		Compute,    // Compute command list
+		Compute,    // Compute command list. This type is used to async compute command
 		Copy,       // Copy command list
 		CountOfType
 	};
@@ -796,7 +796,12 @@ namespace rhi::core
 		return false;
 	}
 
-
+	enum class BindlessResourceType
+	{
+		Unsupported = 0,
+		OnlyRayTracing = 1,
+		AllShaderTypes = 2,
+	};
 #pragma region GPUBuffer
 	/****************************************************************************
 	*				  			BufferType
@@ -1125,6 +1130,19 @@ namespace rhi::core
 			this->Left = left; this->Top = top; this->Right = right; this->Bottom = bottom;
 		}
 	};
+	// https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
+	struct HDRDisplayInfo
+	{
+		float RedPrimary[2]   = {0,0};   // red   xy coordinate in the color space
+		float GreenPrimary[2] = {0,0}; // green xy coordinate in the color space
+		float BluePrimary[2]  = {0,0};  // blue  xy coordinate in the color space
+		float WhitePoint[2]   = {0,0};   // white xy coordinate in the color space
+		float MinLuminance    = 0.0f;    // nits
+		float MaxLuminacnce   = 0.0f;   // nits
+		float MaxFullFrameLuminance = 0.0f;
+		ScissorRect Rect = {};
+	};
+
 	/****************************************************************************
 	*				  			WindowInfo
 	*************************************************************************//**

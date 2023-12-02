@@ -25,9 +25,9 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFence::RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::uint64_t initialValue, const std::wstring& name)
+RHIFence::RHIFence(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::uint64_t initialValue, const std::wstring& name)
 {
-	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(device.get())->GetDevice();
+	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(device.Get())->GetDevice();
 	
 	ThrowIfFailed(dxDevice->CreateFence(initialValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
 	
@@ -38,7 +38,10 @@ RHIFence::RHIFence(const std::shared_ptr<rhi::core::RHIDevice>& device, const st
 
 RHIFence::~RHIFence()
 {
-	if (_fence) { _fence.Reset(); }
+	if (_fence) 
+	{
+		_fence.Reset(); 
+	}
 }
 #pragma endregion Constructor and Destructor
 #pragma region Public Function
@@ -61,7 +64,7 @@ std::uint64_t RHIFence::GetCompletedValue()
 /****************************************************************************
 *                     Signal
 *************************************************************************//**
-*  @fn        void RHIFence::Signal(const std::shared_ptr<rhi::core::RHICommandQueue>& queue)
+*  @fn        void RHIFence::Signal(const gu::SharedPointer<rhi::core::RHICommandQueue>& queue)
 * 
 *  @brief     @brief: Set fence value from CPU side. 
               (in case RHICommandQueue::Signal -> Set fence value from GPU side)

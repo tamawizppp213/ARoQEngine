@@ -15,7 +15,7 @@
 #include "GameUtility/Math/Include/GMTransform.hpp"
 #include <string>
 #include <vector>
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -40,11 +40,11 @@ namespace gc::core
 	*  @class    GameObject
 	*  @brief    GameObject (base class in the all object class)
 	*****************************************************************************/
-	class GameObject : public NonCopyable, public std::enable_shared_from_this<GameObject>
+	class GameObject : public NonCopyable, public gu::EnableSharedFromThis<GameObject>
 	{
 	protected:
-		using GameObjectPtr = std::shared_ptr<GameObject>;
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+		using GameObjectPtr = gu::SharedPointer<GameObject>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************
 		**                Static Function
@@ -53,9 +53,9 @@ namespace gc::core
 		-                       Create
 		---------------------------------------------------------------------*/
 		template <typename T> requires std::is_base_of_v<GameObject, T>
-		static std::shared_ptr<T> Create(const LowLevelGraphicsEnginePtr& engine)
+		static gu::SharedPointer<T> Create(const LowLevelGraphicsEnginePtr& engine)
 		{
-			const auto gameObject = std::make_shared<T>(engine);
+			const auto gameObject = gu::MakeShared<T>(engine);
 			GameObjects.push_back(gameObject);
 			return gameObject;
 		}

@@ -37,7 +37,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		// @brief : Basically for Default Buffer Initialize. Total Buffer Copy
 		//          Create temp upload buffer and copy this to default buffer
-		void Pack(const void* data, const std::shared_ptr<rhi::core::RHICommandList>& copyCommandList = nullptr) override;
+		void Pack(const void* data, const gu::SharedPointer<rhi::core::RHICommandList>& copyCommandList = nullptr) override;
 		
 		// @brief : Begin Map Function
 		void CopyStart() override;
@@ -70,7 +70,7 @@ namespace rhi::directX12
 		
 		~GPUBuffer();
 		
-		explicit GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name = L"Buffer");
+		explicit GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name = L"Buffer");
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

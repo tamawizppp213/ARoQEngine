@@ -45,10 +45,10 @@ namespace rhi::directX12
 		*****************************************************************************/
 		RayTracingGeometry() = default;
 		~RayTracingGeometry() = default;
-		RayTracingGeometry(const std::shared_ptr<core::RHIDevice>& device,
+		RayTracingGeometry(const gu::SharedPointer<core::RHIDevice>& device,
 			const core::RayTracingGeometryFlags flags,
-			const std::shared_ptr<core::GPUBuffer>& vertexBuffer,
-			const std::shared_ptr<core::GPUBuffer>& indexBuffer);
+			const gu::SharedPointer<core::GPUBuffer>& vertexBuffer,
+			const gu::SharedPointer<core::GPUBuffer>& indexBuffer);
 	protected:
 		/****************************************************************************
 		**                Protected Function

@@ -23,7 +23,7 @@ using namespace rhi::core;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil)
+RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil)
 	: _device(device), _renderPass(renderPass), _renderTargets(renderTargets), _depthStencil(depthStencil)
 {
 	assert(_device);
@@ -31,27 +31,25 @@ RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const s
 	CheckResourceFormat();
 }
 
-RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil)
-	: _device(device), _renderPass(renderPass), _renderTargets(std::vector<std::shared_ptr<GPUTexture>>{renderTarget}), _depthStencil(depthStencil)
+RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil)
+	: _device(device), _renderPass(renderPass), _renderTargets(std::vector<gu::SharedPointer<GPUTexture>>{renderTarget}), _depthStencil(depthStencil)
 {
 	CheckResourceFormat();
 }
 
 RHIFrameBuffer::~RHIFrameBuffer()
 {
-	if (_depthStencilView) 
-	{
-		_depthStencilView.reset(); 
-	}
+	if (_depthStencilSRV) { _depthStencilSRV.Reset(); }
+	if (_depthStencilView){ _depthStencilView.Reset();}
+	if (_depthStencil) { _depthStencil.Reset(); }
 
 	_renderTargetViews.clear(); _renderTargetViews.shrink_to_fit();
-	
-	if (_depthStencil) 
-	{ 
-		_depthStencil.reset(); 
-	}
-
+	_renderTargetUAVs.clear(); _renderTargetUAVs.shrink_to_fit();
+	_renderTargetSRVs.clear(); _renderTargetSRVs.shrink_to_fit();
 	_renderTargets.clear(); _renderTargets.shrink_to_fit();
+
+	if (_renderPass) { _renderPass.Reset(); }
+	if (_device) { _device.Reset(); }
 }
 
 #pragma endregion Constructor and Destructor
@@ -60,7 +58,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 {
 	for (int i = 0; i < _renderTargets.size(); ++i)
 	{
-		if (_renderTargets[i] == nullptr) { continue; }
+		if (!_renderTargets[i]) { continue; }
 		if (_renderTargets[i]->GetDimension() != ResourceDimension::Dimension2D) { throw std::runtime_error("Wrong render target dimension"); }
 		if (!core::EnumHas(_renderTargets[i]->GetUsage(), core::ResourceUsage::RenderTarget))
 		{ 
@@ -68,7 +66,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 		}
 	}
 
-	if (_depthStencil != nullptr)
+	if (_depthStencil)
 	{
 		if (_depthStencil->GetDimension() != ResourceDimension::Dimension2D ) { throw std::runtime_error("Wrong depthStencil dimension"); }
 		if (_depthStencil->GetUsage()     != ResourceUsage    ::DepthStencil) { throw std::runtime_error("Wrong resource usage"); }

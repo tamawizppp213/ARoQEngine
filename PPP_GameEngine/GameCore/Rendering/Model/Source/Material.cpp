@@ -57,7 +57,7 @@ Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaD
 	{
 		const auto device      = _engine->GetDevice();
 		const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
-		ResourceCache = std::make_shared<GPUResourceCache>(device, commandList);
+		ResourceCache = gu::MakeShared<GPUResourceCache>(device, commandList);
 	}
 
 	_textures[(int)UsageTexture::Diffuse]  = ResourceCache->Load(L"Resources/Preset/NullAlbedoMap.png");
@@ -71,13 +71,13 @@ Material::~Material()
 {
 	for (auto& texture : _textures)
 	{
-		texture.reset();
+		texture.Reset();
 	}
 
 	InstanceCount--;
 	if (InstanceCount == 0)
 	{
-		ResourceCache.reset();
+		ResourceCache.Reset();
 	}
 }
 #pragma endregion Constructor and Destructor 
@@ -86,7 +86,7 @@ Material::~Material()
 /****************************************************************************
 *					Bind
 *************************************************************************//**
-*  @fn      void Material::Bind(const std::shared_ptr<rhi::core::RHICommandList>& commandList,
+*  @fn      void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandList,
 			const std::uint32_t frameIndex,
 			const std::uint32_t bindID,
 			const std::vector<std::uint32_t>& bindTextureIDs)
@@ -100,7 +100,7 @@ Material::~Material()
 *
 *  @return Å@Å@void
 *****************************************************************************/
-void Material::Bind(const std::shared_ptr<rhi::core::RHICommandList>& commandList,
+void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandList,
 	const std::uint32_t frameIndex,
 	const std::uint32_t bindID,
 	const std::vector<std::uint32_t>& bindTextureIDs)

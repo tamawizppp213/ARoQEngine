@@ -61,6 +61,7 @@ SamplerInfo SamplerInfo::GetDefaultSampler(DefaultSamplerType type)
 		samplerDesc.AddressModeU = SamplerAddressMode::Border;
 		samplerDesc.AddressModeV = SamplerAddressMode::Border;
 		samplerDesc.AddressModeW = SamplerAddressMode::Border;
+		break;
 	}
 	case DefaultSamplerType::SamplerAnisotropicWrap:
 	{

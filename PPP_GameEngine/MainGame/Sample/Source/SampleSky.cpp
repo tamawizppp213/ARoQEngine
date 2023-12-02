@@ -41,7 +41,7 @@ SampleSky::~SampleSky()
 *  @param[in] GameTimer* gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleSky::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleSky::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -118,12 +118,12 @@ void SampleSky::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Camera
 	---------------------------------------------------------------------*/
-	_camera = std::make_shared<Camera>(_engine);
+	_camera = gu::MakeShared<Camera>(_engine);
 	_camera->SetPosition(0.0f, 10.0f, -20.0f);
 	/*-------------------------------------------------------------------
 	-           Skybox
 	---------------------------------------------------------------------*/
-	_skybox = std::make_shared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
+	_skybox = gu::MakeShared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

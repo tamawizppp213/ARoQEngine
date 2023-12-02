@@ -57,7 +57,7 @@ TransportTCP::~TransportTCP()
 *****************************************************************************/
 void TransportTCP::SendPacket()
 {
-	if (_socket == nullptr) { return; }
+	if (!_socket) { return; }
 
 	/*-------------------------------------------------------------------
 	-                      Polling (Non wait time)
@@ -100,7 +100,7 @@ void TransportTCP::SendPacket()
 *****************************************************************************/
 void TransportTCP::ReceivePacket()
 {
-	if (_socket == nullptr) { return; }
+	if (!_socket) { return; }
 
 	/*-------------------------------------------------------------------
 	-                      Polling (Non wait time)
@@ -143,17 +143,17 @@ bool TransportTCP::Connect(const IPAddress& address, const std::uint32_t port)
 	/*-------------------------------------------------------------------
 	-                 Enable to use socket check
 	---------------------------------------------------------------------*/
-	if (_socket != nullptr) { OutputDebugStringA("Connection failed");  return false; }
+	if (!_socket) { OutputDebugStringA("Connection failed");  return false; }
 
 	/*-------------------------------------------------------------------
 	-                 Create new socket 
 	---------------------------------------------------------------------*/
-	_socket = std::make_shared<Socket>(SocketType::Stream, ProtocolType::TCP);
+	_socket = gu::MakeShared<Socket>(SocketType::Stream, ProtocolType::TCP);
 	
 	/*-------------------------------------------------------------------
 	-                 Connect
 	---------------------------------------------------------------------*/
-	_socket->Connect(address, port);
+	_socket->Connect(address, (std::uint16_t)port);
 	_isConnected = true;
 	OutputDebugStringA("Connection Success");
 
@@ -179,12 +179,12 @@ void TransportTCP::Disconnect()
 	/*-------------------------------------------------------------------
 	-                 Disconnect
 	---------------------------------------------------------------------*/
-	if (_socket == nullptr) { return; }
+	if (!_socket) { return; }
 
 	// close socket
 	_socket->Shutdown(ShutdownType::Both);
 	_socket->Close();
-	_socket.reset();
+	_socket.Reset();
 
 	// Todo : êÿífåãâ Çí ímÇµÇ‹Ç∑.
 }

@@ -8,14 +8,15 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/DirectX12Swapchain.hpp"
+#include "../Include/DirectX12Instance.hpp"
 #include "../Include/DirectX12CommandQueue.hpp"
 #include "../Include/DirectX12Adapter.hpp"
-#include "../Include/DirectX12Instance.hpp"
 #include "../Include/DirectX12Fence.hpp"
 #include "../Include/DirectX12Device.hpp"
 #include "../Include/DirectX12Debug.hpp"
 #include "../Include/DirectX12EnumConverter.hpp"
 #include "../../Resource/Include/DirectX12GPUTexture.hpp"
+#include "GameUtility/Base/Include/Screen.hpp"
 #include <d3d12.h>
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::shared_ptr<rhi::core::RHICommandQueue>& queue,
+RHISwapchain::RHISwapchain(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandQueue>& queue,
 	const core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR) 
 	: core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
 
@@ -37,7 +38,7 @@ RHISwapchain::RHISwapchain(const std::shared_ptr<rhi::core::RHIDevice>& device, 
 	SetUp();
 }
 
-RHISwapchain::RHISwapchain(const std::shared_ptr<core::RHIDevice>& device, const core::SwapchainDesc& desc) : rhi::core::RHISwapchain(device, desc)
+RHISwapchain::RHISwapchain(const gu::SharedPointer<core::RHIDevice>& device, const core::SwapchainDesc& desc) : rhi::core::RHISwapchain(device, desc)
 {
 	SetUp();
 }
@@ -75,7 +76,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
-	for (auto& buffer : _backBuffers) { buffer.reset(); }
+	for (auto& buffer : _backBuffers) { buffer.Reset(); }
 	ThrowIfFailed(_swapchain->ResizeBuffers(
 		static_cast<UINT>(_desc.FrameBufferCount),
 		static_cast<UINT>(_desc.WindowInfo.Width),
@@ -98,20 +99,20 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 
 		info.State = core::ResourceState::Present;
 
-		_backBuffers[index] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
+		_backBuffers[index] = gu::MakeShared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
 	}
 	
 }
 /****************************************************************************
 *							PrepareNextImage
 *************************************************************************//**
-*  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
+*  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
 *  @brief     NextImageの準備が完了したときSignalを発行し, 次のframe Indexを返す. 
-*  @param[in] const std::shared_ptr<core::RHIFence>
+*  @param[in] const gu::SharedPointer<core::RHIFence>
 *  @param[in] std::uint64_t signalValue (Normally : ++fenceValueを代入)
 *  @return 　　std::uint32_t Backbuffer index
 *****************************************************************************/
-std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t signalValue)
+std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
 {
 	std::uint32_t frameIndex = _swapchain->GetCurrentBackBufferIndex();
 	_desc.CommandQueue->Signal(fence, signalValue);
@@ -122,16 +123,17 @@ std::uint32_t RHISwapchain::PrepareNextImage(const std::shared_ptr<core::RHIFenc
 *************************************************************************//**
 *  @fn        void RHISwapchain::Present()
 *  @brief     Display front buffer
-*  @param[in] const std::shared_ptr<core::RHIFence>& fence
+*  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *  @param[in] std::uint64_t waitValue
 *  @return 　　void
 *****************************************************************************/
-void RHISwapchain::Present(const std::shared_ptr<core::RHIFence>& fence, std::uint64_t waitValue)
+void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue)
 {
 	/*synchronization between command queue */
 	_desc.CommandQueue->Wait(fence, waitValue);
+
 	/* present front buffer*/
-	ThrowIfFailed(_swapchain->Present(_desc.VSync, 0));
+	ThrowIfFailed(_swapchain->Present(_desc.VSync, _useAllowTearing ? DXGI_PRESENT_ALLOW_TEARING : 0));
 }
 /****************************************************************************
 *							GetCurrentBufferIndex
@@ -172,15 +174,27 @@ void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 *****************************************************************************/
 void RHISwapchain::SetUp()
 {
-	const auto rhiDevice = std::static_pointer_cast<RHIDevice>(_device);
-	const auto dxDevice  = rhiDevice->GetDevice();
-	const auto dxQueue   = std::static_pointer_cast<RHICommandQueue>(_desc.CommandQueue)->GetCommandQueue();
+	const auto rhiDevice  = gu::StaticPointerCast<RHIDevice>(_device);
+	const auto dxDevice   = rhiDevice->GetDevice();
+	const auto dxQueue    = gu::StaticPointerCast<RHICommandQueue>(_desc.CommandQueue)->GetCommandQueue();
+	const auto dxInstance = static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance());
+	const auto factory    = dxInstance->GetFactory();
 
 	/*-------------------------------------------------------------------
 	-        SwapChain Flag
 	---------------------------------------------------------------------*/
 	int flag = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	if (rhiDevice->IsSupportedTearingSupport()) { flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; }
+	if (rhiDevice->IsSupportedAllowTearing()) 
+	{ 
+		flag |= (int)DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING; 
+		
+		_useAllowTearing = _desc.VSync == 0;
+	}
+	else
+	{
+		_useAllowTearing = false;
+	}
+
 	_swapchainFlag = static_cast<DXGI_SWAP_CHAIN_FLAG>(flag);
 
 	/*-------------------------------------------------------------------
@@ -189,44 +203,77 @@ void RHISwapchain::SetUp()
 	_backBufferFormat = EnumConverter::Convert(_desc.PixelFormat);
 
 	/*-------------------------------------------------------------------
-	-                   Create Swapchain Descriptor
+	-        立体視を行うために, 両目で画像をずらす対応を行うかどうか
 	---------------------------------------------------------------------*/
-	const DXGI_SWAP_CHAIN_DESC1 sd =
+	if (_desc.IsValidStereo)
 	{
-		.Width       = static_cast<UINT>(_desc.WindowInfo.Width),  // Window Size Pixel Width
-		.Height      = static_cast<UINT>(_desc.WindowInfo.Height), // Window Size Pixel Height 
-		.Format      = _backBufferFormat,                          // Back Buffer Format 
-		.Stereo      = _desc.IsValidStereo,                        // Use stereoscopic rendering
-		.SampleDesc  = {1, 0},                                     // Count + quality (Not support multi sampling.)
-		.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,            // Use the surface or resource as an output render target
-		.BufferCount = static_cast<UINT>(_desc.FrameBufferCount),  // Current: Triple Buffer
-		.Scaling     = DXGI_SCALING_STRETCH,                       // scaling: stretch
-		.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD,              // bit-block transfer model
-		.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED,                // Alpha Mode => transparency behavior is not specified
-		.Flags       = (UINT)_swapchainFlag,                       // Allow Resize Window
-	};
+		if (factory->IsWindowedStereoEnabled())
+		{
+			const DXGI_SWAP_CHAIN_DESC1 desc = 
+			{
+				.Width       = static_cast<UINT>(_desc.WindowInfo.Width),  // Window Size Pixel Width
+				.Height      = static_cast<UINT>(_desc.WindowInfo.Height), // Window Size Pixel Height 
+				.Format      = _backBufferFormat,                          // Back Buffer Format 
+				.Stereo      = true,                                       // Use stereoscopic rendering
+				.SampleDesc  = {1, 0},                                     // Count + quality (Not support multi sampling.)
+				.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT,  // Use the surface or resource as an output render target
+				.BufferCount = static_cast<UINT>(_desc.FrameBufferCount),  // Current: Triple Buffer
+				.Scaling     = DXGI_SCALING_NONE,                          // fixed
+				.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD,              // bit-block transfer model
+				.AlphaMode   = DXGI_ALPHA_MODE_UNSPECIFIED,                // Alpha Mode => transparency behavior is not specified
+				.Flags       = (UINT)_swapchainFlag,                       // Allow Resize Window
+			};
 
-	// 起動時にフルスクリーンにする場合は使用するが, 現状は使用しないことにする. (フレームレートを固定する必要があるため.)
-	/*DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullScreenDesc = {};
-	fullScreenDesc.RefreshRate.Denominator = 60;
-	fullScreenDesc.RefreshRate.Numerator   = 1;
-	fullScreenDesc.Scaling                 = DXGI_MODE_SCALING_STRETCHED;
-	fullScreenDesc.ScanlineOrdering        = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	fullScreenDesc.Windowed                = FALSE;*/
+			ThrowIfFailed(factory->CreateSwapChainForHwnd (
+					dxQueue.Get(),
+					(HWND)_desc.WindowInfo.Handle,
+					&desc,
+					nullptr, // full screen desc
+					nullptr, // main monitor display
+					(IDXGISwapChain1**)(_swapchain.GetAddressOf())));
+		}
+		else
+		{
+			_desc.IsValidStereo = false;
+			OutputDebugStringA("Failed to use stereo rendering\n");
+		}
+	}
 
 	/*-------------------------------------------------------------------
-	-                   Create Swapchain for hwnd
+	-         ステレオが有効化出来なかった場合か, 使わない場合の対応
 	---------------------------------------------------------------------*/
-	ThrowIfFailed(static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance())->GetFactory()->
-	CreateSwapChainForHwnd
-	(
-		dxQueue.Get(),
-		(HWND)_desc.WindowInfo.Handle,
-		&sd,
-		nullptr, // full screen desc
-		nullptr, // main monitor display
-		(IDXGISwapChain1**)(_swapchain.GetAddressOf())
-	));
+	if (_swapchain == nullptr)
+	{
+		const DXGI_MODE_DESC modeDesc =
+		{
+			.Width            = static_cast<UINT>(_desc.WindowInfo.Width),  // Window Size Pixel Width
+			.Height           = static_cast<UINT>(_desc.WindowInfo.Height), // Window Size Pixel Height 
+			.RefreshRate      = {0, 0},
+			.Format           = _backBufferFormat,                          // Back Buffer Format 
+			.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
+			.Scaling          = DXGI_MODE_SCALING_STRETCHED,                       // scaling: stretch
+		};
+
+		DXGI_SWAP_CHAIN_DESC desc = 
+		{
+			.BufferDesc   = modeDesc,
+			.SampleDesc   = {1, 0},                                     // Count + quality (Not support multi sampling.)
+			.BufferUsage  = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT, // Use the surface or resource as an output render target
+			.BufferCount  = static_cast<UINT>(_desc.FrameBufferCount),  // Current: Triple Buffer
+			.OutputWindow = (HWND)_desc.WindowInfo.Handle,              
+			.Windowed     = !_isFullScreen,                             // Full screen setting is border less window
+			.SwapEffect   = DXGI_SWAP_EFFECT_FLIP_DISCARD,              // bit-block transfer model
+			.Flags        = (UINT)_swapchainFlag,                       // Allow Resize Window
+		};
+
+		/*-------------------------------------------------------------------
+		-                   Create Swapchain for hwnd
+		---------------------------------------------------------------------*/
+		ThrowIfFailed(factory->CreateSwapChain(dxQueue.Get(), &desc, (IDXGISwapChain**)(_swapchain.GetAddressOf())));
+	}
+	
+	// 背後でウィンドウを変更しないように、DXGIメッセージフックを設定する。
+	factory->MakeWindowAssociation((HWND)_desc.WindowInfo.Handle, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER);
 
 	if (rhiDevice->IsSupportedHDR() && _desc.IsValidHDR)
 	{
@@ -250,7 +297,7 @@ void RHISwapchain::SetUp()
 			core::ResourceUsage::RenderTarget);
 		info.State = core::ResourceState::Common;
 
-		_backBuffers[i] = std::make_shared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
+		_backBuffers[i] = gu::MakeShared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
 	}
 
 }

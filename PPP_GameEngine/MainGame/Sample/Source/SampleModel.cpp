@@ -26,8 +26,8 @@ using namespace rhi::core;
 using namespace gc;
 using namespace gc::core;
 
-std::shared_ptr<basepass::ZPrepass> zprepass = nullptr;
-std::shared_ptr<basepass::GBuffer> gbuffer = nullptr;
+gu::SharedPointer<basepass::ZPrepass> zprepass = nullptr;
+gu::SharedPointer<basepass::GBuffer> gbuffer = nullptr;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ SampleModel::~SampleModel()
 *  @param[in] GameTimer* gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleModel::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleModel::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -128,12 +128,12 @@ void SampleModel::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Camera
 	---------------------------------------------------------------------*/
-	_camera = std::make_shared<Camera>(_engine);
+	_camera = gu::MakeShared<Camera>(_engine);
 	_camera->SetPosition(0.0f, 10.0f, -20.0f);
 	/*-------------------------------------------------------------------
 	-           Skybox
 	---------------------------------------------------------------------*/
-	_skybox = std::make_shared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
+	_skybox = gu::MakeShared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
 	/*-------------------------------------------------------------------
 	-           Model
 	---------------------------------------------------------------------*/
@@ -141,12 +141,12 @@ void SampleModel::LoadMaterials()
 	_model->Load(L"Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx");
 	_model->SetDebugColor(gm::Float4(1, 0, 0, 1));
 
-	zprepass = std::make_shared<basepass::ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
+	zprepass = gu::MakeShared<basepass::ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
 	zprepass->Add(_model);
-	gbuffer = std::make_shared<basepass::GBuffer>(_engine);
+	gbuffer = gu::MakeShared<basepass::GBuffer>(_engine);
 	gbuffer->Add(_model);
 
-	_dof = std::make_shared<Dof>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());
+	_dof = gu::MakeShared<Dof>(_engine, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight());
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

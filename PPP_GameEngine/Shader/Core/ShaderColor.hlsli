@@ -17,10 +17,31 @@
 *				  			xyYToRec709
 *************************************************************************//**
 *  @class     float3 xyYToRec709(float2 xy, float Y = 1.0f)
-*  @brief     Convert xyY To Rec709
+*  @brief     Convert xy color space and luminance Y To LMS
 *  @param[in] float3 color
 *****************************************************************************/
-float3 xyYToRec709(float2 xy, float Y = 1.0f)
+float3 xyYToLMS(float2 xy, float Y = 1.0)
+{
+    static const float3x3 XYZtoLMS = 
+    {
+        0.7328, 0.4296, -0.1624,
+        -0.7036, 1.6975, 0.0061,
+        0.0030, 0.0136, 0.9834
+    };
+    
+    float3 XYZ = Y * float3(xy.x / xy.y, 1.0, (1.0 - xy.x - xy.y) / xy.y);
+    float3 LMS = mul(XYZtoLMS, XYZ);
+    return LMS;
+}
+
+/****************************************************************************
+*				  			xyYToRec709
+*************************************************************************//**
+*  @class     float3 xyYToRec709(float2 xy, float Y = 1.0f)
+*  @brief     Convert xy color space and luminance Y To Rec709
+*  @param[in] float3 color
+*****************************************************************************/
+float3 xyYToRec709(float2 xy, float Y = 1.0)
 {
     static const float3x3 XYZtoRGB =
     {
@@ -39,7 +60,7 @@ float3 xyYToRec709(float2 xy, float Y = 1.0f)
 *				  			xyYToRec2020
 *************************************************************************//**
 *  @class     float3 xyYToRec2020(float2 xy, float Y = 1.0)
-*  @brief     Convert xyY To Rec2020 
+*  @brief     Convert xy color space and luminance Y To Rec2020 
 *  @param[in] float3 color
 *****************************************************************************/
 float3 xyYToRec2020(float2 xy, float Y = 1.0)
@@ -135,6 +156,30 @@ float3 LinearToST2084(float3 color)
     float c3 = 2392.0 / 4096.0 * 32;
     float3 cp = pow(abs(color), m1);
     return pow((c1 + c2 * cp) / (1 + c3 * cp), m2);
+}
+
+float3 LinearToLMS(float3 color)
+{
+    static const float3x3 conversion =
+    {
+        3.90405e-1, 5.49941e-1, 8.92632e-3,
+        7.08416e-2, 9.63172e-1, 1.35775e-3,
+        2.31082e-2, 1.28021e-1, 9.36245e-1
+    };
+    
+    return mul(conversion, color);
+}
+
+float3 LMSToLinear(float3 color)
+{
+    static const float3x3 conversion =
+    {
+        2.85847e+0, -1.62879e+0, -2.48910e-2,
+        -2.10182e-1, 1.15820e+0, 3.24281e-4,
+        -4.18120e-2, -1.18169e-1, 1.06867e+0
+    };
+    
+    return mul(conversion, color);
 }
 
 #endif

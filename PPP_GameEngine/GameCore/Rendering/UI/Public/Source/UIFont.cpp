@@ -64,7 +64,7 @@ bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const std::wstring& ima
 	---------------------------------------------------------------------*/
 	const auto device        = engine->GetDevice();
 	const auto commandList   = engine->GetCommandList(CommandListType::Graphics);
-	const auto resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), commandList);
+	const auto resourceCache = gu::MakeShared<GPUResourceCache>(_engine->GetDevice(), commandList);
 
 	/*-------------------------------------------------------------------
 	-             Load texture
@@ -87,7 +87,7 @@ bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const std::wstring& ima
 *****************************************************************************/
 void Font::Reset()
 {
-	_textureView.reset();
+	_textureView.Reset();
 	_pixelPerChar    = { 0.0f, 0.0f };
 	_imagePixelWidth = 0;
 	_engine = nullptr;

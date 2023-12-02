@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIImage.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <vector>
 #include <functional>
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +32,7 @@ namespace gc::ui
 	struct UIResource
 	{
 	private:
-		using ResourceViewPtr = std::shared_ptr<rhi::core::GPUResourceView>;
+		using ResourceViewPtr = gu::SharedPointer<rhi::core::GPUResourceView>;
 	public:
 		ResourceViewPtr ResourceView;
 		Image           Image;
@@ -46,9 +46,9 @@ namespace gc::ui
 	class Slider
 	{
 		using ListenerFunction = std::function<void(float)>;
-		using FunctionPtr      = std::shared_ptr<ListenerFunction>;
-		using ResourceCachePtr = std::shared_ptr<rhi::core::GPUResourceCache>;
-		using ResourceViewPtr  = std::shared_ptr<rhi::core::GPUResourceView>;
+		using FunctionPtr      = gu::SharedPointer<ListenerFunction>;
+		using ResourceCachePtr = gu::SharedPointer<rhi::core::GPUResourceCache>;
+		using ResourceViewPtr  = gu::SharedPointer<rhi::core::GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Enum

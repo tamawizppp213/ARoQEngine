@@ -11,9 +11,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "Engine/Public/Include/PPPEngine.hpp"
 #include "GameCore/Input/Include/GameInput.hpp"
 #include "GameUtility/Base/Include/GameTimer.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,12 +31,13 @@
 class Scene
 {
 protected:
-	using GameTimerPtr = std::shared_ptr<GameTimer>;
+	using GameTimerPtr = gu::SharedPointer<GameTimer>;
+	using PPPEnginePtr = gu::SharedPointer<PPPEngine>;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	virtual void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer);
+	virtual void Initialize(const gu::SharedPointer<PPPEngine>& engine, const GameTimerPtr& gameTimer);
 	virtual void Update   ();
 	virtual void Draw     () = 0;
 	virtual void Terminate() = 0;
@@ -60,7 +62,8 @@ protected:
 	/****************************************************************************
 	**                Protected Member Variables
 	*****************************************************************************/
-	std::shared_ptr<LowLevelGraphicsEngine> _engine;
+	PPPEnginePtr _pppEngine = nullptr;
+	gu::SharedPointer<LowLevelGraphicsEngine> _engine;
 
 	// @brief: keyboard + mouse + gamePad manager
 	GameInput& _gameInput = GameInput::Instance();

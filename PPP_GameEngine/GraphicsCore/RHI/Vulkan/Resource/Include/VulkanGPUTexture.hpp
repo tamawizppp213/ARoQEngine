@@ -24,10 +24,10 @@ namespace rhi::vulkan
 {
 
 	/****************************************************************************
-	*				  			GPUBuffer
+	*				  			GPUTexture
 	*************************************************************************//**
-	*  @class     GPUBuffer
-	*  @brief     Buffer
+	*  @class     GPUTexture
+	*  @brief     Texture 
 	*****************************************************************************/
 	class GPUTexture : public core::GPUTexture
 	{
@@ -35,12 +35,12 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Load(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList) override;
+		void Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList) override;
 
-		void Save(const std::wstring& filePath, const std::shared_ptr<core::RHICommandList>& commandList, const std::shared_ptr<core::RHICommandQueue>& commandQueue) override 
+		void Save(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue) override 
 		{ printf("Non Function\n"); }
 
-		void Write(const std::shared_ptr<core::RHICommandList>& commandList, const gm::RGBA* pixel) override
+		void Write(const gu::SharedPointer<core::RHICommandList>& commandList, const gm::RGBA* pixel) override
 		{
 			printf("Non Function\n");
 		}
@@ -64,11 +64,11 @@ namespace rhi::vulkan
 		
 		~GPUTexture();
 		 
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const std::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const std::wstring& name = L"Texture");
 		
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"Texture");
 		
-		explicit GPUTexture(const std::shared_ptr<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const std::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const std::wstring& name = L"Texture");
 
 	protected:
 		/****************************************************************************
@@ -78,7 +78,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void Pack(const std::shared_ptr<core::RHICommandList>& commandList) override{};
+		void Pack(const gu::SharedPointer<core::RHICommandList>& commandList) override{};
 		
 		/****************************************************************************
 		**                Protected Member Variables
@@ -89,7 +89,7 @@ namespace rhi::vulkan
 
 		VkImageViewCreateInfo  _imageViewDesc = {};
 
-		std::shared_ptr<core::GPUBuffer> _stagingBuffer = nullptr;
+		gu::SharedPointer<core::GPUBuffer> _stagingBuffer = nullptr;
 
 		bool _hasAllocated = false;
 

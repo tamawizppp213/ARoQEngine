@@ -40,7 +40,7 @@ SampleTexture::~SampleTexture()
 *  @param[in] const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleTexture::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleTexture::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -56,8 +56,8 @@ void SampleTexture::Update()
 {
 	Scene::Update();
 
-	_renderer->AddFrameObjects({ _image }, _resourceView);
-	_renderer->AddFrameObjects({ _miniImage }, _resourceCache->Load(L"Resources/Cubemap.jpg"));
+	//_renderer->AddFrameObjects({ _image }, _resourceView);
+	//_renderer->AddFrameObjects({ _miniImage }, _resourceCache->Load(L"Resources/Cubemap.jpg"));
 }
 /****************************************************************************
 *                       Draw
@@ -93,9 +93,9 @@ void SampleTexture::Draw()
 *****************************************************************************/
 void SampleTexture::Terminate()
 {
-	_image.reset();
-	_resourceView.reset();
-	_resourceCache.reset();
+	_image.Reset();
+	_resourceView.Reset();
+	_resourceCache.Reset();
 }
 #pragma endregion Public Function
 
@@ -122,18 +122,18 @@ void SampleTexture::LoadMaterials()
 	-             SetUp Resources
 	---------------------------------------------------------------------*/
 	// Create image sprite
-	_image = std::make_shared<Image>();
+	_image = gu::MakeShared<Image>();
 	_image->CreateInNDCSpace();
-	_miniImage = std::make_shared<Image>();
+	_miniImage = gu::MakeShared<Image>();
 	_miniImage->CreateInScreenSpace(gm::Float3(0, 0, 0), gm::Float2(600, 450));
 
 	// Create Texture
-	_resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
+	_resourceCache = gu::MakeShared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
 	_resourceView  = _resourceCache->Load(L"Resources/BackGround2.png");
 	_resourceCache->Load(L"Resources/Cubemap.jpg");
 
 	// Create UI Renderer
-	_renderer = std::make_unique<gc::ui::UIRenderer>(_engine);
+	_renderer = gu::MakeShared<gc::ui::UIRenderer>(_engine);
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

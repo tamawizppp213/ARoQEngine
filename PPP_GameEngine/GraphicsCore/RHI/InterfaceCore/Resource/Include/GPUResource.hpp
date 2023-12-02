@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -60,9 +60,12 @@ namespace rhi::core
 		*****************************************************************************/
 		GPUResource() = default;
 
-		~GPUResource() = default;
+		virtual ~GPUResource()
+		{
+			if (_device) { _device.Reset(); }
+		}
 
-		explicit GPUResource(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
+		explicit GPUResource(const gu::SharedPointer<RHIDevice>& device) : _device(device) {};
 		
 		/****************************************************************************
 		**                Protected Function
@@ -71,7 +74,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice> _device = nullptr;
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 
 		bool _isTexture = true;
 	}; 

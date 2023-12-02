@@ -111,11 +111,11 @@ std::vector<GameObject::GameObjectPtr> GameObject::GameObjectsWithTag(const std:
 *****************************************************************************/
 bool GameObject::Destroy(GameObjectPtr& gameObject)
 {
-	if (gameObject == nullptr) { return false; }
+	if (!gameObject) { return false; }
 
 	const auto foundCount = std::erase(GameObjects, gameObject);
 	if (foundCount == 0) { return false; }
-	gameObject.reset();
+	gameObject.Reset();
 
 	return true;
 }
@@ -152,7 +152,7 @@ void GameObject::DestroyAllTagObjects(const std::wstring& tag)
 *****************************************************************************/
 void GameObject::DestroyWithChildren(GameObjectPtr& gameObject)
 {
-	if (gameObject == nullptr) { return; }
+	if (!gameObject) { return; }
 	for (int i = gameObject->GetChildCount() - 1; i >= 0; --i)
 	{
 		GameObjectPtr child = gameObject->GetChild(i);

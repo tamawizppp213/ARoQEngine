@@ -9,6 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "MainGame/Core/Include/Scene.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,13 +24,16 @@ Scene::Scene()
 }
 Scene::~Scene()
 {
-
+	_gameTimer.Reset();
+	_engine.Reset();
+	_pppEngine.Reset();
 }
 #pragma region Public Function
-void Scene::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine,const std::shared_ptr<GameTimer>& gameTimer)
+void Scene::Initialize(const gu::SharedPointer<PPPEngine>& engine,const gu::SharedPointer<GameTimer>& gameTimer)
 {
 	_gameTimer = gameTimer;
-	_engine    = engine;
+	_pppEngine = engine;
+	_engine    = engine->GetLowLevelGraphics();
 	LoadMaterials();
 }
 void Scene::Update()

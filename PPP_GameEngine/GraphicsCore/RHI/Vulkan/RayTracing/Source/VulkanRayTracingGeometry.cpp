@@ -20,15 +20,15 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-RayTracingGeometry::RayTracingGeometry(const std::shared_ptr<core::RHIDevice>& device,
+RayTracingGeometry::RayTracingGeometry(const gu::SharedPointer<core::RHIDevice>& device,
 	const core::RayTracingGeometryFlags flags,
-	const std::shared_ptr<core::GPUBuffer>& vertexBuffer,
-	const std::shared_ptr<core::GPUBuffer>& indexBuffer) :
+	const gu::SharedPointer<core::GPUBuffer>& vertexBuffer,
+	const gu::SharedPointer<core::GPUBuffer>& indexBuffer) :
 	rhi::core::RayTracingGeometry(device, flags, vertexBuffer, indexBuffer)
 {
-	const auto vkDevice       = std::static_pointer_cast<vulkan::RHIDevice>(_device);
-	const auto vkVertexBuffer = std::static_pointer_cast<vulkan::GPUBuffer>(_vertexBuffer);
-	const auto vkIndexBuffer  = std::static_pointer_cast<vulkan::GPUBuffer>(_indexBuffer);
+	const auto vkDevice       = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
+	const auto vkVertexBuffer = gu::StaticPointerCast<vulkan::GPUBuffer>(_vertexBuffer);
+	const auto vkIndexBuffer  = gu::StaticPointerCast<vulkan::GPUBuffer>(_indexBuffer);
 
 	/*-------------------------------------------------------------------
 	-         Set up geometry desc

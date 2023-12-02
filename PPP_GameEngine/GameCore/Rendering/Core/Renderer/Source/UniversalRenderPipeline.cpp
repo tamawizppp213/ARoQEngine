@@ -35,21 +35,21 @@ namespace
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
-URP::URP(const LowLevelGraphicsEnginePtr& engine, const std::shared_ptr<GameTimer>& gameTimer) : IRenderPipeline(engine),
+URP::URP(const LowLevelGraphicsEnginePtr& engine, const gu::SharedPointer<GameTimer>& gameTimer) : IRenderPipeline(engine),
 _gameTimer(gameTimer)
 {
-	_zPrepass = std::make_shared<ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), L"URP");
+	_zPrepass = gu::MakeShared<ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), L"URP");
 
-	_gBuffer = std::make_shared<GBuffer>(engine, gc::rendering::GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
+	_gBuffer = gu::MakeShared<GBuffer>(engine, gc::rendering::GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
 
-	//_ssao = std::make_shared<SSAO>(engine, _gBuffer->GetRenderedTextureView(1), _zPrepass->GetRenderedTextureView());
+	_ssao = gu::MakeShared<SSAO>(engine, _gBuffer->GetRenderedTextureView(1), _zPrepass->GetRenderedTextureView());
 	
 	const auto shadowDesc = gc::rendering::CascadeShadowDesc();
-	_cascadeShadowMap = std::make_shared<rendering::CascadeShadow>(_engine, shadowDesc, L"URP");
+	_cascadeShadowMap = gu::MakeShared<rendering::CascadeShadow>(_engine, shadowDesc, L"URP");
 
-	_uiRenderer = std::make_shared<ui::UIRenderer>(engine, L"URP", MAX_UI_COUNT);
+	_uiRenderer = gu::MakeShared<ui::UIRenderer>(engine, L"URP", MAX_UI_COUNT);
 
-	_directionalLights = std::make_shared<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
+	_directionalLights = gu::MakeShared<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
 
 	PrepareModelPipeline();
 }
@@ -63,22 +63,22 @@ URP::~URP()
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function
-bool URP::Draw(const ResourceViewPtr& scene)
+bool URP::Draw()
 {
 	/*-------------------------------------------------------------------
 	-         Is there a scene object
 	---------------------------------------------------------------------*/
-	if (!scene) { return false; }
+	if (!_scene) { return false; }
 
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
-
+	if (!commandList->IsOpen()) { return false; }
 	/*-------------------------------------------------------------------
 	-         Preprocess
 	---------------------------------------------------------------------*/
-	_zPrepass->Draw(scene);
-	_gBuffer ->Draw(scene);
-	//_ssao->Draw(scene);
-	_cascadeShadowMap->Draw(_gameTimer, _directionalLights->GetLight(0).Direction);
+	_zPrepass->Draw(_scene);
+	_gBuffer ->Draw(_scene);
+	_ssao->Draw(_scene);
+	//_cascadeShadowMap->Draw(_gameTimer, _directionalLights->GetLight(0).Direction);
 
 	/*-------------------------------------------------------------------
 	-         Rendering
@@ -86,7 +86,7 @@ bool URP::Draw(const ResourceViewPtr& scene)
 	_engine->BeginSwapchainRenderPass();
 	commandList->SetResourceLayout(_resourceLayout);
 	commandList->SetGraphicsPipeline(_pipeline);
-	scene->Bind(commandList, 0);
+	_scene->Bind(commandList, 0);
 	_directionalLights->BindLightData(commandList, 2);
 	_cascadeShadowMap->GetShadowInfoView()->Bind(commandList, 3);
 	for (const auto& model : _forwardModels)
@@ -152,7 +152,7 @@ void URP::PrepareModelPipeline()
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
 	vs->Compile(ShaderType::Vertex, L"Shader\\Model\\ShaderURPForwardRendering.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel, L"Shader\\Model\\ShaderURPForwardRendering.hlsl",  L"PSMain", 6.4f, { L"Shader\\Core" });
+	ps->Compile(ShaderType::Pixel, L"Shader\\Model\\ShaderURPForwardRendering.hlsl",  L"PSMain", 6.4f, { L"Shader\\Core" }, {L"USE_SPECULAR_F_NONE"});
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state

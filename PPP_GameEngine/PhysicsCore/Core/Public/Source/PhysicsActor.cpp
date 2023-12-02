@@ -18,7 +18,7 @@ using namespace physics::core;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-PhysicsActor::PhysicsActor(const std::shared_ptr<physics::geometry::IGeometry>& geometry,
+PhysicsActor::PhysicsActor(const gu::SharedPointer<physics::geometry::IGeometry>& geometry,
 	const gm::Vector3& worldPosition, const gm::Quaternion& rotation, const ActorFlags flags)
 	: _geometry(geometry), _position(worldPosition), _orientation(rotation), _actorFlags(flags)
 {

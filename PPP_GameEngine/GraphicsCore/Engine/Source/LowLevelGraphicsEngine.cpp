@@ -59,17 +59,17 @@ LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 * 
 *  @return @@void
 *****************************************************************************/
-void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
+void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hInstance)
 {
-	_hwnd = hwnd; _hInstance = hInstance; _apiVersion = apiVersion;
+	_apiVersion = apiVersion;
 
 	/*-------------------------------------------------------------------
 	-      Create Instance
 	---------------------------------------------------------------------*/
 #if _DEBUG
-	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, true, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, true, false, false);
 #else
-	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, false, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, false, false, false);
 #endif
 	_instance->LogAdapters();
 
@@ -82,7 +82,6 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	-      Create logical device
 	---------------------------------------------------------------------*/
 	_device = _adapter->CreateDevice();
-
 	/*-------------------------------------------------------------------
 	-      Get command queue (Graphics, compute, copy command queue )
 	---------------------------------------------------------------------*/
@@ -105,7 +104,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE
 	/*-------------------------------------------------------------------
 	-      Set up swapchain
 	---------------------------------------------------------------------*/
-	const core::WindowInfo    windowInfo = core::WindowInfo(Screen::GetScreenWidth(), Screen::GetScreenHeight(), _hwnd, _hInstance);
+	const core::WindowInfo    windowInfo = core::WindowInfo(Screen::GetScreenWidth(), Screen::GetScreenHeight(), hwnd, hInstance);
 	const core::SwapchainDesc swapchainDesc = 
 	{
 		.CommandQueue     = _commandQueues[CommandListType::Graphics],
@@ -182,9 +181,12 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 
 	// close graphics command list
 	const auto& graphicsCommandList = _commandLists[core::CommandListType::Graphics];
-	graphicsCommandList->EndRenderPass();
-	graphicsCommandList->CopyResource(_swapchain->GetBuffer(_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
-	graphicsCommandList->EndRecording();
+	if (graphicsCommandList->IsOpen())
+	{
+		graphicsCommandList->EndRenderPass();
+		graphicsCommandList->CopyResource(_swapchain->GetBuffer(_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
+		graphicsCommandList->EndRecording();
+	}
 
 	/*-------------------------------------------------------------------
 	-          Execute GPU Command
@@ -223,7 +225,7 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 std::uint64_t LowLevelGraphicsEngine::FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame)
 {
 	// set command lists
-	const auto commandList = _commandLists[type];
+	const auto& commandList = _commandLists[type];
 	
 	/*-------------------------------------------------------------------
 	-          Transit the recorded state into the executable state
@@ -259,7 +261,7 @@ std::uint64_t LowLevelGraphicsEngine::FlushGPUCommands(const rhi::core::CommandL
 
 void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU)
 {
-	const auto commandQueue = _commandQueues[type];
+	const auto& commandQueue = _commandQueues[type];
 
 	commandQueue->Wait(_fence, waitValue);    // gpu stop
 	if (stopCPU) { _fence->Wait(waitValue); } // cpu stop
@@ -282,16 +284,16 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 {
 	if (!(_width != newWidth || _height != newHeight)) { return; }
 
-	Screen::SetScreenWidth(newWidth);
-	Screen::SetScreenHeight(newHeight);
-	SetFrameBuffers(newWidth, newHeight);
+	Screen::SetScreenWidth((int)newWidth);
+	Screen::SetScreenHeight((int)newHeight);
+	SetFrameBuffers((int)newWidth, (int)newHeight);
 
 	_swapchain->Resize(newWidth, newHeight);
 
 	/*-------------------------------------------------------------------
 	-          Wait Graphics Queue
 	---------------------------------------------------------------------*/
-	const auto previousFrame    = _currentFrameIndex;
+	const std::uint32_t previousFrame = _currentFrameIndex;
 	_commandQueues[CommandListType::Graphics]->Signal(_fence, ++_fenceValue);
 	_fence->Wait(_fenceValue);
 
@@ -307,7 +309,6 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 	_fence->Wait(_fenceValue);
 
 }
-
 
 void LowLevelGraphicsEngine::BeginSwapchainRenderPass()
 {
@@ -336,17 +337,21 @@ void LowLevelGraphicsEngine::ShutDown()
 	/*-------------------------------------------------------------------
 	-      Clear render resouces
 	---------------------------------------------------------------------*/
-	if (_swapchain) { _swapchain.reset(); }
+	if (_swapchain) { _swapchain.Reset(); }
 	
+	for (auto& frameBuffer : _frameBuffers)
+	{
+		frameBuffer.Reset();
+	}
 	_frameBuffers.clear(); 
 	_frameBuffers.shrink_to_fit();
 
-	if (_renderPass) { _renderPass.reset(); }
+	if (_renderPass) { _renderPass.Reset(); }
 
 	/*-------------------------------------------------------------------
 	-      Clear command list
 	---------------------------------------------------------------------*/
-	if (_fence) { _fence.reset(); }
+	if (_fence) { _fence.Reset(); }
 	
 	_commandLists.clear(); 
 
@@ -356,9 +361,9 @@ void LowLevelGraphicsEngine::ShutDown()
 	-      Clear Device resources
 	---------------------------------------------------------------------*/
 	_device->Destroy();
-	if (_device)    { _device.reset(); }
-	if (_adapter)   { _adapter.reset(); }
-	if (_instance)  { _instance.reset(); }
+	if (_device)    { _device.Reset(); }
+	if (_adapter)   { _adapter.Reset(); }
+	if (_instance)  { _instance.Reset(); }
 
 	_hasCalledShutDown = true;
 }
@@ -381,17 +386,19 @@ void LowLevelGraphicsEngine::ShutDown()
 void LowLevelGraphicsEngine::SetUpHeap()
 {
 	core::DefaultHeapCount heapCount = {};
-	heapCount.CBVDescCount = CBV_DESC_COUNT;
+	heapCount.CBVDescCount = CBV_DESC_COUNT; 
 	heapCount.SRVDescCount = SRV_DESC_COUNT;
 	heapCount.UAVDescCount = UAV_DESC_COUNT;
 	heapCount.DSVDescCount = _apiVersion == APIVersion::DirectX12 ? DSV_DESC_COUNT : 0;
 	heapCount.RTVDescCount = _apiVersion == APIVersion::DirectX12 ? RTV_DESC_COUNT : 0;
+	heapCount.SamplerDescCount = MAX_SAMPLER_STATE;
 	_device->SetUpDefaultHeap(heapCount);
 
 }
 
 void LowLevelGraphicsEngine::SetUpFence()
 {
+	if (_fence) { _fence.Reset(); }
 	_fence = _device->CreateFence();
 	_fenceValue = 0;
 }
@@ -465,6 +472,7 @@ void LowLevelGraphicsEngine::SetFrameBuffers(const int width, const int height, 
 		/*-------------------------------------------------------------------
 		-      Create Frame Buffer
 		---------------------------------------------------------------------*/
+		if (_frameBuffers[i]) { _frameBuffers[i].Reset(); }
 		_frameBuffers[i] = _device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
 	}
 }

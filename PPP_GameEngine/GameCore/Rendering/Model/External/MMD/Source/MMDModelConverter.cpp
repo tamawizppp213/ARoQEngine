@@ -36,7 +36,7 @@ namespace
 bool PMXConverter::Load(const std::wstring& filePath, GameModelPtr model)
 {
 	if (model == nullptr)          { OutputDebugStringA("model is nullptr.");  return false; }
-	if (model->_engine == nullptr) { OutputDebugStringA("engine is nullptr"); return false; }
+	if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }
 
 	/*-------------------------------------------------------------------
 	-            PMXFile Load
@@ -62,7 +62,7 @@ bool PMXConverter::Load(const std::wstring& filePath, GameModelPtr model)
 bool PMDConverter::Load(const std::wstring& filePath, GameModelPtr model)
 {
 	if (model == nullptr)          { OutputDebugStringA("model is nullptr") ; return false; }
-	if (model->_engine == nullptr) { OutputDebugStringA("engine is nullptr"); return false; }
+	if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }
 	
 	/*-------------------------------------------------------------------
 	-            PMXFile Load
@@ -112,7 +112,7 @@ void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file
 	---------------------------------------------------------------------*/
 	const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.size(), MemoryHeap::Upload , ResourceState::Common, vertices.get());
 	const auto ibData = GPUBufferMetaData::IndexBuffer (sizeof(UINT32)            , file.Indices .size(), MemoryHeap::Default, ResourceState::Common, file.Indices.data());
-	model->_totalMesh = std::make_shared<Mesh>(model->_engine, vbData, ibData);	
+	model->_totalMesh = gu::MakeShared<Mesh>(model->_engine, vbData, ibData);	
 }
 
 /****************************************************************************
@@ -155,7 +155,7 @@ void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFil
 		GPUBufferMetaData bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1, MemoryHeap::Upload, ResourceState::Common, &pbrMaterial);
 
 		// material buffer
-		material = std::make_shared<Material>(model->_engine, bufferInfo, unicode::ToWString(file.Materials[i].MaterialName));
+		material = gu::MakeShared<Material>(model->_engine, bufferInfo, unicode::ToWString(file.Materials[i].MaterialName));
 
 		/*-------------------------------------------------------------------
 		-            Set up texture
@@ -172,11 +172,11 @@ void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFil
 		/*-------------------------------------------------------------------
 		-            Create mesh
 		---------------------------------------------------------------------*/
-		mesh = std::make_shared<Mesh>(model->_engine,
+		mesh = gu::MakeShared<Mesh>(model->_engine,
 			model->_totalMesh->GetVertexBuffers(),
 			model->_totalMesh->GetIndexBuffer(),
-			file.Materials[i].FaceIndicesCount,
-			indexOffset);
+			(std::uint64_t)file.Materials[i].FaceIndicesCount,
+			(std::uint32_t)indexOffset);
 
 		indexOffset += file.Materials[i].FaceIndicesCount;
 	}

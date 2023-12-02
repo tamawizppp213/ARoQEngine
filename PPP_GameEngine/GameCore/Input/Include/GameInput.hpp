@@ -14,7 +14,7 @@
 #include "GamePad.hpp"
 #include "Keyboard.hpp"
 #include "Mouse.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,14 +30,14 @@
 *****************************************************************************/
 class GameInput
 {
-	using KeyboardPtr = std::shared_ptr<Keyboard>;
-	using MousePtr    = std::shared_ptr<Mouse>;
-	using GamePadPtr  = std::shared_ptr<GamePad>;
+	using KeyboardPtr = gu::SharedPointer<Keyboard>;
+	using MousePtr    = gu::SharedPointer<Mouse>;
+	using GamePadPtr  = gu::SharedPointer<GamePad>;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	bool Initialize(HINSTANCE hInstance, HWND hwnd);
+	bool Initialize(void* hInstance, void* hwnd);
 	void Update();
 	void Finalize();
 	KeyboardPtr GetKeyboard() { return this->_keyboard; }

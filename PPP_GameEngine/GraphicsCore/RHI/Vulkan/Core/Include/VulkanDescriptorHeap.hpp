@@ -39,8 +39,11 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Allocate view. Return descriptor index*/
-		DescriptorID Allocate(const core::DescriptorHeapType heapType, const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override;
+		DescriptorID Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override;
 		
+		/* @brief : Free offset ID*/
+		void Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex) override;
+
 		/* @brief : Allocate max view count size heap*/
 		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
 		
@@ -53,8 +56,13 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) { return _resourceAllocator.GetDescriptorSet(id); }
+		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) 
+		{ 
+			return _resourceAllocator.GetDescriptorSet(id); 
+		}
 		
+		VkDescriptorPool GetVkDescriptorPool() { return _descriptorPool; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -62,7 +70,7 @@ namespace rhi::vulkan
 		
 		~RHIDescriptorHeap();
 		
-		explicit RHIDescriptorHeap(const std::shared_ptr<core::RHIDevice>& device);
+		explicit RHIDescriptorHeap(const gu::SharedPointer<core::RHIDevice>& device);
 	
 	protected:
 		/****************************************************************************

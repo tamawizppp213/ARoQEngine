@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
 #include <string>
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -46,13 +46,13 @@ namespace gc::ui
 	class UIRenderer : public NonCopyable
 	{
 	protected:
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using VertexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
-		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using ResourceViewPtr   = std::shared_ptr<rhi::core::GPUResourceView>;
-		using ImagePtr = std::shared_ptr<ui::Image>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using VertexBufferPtr   = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using IndexBufferPtr    = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using PipelineStatePtr  = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+		using ResourceLayoutPtr = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using ResourceViewPtr   = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using ImagePtr = gu::SharedPointer<ui::Image>;
 
 	public:
 		/****************************************************************************
@@ -61,7 +61,7 @@ namespace gc::ui
 		void Clear();
 
 		/* @brief : Add frame ui objects (image, text etc...)*/
-		void AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view);
+		//void AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view);
 		void AddFrameObjects(const std::vector<ui::Image>& images, const ResourceViewPtr& view);
 
 		/* @brief : Render all registered frame ui objects*/

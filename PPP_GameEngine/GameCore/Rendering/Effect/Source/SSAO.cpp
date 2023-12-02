@@ -20,6 +20,7 @@
 #include <iostream>
 #include "GameUtility/Math/Include/GMDistribution.hpp"
 #include "GameUtility/Math/Include/GMColor.hpp"
+#include "GameCore/Rendering/Effect/Include/Blur.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -63,6 +64,7 @@ SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& norma
 	PrepareVertexAndIndexBuffer(name);
 	PreparePipelineState(name);
 
+	_gaussianBlur = gu::MakeShared<gc::GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), false);
 }
 
 SSAO::~SSAO()
@@ -75,7 +77,7 @@ SSAO::~SSAO()
 #pragma region Main Function
 void SSAO::OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight)
 {
-	std::cout << "–¢ŽÀ‘•" << std::endl;
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 
 void SSAO::Draw(const ResourceViewPtr& scene)
@@ -115,19 +117,10 @@ void SSAO::Draw(const ResourceViewPtr& scene)
 	
 	// draw fullscreen quad
 	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
-
-	/*-------------------------------------------------------------------
-	-            Execute Blur
-	---------------------------------------------------------------------*/
-	// vertical blur
-	frameBuffer->GetRenderTargetSRV()->Bind(commandList, 6);
-	commandList->SetGraphicsPipeline(_blurPipeline);
-	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
-
-	//horizontal blur
-	_blurHorizontalModeView->Bind(commandList, 2);
-	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
 	commandList->EndRenderPass();
+	
+	// blur
+	_gaussianBlur->DrawPS(frameBuffer);
 }
 
 #pragma endregion Main Function
@@ -273,7 +266,7 @@ void SSAO::PrepareRandomTexture(const std::wstring& name)
 {
 	const auto device   = _engine->GetDevice();
 	const auto metaData = GPUTextureMetaData::Texture2D(256, 256, PixelFormat::R8G8B8A8_UNORM);
-	const auto texture  = device->CreateTexture(metaData, L"Random");
+	const auto texture  = device->CreateTexture(metaData, name + L"Random");
 	const auto pixel    = new RGBA[256 * 256];
 	Random<float> random;
 	random.SetRange(0.0f, 1.0f);

@@ -40,14 +40,14 @@ namespace rhi::vulkan
 		**                Public Member Variables
 		*****************************************************************************/
 		const VkAccelerationStructureInstanceKHR& GetDesc() const { return _instanceDesc; }
-		std::shared_ptr<vulkan::BLASBuffer> GetVkBLASBuffer() const noexcept { return std::static_pointer_cast<vulkan::BLASBuffer>(_blasBuffer); }
+		gu::SharedPointer<vulkan::BLASBuffer> GetVkBLASBuffer() const noexcept { return gu::StaticPointerCast<vulkan::BLASBuffer>(_blasBuffer); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		ASInstance() = default;
 		~ASInstance();
-		ASInstance(const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr<core::BLASBuffer>& blasBuffer,
+		ASInstance(const gu::SharedPointer<core::RHIDevice>& device,
+			const gu::SharedPointer<core::BLASBuffer>& blasBuffer,
 			const gm::Float3x4& blasTransform,
 			const std::uint32_t instanceID,
 			const std::uint32_t instanceContributionToHitGroupIndex,

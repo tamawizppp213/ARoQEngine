@@ -31,12 +31,12 @@ using namespace rhi::core;
 SkyDome::SkyDome() {};
 SkyDome::~SkyDome()
 {
-	_skyObject.reset();
+	_skyObject.Reset();
 	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
 	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
 	_resourceViews.clear(); _resourceViews.shrink_to_fit();
-	_resourceLayout.reset();
-	_pipeline.reset();
+	_resourceLayout.Reset();
+	_pipeline.Reset();
 }
 #pragma region Constructor and Destructor 
 SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cubeMapPath, const std::wstring& addName)
@@ -214,7 +214,7 @@ void SkyDome::PreparePipelineState(const std::wstring& addName)
 	_pipeline->SetName(addName + L"PSO");
 }
 
-void SkyDome::PrepareResourceView(const std::shared_ptr<GPUTexture>& texture)
+void SkyDome::PrepareResourceView(const gu::SharedPointer<GPUTexture>& texture)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);

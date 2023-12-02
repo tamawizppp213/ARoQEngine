@@ -42,7 +42,7 @@ SampleText::~SampleText()
 *  @param[in] const GameTimerPtr& gameTimer
 *  @return Å@Å@void
 *****************************************************************************/
-void SampleText::Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer)
+void SampleText::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer)
 {
 	Scene::Initialize(engine, gameTimer);
 }
@@ -67,7 +67,7 @@ void SampleText::Update()
 		.Space = {0.0f, 0.0f},
 		.Color = {gm::Sin(_gameTimer->TotalTime()),gm::Cos(_gameTimer->TotalTime()),1,1}
 	};
-	_text = std::make_shared<Text>(CoordinateType::NDC, _font, info);
+	_text = gu::MakeShared<Text>(CoordinateType::NDC, _font, info);
 
 	_renderer->Clear();
 	_renderer->AddFrameObjects(_text->GetTextImages(), _text->GetFontView());
@@ -106,8 +106,8 @@ void SampleText::Draw()
 *****************************************************************************/
 void SampleText::Terminate()
 {
-	_resourceView.reset();
-	_resourceCache.reset();
+	_resourceView.Reset();
+	_resourceCache.Reset();
 }
 #pragma endregion Public Function
 
@@ -133,18 +133,18 @@ void SampleText::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-             SetUp Resources
 	---------------------------------------------------------------------*/
-	_font = std::make_shared<Font>(_engine, L"Resources/Font/GennokakuEnglish.png", gm::Float2(35.0f, 64.0f), 3325.0f);
+	_font = gu::MakeShared<Font>(_engine, L"Resources/Font/GennokakuEnglish.png", gm::Float2(35.0f, 64.0f), 3325.0f);
 	// Create image sprite
 	StringInfo info = { .String = "Text Sample", .SizePerChar = {0.1f, 0.15f}, .StartPosition = {-0.6f, 0.0f, 1.0f}, .Space = 0.0f, .Color = {1,1,1,1} };
-	_text = std::make_shared<Text>(CoordinateType::NDC, _font, info);
+	_text = gu::MakeShared<Text>(CoordinateType::NDC, _font, info);
 
 	// Create Texture
-	_resourceCache = std::make_shared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
+	_resourceCache = gu::MakeShared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
 	_resourceView  = _resourceCache->Load(L"Resources/BackGround2.png");
 	_resourceCache->Load(L"Resources/Cubemap.jpg");
 
 	// Create UI Renderer
-	_renderer = std::make_unique<gc::ui::UIRenderer>(_engine);
+	_renderer = gu::MakeShared<gc::ui::UIRenderer>(_engine);
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

@@ -65,7 +65,8 @@ void IESProfiler::LoadLamp(const std::wstring& name)
 	while (true)
 	{
 		// end of stream check
-		if (!stream) { break; }
+		if (!stream)      { break; }
+		if (stream.eof()) { break; }
 		
 		// Skip this file until founding information on the light source 
 		// Additional information is ignored.
@@ -166,9 +167,9 @@ void IESProfiler::SetUpTexture()
 
 bool IESProfiler::IsProperIESFormat(const std::string& formatName)
 {
-	if (formatName == "IESNA:LM-63-2002") { return true; }
-	if (formatName == "IESNA:LM-63-1995") { return true; }
-	
+	if (formatName == "IESNA:LM-63-2002") { _version = IESVersion::IES_2002; return true; }
+	if (formatName == "IESNA:LM-63-1995") { _version = IESVersion::IES_1995; return true; }
+	if (formatName == "IESNA91")          { _version = IESVersion::IES_1991; return true; }
 	return false;
 }
 #pragma endregion Main Function

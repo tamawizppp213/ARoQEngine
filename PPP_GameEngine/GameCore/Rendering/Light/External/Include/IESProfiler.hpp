@@ -64,6 +64,7 @@ namespace gc::rendering
 		*****************************************************************************/
 		Lamp _lamp = {};
 
+		IESVersion _version = IESVersion::IES_1986;
 	private:
 		/****************************************************************************
 		**                Protected Function

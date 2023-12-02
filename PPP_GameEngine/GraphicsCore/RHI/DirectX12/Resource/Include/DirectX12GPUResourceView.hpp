@@ -38,7 +38,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		/* @brief : Bind resource layout array index to the command list.
 					index : resource layout array index*/
-		void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) override;
+		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index, const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -54,23 +54,23 @@ namespace rhi::directX12
 
 		~GPUResourceView();
 
-		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
+		explicit GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr);
 		
-		explicit GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr);
+		explicit GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr);
 	
 	private:
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-		void CreateView(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // According to view type flag, create each view. 
-		void CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // shader resource view
-		void CreateRAS(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // raytracing acceleration structure
-		void CreateUAV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // unordered access view
-		void CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // render target view
-		void CreateDSV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // depth stencil view
-		void CreateCBV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap); // constant buffer view
+		void CreateView(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap); // According to view type flag, create each view. 
+		void CreateSRV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap); // shader resource view
+		void CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap); // raytracing acceleration structure
+		void CreateUAV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap); // unordered access view
+		void CreateRTV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap); // render target view
+		void CreateDSV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap); // depth stencil view
+		void CreateCBV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap); // constant buffer view
 
-		const std::shared_ptr<directX12::RHIDescriptorHeap> SelectDescriptorHeap(const core::ResourceViewType type);
+		const gu::SharedPointer<directX12::RHIDescriptorHeap> SelectDescriptorHeap(const core::ResourceViewType type);
 		
 		/****************************************************************************
 		**                Private Member Variables

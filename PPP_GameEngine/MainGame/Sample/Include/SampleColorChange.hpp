@@ -25,6 +25,8 @@ namespace gc
 	class GaussianBlur;
 	class Dof;
 	class Mosaic;
+	class Vignette;
+	class WhiteBalance;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,17 +43,19 @@ namespace sample
 	*****************************************************************************/
 	class SampleColorChange : public Scene
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr  = std::shared_ptr<gc::Camera>;
-		using ColorChangePtr  = std::shared_ptr<gc::ColorChange>;
-		using GaussianBlurPtr = std::shared_ptr<gc::GaussianBlur>;
-		using MosaicPtr = std::shared_ptr<gc::Mosaic>;
+		using SkyDomePtr = gu::SharedPointer<gc::SkyDome>;
+		using CameraPtr  = gu::SharedPointer<gc::Camera>;
+		using ColorChangePtr  = gu::SharedPointer<gc::ColorChange>;
+		using GaussianBlurPtr = gu::SharedPointer<gc::GaussianBlur>;
+		using MosaicPtr = gu::SharedPointer<gc::Mosaic>;
+		using VignettePtr = gu::SharedPointer<gc::Vignette>;
+		using WhiteBalancePtr = gu::SharedPointer<gc::WhiteBalance>;
 		
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
+		void Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer) override;
 		void Update() override;
 		void Draw() override;
 		void Terminate() override;
@@ -85,9 +89,15 @@ namespace sample
 
 		MosaicPtr _mosaic = nullptr;
 
+		VignettePtr _vignette = nullptr;
+
+		WhiteBalancePtr _whiteBalance = nullptr;
+
 		bool _useBlur = false;
 		bool _useMosaic = false;
-
+		bool _useVignette = false;
+		bool _useWhiteBalance = false;
+		bool _useScreenSpaceReflection = false;
 
 		std::uint32_t _colorIndex = 0;
 	};

@@ -71,7 +71,7 @@ namespace rhi::core
 		virtual ~GPUDepthStencilState() = default;
 
 		explicit GPUDepthStencilState(
-			const std::shared_ptr<rhi::core::RHIDevice>& device,
+			const gu::SharedPointer<rhi::core::RHIDevice>& device,
 			const DepthStencilProperty& depthStencilProperty
 		) : GPUState(device), _property(depthStencilProperty){ };
 		

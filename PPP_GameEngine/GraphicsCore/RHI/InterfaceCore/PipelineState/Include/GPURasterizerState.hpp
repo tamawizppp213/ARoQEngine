@@ -61,7 +61,7 @@ namespace rhi::core
 		virtual ~GPURasterizerState() = default;
 
 		explicit GPURasterizerState(
-			const std::shared_ptr<RHIDevice>& device,
+			const gu::SharedPointer<RHIDevice>& device,
 			const RasterizerProperty& rasterizerProperty) 
 			: GPUState(device), _property(rasterizerProperty) { };
 	

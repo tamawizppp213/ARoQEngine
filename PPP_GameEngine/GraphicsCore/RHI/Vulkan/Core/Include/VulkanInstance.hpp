@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIInstance.hpp"
+#include "VulkanHelper.hpp"
 #include <vulkan/vulkan.h>
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,21 +30,20 @@ namespace rhi::vulkan
 	*  @class     RHIInstance
 	*  @brief     Select device api and display adapter
 	*****************************************************************************/
-	class RHIInstance : public core::RHIInstance
+	class RHIInstance : public core::RHIInstance, public gu::EnableSharedFromThis<RHIInstance>
 	{
 	public:
-		
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
 		/* return all available display adapter*/
-		std::vector<std::shared_ptr<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
 		
 		/*vulkan : dGPU (not : first select gpu) */
-		std::shared_ptr<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		gu::SharedPointer<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
 		
 		/*vulkan : iGPU (not : first select gpu) */
-		std::shared_ptr<core::RHIDisplayAdapter> SearchMinimumPowerAdapter() override;
+		gu::SharedPointer<core::RHIDisplayAdapter> SearchMinimumPowerAdapter() override;
 		
 		/* OutputDebugString : adapter list*/
 		void LogAdapters() override;
@@ -53,12 +53,18 @@ namespace rhi::vulkan
 		VkInstance       GetVkInstance()       { return _instance; }
 		
 		const VkInstance GetVkInstance() const { return _instance; }
-		
-		/* Checks if the given extension is enabled in the VkInstance. */
-		bool IsEnabledExtension(const std::string& extensionName) const;
 
-		std::uint32_t GetVkAPIVersion() const { return _vulkanAPIVersion; }
-	
+		std::vector<VkLayerProperties> GetInstanceLayers() const;
+
+		// Vulkan version check. 
+		bool MeetRequiredVersion(const std::uint32_t major, const std::uint32_t minor, const std::uint32_t patch = 0)
+		{
+			return VK_MAKE_VERSION(_majorVersion, _minorVersion, _patchVersion) >= VK_MAKE_VERSION(major, minor, patch);
+		}
+		std::uint32_t GetVkAPIVersion() const { return VK_MAKE_VERSION(_majorVersion, _minorVersion, _patchVersion); }
+		std::uint32_t GetVkMajorVersion() const { return _majorVersion; }
+		std::uint32_t GetVkMinorVersion() const { return _minorVersion; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -66,21 +72,26 @@ namespace rhi::vulkan
 
 		~RHIInstance();
 
-		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger);
+		RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak);
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		bool CheckValidationLayerSupport(); // check enable cpu and gpu debugger
 		
-		std::shared_ptr<core::RHIDisplayAdapter> SearchAdapter(const VkPhysicalDeviceType deviceType);
+		gu::SharedPointer<core::RHIDisplayAdapter> SearchAdapter(const VkPhysicalDeviceType deviceType);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		VkInstance               _instance         = nullptr;
 		VkDebugUtilsMessengerEXT _debugMessenger   = nullptr;
 		std::vector<const char*> _instanceLayers   = {};
-		std::uint32_t            _vulkanAPIVersion = VK_API_VERSION_1_3; // newest version
+		
+		// current version
+		std::uint32_t _majorVersion = 0;
+		std::uint32_t _minorVersion = 0;
+		std::uint32_t _patchVersion = 0;
 	
 	private:
 		/****************************************************************************
@@ -90,7 +101,17 @@ namespace rhi::vulkan
 		std::vector<std::string>      AcquireExtensionList();
 
 		std::vector<VkPhysicalDevice> EnumratePhysicalDevices();
-		
+
+		// push back name array list
+		VkResult FillFilteredNameArray(std::vector<std::string>& used, 
+			const std::vector<VkLayerProperties>& properties, 
+			const std::vector<Entry>& requestedLayers);
+
+		VkResult FillFilteredNameArray(std::vector<std::string>& used,
+			const std::vector<VkExtensionProperties>& properties,
+			const std::vector<Entry>& requested,
+			std::vector<void*>& featureStructs);
+
 		// debugging
 		void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 	};

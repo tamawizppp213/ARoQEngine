@@ -21,7 +21,7 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUSampler::GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo)
+GPUSampler::GPUSampler(const gu::SharedPointer<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo)
 	: core::GPUSampler(device, samplerInfo)
 {
 	const VkSamplerCreateInfo createInfo = 
@@ -46,7 +46,7 @@ GPUSampler::GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const cor
 		.unnormalizedCoordinates = false                                                              // Always normalize (0.0f Å` 1.0f)
 	};
 
-	const auto vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
+	const auto vkDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 	if (vkCreateSampler(vkDevice, &createInfo, nullptr, &_sampler) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to create sampler state");
@@ -55,6 +55,6 @@ GPUSampler::GPUSampler(const std::shared_ptr<core::RHIDevice>& device, const cor
 
 GPUSampler::~GPUSampler()
 {
-	const auto vkDevice = std::static_pointer_cast<RHIDevice>(_device)->GetDevice();
+	const auto vkDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 	vkDestroySampler(vkDevice, _sampler, nullptr);
 }

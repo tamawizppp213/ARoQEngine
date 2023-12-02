@@ -23,7 +23,7 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
+GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
 	:core::GPUBuffer(device, metaData, name)
 {
 	/*-------------------------------------------------------------------
@@ -58,7 +58,7 @@ GPUBuffer::GPUBuffer(const std::shared_ptr<core::RHIDevice>& device, const core:
 	/*-------------------------------------------------------------------
 	-           Create
 	---------------------------------------------------------------------*/
-	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
+	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get())->GetDevice();
 	ThrowIfFailed(dxDevice->CreateCommittedResource(
 		&heapProp, D3D12_HEAP_FLAG_NONE, &resourceDesc,
 		EnumConverter::Convert(metaData.State),                                          // Generic Read
@@ -155,10 +155,10 @@ void GPUBuffer::SetName(const std::wstring& name)
 	ThrowIfFailed(_resource->SetName(name.c_str()));
 }
 
-void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandList>& copyCommandList)
+void GPUBuffer::Pack(const void* data, const gu::SharedPointer<core::RHICommandList>& copyCommandList)
 {
 
-	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.get())->GetDevice();
+	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get())->GetDevice();
 	if ((!_metaData.IsCPUAccessible()))
 	{
 #if _DEBUG
@@ -192,7 +192,7 @@ void GPUBuffer::Pack(const void* data, const std::shared_ptr<core::RHICommandLis
 		/*-------------------------------------------------------------------
 		-      Schedule to copy the data to the default buffer resource
 		---------------------------------------------------------------------*/
-		const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(copyCommandList)->GetCommandList();
+		const auto dxCommandList = gu::StaticPointerCast<directX12::RHICommandList>(copyCommandList)->GetCommandList();
 		const auto beforeState = EnumConverter::Convert(_metaData.State);
 		const auto before      = BARRIER::Transition(_resource.Get(), beforeState, D3D12_RESOURCE_STATE_COPY_DEST);
 		

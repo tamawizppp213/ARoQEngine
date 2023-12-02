@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -38,8 +38,8 @@ namespace rhi::core
 	class RHIFrameBuffer : public NonCopyable
 	{
 	protected:
-		using TexturePtr      = std::shared_ptr<GPUTexture>;
-		using ResourceViewPtr = std::shared_ptr<GPUResourceView>;
+		using TexturePtr      = gu::SharedPointer<GPUTexture>;
+		using ResourceViewPtr = gu::SharedPointer<GPUResourceView>;
 	public:
 		/****************************************************************************
 		**                Public Function
@@ -101,15 +101,15 @@ namespace rhi::core
 
 		virtual ~RHIFrameBuffer();
 
-		explicit RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<GPUTexture>>& renderTargets, const std::shared_ptr<GPUTexture>& depthStencil = nullptr);
+		explicit RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr);
 
-		explicit RHIFrameBuffer(const std::shared_ptr<RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<GPUTexture>& renderTarget, const std::shared_ptr<GPUTexture>& depthStencil = nullptr);
+		explicit RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr);
 		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice>     _device     = nullptr;
-		std::shared_ptr<RHIRenderPass> _renderPass = nullptr;
+		gu::SharedPointer<RHIDevice>     _device     = nullptr;
+		gu::SharedPointer<RHIRenderPass> _renderPass = nullptr;
 
 		std::vector<TexturePtr>      _renderTargets     = {nullptr};
 		std::vector<ResourceViewPtr> _renderTargetViews = {nullptr};

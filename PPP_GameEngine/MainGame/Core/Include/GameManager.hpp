@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "SceneManager.hpp"
-#include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
+#include "Engine/Public/Include/PPPEngine.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,15 +33,16 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void GameStart(rhi::core::APIVersion apiVersion, const std::shared_ptr<GameTimer>& gameTimer, HWND hwnd, HINSTANCE hInstance);
-	void GameMain();
+	void GameStart(const engine::setting::StartUpParameters& parameters);
+	void GameUpdateMain();
+	void GameDrawMain();
 	void GameEnd();
 
 	/****************************************************************************
 	**                Public Member Variables
 	*****************************************************************************/
-	void SetHWND(HWND hwnd);
-	std::shared_ptr<LowLevelGraphicsEngine> GetGraphicsEngine() { return _engine; }
+	gu::SharedPointer<PPPEngine> GetEngine() const { return _engine; }
+	gu::SharedPointer<LowLevelGraphicsEngine> GetGraphicsEngine() { return _engine->GetLowLevelGraphics(); }
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -71,7 +72,7 @@ private:
 	**                Private Member Variables
 	*****************************************************************************/
 	SceneManager& _sceneManager = SceneManager::Instance();
-	std::shared_ptr<LowLevelGraphicsEngine> _engine;
+	gu::SharedPointer<PPPEngine> _engine = nullptr;
 	HWND _mainWindow = nullptr;
 };
 #endif

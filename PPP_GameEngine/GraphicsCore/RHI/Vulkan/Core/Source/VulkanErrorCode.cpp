@@ -21,5 +21,5 @@ using namespace rhi::vulkan::error;
 //////////////////////////////////////////////////////////////////////////////////
 void rhi::vulkan::error::Log(VkResult result)
 {
-
+	printf("%d", (int)result);
 }

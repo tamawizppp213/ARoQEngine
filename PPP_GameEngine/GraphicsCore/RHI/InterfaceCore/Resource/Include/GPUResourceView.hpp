@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +29,7 @@ namespace rhi::core
 	class GPUBuffer;
 	class GPUTexture;
 	class RHIDescriptorHeap;
+	class RHIResourceLayout;
 	/****************************************************************************
 	*				  			GPUResourceView
 	*************************************************************************//**
@@ -44,13 +45,13 @@ namespace rhi::core
 		*****************************************************************************/
 		/* @brief : Bind resource layout array index to the command list.
 		            index : resource layout array index*/
-		virtual void Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index) = 0;
+		virtual void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index, const gu::SharedPointer<RHIResourceLayout>& layout = nullptr) = 0;
 		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		/* @brief: Return descriptor heap pointer. */
-		std::shared_ptr<core::RHIDescriptorHeap> GetHeap() const noexcept { return _heap; };
+		gu::SharedPointer<core::RHIDescriptorHeap> GetHeap() const noexcept { return _heap; };
 		
 		/* @brief: Return resource view type*/
 		core::ResourceViewType GetResourceViewType() const noexcept { return _resourceViewType; }
@@ -59,16 +60,16 @@ namespace rhi::core
 		std::uint32_t GetDescriptorID() const { return _descriptorID; }
 
 		/* @brief: Return texture pointer or nullptr */
-		std::shared_ptr<GPUTexture> GetTexture() const noexcept{ return _texture; }
+		gu::SharedPointer<GPUTexture> GetTexture() const noexcept{ return _texture; }
 
 		/* @brief : Return buffer pointer or nullptr*/
-		std::shared_ptr<GPUBuffer> GetBuffer() const noexcept { return _buffer; }
+		gu::SharedPointer<GPUBuffer> GetBuffer() const noexcept { return _buffer; }
 
 		/* @brief : Set texture*/
-		void SetTexture(const std::shared_ptr<GPUTexture>& texture) { _texture = texture; }
+		void SetTexture(const gu::SharedPointer<GPUTexture>& texture) { _texture = texture; }
 
 		/* @brief : Set buffer*/
-		void SetBuffer(const std::shared_ptr<GPUBuffer>& buffer) { _buffer = buffer; }
+		void SetBuffer(const gu::SharedPointer<GPUBuffer>& buffer) { _buffer = buffer; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -82,7 +83,7 @@ namespace rhi::core
 
 		virtual ~GPUResourceView() = default;
 
-		explicit GPUResourceView(const std::shared_ptr<RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap = nullptr) : _device(device), _resourceViewType(type), _heap(customHeap) {};
+		explicit GPUResourceView(const gu::SharedPointer<RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) : _device(device), _resourceViewType(type), _heap(customHeap) {};
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -90,13 +91,13 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice>  _device = nullptr;
+		gu::SharedPointer<RHIDevice>  _device = nullptr;
 
-		std::shared_ptr<GPUBuffer>  _buffer = nullptr;
+		gu::SharedPointer<GPUBuffer>  _buffer = nullptr;
 
-		std::shared_ptr<GPUTexture> _texture = nullptr;
+		gu::SharedPointer<GPUTexture> _texture = nullptr;
 
-		std::shared_ptr<RHIDescriptorHeap> _heap = nullptr;
+		gu::SharedPointer<RHIDescriptorHeap> _heap = nullptr;
 
 		core::ResourceViewType      _resourceViewType = core::ResourceViewType::Unknown;
 		

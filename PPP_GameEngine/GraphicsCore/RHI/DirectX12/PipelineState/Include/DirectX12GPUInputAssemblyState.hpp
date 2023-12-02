@@ -49,7 +49,7 @@ namespace rhi::directX12
 		~GPUInputAssemblyState() = default;
 		
 		explicit GPUInputAssemblyState(
-			const std::shared_ptr<rhi::core::RHIDevice>& device, 
+			const gu::SharedPointer<rhi::core::RHIDevice>& device, 
 			const std::vector<core::InputLayoutElement>& elements, 
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList);
 

@@ -29,7 +29,7 @@ namespace rhi::directX12
 	*  @class     RHIDisplayAdapter
 	*  @brief     Physical Device (adapter), Describe gpu information
 	*****************************************************************************/
-	class RHIDisplayAdapter : public core::RHIDisplayAdapter
+	class RHIDisplayAdapter : public core::RHIDisplayAdapter, public gu::EnableSharedFromThis<RHIDisplayAdapter>
 	{
 	public:
 
@@ -37,7 +37,7 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		/* return logical device shared pointer. frame count is used for the command allocators*/
-		std::shared_ptr<core::RHIDevice> CreateDevice() override;
+		gu::SharedPointer<core::RHIDevice> CreateDevice() override;
 
 		/* Describe physical device name and spec */
 		void PrintInfo() override;
@@ -50,7 +50,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		RHIDisplayAdapter(const std::shared_ptr<core::RHIInstance>& instance, const AdapterComPtr& adapter);
+		RHIDisplayAdapter(const gu::SharedPointer<core::RHIInstance>& instance, const AdapterComPtr& adapter);
 
 		~RHIDisplayAdapter();
 	protected:

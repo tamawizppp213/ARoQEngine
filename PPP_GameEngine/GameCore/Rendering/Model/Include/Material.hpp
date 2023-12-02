@@ -16,7 +16,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <string>
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -53,17 +53,17 @@ namespace gc::core
 	*****************************************************************************/
 	class Material : public NonCopyable
 	{
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using GPUBufferPtr              = std::shared_ptr<rhi::core::GPUBuffer>;
-		using GPUResourceViewPtr        = std::shared_ptr<rhi::core::GPUResourceView>;
-		using RHIDescriptorHeapPtr      = std::shared_ptr<rhi::core::RHIDescriptorHeap>;
-		using GPUResourceCachePtr       = std::shared_ptr<rhi::core::GPUResourceCache>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using GPUBufferPtr              = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using GPUResourceViewPtr        = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using RHIDescriptorHeapPtr      = gu::SharedPointer<rhi::core::RHIDescriptorHeap>;
+		using GPUResourceCachePtr       = gu::SharedPointer<rhi::core::GPUResourceCache>;
 		
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Bind(const std::shared_ptr<rhi::core::RHICommandList>& graphicsCommandList, const std::uint32_t frameIndex, 
+		virtual void Bind(const gu::SharedPointer<rhi::core::RHICommandList>& graphicsCommandList, const std::uint32_t frameIndex, 
 			const std::uint32_t materialID, // bind material constant buffer id
 			const std::vector<std::uint32_t>& textureIDs
 		);

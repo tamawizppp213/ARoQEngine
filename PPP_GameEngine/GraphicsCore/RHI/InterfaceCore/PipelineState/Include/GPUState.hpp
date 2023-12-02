@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ namespace rhi::core
 
 		virtual ~GPUState() = default;
 
-		explicit GPUState(const std::shared_ptr<RHIDevice>& device) : _device(device) {};
+		explicit GPUState(const gu::SharedPointer<RHIDevice>& device) : _device(device) {};
 		
 		/****************************************************************************
 		**                Protected Function
@@ -61,7 +61,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::shared_ptr<RHIDevice>  _device = nullptr;
+		gu::SharedPointer<RHIDevice>  _device = nullptr;
 	};
 
 }

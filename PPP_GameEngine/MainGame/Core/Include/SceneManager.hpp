@@ -13,6 +13,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "Scene.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <memory>
 #include <stack>
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,13 +35,13 @@ class SceneManager
 {
 	using SceneUniquePtr = std::unique_ptr<Scene>;
 	using ScenePtr       = Scene*;
-	using GameTimerPtr   = std::shared_ptr<GameTimer>;
-	using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
+	using GameTimerPtr   = gu::SharedPointer<GameTimer>;
+	using PPPEnginePtr   = gu::SharedPointer<PPPEngine>;
 public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void StartUp(LowLevelGraphicsEnginePtr engine, const GameTimerPtr& gameTimer);
+	void StartUp(PPPEnginePtr& engine, const GameTimerPtr& gameTimer);
 	void TransitScene(ScenePtr scene);
 	void CallSceneInitialize(const GameTimerPtr& gameTimer);
 	void CallSceneUpdate();
@@ -81,7 +82,7 @@ private:
 	*****************************************************************************/
 	std::stack<SceneUniquePtr> _currentScene;
 	GameTimerPtr _gameTimer = nullptr;
-	std::shared_ptr<LowLevelGraphicsEngine> _engine;
+	PPPEnginePtr _engine = nullptr;
 };
 
 #endif

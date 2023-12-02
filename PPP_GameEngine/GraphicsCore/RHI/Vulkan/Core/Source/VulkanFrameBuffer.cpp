@@ -26,12 +26,12 @@ using namespace rhi;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::vector<std::shared_ptr<core::GPUTexture>>& renderTargets, const std::shared_ptr<core::GPUTexture>& depthStencil)
+RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
 	: core::RHIFrameBuffer(device, renderPass, renderTargets, depthStencil)
 {
 	Prepare();
 }
-RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::GPUTexture>& renderTarget, const std::shared_ptr<core::GPUTexture>& depthStencil)
+RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil)
 	:core::RHIFrameBuffer(device, renderPass, renderTarget, depthStencil)
 {
 	Prepare();
@@ -40,7 +40,7 @@ RHIFrameBuffer::RHIFrameBuffer(const std::shared_ptr<core::RHIDevice>& device, c
 RHIFrameBuffer::~RHIFrameBuffer()
 {
 	VkDevice vkDevice = nullptr;
-	vkDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device)->GetDevice();
+	vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 	vkDestroyFramebuffer(vkDevice, _frameBuffer, nullptr);
 }
 #pragma endregion Constructor and Destructor
@@ -59,7 +59,7 @@ RHIFrameBuffer::~RHIFrameBuffer()
 *****************************************************************************/
 void RHIFrameBuffer::Prepare()
 {
-	const auto rhiDevice = std::static_pointer_cast<vulkan::RHIDevice>(_device);
+	const auto rhiDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	VkDevice    vkDevice = rhiDevice->GetDevice();
 
 	/*-------------------------------------------------------------------
@@ -74,7 +74,7 @@ void RHIFrameBuffer::Prepare()
 		_renderTargetSRVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _renderTargets[index], nullptr);
 		_renderTargetUAVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::RWTexture   , _renderTargets[index], nullptr);
 
-		imageViews[index] = std::static_pointer_cast<vulkan::GPUResourceView>(_renderTargetViews[index])->GetImageView();
+		imageViews[index] = gu::StaticPointerCast<vulkan::GPUResourceView>(_renderTargetViews[index])->GetImageView();
 
 		// set rener target size
 		_width  = std::max(_width , _renderTargets[index]->GetWidth());
@@ -82,13 +82,13 @@ void RHIFrameBuffer::Prepare()
 	}
 
 	// Depth Stencil
-	if (_depthStencil != nullptr)
+	if (_depthStencil)
 	{
 		// set up depth stencil resource view
 		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil, _depthStencil, nullptr);
 		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _depthStencil, nullptr);
 
-		const auto vkDepthStancilView = std::static_pointer_cast<vulkan::GPUResourceView>(_depthStencilView);
+		const auto vkDepthStancilView = gu::StaticPointerCast<vulkan::GPUResourceView>(_depthStencilView);
 		imageViews.push_back(vkDepthStancilView->GetImageView());
 	}
 
@@ -104,7 +104,7 @@ void RHIFrameBuffer::Prepare()
 		.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
 		.pNext           = nullptr,
 		.flags           = 0,
-		.renderPass      = std::static_pointer_cast<vulkan::RHIRenderPass>(_renderPass)->GetRenderPass(),
+		.renderPass      = gu::StaticPointerCast<vulkan::RHIRenderPass>(_renderPass)->GetRenderPass(),
 		.attachmentCount = static_cast<std::uint32_t>(imageViews.size()),
 		.pAttachments    = imageViews.data(),
 		.width           = static_cast<std::uint32_t>(_width),

@@ -30,7 +30,7 @@ namespace rhi::vulkan
 	*  @class     TemplateClass
 	*  @brief     temp
 	*****************************************************************************/
-	class RHICommandList : public rhi::core::RHICommandList
+	class RHICommandList : public rhi::core::RHICommandList, public gu::EnableSharedFromThis<RHICommandList>
 	{
 	public:
 		/****************************************************************************
@@ -42,20 +42,22 @@ namespace rhi::vulkan
 		
 		void EndRecording () override;  // end call   at draw frame
 		
-		void BeginRenderPass(const std::shared_ptr<core::RHIRenderPass>& renderPass, const std::shared_ptr<core::RHIFrameBuffer>& frameBuffer) override;
+		void BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer) override;
 		
 		void EndRenderPass() override;
 		
 		/* @brief : Proceed to the record state.*/
-		void Reset(const std::shared_ptr<core::RHICommandAllocator>& changeAllocator) override {};
+		void Reset(const gu::SharedPointer<core::RHICommandAllocator>& changeAllocator) override {};
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/
-		void SetDescriptorHeap(const std::shared_ptr<core::RHIDescriptorHeap>& heap) override {};
+		void SetDepthBounds(const float minDepth, const float maxDepth) override {};
+
+		void SetDescriptorHeap(const gu::SharedPointer<core::RHIDescriptorHeap>& heap) override {};
 		
-		void SetResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& layout) override;
+		void SetResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& layout) override;
 		
-		void SetGraphicsPipeline(const std::shared_ptr<core::GPUGraphicsPipelineState>& pipeline);
+		void SetGraphicsPipeline(const gu::SharedPointer<core::GPUGraphicsPipelineState>& pipeline);
 		
 		void SetPrimitiveTopology(const core::PrimitiveTopology topology) override;
 		
@@ -67,32 +69,41 @@ namespace rhi::vulkan
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
-		void SetComputePipeline(const std::shared_ptr<core::GPUComputePipelineState>& pipeline) override {};
+		void SetComputePipeline(const gu::SharedPointer<core::GPUComputePipelineState>& pipeline) override {};
 		
-		void SetVertexBuffer (const std::shared_ptr<core::GPUBuffer>& buffer) override;
+		void SetVertexBuffer (const gu::SharedPointer<core::GPUBuffer>& buffer) override;
 		
-		void SetVertexBuffers(const std::vector<std::shared_ptr<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
+		void SetVertexBuffers(const std::vector<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
 		
-		void SetIndexBuffer  (const std::shared_ptr<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
+		void SetIndexBuffer  (const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
 		
 		void DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0)override;
 		
 		void DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0, std::uint32_t startInstanceLocation = 0)override;
 		
+		/*----------------------------------------------------------------------
+		*  @brief :インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です
+		/*----------------------------------------------------------------------*/
+		void DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const std::uint32_t drawCallCount) override {};
+
+		/*----------------------------------------------------------------------
+		*  @brief :Mesh shaderで使用する描画関数です.
+		/*----------------------------------------------------------------------*/
+		void DispatchMesh(const std::uint32_t threadGroupCountX = 1, const std::uint32_t threadGroupCountY = 1, const std::uint32_t threadGroupCountZ = 1) override {};
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/
-		void SetComputeResourceLayout(const std::shared_ptr<core::RHIResourceLayout>& resourceLayout) override{};
+		void SetComputeResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override{};
 		
 		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1)override;
 		/*-------------------------------------------------------------------
 		-                Transition Resource State
 		---------------------------------------------------------------------*/
-		void TransitionResourceState(const std::shared_ptr<core::GPUTexture>& texture, core::ResourceState after) override;
+		void TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after) override;
 		
-		void TransitionResourceStates(const std::uint32_t numStates, const std::shared_ptr<core::GPUTexture>* textures, core::ResourceState* afters) override;
+		void TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override;
 		
-		void CopyResource(const std::shared_ptr<core::GPUTexture>& dest, const std::shared_ptr<core::GPUTexture>& source) override {};;
+		void CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source) override {};;
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -108,8 +119,8 @@ namespace rhi::vulkan
 		~RHICommandList();
 		
 		explicit RHICommandList(
-			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr<core::RHICommandAllocator>& allocator,
+			const gu::SharedPointer<core::RHIDevice>& device,
+			const gu::SharedPointer<core::RHICommandAllocator>& allocator,
 			const std::wstring& name);
 	protected:
 		/****************************************************************************
@@ -121,7 +132,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkCommandBuffer _commandBuffer = nullptr;
 		
-		std::shared_ptr<RHIResourceLayout> _resourceLayout = nullptr;
+		gu::SharedPointer<RHIResourceLayout> _resourceLayout = nullptr;
 	
 		bool _isFirstFrame = true;
 	private:

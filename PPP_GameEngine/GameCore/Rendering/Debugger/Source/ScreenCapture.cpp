@@ -17,7 +17,7 @@
 #include "GameUtility/File/Include/FileSystem.hpp"
 #include <iostream>
 #include <ctime>
-
+#pragma warning(disable: 4996)
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -73,20 +73,20 @@ bool ScreenCapture::Capture(const FrameBufferPtr& frameBuffer)
 {
 	if (!IsTriggerPrintScreenKey()) { return false; }
 
-	const auto currentTime = GetCurrentDataTime();
+	const auto currentTime = GetCurrentDateTime();
 	return true;
 }
 
 std::wstring ScreenCapture::CreateFileDirectoryAndPath(const size_t index)
 {
-	const auto currentTime   = GetCurrentDataTime();
+	const auto currentTime   = GetCurrentDateTime();
 	const auto fileDirectory = L"Resources/Capture/" + currentTime;
 	const auto filePath      = fileDirectory + L"/" + std::to_wstring(index) + L".png";
 	if (!file::FileSystem::MakeDirectory(fileDirectory)) { throw std::runtime_error("failed to create directory"); }
 	return filePath;
 }
 
-std::wstring ScreenCapture::GetCurrentDataTime()
+std::wstring ScreenCapture::GetCurrentDateTime()
 {
 	const auto time = std::time(nullptr);
 	const auto now  = std::localtime(&time);

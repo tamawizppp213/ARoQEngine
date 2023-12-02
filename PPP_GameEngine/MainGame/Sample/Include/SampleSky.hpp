@@ -36,13 +36,13 @@ namespace sample
 	*****************************************************************************/
 	class SampleSky : public Scene
 	{
-		using SkyDomePtr = std::shared_ptr<gc::SkyDome>;
-		using CameraPtr  = std::shared_ptr<gc::Camera>;
+		using SkyDomePtr = gu::SharedPointer<gc::SkyDome>;
+		using CameraPtr  = gu::SharedPointer<gc::Camera>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
+		void Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer) override;
 		void Update   () override;
 		void Draw     () override;
 		void Terminate() override;

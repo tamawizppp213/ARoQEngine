@@ -74,42 +74,42 @@ void UIRenderer::Clear()
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view)
-{
-	/*-------------------------------------------------------------------
-	-               sprite count check
-	---------------------------------------------------------------------*/
-	if (_totalImageCount + images.size() > _maxWritableUICount)
-	{
-		throw std::runtime_error("The maximum number of sprites exceeded. \n If the maximum number is not exceeded, please check whether DrawEnd is being called. \n");
-	}
-
-	/*-------------------------------------------------------------------
-	-               Check whether spriteList is empty
-	---------------------------------------------------------------------*/
-	if (images.empty()) { return ; }
-
-	/*-------------------------------------------------------------------
-	-               Add vertex data
-	---------------------------------------------------------------------*/
-	const auto  currentFrame = _engine->GetCurrentFrameIndex();
-	const auto& vertexBuffer = _vertexBuffers[currentFrame];
-	const auto  oneRectVertexCount = 4;
-
-	vertexBuffer->CopyStart();
-	// _maxWritableUICount - _totalImageCount is écÇËÇÃìoò^Ç≈Ç´ÇÈêî
-	for (std::uint32_t i = 0; i < std::min<std::uint32_t>(images.size(), _maxWritableUICount - _totalImageCount); ++i)
-	{
-		vertexBuffer->CopyTotalData(images[i]->GetVertices(), 4, (i + _totalImageCount) * oneRectVertexCount);
-	}
-	vertexBuffer->CopyEnd();
-
-	/*-------------------------------------------------------------------
-	-               Count sprite num
-	---------------------------------------------------------------------*/
-	CountUpDrawImageAndView(images.size(), view);
-	
-}
+//void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view)
+//{
+//	/*-------------------------------------------------------------------
+//	-               sprite count check
+//	---------------------------------------------------------------------*/
+//	if (_totalImageCount + images.size() > _maxWritableUICount)
+//	{
+//		throw std::runtime_error("The maximum number of sprites exceeded. \n If the maximum number is not exceeded, please check whether DrawEnd is being called. \n");
+//	}
+//
+//	/*-------------------------------------------------------------------
+//	-               Check whether spriteList is empty
+//	---------------------------------------------------------------------*/
+//	if (images.empty()) { return ; }
+//
+//	/*-------------------------------------------------------------------
+//	-               Add vertex data
+//	---------------------------------------------------------------------*/
+//	const auto  currentFrame = _engine->GetCurrentFrameIndex();
+//	const auto& vertexBuffer = _vertexBuffers[currentFrame];
+//	const auto  oneRectVertexCount = 4;
+//
+//	vertexBuffer->CopyStart();
+//	// _maxWritableUICount - _totalImageCount is écÇËÇÃìoò^Ç≈Ç´ÇÈêî
+//	for (std::uint32_t i = 0; i < std::min<std::uint32_t>((std::uint32_t)images.size(), _maxWritableUICount - _totalImageCount); ++i)
+//	{
+//		vertexBuffer->CopyTotalData(images[i]->GetVertices(), 4, (i + _totalImageCount) * oneRectVertexCount);
+//	}
+//	vertexBuffer->CopyEnd();
+//
+//	/*-------------------------------------------------------------------
+//	-               Count sprite num
+//	---------------------------------------------------------------------*/
+//	CountUpDrawImageAndView(images.size(), view);
+//	
+//}
 
 void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const ResourceViewPtr& view)
 {
@@ -135,9 +135,9 @@ void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const Res
 
 	vertexBuffer->CopyStart();
 	// _maxWritableUICount - _totalImageCount is écÇËÇÃìoò^Ç≈Ç´ÇÈêî
-	for (std::uint32_t i = 0; i < std::min<std::uint32_t>(images.size(), _maxWritableUICount - _totalImageCount); ++i)
+	for (std::uint32_t i = 0; i < std::min<std::uint32_t>((std::uint32_t)images.size(), _maxWritableUICount - _totalImageCount); ++i)
 	{
-		vertexBuffer->CopyTotalData(images[i].GetVertices(), 4, (i + _totalImageCount) * oneRectVertexCount);
+		vertexBuffer->CopyTotalData(images[i].GetVertices(), 4, ((size_t)i + (size_t)_totalImageCount) * (size_t)oneRectVertexCount);
 	}
 	vertexBuffer->CopyEnd();
 
@@ -181,7 +181,7 @@ void UIRenderer::Draw()
 	{
 		// Regist root descriptor table 
 		commandList->SetDescriptorHeap(_resourceViews[i]->GetHeap());
-		_resourceViews[i]->Bind(commandList, 0);
+		_resourceViews[i]->Bind(commandList, 0, _resourceLayout);
 
 		// Draw Rects in one texture at a time
 		const std::uint32_t oneImageTotalIndexCount = 6 * _imageCountList[i];
@@ -308,7 +308,7 @@ void UIRenderer::PreparePipelineState(const std::wstring& name)
 	_resourceLayout = device->CreateResourceLayout
 	(
 		{ ResourceLayoutElement(DescriptorHeapType::SRV, 0) },
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0) }
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),1) }
 	);
 
 	/*-------------------------------------------------------------------

@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ namespace physics::core
 	class SimpleCollisionDetector : public NonCopyable
 	{
 	protected:
-		using PhysicsActorPtr = std::shared_ptr<PhysicsActor>;
+		using PhysicsActorPtr = gu::SharedPointer<PhysicsActor>;
 	public:
 		/****************************************************************************
 		**                Public Function

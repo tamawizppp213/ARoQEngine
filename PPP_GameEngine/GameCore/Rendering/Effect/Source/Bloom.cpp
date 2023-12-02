@@ -81,7 +81,7 @@ void Bloom::Draw()
 	computeCommandList->SetResourceLayout(_resourceLayout);
 	computeCommandList->SetComputePipeline(_luminancePipeline);
 	frameBuffer->GetRenderTargetSRV()->Bind(computeCommandList, 0);
-	_luminanceUAV->Bind(computeCommandList, 5);
+	_luminanceUAV->Bind(computeCommandList, 5, _resourceLayout);
 	computeCommandList->Dispatch(Screen::GetScreenWidth() / THREAD, Screen::GetScreenHeight() / THREAD, 1);
 
 	/*-------------------------------------------------------------------
@@ -115,7 +115,7 @@ void Bloom::Draw()
 }
 void Bloom::OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight)
 {
-
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 /****************************************************************************
 *                          UpdateBloomPower
@@ -137,12 +137,12 @@ void Bloom::UpdateBloomPower(const float power)
 #pragma region Set up Function
 void Bloom::PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t height, const std::wstring& name)
 {
-	_gaussianBlur[0] = std::make_shared<GaussianBlur>(_engine, width, height, true, name + L"GaussianBlur");
+	_gaussianBlur[0] = gu::MakeShared<GaussianBlur>(_engine, width, height, true, name + L"GaussianBlur");
 	for (std::uint32_t i = 1; i < _countof(_gaussianBlur); ++i)
 	{
-		_gaussianBlur[i] = std::make_shared<GaussianBlur>(_engine, 
-			width / pow(2, i),
-			height / pow(2, i),
+		_gaussianBlur[i] = gu::MakeShared<GaussianBlur>(_engine, 
+			(std::uint32_t)(width / pow(2, i)),
+			(std::uint32_t)(height / pow(2, i)),
 			true,
 			name + L"GaussianBlur");
 	}
@@ -198,7 +198,7 @@ void Bloom::PrepareResourceView(const std::wstring& name)
 	if (!_luminanceSRV || !_luminanceUAV)
 	{
 		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess);
-		const auto texture = device->CreateTexture(metaData);
+		const auto texture = device->CreateTexture(metaData,name+L"Luminance");
 		_luminanceSRV = device->CreateResourceView(ResourceViewType::Texture  , texture, nullptr);
 		_luminanceUAV = device->CreateResourceView(ResourceViewType::RWTexture, texture, nullptr);
 	}

@@ -26,7 +26,7 @@ using namespace rhi::directX12;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type,  const std::shared_ptr<core::GPUBuffer>& buffer, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
+GPUResourceView::GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type,  const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
 	: core::GPUResourceView(device, type, customHeap)
 {
 	_buffer  = buffer; 
@@ -41,7 +41,7 @@ GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device,
 	if (_buffer) { CreateView(heap); }
 
 }
-GPUResourceView::GPUResourceView(const std::shared_ptr<core::RHIDevice>& device, const core::ResourceViewType type, const std::shared_ptr<core::GPUTexture>& texture, const std::shared_ptr<core::RHIDescriptorHeap>& customHeap)
+GPUResourceView::GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
 	: core::GPUResourceView(device, type, customHeap)
 {
 	_texture = texture;
@@ -62,7 +62,7 @@ GPUResourceView::~GPUResourceView()
 	{
 		const auto heapType = _heapOffset.first;
 		const auto id       = _heapOffset.second;
-		const auto dxHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_heap);
+		const auto dxHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_heap);
 		dxHeap->Free(heapType, id);
 	}
 }
@@ -72,22 +72,22 @@ GPUResourceView::~GPUResourceView()
 /****************************************************************************
 *                     Bind
 *************************************************************************//**
-*  @fn        void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
+*  @fn        void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index)
 *
 *  @brief     Bind resource layout array index to the command list.
               index : resource layout array index
 
-*  @param[in] const std::shared_ptr<core::RHICommandList>& commandList pointer
+*  @param[in] const gu::SharedPointer<core::RHICommandList>& commandList pointer
 *  @param[in] const std::uint32_t resource layout array index.
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandList, const std::uint32_t index)
+void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index, const gu::SharedPointer<core::RHIResourceLayout>& layout)
 {
 	/*-------------------------------------------------------------------
 	-             Set Descirptor Table
 	---------------------------------------------------------------------*/
-	const auto dxCommandList = std::static_pointer_cast<directX12::RHICommandList>(commandList)->GetCommandList();
+	const auto dxCommandList = gu::StaticPointerCast<directX12::RHICommandList>(commandList)->GetCommandList();
 	if (commandList->GetType() == core::CommandListType::Graphics)
 	{
 		dxCommandList->SetGraphicsRootDescriptorTable(index, GetGPUHandler());
@@ -105,7 +105,7 @@ void GPUResourceView::Bind(const std::shared_ptr<core::RHICommandList>& commandL
 
 #pragma endregion Bind Function
 #pragma region Setup view
-void GPUResourceView::CreateView(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+void GPUResourceView::CreateView(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 {
 	switch (_resourceViewType)
 	{
@@ -130,17 +130,17 @@ void GPUResourceView::CreateView(const std::shared_ptr<directX12::RHIDescriptorH
 /****************************************************************************
 *                     CreateSRV
 *************************************************************************//**
-*  @fn        void GPUResourceView::CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+*  @fn        void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create shader resource view
 * 
-*  @param[in] const std::shared_ptr<directX12::RHIDescriptorHeap>
+*  @param[in] const gu::SharedPointer<directX12::RHIDescriptorHeap>
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUResourceView::CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 {
-	DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
+	DeviceComPtr dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
 	
 	Resource* resource = nullptr;
 	D3D12_SHADER_RESOURCE_VIEW_DESC resourceViewDesc = {};
@@ -248,7 +248,7 @@ void GPUResourceView::CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHe
 				break;
 			}
 		}
-		const auto dxTexture = std::static_pointer_cast<directX12::GPUTexture>(_texture);
+		const auto dxTexture = gu::StaticPointerCast<directX12::GPUTexture>(_texture);
 		resource = dxTexture->GetResource().Get();
 	}
 	/*-------------------------------------------------------------------
@@ -273,7 +273,7 @@ void GPUResourceView::CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHe
 				throw std::runtime_error("not supported buffer resource type");
 			}
 		}
-		const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_buffer);
+		const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
 		resource = dxBuffer->GetResource().Get();
 	}
 	else
@@ -294,17 +294,17 @@ void GPUResourceView::CreateSRV(const std::shared_ptr<directX12::RHIDescriptorHe
 /****************************************************************************
 *                     CreateRAS
 *************************************************************************//**
-*  @fn        void GPUResourceView::CreateRAS(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+*  @fn        void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 *  @brief     Create raytracing acceleration structure
-*  @param[in] const std::shared_ptr<directX12::RHIDescriptorHeap>
+*  @param[in] const gu::SharedPointer<directX12::RHIDescriptorHeap>
 *  @return 　　void
 *****************************************************************************/
-void GPUResourceView::CreateRAS(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 {
 	if (!_buffer) { return; }
 
-	const auto dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
-	const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_buffer);
+	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
+	const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
 
 	/*-------------------------------------------------------------------
 	-             Set up resource view descriptor
@@ -322,17 +322,17 @@ void GPUResourceView::CreateRAS(const std::shared_ptr<directX12::RHIDescriptorHe
 /****************************************************************************
 *                     CreateUAV
 *************************************************************************//**
-*  @fn        void GPUResourceView::CreateUAV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+*  @fn        void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create unordered access view
 * 
-*  @param[in] const std::shared_ptr<directX12::RHIDescriptorHeap>
+*  @param[in] const gu::SharedPointer<directX12::RHIDescriptorHeap>
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUResourceView::CreateUAV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 {
-	DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
+	DeviceComPtr dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
 
 	Resource* resource = nullptr;
 	D3D12_UNORDERED_ACCESS_VIEW_DESC resourceViewDesc = {};
@@ -390,7 +390,7 @@ void GPUResourceView::CreateUAV(const std::shared_ptr<directX12::RHIDescriptorHe
 			}
 		}
 		
-		const auto dxTexture = std::static_pointer_cast<directX12::GPUTexture>(_texture);
+		const auto dxTexture = gu::StaticPointerCast<directX12::GPUTexture>(_texture);
 		resource = dxTexture->GetResource().Get();
 	}
 	/*-------------------------------------------------------------------
@@ -417,7 +417,7 @@ void GPUResourceView::CreateUAV(const std::shared_ptr<directX12::RHIDescriptorHe
 			}
 		}
 
-		const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_buffer);
+		const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
 		resource = dxBuffer->GetResource().Get();
 	}
 	else
@@ -438,17 +438,17 @@ void GPUResourceView::CreateUAV(const std::shared_ptr<directX12::RHIDescriptorHe
 /****************************************************************************
 *                     CreateRTV
 *************************************************************************//**
-*  @fn        void GPUResourceView::CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+*  @fn        void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create render target view
 * 
-*  @param[in] const std::shared_ptr<directX12::RHIDescriptorHeap>
+*  @param[in] const gu::SharedPointer<directX12::RHIDescriptorHeap>
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUResourceView::CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 {
-	DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
+	DeviceComPtr dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
 
 	Resource* resource = nullptr;
 	D3D12_RENDER_TARGET_VIEW_DESC desc = {};
@@ -465,6 +465,7 @@ void GPUResourceView::CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHe
 			{
 				desc.ViewDimension = D3D12_RTV_DIMENSION::D3D12_RTV_DIMENSION_TEXTURE1D;
 				desc.Texture1D.MipSlice = static_cast<UINT>(0);
+				break;
 			}
 			case core::ResourceType::Texture2D:
 			{
@@ -479,6 +480,7 @@ void GPUResourceView::CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHe
 				desc.Texture3D.MipSlice    = 0;
 				desc.Texture3D.WSize       = 0;
 				desc.Texture3D.FirstWSlice = 0;
+				break;
 			}
 			case core::ResourceType::Texture2DMultiSample:
 			{
@@ -507,7 +509,7 @@ void GPUResourceView::CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHe
 			}
 		}
 
-		const auto dxTexture = std::static_pointer_cast<directX12::GPUTexture>(_texture);
+		const auto dxTexture = gu::StaticPointerCast<directX12::GPUTexture>(_texture);
 		resource = dxTexture->GetResource().Get();
 	}
 	/*-------------------------------------------------------------------
@@ -531,7 +533,7 @@ void GPUResourceView::CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHe
 			}
 		}
 
-		const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_buffer);
+		const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
 		resource = dxBuffer->GetResource().Get();
 	}
 	else
@@ -553,17 +555,17 @@ void GPUResourceView::CreateRTV(const std::shared_ptr<directX12::RHIDescriptorHe
 /****************************************************************************
 *                     CreateDSV
 *************************************************************************//**
-*  @fn        void GPUResourceView::CreateDSV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+*  @fn        void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create depth stencil view
 * 
-*  @param[in] const std::shared_ptr<directX12::RHIDescriptorHeap>
+*  @param[in] const gu::SharedPointer<directX12::RHIDescriptorHeap>
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUResourceView::CreateDSV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 {
-	DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
+	DeviceComPtr dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
 	if (_texture)
@@ -610,7 +612,7 @@ void GPUResourceView::CreateDSV(const std::shared_ptr<directX12::RHIDescriptorHe
 
 		// create depth stencil view
 		dxDevice->CreateDepthStencilView(
-			std::static_pointer_cast<directX12::GPUTexture>(_texture)->GetResource().Get(),
+			gu::StaticPointerCast<directX12::GPUTexture>(_texture)->GetResource().Get(),
 			&desc,
 			heap->GetCPUDescHandler(core::DescriptorHeapType::DSV, _heapOffset.second)
 		);
@@ -624,21 +626,21 @@ void GPUResourceView::CreateDSV(const std::shared_ptr<directX12::RHIDescriptorHe
 /****************************************************************************
 *                     CreateCBV
 *************************************************************************//**
-*  @fn        void GPUResourceView::CreateCBV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+*  @fn        void GPUResourceView::CreateCBV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create constant buffer view 
 * 
-*  @param[in] const std::shared_ptr<directX12::RHIDescriptorHeap>
+*  @param[in] const gu::SharedPointer<directX12::RHIDescriptorHeap>
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUResourceView::CreateCBV(const std::shared_ptr<directX12::RHIDescriptorHeap>& heap)
+void GPUResourceView::CreateCBV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 {
 
 	if (_buffer)
 	{
-		DeviceComPtr dxDevice = std::static_pointer_cast<directX12::RHIDevice>(_device)->GetDevice();
-		const auto dxBuffer = std::static_pointer_cast<directX12::GPUBuffer>(_buffer);
+		DeviceComPtr dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
+		const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
 
 		// Set up constant buffer view descriptor
 		D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
@@ -665,33 +667,33 @@ void GPUResourceView::CreateCBV(const std::shared_ptr<directX12::RHIDescriptorHe
 /****************************************************************************
 *                     SelectDescriptorHeap
 *************************************************************************//**
-*  @fn        const std::shared_ptr<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
+*  @fn        const gu::SharedPointer<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
 * 
 *  @brief     Select DirectX12 Descriptor Heap. return custom heap or default heap 
 * 
 *  @param[in] const core::DescriptorHeapType type
 * 
-*  @return 　　const std::shared_ptr<directX12::RHIDescriptorHeap> 
+*  @return 　　const gu::SharedPointer<directX12::RHIDescriptorHeap> 
 *****************************************************************************/
-const std::shared_ptr<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
+const gu::SharedPointer<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
 {
 	// Set custom Heap
-	if (_heap) { return std::static_pointer_cast<directX12::RHIDescriptorHeap>(_heap); }
+	if (_heap) { return gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_heap); }
 
 	// Select default heap based on core::ResourceViewType
-	std::shared_ptr<directX12::RHIDescriptorHeap> defaultHeap = nullptr;
+	gu::SharedPointer<directX12::RHIDescriptorHeap> defaultHeap = nullptr;
 	switch (type)
 	{
-		case core::ResourceViewType::ConstantBuffer: { defaultHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::CBV)); break; }
+		case core::ResourceViewType::ConstantBuffer: { defaultHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::CBV)); break; }
 		case core::ResourceViewType::Texture:
 		case core::ResourceViewType::Buffer:
-		case core::ResourceViewType::StructuredBuffer:      { defaultHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::SRV)); break;}
+		case core::ResourceViewType::StructuredBuffer:      { defaultHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::SRV)); break;}
 		case core::ResourceViewType::RWBuffer:
 		case core::ResourceViewType::RWTexture:
-		case core::ResourceViewType::RWStructuredBuffer:    { defaultHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::UAV)); break;}
-		case core::ResourceViewType::RenderTarget:          { defaultHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::RTV)); break;}
-		case core::ResourceViewType::DepthStencil:          { defaultHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::DSV)); break;}
-		case core::ResourceViewType::AccelerationStructure: { defaultHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::SRV)); break;}
+		case core::ResourceViewType::RWStructuredBuffer:    { defaultHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::UAV)); break;}
+		case core::ResourceViewType::RenderTarget:          { defaultHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::RTV)); break;}
+		case core::ResourceViewType::DepthStencil:          { defaultHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::DSV)); break;}
+		case core::ResourceViewType::AccelerationStructure: { defaultHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_device->GetDefaultHeap(core::DescriptorHeapType::SRV)); break;}
 		default:
 		{
 			throw std::runtime_error("not support descriptor view. (directX12 api)");
@@ -705,12 +707,12 @@ const std::shared_ptr<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescr
 #pragma region Property
 D3D12_CPU_DESCRIPTOR_HANDLE GPUResourceView::GetCPUHandler()
 {
-	const auto dxHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_heap);
+	const auto dxHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_heap);
 	return dxHeap->GetCPUDescHandler(_heapOffset.first, _heapOffset.second);
 }
 D3D12_GPU_DESCRIPTOR_HANDLE GPUResourceView::GetGPUHandler()
 {
-	const auto dxHeap = std::static_pointer_cast<directX12::RHIDescriptorHeap>(_heap);
+	const auto dxHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_heap);
 	return dxHeap->GetGPUDescHandler(_heapOffset.first, _heapOffset.second);
 }
 #pragma endregion Property

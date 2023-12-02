@@ -52,9 +52,9 @@ namespace rhi::vulkan
 		~GPUGraphicsPipelineState();
 		
 		explicit GPUGraphicsPipelineState(
-			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr<core::RHIRenderPass>& renderPass,
-			const std::shared_ptr<core::RHIResourceLayout>& layout);
+			const gu::SharedPointer<core::RHIDevice>& device,
+			const gu::SharedPointer<core::RHIRenderPass>& renderPass,
+			const gu::SharedPointer<core::RHIResourceLayout>& layout);
 	
 	protected:
 		/****************************************************************************
@@ -97,8 +97,8 @@ namespace rhi::vulkan
 		~GPUComputePipelineState() = default;
 		
 		explicit GPUComputePipelineState(
-			const std::shared_ptr<core::RHIDevice>& device,
-			const std::shared_ptr<core::RHIResourceLayout>& layout) : core::GPUComputePipelineState(device, layout) {};
+			const gu::SharedPointer<core::RHIDevice>& device,
+			const gu::SharedPointer<core::RHIResourceLayout>& layout) : core::GPUComputePipelineState(device, layout) {};
 	
 	protected:
 		/****************************************************************************

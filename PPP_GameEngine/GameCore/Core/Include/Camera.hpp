@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -93,10 +93,10 @@ namespace gc
 			float  DeltaTime = 0.0f;
 		};
 
-		using LowLevelGraphicsEnginePtr = std::shared_ptr<LowLevelGraphicsEngine>;
-		using SceneConstantBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
-		using GPUResourceViewPtr        = std::shared_ptr<rhi::core::GPUResourceView>;
-		using GameTimerPtr              = std::shared_ptr<GameTimer>;
+		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+		using SceneConstantBufferPtr    = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using GPUResourceViewPtr        = gu::SharedPointer<rhi::core::GPUResourceView>;
+		using GameTimerPtr              = gu::SharedPointer<GameTimer>;
 
 	public:
 		/****************************************************************************

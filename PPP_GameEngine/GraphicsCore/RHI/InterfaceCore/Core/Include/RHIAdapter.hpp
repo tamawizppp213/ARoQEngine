@@ -12,10 +12,10 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Base/Include/GUAssert.hpp"
 #include "RHICommonState.hpp"
-#include <memory>
 #include <string>
-#include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -34,7 +34,7 @@ namespace rhi::core
 	*  @class     RHIDisplayAdapter
 	*  @brief     Physical Device (adapter), Describe gpu information
 	*****************************************************************************/
-	class RHIDisplayAdapter : public NonCopyable, public std::enable_shared_from_this<RHIDisplayAdapter>
+	class RHIDisplayAdapter : public NonCopyable
 	{
 	public:
 		
@@ -42,7 +42,7 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		/* return logical device shared pointer. frame count is used for the command allocators*/
-		virtual std::shared_ptr<core::RHIDevice> CreateDevice() = 0;
+		virtual gu::SharedPointer<core::RHIDevice> CreateDevice() = 0;
 		
 		/* Describe physical device name and spec(future work) */
 		virtual void PrintInfo() = 0; // Todo : ç°å„ÇÕê´î\Ç»Ç«Ç‡ì¸ÇÍÇƒÇ®Ç´ÇΩÇ¢. 2022/09/07
@@ -66,17 +66,23 @@ namespace rhi::core
 		const std::uint32_t GetDeviceID() const { return _deviceID; } // Return 0 if no assignment
 		
 		// @brief : Return RHIInstance Raw Pointer
-		RHIInstance* GetInstance() const { return _instance.get(); };
+		RHIInstance* GetInstance() const { return _instance.Get(); };
+		
+		/* @brief : Device vender check*/
+		bool IsAdapterNVIDIA() const { Check(_venderID != 0); return _venderID == 0x10DE; }
+		bool IsAdapterIntel()  const { Check(_venderID != 0); return _venderID == 0x8086;}
+		bool IsAdapterAMD()    const { Check(_venderID != 0); return _venderID == 0x1002; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHIDisplayAdapter() = default;
 
-		virtual ~RHIDisplayAdapter() { if (_instance) { _instance.reset(); } }
+		virtual ~RHIDisplayAdapter() { if (_instance) { _instance.Reset(); } }
 
-		RHIDisplayAdapter(const std::shared_ptr<RHIInstance>& instance) : _instance(instance)
+		RHIDisplayAdapter(const gu::SharedPointer<RHIInstance>& instance) : _instance(instance)
 		{
-			assert(_instance);
+			Check(_instance);
 		}; 
 
 	protected:
@@ -88,11 +94,11 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::string   _name     = "";
 		std::uint32_t _venderID = 0;
 		std::uint32_t _deviceID = 0;
 		bool _isDiscreteGPU = false;
-		std::shared_ptr<RHIInstance> _instance = nullptr;
+		gu::SharedPointer<RHIInstance> _instance = nullptr;
+		std::string   _name = "";
 	};
 }
 

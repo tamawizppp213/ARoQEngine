@@ -20,7 +20,7 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUBlendState::GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties)
+GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties)
 : rhi::core::GPUBlendState(device, blendProperties)
 {
 #ifdef _DEBUG
@@ -49,7 +49,7 @@ GPUBlendState::GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device
 	}
 }
 
-GPUBlendState::GPUBlendState(const std::shared_ptr<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty)
+GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty)
 	: rhi::core::GPUBlendState(device, blendProperty)
 {
 #ifdef _DEBUG

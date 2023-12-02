@@ -68,7 +68,7 @@ Sobel::~Sobel()
 *****************************************************************************/
 void Sobel::OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight)
 {
-	std::cout << "Sobel::OnResize–¢ŽÀ‘•" << std::endl;
+	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 
 /****************************************************************************
@@ -89,7 +89,7 @@ void Sobel::Draw(const ResourceViewPtr& sourceSRV)
 	const auto device          = _engine->GetDevice();
 	const auto computeCommand  = _engine->GetCommandList(CommandListType::Compute);
 	const auto graphicsCommand = _engine->GetCommandList(CommandListType::Graphics);
-	const auto frameIndex      = _engine->GetCurrentFrameIndex();
+	const auto& frameIndex      = _engine->GetCurrentFrameIndex();
 
 	/*-------------------------------------------------------------------
 	-               Pause current render pass

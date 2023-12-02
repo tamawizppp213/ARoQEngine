@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <memory>
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -53,30 +53,30 @@ namespace rhi::core
 	struct GPUTextureMetaData;
 }
 
-using DisplayAdapterPtr     = std::shared_ptr<rhi::core::RHIDisplayAdapter>;
-using CommandAllocatorPtr   = std::shared_ptr<rhi::core::RHICommandAllocator>;
-using CommandListPtr        = std::shared_ptr<rhi::core::RHICommandList>;
-using CommandQueuePtr       = std::shared_ptr<rhi::core::RHICommandQueue>;
-using DescriptorHeapPtr     = std::shared_ptr<rhi::core::RHIDescriptorHeap>;
-using DevicePtr             = std::shared_ptr<rhi::core::RHIDevice>;
-using FencePtr              = std::shared_ptr<rhi::core::RHIFence>;
-using FrameBufferPtr        = std::shared_ptr<rhi::core::RHIFrameBuffer>;
-using InstancePtr           = std::shared_ptr<rhi::core::RHIInstance>;
-using RenderPassPtr         = std::shared_ptr<rhi::core::RHIRenderPass>;
-using ResourceLayoutPtr     = std::shared_ptr<rhi::core::RHIResourceLayout>;
-using SwapchainPtr          = std::shared_ptr<rhi::core::RHISwapchain>;
+using DisplayAdapterPtr     = gu::SharedPointer<rhi::core::RHIDisplayAdapter>;
+using CommandAllocatorPtr   = gu::SharedPointer<rhi::core::RHICommandAllocator>;
+using CommandListPtr        = gu::SharedPointer<rhi::core::RHICommandList>;
+using CommandQueuePtr       = gu::SharedPointer<rhi::core::RHICommandQueue>;
+using DescriptorHeapPtr     = gu::SharedPointer<rhi::core::RHIDescriptorHeap>;
+using DevicePtr             = gu::SharedPointer<rhi::core::RHIDevice>;
+using FencePtr              = gu::SharedPointer<rhi::core::RHIFence>;
+using FrameBufferPtr        = gu::SharedPointer<rhi::core::RHIFrameBuffer>;
+using InstancePtr           = gu::SharedPointer<rhi::core::RHIInstance>;
+using RenderPassPtr         = gu::SharedPointer<rhi::core::RHIRenderPass>;
+using ResourceLayoutPtr     = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+using SwapchainPtr          = gu::SharedPointer<rhi::core::RHISwapchain>;
 
-using BlendStatePtr         = std::shared_ptr<rhi::core::GPUBlendState>;
-using DepthStecilStatePtr   = std::shared_ptr<rhi::core::GPUDepthStencilState>;
-using InputAssemblyStatePtr = std::shared_ptr<rhi::core::GPUInputAssemblyState>;
-using PipelineFactoryPtr    = std::shared_ptr<rhi::core::GPUPipelineFactory>;
-using GraphicsPipelinePtr   = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
-using ComputePipelinePtr    = std::shared_ptr<rhi::core::GPUComputePipelineState>;
-using RasterizerStatePtr    = std::shared_ptr<rhi::core::GPURasterizerState>;
-using ShaderStatePtr        = std::shared_ptr<rhi::core::GPUShaderState>;
-using BufferPtr             = std::shared_ptr<rhi::core::GPUBuffer>;
-using ResourceCachePtr      = std::shared_ptr<rhi::core::GPUResourceCache>;
-using ResourceViewPtr       = std::shared_ptr<rhi::core::GPUResourceView>;
-using SamplerPtr            = std::shared_ptr<rhi::core::GPUSampler>;
-using TexturePtr            = std::shared_ptr<rhi::core::GPUTexture>;
+using BlendStatePtr         = gu::SharedPointer<rhi::core::GPUBlendState>;
+using DepthStecilStatePtr   = gu::SharedPointer<rhi::core::GPUDepthStencilState>;
+using InputAssemblyStatePtr = gu::SharedPointer<rhi::core::GPUInputAssemblyState>;
+using PipelineFactoryPtr    = gu::SharedPointer<rhi::core::GPUPipelineFactory>;
+using GraphicsPipelinePtr   = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+using ComputePipelinePtr    = gu::SharedPointer<rhi::core::GPUComputePipelineState>;
+using RasterizerStatePtr    = gu::SharedPointer<rhi::core::GPURasterizerState>;
+using ShaderStatePtr        = gu::SharedPointer<rhi::core::GPUShaderState>;
+using BufferPtr             = gu::SharedPointer<rhi::core::GPUBuffer>;
+using ResourceCachePtr      = gu::SharedPointer<rhi::core::GPUResourceCache>;
+using ResourceViewPtr       = gu::SharedPointer<rhi::core::GPUResourceView>;
+using SamplerPtr            = gu::SharedPointer<rhi::core::GPUSampler>;
+using TexturePtr            = gu::SharedPointer<rhi::core::GPUTexture>;
 #endif

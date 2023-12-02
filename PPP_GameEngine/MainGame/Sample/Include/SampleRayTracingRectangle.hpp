@@ -36,15 +36,15 @@ namespace sample
 	*****************************************************************************/
 	class SampleRayTracingRectangle : public Scene
 	{
-		using VertexBufferPtr   = std::shared_ptr<rhi::core::GPUBuffer>;
-		using IndexBufferPtr    = std::shared_ptr<rhi::core::GPUBuffer>;
-		using ResourceLayoutPtr = std::shared_ptr<rhi::core::RHIResourceLayout>;
-		using PipelineStatePtr  = std::shared_ptr<rhi::core::GPUGraphicsPipelineState>;
+		using VertexBufferPtr   = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using IndexBufferPtr    = gu::SharedPointer<rhi::core::GPUBuffer>;
+		using ResourceLayoutPtr = gu::SharedPointer<rhi::core::RHIResourceLayout>;
+		using PipelineStatePtr  = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Initialize(const std::shared_ptr<LowLevelGraphicsEngine>& engine, const GameTimerPtr& gameTimer) override;
+		void Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameTimer) override;
 		void Update() override;
 		void Draw() override;
 		void Terminate() override;
