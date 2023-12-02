@@ -39,6 +39,9 @@ namespace platform::windows
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		/*---------------------------------------------------------------
+		　　　　　@brief : Applicationに登録しつつ, 指定したDescriptorでウィンドウを作成します. 
+		-----------------------------------------------------------------*/
 		void Create(const gu::SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc);
 
 		/* @brief : Visibleでなかった場合にウィンドウを表示します.*/

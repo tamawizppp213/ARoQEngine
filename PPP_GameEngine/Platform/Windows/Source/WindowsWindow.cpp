@@ -12,7 +12,7 @@
 #if PLATFORM_OS_WINDOWS
 #include "../../Windows/Include/WindowsPlatformApplication.hpp"
 #include "../../Windows/Include/WindowsError.hpp"
-#include <cassert>
+#include "GameUtility/Base/Include/GUAssert.hpp"
 #include <stdexcept>
 #include <dwmapi.h>
 
@@ -44,7 +44,7 @@ void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& applicat
 	/*-----------------------------------------------------------------
 					   Prepare 
 	--------------------------------------------------------------------*/
-	assert(("application is nullptr", application));
+	Checkf(application, "application is nullptr");
 
 	const auto windowsApplication = StaticPointerCast<windows::PlatformApplication>(application);
 
