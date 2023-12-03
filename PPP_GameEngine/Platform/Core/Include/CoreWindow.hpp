@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Core/Include/CoreCommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <cstdint>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -71,12 +71,12 @@ namespace platform::core
 
 		virtual float GetAspectRatio() const = 0;
 
-		WindowMode GetWindowMode() const { return _windowMode; };
+		WindowMode GetWindowMode() const { return _windowDesc.WindowMode; };
 
 		/* @brief : IsVisible the window*/
 		bool IsVisible() const { return _isVisible; }
 
-		void SetWindowMode(const WindowMode windowMode) { _windowMode = windowMode; }
+		void SetWindowMode(const WindowMode windowMode) { _windowDesc.WindowMode = windowMode; }
 
 		virtual void SetText(const wchar_t* const text) = 0;
 
@@ -99,9 +99,7 @@ namespace platform::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		WindowMode _windowMode = WindowMode::Windowed;
-
-		ActivationPolicy _activationPolicy = ActivationPolicy::FirstOnlyShow;
+		CoreWindowDesc _windowDesc = {};
 
 		bool _isVisible = false;
 	};

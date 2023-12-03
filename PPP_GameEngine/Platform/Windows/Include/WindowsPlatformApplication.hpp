@@ -54,6 +54,21 @@ namespace platform::windows
 
 		/* @brief : アプリケーションが終了したかを検知します.*/
 		bool IsQuit() const override { return _isApplicationQuited; };
+		
+		/*---------------------------------------------------------------
+		　　　　　@brief : モニターのdisplay per inchを取得する.
+		-----------------------------------------------------------------*/
+		virtual gu::int32 GetMonitorDPI(const core::MonitorInfo& monitorInfo) const override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : 高DPIモードになっているかどうか
+		-----------------------------------------------------------------*/
+		virtual bool EnableHighDPIAwareness() const override { return _enableHighDPIMode; }
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : あるピクセル位置でのDPIの拡大率を取得する
+		-----------------------------------------------------------------*/
+		virtual float GetDPIScaleFactorAtPixelPoint(const float x, const float y) const override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -75,6 +90,10 @@ namespace platform::windows
 
 		virtual LRESULT ApplicationWindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 		
+		/*---------------------------------------------------------------
+		　　　　　@brief : 96dpi以上のdpiを設定するために使用します.
+		-----------------------------------------------------------------*/
+		virtual bool SetHighDPIMode() override;
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
@@ -103,6 +122,8 @@ namespace platform::windows
 
 		//@brief : アプリケーションが終了したときにtrueになる
 		bool _isApplicationQuited = false;
+
+		bool _enableHighDPIMode = false;
 	};
 }
 #endif

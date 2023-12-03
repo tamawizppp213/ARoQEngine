@@ -50,10 +50,14 @@ namespace platform::windows
 		/* @brief : Visible出会った場合にウィンドウを隠します*/
 		bool Hide() override;
 
-		/* @brief : ウィンドウを最小化します*/
+		/*---------------------------------------------------------------
+		　　　　　@brief : ウィンドウを最小化します
+		-----------------------------------------------------------------*/
 		bool Minimize() override;
 
-		/* @brief : ウィンドウを最大化します.*/
+		/*---------------------------------------------------------------
+		　　　　　@brief : ウィンドウを最大化します.
+		-----------------------------------------------------------------*/
 		bool Maximize() override;
 
 		/* @brief : ウィンドウをアクティブにして表示する。最小化・最大化されている場合は元のサイズと位置に復元される.*/
@@ -64,16 +68,27 @@ namespace platform::windows
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void* GetWindowHandle() const noexcept override { return _hwnd; }
+		/*---------------------------------------------------------------
+		　　　　　@brief : Windows専用じゃない場合のWindow Handlerの受け渡しです.
+		-----------------------------------------------------------------*/
+		[[nodiscard]] void* GetWindowHandle() const noexcept override { return _hwnd; }
 
 		float GetAspectRatio() const override { return _aspectRatio;  }
 
-		HWND GetHWND() const { return _hwnd; }
+		/*---------------------------------------------------------------
+		　　　　　@brief : Window handlerを取得します
+		-----------------------------------------------------------------*/
+		[[nodiscard]] __forceinline HWND GetHWND() const { return _hwnd; }
 
-		void SetHWND(const HWND hwnd) { _hwnd = hwnd; }
+		/*---------------------------------------------------------------
+		　　　　　@brief : Window handlerを設定します
+		-----------------------------------------------------------------*/
+		__forceinline void SetHWND(const HWND hwnd) { _hwnd = hwnd; }
 
-		/* @brief : キャプションにテキストを追加します. */
-		void SetText(const wchar_t* const text) override { SetWindowText(_hwnd, text); }
+		/*---------------------------------------------------------------
+		　　　　　@brief : キャプションにテキストを追加します.
+		-----------------------------------------------------------------*/
+		__forceinline void SetText(const wchar_t* const text) override { SetWindowText(_hwnd, text); }
 
 		/* @brief : 現在作業中のウィンドウであるかを調べます. */
 		bool IsForegroundWindow() const override;
@@ -81,11 +96,15 @@ namespace platform::windows
 		/* @brief : フルスクリーンをサポートしているかを調べます. */
 		bool IsFullscreenSupported() const override;
 
-		// @brief : 最大化されているかを調べます
-		bool IsMaximized() const override { return !!::IsZoomed(_hwnd); }
+		/*---------------------------------------------------------------
+		　　　　　@brief : 最大化されているかを調べます
+		-----------------------------------------------------------------*/
+		__forceinline bool IsMaximized() const override { return !!::IsZoomed(_hwnd); }
 
-		// @brief : 最小化されているかを調べます (アイコン状態になっているか)
-		bool IsMinimized() const override { return !!::IsIconic(_hwnd); }
+		/*---------------------------------------------------------------
+		　　　　　@brief : 最小化されているかを調べます (アイコン状態になっているか)
+		-----------------------------------------------------------------*/
+		__forceinline bool IsMinimized() const override { return !!::IsIconic(_hwnd); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -97,6 +116,7 @@ namespace platform::windows
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
+		
 
 		/****************************************************************************
 		**                Protected Member Variables
@@ -109,6 +129,11 @@ namespace platform::windows
 		bool _isFirstTimeVisible = true;
 		bool _initiallyMinimized = false;
 		bool _initiallyMaximized = false;
+
+		// @brief : ディスプレイの拡大率です. 
+		float _dpiScaleFactor = 1.0f;
+
+		bool _enableHighDPIMode = false;
 	};
 }
 #endif _WIN32

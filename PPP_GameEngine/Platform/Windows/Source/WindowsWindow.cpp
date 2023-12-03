@@ -24,6 +24,7 @@
 using namespace platform;
 using namespace platform::windows;
 using namespace gu;
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -51,17 +52,18 @@ void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& applicat
 	/*-----------------------------------------------------------------
 				descの登録
 	--------------------------------------------------------------------*/
-	_windowMode       = desc.WindowMode;
-	_activationPolicy = desc.ActivationPolicy;
+	_windowDesc = desc;
 
 	/*-----------------------------------------------------------------
 		               Window Settings
 	--------------------------------------------------------------------*/
-	int windowWidth   = static_cast<int>(desc.DesiredScreenWidth);
-	int windowHeight  = static_cast<int>(desc.DesiredScreenHeight);
-	int windowCenterX = static_cast<int>(desc.DesiredScreenPositionX);
-	int windowCenterY = static_cast<int>(desc.DesiredScreenPositionY);
+	int32 windowWidth   = static_cast<int32>(desc.DesiredScreenWidth);
+	int32 windowHeight  = static_cast<int32>(desc.DesiredScreenHeight);
+	int32 windowCenterX = static_cast<int32>(desc.DesiredScreenPositionX);
+	int32 windowCenterY = static_cast<int32>(desc.DesiredScreenPositionY);
 	
+	_dpiScaleFactor = windowsApplication->GetDPIScaleFactorAtPixelPoint(windowCenterX, windowCenterY);
+
 	// https://learn.microsoft.com/ja-jp/windows/win32/winmsg/extended-window-styles
 	DWORD windowExtensionStyle = 0;
 	DWORD windowDefaultStyle   = 0;
@@ -144,6 +146,8 @@ void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& applicat
 			ErrorLogger::Log(_hwnd);
 		}
 	}
+
+
 }
 
 /****************************************************************************
@@ -166,8 +170,8 @@ bool CoreWindow::Show()
 	/*---------------------------------------------------------------
 					  アクティブ化を行うか
 	-----------------------------------------------------------------*/
-	bool shouldActiveWindow = _activationPolicy == core::ActivationPolicy::Always;
-	if (_isFirstTimeVisible && _activationPolicy == core::ActivationPolicy::FirstOnlyShow)
+	bool shouldActiveWindow =  _windowDesc.ActivationPolicy == core::ActivationPolicy::Always;
+	if (_isFirstTimeVisible && _windowDesc.ActivationPolicy == core::ActivationPolicy::FirstOnlyShow)
 	{
 		shouldActiveWindow = true;
 	}
@@ -325,4 +329,5 @@ bool CoreWindow::IsFullscreenSupported() const
 	return !::GetSystemMetrics(SM_REMOTESESSION);
 }
 #pragma endregion Supported Check Function
+
 #endif

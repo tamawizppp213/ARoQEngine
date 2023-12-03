@@ -55,6 +55,23 @@ namespace platform::core
 		/* @brief : Is platform application is quited.*/
 		virtual bool IsQuit() const = 0;
 
+#pragma region Monitor
+		/*---------------------------------------------------------------
+		　　　　　@brief : return the monitor DPI
+		-----------------------------------------------------------------*/
+		virtual gu::int32 GetMonitorDPI(const MonitorInfo& monitorInfo) const = 0;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : return the high dpi mode
+		-----------------------------------------------------------------*/
+		virtual bool EnableHighDPIAwareness() const = 0;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : Acquire the dpi zoom factor at pixel point (x,y)
+		-----------------------------------------------------------------*/
+		virtual float GetDPIScaleFactorAtPixelPoint(const float x, const float y) const = 0;
+
+#pragma endregion Monitor
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -71,6 +88,8 @@ namespace platform::core
 		**                Protected Function
 		*****************************************************************************/
 		PlatformApplication();
+
+		virtual bool SetHighDPIMode() = 0;
 
 		/****************************************************************************
 		**                Protected Member Variables

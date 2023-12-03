@@ -11,6 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GameUtility/Base/Include/GUType.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -133,6 +134,26 @@ namespace platform::core
 		long Right  = 0;
 		long Bottom = 0;
 	};
+
+	/****************************************************************************
+	*				  			 MonitorInfo
+	*************************************************************************//**
+	*  @struct    MonitorInfo
+	*  @brief     使用しているモニターの情報を取得します
+	*****************************************************************************/
+	struct MonitorInfo
+	{
+		gu::tchar* Name         = nullptr;  // モニターの名前
+		gu::tchar* ID           = nullptr;  // IDの名前
+		gu::int32  NativeWidth  = 0;     // width
+		gu::int32  NativeHeight = 0;     // height
+		gu::int32  ResolutionX  = 0;     // モニターの解像度X
+		gu::int32  ResolutionY  = 0;     // モニターの解像度Y
+		gu::int32  DPI          = 0;     // Dots per inch (1インチあたりにドットが何個あるか)
+		Rectangle  ActualRectangle = {};
+		bool       IsPrimary    = false;    // プライマリーモニターか
+	};
+
 #pragma endregion Window
 }
 
