@@ -74,7 +74,7 @@ PlatformApplication::PlatformApplication() : core::PlatformApplication()
 	_messageHandler = gu::MakeShared<windows::CoreWindowMessageHandler>();
 
 	/*-----------------------------------------------------------------
-					  DPI scale
+					  çÇDPIÇ™ê›íËâ¬î\Ç©Ç«Ç§Ç©
 	--------------------------------------------------------------------*/
 	_enableHighDPIMode = SetHighDPIMode();
 }

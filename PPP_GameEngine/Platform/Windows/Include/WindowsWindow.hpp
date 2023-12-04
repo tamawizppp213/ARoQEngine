@@ -42,44 +42,102 @@ namespace platform::windows
 		/*---------------------------------------------------------------
 		　　　　　@brief : Applicationに登録しつつ, 指定したDescriptorでウィンドウを作成します. 
 		-----------------------------------------------------------------*/
-		void Create(const gu::SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc);
+		void Create(const gu::SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc, const gu::SharedPointer<core::CoreWindow>& parentWindow = nullptr);
 
-		/* @brief : Visibleでなかった場合にウィンドウを表示します.*/
-		bool Show() override;
+		/*---------------------------------------------------------------
+		　　　　　@brief : Visibleでなかった場合にウィンドウを表示します
+		-----------------------------------------------------------------*/
+		virtual bool Show() override;
 
-		/* @brief : Visible出会った場合にウィンドウを隠します*/
-		bool Hide() override;
+		/*---------------------------------------------------------------
+		　　　　　@brief : Visibleであった場合にウィンドウを隠します
+		-----------------------------------------------------------------*/
+		virtual bool Hide() override;
 
 		/*---------------------------------------------------------------
 		　　　　　@brief : ウィンドウを最小化します
 		-----------------------------------------------------------------*/
-		bool Minimize() override;
+		virtual bool Minimize() override;
 
 		/*---------------------------------------------------------------
 		　　　　　@brief : ウィンドウを最大化します.
 		-----------------------------------------------------------------*/
-		bool Maximize() override;
+		virtual bool Maximize() override;
 
-		/* @brief : ウィンドウをアクティブにして表示する。最小化・最大化されている場合は元のサイズと位置に復元される.*/
-		bool ReStore() override;
+		/*---------------------------------------------------------------
+		　　　　　@brief : ウィンドウをアクティブにして表示する
+			            最小化・最大化されている場合は元のサイズと位置に復元される.
+		-----------------------------------------------------------------*/
+		virtual bool ReStore() override;
 
-		/* @brief : ウィンドウを破棄します*/
-		bool Destroy() override;
+		/*---------------------------------------------------------------
+		　　　　　@brief :  ウィンドウを破棄します
+		-----------------------------------------------------------------*/
+		virtual bool Destroy() override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief :  ウィンドウサイズを変更します
+		-----------------------------------------------------------------*/
+		virtual void Resize(const gu::int32 x, const gu::int32 y, const gu::int32 width, const gu::int32 height) override;
+		
+		/*---------------------------------------------------------------
+		　　　　　@brief :  既に設定されたウィンドウを最前面に表示する
+		-----------------------------------------------------------------*/
+		virtual void BringToFront(const bool forceFront = false) override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : 指定したx, y座標にウィンドウを移動させます
+		-----------------------------------------------------------------*/
+		virtual void Move(const gu::int32 x, const gu::int32 y) override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : ウィンドウを有効/無効化する. 無効化する場合入力を受け付けない.
+		-----------------------------------------------------------------*/
+		virtual void Enable(const bool enable) override { ::EnableWindow(_hwnd, enable); }
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : 透過度を変更する	
+		-----------------------------------------------------------------*/
+		void OnTransparenySupportChanged(const core::WindowTransparency transparency);
+		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		/*---------------------------------------------------------------
 		　　　　　@brief : Windows専用じゃない場合のWindow Handlerの受け渡しです.
 		-----------------------------------------------------------------*/
-		[[nodiscard]] void* GetWindowHandle() const noexcept override { return _hwnd; }
+		[[nodiscard]] __forceinline virtual void* GetWindowHandle() const noexcept override { return _hwnd; }
 
-		float GetAspectRatio() const override { return _aspectRatio;  }
+		/*---------------------------------------------------------------
+		　　　　　@brief : Windowのアスペクト比を渡します.
+		-----------------------------------------------------------------*/
+		__forceinline virtual float GetAspectRatio() const override { return _aspectRatio;  }
 
 		/*---------------------------------------------------------------
 		　　　　　@brief : Window handlerを取得します
 		-----------------------------------------------------------------*/
 		[[nodiscard]] __forceinline HWND GetHWND() const { return _hwnd; }
 
+		/*---------------------------------------------------------------
+		　　　　　@brief : return the border size
+		-----------------------------------------------------------------*/
+		virtual gu::int32 GetWindowBorderSize() const override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : return the title bar size
+		-----------------------------------------------------------------*/
+		virtual gu::int32 GetWindowTitleBarSize() const override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : return the title bar size
+		-----------------------------------------------------------------*/
+		bool GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height);
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : 指定した位置がウィンドウ中に存在するかを判定します.
+		-----------------------------------------------------------------*/
+		virtual bool ExistPointInWindow(const gu::int32 x, const gu::int32 y) const override;
+		
 		/*---------------------------------------------------------------
 		　　　　　@brief : Window handlerを設定します
 		-----------------------------------------------------------------*/
@@ -88,23 +146,69 @@ namespace platform::windows
 		/*---------------------------------------------------------------
 		　　　　　@brief : キャプションにテキストを追加します.
 		-----------------------------------------------------------------*/
-		__forceinline void SetText(const wchar_t* const text) override { SetWindowText(_hwnd, text); }
+		__forceinline virtual void SetText(const wchar_t* const text) override { SetWindowText(_hwnd, text); }
 
-		/* @brief : 現在作業中のウィンドウであるかを調べます. */
-		bool IsForegroundWindow() const override;
+		/*---------------------------------------------------------------
+		　　　　　@brief : 現在作業中のウィンドウであるかを調べます.
+		-----------------------------------------------------------------*/
+		virtual bool IsForegroundWindow() const override;
 
-		/* @brief : フルスクリーンをサポートしているかを調べます. */
-		bool IsFullscreenSupported() const override;
+		/*---------------------------------------------------------------
+		　　　　　@brief : フルスクリーンをサポートしているかを調べます. 
+		-----------------------------------------------------------------*/
+		virtual bool IsFullscreenSupported() const override;
 
 		/*---------------------------------------------------------------
 		　　　　　@brief : 最大化されているかを調べます
 		-----------------------------------------------------------------*/
-		__forceinline bool IsMaximized() const override { return !!::IsZoomed(_hwnd); }
+		__forceinline virtual bool IsMaximized() const override { return !!::IsZoomed(_hwnd); }
 
 		/*---------------------------------------------------------------
 		　　　　　@brief : 最小化されているかを調べます (アイコン状態になっているか)
 		-----------------------------------------------------------------*/
-		__forceinline bool IsMinimized() const override { return !!::IsIconic(_hwnd); }
+		__forceinline virtual bool IsMinimized() const override { return !!::IsIconic(_hwnd); }
+		
+		/*---------------------------------------------------------------
+		　　　　　@brief : ウィンドウが有効化されているか
+		-----------------------------------------------------------------*/
+		virtual bool IsEnabled() override { return !!::IsWindowEnabled(_hwnd); }
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : 手動でDPIを変更可能にするか
+		-----------------------------------------------------------------*/
+		virtual bool IsManualManageDPIChanges() const override { return _useManualDPIChange; }
+
+		virtual void SetManualManageDPIChanges(const bool manualManageDPIChange) override { _useManualDPIChange = manualManageDPIChange; }
+		/*---------------------------------------------------------------
+		　　　　　@brief : Return the rectangle of the winow is associated with
+		-----------------------------------------------------------------*/
+		virtual bool GetFullScreenInfo(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height) const override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : window modeを設定する
+		-----------------------------------------------------------------*/
+		virtual void SetWindowMode(const core::WindowMode windowMode) override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : 透過度を設定する
+		-----------------------------------------------------------------*/
+		virtual void SetOpacity(const float opacity) const;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : KeyboardFocusにこのウィンドウを設定する
+		-----------------------------------------------------------------*/
+		virtual void SetKeyboardFocus() override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : 親ウィンドウが最小化されたときに呼び出される関数
+		-----------------------------------------------------------------*/
+		bool OnParentWindowMinimized();
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : 親ウィンドウがRestoreされたときに呼び出される関数
+		-----------------------------------------------------------------*/
+		bool OnParentWindowRestored();
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -116,7 +220,15 @@ namespace platform::windows
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		
+		/*---------------------------------------------------------------
+		　　　　　@brief : タッチフィードバックを無効化する.
+		-----------------------------------------------------------------*/
+		void DisableTouchFeedback();
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : ウィンドウ領域の調整
+		-----------------------------------------------------------------*/
+		void AdjustWindowRegion(const gu::int32 width, const gu::int32 height);
 
 		/****************************************************************************
 		**                Protected Member Variables
@@ -134,6 +246,34 @@ namespace platform::windows
 		float _dpiScaleFactor = 1.0f;
 
 		bool _enableHighDPIMode = false;
+
+		// @brief : ディスプレイの仮想的な幅と高さを設定します. 
+		// 実際にリサイズしてGPUバッファのパフォーマンスに影響を与えるのではなく, 
+		// Windows側で小さく見えるようにトリミングして描画させるために使用します.
+		gu::int32 _virtualWindowWidth  = 0;
+		gu::int32 _virtualWindowHeight = 0;
+
+		// @brief : 任意のピクセルががウィンドウ内にあるかどうかを問い合わせるためのウィンドウ領域サイズを格納する
+		gu::int32 _regionWidth  = -1;
+		gu::int32 _regionHeight = -1;
+
+		// @brief : フルスクリーン状態になる前のウィンドウの配置を決定する
+		WINDOWPLACEMENT _previousFullScreenWindowPlacement;
+
+		// @brief : 親ウィンドウが最小化される前の配置情報
+		WINDOWPLACEMENT _previousParentMinimizedWindowPlacement;
+
+		// @brief : DPIを手動で変更するか
+		bool _useManualDPIChange = false;
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+		/*---------------------------------------------------------------
+		　　　　　@brief : Regionオブジェクトの作成]
+			 const bool useBorderWhenMaximizedは最大化しているときにも境界部分を使うか.
+		-----------------------------------------------------------------*/
+		HRGN CreateWindowRegionObject(const bool useBorderWhenMaximized) const;
 	};
 }
 #endif _WIN32
