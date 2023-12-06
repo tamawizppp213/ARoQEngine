@@ -271,7 +271,10 @@ void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& applicat
 		EnableMenuItem(GetSystemMenu(_hwnd, false), SC_CLOSE, MF_GRAYED);
 	}
 
-	// このあと出す
+	if (_windowDesc.IsVanillaWindow)
+	{
+		RegisterDragDrop(_hwnd, this);
+	}
 }
 
 /****************************************************************************
@@ -1132,6 +1135,84 @@ bool CoreWindow::OnParentWindowRestored()
 	return !!::SetWindowPlacement(_hwnd, &_previousParentMinimizedWindowPlacement);
 }
 #pragma endregion Main Function
+
+#pragma region IDropTarget
+/*---------------------------------------------------------------
+　　　　　@brief : オブジェクトがコントロールの境界内にドラッグされると発生するイベント
+-----------------------------------------------------------------*/
+HRESULT STDMETHODCALLTYPE CoreWindow::DragEnter(
+	/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+	/* [in] */ DWORD keyState,
+	/* [in] */ POINTL cursorPosition,
+	/* [out][in] */ __RPC__inout DWORD* cursorEffect)
+{
+	return S_OK;
+}
+
+/*---------------------------------------------------------------
+　　　　　@brief : オブジェクトがコントロールの境界を越えてドラッグされると発生するイベント
+-----------------------------------------------------------------*/
+HRESULT STDMETHODCALLTYPE CoreWindow::DragOver(
+	/* [in] */ DWORD keyState,
+	/* [in] */ POINTL cursorPosition,
+	/* [out][in] */ __RPC__inout DWORD* cursorEffect)
+{
+	return S_OK;
+}
+
+/*---------------------------------------------------------------
+　　　　　@brief : オブジェクトがコントロールの境界外にドラッグされたときに発生するイベント
+-----------------------------------------------------------------*/
+HRESULT STDMETHODCALLTYPE CoreWindow::DragLeave()
+{
+	return S_OK;
+}
+
+/*---------------------------------------------------------------
+　　　　　@brief : オブジェクトがドロップするときに発生するイベント
+-----------------------------------------------------------------*/
+HRESULT STDMETHODCALLTYPE CoreWindow::Drop(
+	/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+	/* [in] */ DWORD keyState,
+	/* [in] */ POINTL cursorPosition,
+	/* [out][in] */ __RPC__inout DWORD* cursorEffect)
+{
+	return S_OK;
+}
+
+#pragma endregion IDropTarget
+
+#pragma region IUnknown Interface
+HRESULT STDMETHODCALLTYPE CoreWindow::QueryInterface(
+	/* [in] */ REFIID riid,
+	/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject)
+{
+	if (IID_IDropTarget == riid || IID_IUnknown == riid)
+	{
+		AddRef();
+		*ppvObject = (IDropTarget*)(this);
+		return S_OK;
+	}
+	else
+	{
+		*ppvObject = NULL;
+		return E_NOINTERFACE;
+	}
+}
+
+ULONG STDMETHODCALLTYPE CoreWindow::AddRef()
+{
+	::_InterlockedIncrement((long*)&_oleReferenceCount);
+	return _oleReferenceCount;
+}
+
+ULONG STDMETHODCALLTYPE CoreWindow::Release()
+{
+	::_InterlockedDecrement((long*)&_oleReferenceCount);
+	return _oleReferenceCount;
+}
+#pragma endregion IUnknown Interface
+
 #pragma region Supported Check Function
 bool CoreWindow::IsForegroundWindow() const
 {

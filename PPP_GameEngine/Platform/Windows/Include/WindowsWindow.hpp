@@ -16,6 +16,8 @@
 #if PLATFORM_OS_WINDOWS
 #include "../../Core/Include/CoreWindow.hpp"
 #include <Windows.h>
+#include <Ole2.h>
+#include <oleidl.h>
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -33,7 +35,7 @@ namespace platform::windows
 	*  @class     CoreWindow
 	*  @brief     描画用のウィンドウを作成するクラス
 	*****************************************************************************/
-	class CoreWindow : public platform::core::CoreWindow
+	class CoreWindow : public platform::core::CoreWindow, public IDropTarget
 	{
 	public:
 		/****************************************************************************
@@ -100,6 +102,49 @@ namespace platform::windows
 		-----------------------------------------------------------------*/
 		void OnTransparenySupportChanged(const core::WindowTransparency transparency);
 		
+#pragma region IDropTarget
+		/*---------------------------------------------------------------
+		　　　　　@brief : オブジェクトがコントロールの境界内にドラッグされると発生するイベント
+		-----------------------------------------------------------------*/
+		virtual HRESULT STDMETHODCALLTYPE DragEnter(
+			/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+			/* [in] */ DWORD keyState,
+			/* [in] */ POINTL cursorPosition,
+			/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : オブジェクトがコントロールの境界を越えてドラッグされると発生するイベント
+		-----------------------------------------------------------------*/
+		virtual HRESULT STDMETHODCALLTYPE DragOver(
+			/* [in] */ DWORD keyState,
+			/* [in] */ POINTL cursorPosition,
+			/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : オブジェクトがコントロールの境界外にドラッグされたときに発生するイベント
+		-----------------------------------------------------------------*/
+		virtual HRESULT STDMETHODCALLTYPE DragLeave() override;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : オブジェクトがドロップするときに発生するイベント
+		-----------------------------------------------------------------*/
+		virtual HRESULT STDMETHODCALLTYPE Drop(
+			/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+			/* [in] */ DWORD keyState,
+			/* [in] */ POINTL cursorPosition,
+			/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
+
+#pragma endregion IDropTarget
+
+#pragma region IUnknown Interface
+		virtual HRESULT STDMETHODCALLTYPE QueryInterface(
+			/* [in] */ REFIID riid,
+			/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR* __RPC_FAR* ppvObject) override;
+
+		virtual ULONG STDMETHODCALLTYPE AddRef() override;
+
+		virtual ULONG STDMETHODCALLTYPE Release() override;
+#pragma endregion IUnknown Interface
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -265,6 +310,9 @@ namespace platform::windows
 
 		// @brief : DPIを手動で変更するか
 		bool _useManualDPIChange = false;
+
+		// @brief : 参照カウント
+		gu::int32 _oleReferenceCount = 0;
 	private:
 		/****************************************************************************
 		**                Private Function
