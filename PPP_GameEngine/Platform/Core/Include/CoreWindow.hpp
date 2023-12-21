@@ -111,7 +111,9 @@ namespace platform::core
 		-----------------------------------------------------------------*/
 		virtual bool ExistPointInWindow(const gu::int32 x, const gu::int32 y) const = 0;
 
-		/* @brief : IsVisible the window*/
+		/*---------------------------------------------------------------
+		　　　　　@brief :  IsVisible the window
+		-----------------------------------------------------------------*/
 		bool IsVisible() const { return _isVisible; }
 
 		/*---------------------------------------------------------------

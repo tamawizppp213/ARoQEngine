@@ -14,6 +14,7 @@
 #include "CoreCommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -47,13 +48,23 @@ namespace platform::core
 
 		virtual gu::SharedPointer<PlatformCommand> MakeCommand() = 0;
 		
-		virtual void SetUpWindow(const gu::SharedPointer<CoreWindow>& window, const CoreWindowDesc& desc) = 0;
+		/*---------------------------------------------------------------
+		　　　　　@brief : 指定のウィンドウを実際に作成し, セットアップするまで行います (初期化時に呼び出し必要)
+		-----------------------------------------------------------------*/
+		virtual void SetUpWindow(const gu::SharedPointer<CoreWindow>& window, const CoreWindowDesc& desc, const gu::SharedPointer<core::CoreWindow>& parentWindow = nullptr) = 0;
 
 		/* @brief : This function pumps window message, when you are returned the true, you accept the message. */
 		virtual bool PumpMessage() = 0;
 
 		/* @brief : Is platform application is quited.*/
 		virtual bool IsQuit() const = 0;
+
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		static constexpr wchar_t* APPLICATION_NAME = L"PPP Game Window";
+
+		virtual void* GetInstanceHandle() const noexcept = 0;
 
 #pragma region Monitor
 		/*---------------------------------------------------------------
@@ -71,14 +82,25 @@ namespace platform::core
 		-----------------------------------------------------------------*/
 		virtual float GetDPIScaleFactorAtPixelPoint(const float x, const float y) const = 0;
 
+		/*---------------------------------------------------------------
+		　　　　　@brief : Return the work area without including the task bar
+		-----------------------------------------------------------------*/
+		virtual Rectangle GetWorkArea(const Rectangle& window) = 0;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : Acquire the monitor list 
+		-----------------------------------------------------------------*/
+		virtual void GetMonitorsInfo(std::vector<core::MonitorInfo>& monitorInfo) const = 0;
+
+		/*---------------------------------------------------------------
+		　　　　　@brief : Set application message handle
+		-----------------------------------------------------------------*/
+		virtual void SetMessageHandler(const gu::SharedPointer<CoreWindowMessageHandler>& messageHandler)
+		{
+			_messageHandler = messageHandler;
+		}
+
 #pragma endregion Monitor
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		static constexpr wchar_t* APPLICATION_NAME = L"PPP Game Window";
-
-		virtual void* GetInstanceHandle() const noexcept = 0;
-
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
