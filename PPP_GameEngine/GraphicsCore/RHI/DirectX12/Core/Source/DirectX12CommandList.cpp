@@ -96,8 +96,14 @@ void RHICommandList::BeginRecording(const bool stillMidFrame)
 	/*-------------------------------------------------------------------
 	-        描画フレームの途中でなければCommandAllocatorのバッファを先頭に戻す.
 	---------------------------------------------------------------------*/
-	if (!stillMidFrame) { _commandAllocator->CleanUp(); } // command buffer clear
-	ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.Get())->GetAllocator().Get(), nullptr));
+	if (_commandAllocator)
+	{
+		if (!stillMidFrame)
+		{
+			_commandAllocator->CleanUp();
+		} // command buffer clear
+		ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.Get())->GetAllocator().Get(), nullptr));
+	}
 	
 	/*-------------------------------------------------------------------
 	-        コマンドリストを記録可能状態に変更します
@@ -136,6 +142,19 @@ void RHICommandList::EndRecording()
 	_beginRenderPass = false;
 }
 
+/****************************************************************************
+*                     Reset
+*************************************************************************//**
+*  @fn        void RHICommandList::Reset(const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator)
+*
+*  @brief     Proceed to the record state. コマンドリストを記録状態に変更します.
+		      基本的には, ResetではなくBeginRecordingを使用してください.
+*
+*  @param[in] const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator
+*             コマンドをためておくバッファです
+*
+*  @return    void
+*****************************************************************************/
 void RHICommandList::Reset(const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator)
 {
 	/*-------------------------------------------------------------------
@@ -144,11 +163,28 @@ void RHICommandList::Reset(const gu::SharedPointer<rhi::core::RHICommandAllocato
 	if (IsOpen()) { return; }
 
 	/*-------------------------------------------------------------------
-	-        コマンドリストが記録可能状態に変更する
+	-         新しいコマンドバッファが同じキューの種類であるかを確認する
 	---------------------------------------------------------------------*/
-	if (commandAllocator) { _commandAllocator = commandAllocator; }
-	if (_commandAllocator) { ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.Get())->GetAllocator().Get(), nullptr)); }
-	
+	if (commandAllocator) 
+	{
+		// コマンドリストの種類チェック
+		if (_commandAllocator->GetCommandListType() != GetType()) 
+		{
+			_RPTW0(_CRT_WARN, L"Different commandList type");
+			return;
+		}
+
+		// コマンドリストを登録
+		_commandAllocator = commandAllocator; 
+
+		// Reset
+		ThrowIfFailed(_commandList->Reset(static_cast<RHICommandAllocator*>(_commandAllocator.Get())->GetAllocator().Get(), nullptr));
+	}
+	else
+	{
+		return;
+	}
+
 	/*-------------------------------------------------------------------
 	-        コマンドリストを開いている状態にする
 	---------------------------------------------------------------------*/

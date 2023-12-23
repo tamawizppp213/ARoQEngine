@@ -51,8 +51,10 @@ namespace rhi::core
 		/*-------------------------------------------------------------------
 		-               Draw Frame Function
 		---------------------------------------------------------------------*/
-		/* @brief : This function must be called at draw function initially (stillMidFrame = false). 
-		            If still mid frame is set false, this function clears the command allocator.*/
+		/*----------------------------------------------------------------------
+		*  @brief : This function must be called at draw function initially (stillMidFrame = false). 
+		            If still mid frame is set false, this function clears the command allocator.
+		/*----------------------------------------------------------------------*/
 		virtual void BeginRecording(const bool stillMidFrame = false) = 0;
 
 		/* @brief : This function must be called at draw function at end, 

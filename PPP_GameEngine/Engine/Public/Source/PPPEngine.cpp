@@ -128,7 +128,6 @@ void PPPEngine::ExecuteMainThread()
 				GameInput::Instance().Update();
 				// 現状シングルスレッドで.
 				GameManager::Instance().GameUpdateMain();
-				GameManager::Instance().GameDrawMain();
 			}
 		}
 
@@ -164,9 +163,16 @@ void PPPEngine::ExecuteRenderThread()
 	-----------------------------------------------------------------*/
 	while (!_isStoppedAllThreads)
 	{
-		//if (!_renderPipeline) { continue; }
+		// 開始処理 : コマンドバッファをOpenにする
 		_graphicsEngine->BeginDrawFrame();
-		//_renderPipeline->Draw();
+
+		// 初期レンダーパスの設定
+		_graphicsEngine->BeginSwapchainRenderPass();
+		
+		// シーンの描画
+		GameManager::Instance().GameDrawMain();
+
+		// 終了処理, 描画コマンドを実行する
 		_graphicsEngine->EndDrawFrame();
 	}
 
