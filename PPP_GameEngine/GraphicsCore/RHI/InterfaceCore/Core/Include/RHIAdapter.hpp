@@ -11,11 +11,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
-#include "RHICommonState.hpp"
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -41,31 +41,48 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* return logical device shared pointer. frame count is used for the command allocators*/
+		/*---------------------------------------------------------------
+				@brief :  return logical device shared pointer.
+						  frame count is used for the command allocators
+		-----------------------------------------------------------------*/
 		virtual gu::SharedPointer<core::RHIDevice> CreateDevice() = 0;
 		
-		/* Describe physical device name and spec(future work) */
+		/*---------------------------------------------------------------
+				@brief : Describe physical device name and spec(future work) 
+		-----------------------------------------------------------------*/
 		virtual void PrintInfo() = 0; // Todo : ç°å„ÇÕê´î\Ç»Ç«Ç‡ì¸ÇÍÇƒÇ®Ç´ÇΩÇ¢. 2022/09/07
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		/* @brief : Discrete GPU (true : dGPU, xGPU, false: iGPU)*/
+		/*---------------------------------------------------------------
+				@brief : Discrete GPU (true : dGPU, xGPU, false: iGPU)
+		-----------------------------------------------------------------*/
 		bool IsDiscreteGPU() const { return _isDiscreteGPU; }
 
-		/* @brief : Unified memory architecture (true: iGPU, false: dGPU, xGPU)*/
+		/*---------------------------------------------------------------
+				@brief : Unified memory architecture (true: iGPU, false: dGPU, xGPU)
+		-----------------------------------------------------------------*/
 		bool IsUnifiedGPU() const { return !_isDiscreteGPU; }
 
-		/* @brief : Return Physical Device Name (GPU name)*/
-		const std::string&  GetName    () const { return _name; };
+		/*---------------------------------------------------------------
+				@brief : Return Physical Device Name (GPU name)
+		-----------------------------------------------------------------*/
+		const gu::string& GetName() const { return _name; };
 
-		/* @brief : Return vender ID*/
-		const std::uint32_t GetVenderID() const { return _venderID; } // Return 0 if no assignment
+		/*---------------------------------------------------------------
+				@brief :  Return vender ID. return 0 if no assignment
+		-----------------------------------------------------------------*/
+		const gu::uint32 GetVenderID() const { return _venderID; }
 		
-		/* @brief : Return Device ID*/
-		const std::uint32_t GetDeviceID() const { return _deviceID; } // Return 0 if no assignment
+		/*---------------------------------------------------------------
+				@brief :  Return Device ID. Return 0 if no assignment
+		-----------------------------------------------------------------*/
+		const gu::uint32 GetDeviceID() const { return _deviceID; } 
 		
-		// @brief : Return RHIInstance Raw Pointer
+		/*---------------------------------------------------------------
+				@brief :   Return RHIInstance Raw Pointer
+		-----------------------------------------------------------------*/
 		RHIInstance* GetInstance() const { return _instance.Get(); };
 		
 		/* @brief : Device vender check*/
@@ -94,11 +111,20 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::uint32_t _venderID = 0;
-		std::uint32_t _deviceID = 0;
+		// @brief : Vender ID is able to specify company.  
+		gu::uint32 _venderID = 0;
+
+		// @brief : Device ID is the product id
+		gu::uint32 _deviceID = 0;
+
+		// @brief : true : dGPU, xGPU, false: iGPU
 		bool _isDiscreteGPU = false;
+
+		// @brief : Instance handler
 		gu::SharedPointer<RHIInstance> _instance = nullptr;
-		std::string   _name = "";
+		
+		// @brief : adapter name
+		gu::string _name = "";
 	};
 }
 

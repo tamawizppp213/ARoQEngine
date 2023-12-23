@@ -36,10 +36,15 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* return logical device shared pointer. frame count is used for the command allocators*/
+		/*---------------------------------------------------------------
+				@brief :  return logical device shared pointer.
+						  frame count is used for the command allocators
+		-----------------------------------------------------------------*/
 		gu::SharedPointer<core::RHIDevice> CreateDevice() override;
 
-		/* Describe physical device name and spec */
+		/*---------------------------------------------------------------
+				@brief : Describe physical device name and spec(future work)
+		-----------------------------------------------------------------*/
 		void PrintInfo() override;
 
 		/****************************************************************************
@@ -53,6 +58,7 @@ namespace rhi::directX12
 		RHIDisplayAdapter(const gu::SharedPointer<core::RHIInstance>& instance, const AdapterComPtr& adapter);
 
 		~RHIDisplayAdapter();
+
 	protected:
 		/****************************************************************************
 		**                Protected Function

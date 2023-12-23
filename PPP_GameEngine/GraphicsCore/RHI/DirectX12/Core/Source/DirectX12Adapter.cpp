@@ -12,7 +12,9 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
-#include <d3d12.h>
+#include "Platform/Core/Include/CorePlatformMacros.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
+#include <d3d12.h> // ‚±‚êŽ©‘Ìwindows.hˆË‘¶‚È‚Ì‚©
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -28,7 +30,9 @@ RHIDisplayAdapter::RHIDisplayAdapter(const gu::SharedPointer<core::RHIInstance>&
 {
 	Checkf(_adapter, "adapter is nullptr.\n");
 
-	DXGI_ADAPTER_DESC desc = {}; adapter->GetDesc(&desc);
+	DXGI_ADAPTER_DESC desc = {};
+	adapter->GetDesc(&desc);
+	
 	_name     = unicode::ToUtf8String(desc.Description);
 	_venderID = desc.VendorId;
 	_deviceID = desc.DeviceId; 
@@ -79,22 +83,33 @@ void RHIDisplayAdapter::PrintInfo()
 	/*-------------------------------------------------------------------
 	-                  Print Adapter Name
 	---------------------------------------------------------------------*/
-	std::wstring adapterName  
+	gu::wstring adapterName  
 		         = L"\n//////////////////////////\n Adapter : ";
 	adapterName += desc.Description;
 	adapterName += L"\n//////////////////////////\n";
+
+#if PLATFORM_OS_WINDOWS
 	OutputDebugString(adapterName.c_str());
+#else
+	_RPTWN(_CRT_WARN, L"%s", adapterName.c_str());
+#endif
 
 	/*-------------------------------------------------------------------
 	-                  memory description
 	---------------------------------------------------------------------*/
-	const std::wstring systemMemoryStr       = L"System memory: "         + std::to_wstring(desc.DedicatedSystemMemory) + L"\n";
-	const std::wstring videoMemoryStr        = L"Video memory : "         + std::to_wstring(desc.DedicatedVideoMemory) + L"\n";
-	const std::wstring sharedSystemMemoryStr = L"Shared system memory : " + std::to_wstring(desc.SharedSystemMemory) + L"\n";
+	const gu::wstring systemMemoryStr       = L"System memory: "         + std::to_wstring(desc.DedicatedSystemMemory) + L"\n";
+	const gu::wstring videoMemoryStr        = L"Video memory : "         + std::to_wstring(desc.DedicatedVideoMemory) + L"\n";
+	const gu::wstring sharedSystemMemoryStr = L"Shared system memory : " + std::to_wstring(desc.SharedSystemMemory) + L"\n";
 	
+#if PLATFORM_OS_WINDOWS
 	OutputDebugString(systemMemoryStr.c_str());
 	OutputDebugString(videoMemoryStr.c_str());
 	OutputDebugString(sharedSystemMemoryStr.c_str());
+#else
+	_RPTWN(_CRT_WARN, L"%s", systemMemoryStr.c_str());
+	_RPTWN(_CRT_WARN, L"%s", videoMemoryStr.c_str());
+	_RPTWN(_CRT_WARN, L"%s", sharedSystemMemoryStr.c_str());
+#endif
 
 	/*-------------------------------------------------------------------
 	-                  Print Display Name
@@ -111,7 +126,12 @@ void RHIDisplayAdapter::PrintInfo()
 		std::wstring text = L"\n***Output: ";
 		text += outputDesc.DeviceName;
 		text += L"n";
+
+#if PLATFORM_OS_WINDOWS
 		OutputDebugString(text.c_str());
+#else
+		_RPTWN(_CRT_WARN, L"%s", text.c_str());
+#endif
 
 		// Release IOutput Pointer
 		SAFE_RELEASE(output);

@@ -53,6 +53,8 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 {
 	_hasShutdown = false;
 
+	StartUpParameter = setting;
+
 	/*---------------------------------------------------------------
 					  Timer
 	-----------------------------------------------------------------*/
@@ -80,8 +82,7 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 					  レンダリングエンジンの作成
 	-----------------------------------------------------------------*/
 	_graphicsEngine = gu::MakeShared<LowLevelGraphicsEngine>();
-	_graphicsEngine->StartUp(setting.GraphicsSettings.APIversion, _mainWindow->GetWindowHandle(), _platformApplication->GetInstanceHandle());
-
+	_graphicsEngine->StartUp(StartUpParameter.GraphicsSettings.APIversion, _mainWindow->GetWindowHandle(), _platformApplication->GetInstanceHandle());
 
 	/*---------------------------------------------------------------
 					  Inputの作成
@@ -145,14 +146,28 @@ void PPPEngine::ExecuteUpdateThread()
 	printf("update finish\n");
 }
 
+/****************************************************************************
+*                     ExecuteRenderThread
+*************************************************************************//**
+*  @fn        void PPPEngine::ExecuteRenderThread()
+*
+*  @brief     描画ループです
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void PPPEngine::ExecuteRenderThread()
 {
+	/*---------------------------------------------------------------
+					  描画ループ
+	-----------------------------------------------------------------*/
 	while (!_isStoppedAllThreads)
 	{
-		if (!_renderPipeline) { continue; }
-		/*_graphicsEngine->BeginDrawFrame();
-		_renderPipeline->Draw();
-		_graphicsEngine->EndDrawFrame();*/
+		//if (!_renderPipeline) { continue; }
+		_graphicsEngine->BeginDrawFrame();
+		//_renderPipeline->Draw();
+		_graphicsEngine->EndDrawFrame();
 	}
 
 	printf("draw finish\n");

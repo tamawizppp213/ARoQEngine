@@ -34,7 +34,9 @@ namespace gu
 	using char32   = char32_t; // literal "U"
 	using wchar    = wchar_t;  // literal "L"
 	using u8char   = unsigned char; // literal "u8"
-	
+	using float32  = float;
+	using double64 = double;
+
 	// 接頭辞の変更が必要となります
 #if defined(_WIN32) || defined(_WIN64)
 	using tchar = wchar;
@@ -45,5 +47,11 @@ namespace gu
 	#define NEED_WIDE_CHAR (0)
 	#define TCHAR_TEXT(str) u ##str
 #endif
+
+	/*---------------------------------------------------------------
+		各最大値/最小値を取得する
+	-----------------------------------------------------------------*/
+	#define FLOAT32_MAX (3.402823466e+38F)
+	#define FLOAT32_MIN (1.175494351e-38F)
 }
 #endif

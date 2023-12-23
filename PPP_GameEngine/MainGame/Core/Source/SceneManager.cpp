@@ -17,7 +17,7 @@
 #include "MainGame/Sample/Include/SampleUI.hpp"
 #include "MainGame/Sample/Include/SampleModel.hpp"
 #include "MainGame/Sample/Include/SampleURP.hpp"
-#include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
+#include "MainGame/Sample/Include/SampleEmpty.hpp"
 #include "MainGame/Sample/Include/SampleCollisionDetection.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 
@@ -37,7 +37,7 @@ void SceneManager::StartUp(PPPEnginePtr& engine, const gu::SharedPointer<GameTim
 	_engine = engine;
 	_gameTimer = gameTimer;
 
-	PushScene(new sample::SampleColorChange());
+	PushScene(new sample::SampleEmpty());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

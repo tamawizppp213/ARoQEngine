@@ -11,8 +11,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <cstdint>
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -183,9 +183,9 @@ namespace rhi::core
 	struct ClearValue
 	{
 		enum ColorType { Red, Green, Blue, Alpha };
-		float        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
-		float        Depth    = 1.0f;
-		std::uint8_t Stencil  = 0;
+		gu::float32        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
+		gu::float32        Depth    = 1.0f;
+		gu::uint8 Stencil  = 0;
 
 		ClearValue() = default;
 		ClearValue(float red, float green, float blue, float alpha)
@@ -195,7 +195,7 @@ namespace rhi::core
 		
 		explicit ClearValue(float depth, std::uint8_t stencil = 0)
 		{
-			Depth = depth; Stencil = stencil;
+			Depth = depth; Stencil = stencil; 
 		}
 	};
 #pragma endregion         Pixel
@@ -344,9 +344,9 @@ namespace rhi::core
 		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;               // Texture addressing mode in the W direction
 		BorderColor         Border        = BorderColor::TransparentBlack;          // Border color 
 		size_t              MaxAnisotropy = 1;                                      // Max anisotropy
-		float               MipLODBias    = 0.0f;                                   // Defined LOD = normalLOD + bias
-		float               MinLOD        = 0.0f;                                   // Min LOD size
-		float               MaxLOD        = FLT_MAX;                                // Max LOD size: FLT_MAX è„å¿ÇéwíËÇµÇ»Ç¢.
+		gu::float32         MipLODBias    = 0.0f;                                   // Defined LOD = normalLOD + bias
+		gu::float32         MinLOD        = 0.0f;                                   // Min LOD size
+		gu::float32         MaxLOD        = FLOAT32_MAX;                                // Max LOD size: FLT_MAX è„å¿ÇéwíËÇµÇ»Ç¢.
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -359,7 +359,7 @@ namespace rhi::core
 			const SamplerAddressMode addressW = SamplerAddressMode::Wrap,
 			const BorderColor border = BorderColor::TransparentBlack,
 			float minLOD = 0.0f,
-			float maxLOD = FLT_MAX,
+			float maxLOD = FLOAT32_MAX,
 			float mipLODBias = 0.0f) :
 			Filter(filter),
 			AddressModeU(addressU),

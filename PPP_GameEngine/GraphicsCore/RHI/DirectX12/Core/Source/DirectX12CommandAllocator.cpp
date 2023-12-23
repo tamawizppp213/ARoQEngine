@@ -27,6 +27,7 @@ using namespace rhi;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 RHICommandAllocator::~RHICommandAllocator()
 {
 	if (_commandAllocator) { _commandAllocator.Reset(); }
@@ -42,13 +43,41 @@ RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHID
 
 	_commandAllocator->SetName(name.c_str());
 }
+#pragma endregion Constructor and Desturctor
 
+#pragma region Main Function
+/****************************************************************************
+*                     CleanUp
+*************************************************************************//**
+*  @fn        void RHICommandAllocator::CleanUp()
+*
+*  @brief     コマンドアロケーターをリセットします (コマンドバッファの削除)
+			  あらゆるバインドされたコマンドリストはこの関数を呼ばれる前に閉じておく必要があります
+			　加えて, GPU上のコマンドが実行されるまで, この関数は呼んではなりません
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void RHICommandAllocator::CleanUp()
 {
 	ThrowIfFailed(_commandAllocator->Reset());
 }
 
-void RHICommandAllocator::SetName(const std::wstring& name)
+/****************************************************************************
+*                     SetName
+*************************************************************************//**
+*  @fn        void RHICommandAllocator::CleanUp()
+*
+*  @brief     デバッグ表示名の設定
+*
+*  @param[in] const gu::wstring& name
+*
+*  @return    void
+*****************************************************************************/
+void RHICommandAllocator::SetName(const gu::wstring& name)
 {
 	_commandAllocator->SetName(name.c_str());
 }
+
+#pragma endregion Main Function

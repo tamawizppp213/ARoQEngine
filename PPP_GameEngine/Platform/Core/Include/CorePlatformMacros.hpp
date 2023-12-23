@@ -287,6 +287,8 @@
 #define PREPROCESSOR_TO_STRING(str) PREPROCESSOR_TO_STRING_INNER(str)
 #define PREPROCESSOR_JOIN_INNER(left, right) left##right
 #define PREPROCESSOR_JOIN(left, right) PREPROCESSOR_JOIN_INNER(left, right)
+
+// PreDirectory/PLATFORM_NAME/Include/PLATFORM_NAME + commonHeaderName
 #define PLATFORM_COMPILED_HEADER(preDirectory, commonHeaderName) PREPROCESSOR_TO_STRING(preDirectory/PLATFORM_NAME/Include/PREPROCESSOR_JOIN(PLATFORM_NAME,commonHeaderName)) 
 #pragma endregion Platform NameSpace
 #endif
