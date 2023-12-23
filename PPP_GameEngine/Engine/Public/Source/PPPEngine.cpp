@@ -28,6 +28,7 @@
 #include "GameUtility/Base/Include/GUAssert.hpp"
 
 #include "MainGame/Core/Include/GameManager.hpp"
+#include "MainGame/Core/Include/SceneManager.hpp"
 #include "Platform/Windows/Include/WindowsCursor.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +90,10 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 	-----------------------------------------------------------------*/
 	GameInput::Instance().Initialize(_platformApplication->GetInstanceHandle(), _mainWindow->GetWindowHandle());
 
+}
+
+void PPPEngine::Run()
+{
 	/*---------------------------------------------------------------
 					  ƒXƒŒƒbƒh‚ÌŠÇ—
 	-----------------------------------------------------------------*/

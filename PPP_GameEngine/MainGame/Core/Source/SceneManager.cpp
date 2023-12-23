@@ -63,7 +63,6 @@ void SceneManager::CallSceneInitialize( const GameTimerPtr& gameTimer)
 {
 	if (_currentScene.empty()) { return; }
 	_currentScene.top()->Initialize(_engine, gameTimer);
-	//GraphicsCoreEngine::Instance().OnInitializeRenderScene();
 }
 void SceneManager::CallSceneUpdate()
 {

@@ -58,6 +58,8 @@ public:
 	*****************************************************************************/
 	void StartUp(const engine::setting::StartUpParameters& setting);
 
+	void Run();
+
 	void ExecuteMainThread();
 	void ExecuteUpdateThread();
 	void ExecuteRenderThread();
