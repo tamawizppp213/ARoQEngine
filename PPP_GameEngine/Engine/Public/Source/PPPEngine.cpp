@@ -138,6 +138,10 @@ void PPPEngine::ExecuteMainThread()
 
 	}
 	_isStoppedAllThreads.store(true);
+
+	// 全てのスレッドに対する実行完了待ち
+	_engineThreadManager->ShutDown();
+
 }
 
 void PPPEngine::ExecuteUpdateThread()
@@ -147,6 +151,7 @@ void PPPEngine::ExecuteUpdateThread()
 		
 	}
 
+	_engineThreadManager->CallExecuteComplete(ThreadPoolType::UpdateMain);
 	printf("update finish\n");
 }
 
@@ -181,6 +186,8 @@ void PPPEngine::ExecuteRenderThread()
 		_graphicsEngine->EndDrawFrame();
 	}
 
+
+	_engineThreadManager->CallExecuteComplete(ThreadPoolType::RenderMain);
 	printf("draw finish\n");
 }
 
