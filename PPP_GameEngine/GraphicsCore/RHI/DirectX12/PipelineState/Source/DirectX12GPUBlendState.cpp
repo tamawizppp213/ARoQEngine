@@ -24,10 +24,16 @@ using namespace gu;
 GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties)
 : rhi::core::GPUBlendState(device, blendProperties)
 {
+	/*-------------------------------------------------------------------
+	-        無効入力チェック
+	---------------------------------------------------------------------*/
 	Checkf(device, "Device is nullptr");
 	Checkf(blendProperties.size() > 0, "Blend properties are empty.");
 	Checkf(blendProperties.size() <= _countof(_blendState.RenderTarget), "BlendProperty exceeds the max render target");
 
+	/*-------------------------------------------------------------------
+	-        Blendingの設定
+	---------------------------------------------------------------------*/
 	// Explain https://bgolus.medium.com/anti-aliased-alpha-test-the-esoteric-alpha-to-coverage-8b177335ae4f
 	_blendState.AlphaToCoverageEnable  = blendProperties[0].AlphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
@@ -52,8 +58,14 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty)
 	: rhi::core::GPUBlendState(device, blendProperty)
 {
+	/*-------------------------------------------------------------------
+	-        無効入力チェック
+	---------------------------------------------------------------------*/
 	Checkf(device, "Device is nullptr");
 
+	/*-------------------------------------------------------------------
+	-        Blendingの設定
+	---------------------------------------------------------------------*/
 	_blendState.AlphaToCoverageEnable  = blendProperty.AlphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
 

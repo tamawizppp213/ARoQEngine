@@ -26,11 +26,12 @@ namespace rhi::core
 	class RHIDevice;
 	enum class DefaultBlendStateType
 	{
-		NoColorWrite,
-		OverWrite,
-		AlphaBlend,
+		NoColorWrite,         // NoColorWrite (Display the render target as it is)
+		OverWrite,            // OverWrite (Displays the source as it is.)
+		AlphaBlend,           //  Alpha blending : destination * (1 - source.Alpha) + source * 1
 		CountOfBlendStateType
 	};
+
 	/****************************************************************************
 	*				  			RHIPipelineState
 	*************************************************************************//**

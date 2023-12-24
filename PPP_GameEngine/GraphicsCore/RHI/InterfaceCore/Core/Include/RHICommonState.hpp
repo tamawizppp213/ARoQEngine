@@ -451,7 +451,7 @@ namespace rhi::core
 
 	inline ColorMask operator | (const ColorMask& left, const ColorMask& right)
 	{
-		return static_cast<ColorMask>( static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
+		return static_cast<ColorMask>( static_cast<gu::uint8>(left) | static_cast<gu::uint8>(right));
 	}
 
 	/****************************************************************************
@@ -593,7 +593,7 @@ namespace rhi::core
 	*  @enum      CompareOperator
 	*  @brief     Compare operator
 	*****************************************************************************/
-	enum class CompareOperator : std::uint8_t
+	enum class CompareOperator : gu::uint8
 	{
 		Never,          // Always false
 		Less,           // reference < test
@@ -612,7 +612,7 @@ namespace rhi::core
 	*  @brief     Stencil operator (設定したテストが失敗, または成功した場合に格納されたステンシル値に何が起こるかを指定する) 
 	*             良い感じの説明: https://www.asawicki.info/news_1654_stencil_test_explained_using_code
 	*****************************************************************************/
-	enum class StencilOperator : std::uint8_t
+	enum class StencilOperator : gu::uint8
 	{
 		Keep,                 // keep the current value
 		Zero,                 // set the value to 0
@@ -632,11 +632,11 @@ namespace rhi::core
 	*****************************************************************************/
 	struct StencilOperatorInfo
 	{
-		CompareOperator CompareOperator   = CompareOperator::Always;
-		StencilOperator FailOperator      = StencilOperator::Keep;
-		StencilOperator PassOperator      = StencilOperator::Keep;
-		StencilOperator DepthFailOperator = StencilOperator::Keep;
-		std::uint32_t   Reference         = 0;
+		CompareOperator CompareOperator   = CompareOperator::Always; // Stencil test
+		StencilOperator FailOperator      = StencilOperator::Keep;   // Failed stencil action
+		StencilOperator PassOperator      = StencilOperator::Keep;   // Succeed stencil action
+		StencilOperator DepthFailOperator = StencilOperator::Keep;   // Failed depth test action
+		gu::uint32   Reference         = 0;
 		StencilOperatorInfo() = default;
 	};
 
@@ -650,13 +650,13 @@ namespace rhi::core
 	{
 		bool                UseDepthTest       = true;                       // Use depth test
 		bool                DepthWriteEnable   = true;                       // Enable to write depth
-		bool                StenciWriteEnable  = false;                       // Enable to write Stencil (stencil test: 描画マスクみたいなやつ)  
+		bool                StenciWriteEnable  = false;                      // Enable to write Stencil (stencil test: 描画マスクみたいなやつ)  
 		bool                UseDepthBoundsTest = false;                      // Use depth bounds test (vulkan api only)https://shikihuiku.wordpress.com/2012/06/27/depth-bounds-test1/
 		float               MinDepthBounds     = 0.0f;                       // Min depth bounds test region
 		float               MaxDepthBounds     = 0.0f;                       // Max depth bounds test region
 		CompareOperator     DepthOperator      = CompareOperator::LessEqual; // Depth test operator
-		StencilOperatorInfo Front              = StencilOperatorInfo();      
-		StencilOperatorInfo Back               = StencilOperatorInfo();
+		StencilOperatorInfo Front              = StencilOperatorInfo();      // Use depth test and stencil test results for pixels with surface normals facing the camera
+		StencilOperatorInfo Back               = StencilOperatorInfo();      // Use depth test and stencil test results for pixels where the surface normal is away from the camera
 	};
 
 #pragma endregion  DepthStencilState
