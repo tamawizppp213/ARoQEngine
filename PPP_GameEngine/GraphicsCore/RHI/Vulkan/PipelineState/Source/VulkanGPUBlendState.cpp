@@ -45,8 +45,8 @@ void GPUBlendState::Prepare()
 		_attachments[index].blendEnable         = prop.Enable;
 		_attachments[index].alphaBlendOp        = EnumConverter::Convert(prop.AlphaOperator);
 		_attachments[index].colorBlendOp        = EnumConverter::Convert(prop.ColorOperator);
-		_attachments[index].srcColorBlendFactor = EnumConverter::Convert(prop.Source);
-		_attachments[index].dstColorBlendFactor = EnumConverter::Convert(prop.Destination);
+		_attachments[index].srcColorBlendFactor = EnumConverter::Convert(prop.SourceRGB);
+		_attachments[index].dstColorBlendFactor = EnumConverter::Convert(prop.DestinationRGB);
 		_attachments[index].srcAlphaBlendFactor = EnumConverter::Convert(prop.SourceAlpha);
 		_attachments[index].dstAlphaBlendFactor = EnumConverter::Convert(prop.DestinationAlpha);
 	}

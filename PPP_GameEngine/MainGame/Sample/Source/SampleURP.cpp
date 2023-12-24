@@ -103,7 +103,6 @@ void SampleURP::Update()
 *****************************************************************************/
 void SampleURP::Draw()
 {
-	_engine->BeginDrawFrame();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
@@ -113,7 +112,6 @@ void SampleURP::Draw()
 		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
 	_renderer->Draw();
 	_skybox  ->Draw(_camera->GetResourceView());
-	_engine  ->EndDrawFrame();
 }
 
 /****************************************************************************

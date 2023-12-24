@@ -348,28 +348,81 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 }
 #pragma endregion GPUTexture
 #pragma region BlendProperty
+/****************************************************************************
+*                     NoColorWrite
+*************************************************************************//**
+*  @fn        BlendProperty BlendProperty::NoColorWrite(const bool useAlphaToCoverage)
+*
+*  @brief     そのままレンダーターゲットの出力を表示します
+*
+*  @param[in] bool useAlphaToCoverage
+*
+*  @return    BlendProperty
+*****************************************************************************/
 BlendProperty BlendProperty::NoColorWrite(const bool useAlphaToCoverage)
 {
-	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
-		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
-		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::None, useAlphaToCoverage, false);
+	return BlendProperty
+	(
+		BlendOperator::Add,  // color operator
+		BlendOperator::Add,  // alpha operator
+		BlendFactor::One,    // Render Target alpha(a) element blend mode
+		BlendFactor::One,    // Render Target color(rgb) element blend mode    
+		BlendFactor::Zero,   // pixel shader alpha 
+		BlendFactor::Zero,   // pixel shader color
+		ColorMask::None, useAlphaToCoverage, false
+	);
 }
 
+/****************************************************************************
+*                     OverWrite
+*************************************************************************//**
+*  @fn        BlendProperty BlendProperty::OverWrite(const bool useAlphaToCoverage)
+*
+*  @brief     そのままピクセルシェーダーの出力を上書きします
+*
+*  @param[in] bool useAlphaToCoverage
+*
+*  @return    BlendProperty
+*****************************************************************************/
 BlendProperty BlendProperty::OverWrite(const bool useAlphaToCoverage)
 {
-	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
-		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
-		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::All, useAlphaToCoverage, false);
+	return BlendProperty(
+		BlendOperator::Add, // color operator
+		BlendOperator::Add, // alpha operator
+		BlendFactor::Zero,  // Render Target alpha(a) element blend mode
+		BlendFactor::Zero,  // Render Target color(rgb) element blend mode    
+		BlendFactor::One,   // pixel shader alpha 
+		BlendFactor::One,   // pixel shader color
+		ColorMask::All,
+		useAlphaToCoverage, false);
 }
 
+/****************************************************************************
+*                     AlphaBlend
+*************************************************************************//**
+*  @fn        BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
+*
+*  @brief     Alpha blending 
+*             Destination * (1 - source.Alpha) + source * 1
+*
+*  @param[in] bool useAlphaToCoverage
+*
+*  @return    BlendProperty
+*****************************************************************************/
 BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
 {
-	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
-		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
-		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::All, useAlphaToCoverage, true);
+	return BlendProperty
+	(
+		BlendOperator::Add,                 // color operator
+		BlendOperator::Add,                 // alpha operator
+		BlendFactor::Zero ,                 // Render Target alpha(a) element blend mode
+		BlendFactor::Inverse_Source_Alpha,  // Render Target color(rgb) element blend mode    
+		BlendFactor::One,                   // source alpha 
+		BlendFactor::Source_Alpha,          // source
+		ColorMask::All,                     // color mask
+		useAlphaToCoverage, 
+		true
+	);
 }
 #pragma endregion      BlendProperty
 #pragma region RasterizerProperty

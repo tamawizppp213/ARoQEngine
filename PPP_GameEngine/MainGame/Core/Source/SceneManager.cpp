@@ -37,7 +37,7 @@ void SceneManager::StartUp(PPPEnginePtr& engine, const gu::SharedPointer<GameTim
 	_engine = engine;
 	_gameTimer = gameTimer;
 
-	PushScene(new sample::SampleSky());
+	PushScene(new sample::SampleColorChange());
 	CallSceneInitialize(gameTimer);
 }
 /****************************************************************************

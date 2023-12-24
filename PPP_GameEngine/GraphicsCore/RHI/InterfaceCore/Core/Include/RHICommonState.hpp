@@ -397,35 +397,39 @@ namespace rhi::core
 	*************************************************************************//**
 	*  @class     BlendFactor
 	*  @brief     Color blend factor (directX12 based)
+	*             Source : Color to be rendered from now on
+	*             Dest   : Color of rendering destination
 	*****************************************************************************/
-	enum class BlendFactor : std::uint32_t
+	enum class BlendFactor : gu::uint8
 	{
-		Zero = 1,
-		One,
-		Source_Color,
-		Inverse_Source_Color,
-		Source_Alpha,
-		Inverse_Source_Alpha,
-		Dest_Alpha,
-		Inverse_Dest_Alpha,
-		Dest_Color,
-		Inverse_Dest_Color,
-		Source_Alpha_Saturate,
+		Zero = 1,             // * 0
+		One,                  // * 1
+		Source_Color,         // * Rs, *Gs, *Bs, *As
+		Inverse_Source_Color, // * (1 - Rs), *(1 - Gs), *(1 - Bs), *(1 - As)
+		Source_Alpha,         // * As
+		Inverse_Source_Alpha, // * (1 - As)
+		Dest_Alpha,           // * Ad
+		Inverse_Dest_Alpha,   // * (1 - Ad)
+		Dest_Color,           // * Rd, *Gd, *Bd, *Ad
+		Inverse_Dest_Color,   // * (1 - Rd), *(1 - Gd), *(1 - Bd), *(1 - Ad)
+		Source_Alpha_Saturate,// * mih(1 - Ad, As)
 	};
+
 	/****************************************************************************
 	*				  			BlendOperator
 	*************************************************************************//**
 	*  @class     BlendOperator
 	*  @brief     Color blend calculate opration (directX12 based)
 	*****************************************************************************/
-	enum class BlendOperator : std::uint32_t
+	enum class BlendOperator : gu::uint8
 	{
-		Add = 1,
-		Subtract = 2,
-		Reverse_Subtract = 3,
-		Min = 4,
-		Max = 5
+		Add              = 1, // Default color blend operator : destination + source
+		Subtract         = 2, // source - destination
+		Reverse_Subtract = 3, // destination - source
+		Min              = 4, // min(destination, source)
+		Max              = 5  // max(destination, source)
 	};
+
 	/****************************************************************************
 	*				  			ColorMask
 	*************************************************************************//**
@@ -439,6 +443,9 @@ namespace rhi::core
 		Green = 0x2, // Green WriteEnable
 		Blue  = 0x4, // Blue WriteEnable
 		Alpha = 0x8, // Alpha WriteEnable
+		RGB   = Red | Green | Blue,
+		RG    = Red | Green,
+		BA    = Blue | Green,
 		All   = Red | Green | Blue | Alpha // AllEnable
 	};
 
@@ -452,32 +459,45 @@ namespace rhi::core
 	*************************************************************************//**
 	*  @class     BlendProperty
 	*  @brief     Property
+	*             Source      : これからレンダリングする色 (ピクセルシェーダー)
+	*             Destination : レンダリング先 (レンダーターゲット)
 	*****************************************************************************/
 	struct BlendProperty
 	{
-		BlendOperator ColorOperator    = BlendOperator::Add;   // Color Blend Type
+		BlendOperator ColorOperator    = BlendOperator::Add;   // RGB Color Blend Type 
 		BlendOperator AlphaOperator    = BlendOperator::Add;   // Alpha Blend Type
-		BlendFactor   DestinationAlpha = BlendFactor::Zero;    // 
-		BlendFactor   Destination      = BlendFactor::Zero;
-		BlendFactor   SourceAlpha      = BlendFactor::One;
-		BlendFactor   Source           = BlendFactor::One;
-		ColorMask     ColorMask        = ColorMask::All;
-		bool AlphaToConverageEnable    = false;                // Multi sample時に使用する
+		BlendFactor   DestinationAlpha = BlendFactor::Zero;    // Multiply to Render Target alpha(a) element blend mode
+		BlendFactor   DestinationRGB   = BlendFactor::Zero;    // Multiply to Render Target color(rgb) element blend mode
+		BlendFactor   SourceAlpha      = BlendFactor::One;     // Multiply to Pixel Shader alpha element(a) blend mode
+		BlendFactor   SourceRGB        = BlendFactor::One;     // Multiply to Pixel Shader color element(rgb) blend mode
+		ColorMask     ColorMask        = ColorMask::All;       // color mask
+		bool AlphaToConverageEnable    = false;                // Multi sample時に使用する. ピクセルシェーダーから出力されたあrぷふぁを取得し, Multi sanling aliasingを適用する
 
-		bool Enable = false;
+		bool Enable = false; // レンダーターゲットの独立したブレンドを使用するかを設定する
 
 		BlendProperty() = default;
 
 		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, BlendFactor destAlpha, BlendFactor dest,
 			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool alphaToConverageEnable = false, bool enable = false) :
-			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), Destination(dest), SourceAlpha(srcAlpha),
-			Source(src), ColorMask(colorMask), Enable(enable), AlphaToConverageEnable(alphaToConverageEnable) { };
+			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), DestinationRGB(dest), SourceAlpha(srcAlpha),
+			SourceRGB(src), ColorMask(colorMask), Enable(enable), AlphaToConverageEnable(alphaToConverageEnable) { };
 		
+		/*----------------------------------------------------------------------
+		*  @brief : NoColorWrite (Display the render target as it is)
+		/*----------------------------------------------------------------------*/
 		static BlendProperty NoColorWrite(const bool useAlphaToCoverage = false);
+
+		/*----------------------------------------------------------------------
+		*  @brief : OverWrite (Displays the source as it is.)
+		/*----------------------------------------------------------------------*/
 		static BlendProperty OverWrite (const bool useAlphaToCoverage = false);
+
+		/*----------------------------------------------------------------------
+		*  @brief : Alpha blending : destination * (1 - source.Alpha) + source * 1
+		/*----------------------------------------------------------------------*/
 		static BlendProperty AlphaBlend(const bool useAlphaToCoverage = false);
-		
 	};
+
 #pragma endregion        Blend State
 #pragma region Rasterizer State
 	/****************************************************************************

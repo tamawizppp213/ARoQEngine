@@ -22,6 +22,7 @@
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
+#include "Platform/Core/Include/CorePlatformMacros.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <vector>
@@ -253,13 +254,25 @@ void RHICommandList::EndRenderPass()
 #pragma endregion Call Draw Frame
 
 #pragma region GPU Command
+/****************************************************************************
+*                       SetDepthBounds
+*************************************************************************//**
+*  @fn        void RHICommandList::SetDepthBounds(const float minDepth, const float maxDepth)
+*
+*  @brief     深度が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させます.
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::SetDepthBounds(const float minDepth, const float maxDepth)
 {
+#if PLATFORM_OS_WINDOWS
 	if (_device->IsSupportedDepthBoundsTest())
 	{
 		_commandList->OMSetDepthBounds(minDepth, maxDepth);
 	}
+#endif
 }
+
 void RHICommandList::SetDescriptorHeap(const gu::SharedPointer<core::RHIDescriptorHeap>& heap)
 {
 	const auto dxHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(heap);

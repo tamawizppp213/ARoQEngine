@@ -10,12 +10,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/DirectX12GPUBlendState.hpp"
 #include "../../Core/Include/DirectX12EnumConverter.hpp"
-#include <cassert>
+#include "GameUtility/Base/Include/GUAssert.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::directX12;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -23,11 +24,10 @@ using namespace rhi::directX12;
 GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties)
 : rhi::core::GPUBlendState(device, blendProperties)
 {
-#ifdef _DEBUG
-	assert(device);
-	assert(blendProperties.size() > 0);
-	assert(blendProperties.size() <= _countof(_blendState.RenderTarget));
-#endif
+	Checkf(device, "Device is nullptr");
+	Checkf(blendProperties.size() > 0, "Blend properties are empty.");
+	Checkf(blendProperties.size() <= _countof(_blendState.RenderTarget), "BlendProperty exceeds the max render target");
+
 	// Explain https://bgolus.medium.com/anti-aliased-alpha-test-the-esoteric-alpha-to-coverage-8b177335ae4f
 	_blendState.AlphaToCoverageEnable  = blendProperties[0].AlphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
@@ -38,8 +38,8 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 
 		_blendState.RenderTarget[index].BlendEnable    = blendProperty.Enable;
 		_blendState.RenderTarget[index].LogicOpEnable  = false;
-		_blendState.RenderTarget[index].SrcBlend       = EnumConverter::Convert(blendProperty.Source);
-		_blendState.RenderTarget[index].DestBlend      = EnumConverter::Convert(blendProperty.Destination);
+		_blendState.RenderTarget[index].SrcBlend       = EnumConverter::Convert(blendProperty.SourceRGB);
+		_blendState.RenderTarget[index].DestBlend      = EnumConverter::Convert(blendProperty.DestinationRGB);
 		_blendState.RenderTarget[index].BlendOp        = EnumConverter::Convert(blendProperty.ColorOperator);
 		_blendState.RenderTarget[index].SrcBlendAlpha  = EnumConverter::Convert(blendProperty.SourceAlpha);
 		_blendState.RenderTarget[index].DestBlendAlpha = EnumConverter::Convert(blendProperty.DestinationAlpha);
@@ -52,9 +52,7 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty)
 	: rhi::core::GPUBlendState(device, blendProperty)
 {
-#ifdef _DEBUG
-	assert(device);
-#endif
+	Checkf(device, "Device is nullptr");
 
 	_blendState.AlphaToCoverageEnable  = blendProperty.AlphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
@@ -65,8 +63,8 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 
 		_blendState.RenderTarget[index].BlendEnable    = prop.Enable;
 		_blendState.RenderTarget[index].LogicOpEnable  = false;
-		_blendState.RenderTarget[index].SrcBlend       = EnumConverter::Convert(prop.Source);
-		_blendState.RenderTarget[index].DestBlend      = EnumConverter::Convert(prop.Destination);
+		_blendState.RenderTarget[index].SrcBlend       = EnumConverter::Convert(prop.SourceRGB);
+		_blendState.RenderTarget[index].DestBlend      = EnumConverter::Convert(prop.DestinationRGB);
 		_blendState.RenderTarget[index].BlendOp        = EnumConverter::Convert(prop.ColorOperator);
 		_blendState.RenderTarget[index].SrcBlendAlpha  = EnumConverter::Convert(prop.SourceAlpha);
 		_blendState.RenderTarget[index].DestBlendAlpha = EnumConverter::Convert(prop.DestinationAlpha);
