@@ -36,13 +36,19 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
-		std::uint32_t PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue) override;
+		/*----------------------------------------------------------------------
+		*  @brief :  NextImageが準備出来たとき, Signalを発行して次のフレームインデックスを返します
+		/*----------------------------------------------------------------------*/
+		gu::uint32 PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 signalValue) override;
 		
-		/* @brief : Display front buffer */
+		/*----------------------------------------------------------------------
+		*  @brief :  フロントバッファを表示します. 
+		/*----------------------------------------------------------------------*/
 		void Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue) override ;
 		
-		/* @brief : Resize screen size. Rebuild everything once and update again.*/
+		/*----------------------------------------------------------------------
+		*  @brief :  Resize screen size. Rebuild everything once and update again.
+		/*----------------------------------------------------------------------*/
 		void Resize(const size_t width, const size_t height) override ;
 		
 		/* @brief : Return current frame buffer*/

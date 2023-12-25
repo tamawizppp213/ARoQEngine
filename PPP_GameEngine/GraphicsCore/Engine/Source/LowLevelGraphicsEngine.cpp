@@ -112,7 +112,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 		.PixelFormat      = _pixelFormat,
 		.FrameBufferCount = FRAME_BUFFER_COUNT,
 		.VSync            = VSYNC,
-		.IsValidHDR       = false,
+		.IsValidHDR       = true,
 		.IsValidStereo    = false,
 	};
 

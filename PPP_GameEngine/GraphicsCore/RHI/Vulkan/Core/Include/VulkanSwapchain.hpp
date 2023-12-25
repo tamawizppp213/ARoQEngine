@@ -41,7 +41,7 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
-		std::uint32_t PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue) override;
+		gu::uint32 PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 signalValue) override;
 		
 		/* @brief : Display front buffer*/
 		void Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue) override ;
@@ -52,7 +52,7 @@ namespace rhi::vulkan
 		/* @brief : Return current frame buffer*/
 		size_t GetCurrentBufferIndex() const override ;
 
-		void SwitchFullScreenMode(const bool isOn) override {};
+		void SwitchFullScreenMode([[maybe_unused]] const bool isOn) override {};
 		
 		/****************************************************************************
 		**                Public Member Variables

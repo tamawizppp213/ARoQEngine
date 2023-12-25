@@ -68,8 +68,11 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
-		virtual std::uint32_t PrepareNextImage(const gu::SharedPointer<RHIFence>& fence, std::uint64_t signalValue) = 0;
+		/*----------------------------------------------------------------------
+		*  @brief :  When NextImage is ready, 
+		　　　　　　　　　Signal is issued and the next frame Index is returned.
+		/*----------------------------------------------------------------------*/
+		virtual gu::uint32 PrepareNextImage(const gu::SharedPointer<RHIFence>& fence, const gu::uint64 signalValue) = 0;
 		
 		/* @brief : Display front buffer*/
 		virtual void Present(const gu::SharedPointer<RHIFence>& fence, std::uint64_t waitValue) = 0;

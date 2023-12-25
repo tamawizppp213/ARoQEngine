@@ -17,6 +17,7 @@
 #include "../Include/DirectX12EnumConverter.hpp"
 #include "../../Resource/Include/DirectX12GPUTexture.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include "Platform/Core/Include/CorePlatformMacros.hpp"
 #include <d3d12.h>
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,6 +26,7 @@
 using namespace rhi;
 using namespace rhi::directX12;
 using namespace Microsoft::WRL;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -109,12 +111,12 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 *  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
 *  @brief     NextImageの準備が完了したときSignalを発行し, 次のframe Indexを返す. 
 *  @param[in] const gu::SharedPointer<core::RHIFence>
-*  @param[in] std::uint64_t signalValue (Normally : ++fenceValueを代入)
-*  @return 　　std::uint32_t Backbuffer index
+*  @param[in] uint64 signalValue (Normally : ++fenceValueを代入)
+*  @return 　　uint32 Backbuffer index
 *****************************************************************************/
-std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
+gu::uint32 RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 signalValue)
 {
-	std::uint32_t frameIndex = _swapchain->GetCurrentBackBufferIndex();
+	uint32 frameIndex = _swapchain->GetCurrentBackBufferIndex();
 	_desc.CommandQueue->Signal(fence, signalValue);
 	return frameIndex;
 }
@@ -127,7 +129,7 @@ std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFe
 *  @param[in] std::uint64_t waitValue
 *  @return 　　void
 *****************************************************************************/
-void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue)
+void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 waitValue)
 {
 	/*synchronization between command queue */
 	_desc.CommandQueue->Wait(fence, waitValue);
@@ -180,6 +182,8 @@ void RHISwapchain::SetUp()
 	const auto dxInstance = static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance());
 	const auto factory    = dxInstance->GetFactory();
 
+	Checkf(_desc.CommandQueue->GetType() == core::CommandListType::Graphics, "swapchain must be graphics type command queue");
+	
 	/*-------------------------------------------------------------------
 	-        SwapChain Flag
 	---------------------------------------------------------------------*/
@@ -235,7 +239,11 @@ void RHISwapchain::SetUp()
 		else
 		{
 			_desc.IsValidStereo = false;
+#if PLATFORM_OS_WINDOWS
 			OutputDebugStringA("Failed to use stereo rendering\n");
+#else 
+			_RPT0(_CRT_WARN, "Failed to use stereo rendering\n");
+#endif
 		}
 	}
 
@@ -248,10 +256,10 @@ void RHISwapchain::SetUp()
 		{
 			.Width            = static_cast<UINT>(_desc.WindowInfo.Width),  // Window Size Pixel Width
 			.Height           = static_cast<UINT>(_desc.WindowInfo.Height), // Window Size Pixel Height 
-			.RefreshRate      = {0, 0},
+			.RefreshRate      = {0, 0},                                     // Use 0 to avoid a potential mismatch with hw
 			.Format           = _backBufferFormat,                          // Back Buffer Format 
-			.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
-			.Scaling          = DXGI_MODE_SCALING_STRETCHED,                       // scaling: stretch
+			.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,       // 順序指定なし
+			.Scaling          = DXGI_MODE_SCALING_STRETCHED,                // 拡大スケーリングを適用する
 		};
 
 		DXGI_SWAP_CHAIN_DESC desc = 
@@ -275,6 +283,9 @@ void RHISwapchain::SetUp()
 	// 背後でウィンドウを変更しないように、DXGIメッセージフックを設定する。
 	factory->MakeWindowAssociation((HWND)_desc.WindowInfo.Handle, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER);
 
+	/*-------------------------------------------------------------------
+	-                  HDRの設定
+	---------------------------------------------------------------------*/
 	if (rhiDevice->IsSupportedHDR() && _desc.IsValidHDR)
 	{
 		EnsureSwapChainColorSpace();

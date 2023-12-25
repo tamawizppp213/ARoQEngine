@@ -41,17 +41,40 @@ namespace rhi::core
 		*****************************************************************************/
 		const RasterizerProperty& GetProperty() const { return _property; }
 
-		/* @brief: Return polygon front face. Clockwise -> for left hand coordinate, CounterClockwise-> for right hand coordinate*/
-		FrontFace   GetFrontFace  () const noexcept { return _property.FaceType; }
+		/*----------------------------------------------------------------------
+		*  @brief : Return polygon front face. 
+		*           Clockwise       -> for  left hand coordinate, 
+		*　　　　　　　 CounterClockwise-> for right hand coordinate
+		/*----------------------------------------------------------------------*/
+		__forceinline FrontFace GetFrontFace  () const noexcept { return _property.FaceType; }
 
-		/* @brief : Drawing culling mode. default use none.*/
-		CullingMode GetCullingMode() const noexcept { return _property.CullingType; }
+		/*----------------------------------------------------------------------
+		*  @brief : Drawing culling mode. default use none.
+		*           None  -> all   face render
+		*           Front -> front face culling
+		*           Back  -> back  face culling
+		/*----------------------------------------------------------------------*/
+		__forceinline CullingMode GetCullingMode() const noexcept { return _property.CullingType; }
 
-		/* @brief : Polygon fillmode. You can select the wireframe, solid, (only vulkan) point filling modes.*/
-		FillMode    GetFillMode   () const noexcept { return _property.FillType; }
+		/*----------------------------------------------------------------------
+		*  @brief : Polygon fillmode. You can select the wireframe, solid, (only vulkan) point filling modes.
+		/*----------------------------------------------------------------------*/
+		__forceinline FillMode GetFillMode() const noexcept { return _property.FillType; }
 
-		/* @brief : Return use depth clamp.*/
-		bool        UseDepthClamp () const noexcept { return _property.UseDepthClamp; }
+		/*----------------------------------------------------------------------
+		*  @brief :  Return use depth clamp
+		/*----------------------------------------------------------------------*/
+		__forceinline bool UseDepthClamp () const noexcept { return _property.UseDepthClamp; }
+
+		/*----------------------------------------------------------------------
+		*  @brief :  Return use multi sampling
+		/*----------------------------------------------------------------------*/
+		__forceinline bool UseMultiSample() const { return _property.UseMultiSample; }
+
+		/*----------------------------------------------------------------------
+		*  @brief :  Return use anti alias line
+		/*----------------------------------------------------------------------*/
+		__forceinline bool UseAntiAliasLine() const { return _property.UseAntiAliasLine; }
 
 		/****************************************************************************
 		**                Constructor and Destructor

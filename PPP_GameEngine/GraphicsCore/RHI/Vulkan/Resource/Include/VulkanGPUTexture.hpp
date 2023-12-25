@@ -35,9 +35,14 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList) override;
+		void Load(
+			[[maybe_unused]] const std::wstring& filePath,
+			[[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList) override;
 
-		void Save(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue) override 
+		void Save(
+			[[maybe_unused]]const std::wstring& filePath, 
+			[[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList,
+			[[maybe_unused]] const gu::SharedPointer<core::RHICommandQueue>& commandQueue) override
 		{ printf("Non Function\n"); }
 
 		void Write(const gu::SharedPointer<core::RHICommandList>& commandList, const gm::RGBA* pixel) override
@@ -78,7 +83,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void Pack(const gu::SharedPointer<core::RHICommandList>& commandList) override{};
+		void Pack([[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList) override{};
 		
 		/****************************************************************************
 		**                Protected Member Variables

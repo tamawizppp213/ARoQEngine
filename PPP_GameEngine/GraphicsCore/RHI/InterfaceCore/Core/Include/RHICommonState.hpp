@@ -498,7 +498,7 @@ namespace rhi::core
 		static BlendProperty AlphaBlend(const bool useAlphaToCoverage = false);
 	};
 
-#pragma endregion        Blend State
+#pragma endregion       Blend   State
 #pragma region Rasterizer State
 	/****************************************************************************
 	*				  			MultiSample
@@ -527,10 +527,11 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			CullingMode
 	*************************************************************************//**
-	*  @class     CullingMode
-	*  @brief     Culling mode (left hand coordinate)
+	*  @enum      CullingMode
+	*  @brief     Sets the triangle facing the specified direction 
+	              not to be drawn in the left hand coordinate
 	*****************************************************************************/
-	enum class CullingMode : std::uint8_t
+	enum class CullingMode : gu::uint8
 	{
 		None,  // all face render
 		Front, // front culling
@@ -541,9 +542,9 @@ namespace rhi::core
 	*				  			FrontFace
 	*************************************************************************//**
 	*  @class     FrontFace
-	*  @brief     Polygon front face
+	*  @brief     Determine if all sides are counterclockwise
 	*****************************************************************************/
-	enum class FrontFace : std::uint8_t
+	enum class FrontFace : gu::uint8
 	{
 		CounterClockwise, // for right hand coordinate
 		Clockwise,        // for left  hand coordinate
@@ -570,20 +571,65 @@ namespace rhi::core
 	*****************************************************************************/
 	struct RasterizerProperty
 	{
-		FrontFace   FaceType       = FrontFace::Clockwise;
-		CullingMode CullingType    = CullingMode::None;
-		FillMode    FillType       = FillMode::Solid;
-		bool        UseDepthClamp  = true;
-		bool        UseMultiSample = true;
-		bool        UseAntiAliasLine = false; // DirectX12 only use
+		FrontFace   FaceType              = FrontFace::Clockwise; //  Determine if all sides are counterclockwise
+		CullingMode CullingType           = CullingMode::None;    // Sets the triangle facing the specified direction not to be drawn in the left hand coordinate
+		FillMode    FillType              = FillMode::Solid;      // Polygon fill mode
+		bool        UseDepthClamp         = true;                 // use clipping base on the depth length.
+		bool        UseMultiSample        = true;
+		bool        UseAntiAliasLine      = false;                // DirectX12 only use
+		bool        UseConservativeRaster = false;                // Perform rasterization if it hangs on a pixel for even a second.
+
+		// How to calculate : https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias?redirectedfrom=MSDN
+		// Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope;
+		float  DepthBias           = 0.0f;  // Depth value added to a given pixel.
+		float  SlopeScaleDepthBias = 0.0f;  // Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope;
+		float  ClampMaxDepthBias   = 0.0f;  // Clamp MaxDepth
 
 		RasterizerProperty() = default;
 
-		RasterizerProperty(const FrontFace frontFace, const CullingMode cullingMode, const FillMode fillMode, const bool useDepthClamp, const bool useMultiSample) :
-			FaceType(frontFace), CullingType(cullingMode), FillType(fillMode), UseDepthClamp(useDepthClamp), UseMultiSample(useMultiSample){};
+		RasterizerProperty
+		(
+			const FrontFace   frontFace,
+			const CullingMode cullingMode,
+			const FillMode    fillMode,
+			const bool  useDepthClamp,
+			const bool  useMultiSample,
+			const float depthBias           = 0.0f,
+			const float slopeScaleDepthBias = 0.0f,
+			const float clampMaxDepthBias   = 0.0f
+		) :
+			FaceType(frontFace), CullingType(cullingMode), FillType(fillMode), 
+			UseDepthClamp(useDepthClamp), UseMultiSample(useMultiSample),
+			DepthBias(depthBias), SlopeScaleDepthBias(slopeScaleDepthBias), 
+			ClampMaxDepthBias(clampMaxDepthBias)
+		{
+		};
 
-		static RasterizerProperty Solid(const bool useMultiSample = false, const FrontFace frontFace = FrontFace::Clockwise, const CullingMode cullingMode = CullingMode::None);
-		static RasterizerProperty WireFrame(const bool useMultiSample = false, const FrontFace frontFace = FrontFace::Clockwise, const CullingMode cullingMode = CullingMode::None);
+		/*----------------------------------------------------------------------
+		*  @brief : fill polygon face rasterize mode
+		/*----------------------------------------------------------------------*/
+		static RasterizerProperty Solid
+		(
+			const bool        useMultiSample      = false, 
+			const FrontFace   frontFace           = FrontFace::Clockwise, 
+			const CullingMode cullingMode         = CullingMode::None,
+			const float       depthBias           = 0.0f,
+			const float       slopeScaleDepthBias = 0.0f,
+			const float       clampMaxDepthBias   = 0.0f
+		);
+		
+		/*----------------------------------------------------------------------
+		*  @brief : wire frame polygon rasterize mode
+		/*----------------------------------------------------------------------*/
+		static RasterizerProperty WireFrame
+		(
+			const bool        useMultiSample      = false, 
+			const FrontFace   frontFace           = FrontFace::Clockwise, 
+			const CullingMode cullingMode         = CullingMode::None,
+			const float       depthBias           = 0.0f,
+			const float       slopeScaleDepthBias = 0.0f,
+			const float       clampMaxDepthBias   = 0.0f
+		);
 	};
 #pragma endregion   Rasterizer State
 #pragma region DepthStencilState
@@ -1186,5 +1232,9 @@ namespace rhi::core
 	};
 
 #pragma endregion    Window Surface
+
+#pragma region HDR
+
+#pragma endregion HDR
 }
 #endif

@@ -426,13 +426,13 @@ BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
 }
 #pragma endregion      BlendProperty
 #pragma region RasterizerProperty
-RasterizerProperty RasterizerProperty::Solid(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode)
+RasterizerProperty RasterizerProperty::Solid(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode, const float depthBias, const float slopeScaleDepthBias, const float clampMaxDepthBias)
 {
-	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample);
+	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample, depthBias, slopeScaleDepthBias, clampMaxDepthBias);
 }
 
-RasterizerProperty RasterizerProperty::WireFrame(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode)
+RasterizerProperty RasterizerProperty::WireFrame(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode, const float depthBias, const float slopeScaleDepthBias, const float clampMaxDepthBias)
 {
-	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample);
+	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample, depthBias, slopeScaleDepthBias, clampMaxDepthBias);
 }
 #pragma endregion RasterizerProperty
