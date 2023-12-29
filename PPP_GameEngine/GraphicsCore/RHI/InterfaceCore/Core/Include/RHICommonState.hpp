@@ -206,7 +206,7 @@ namespace rhi::core
 	*  @enum      ShaderVisibility
 	*  @brief     Visible shader stage type
 	*****************************************************************************/
-	enum class ShaderVisibility : std::uint8_t
+	enum class ShaderVisibility : gu::uint8
 	{
 		All,           // all      shader stage visible
 		Vertex,        // vertex   shader stage only
@@ -346,7 +346,7 @@ namespace rhi::core
 		size_t              MaxAnisotropy = 1;                                      // Max anisotropy
 		gu::float32         MipLODBias    = 0.0f;                                   // Defined LOD = normalLOD + bias
 		gu::float32         MinLOD        = 0.0f;                                   // Min LOD size
-		gu::float32         MaxLOD        = FLOAT32_MAX;                                // Max LOD size: FLT_MAX è„å¿ÇéwíËÇµÇ»Ç¢.
+		gu::float32         MaxLOD        = FLOAT32_MAX;                            // Max LOD size: FLT_MAX è„å¿ÇéwíËÇµÇ»Ç¢.
 
 		/****************************************************************************
 		**                Constructor and Destructor

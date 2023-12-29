@@ -430,6 +430,10 @@
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVertex.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\LowLevelGraphicsEngine.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIMultiGPUMask.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Core\Include\CoreCommonState.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreCursor.hpp" />
     <ClInclude Include="Platform\Core\Include\CorePlatformApplication.hpp" />
