@@ -709,6 +709,10 @@
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\LowLevelGraphicsEngine.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIMultiGPUMask.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Platform\Core\Source\CorePlatformApplication.cpp" />
     <ClCompile Include="Platform\Core\Source\CoreWindow.cpp" />
     <ClCompile Include="Platform\Core\Source\CoreWindowMessageHandler.cpp" />

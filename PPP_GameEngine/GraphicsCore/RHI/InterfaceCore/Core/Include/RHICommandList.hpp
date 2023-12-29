@@ -57,12 +57,20 @@ namespace rhi::core
 		/*----------------------------------------------------------------------*/
 		virtual void BeginRecording(const bool stillMidFrame = false) = 0;
 
-		/* @brief : This function must be called at draw function at end, 
-		            The command list is closed, it transits the executable state.*/
+		/*----------------------------------------------------------------------
+		*  @brief : This function must be called at draw function at end, 
+		            The command list is closed, it transits the executable state.
+		/*----------------------------------------------------------------------*/
 		virtual void EndRecording  () = 0; // Call end function at end
 
+		/*----------------------------------------------------------------------
+		*  @brief : Start the render pass. This function basically called at draw function at start
+		/*----------------------------------------------------------------------*/
 		virtual void BeginRenderPass(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<RHIFrameBuffer>& frameBuffer) = 0;
 		
+		/*----------------------------------------------------------------------
+		*  @brief : Finish the render pass. This function basically called at draw function at end
+		/*----------------------------------------------------------------------*/
 		virtual void EndRenderPass() = 0;
 
 		/* @brief : コマンドリストを詰め込み可能な状態に変更します. またコマンドアロケータ中のコマンドバッファの内容を先頭に戻します.

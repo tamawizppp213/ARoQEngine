@@ -11,12 +11,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "Platform/Core/Include/CorePlatformMacros.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIMultiGPUMask.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
 #include <optional>
 #include <map> // vulkanだめだったらunordered_mapも追加.
-#include <Windows.h>
+
+#if PLATFORM_OS_WINDOWS
+#include <Windows.h> // 今後Platform依存を脱却予定
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -144,6 +150,11 @@ namespace rhi::core
 		
 		gu::SharedPointer<RHIDisplayAdapter> GetDisplayAdapter() const noexcept { return _adapter; }
 		
+		/*----------------------------------------------------------------------
+		*  @brief : Deviceを使用するときにどのGPUを使用するかのビットマスクを取得します
+		/*----------------------------------------------------------------------*/
+		const RHIMultiGPUMask& GetGPUMask() const { return _gpuMask; }
+
 		virtual void SetName(const std::wstring& name) = 0;
 
 		/*-------------------------------------------------------------------
@@ -176,6 +187,8 @@ namespace rhi::core
 		virtual bool IsSupportedNative16bitOperation() const = 0;
 
 		virtual bool IsSupportedAtomicOperation() const = 0;
+
+
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -187,8 +200,8 @@ namespace rhi::core
 			_adapter.Reset(); 
 		}
 
-		RHIDevice(const gu::SharedPointer<RHIDisplayAdapter>& adapter) 
-			: _adapter(adapter) {};
+		RHIDevice(const gu::SharedPointer<RHIDisplayAdapter>& adapter, const RHIMultiGPUMask& mask = RHIMultiGPUMask::SingleGPU()) 
+			: _adapter(adapter), _gpuMask(mask) {};
 
 		/****************************************************************************
 		**                Protected Function
@@ -200,6 +213,8 @@ namespace rhi::core
 		/* @brief : Use Display Apapter (GPU)*/
 		gu::SharedPointer<RHIDisplayAdapter> _adapter = nullptr;
 
+		// @brief : GPUのインデックス
+		RHIMultiGPUMask _gpuMask = RHIMultiGPUMask::SingleGPU();
 	};
 }
 #endif

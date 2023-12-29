@@ -59,8 +59,8 @@ RHIDevice::~RHIDevice()
 	if (_device) { Destroy(); }
 }
 
-RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter) :
-	core::RHIDevice(adapter)
+RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, const core::RHIMultiGPUMask& mask) :
+	core::RHIDevice(adapter, mask)
 {
 	/*-------------------------------------------------------------------
 	-                   Create Logical Device

@@ -174,7 +174,7 @@ namespace rhi::directX12
 
 		~RHIDevice();
 
-		RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter);
+		RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, const core::RHIMultiGPUMask& mask = core::RHIMultiGPUMask::SingleGPU());
 
 	protected:
 		/****************************************************************************
