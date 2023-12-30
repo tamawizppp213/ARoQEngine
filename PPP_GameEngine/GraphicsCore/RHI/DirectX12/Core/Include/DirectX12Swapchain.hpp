@@ -74,7 +74,9 @@ namespace rhi::directX12
 			const rhi::core::WindowInfo& windowInfo,
 			const rhi::core::PixelFormat& piexlFormat,
 			const size_t frameBufferCount = 3, const std::uint32_t vsync = 0,
-			const bool isValidHDR = true);
+			const bool isValidHDR = true,
+			const bool isFullScreen = false
+			);
 
 		explicit RHISwapchain(
 			const gu::SharedPointer<rhi::core::RHIDevice>& device,

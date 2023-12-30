@@ -33,9 +33,8 @@ using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
 RHISwapchain::RHISwapchain(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandQueue>& queue,
-	const core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR) 
-	: core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
-
+	const core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR, const bool isFullScreen) 
+	: core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR, isFullScreen)
 {
 	SetUp();
 }
@@ -135,7 +134,12 @@ void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const
 	_desc.CommandQueue->Wait(fence, waitValue);
 
 	/* present front buffer*/
-	ThrowIfFailed(_swapchain->Present(_desc.VSync, _useAllowTearing ? DXGI_PRESENT_ALLOW_TEARING : 0));
+	UINT presentFlags = 0;
+	if (!_desc.VSync && !_isFullScreen && _useAllowTearing)
+	{
+		presentFlags |= DXGI_PRESENT_ALLOW_TEARING;
+	}
+	ThrowIfFailed(_swapchain->Present(_desc.VSync, presentFlags));
 }
 /****************************************************************************
 *							GetCurrentBufferIndex
@@ -176,6 +180,9 @@ void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 *****************************************************************************/
 void RHISwapchain::SetUp()
 {
+	/*-------------------------------------------------------------------
+	-        Prepare
+	---------------------------------------------------------------------*/
 	const auto rhiDevice  = gu::StaticPointerCast<RHIDevice>(_device);
 	const auto dxDevice   = rhiDevice->GetDevice();
 	const auto dxQueue    = gu::StaticPointerCast<RHICommandQueue>(_desc.CommandQueue)->GetCommandQueue();

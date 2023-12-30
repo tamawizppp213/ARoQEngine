@@ -117,19 +117,39 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class PixelFormat
 	{
-		Unknown,   
+		Unknown,  
+
+		// RGBA format
+		R32G32B32A32_FLOAT,
+		R16G16B16A16_FLOAT, 
 		R8G8B8A8_UNORM,
 		B8G8R8A8_UNORM,
-		R10G10B10A2_UNORM,
-		R32G32B32A32_FLOAT,
-		R16G16B16A16_FLOAT,
+
+		// RGB format
+		R32G32B32_FLOAT,
+		R16G16B16_FLOAT,
+
+		// RG format
+		R32G32_FLOAT,
+
+		// Single format
 		D32_FLOAT,
 		R32_FLOAT,
+		R16_FLOAT,
+
+		// Block compression format (画像を4x4ピクセル単位のブロックに分割して, それぞれのブロックごとに圧縮を行う方式)
+		// https://www.webtech.co.jp/blog/optpix_labs/format/6993/
+		BC1_UNORM,   // 8byte : RGB, RGBA画像
+		BC2_UNORM,   // 16byte:RGBA(16諧調アルファ)
+		BC3_UNORM,   // 16byte:RGBA(多階調アルファ)
+		BC4_UNORM,   // 8byte :1成分のデータ (ハイトマップ等)
+		BC5_UNORM,   // 16byte:2成分のデータ (法線マップ等)
+		BC7_UNORM,   // 16byte:HDRのRGB画像
+		BC6H_UNORM,  // 16byte:RGB画像, RGBA画像 (多階調アルファ)
+
+		R10G10B10A2_UNORM,
 		D24_UNORM_S8_UINT,
-		R32G32B32_FLOAT,
-		R32G32_FLOAT,
 		B8G8R8A8_UNORM_SRGB,
-		BC1_UNORM,
 		CountOfPixelFormat
 	};
 	/****************************************************************************

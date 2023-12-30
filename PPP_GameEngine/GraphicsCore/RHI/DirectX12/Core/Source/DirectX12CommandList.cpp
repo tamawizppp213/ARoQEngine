@@ -61,10 +61,10 @@ RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& de
 	-               Prepare Closed Command List
 	---------------------------------------------------------------------*/
 	ThrowIfFailed(dxDevice->CreateCommandList(
-		0,
+		_device->GetGPUMask().Value(),            // GPU index
 		EnumConverter::Convert(_commandListType),
-		dxAllocator.Get(), // Associated command allocator
-		nullptr,           // Initial PipeLine State Object
+		dxAllocator.Get(),                        // Associated command allocator
+		nullptr,                                  // Initial PipeLine State Object
 		IID_PPV_ARGS(_commandList.GetAddressOf())));
 
 	ThrowIfFailed(_commandList->SetName(name.c_str()));

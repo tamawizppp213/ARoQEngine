@@ -153,6 +153,7 @@ namespace rhi::core
 		/*----------------------------------------------------------------------
 		*  @brief : Deviceを使用するときにどのGPUを使用するかのビットマスクを取得します
 		/*----------------------------------------------------------------------*/
+		      RHIMultiGPUMask& GetGPUMask()       { return _gpuMask; }
 		const RHIMultiGPUMask& GetGPUMask() const { return _gpuMask; }
 
 		virtual void SetName(const std::wstring& name) = 0;
