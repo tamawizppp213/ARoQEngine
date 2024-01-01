@@ -36,7 +36,9 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <vector>
+#if PLATFORM_OS_WINDOWS
 #include <Windows.h>
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -44,6 +46,7 @@
 using namespace rhi;
 using namespace rhi::directX12;
 using namespace Microsoft::WRL;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -597,9 +600,18 @@ void RHIDevice::SetupDisplayHDRMetaData()
 	ComPtr<IDXGIOutput> output = nullptr;
 
 	/*-------------------------------------------------------------------
+	-               Adapter‚ÍAMD or Nvidia‚Å‚ ‚ê‚Îˆ—‚ðŽÀs‚·‚é
+	---------------------------------------------------------------------*/
+	if (!(adapter->IsAdapterAMD() || adapter->IsAdapterNVIDIA()))
+	{
+		_isSupportedHDR = false; 
+		return;
+	}
+
+	/*-------------------------------------------------------------------
 	-              Search EnableHDR output
 	---------------------------------------------------------------------*/
-	for(std::uint32_t i = 0; dxAdapter->EnumOutputs(i, output.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
+	for(uint32 i = 0; dxAdapter->EnumOutputs(i, output.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
 #if DXGI_MAX_OUTPUT_INTERFACE >= 6
 		
@@ -622,6 +634,8 @@ void RHIDevice::SetupDisplayHDRMetaData()
 				---------------------------------------------------------------------*/
 				_displayInfo = 
 				{
+					core::DisplayColorGamut::Rec2020_D65,
+					desc.MaxLuminance <= 1000.0f ? core::DisplayOutputFormat::HDR_ACES_1000nit_ST2084 : core::DisplayOutputFormat::HDR_ACES_2000nit_ST2084,
 					{desc.RedPrimary  [0], desc.RedPrimary  [1]},
 					{desc.GreenPrimary[0], desc.GreenPrimary[1]},
 					{desc.BluePrimary [0], desc.BluePrimary [1]},

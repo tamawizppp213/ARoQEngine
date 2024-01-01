@@ -65,6 +65,8 @@ PlatformApplication::PlatformApplication() : core::PlatformApplication()
 	/*---------------------------------------------------------------
 					Create instance handle
 	-----------------------------------------------------------------*/
+	windows::PlatformCommand::CoInitialize();
+
 	_instanceHandle = GetModuleHandleA(NULL);
 	Checkf(_instanceHandle, "_instanceHandle is nullptr.\n");
 
@@ -94,7 +96,7 @@ PlatformApplication::~PlatformApplication()
 	_messageList.clear();
 	_messageList.shrink_to_fit();
 
-	::CoUninitialize();
+	windows::PlatformCommand::CoUnInitialize();
 
 	printf_s("Windows application is destroyed\n");
 }
@@ -326,7 +328,7 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 				return 0;
 			}
 
-			_messageHandler->OnSizeChanged(LOWORD(message.LParam), HIWORD(message.LParam));
+			_messageHandler->OnSizeChanged(window, LOWORD(message.LParam), HIWORD(message.LParam));
 
 			switch (message.WParam)
 			{

@@ -31,6 +31,7 @@
 #include "MainGame/Core/Include/SceneManager.hpp"
 #include "Platform/Windows/Include/WindowsCursor.hpp"
 
+#include "GameUtility/Base/Include/Screen.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -175,6 +176,9 @@ void PPPEngine::ExecuteRenderThread()
 	{
 		// 開始処理 : コマンドバッファをOpenにする
 		_graphicsEngine->BeginDrawFrame();
+
+		// 描画ループ前にウィンドウサイズが変更されていたらすぐにバッファを変えておく.
+		_graphicsEngine->OnResize(Screen::GetScreenWidth(), Screen::GetScreenHeight());
 
 		// 初期レンダーパスの設定
 		_graphicsEngine->BeginSwapchainRenderPass();

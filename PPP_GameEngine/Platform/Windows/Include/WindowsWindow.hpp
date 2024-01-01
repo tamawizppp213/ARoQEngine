@@ -174,6 +174,10 @@ namespace platform::windows
 		virtual gu::int32 GetWindowTitleBarSize() const override;
 
 		/*---------------------------------------------------------------
+		　　　　　@brief : windowの現在の左上の位置を返します.
+		-----------------------------------------------------------------*/
+		virtual void GetWindowPostion(gu::int32& x, gu::int32& y) const override;
+		/*---------------------------------------------------------------
 		　　　　　@brief : return the title bar size
 		-----------------------------------------------------------------*/
 		bool GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height);

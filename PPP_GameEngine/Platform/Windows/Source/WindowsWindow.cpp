@@ -1000,6 +1000,29 @@ int32 CoreWindow::GetWindowTitleBarSize() const
 {
 	return ::GetSystemMetrics(SM_CYCAPTION);
 }
+
+/****************************************************************************
+*                     GetWindowPostion
+*************************************************************************//**
+*  @fn        void CoreWindow::GetWindowPostion(gu::int32& x, gu::int32& y) const
+*
+*  @brief     ウィンドウの左上の位置を返します
+*
+*  @param[out] gu::int32& x
+*  @param[out] gu::int32& y 
+* 
+*  @return    int32 size
+*****************************************************************************/
+void CoreWindow::GetWindowPostion(gu::int32& x, gu::int32& y) const
+{
+	RECT rect = { NULL };
+	if (GetWindowRect(_hwnd, &rect))
+	{
+		x = rect.left;
+		y = rect.top;
+	}
+}
+
 /****************************************************************************
 *                     GetRestoredDimensions
 *************************************************************************//**

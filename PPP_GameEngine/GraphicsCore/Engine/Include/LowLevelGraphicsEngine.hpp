@@ -113,6 +113,7 @@ public:
 	rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
 
 	gu::SharedPointer<rhi::core::RHISwapchain> GetSwapchain() const noexcept { return _swapchain; }
+	
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/

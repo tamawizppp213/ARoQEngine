@@ -46,7 +46,11 @@ RHISwapchain::RHISwapchain(const gu::SharedPointer<core::RHIDevice>& device, con
 
 RHISwapchain::~RHISwapchain()
 {
-	if (_swapchain) { _swapchain.Reset(); }
+	if (_swapchain) 
+	{
+		SwitchFullScreenMode(false);
+		_swapchain.Reset();
+	}
 }
 
 #pragma endregion Constructor and Destructor
@@ -55,9 +59,12 @@ RHISwapchain::~RHISwapchain()
 *							Resize
 *************************************************************************//**
 *  @fn        void RHISwapchain::Resize(const size_t width, const size_t height)
+* 
 *  @brief     Resize screen size. (set resized swapchain buffers )
+* 
 *  @param[in] const size_t width
 *  @param[in] const size_t height
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHISwapchain::Resize(const size_t width, const size_t height)
@@ -141,12 +148,16 @@ void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const
 	}
 	ThrowIfFailed(_swapchain->Present(_desc.VSync, presentFlags));
 }
+
 /****************************************************************************
 *							GetCurrentBufferIndex
 *************************************************************************//**
 *  @fn        size_t RHISwapchain::GetCurrentBufferIndex() const
-*  @brief     Get current buffer 
+* 
+*  @brief     現在のバッファーのIndexを返します
+* 
 *  @param[in] void
+* 
 *  @return 　　size_t
 *****************************************************************************/
 size_t RHISwapchain::GetCurrentBufferIndex() const
@@ -154,6 +165,18 @@ size_t RHISwapchain::GetCurrentBufferIndex() const
 	return static_cast<size_t>(_swapchain->GetCurrentBackBufferIndex());
 }
 
+/****************************************************************************
+*                      SwitchFullScreenMode
+*************************************************************************//**
+*  @fn        void RHISwapchain::SwitchFullScreenMode(const bool isOn)
+*
+*  @brief     フルスクリーンモードを設定する 
+(isOn : true->フルスクリーンモードに移行する. false : windowモードに移行する)
+*
+*  @param[in] bool is Full screen mode on
+*
+*  @return    void
+*****************************************************************************/
 void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 {
 	// 現在のモードが同じときは特に何もしない. 
@@ -161,7 +184,11 @@ void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 
 	if (FAILED(_swapchain->SetFullscreenState(isOn, nullptr)))
 	{
-		OutputDebugStringA("failed to switch swapchain mode");
+#if PLATFORM_OS_WINDOWS
+		OutputDebugStringA("failed to switch swapchain mode\n");
+#else
+		_RPT0(_CRT_WARN, "failed to switch swapchain mode\n");
+#endif
 		return;
 	}
 	_isFullScreen = isOn;
@@ -293,11 +320,11 @@ void RHISwapchain::SetUp()
 	/*-------------------------------------------------------------------
 	-                  HDRの設定
 	---------------------------------------------------------------------*/
-	if (rhiDevice->IsSupportedHDR() && _desc.IsValidHDR)
+	EnsureSwapChainColorSpace(rhiDevice->GetHDRDisplayInfo().ColorGamut, rhiDevice->GetHDRDisplayInfo().DisplayFormat);
+	/*if (rhiDevice->IsSupportedHDR() && _desc.IsValidHDR)
 	{
-		EnsureSwapChainColorSpace();
 		SetHDRMetaData();
-	}
+	}*/
 
 	/*-------------------------------------------------------------------
 	-                   Set Back Buffer
@@ -319,6 +346,73 @@ void RHISwapchain::SetUp()
 	}
 
 }
+
+/****************************************************************************
+*                      StartUpHDR
+*************************************************************************//**
+*  @fn        void RHISwapchain::StartUpHDR()
+*
+*  @brief     HDRモードとSDRモードを切り替える
+*
+*  @param[in] bool enableHDR
+*
+*  @return    void
+*****************************************************************************/
+void RHISwapchain::SwitchHDRMode(const bool enableHDR)
+{
+	const auto rhiDevice = gu::StaticPointerCast<RHIDevice>(_device);
+	const auto& hdrInfo  = rhiDevice->GetHDRDisplayInfo();
+	if (rhiDevice->IsSupportedHDR() && enableHDR)
+	{
+		EnsureSwapChainColorSpace(hdrInfo.ColorGamut, hdrInfo.DisplayFormat);
+	}
+	else
+	{
+		EnsureSwapChainColorSpace(core::DisplayColorGamut::SRGB_D65, core::DisplayOutputFormat::SDR_SRGB);
+	}
+}
+
+/****************************************************************************
+*                      IsSupportedHDRInDisplayOutput
+*************************************************************************//**
+*  @fn        bool RHISwapchain::IsSupportedHDRInCurrentDisplayOutput()
+*
+*  @brief     現在のディスプレイ出力がHDR機能をサポートしているかを調べる
+*             ただし, swapchainのバージョンが4より小さい場合は常にfalseを返すので注意すること
+*
+*  @param[in] void
+*
+*  @return    bool
+*****************************************************************************/
+bool RHISwapchain::IsSupportedHDRInCurrentDisplayOutput()
+{
+	if constexpr (DXGI_MAX_SWAPCHAIN_INTERFACE < 4) { return false; }
+
+	/*-------------------------------------------------------------------
+	-        Prepare
+	---------------------------------------------------------------------*/
+	const auto rhiDevice  = gu::StaticPointerCast<RHIDevice>(_device);
+	const auto dxInstance = static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance());
+	const auto factory    = dxInstance->GetFactory();
+
+	/*-------------------------------------------------------------------
+	-        Get the display information that we are presenting to 
+	---------------------------------------------------------------------*/
+	ComPtr<IDXGIOutput> output = nullptr;
+	ThrowIfFailed(_swapchain->GetContainingOutput(output.GetAddressOf()));
+
+	ComPtr<IDXGIOutput6> output6 = nullptr;
+	if (FAILED(output->QueryInterface(IID_PPV_ARGS(output6.GetAddressOf())))) { return false; }
+
+	DXGI_OUTPUT_DESC1 outputDesc = {};
+	ThrowIfFailed(output6->GetDesc1(&outputDesc));
+
+	/*-------------------------------------------------------------------
+	-        Check the color space which is able to use in the HDR mode
+	         (rgb color format + P2020)
+	---------------------------------------------------------------------*/
+	return outputDesc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+}
 #pragma endregion Main Function
 
 # pragma region Color Space
@@ -328,6 +422,7 @@ void RHISwapchain::SetUp()
 *  @fn        void RHISwapchain::EnsureSwapChainColorSpace()
 * 
 *  @brief     Check SwapChain Color Space
+*             (こちらはピクセルフォーマットにのっとって移行します. 今後は未使用になります)
 * 
 *  @param[in] void
 * 
@@ -354,7 +449,75 @@ void RHISwapchain::EnsureSwapChainColorSpace()
 	}
 
 	_swapchain->SetColorSpace1(colorSpace);
+	_colorSpace = colorSpace;
+}
+
+/****************************************************************************
+*                     EnsureSwapChainColorSpace
+*************************************************************************//**
+*  @fn        void RHISwapchain::EnsureSwapChainColorSpace(const core::DisplayColorGamut colorGamut, const core::DisplayOutputFormat displayFormat)
+*
+*  @brief     Check SwapChain Color Space
+*
+*  @param[in] core::DisplayColorGamut color gamut
+*  @param[in] core::DisplayOutputFormat display format
+*
+*  @return 　　void
+*****************************************************************************/
+void RHISwapchain::EnsureSwapChainColorSpace(const core::DisplayColorGamut colorGamut, const core::DisplayOutputFormat displayFormat)
+{
+	Confirm(_swapchain);
+
+	/*-------------------------------------------------------------------
+	-                  Displayの出力フォーマットの設定
+	---------------------------------------------------------------------*/
+	auto colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709; // srgb
 	
+	switch (displayFormat)
+	{
+		// gamma 2.2
+		case core::DisplayOutputFormat::SDR_SRGB:
+		case core::DisplayOutputFormat::SDR_Rec709:
+		{
+			colorSpace = colorGamut == core::DisplayColorGamut::Rec2020_D65 ? 
+				DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P2020 : DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
+			break;
+		}
+
+		// gamma ST.2084
+		case core::DisplayOutputFormat::HDR_ACES_1000nit_ST2084:
+		case core::DisplayOutputFormat::HDR_ACES_2000nit_ST2084:
+		{
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+			break;
+		}
+
+		// gamma 1.0 (Linear)
+		case core::DisplayOutputFormat::HDR_ACES_1000nit_ScRGB:
+		case core::DisplayOutputFormat::HDR_ACES_2000nit_ScRGB:
+		{
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
+			break;
+		}
+
+	}
+
+	/*-------------------------------------------------------------------
+	-                  色空間を設定する
+	---------------------------------------------------------------------*/
+	if (_colorSpace == colorSpace) { return; }
+
+	// color spaceがサポートされているかのチェック
+#if DXGI_MAX_SWAPCHAIN_INTERFACE >= 4
+	uint32 colorSpaceSupport = 0;
+
+	const auto result = _swapchain->CheckColorSpaceSupport(colorSpace, &colorSpaceSupport);
+	if (SUCCEEDED(result) && ((colorSpaceSupport & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT) != 0))
+#endif
+	{
+		ThrowIfFailed(_swapchain->SetColorSpace1(colorSpace));
+		_colorSpace = colorSpace;
+	}
 }
 
 /****************************************************************************

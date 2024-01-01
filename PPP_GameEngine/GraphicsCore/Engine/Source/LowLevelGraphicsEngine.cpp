@@ -114,7 +114,7 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 		.VSync            = VSYNC,
 		.IsValidHDR       = true,
 		.IsValidStereo    = false,
-		.IsFullScreen     = true,
+		.IsFullScreen     = false,
 	};
 
 	_swapchain   = _device   ->CreateSwapchain(swapchainDesc);

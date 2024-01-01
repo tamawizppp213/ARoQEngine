@@ -65,5 +65,43 @@ gu::UUID PlatformCommand::IssueUUID()
 	Confirmf(CoCreateGuid((GUID*)&uuid) == S_OK, "failed to create uuid");
 	return uuid;
 }
+
+#pragma region Initialize and Finalize Windows.h
+/****************************************************************************
+*                       CoInitialize
+*************************************************************************//**
+*  @fn        bool PlatformCommand::CoInitialize(const bool useMultiThread = false)
+*
+*  @brief     COMライブラリを初期化します
+*
+* 　@param[in] bool useMultiThread
+*
+*  @return 　　bool
+*****************************************************************************/
+bool PlatformCommand::CoInitialize(const bool useMultiThread)
+{
+	HRESULT hResult = ::CoInitializeEx(nullptr, useMultiThread ? COINIT_MULTITHREADED : COINIT_APARTMENTTHREADED);
+	
+	// S_FALSEについては既に初期化が行われているために成功判定とみなします. 
+	return hResult == S_OK || hResult == S_FALSE;
+}
+
+/****************************************************************************
+*                       CoUnInitialize
+*************************************************************************//**
+*  @fn        bool PlatformCommand::CoUnInitialize()
+*
+*  @brief     COMライブラリを初期化します
+*
+* 　@param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void PlatformCommand::CoUnInitialize()
+{
+	::CoUninitialize();
+}
+
+#pragma endregion Initialize and Finalize Windows.h
 #pragma endregion Main Function
 #endif

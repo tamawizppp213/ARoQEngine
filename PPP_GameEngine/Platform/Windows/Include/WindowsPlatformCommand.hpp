@@ -46,8 +46,22 @@ namespace platform::windows
 		void PutDebugBreak() const override;
 
 #pragma endregion Debugging Command
+
+#pragma region Initialize and Finalize Windows.h
 		/*----------------------------------------------------------------------
-		*  @brief : オブジェクトを特定するUUIDを発行します. 
+		*  @brief : COMライブラリの初期化
+		/*----------------------------------------------------------------------*/
+		static bool CoInitialize(const bool useMultiThread = false);
+
+		/*----------------------------------------------------------------------
+		*  @brief : COMライブラリの終了
+		/*----------------------------------------------------------------------*/
+		static void CoUnInitialize();
+
+#pragma endregion Initialize and Finalize Windows.h
+
+		/*----------------------------------------------------------------------
+		*  @brief : オブジェクトを特定するUUIDを発行します.
 		/*----------------------------------------------------------------------*/
 		gu::UUID IssueUUID() override;
 		/****************************************************************************

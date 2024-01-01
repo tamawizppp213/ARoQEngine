@@ -91,6 +91,8 @@ namespace platform::core
 
 		WindowMode GetWindowMode() const { return _windowDesc.WindowMode; };
 
+		virtual void GetWindowPostion(gu::int32& x, gu::int32& y) const = 0;
+
 		/*---------------------------------------------------------------
 		　　　　　@brief : return the border size
 		-----------------------------------------------------------------*/

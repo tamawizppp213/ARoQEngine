@@ -47,7 +47,7 @@ namespace platform::core
 		virtual bool OnWindowClosed(const CoreWindowPtr& window) = 0;
 
 		/* @brief : This function is called by the window size changed*/
-		virtual bool OnSizeChanged(const std::uint32_t width, const std::uint32_t height) = 0;
+		virtual bool OnSizeChanged(const CoreWindowPtr& window, const gu::uint32 width, const gu::uint32 height) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

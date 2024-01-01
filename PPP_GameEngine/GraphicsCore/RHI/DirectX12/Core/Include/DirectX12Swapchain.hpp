@@ -54,10 +54,22 @@ namespace rhi::directX12
 		/* @brief : Return current frame buffer*/
 		size_t GetCurrentBufferIndex() const override;
 
-		/* @brief : Switch between fullscreen mode and specified resolution screen mode.
-		            isOn = true : proceed fullscreen mode. false : specified resolution screen mode */
+		/*----------------------------------------------------------------------
+		*  @brief :  フルスクリーンモードと指定された解像度のスクリーンモードを切り替える
+		* 　　　　　　  (isOn : true->フルスクリーンモードに移行する. false : windowモードに移行する)
+		/*----------------------------------------------------------------------*/       
 		void SwitchFullScreenMode(const bool isOn) override;
 		
+		/*----------------------------------------------------------------------
+		*  @brief :  HDRモードとSDRモードを切り替える
+		/*----------------------------------------------------------------------*/
+		void SwitchHDRMode(const bool enableHDR) override;
+
+		/*----------------------------------------------------------------------
+		*  @brief :  現在のディスプレイ出力がHDR機能をサポートしているかを調べる
+		/*----------------------------------------------------------------------*/
+		bool IsSupportedHDRInCurrentDisplayOutput();
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -96,6 +108,8 @@ namespace rhi::directX12
 
 		DXGI_FORMAT          _backBufferFormat; // color format
 
+		DXGI_COLOR_SPACE_TYPE _colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
+
 		/*----------------------------------------------------------------------
 		*  @brief : VSyncが0のときかつ, AllowTearingがサポートされているなら,　
 		*           スワップの準備が出来るまで待つようにします.
@@ -106,6 +120,8 @@ namespace rhi::directX12
 		**                Private Function
 		*****************************************************************************/
 		void EnsureSwapChainColorSpace();
+		void EnsureSwapChainColorSpace(const core::DisplayColorGamut colorGamut, const core::DisplayOutputFormat displayFormat);
+
 		void SetHDRMetaData();
 	};
 }

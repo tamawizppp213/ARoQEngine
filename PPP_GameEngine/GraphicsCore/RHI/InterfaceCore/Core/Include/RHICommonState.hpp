@@ -98,7 +98,71 @@ namespace rhi::core
 		}
 	};
 #pragma endregion         Index
+	#pragma region Window Surface
+	/****************************************************************************
+	*				  			Viewport 
+	*************************************************************************//**
+	*  @class     Viewport 
+	*  @brief     Rect Viewport 
+	*****************************************************************************/
+	struct Viewport
+	{
+		float TopLeftX  = 0.0f; 
+		float TopLeftY  = 0.0f;
+		float Width     = 0.0f;
+		float Height    = 0.0f;
+		float MinDepth  = 0.0f;
+		float MaxDepth  = 1.0f;
+		Viewport() = default;
+		Viewport(float topLeftX, float topLeftY, float width, float height, float minDepth = 0.0f, float maxDepth = 1.0f)
+		{
+			this->TopLeftX = topLeftX; this->TopLeftY = topLeftY; this->Width = width; this->Height = height; this->MinDepth = minDepth; this->MaxDepth = maxDepth;
+		}
+	};
+	/****************************************************************************
+	*				  			ScissorRect
+	*************************************************************************//**
+	*  @class     ScissorRect
+	*  @brief     Scissor Rectangle
+	*****************************************************************************/
+	struct ScissorRect
+	{
+		long Left   = 0; // Left window position
+		long Top    = 0; // top window position
+		long Right  = 0; // right window position
+		long Bottom = 0; // bottom window position
+		ScissorRect() = default;
+		ScissorRect(long left, long top, long right, long bottom)
+		{
+			this->Left = left; this->Top = top; this->Right = right; this->Bottom = bottom;
+		}
+	};
+
+	/****************************************************************************
+	*				  			WindowInfo
+	*************************************************************************//**
+	*  @struct    WindowInfo
+	*  @brief     Window size and window handle pointer
+	*****************************************************************************/
+	struct WindowInfo
+	{
+		size_t Width     = 0;       // window width
+		size_t Height    = 0;       // window height
+		void*  Handle    = nullptr; // window handle pointer 
+		void*  HInstance = nullptr; // window instance for Windows API
+
+		WindowInfo()  = default;
+
+		WindowInfo(size_t width, size_t height, void* handle, void* hInstance = nullptr)
+		{
+			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
+		}
+
+	};
+
+#pragma endregion    Window Surface
 #pragma region Pixel
+
 	enum class ShadingRate
 	{
 		K_1x1,
@@ -109,6 +173,65 @@ namespace rhi::core
 		K_4x2,
 		K_4x4
 	};
+
+	/****************************************************************************
+	*				  			DisplayOutputFormat
+	*************************************************************************//**
+	*  @enum      DisplayOutputFormat
+	*  @brief     Color format
+	*****************************************************************************/
+	enum class DisplayOutputFormat
+	{
+		SDR_SRGB,
+		SDR_Rec709,
+		HDR_ACES_1000nit_ST2084,
+		HDR_ACES_2000nit_ST2084,
+		HDR_ACES_1000nit_ScRGB,
+		HDR_ACES_2000nit_ScRGB,
+		HDR_Linear_NoToneCurve,
+		HDR_Linear_WithToneCurve
+	};
+
+	/****************************************************************************
+	*				  			DisplayColorGamut
+	*************************************************************************//**
+	*  @enum      DisplayColorGamut
+	*  @brief     Color range
+	*             https://uwatechnologies.hatenablog.com/entry/2022/04/09/001938
+	* 　　　　　 　　　https://garagefarm.net/jp-blog/what-is-color-space-and-why-you-should-use-aces
+	*             https://qiita.com/UWATechnology/items/2a40dbc66bf48041d405
+	*****************************************************************************/
+	enum class DisplayColorGamut
+	{
+		SRGB_D65,    // srgb color format    + white point D65 (Windows標準色域)
+		DCIP3_D65,   // dcpi3   color format + white point D65 (映像撮影に使われるカラーフィルムの色域に対応した広範囲の色域を表現できる規格)
+		Rec2020_D65, // rec2020 color format + white point D65 (HDR用に使われる色域)
+		ACES_D60,    // aces    color format + white point D60 (ダイナミックレンジが広い)  
+		ACEScg_D60   // aces cg color format 
+	};
+
+	/****************************************************************************
+	*				  			HDRDisplayInfo
+	*************************************************************************//**
+	*  @enum      HDRDisplayInfo
+	*  @brief     HDR display settings (RHIDeviceにて設定を行います)
+	*             https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
+	*****************************************************************************/
+	struct HDRDisplayInfo
+	{
+		DisplayColorGamut   ColorGamut    = DisplayColorGamut::SRGB_D65;
+		DisplayOutputFormat DisplayFormat = DisplayOutputFormat::SDR_SRGB;
+		float RedPrimary[2]         = {0,0}; // red   xy coordinate in the color space
+		float GreenPrimary[2]       = {0,0}; // green xy coordinate in the color space
+		float BluePrimary[2]        = {0,0}; // blue  xy coordinate in the color space
+		float WhitePoint[2]         = {0,0}; // white xy coordinate in the color space
+		float MinLuminance          = 0.0f;  // nits
+		float MaxLuminacnce         = 0.0f;  // nits
+		float MaxFullFrameLuminance = 0.0f;
+		ScissorRect Rect = {};
+	};
+
+
 	/****************************************************************************
 	*				  			PixelFormat
 	*************************************************************************//**
@@ -152,6 +275,7 @@ namespace rhi::core
 		B8G8R8A8_UNORM_SRGB,
 		CountOfPixelFormat
 	};
+
 	/****************************************************************************
 	*				  			PixelFormatSizeOf
 	*************************************************************************//**
@@ -1177,84 +1301,5 @@ namespace rhi::core
 		
 	};
 #pragma endregion       Render Pass
-#pragma region Window Surface
-	/****************************************************************************
-	*				  			Viewport 
-	*************************************************************************//**
-	*  @class     Viewport 
-	*  @brief     Rect Viewport 
-	*****************************************************************************/
-	struct Viewport
-	{
-		float TopLeftX  = 0.0f; 
-		float TopLeftY  = 0.0f;
-		float Width     = 0.0f;
-		float Height    = 0.0f;
-		float MinDepth  = 0.0f;
-		float MaxDepth  = 1.0f;
-		Viewport() = default;
-		Viewport(float topLeftX, float topLeftY, float width, float height, float minDepth = 0.0f, float maxDepth = 1.0f)
-		{
-			this->TopLeftX = topLeftX; this->TopLeftY = topLeftY; this->Width = width; this->Height = height; this->MinDepth = minDepth; this->MaxDepth = maxDepth;
-		}
-	};
-	/****************************************************************************
-	*				  			ScissorRect
-	*************************************************************************//**
-	*  @class     ScissorRect
-	*  @brief     Scissor Rectangle
-	*****************************************************************************/
-	struct ScissorRect
-	{
-		long Left   = 0; // Left window position
-		long Top    = 0; // top window position
-		long Right  = 0; // right window position
-		long Bottom = 0; // bottom window position
-		ScissorRect() = default;
-		ScissorRect(long left, long top, long right, long bottom)
-		{
-			this->Left = left; this->Top = top; this->Right = right; this->Bottom = bottom;
-		}
-	};
-	// https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
-	struct HDRDisplayInfo
-	{
-		float RedPrimary[2]   = {0,0};   // red   xy coordinate in the color space
-		float GreenPrimary[2] = {0,0}; // green xy coordinate in the color space
-		float BluePrimary[2]  = {0,0};  // blue  xy coordinate in the color space
-		float WhitePoint[2]   = {0,0};   // white xy coordinate in the color space
-		float MinLuminance    = 0.0f;    // nits
-		float MaxLuminacnce   = 0.0f;   // nits
-		float MaxFullFrameLuminance = 0.0f;
-		ScissorRect Rect = {};
-	};
-
-	/****************************************************************************
-	*				  			WindowInfo
-	*************************************************************************//**
-	*  @struct    WindowInfo
-	*  @brief     Window size and window handle pointer
-	*****************************************************************************/
-	struct WindowInfo
-	{
-		size_t Width     = 0;       // window width
-		size_t Height    = 0;       // window height
-		void*  Handle    = nullptr; // window handle pointer 
-		void*  HInstance = nullptr; // window instance for Windows API
-
-		WindowInfo()  = default;
-
-		WindowInfo(size_t width, size_t height, void* handle, void* hInstance = nullptr)
-		{
-			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
-		}
-
-	};
-
-#pragma endregion    Window Surface
-
-#pragma region HDR
-
-#pragma endregion HDR
 }
 #endif

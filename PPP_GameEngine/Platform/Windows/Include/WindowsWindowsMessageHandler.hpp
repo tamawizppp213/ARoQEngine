@@ -27,9 +27,9 @@
 namespace platform::windows
 {
 	/****************************************************************************
-	*				  			    ICursor
+	*				  		CoreWindowMessageHandler
 	*************************************************************************//**
-	*  @class     ICursor
+	*  @class     CoreWindowMessageHandler
 	*  @brief     Cursor interface
 	*****************************************************************************/
 	class CoreWindowMessageHandler : public core::CoreWindowMessageHandler
@@ -42,7 +42,7 @@ namespace platform::windows
 
 		bool OnWindowClosed(const CoreWindowPtr& window) override;
 
-		bool OnSizeChanged(const std::uint32_t width, const std::uint32_t height) override;
+		bool OnSizeChanged(const CoreWindowPtr& window, const gu::uint32 width, const gu::uint32 height) override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -61,6 +61,7 @@ namespace platform::windows
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		bool _isResizing = false;
 	};
 }
 #endif
