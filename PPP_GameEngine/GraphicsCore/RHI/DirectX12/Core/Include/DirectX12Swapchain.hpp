@@ -47,7 +47,7 @@ namespace rhi::directX12
 		void Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue) override ;
 		
 		/*----------------------------------------------------------------------
-		*  @brief :  Resize screen size. Rebuild everything once and update again.
+		*  @brief :  画面サイズを変更する。一度すべてを再構築し、再度アップデートする。
 		/*----------------------------------------------------------------------*/
 		void Resize(const size_t width, const size_t height) override ;
 		
@@ -102,12 +102,16 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		// @brief : swapchain
 		SwapchainComPtr      _swapchain = nullptr;
 
+		// @brief : swapchainの設定
 		DXGI_SWAP_CHAIN_FLAG _swapchainFlag;
 
+		// @brief : ピクセルの色フォーマット
 		DXGI_FORMAT          _backBufferFormat; // color format
 
+		// @brief : 色空間
 		DXGI_COLOR_SPACE_TYPE _colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
 
 		/*----------------------------------------------------------------------

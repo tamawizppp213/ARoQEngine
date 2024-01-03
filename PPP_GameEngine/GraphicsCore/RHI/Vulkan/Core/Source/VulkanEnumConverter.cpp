@@ -70,18 +70,18 @@ VkShaderStageFlagBits  EnumConverter::Convert(const rhi::core::ShaderType type)
 			throw std::runtime_error("Not support shader stage");
 	}
 }
-VkShaderStageFlagBits EnumConverter::Convert(const rhi::core::ShaderVisibility visibility)
+VkShaderStageFlagBits EnumConverter::Convert(const rhi::core::ShaderVisibleFlag visibility)
 {
 	switch (visibility)
 	{
-		case core::ShaderVisibility::All          : return VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
-		case core::ShaderVisibility::Vertex       : return VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
-		case core::ShaderVisibility::Pixel        : return VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
-		case core::ShaderVisibility::Geometry     : return VkShaderStageFlagBits::VK_SHADER_STAGE_GEOMETRY_BIT;
-		case core::ShaderVisibility::Amplification: return VkShaderStageFlagBits::VK_SHADER_STAGE_TASK_BIT_NV;
-		case core::ShaderVisibility::Mesh         : return VkShaderStageFlagBits::VK_SHADER_STAGE_MESH_BIT_NV;
-		case core::ShaderVisibility::Hull         : return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-		case core::ShaderVisibility::Domain       : return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+		case core::ShaderVisibleFlag::All          : return VkShaderStageFlagBits::VK_SHADER_STAGE_ALL;
+		case core::ShaderVisibleFlag::Vertex       : return VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
+		case core::ShaderVisibleFlag::Pixel        : return VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
+		case core::ShaderVisibleFlag::Geometry     : return VkShaderStageFlagBits::VK_SHADER_STAGE_GEOMETRY_BIT;
+		case core::ShaderVisibleFlag::Amplification: return VkShaderStageFlagBits::VK_SHADER_STAGE_TASK_BIT_NV;
+		case core::ShaderVisibleFlag::Mesh         : return VkShaderStageFlagBits::VK_SHADER_STAGE_MESH_BIT_NV;
+		case core::ShaderVisibleFlag::Hull         : return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+		case core::ShaderVisibleFlag::Domain       : return VkShaderStageFlagBits::VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
 		default:
 			throw std::runtime_error("Not support shader visibility");
 	}

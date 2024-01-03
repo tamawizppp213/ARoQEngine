@@ -68,14 +68,14 @@ void RHIResourceLayout::SetUp()
 	-                 Find the max register space
 	---------------------------------------------------------------------*/
 	size_t maxRegisterSpace = 0;
-	for (const auto& element : _elements) { maxRegisterSpace = std::max(maxRegisterSpace, element.RegisterSpace + 1); }
-	for (const auto& sampler : _samplers) { maxRegisterSpace = std::max(maxRegisterSpace, sampler.RegisterSpace + 1); }
+	for (const auto& element : _desc.Elements) { maxRegisterSpace = std::max(maxRegisterSpace, element.RegisterSpace + 1); }
+	for (const auto& sampler : _desc.Samplers) { maxRegisterSpace = std::max(maxRegisterSpace, sampler.RegisterSpace + 1); }
 
 	std::vector<std::vector<VkDescriptorSetLayoutBinding>> bindings(maxRegisterSpace);
 	/*-------------------------------------------------------------------
 	-                 Generate the binding infomation of elements
 	---------------------------------------------------------------------*/
-	for (const auto& element : _elements)
+	for (const auto& element : _desc.Elements)
 	{
 		const VkDescriptorSetLayoutBinding binding =
 		{
@@ -92,7 +92,7 @@ void RHIResourceLayout::SetUp()
 	/*-------------------------------------------------------------------
 	-                 Generate the binding infomation of samplers
 	---------------------------------------------------------------------*/
-	for (const auto& sampler : _samplers)
+	for (const auto& sampler : _desc.Samplers)
 	{
 		const VkDescriptorSetLayoutBinding binding = 
 		{
@@ -133,11 +133,11 @@ void RHIResourceLayout::SetUp()
 	-                Create constant range
 	---------------------------------------------------------------------*/
 	VkPushConstantRange range = {};
-	if (_constant32Bits.has_value())
+	if (_desc.Constant32Bits.has_value())
 	{
 		range.offset     = 0;
-		range.size       = static_cast<std::uint32_t>(_constant32Bits->Count * sizeof(std::uint32_t));
-		range.stageFlags = EnumConverter::Convert(_constant32Bits->Visibility);
+		range.size       = static_cast<std::uint32_t>(_desc.Constant32Bits->Count * sizeof(std::uint32_t));
+		range.stageFlags = EnumConverter::Convert(_desc.Constant32Bits->Visibility);
 	}
 
 	/*-------------------------------------------------------------------
@@ -147,7 +147,7 @@ void RHIResourceLayout::SetUp()
 	layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	layoutInfo.flags = 0;
 	layoutInfo.setLayoutCount         = static_cast<std::uint32_t>(_descriptorSetLayouts.size());
-	layoutInfo.pushConstantRangeCount = _constant32Bits.has_value() ? 1 : 0;
+	layoutInfo.pushConstantRangeCount = _desc.Constant32Bits.has_value() ? 1 : 0;
 	layoutInfo.pSetLayouts            = _descriptorSetLayouts.data();
 	layoutInfo.pPushConstantRanges    = &range;
 

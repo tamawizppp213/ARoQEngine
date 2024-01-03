@@ -21,6 +21,7 @@
 using namespace rhi;
 using namespace rhi::directX12;
 using namespace Microsoft::WRL;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -42,6 +43,13 @@ RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& d
 	SetName(name);
 }
 
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const rhi::core::RHIResourceLayoutDesc& desc, const std::wstring& name)
+	: core::RHIResourceLayout(device, desc)
+{
+	SetUp();
+	SetName(name);
+}
+
 #pragma region SetUp Function
 /****************************************************************************
 *                     SetUp
@@ -56,44 +64,76 @@ RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& d
 *****************************************************************************/
 void RHIResourceLayout::SetUp()
 {
+	const auto rhiDevice  = gu::StaticPointerCast<directX12::RHIDevice>(_device);
 	DeviceComPtr dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
-
-	std::vector<D3D12_DESCRIPTOR_RANGE>    ranges(_elements.size());
-	std::vector<D3D12_SHADER_VISIBILITY>   visibilities(_elements.size());
-	std::vector<D3D12_STATIC_SAMPLER_DESC> staticSamplerArrays = {};
 	
+	// Binding Tier
+	_bindingTier = rhiDevice->GetResourceBindingTier();
+
+	/*-------------------------------------------------------------------
+	-                   Prepare
+	---------------------------------------------------------------------*/
+	std::vector<D3D12_DESCRIPTOR_RANGE>    ranges(_desc.Elements.size());
+	std::vector<D3D12_SHADER_VISIBILITY>   visibilities(_desc.Elements.size());
+	std::vector<D3D12_STATIC_SAMPLER_DESC> staticSamplerArrays = {};
+
 	/*-------------------------------------------------------------------
 	-                   Set resource layout state
 	---------------------------------------------------------------------*/
-	for (size_t i = 0; i < _elements.size(); ++i)
+	std::vector<int32> shaderStageCounter((int32)core::ShaderVisibleFlag::CountOfPipeline);
+	const core::ShaderVisibleFlag shaderStageFlags[] =
 	{
-		visibilities[i]                             = EnumConverter::Convert(_elements[i].Visibility);
-		ranges[i].RangeType                         = EnumConverter::Convert1(_elements[i].DescriptorType);
+		core::ShaderVisibleFlag::Vertex, 
+		core::ShaderVisibleFlag::Hull, 
+		core::ShaderVisibleFlag::Domain,
+		core::ShaderVisibleFlag::Geometry,
+		core::ShaderVisibleFlag::Pixel,
+		core::ShaderVisibleFlag::Amplification,
+		core::ShaderVisibleFlag::Mesh
+	};
+
+	for (size_t i = 0; i < _desc.Elements.size(); ++i)
+	{
+		const auto visibilityValue = (int16)_desc.Elements[i].Visibility;
+		const bool hasSingleIndex = visibilityValue != 0 && ((visibilityValue & (visibilityValue - 1)) == 0);
+		// フラグが複数ある場合は必ずALLに設定した後で, 後に続くDeny flagによってパイプラインに流さない設定を行う.
+		visibilities[i]                             = hasSingleIndex ? EnumConverter::Convert(_desc.Elements[i].Visibility) : D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_ALL;
+		ranges[i].RangeType                         = EnumConverter::Convert1(_desc.Elements[i].DescriptorType);
 		ranges[i].NumDescriptors                    = 1;
-		ranges[i].BaseShaderRegister                = static_cast<UINT>(_elements[i].Binding);
-		ranges[i].RegisterSpace                     = static_cast<UINT>(_elements[i].RegisterSpace);
+		ranges[i].BaseShaderRegister                = static_cast<UINT>(_desc.Elements[i].Binding);
+		ranges[i].RegisterSpace                     = static_cast<UINT>(_desc.Elements[i].RegisterSpace);
 		ranges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+		// 各描画パイプラインのステージでの個数を取得
+		for (size_t j = 0; j < shaderStageCounter.size(); ++j)
+		{
+			if (visibilityValue & (int16)shaderStageFlags[j])
+			{
+				shaderStageCounter[j]++;
+			}
+		}
 	}
 
 	/*-------------------------------------------------------------------
 	-                   Set static sampler states
 	---------------------------------------------------------------------*/
-	for (auto& sampler : _samplers)
+	for (auto& sampler : _desc.Samplers)
 	{
 		auto& samplerInfo = static_cast<rhi::directX12::GPUSampler*>(sampler.Sampler.Get())->GetSamplerDesc();
 		samplerInfo.ShaderVisibility = EnumConverter::Convert(sampler.Visibility);
 		samplerInfo.ShaderRegister   = static_cast<UINT>(sampler.Binding);
 		samplerInfo.RegisterSpace    = static_cast<UINT>(sampler.RegisterSpace);
-		staticSamplerArrays.push_back(samplerInfo);
+		staticSamplerArrays.emplace_back(samplerInfo);
 	}
 
 	/*-------------------------------------------------------------------
 	-                   Set Root Parameter
 	---------------------------------------------------------------------*/
 	std::vector<D3D12_ROOT_PARAMETER> parameters = {};
-	if (!_elements.empty())
+	if (!_desc.Elements.empty())
 	{
-		_elementsCount = _elements.size();
+		_elementsCount = _desc.Elements.size();
+		parameters.resize(_elementsCount);
 		for (size_t i = 0; i < _elementsCount; ++i)
 		{
 			D3D12_ROOT_PARAMETER parameter = {};
@@ -101,7 +141,7 @@ void RHIResourceLayout::SetUp()
 			parameter.ShaderVisibility                    = visibilities[i];
 			parameter.DescriptorTable.NumDescriptorRanges = 1;
 			parameter.DescriptorTable.pDescriptorRanges   = &ranges[i];
-			parameters.push_back(parameter);
+			parameters[i] = parameter;
 		}
 	}
 	
@@ -109,27 +149,103 @@ void RHIResourceLayout::SetUp()
 	/*-------------------------------------------------------------------
 	-                   Constant 32 bits
 	---------------------------------------------------------------------*/
-	if (_constant32Bits.has_value())
+	if (_desc.Constant32Bits.has_value())
 	{
 		_constant32BitsCount = parameters.size();
 
 		D3D12_ROOT_PARAMETER parameter = {};
 		parameter.ParameterType            = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
-		parameter.ShaderVisibility         = EnumConverter::Convert(_constant32Bits->Visibility);
-		parameter.Constants.Num32BitValues = static_cast<UINT>(_constant32Bits->Count);
-		parameter.Constants.ShaderRegister = static_cast<UINT>(_constant32Bits->Binding);
-		parameter.Constants.RegisterSpace  = static_cast<UINT>(_constant32Bits->RegisterSpace);
+		parameter.ShaderVisibility         = EnumConverter::Convert(_desc.Constant32Bits->Visibility);
+		parameter.Constants.Num32BitValues = static_cast<UINT>(_desc.Constant32Bits->Count);
+		parameter.Constants.ShaderRegister = static_cast<UINT>(_desc.Constant32Bits->Binding);
+		parameter.Constants.RegisterSpace  = static_cast<UINT>(_desc.Constant32Bits->RegisterSpace);
 		parameters.push_back(parameter);
 	}
+
+	/*-------------------------------------------------------------------
+	-                   Root signature flags
+	---------------------------------------------------------------------*/
+	D3D12_ROOT_SIGNATURE_FLAGS flags = D3D12_ROOT_SIGNATURE_FLAG_NONE;
+
+	if (_desc.UseDirectlyIndexedResourceHeap)
+	{
+		flags |= D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED;
+	}
+
+	if (_desc.UseDirectlyIndexedSamplerHeap)
+	{
+		flags |= D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED;
+	}
+
+	if (_device->IsSupportedDxr())
+	{
+		if (_desc.ResourceLayoutType == core::RootSignatureType::RayTracingLocal)
+		{
+			flags = D3D12_ROOT_SIGNATURE_FLAG_LOCAL_ROOT_SIGNATURE;
+		}
+		else if (_desc.ResourceLayoutType == core::RootSignatureType::RayTracingGlobal)
+		{
+			flags |= D3D12_ROOT_SIGNATURE_FLAG_NONE;
+		}
+	}
+	if (_desc.ResourceLayoutType == core::RootSignatureType::Rasterize)
+	{
+		// Input layoutをOnにする
+		if (_desc.UseIAInputLayout)
+		{
+			flags |= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+		}
+
+		if (!_desc.Elements.empty())
+		{
+			// Visibility部分はD3D12_ROOT_SIGNATURE_FLAGSと同じ値を採用している
+			// 各描画パイプライン上のDeny flagを立てる
+			
+			for (size_t i = 0; i < shaderStageCounter.size(); ++i)
+			{
+				// 何もShader stageにバインドするものが無ければ次に進む
+				if (shaderStageCounter[i] != 0) { continue; }
+
+				// Deny flagを設定する
+				flags |= (D3D12_ROOT_SIGNATURE_FLAGS)shaderStageFlags[i];
+			}
+		}
+	}
+
+
 	/*-------------------------------------------------------------------
 	-                   Set Rootsignature descriptor
 	---------------------------------------------------------------------*/
 	D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-	rootSignatureDesc.NumStaticSamplers = static_cast<UINT>(staticSamplerArrays.size());
-	rootSignatureDesc.NumParameters     = static_cast<UINT>(parameters.size());
-	rootSignatureDesc.pParameters       = parameters.data();
-	rootSignatureDesc.pStaticSamplers   = staticSamplerArrays.data();
-	rootSignatureDesc.Flags             = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	if (_desc.ResourceLayoutType == core::RootSignatureType::RayTracingLocal)
+	{
+		// Local root signatureの場合はstatic samplerのレジスタ範囲がGlobal root signatureと
+		// 同じになってしまうため, static sampler stateは使用しないようにします
+		rootSignatureDesc.NumStaticSamplers = 0;
+		rootSignatureDesc.NumParameters     = static_cast<UINT>(parameters.size());
+		rootSignatureDesc.pParameters       = parameters.data();
+		rootSignatureDesc.pStaticSamplers   = nullptr;
+		rootSignatureDesc.Flags             = flags;
+	}
+	else
+	{
+		if (_bindingTier > D3D12_RESOURCE_BINDING_TIER_1)
+		{
+			rootSignatureDesc.NumStaticSamplers = static_cast<UINT>(staticSamplerArrays.size());
+			rootSignatureDesc.NumParameters     = static_cast<UINT>(parameters.size());
+			rootSignatureDesc.pParameters       = parameters.data();
+			rootSignatureDesc.pStaticSamplers   = staticSamplerArrays.data();
+			rootSignatureDesc.Flags             = flags;
+		}
+		else
+		{
+			rootSignatureDesc.NumStaticSamplers = 0;
+			rootSignatureDesc.NumParameters     = static_cast<UINT>(parameters.size());
+			rootSignatureDesc.pParameters       = parameters.data();
+			rootSignatureDesc.pStaticSamplers   = nullptr;
+			rootSignatureDesc.Flags             = flags;
+		}
+	}
 	
 	/*-------------------------------------------------------------------
 	-                   Create RootSignature
@@ -141,16 +257,17 @@ void RHIResourceLayout::SetUp()
 
 	if (errorBlob != nullptr)
 	{
-		::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+		_RPTN(_CRT_WARN, "%s", (char*)errorBlob->GetBufferPointer());
 	}
 	if (FAILED(hresult))
 	{
-		::OutputDebugStringA("Result False");
+		_RPT0(_CRT_WARN, "Result False\n");
 	}
 
-	if (FAILED(dxDevice->CreateRootSignature(1, rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(&_rootSignature))))
+	if (FAILED(dxDevice->CreateRootSignature(_device->GetGPUMask().Value(), rootSigBlob->GetBufferPointer(), rootSigBlob->GetBufferSize(), IID_PPV_ARGS(&_rootSignature))))
 	{
-		::OutputDebugStringA("Failed to create rootsignature");
+		_RPT0(_CRT_WARN, "Failed to create rootsignature\n");
+		return;
 	};
 
 	_rootSignature->SetName(L"RootSignature");

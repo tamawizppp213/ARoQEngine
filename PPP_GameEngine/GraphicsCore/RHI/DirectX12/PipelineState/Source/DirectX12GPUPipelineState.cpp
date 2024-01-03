@@ -50,7 +50,7 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	desc.Flags                 = D3D12_PIPELINE_STATE_FLAG_NONE;
 	desc.DSVFormat             = EnumConverter::Convert(_renderPass->GetDepthAttachment().has_value() ? _renderPass->GetDepthAttachment()->Format : core::PixelFormat::Unknown);
 	desc.IBStripCutValue       = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
-	desc.NodeMask              = 0;
+	desc.NodeMask              = _device->GetGPUMask().Value();
 	desc.NumRenderTargets      = static_cast<UINT>(_renderPass->GetColorAttachmentSize());
 	desc.SampleDesc.Count      = static_cast<UINT>(_renderPass->GetMaxSample());
 	desc.SampleDesc.Quality    = 0;
@@ -65,7 +65,6 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	-                      Create Graphic pipelineState
 	---------------------------------------------------------------------*/
 	ThrowIfFailed(dxDevice->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(_graphicsPipeline.GetAddressOf())));
-	
 }
 #pragma endregion Graphic PSO
 

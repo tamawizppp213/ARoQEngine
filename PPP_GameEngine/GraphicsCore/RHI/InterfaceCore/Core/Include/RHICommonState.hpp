@@ -345,22 +345,39 @@ namespace rhi::core
 #pragma endregion         Pixel
 #pragma region Shader
 	/****************************************************************************
-	*				  			ShaderVisibility
+	*				  			ShaderVisibleFlag
 	*************************************************************************//**
-	*  @enum      ShaderVisibility
+	*  @enum      ShaderVisibleFlag
 	*  @brief     Visible shader stage type
 	*****************************************************************************/
-	enum class ShaderVisibility : gu::uint8
+	enum class ShaderVisibleFlag : gu::int16
 	{
-		All,           // all      shader stage visible
-		Vertex,        // vertex   shader stage only
-		Pixel,         // pixel    shader stage only
-		Hull,          // hull     shader stage only
-		Domain,        // domain   shader stage only
-		Geometry,      // geometry shader stage only
-		Amplification, // amplification shader stage only,
-		Mesh           // mesh shader stage only
+		// directX12Ç…èÄãíÇµÇƒÇ¢Ç‹Ç∑ D3D12_ROOT_SIGNATURE_FLAGS
+		Vertex        = 0x0002, // vertex   shader stage only
+		Hull          = 0x0004, // hull     shader stage only
+		Domain        = 0x0008, // domain   shader stage only
+		Geometry      = 0x0010, // geometry shader stage only
+		Pixel         = 0x0020, // pixel    shader stage only
+		Amplification = 0x0100, // amplification shader stage only,
+		Mesh          = 0x0200, // mesh shader stage only
+		All = Vertex | Pixel | Hull | Domain | Geometry | Amplification | Mesh, // all shader stage visible
+		CountOfPipeline = 7
 	};
+
+	__forceinline ShaderVisibleFlag operator | (const ShaderVisibleFlag& left, const ShaderVisibleFlag& right)
+	{
+		return static_cast<ShaderVisibleFlag>(static_cast<gu::uint8>(left) | static_cast<gu::uint8>(right));
+	}
+	__forceinline ShaderVisibleFlag operator & (const ShaderVisibleFlag& left, const ShaderVisibleFlag& right)
+	{
+		return static_cast<ShaderVisibleFlag>(static_cast<gu::uint8>(left) & static_cast<gu::uint8>(right));
+	}
+
+	__forceinline bool EnumHas(const ShaderVisibleFlag& left, const ShaderVisibleFlag& right)
+	{
+		return (left & right) == right;
+	}
+
 	/****************************************************************************
 	*				  			ShaderType
 	*************************************************************************//**
@@ -870,6 +887,13 @@ namespace rhi::core
 
 	#pragma endregion InputAssemblyState
 #pragma region GPUResource
+	enum class RootSignatureType : gu::uint8
+	{
+		Rasterize,
+		RayTracingGlobal,
+		RayTracingLocal
+	};
+
 	enum class ResourceDimension : std::uint8_t
 	{
 		Buffer,

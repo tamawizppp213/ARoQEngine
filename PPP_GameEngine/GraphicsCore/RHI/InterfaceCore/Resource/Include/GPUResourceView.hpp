@@ -43,9 +43,11 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Bind resource layout array index to the command list.
-		            index : resource layout array index*/
-		virtual void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index, const gu::SharedPointer<RHIResourceLayout>& layout = nullptr) = 0;
+		/*----------------------------------------------------------------------
+		*  @brief : Bind resource layout array index to the command list.
+		            index : resource layout array index
+		/*----------------------------------------------------------------------*/
+		virtual void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, const gu::SharedPointer<RHIResourceLayout>& layout = nullptr) = 0;
 		
 		/****************************************************************************
 		**                Public Member Variables

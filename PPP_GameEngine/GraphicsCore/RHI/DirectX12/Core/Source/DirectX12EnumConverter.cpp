@@ -37,11 +37,11 @@ D3D12_COMMAND_LIST_TYPE EnumConverter::Convert(const rhi::core::CommandListType 
 }
 #pragma endregion CommandList
 #pragma region Shader
-D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibility visibility)
+D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibleFlag visibility)
 {
 	switch (visibility)
 	{
-		using enum core::ShaderVisibility;
+		using enum core::ShaderVisibleFlag;
 
 		case All          : return D3D12_SHADER_VISIBILITY_ALL;
 		case Vertex       : return D3D12_SHADER_VISIBILITY_VERTEX;
@@ -52,6 +52,23 @@ D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibility
 		case Hull         : return D3D12_SHADER_VISIBILITY_HULL;
 		case Domain       : return D3D12_SHADER_VISIBILITY_DOMAIN;
 		
+		default:
+			throw std::runtime_error("Not supported shader visibility (directX12 api)");
+	}
+}
+
+D3D12_ROOT_SIGNATURE_FLAGS EnumConverter::Convert1(const rhi::core::ShaderVisibleFlag visibility)
+{
+	switch (visibility)
+	{
+		using enum core::ShaderVisibleFlag;
+
+		case All          : return D3D12_ROOT_SIGNATURE_FLAG_NONE;
+		case Vertex       : return D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS;
+		case Pixel        : return D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+		case Geometry     : return D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+		case Mesh         : return D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS;
+		case Amplification: return D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
 		default:
 			throw std::runtime_error("Not supported shader visibility (directX12 api)");
 	}

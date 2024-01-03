@@ -39,7 +39,8 @@ namespace rhi::directX12
 		static D3D12_COMMAND_LIST_TYPE    Convert(const rhi::core::CommandListType type);
 #pragma endregion CommandList
 #pragma region Shader 
-		static D3D12_SHADER_VISIBILITY    Convert(const rhi::core::ShaderVisibility visibility);
+		static D3D12_SHADER_VISIBILITY    Convert(const rhi::core::ShaderVisibleFlag visibility);
+		static D3D12_ROOT_SIGNATURE_FLAGS Convert1(const rhi::core::ShaderVisibleFlag visibility);
 #pragma endregion Shader
 #pragma region Sampler State
 		static D3D12_FILTER               Convert(const rhi::core::FilterOption filter);

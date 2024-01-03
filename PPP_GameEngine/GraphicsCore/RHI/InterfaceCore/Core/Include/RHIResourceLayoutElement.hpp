@@ -36,11 +36,33 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		
+		static constexpr gu::int32 GLOBAL_ROOT_SIGNATURE_REGISTER_SPACE = 1;
+		static constexpr gu::int32 LOCAL_ROOT_SIGNATURE_REGISTER_SPACE  = 2;
+
+		static ResourceLayoutElement GlobalRootSignature(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = GLOBAL_ROOT_SIGNATURE_REGISTER_SPACE)
+		{
+			return ResourceLayoutElement(type, binding, registerSpace, rhi::core::ShaderVisibleFlag::All);
+		}
+
+		static ResourceLayoutElement LocalRootSignature(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = LOCAL_ROOT_SIGNATURE_REGISTER_SPACE)
+		{
+			return ResourceLayoutElement(type, binding, registerSpace, rhi::core::ShaderVisibleFlag::All);
+		}
+
+		static ResourceLayoutElement GraphicsRootSignature(const core::DescriptorHeapType type, const size_t binding, const size_t registerSpace = 0, const core::ShaderVisibleFlag flag = core::ShaderVisibleFlag::All)
+		{
+			return ResourceLayoutElement(type, binding, registerSpace, flag);
+		}
+
+		static ResourceLayoutElement ComputeRootSignature(const core::DescriptorHeapType type, const size_t binding, const size_t registerSpace = 0, const core::ShaderVisibleFlag flag = core::ShaderVisibleFlag::All)
+		{
+			return ResourceLayoutElement(type, binding, registerSpace, flag);
+		}
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		ShaderVisibility   Visibility     = ShaderVisibility::All;    // Specify the shaders that can access the contents of the root signature slot.
+		ShaderVisibleFlag  Visibility     = ShaderVisibleFlag::All;    // Specify the shaders that can access the contents of the root signature slot.
 		DescriptorHeapType DescriptorType = DescriptorHeapType::CBV;  // Descriptor type
 		size_t             Binding        = 0;                        // binding or shader resister. In case of srv, 3 is mapped in register(t3) of HLSL.   
 		size_t             RegisterSpace  = 0;                        // register space. normally this value is set 0. Multiple descriptor arrays of unknown size can be prevented from overlapping
@@ -51,7 +73,7 @@ namespace rhi::core
 		*****************************************************************************/
 		ResourceLayoutElement() = default;
 
-		explicit ResourceLayoutElement(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = 0, const ShaderVisibility visibility = ShaderVisibility::All)
+		explicit ResourceLayoutElement(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = 0, const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
 			: Binding(binding), RegisterSpace(registerSpace), DescriptorType(type), Visibility(visibility)
 		{
 		};
@@ -73,7 +95,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		ShaderVisibility Visibility     = ShaderVisibility::All;
+		ShaderVisibleFlag Visibility     = ShaderVisibleFlag::All;
 		size_t           Binding        = 0;
 		size_t           RegisterSpace  = 0;
 		gu::SharedPointer<GPUSampler> Sampler;
@@ -83,7 +105,7 @@ namespace rhi::core
 		*****************************************************************************/
 		SamplerLayoutElement() = default;
 
-		explicit SamplerLayoutElement(const gu::SharedPointer<GPUSampler>& sampler, const size_t binding = 0, const size_t space = 0, const ShaderVisibility visibility = ShaderVisibility::All)
+		explicit SamplerLayoutElement(const gu::SharedPointer<GPUSampler>& sampler, const size_t binding = 0, const size_t space = 0, const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
 			: Visibility(visibility), Binding(binding), RegisterSpace(space), Sampler(sampler)
 		{
 		};
@@ -153,17 +175,22 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		ShaderVisibility Visibility = ShaderVisibility::All;
-		size_t           Binding        = 0;
-		size_t           RegisterSpace  = 0;
-		size_t           Count          = 1;
+		ShaderVisibleFlag Visibility     = ShaderVisibleFlag::All;
+		size_t           Binding        = 0; // リソースレイアウト上でバインドするIndex
+		size_t           RegisterSpace  = 0; // レジスタ空間
+		size_t           Count          = 1; // 32 bitの定数を割り当てる数
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		Constant32Bits() = default;
 
-		explicit Constant32Bits(const size_t count, const size_t binding = 0, const size_t space = 0, const ShaderVisibility visibility = ShaderVisibility::All)
+		explicit Constant32Bits
+		(
+			const size_t count, 
+			const size_t binding = 0, 
+			const size_t space   = 0, 
+			const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
 			: Visibility(visibility), Binding(binding), RegisterSpace(space), Count(count)
 		{
 		};

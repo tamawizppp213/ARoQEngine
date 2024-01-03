@@ -76,21 +76,11 @@ void SampleModel::Update()
 *****************************************************************************/
 void SampleModel::Draw()
 {
-	_engine->BeginDrawFrame();
-	/*-------------------------------------------------------------------
-	-             Regist graphics pipeline command
-	---------------------------------------------------------------------*/
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
-	commandList->SetViewportAndScissor(
-		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
-		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
-	
-	zprepass->Draw(_camera->GetResourceView());
-	gbuffer->Draw(_camera->GetResourceView());
+	/*zprepass->Draw(_camera->GetResourceView());
+	gbuffer->Draw(_camera->GetResourceView());*/
 	_engine->BeginSwapchainRenderPass();
 	_skybox->Draw(_camera->GetResourceView());
-	_dof->Draw(zprepass->GetRenderedTextureView());
-	_engine->EndDrawFrame();
+	//_dof->Draw(zprepass->GetRenderedTextureView());
 }
 /****************************************************************************
 *                       Terminate

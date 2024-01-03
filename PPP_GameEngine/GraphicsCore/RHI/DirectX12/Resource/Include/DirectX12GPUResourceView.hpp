@@ -36,15 +36,22 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Bind resource layout array index to the command list.
-					index : resource layout array index*/
-		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index, const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
+		/*----------------------------------------------------------------------
+		*  @brief : Resource Layoutの配列インデックスをコマンドリストとバインドする
+		/*----------------------------------------------------------------------*/
+		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
 		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/*----------------------------------------------------------------------
+		*  @brief : CPUのポインタを返すハンドラを取得します
+		/*----------------------------------------------------------------------*/
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandler();
 
+		/*----------------------------------------------------------------------
+		*  @brief : GPUのポインタを返すハンドラを取得します
+		/*----------------------------------------------------------------------*/
 		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandler();
 
 		/****************************************************************************

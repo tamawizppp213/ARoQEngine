@@ -40,13 +40,19 @@ namespace platform::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : This function is called by window activation changed*/
+		/*----------------------------------------------------------------------
+		*  @brief : This function is called by window activation changed
+		/*----------------------------------------------------------------------*/
 		virtual bool OnWindowActivationChanged([[maybe_unused]]const CoreWindowPtr& window, [[maybe_unused]]const core::ActivationType type) = 0;
 
-		/* @brief : This function is called by window closed*/
+		/*----------------------------------------------------------------------
+		*  @brief : This function is called by window closed
+		/*----------------------------------------------------------------------*/
 		virtual bool OnWindowClosed(const CoreWindowPtr& window) = 0;
 
-		/* @brief : This function is called by the window size changed*/
+		/*----------------------------------------------------------------------
+		*  @brief : This function is called by the window size changed
+		/*----------------------------------------------------------------------*/
 		virtual bool OnSizeChanged(const CoreWindowPtr& window, const gu::uint32 width, const gu::uint32 height) = 0;
 		/****************************************************************************
 		**                Public Member Variables
