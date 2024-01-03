@@ -65,6 +65,36 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------*/
 		size_t GetConstant32BitsCount() const noexcept { return _constant32BitsCount; }
 		
+		/*----------------------------------------------------------------------
+		*  @brief :  Unordered Access ViewÇ™Ç†ÇÈÇ±Ç∆Çï‘ÇµÇ‹Ç∑
+		/*----------------------------------------------------------------------*/
+		bool HasUAV() const { return _hasUAV; }
+
+		/*----------------------------------------------------------------------
+		*  @brief :  Shader Resource ViewÇ™Ç†ÇÈÇ±Ç∆Çï‘ÇµÇ‹Ç∑
+		/*----------------------------------------------------------------------*/
+		bool HasSRV() const { return _hasSRV; }
+
+		/*----------------------------------------------------------------------
+		*  @brief :  Constant Buffer ViewÇ™Ç†ÇÈÇ±Ç∆Çï‘ÇµÇ‹Ç∑
+		/*----------------------------------------------------------------------*/
+		bool HasCBV() const { return _hasCBV; }
+
+		/*----------------------------------------------------------------------
+		*  @brief :  Descriptor TableÇ™Ç†ÇÈÇ±Ç∆Çï‘ÇµÇ‹Ç∑
+		/*----------------------------------------------------------------------*/
+		bool HasTableResource() const { return _hasCBV || _hasSRV || _hasUAV; }
+
+		/*----------------------------------------------------------------------
+		*  @brief :  Static Sampler state Ç™Ç†ÇÈÇ±Ç∆Çï‘ÇµÇ‹Ç∑
+		/*----------------------------------------------------------------------*/
+		bool HasStaticSampler() const { return _hasStaticSampler; }
+
+		/*----------------------------------------------------------------------
+		*  @brief :  Dynamic Sampler stateÇ™Ç†ÇÈÇ±Ç∆Çï‘ÇµÇ‹Ç∑
+		/*----------------------------------------------------------------------*/
+		bool HasDynamicSampler() const { return _hasDynamicSampler; }
+
 		void SetName(const std::wstring& name) override;
 
 		/****************************************************************************
@@ -96,11 +126,26 @@ namespace rhi::directX12
 
 		D3D12_RESOURCE_BINDING_TIER _bindingTier = D3D12_RESOURCE_BINDING_TIER_1;
 
+		/*----------------------------------------------------------------------
+		*        Resource viewÇ™ë∂ç›Ç∑ÇÈÇ©
+		/*----------------------------------------------------------------------*/
+		bool _hasUAV = false;
+		bool _hasSRV = false;
+		bool _hasCBV = false;
+		bool _hasStaticSampler = false;
+		bool _hasDynamicSampler = false;
+
 	private:
 		/*----------------------------------------------------------------------
 		*  @brief :   RootSignatureÇÃçÏê¨Ç‹Ç≈àÍí ÇËçsÇ¢Ç‹Ç∑.
 		/*----------------------------------------------------------------------*/
 		void SetUp();
+
+		/*----------------------------------------------------------------------
+		*  @brief :   RootSignatureÇÃçÏê¨ÇVersionÇ…çáÇÌÇπÇƒçsÇ¢Ç‹Ç∑.
+		/*----------------------------------------------------------------------*/
+		HRESULT SerializeVersionedRootSignature(const D3D12_VERSIONED_ROOT_SIGNATURE_DESC& desc, 
+			ID3DBlob** rootSignatureBlob, ID3DBlob** errrorBlob);
 	};
 }
 #endif

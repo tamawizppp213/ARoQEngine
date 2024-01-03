@@ -134,6 +134,8 @@ namespace rhi::directX12
 
 		CommandSignaturePtr GetDefaultDrawIndexedIndirectCommandSignature() const { return _drawIndexedIndirectCommandSignature; }
 
+		D3D_ROOT_SIGNATURE_VERSION GetMaxRootSignatureVersion() const { return _maxRootSignatureVersion; }
+
 		std::uint32_t MaxUsableSamplerHeapCount() const { return _maxSamplerHeapCount; }
 
 		std::uint32_t MaxUsableDescriptorHeapCount() const { return _maxDescriptorHeapCount; }
@@ -293,6 +295,16 @@ namespace rhi::directX12
 		std::uint32_t _maxWaveLaneCount = 0;
 
 		/*-------------------------------------------------------------------
+		-              RootSignature
+		---------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------
+		*  @brief : RootSignatureの最新バージョン
+		* 　　　　　　　1_0 or 1: Default 
+		*           1_1     : Descriptorに対して最適化を行うためのフラグを設置可能
+		/*----------------------------------------------------------------------*/
+		D3D_ROOT_SIGNATURE_VERSION _maxRootSignatureVersion = D3D_ROOT_SIGNATURE_VERSION_1;
+
+		/*-------------------------------------------------------------------
 		-               Atomic
 		---------------------------------------------------------------------*/
 		bool _isSupportedAtomicInt64OnGroupSharedSupported      = false;
@@ -343,6 +355,7 @@ namespace rhi::directX12
 		void CheckWaveLaneSupport();
 		void CheckNative16bitOperation();
 		void CheckAtomicOperation();
+		void CheckMaxRootSignatureVersion();
 		void SetupDisplayHDRMetaData();
 		void SetupDefaultCommandSignatures();
 		void SetGPUDebugBreak();

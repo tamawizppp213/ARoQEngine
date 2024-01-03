@@ -110,6 +110,16 @@ namespace rhi::core
 		
 		inline gu::SharedPointer<GPUShaderState>        GetDomainShader      () const noexcept { return _domainShaderState; }
 
+		inline bool HasVertexShader() const { return _vertexShaderState; }
+
+		inline bool HasPixelShader() const { return _pixelShaderState; }
+
+		inline bool HasGeometryShader() const { return _geometryShaderState; }
+
+		inline bool HasHullShader() const { return _hullShaderState; }
+
+		inline bool HasDomainShader() const { return _domainShaderState; }
+
 		inline void SetInputAssemblyState(const gu::SharedPointer<GPUInputAssemblyState>& inputAssembly)     { _inputAssemblyState = inputAssembly; }
 		
 		inline void SetRasterizerState   (const gu::SharedPointer<GPURasterizerState>   & rasterizerState)   { _rasterizerState    = rasterizerState; }

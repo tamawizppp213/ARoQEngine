@@ -108,6 +108,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	CheckStencilReferenceFromPixelShaderSupport();
 	CheckSamplerFeedbackSupport();
 	CheckAllowTearingSupport();
+	CheckMaxRootSignatureVersion();
 	CheckWaveLaneSupport();
 	SetupDisplayHDRMetaData();
 	SetupDefaultCommandSignatures();
@@ -969,6 +970,32 @@ void RHIDevice::CheckAtomicOperation()
 	_isSupportedAtomicInt64OnGroupSharedSupported      = !!options9.AtomicInt64OnGroupSharedSupported;
 	_isSupportedInt64OnDescriptorHeapResourceSupported = !!options11.AtomicInt64OnDescriptorHeapResourceSupported;
 	_isSupportedAtomicUInt64 = _isSupportedAtomicInt64OnTypedResource && _isSupportedInt64OnDescriptorHeapResourceSupported;
+}
+
+/****************************************************************************
+*                     CheckMaxRootSignatureVersion
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckMaxRootSignatureVersion()
+*
+*  @brief     RootSignatureの最新バージョンを調べます
+*             1_0 or 1: Default
+*             1_1     : Descriptorに対して最適化を行うためのフラグを設置可能
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckMaxRootSignatureVersion()
+{
+	D3D12_FEATURE_DATA_ROOT_SIGNATURE options = {};
+	options.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &options, sizeof(options))))
+	{
+		options.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+	}
+
+	_maxRootSignatureVersion = options.HighestVersion;
 }
 #pragma endregion  Device Support Function
 
