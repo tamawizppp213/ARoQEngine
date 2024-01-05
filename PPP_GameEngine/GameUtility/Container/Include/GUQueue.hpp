@@ -149,6 +149,7 @@ namespace gu
 		}
 
 		_queueSize++;
+		return true;
 	}
 
 	template<class ElementType, QueueMode Mode>
@@ -186,6 +187,7 @@ namespace gu
 		}
 
 		_queueSize++;
+		return true;
 	}
 
 	/*-------------------------------------------------------------------
