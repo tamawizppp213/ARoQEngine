@@ -17,12 +17,14 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12DescriptorHeap.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12ResourceLayout.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Query.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
 #include "Platform/Core/Include/CorePlatformMacros.hpp"
+#include <stdexcept>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <vector>
@@ -278,6 +280,63 @@ void RHICommandList::SetDescriptorHeap(const gu::SharedPointer<core::RHIDescript
 	const auto dxHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(heap);
 	_commandList->SetDescriptorHeaps(1, dxHeap->GetHeap().GetAddressOf());
 }
+
+#pragma region Query
+/****************************************************************************
+*                       BeginQuery
+*************************************************************************//**
+*  @fn        void RHICommandList::BeginQuery(const core::QueryResultLocation& location)
+*
+*  @brief     GPU情報を取得するためのクエリを開始します
+*
+*  @param[in] const core::QueryResultLocation& location
+*
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::BeginQuery(const core::QueryResultLocation& location)
+{
+	/*-------------------------------------------------------------------
+	-              Queryの取得
+	---------------------------------------------------------------------*/
+	const auto query = static_cast<directX12::RHIQuery*>(location.Heap.Get());
+	
+	Checkf(query, "query is nullptr");
+	Check(query->GetDxQueryType() == D3D12_QUERY_TYPE_OCCLUSION ||
+		  query->GetDxQueryType() == D3D12_QUERY_TYPE_PIPELINE_STATISTICS);
+	
+	/*-------------------------------------------------------------------
+	-              QueryHeapの取得
+	---------------------------------------------------------------------*/
+	const auto heap = query->GetHeap();
+
+	Checkf(heap, "heap is nullptr");
+
+	/*-------------------------------------------------------------------
+	-               Common command
+	---------------------------------------------------------------------*/
+	_commandList->BeginQuery(heap.Get(), query->GetDxQueryType(), location.QueryID);
+}
+
+/****************************************************************************
+*                       EndQuery
+*************************************************************************//**
+*  @fn        void RHICommandList::EndQuery(const core::QueryResultLocation& location)
+*
+*  @brief     GPU情報を取得するためのクエリを終了します
+*
+*  @param[in] const core::QueryResultLocation& location
+*
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::EndQuery(const core::QueryResultLocation& location)
+{
+	const auto query = static_cast<directX12::RHIQuery*>(location.Heap.Get());
+	Checkf(query, "query is nullptr");
+	
+	// クエリの終了
+	_commandList->EndQuery(query->GetHeap().Get(), query->GetDxQueryType(), location.QueryID);
+}
+#pragma endregion Query
 /****************************************************************************
 *                       SetPrimitiveTopology
 *************************************************************************//**

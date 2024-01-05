@@ -226,6 +226,7 @@ struct ID3D12Heap;
 struct D3D12_GLOBAL_ROOT_SIGNATURE;
 struct D3D12_LOCAL_ROOT_SIGNATURE;
 struct ID3D12CommandSignature;
+struct ID3D12QueryHeap;
 
 using ICommandQueue     = ID3D12CommandQueue;
 using ICommandAllocator = ID3D12CommandAllocator;
@@ -237,6 +238,7 @@ using IFence            = ID3D12Fence;
 using IBlob             = ID3D10Blob;
 using IHeap             = ID3D12Heap;
 using ICommandSignature = ID3D12CommandSignature;
+using IQueryHeap        = ID3D12QueryHeap;
 
 using DeviceComPtr           = ComPtr<IDevice>;
 using AdapterComPtr          = ComPtr<IAdapter>;
@@ -256,6 +258,7 @@ using DebugComPtr            = ComPtr<IDebug>;
 using HeapComPtr             = ComPtr<IHeap>;
 using InfoQueuePtr           = ComPtr<IInfoQueue>;
 using CommandSignaturePtr    = ComPtr<ICommandSignature>;
+using QueryHeapPtr           = ComPtr<IQueryHeap>;
 
 #endif DirectX12_CORE_HPP
 

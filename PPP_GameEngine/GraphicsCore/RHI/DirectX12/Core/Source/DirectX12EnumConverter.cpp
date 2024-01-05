@@ -505,3 +505,34 @@ D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS EnumConverter::Convert(const
 	}
 }
 #pragma endregion RayTracing
+#pragma region Query
+D3D12_QUERY_HEAP_TYPE EnumConverter::Convert(const rhi::core::QueryHeapType heapType)
+{
+	using enum core::QueryHeapType;
+
+	switch (heapType)
+	{
+		case Occulusion: return D3D12_QUERY_HEAP_TYPE_OCCLUSION;
+		case TimeStamp :  return D3D12_QUERY_HEAP_TYPE_TIMESTAMP;
+		case CopyQueueTimeStamp: return D3D12_QUERY_HEAP_TYPE_COPY_QUEUE_TIMESTAMP;
+		case PipelineStatistics: return D3D12_QUERY_HEAP_TYPE_PIPELINE_STATISTICS;
+		default:
+			throw std::runtime_error("not support acceleration query heap type (directX12 api)");
+	}
+}
+
+D3D12_QUERY_TYPE EnumConverter::Convert1(const rhi::core::QueryHeapType heapType)
+{
+	using enum core::QueryHeapType;
+
+	switch (heapType)
+	{
+		case Occulusion        : return D3D12_QUERY_TYPE_OCCLUSION;
+		case TimeStamp         : return D3D12_QUERY_TYPE_TIMESTAMP;
+		case CopyQueueTimeStamp: return D3D12_QUERY_TYPE_TIMESTAMP;
+		case PipelineStatistics: return D3D12_QUERY_TYPE_PIPELINE_STATISTICS;
+		default:
+			throw std::runtime_error("not support acceleration query heap type (directX12 api)");
+	}
+}
+#pragma endregion Query

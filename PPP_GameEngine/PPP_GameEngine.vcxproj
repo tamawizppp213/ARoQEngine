@@ -430,7 +430,19 @@
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVertex.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\LowLevelGraphicsEngine.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Query.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12QueryAllocator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIMultiGPUMask.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIQuery.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -709,6 +721,14 @@
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\LowLevelGraphicsEngine.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Query.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12QueryAllocator.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIMultiGPUMask.cpp">
       <SubType>
       </SubType>

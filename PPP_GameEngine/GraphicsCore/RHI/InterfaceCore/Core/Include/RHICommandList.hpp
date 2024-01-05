@@ -29,6 +29,8 @@ namespace rhi::core
 	class RHIRenderPass;
 	class RHIFrameBuffer;
 	class RHIResourceLayout;
+	class RHIQuery;
+	struct QueryResultLocation;
 	class GPUGraphicsPipelineState;
 	class GPUComputePipelineState;
 	class GPUResource;
@@ -86,6 +88,18 @@ namespace rhi::core
 		//virtual void CopyBuffer(const gu::SharedPointer<GPUBuffer>& source, const gu::SharedPointer<GPUBuffer>& destination, const size_t size, const size_t sourceOffset = 0, const size_t destinationOffset = 0) = 0;*/
 		//virtual void TransitLayout(const gu::SharedPointer<GPUTexture>& texture, const ResourceLayout& newLayout) = 0;
 		//virtual void TransitLayout(const gu::SharedPointer<GPUBuffer>& buffer, const ResourceLayout& newLayout) = 0;
+
+#pragma region Query
+		/*----------------------------------------------------------------------
+		*  @brief :  Starts the query to get GPU information.
+		/*----------------------------------------------------------------------*/
+		virtual void BeginQuery(const QueryResultLocation& location) = 0;
+
+		/*----------------------------------------------------------------------
+		*  @brief :  End the query to get GPU information.
+		/*----------------------------------------------------------------------*/
+		virtual void EndQuery(const QueryResultLocation& location) = 0;
+#pragma endregion Query
 
 #pragma region Graphics Command Function
 		/*-------------------------------------------------------------------

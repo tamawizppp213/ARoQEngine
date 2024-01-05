@@ -1325,5 +1325,21 @@ namespace rhi::core
 		
 	};
 #pragma endregion       Render Pass
+#pragma region Query
+	/****************************************************************************
+	*				  			QueryType
+	*************************************************************************//**
+	*  @enum      QueryType
+	*  @brief     GPU情報の計測のために使用するHeapの設定
+	*****************************************************************************/
+	enum class QueryHeapType : gu::uint8
+	{
+		Occulusion,         // 遮蔽されていたら0, それ以外は遮蔽されていないことを示す
+		TimeStamp,          // GPU, CPUのタイムスタンプに使用します
+		PipelineStatistics, // Graphics pipelineの統計を示します
+		CopyQueueTimeStamp  // copy queue用のタイムスタンプ
+	};
+
+#pragma endregion Query
 }
 #endif

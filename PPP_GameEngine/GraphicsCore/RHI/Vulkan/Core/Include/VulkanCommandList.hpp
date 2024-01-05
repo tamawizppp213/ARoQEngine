@@ -48,6 +48,17 @@ namespace rhi::vulkan
 		
 		/* @brief : Proceed to the record state.*/
 		void Reset(const gu::SharedPointer<core::RHICommandAllocator>& changeAllocator) override {};
+
+		/*----------------------------------------------------------------------
+		*  @brief : GPU情報を取得するためのクエリを開始します
+		/*----------------------------------------------------------------------*/
+		void BeginQuery(const core::QueryResultLocation& location) override {};
+
+		/*----------------------------------------------------------------------
+		*  @brief : GPU情報を取得するためのクエリを終了します
+		/*----------------------------------------------------------------------*/
+		void EndQuery(const core::QueryResultLocation& location) override {};
+
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/

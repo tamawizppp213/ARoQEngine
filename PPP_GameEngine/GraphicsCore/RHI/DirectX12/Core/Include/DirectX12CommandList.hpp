@@ -73,6 +73,17 @@ namespace rhi::directX12
 		---------------------------------------------------------------------*/
 		void SetDescriptorHeap(const gu::SharedPointer<core::RHIDescriptorHeap>& heap) override;
 
+#pragma region Query
+		/*----------------------------------------------------------------------
+		*  @brief : GPU情報を取得するためのクエリを開始します
+		/*----------------------------------------------------------------------*/
+		void BeginQuery(const core::QueryResultLocation& location) override;
+
+		/*----------------------------------------------------------------------
+		*  @brief : GPU情報を取得するためのクエリを終了します
+		/*----------------------------------------------------------------------*/
+		void EndQuery(const core::QueryResultLocation& location) override;
+#pragma endregion Query
 #pragma region Graphics Command Function
 		/*-------------------------------------------------------------------
 		-                Graphics Command

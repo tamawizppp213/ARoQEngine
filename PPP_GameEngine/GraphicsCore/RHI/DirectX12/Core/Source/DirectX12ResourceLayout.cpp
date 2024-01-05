@@ -1,7 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //              @file   DirectX12ResourceLayout.cpp
 ///             @brief  Resource Layout
-///             @author Toide Yutaro
+/// 　　　　　　　　　　　　　　https://zenn.dev/piffett/scraps/b6ce0c751487b1
+///                     https://shikihuiku.wordpress.com/2017/11/30/d3d12_rootsignature_1_1/
+///             @author Toide Yutaro　
 ///             @date   2022_08_09
 //////////////////////////////////////////////////////////////////////////////////
 
