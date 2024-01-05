@@ -125,7 +125,7 @@ namespace gu
 		-           Pushˆ—‚ÌÀ‘•
 		---------------------------------------------------------------------*/
 		Node* oldHead = nullptr;
-		if (Mode == QueueMode::MPSC)
+		if constexpr(Mode == QueueMode::MPSC)
 		{
 			// ƒm[ƒh‚ğ‚Â‚¯‚é
 			oldHead = _head;
