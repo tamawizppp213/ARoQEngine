@@ -1005,23 +1005,86 @@ namespace rhi::core
 	*  @enum      ResourceUsage
 	*  @brief     resource 
 	*****************************************************************************/
-	enum class ResourceUsage : std::uint32_t
+	enum class ResourceUsage : gu::uint32
 	{
 		None = 0,
-		VertexBuffer   = 0x1,
-		IndexBuffer    = 0x2,
-		ConstantBuffer = 0x4,
-		RenderTarget   = 0x8, // allow render target
-		DepthStencil   = 0x10, // allow depth stencil
-		UnorderedAccess = 0x20, // allow unordered access 
+
+		// バッファへの書き込みは一度だけ行われる
+		Static                = 0x000001,
+
+		// バッファは時々書き込まれ, GPUは読み取り専用でCPUは書き込み専用となる. 
+		Dynamic               = 0x000002,
+
+		// バッファの寿命は1フレーム. フレームごとに書き込むか新しいものを作るかの対応が必要となる.
+		Volatile              = 0x000004,
+
+		//　Unorder access viewを作成する
+		UnorderedAccess       = 0x000008,
+
+		// byte adress buffer : バイト単位でインデックスが作成される読み取り専用バッファ (基本uint32)
+		ByteAddress           = 0x000010,
+
+		// コピー元として使用するGPUバッファ
+		SourceCopy            = 0x000020,
+
+		// Stream出力ターゲットとして使用するGPUバッファ
+		StreamOutput          = 0x000040,
+
+		// DispatchIndirectまたはDrawIndirectが使用する引数を含むバッファを作成する
+		DrawIndirect          = 0x000080,
+
+		// シェーダ・リソースとしてバインドできるバッファを作成します。 
+		// 頂点バッファのような、通常はシェーダリソースとして使用されないバッファにのみ必要です。
+		ShaderResource        = 0x000100,
+
+		// CPUに直接アクセス可能なバッファ
+		CPUAccessible         = 0x000200,
+
+		// バッファは高速VRAMに置く
+		FastVRAM              = 0x000400,
+
+		// 外部のRHIやプロセスと共有できるバッファを作成する
+		Shared                = 0x000800,
+
+		// RayTracing用のAcceleration structureを作成する
+		AccelerationStructure = 0x001000,
+
+		// 頂点バッファとして使用する
+		VertexBuffer          = 0x002000,
+
+		// インデックスバッファとして使用する
+		IndexBuffer           = 0x004000,
+
+		// 構造化バッファ
+		StructuredBuffer      = 0x008000,
+
+		// 定数バッファ
+		ConstantBuffer        = 0x010000,
+
+		// レンダーターゲット
+		RenderTarget          = 0x020000, // allow render target
+
+		// デプスステンシル
+		DepthStencil          = 0x040000, // allow depth stencil
+
+		// バッファメモリは、ドライバのエイリアシングによって共有されるのではなく、複数のGPUに対して個別に割り当てられる
+		MultiGPUAllocate      = 0x080000,
+
+		// バッファをレイトレーシングのアクセラレーション構造を構築するためのスクラッチバッファとして使用できるようにします
+		// バッファのアライメントのみを変更し、他のフラグと組み合わせることができます
+		Scratch = 0x100000,
+
+		AnyDynamic = (Dynamic | Volatile),
 	};
+
 	inline ResourceUsage operator | (const ResourceUsage& left, const ResourceUsage& right)
 	{
-		return static_cast<ResourceUsage>(static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
+		return static_cast<ResourceUsage>(static_cast<gu::uint32>(left) | static_cast<gu::uint32>(right));
 	}
+
 	inline ResourceUsage operator & (const ResourceUsage& left, const ResourceUsage& right)
 	{
-		return static_cast<ResourceUsage>( static_cast<std::uint32_t>(left) & static_cast<std::uint32_t>(right));
+		return static_cast<ResourceUsage>( static_cast<gu::uint32>(left) & static_cast<gu::uint32>(right));
 	}
 
 	inline bool EnumHas(const ResourceUsage& left, const ResourceUsage& right)

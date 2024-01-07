@@ -34,6 +34,7 @@
 using namespace rhi;
 using namespace rhi::directX12;
 using namespace Microsoft::WRL;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -571,7 +572,7 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 void RHICommandList::TransitionResourceStates(const std::vector<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters)
 {
 	std::vector<BARRIER> barriers(resources.size());
-	for (std::uint32_t i = 0; i < resources.size(); ++i)
+	for (uint32 i = 0; i < resources.size(); ++i)
 	{
 		if (resources[i]->IsTexture())
 		{
@@ -591,11 +592,38 @@ void RHICommandList::TransitionResourceStates(const std::vector<gu::SharedPointe
 
 #pragma endregion Transition Resource State
 #pragma region Copy 
+/****************************************************************************
+*                     CopyResource
+*************************************************************************//**
+*  @fn      void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source)
+
+*
+*  @brief   あるリソースの領域をまとめて別のリソースにコピーする.
+*           組み合わせに応じて自動でバッファかテクスチャかを判定します
+*
+*  @param[in] const gu::SharedPointer<core::GPUTexture>& コピー先のバッファ
+*  @param[in] const gu::SharedPointer<core::GPUTexture>& コピー元のバッファ
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source)
 {
 	CopyResource(gu::StaticPointerCast<core::GPUResource>(dest), gu::StaticPointerCast<core::GPUResource>(source));
 }
 
+/****************************************************************************
+*                     CopyResource
+*************************************************************************//**
+*  @fn        void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& dest, const gu::SharedPointer<core::GPUResource>& source)
+*
+*  @brief     あるリソースの領域をまとめて別のリソースにコピーする. 
+*           組み合わせに応じて自動でバッファかテクスチャかを判定します
+*
+*  @param[in] const gu::SharedPointer<core::GPUBuffer> コピー先のバッファ
+*  @param[in] const gu::SharedPointer<core::GPUBuffer>& コピー元のバッファ
+
+*  @return 　　void
+*****************************************************************************/
 void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& dest, const gu::SharedPointer<core::GPUResource>& source)
 {
 	gu::SharedPointer<core::GPUResource> resources[] = { dest, source };
@@ -625,10 +653,63 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& de
 
 	TransitionResourceStates({ dest, source }, befores);
 }
+
+/****************************************************************************
+*                     CopyBufferRegion
+*************************************************************************//**
+*  @fn        void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize)
+*
+*  @brief     バッファの領域をあるリソースから別のリソースにコピーする.
+*
+*  @param[in] const gu::SharedPointer<core::GPUBuffer> コピー先のバッファ
+*  @param[in] const gu::uint64 destOffset コピー先の書き出す初期バイト数, (ポインタでないことに注意)
+*  @param[in] const gu::SharedPointer<core::GPUBuffer>& コピー元のバッファ, 
+*  @param[in] const gu::uint64 sourceOffset コピー元の書き出す初期バイト数 (ポインタでないことに注意), 
+*  @param[in] const gu::uint64 copyByteSize コピーしたいバイト数
+
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize)
+{
+	using enum core::ResourceState;
+
+	const auto rhiDestBuffer   = static_cast<directX12::GPUBuffer*>(dest.Get());
+	const auto rhiSourceBuffer = static_cast<directX12::GPUBuffer*>(source.Get());
+	const auto destResource    = rhiDestBuffer->GetResourcePtr();
+	const auto sourceResource  = rhiSourceBuffer->GetResourcePtr();
+
+	/*-------------------------------------------------------------------
+	-           Copyable resource check
+	---------------------------------------------------------------------*/
+	Checkf(sourceResource != destResource, "CopyBufferRegion cannot be used on the same resource. This can happen when both the source and the dest are suballocated from the same resource.");
+	Check(destOffset   + copyByteSize <= rhiDestBuffer  ->GetTotalByteSize());
+	Check(sourceOffset + copyByteSize <= rhiSourceBuffer->GetTotalByteSize());
+
+	/*-------------------------------------------------------------------
+	-           Prepare copy barrier resource 
+	---------------------------------------------------------------------*/
+	core::ResourceState befores[] = { dest->GetResourceState(), source->GetResourceState() };
+	core::ResourceState afters[]  = { CopyDestination, CopySource };
+
+	// バリアにより, リソースの読み方を伝える
+	TransitionResourceStates({ dest, source }, afters);
+
+	/*-------------------------------------------------------------------
+	-           Prepare copy barrier resource
+	---------------------------------------------------------------------*/
+	_commandList->CopyBufferRegion(destResource, destOffset, sourceResource, sourceOffset, copyByteSize);
+
+	/*-------------------------------------------------------------------
+	-           After copy barrier resource
+	---------------------------------------------------------------------*/
+	TransitionResourceStates({ dest, source }, befores);
+}
+
+
 #pragma endregion Copy
 #pragma endregion GPU Command
 #pragma region Property
-void RHICommandList::SetName(const std::wstring& name)
+void RHICommandList::SetName(const gu::wstring& name)
 {
 	_commandList->SetName(name.c_str());
 }

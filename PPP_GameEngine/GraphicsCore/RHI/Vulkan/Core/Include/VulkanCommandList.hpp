@@ -49,6 +49,7 @@ namespace rhi::vulkan
 		/* @brief : Proceed to the record state.*/
 		void Reset(const gu::SharedPointer<core::RHICommandAllocator>& changeAllocator) override {};
 
+#pragma region Query
 		/*----------------------------------------------------------------------
 		*  @brief : GPU情報を取得するためのクエリを開始します
 		/*----------------------------------------------------------------------*/
@@ -59,6 +60,7 @@ namespace rhi::vulkan
 		/*----------------------------------------------------------------------*/
 		void EndQuery(const core::QueryResultLocation& location) override {};
 
+#pragma endregion Query
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/
@@ -116,6 +118,11 @@ namespace rhi::vulkan
 		
 		void CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source) override {};;
 		
+		/*----------------------------------------------------------------------
+		*  @brief : バッファの領域をあるリソースから別のリソースにコピーする. GPU版memcpy
+		/*----------------------------------------------------------------------*/
+		void CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) override {};
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

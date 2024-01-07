@@ -312,14 +312,16 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 {
 	using enum core::ResourceUsage;
 
-	static std::vector<core::ResourceUsage> sourcePool = {
+	static std::vector<core::ResourceUsage> sourcePool =
+	{
 		None,
 		VertexBuffer,
 		IndexBuffer,
 		ConstantBuffer,
 		RenderTarget,
 		DepthStencil,
-		UnorderedAccess
+		UnorderedAccess,
+		Shared,
 	};
 
 	static std::vector<D3D12_RESOURCE_FLAGS> targetPool =
@@ -331,6 +333,7 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
 		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
 		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
+		D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS
 	};
 
 	auto res = D3D12_RESOURCE_FLAG_NONE;
@@ -339,6 +342,11 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 	{
 		if (core::EnumHas(usage, sourcePool[index]))
 			res = res | targetPool[index];
+	}
+
+	if (!core::EnumHas(usage, ShaderResource))
+	{
+		res |= D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
 	}
 
 	return res;

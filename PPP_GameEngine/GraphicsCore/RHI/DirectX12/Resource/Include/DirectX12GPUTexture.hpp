@@ -35,9 +35,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList) override;
+		void Load(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList) override;
 		
-		void Save(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)override;
+		void Save(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)override;
 
 		void Write(const gu::SharedPointer<core::RHICommandList>& commandList, const gm::RGBA* pixel) override;
 
@@ -61,11 +61,11 @@ namespace rhi::directX12
 
 		~GPUTexture();
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const std::wstring& name = L"");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::wstring& name = L"");
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::wstring& name = L"");
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const gu::wstring& name = L"");
 	
 	protected:
 		/****************************************************************************

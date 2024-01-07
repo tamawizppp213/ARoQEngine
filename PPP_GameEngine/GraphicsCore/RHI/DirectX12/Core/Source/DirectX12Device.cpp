@@ -342,6 +342,115 @@ gu::SharedPointer<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const
 {
 	return gu::StaticPointerCast<core::TLASBuffer>(gu::MakeShared<directX12::TLASBuffer>(SharedFromThis(), asInstances, flags));
 }
+
+/****************************************************************************
+*                     CreateCommittedResource
+*************************************************************************//**
+*  @fn        HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,const D3D12_RESOURCE_DESC& resourceDesc,const D3D12_HEAP_PROPERTIES& heapProps,const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue)
+*
+*  @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
+*             参考はD3D12Resources.cpp(UE5)
+*
+*  @param[in] const ResourceComPtr&  resource, 
+*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
+*  @param[in] D3D12_HEAP_PROPERTIES& ヒープの設定
+*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
+*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
+* 
+*  @return 　　HRESULT
+*****************************************************************************/
+HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
+	const D3D12_RESOURCE_DESC& resourceDesc,
+	const D3D12_HEAP_PROPERTIES& heapProps,
+	const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue)
+{
+	// Stateの初期化が必要かどうか
+	const bool requireInitialize = (resourceDesc.Flags & (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0;
+	
+	/*-------------------------------------------------------------------
+	-            Heap flagの設定
+	---------------------------------------------------------------------*/
+	D3D12_HEAP_FLAGS heapFlags = (_isSupportedHeapNotZero && !requireInitialize)
+		? D3D12_HEAP_FLAG_CREATE_NOT_ZEROED : D3D12_HEAP_FLAG_NONE;
+
+	auto localDesc = resourceDesc;
+
+	// 共有リソース
+	if (resourceDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS)
+	{
+		heapFlags |= D3D12_HEAP_FLAG_SHARED;
+
+		// バッファ作成時には同時アクセスフラグは使用不可
+		if (resourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
+		{
+			localDesc.Flags &= ~D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS;
+		}
+	}
+
+	// RayTracingのAcceleration Structureを使用する場合
+	if (initialState == D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE)
+	{
+		localDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	}
+
+	/*-------------------------------------------------------------------
+	-            ヒープ領域の確保とGPUにメモリを確保する
+	---------------------------------------------------------------------*/
+	// 今後の方針としては, uncompressed uavを使用するときは処理を分岐する
+	return _device->CreateCommittedResource(&heapProps, heapFlags, &localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));;
+}
+
+/****************************************************************************
+*                     CreateReservedResource
+*************************************************************************//**
+*  @fn        HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_HEAP_PROPERTIES& heapProp, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
+*
+*  @brief     Heap内にまだマップまでは行わない予約済みのリソースを作成
+*
+*  @param[in] const ResourceComPtr&  resource,
+*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
+*  @param[in] D3D12_HEAP_PROPERTIES& ヒープの設定
+*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
+*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
+*
+*  @return 　　HRESULT
+*****************************************************************************/
+HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_HEAP_PROPERTIES& heapProp, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
+{
+	/*-------------------------------------------------------------------
+	-            Flagの設定
+	---------------------------------------------------------------------*/
+	auto localDesc   = resourceDesc;
+	localDesc.Layout = D3D12_TEXTURE_LAYOUT_64KB_UNDEFINED_SWIZZLE;
+
+	/*-------------------------------------------------------------------
+	-            Heap内にまだマップまでは行わない予約済みのリソースを作成
+	---------------------------------------------------------------------*/
+	return _device->CreateReservedResource(&localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+}
+
+/****************************************************************************
+*                     CreatePlacedResource
+*************************************************************************//**
+*  @fn        HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const HeapComPtr& heap,const gu::uint64 heapOffset,const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue = nullptr)
+*
+*  @brief     既に作成済みのヒープに配置されるリソースを作成する.
+*             Committed, Reserved, Placedの中では最も高速に動作する
+*
+*  @param[in] const ResourceComPtr&  resource,
+*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
+*  @param[in] const HeapComPtr& ヒープ
+* 　@param[in] const gu::uint64 heapのoffsetバイト数
+*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
+*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
+*
+*  @return 　　HRESULT
+*****************************************************************************/
+HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const HeapComPtr& heap, const gu::uint64 heapOffset, const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue )
+{
+	return _device->CreatePlacedResource(heap.Get(), heapOffset, &resourceDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+}
+
 #pragma endregion           Create Resource Function
 
 #pragma region Debug Function

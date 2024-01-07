@@ -153,11 +153,24 @@ namespace rhi::directX12
 		void TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override ;
 
 		void TransitionResourceStates(const std::vector<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters);
+		
 		/*-------------------------------------------------------------------
 		-                Copy
 		---------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------
+		*  @brief : バッファの領域をあるリソースから別のリソースにコピーする. GPU memcpy
+		/*----------------------------------------------------------------------*/
+		void CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) override;
+
+		/*----------------------------------------------------------------------
+		*  @brief : テクスチャの領域をまとめて別のリソースにコピーする
+		/*----------------------------------------------------------------------*/
 		void CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source) override;
 		
+		/*----------------------------------------------------------------------
+		*  @brief : あるリソースの領域をまとめて別のリソースにコピーする. 
+		*           組み合わせに応じて自動でバッファかテクスチャかを判定します
+		/*----------------------------------------------------------------------*/
 		void CopyResource(const gu::SharedPointer<core::GPUResource>& dest, const gu::SharedPointer<core::GPUResource>& source);
 		/****************************************************************************
 		**                Public Member Variables

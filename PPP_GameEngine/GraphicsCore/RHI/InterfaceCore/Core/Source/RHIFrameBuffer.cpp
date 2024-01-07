@@ -69,7 +69,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 	if (_depthStencil)
 	{
 		if (_depthStencil->GetDimension() != ResourceDimension::Dimension2D ) { throw std::runtime_error("Wrong depthStencil dimension"); }
-		if (_depthStencil->GetUsage()     != ResourceUsage    ::DepthStencil) { throw std::runtime_error("Wrong resource usage"); }
+		if (!core::EnumHas(_depthStencil->GetUsage(), ResourceUsage::DepthStencil)) { throw std::runtime_error("Wrong resource usage"); }
 	}
 }
 #pragma endregion Prepare

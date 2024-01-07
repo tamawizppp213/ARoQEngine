@@ -13,6 +13,8 @@
 #include "../../Core/Include/DirectX12Device.hpp"
 #include "../../Core/Include/DirectX12CommandList.hpp"
 #include "../../Core/Include/DirectX12BaseStruct.hpp"
+#include "GameUtility/Base/Include/GUAssert.hpp"
+#include "GameUtility/Memory/Include/GUMemory.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -23,28 +25,38 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
+GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::wstring& name)
 	:core::GPUBuffer(device, metaData, name)
 {
+	using enum core::ResourceUsage;
+
+	const auto rhiDevice = static_cast<directX12::RHIDevice*>(device.Get());
+
 	/*-------------------------------------------------------------------
 	-           Set heap property
 	---------------------------------------------------------------------*/
-	D3D12_HEAP_PROPERTIES heapProp
+	const D3D12_HEAP_PROPERTIES heapProp
 	{
 		.Type                 = EnumConverter::Convert(_metaData.HeapType), 
 		.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
 		.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
-		.CreationNodeMask     = 1,
-		.VisibleNodeMask      = 1
+		.CreationNodeMask     = rhiDevice->GetGPUMask().Value(),
+		.VisibleNodeMask      = rhiDevice->GetGPUMask().Value()
 	};
 
 	/*-------------------------------------------------------------------
 	-           Set resource desc
 	---------------------------------------------------------------------*/
+	const auto usage     = metaData.ResourceUsage;
+	const auto isDynamic = core::EnumHas(usage, core::ResourceUsage::AnyDynamic);
+	Check(isDynamic ? _metaData.HeapType != core::MemoryHeap::Default : true);
+
 	const D3D12_RESOURCE_DESC resourceDesc = 
 	{
 		.Dimension          = D3D12_RESOURCE_DIMENSION_BUFFER,
-		.Alignment          = 0,
+		.Alignment          = metaData.Stride > 0 && 
+		                      (core::EnumHas(usage, StructuredBuffer) || 
+							  !core::EnumHas(usage, ByteAddress | DrawIndirect)) ? (UINT64)0: (UINT64)4,
 		.Width              = static_cast<UINT64>(GetTotalByteSize()),
 		.Height             = 1, // For 1D buffer
 		.DepthOrArraySize   = 1, // For 1D buffer
@@ -58,12 +70,8 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const cor
 	/*-------------------------------------------------------------------
 	-           Create
 	---------------------------------------------------------------------*/
-	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get())->GetDevice();
-	ThrowIfFailed(dxDevice->CreateCommittedResource(
-		&heapProp, D3D12_HEAP_FLAG_NONE, &resourceDesc,
-		EnumConverter::Convert(metaData.State),                                          // Generic Read
-		nullptr,
-		IID_PPV_ARGS(&_resource)));
+	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get());
+	ThrowIfFailed( dxDevice->CreateCommittedResource(_resource, resourceDesc, heapProp, EnumConverter::Convert(metaData.State)));
 
 	_resource->SetName(name.c_str());
 }
@@ -73,6 +81,7 @@ GPUBuffer::~GPUBuffer()
 	if (_intermediateBuffer) { _intermediateBuffer.Reset(); }
 	if (_resource)           { _resource.Reset(); }
 }
+
 #pragma region Public Function
 /****************************************************************************
 *                     CopyStart
@@ -87,11 +96,11 @@ GPUBuffer::~GPUBuffer()
 *****************************************************************************/
 void GPUBuffer::CopyStart()
 {
-#if _DEBUG
-	assert(_metaData.IsCPUAccessible());
-#endif
+	Check(_metaData.IsCPUAccessible());
+
 	ThrowIfFailed(_resource->Map(0, nullptr, reinterpret_cast<void**>(&_mappedData)));
 }
+
 /****************************************************************************
 *                     CopyData
 *************************************************************************//**
@@ -107,11 +116,10 @@ void GPUBuffer::CopyStart()
 *****************************************************************************/
 void GPUBuffer::CopyData(const void* data, const size_t elementIndex)
 {
-#ifdef _DEBUG
-	assert(elementIndex <= _metaData.Count);
-#endif
-	std::memcpy(&_mappedData[elementIndex * _metaData.Stride], data, _metaData.Stride);
+	Check(elementIndex <= _metaData.Count);
+	gu::Memory::Copy(&_mappedData[elementIndex * _metaData.Stride], data, _metaData.Stride);
 }
+
 /****************************************************************************
 *                     CopyTotalData
 *************************************************************************//**
@@ -129,11 +137,10 @@ void GPUBuffer::CopyData(const void* data, const size_t elementIndex)
 *****************************************************************************/
 void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset)
 {
-#if _DEBUG
-	assert(dataLength + indexOffset <= _metaData.Count);
-#endif
-	std::memcpy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (size_t)dataLength);
+	Check(dataLength + indexOffset <= _metaData.Count);
+	gu::Memory::Copy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (size_t)dataLength);
 }
+
 /****************************************************************************
 *                     CopyEnd
 *************************************************************************//**
@@ -157,30 +164,35 @@ void GPUBuffer::SetName(const std::wstring& name)
 
 void GPUBuffer::Pack(const void* data, const gu::SharedPointer<core::RHICommandList>& copyCommandList)
 {
-
-	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get())->GetDevice();
+	const auto rhiDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get());
+	const auto dxDevice  = rhiDevice->GetDevice();
 	if ((!_metaData.IsCPUAccessible()))
 	{
-#if _DEBUG
-		assert(copyCommandList->GetType() == core::CommandListType::Copy);
-#endif
+		Check(copyCommandList->GetType() == core::CommandListType::Copy);
 
 		/*-------------------------------------------------------------------
-		-          Copy CPU memory data into our dafault buffer,
+		-          Copy CPU memory data into our default buffer,
 		-          we need to create an intermediate upload heap
 		---------------------------------------------------------------------*/
-		auto uploadHeapProp   = HEAP_PROPERTY(D3D12_HEAP_TYPE_UPLOAD);
-		auto uploadTempBuffer = RESOURCE_DESC::Buffer(GetTotalByteSize());
-		// CreateCommittedResource -> HeapŠm•Û + ŽÀÛ‚ÉGPU‚Éƒƒ‚ƒŠ‚ð‘‚«ž‚Þ‚ð—¼•û‚â‚Á‚Ä‚­‚ê‚é.
-		ThrowIfFailed(dxDevice->CreateCommittedResource(
-			&uploadHeapProp,
-			D3D12_HEAP_FLAG_NONE,
-			&uploadTempBuffer,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(_intermediateBuffer.GetAddressOf())));
-		_intermediateBuffer->SetName(L"Intermediate Buffer");
+		const D3D12_HEAP_PROPERTIES uploadHeapProp
+		{
+			.Type                 = D3D12_HEAP_TYPE_UPLOAD,
+			.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+			.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+			.CreationNodeMask     = rhiDevice->GetGPUMask().Value(),
+			.VisibleNodeMask      = rhiDevice->GetGPUMask().Value()
+		};
 
+		const auto uploadTempBuffer = RESOURCE_DESC::Buffer(GetTotalByteSize());
+
+		// CreateCommittedResource -> HeapŠm•Û + ŽÀÛ‚ÉGPU‚Éƒƒ‚ƒŠ‚ð‘‚«ž‚Þ‚ð—¼•û‚â‚Á‚Ä‚­‚ê‚é.
+		ThrowIfFailed(rhiDevice->CreateCommittedResource
+		(
+			_intermediateBuffer, uploadTempBuffer, uploadHeapProp, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr)
+		);
+
+		_intermediateBuffer->SetName(L"Intermediate Buffer");
+		
 		/*-------------------------------------------------------------------
 		-      Describe the data we want to copy into the default buffer.
 		---------------------------------------------------------------------*/

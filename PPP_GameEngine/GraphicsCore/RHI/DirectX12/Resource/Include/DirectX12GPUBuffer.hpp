@@ -39,16 +39,24 @@ namespace rhi::directX12
 		//          Create temp upload buffer and copy this to default buffer
 		void Pack(const void* data, const gu::SharedPointer<rhi::core::RHICommandList>& copyCommandList = nullptr) override;
 		
-		// @brief : Begin Map Function
+		/*----------------------------------------------------------------------
+		*  @brief : 　Map関数を呼び出す
+		/*----------------------------------------------------------------------*/
 		void CopyStart() override;
 
-		// @brief : GPU copy to one element 
+		/*----------------------------------------------------------------------
+		*  @brief :  指定されたインデックスにしたがってデータをコピーする
+		/*----------------------------------------------------------------------*/
 		void CopyData(const void* data, const size_t elementIndex) override ;
 
-		/* @brief : GPU copy the specified range*/
+		/*----------------------------------------------------------------------
+		*  @brief :  指定されたインデックスのoffsetにしたがって, 指定の配列数分だけコピーする
+		/*----------------------------------------------------------------------*/
 		void CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset = 0) override;
 		
-		// @brief : Unmap Function
+		/*----------------------------------------------------------------------
+		*  @brief :  Unmapを呼び出すときに使用します
+		/*----------------------------------------------------------------------*/
 		void CopyEnd() override ;
 
 		
@@ -59,9 +67,11 @@ namespace rhi::directX12
 		
 		Resource*      GetResourcePtr() const noexcept { return _resource.Get(); }
 		
-		Resource**     GetAddressOf  () { return _resource.GetAddressOf(); }
+		Resource**     GetAddressOf  () { return _resource.GetAddressOf();}
 
-		void SetName(const std::wstring& name) override;
+		D3D12_GPU_VIRTUAL_ADDRESS GetDxGPUVirtualAddress() const { return _resource->GetGPUVirtualAddress(); }
+
+		void SetName(const gu::wstring& name) override;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -70,7 +80,7 @@ namespace rhi::directX12
 		
 		~GPUBuffer();
 		
-		explicit GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name = L"Buffer");
+		explicit GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::wstring& name = L"Buffer");
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

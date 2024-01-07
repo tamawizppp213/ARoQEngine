@@ -128,7 +128,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture1D(const size_t width, const core:
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension1D;
 	metaData.ResourceType     = core::ResourceType::Texture1D;
@@ -145,7 +145,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture1DArray(const size_t width, const 
 	metaData.DepthOrArraySize = length;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension1D;
 	metaData.ResourceType     = core::ResourceType::Texture1DArray;
@@ -162,7 +162,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture2D(const size_t width, const size_
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
@@ -179,7 +179,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture2DArray(const size_t width, const 
 	metaData.DepthOrArraySize = length;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
@@ -196,7 +196,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture3D(const size_t width, const size_
 	metaData.DepthOrArraySize = depth;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension3D;
 	metaData.ResourceType     = core::ResourceType::Texture3D;
@@ -213,7 +213,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture2DMultiSample(const size_t width, 
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
@@ -230,7 +230,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture2DArrayMultiSample(const size_t wi
 	metaData.DepthOrArraySize = length;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DArrayMultiSample;
@@ -247,7 +247,7 @@ GPUTextureMetaData GPUTextureMetaData::CubeMap(const size_t width, const size_t 
 	metaData.DepthOrArraySize = 6;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::TextureCube;
@@ -264,7 +264,7 @@ GPUTextureMetaData GPUTextureMetaData::CubeMapArray(const size_t width, const si
 	metaData.DepthOrArraySize = 6 * length;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::TextureCubeArray;
@@ -281,7 +281,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTarget(const size_t width, const si
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess; // for frame buffer
+	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess | ResourceUsage::ShaderResource; // for frame buffer
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
@@ -300,7 +300,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTargetMultiSample(const size_t widt
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess;
+	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
@@ -318,7 +318,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencil(const size_t width, const si
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil;
+	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::DepthStencil;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
@@ -336,7 +336,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil;
+	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::DepthStencil;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;

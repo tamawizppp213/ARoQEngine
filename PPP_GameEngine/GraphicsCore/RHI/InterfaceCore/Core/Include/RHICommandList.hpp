@@ -162,11 +162,18 @@ namespace rhi::core
 		-                RayTracing Command
 		---------------------------------------------------------------------*/
 		
+#pragma region Copy
 		/*-------------------------------------------------------------------
 		-                Copy Resource
 		---------------------------------------------------------------------*/
 		virtual void CopyResource(const gu::SharedPointer<GPUTexture>& dest, const gu::SharedPointer<GPUTexture>& source) = 0;
 		
+		/*----------------------------------------------------------------------
+		*  @brief : バッファの領域をあるリソースから別のリソースにコピーする. 
+		*           GPU版memcpy
+		/*----------------------------------------------------------------------*/
+		virtual void CopyBufferRegion(const gu::SharedPointer<GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) = 0;
+#pragma endregion Copys
 		/*-------------------------------------------------------------------
 		-                Transition layout
 		---------------------------------------------------------------------*/

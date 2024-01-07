@@ -100,6 +100,43 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
 
+		/*----------------------------------------------------------------------
+		*  @brief : Heap領域の確保と実際にGPUにデータをメモリに確保するのを両方行う関数
+		/*----------------------------------------------------------------------*/
+		HRESULT CreateCommittedResource
+		(
+			ResourceComPtr&      resource,
+			const D3D12_RESOURCE_DESC& resourceDesc, // ほとんどはconst
+			const D3D12_HEAP_PROPERTIES& heapProp,
+			const D3D12_RESOURCE_STATES initialState,
+			const D3D12_CLEAR_VALUE* clearValue = nullptr
+		);
+
+		/*----------------------------------------------------------------------
+		*  @brief : Heap内にまだマップまでは行わない予約済みのリソースを作成
+		/*----------------------------------------------------------------------*/
+		HRESULT CreateReservedResource
+		(
+			ResourceComPtr& resource,
+			const D3D12_RESOURCE_DESC& resourceDesc, // ほとんどはconst
+			const D3D12_HEAP_PROPERTIES& heapProp,
+			const D3D12_RESOURCE_STATES initialState,
+			const D3D12_CLEAR_VALUE* clearValue = nullptr
+		);
+
+		/*----------------------------------------------------------------------
+		*  @brief : 既に作成済みのヒープに配置されるリソースを作成する. 
+		*           Committed, Reserved, Placedの中では最も高速に動作する
+		/*----------------------------------------------------------------------*/
+		HRESULT CreatePlacedResource
+		(
+			ResourceComPtr& resource,
+			const D3D12_RESOURCE_DESC& resourceDesc, // ほとんどはconst
+			const HeapComPtr& heap,
+			const gu::uint64 heapOffset,
+			const D3D12_RESOURCE_STATES initialState,
+			const D3D12_CLEAR_VALUE* clearValue = nullptr
+		);
 #pragma endregion Create Function
 
 		/****************************************************************************
@@ -111,7 +148,7 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 
-		std::uint32_t GetNodeCount() const { return _deviceNodeCount; }
+		gu::uint32 GetNodeCount() const { return _deviceNodeCount; }
 
 		const rhi::core::HDRDisplayInfo& GetHDRDisplayInfo() const { return _displayInfo; }
 
@@ -204,6 +241,7 @@ namespace rhi::directX12
 		bool _isSupportedBindless                 = true;
 		bool _isSupportedStencilReferenceFromPixelShader   = true;
 		bool _isSupported16bitOperation           = false;
+		bool _isSupportedHeapNotZero = false; // Heap確保のオーバーヘッドを減らすため, ゼロ初期化しないようにする
 
 		/* @brief : The maximum D3D12 feature level supported. 0 if not supported*/
 		D3D_FEATURE_LEVEL _maxSupportedFeatureLevel = (D3D_FEATURE_LEVEL)0;
