@@ -315,7 +315,7 @@ void GPUTexture::Write(const gu::SharedPointer<core::RHICommandList>& commandLis
 	std::vector<D3D12_SUBRESOURCE_DATA> subResources = {};
 	ThrowIfFailed(PrepareUpload(dxDevice.Get(), &image, scratchImage.GetImageCount(), dxMetaData, subResources));
 
-	const auto uploadBufferSize  = GetRequiredIntermediateSize(_resource.Get(), 0, static_cast<UINT>(subResources.size()));
+	//const auto uploadBufferSize  = GetRequiredIntermediateSize(_resource.Get(), 0, static_cast<UINT>(subResources.size()));
 	const D3D12_HEAP_PROPERTIES intermediateHeapProperty = 
 	{
 		.Type                 = EnumConverter::Convert(_metaData.HeapType),
@@ -483,7 +483,7 @@ void GPUTexture::Save(const std::wstring& filePath, const gu::SharedPointer<core
 }
 
 #pragma endregion Public Function
-void GPUTexture::Pack(const gu::SharedPointer<core::RHICommandList>& commandList)
+void GPUTexture::Pack([[maybe_unused]]const gu::SharedPointer<core::RHICommandList>& commandList)
 {
 	
 }

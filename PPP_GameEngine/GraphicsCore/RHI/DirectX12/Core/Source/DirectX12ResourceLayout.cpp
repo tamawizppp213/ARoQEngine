@@ -108,8 +108,8 @@ void RHIResourceLayout::SetUp()
 		D3D12_DESCRIPTOR_RANGE_FLAG_NONE :                // 静的
 		D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE; // 変更がありうるものとして扱う
 
-	const D3D12_ROOT_DESCRIPTOR_FLAGS cbvRootDescriptorFlags = 
-		D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC;	// 一度Bindされた時点で変更がないものとして扱われる.
+	//const D3D12_ROOT_DESCRIPTOR_FLAGS cbvRootDescriptorFlags = 
+	//	D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC;	// 一度Bindされた時点で変更がないものとして扱われる.
 	// We always set the data in an upload heap before calling Set*RootConstantBufferView.
 
 	/*-------------------------------------------------------------------

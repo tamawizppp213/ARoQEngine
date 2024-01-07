@@ -294,7 +294,6 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 	/*-------------------------------------------------------------------
 	-          Wait Graphics Queue
 	---------------------------------------------------------------------*/
-	const std::uint32_t previousFrame = _currentFrameIndex;
 	_commandQueues[CommandListType::Graphics]->Signal(_fence, ++_fenceValue);
 	_fence->Wait(_fenceValue);
 

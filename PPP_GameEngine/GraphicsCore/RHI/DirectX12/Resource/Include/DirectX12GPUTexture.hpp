@@ -75,7 +75,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void Pack(const gu::SharedPointer<core::RHICommandList>& commandList) override;
+		void Pack([[maybe_unused]]const gu::SharedPointer<core::RHICommandList>& commandList) override;
 
 		/****************************************************************************
 		**                Protected Member Variables

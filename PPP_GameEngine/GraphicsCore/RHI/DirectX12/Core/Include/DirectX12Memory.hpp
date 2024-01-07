@@ -51,7 +51,7 @@ namespace rhi::directX12
 			const gu::SharedPointer<core::RHIDevice>& device, 
 			const core::MemoryHeap heapType,
 			const std::uint64_t size, 
-			std::uint32_t typeBits);
+			[[maybe_unused]]std::uint32_t typeBits);
 	
 	protected:
 		/****************************************************************************

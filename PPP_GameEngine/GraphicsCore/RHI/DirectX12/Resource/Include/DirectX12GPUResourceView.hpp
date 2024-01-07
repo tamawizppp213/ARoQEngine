@@ -39,7 +39,7 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------
 		*  @brief : Resource Layoutの配列インデックスをコマンドリストとバインドする
 		/*----------------------------------------------------------------------*/
-		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
+		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, [[maybe_unused]]const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
 		
 		/****************************************************************************
 		**                Public Member Variables

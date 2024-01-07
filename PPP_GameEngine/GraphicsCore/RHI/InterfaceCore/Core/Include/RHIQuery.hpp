@@ -61,7 +61,7 @@ namespace rhi::core
 		QueryResultLocation() = default;
 
 		QueryResultLocation(const gu::SharedPointer<RHIQuery>& queryHeap, const gu::uint32 id,
-			const core::QueryHeapType type, void* target = nullptr)
+			const core::QueryHeapType type)
 			: Heap(queryHeap), QueryID(id), Type(type)//, Target(target)
 		{
 
