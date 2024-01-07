@@ -180,6 +180,10 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Editor\Widget\Include\EditorWidget.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Engine\Public\Include\EngineProfiles.hpp" />
     <ClInclude Include="Engine\Public\Include\EngineThreadManager.hpp" />
     <ClInclude Include="Engine\Public\Include\PPPEngine.hpp" />
@@ -605,6 +609,10 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Editor\Widget\Source\EditorWidget.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Engine\Public\Source\EngineProfiles.cpp" />
     <ClCompile Include="Engine\Public\Source\EngineThreadManager.cpp" />
     <ClCompile Include="Engine\Public\Source\PPPEngine.cpp" />
