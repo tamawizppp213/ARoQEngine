@@ -988,7 +988,7 @@ namespace rhi::core
 	*  @enum      ResourceViewType
 	*  @brief     How to read gpu resource buffer
 	*****************************************************************************/
-	enum class ResourceViewType : std::uint32_t
+	enum class ResourceViewType : gu::uint32
 	{
 		Unknown,
 		ConstantBuffer       , // 256 alighment buffer

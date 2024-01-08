@@ -52,29 +52,51 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		/* @brief: Return descriptor heap pointer. */
+		/*----------------------------------------------------------------------
+		*  @brief : Return the descriptor heap pointer.
+		/*----------------------------------------------------------------------*/
 		gu::SharedPointer<core::RHIDescriptorHeap> GetHeap() const noexcept { return _heap; };
 		
-		/* @brief: Return resource view type*/
+		/*----------------------------------------------------------------------
+		*  @brief : Return the resource view type
+		/*----------------------------------------------------------------------*/
 		core::ResourceViewType GetResourceViewType() const noexcept { return _resourceViewType; }
 
-		/* @brief: Return descriptorID in the descriptor heap. */
+		/*----------------------------------------------------------------------
+		*  @brief : Return the descriptor index in the descriptor heap
+		/*----------------------------------------------------------------------*/
 		gu::uint32 GetDescriptorID() const { return _descriptorID; }
 
+		/*----------------------------------------------------------------------
+		*  @brief : テクスチャ配列において, 同一のmipmapレベルのテクスチャをまとめるためのIndex
+		https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/subresources
+		/*----------------------------------------------------------------------*/
 		gu::uint32 GetMipSlice() const { return _mipSlice; }
 
+		/*----------------------------------------------------------------------
+		*  @brief : Return the plane slice index (使い道が現状不明なので今後調べる必要あり)
+		https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/subresources
+		/*----------------------------------------------------------------------*/
 		gu::uint32 GetPlaneSlice() const { return _planeSlice; }
 
-		/* @brief: Return texture pointer or nullptr */
+		/*----------------------------------------------------------------------
+		*  @brief : Return texture pointer or nullptr.
+		/*----------------------------------------------------------------------*/
 		gu::SharedPointer<GPUTexture> GetTexture() const noexcept{ return _texture; }
 
-		/* @brief : Return buffer pointer or nullptr*/
+		/*----------------------------------------------------------------------
+		*  @brief : Return buffer pointer or nullptr. 
+		/*----------------------------------------------------------------------*/
 		gu::SharedPointer<GPUBuffer> GetBuffer() const noexcept { return _buffer; }
 
-		/* @brief : Set texture*/
+		/*----------------------------------------------------------------------
+		*  @brief : Set texture pointer. (本来バッファ用途であるなら使用しないでください)
+		/*----------------------------------------------------------------------*/
 		void SetTexture(const gu::SharedPointer<GPUTexture>& texture) { _texture = texture; }
 
-		/* @brief : Set buffer*/
+		/*----------------------------------------------------------------------
+		*  @brief : Set buffer pointer. (本来テクスチャ用途であるなら使用しないでください)
+		/*----------------------------------------------------------------------*/
 		void SetBuffer(const gu::SharedPointer<GPUBuffer>& buffer) { _buffer = buffer; }
 
 		/****************************************************************************
@@ -101,20 +123,28 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		// @brief : GPU logical device
 		gu::SharedPointer<RHIDevice>  _device = nullptr;
 
+		// @brief : buffer pointer
 		gu::SharedPointer<GPUBuffer>  _buffer = nullptr;
 
+		// @brief : texture pointer
 		gu::SharedPointer<GPUTexture> _texture = nullptr;
 
+		// @brief : descriptor heap pointer
 		gu::SharedPointer<RHIDescriptorHeap> _heap = nullptr;
 
+		// @brief : resource view type
 		core::ResourceViewType      _resourceViewType = core::ResourceViewType::Unknown;
 		
+		// @brief : descriptor index in the descriptor heap array
 		gu::uint32 _descriptorID = 0;
 
+		// @brief : specified mip map level in the texture array
 		gu::uint32 _mipSlice = 0;
 
+		// @brief : plane slice index
 		gu::uint32 _planeSlice = 0;
 	};
 }
