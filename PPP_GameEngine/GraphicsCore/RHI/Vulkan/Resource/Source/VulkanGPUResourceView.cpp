@@ -48,8 +48,10 @@ namespace
 	}
 }
 #pragma region Constructor and Destructor
-GPUResourceView::GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
-	: core::GPUResourceView(device, type, customHeap)
+GPUResourceView::GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUBuffer>& buffer, 
+	const gu::uint32 mipSlice, const gu::uint32 planeSlice,
+	const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
+	: core::GPUResourceView(device, type, mipSlice, planeSlice, customHeap)
 {
 	_buffer  = buffer;
 	_texture = nullptr;
@@ -57,8 +59,10 @@ GPUResourceView::GPUResourceView(const gu::SharedPointer<core::RHIDevice>& devic
 	CreateView();
 	
 }
-GPUResourceView::GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
-	:core::GPUResourceView(device, type, customHeap)
+GPUResourceView::GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUTexture>& texture, 
+	const gu::uint32 mipSlice, const gu::uint32 planeSlice,
+	const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
+	:core::GPUResourceView(device, type, mipSlice, planeSlice, customHeap)
 {
 	const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 
@@ -272,7 +276,7 @@ void GPUResourceView::CreateBufferView()
 	assert(_buffer->IsBuffer());
 #endif
 
-	if (_buffer->GetMetaData().Format != core::InputFormat::Unknown)
+	if (_buffer->GetMetaData().Format != core::PixelFormat::Unknown)
 	{
 		
 		const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device);

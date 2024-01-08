@@ -114,9 +114,9 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const Attachment& color, const std::optional<Attachment>& depth) = 0;
 		
-		virtual gu::SharedPointer<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const gu::SharedPointer<GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) = 0;
+		virtual gu::SharedPointer<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const gu::SharedPointer<GPUTexture>& texture, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) = 0;
 		
-		virtual gu::SharedPointer<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const gu::SharedPointer<GPUBuffer>& buffer, const gu::SharedPointer<RHIDescriptorHeap>& customHeap = nullptr) = 0;
+		virtual gu::SharedPointer<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const gu::SharedPointer<GPUBuffer>& buffer, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<RHIDescriptorHeap>& customHeap = nullptr) = 0;
 		
 		virtual gu::SharedPointer<GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
 		

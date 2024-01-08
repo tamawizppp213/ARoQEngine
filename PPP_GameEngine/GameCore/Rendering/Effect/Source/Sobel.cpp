@@ -151,7 +151,7 @@ void Sobel::PrepareOutlineInfo(const std::wstring& name)
 	buffer->Pack(&_outlineInfo, nullptr);
 	
 	// create resource view
-	_outlineCBV = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, nullptr);
+	_outlineCBV = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, 0,0,nullptr);
 }
 
 /****************************************************************************
@@ -174,8 +174,8 @@ void Sobel::PrepareResourceView()
 	{
 		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess);
 		const auto texture = device->CreateTexture(metaData);
-		_uav = device->CreateResourceView(ResourceViewType::RWTexture, texture, nullptr);
-		_srv = device->CreateResourceView(ResourceViewType::Texture  , texture, nullptr);
+		_uav = device->CreateResourceView(ResourceViewType::RWTexture, texture,0,0, nullptr);
+		_srv = device->CreateResourceView(ResourceViewType::Texture  , texture,0,0, nullptr);
 	}
 }
 

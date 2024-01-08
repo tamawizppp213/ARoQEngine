@@ -70,9 +70,9 @@ void RHIFrameBuffer::Prepare()
 	for (size_t index = 0; index < _renderTargets.size(); ++index)
 	{
 		// set up render target resource view
-		_renderTargetViews[index] = rhiDevice->CreateResourceView(core::ResourceViewType::RenderTarget, _renderTargets[index], nullptr);
-		_renderTargetSRVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _renderTargets[index], nullptr);
-		_renderTargetUAVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::RWTexture   , _renderTargets[index], nullptr);
+		_renderTargetViews[index] = rhiDevice->CreateResourceView(core::ResourceViewType::RenderTarget, _renderTargets[index],0,0, nullptr);
+		_renderTargetSRVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _renderTargets[index],0,0, nullptr);
+		_renderTargetUAVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::RWTexture   , _renderTargets[index],0,0, nullptr);
 
 		imageViews[index] = gu::StaticPointerCast<vulkan::GPUResourceView>(_renderTargetViews[index])->GetImageView();
 
@@ -85,8 +85,8 @@ void RHIFrameBuffer::Prepare()
 	if (_depthStencil)
 	{
 		// set up depth stencil resource view
-		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil, _depthStencil, nullptr);
-		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _depthStencil, nullptr);
+		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil,_depthStencil,0,0, nullptr);
+		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     ,_depthStencil,0,0, nullptr);
 
 		const auto vkDepthStancilView = gu::StaticPointerCast<vulkan::GPUResourceView>(_depthStencilView);
 		imageViews.push_back(vkDepthStancilView->GetImageView());

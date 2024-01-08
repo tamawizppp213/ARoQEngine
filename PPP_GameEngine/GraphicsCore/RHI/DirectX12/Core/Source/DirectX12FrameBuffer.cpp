@@ -95,9 +95,9 @@ void RHIFrameBuffer::Prepare()
 
 	for (size_t i = 0; i < _renderTargets.size(); ++i)
 	{
-		_renderTargetViews[i] = rhiDevice->CreateResourceView(core::ResourceViewType::RenderTarget, _renderTargets[i], nullptr);
-		_renderTargetSRVs[i]  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _renderTargets[i], nullptr);
-		_renderTargetUAVs[i]  = rhiDevice->CreateResourceView(core::ResourceViewType::RWTexture   , _renderTargets[i], nullptr);
+		_renderTargetViews[i] = rhiDevice->CreateResourceView(core::ResourceViewType::RenderTarget, _renderTargets[i],0,0, nullptr);
+		_renderTargetSRVs[i]  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _renderTargets[i],0,0, nullptr);
+		_renderTargetUAVs[i]  = rhiDevice->CreateResourceView(core::ResourceViewType::RWTexture   , _renderTargets[i],0,0, nullptr);
 	}
 
 	/*-------------------------------------------------------------------
@@ -105,8 +105,8 @@ void RHIFrameBuffer::Prepare()
 	---------------------------------------------------------------------*/
 	if (_depthStencil)
 	{
-		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil, _depthStencil, nullptr);
-		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _depthStencil,  nullptr);
+		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil, _depthStencil,0,0, nullptr);
+		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _depthStencil,0,0,  nullptr);
 	}
 }
 #pragma endregion Prepare

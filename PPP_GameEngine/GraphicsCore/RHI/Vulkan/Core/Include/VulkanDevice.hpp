@@ -84,9 +84,9 @@ namespace rhi::vulkan
 		//gu::SharedPointer<core::GPURayTracingPipelineState>CreateRayTracingPipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override { return nullptr; };
 		
 		
-		gu::SharedPointer<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
+		gu::SharedPointer<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::uint32 mipSlice = 0, const gu::uint32 planeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
-		gu::SharedPointer<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
+		gu::SharedPointer<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::uint32 mipSlice = 0, const gu::uint32 planeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
 		gu::SharedPointer<core::GPUSampler>              CreateSampler(const core::SamplerInfo& samplerInfo) override; // both
 		

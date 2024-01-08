@@ -276,7 +276,7 @@ void GaussianBlur::PrepareBlurParameters(const std::wstring& name)
 	// Pack blur paramter init data 
 	blurParameter->Pack(&parameter, nullptr);
 
-	_blurParameterView = device->CreateResourceView(ResourceViewType::ConstantBuffer, blurParameter, nullptr);
+	_blurParameterView = device->CreateResourceView(ResourceViewType::ConstantBuffer, blurParameter,0,0, nullptr);
 }
 /****************************************************************************
 *							PrepareTextureSizeBuffer
@@ -305,7 +305,7 @@ void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std
 	_textureSize.YBlurTexture[1]    = height / 2;
 
 	textureSizeBuffer->Pack(&_textureSize, nullptr);
-	_textureSizeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, textureSizeBuffer, nullptr);
+	_textureSizeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, textureSizeBuffer,0,0, nullptr);
 }
 
 /****************************************************************************
@@ -426,11 +426,11 @@ void GaussianBlur::PrepareResourceView()
 		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 		const auto destTexture = device->CreateTexture(dstData);
 		
-		_unorderedResourceViews[0] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr); // x half texture uav
-		_shaderResourceViews   [0] = device->CreateResourceView(ResourceViewType::Texture  , destTexture, nullptr); // x half texture srv
+		_unorderedResourceViews[0] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, 0,0,nullptr); // x half texture uav
+		_shaderResourceViews   [0] = device->CreateResourceView(ResourceViewType::Texture  , destTexture, 0,0,nullptr); // x half texture srv
 		if (!_useCS)
 		{
-			_renderTargetResourceViews[0] = device->CreateResourceView(ResourceViewType::RenderTarget, destTexture, nullptr);
+			_renderTargetResourceViews[0] = device->CreateResourceView(ResourceViewType::RenderTarget, destTexture, 0,0,nullptr);
 			_xBlur.FrameBuffer            = device->CreateFrameBuffer(_xBlur.RenderPass, destTexture, nullptr);
 		}
 	}
@@ -438,8 +438,8 @@ void GaussianBlur::PrepareResourceView()
 	{
 		const auto dstData         = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight() / 2, format, 1, ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 		const auto destTexture     = device->CreateTexture(dstData);
-		_unorderedResourceViews[1] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr);
-		_shaderResourceViews[1]    = device->CreateResourceView(ResourceViewType::Texture  , destTexture, nullptr);
+		_unorderedResourceViews[1] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, 0,0,nullptr);
+		_shaderResourceViews[1]    = device->CreateResourceView(ResourceViewType::Texture  , destTexture, 0,0,nullptr);
 		if (!_useCS)
 		{
 			_renderTargetResourceViews[1] = device->CreateResourceView(ResourceViewType::RenderTarget, destTexture);
@@ -450,7 +450,7 @@ void GaussianBlur::PrepareResourceView()
 	{
 		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth()    , Screen::GetScreenHeight()    , format, 1, ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 		const auto destTexture = device->CreateTexture(dstData);
-		_unorderedResourceViews[2] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, nullptr);
+		_unorderedResourceViews[2] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture,0,0, nullptr);
 
 	}
 }

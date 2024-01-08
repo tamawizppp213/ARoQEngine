@@ -148,7 +148,7 @@ void CascadeShadow::PrepareResourceView(const std::wstring& name)
 		const auto buffer   = device->CreateBuffer(metaData);
 		buffer->SetName(name + L"ShadowInfo");
 		buffer->Pack(&shadowInfo, nullptr);
-		_shadowInfoView = device->CreateResourceView(ResourceViewType::Buffer, buffer, nullptr);
+		_shadowInfoView = device->CreateResourceView(ResourceViewType::Buffer, buffer, 0, 0, nullptr);
 	}
 }
 

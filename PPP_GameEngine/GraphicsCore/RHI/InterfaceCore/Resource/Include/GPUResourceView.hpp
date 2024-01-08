@@ -59,7 +59,11 @@ namespace rhi::core
 		core::ResourceViewType GetResourceViewType() const noexcept { return _resourceViewType; }
 
 		/* @brief: Return descriptorID in the descriptor heap. */
-		std::uint32_t GetDescriptorID() const { return _descriptorID; }
+		gu::uint32 GetDescriptorID() const { return _descriptorID; }
+
+		gu::uint32 GetMipSlice() const { return _mipSlice; }
+
+		gu::uint32 GetPlaneSlice() const { return _planeSlice; }
 
 		/* @brief: Return texture pointer or nullptr */
 		gu::SharedPointer<GPUTexture> GetTexture() const noexcept{ return _texture; }
@@ -85,7 +89,11 @@ namespace rhi::core
 
 		virtual ~GPUResourceView() = default;
 
-		explicit GPUResourceView(const gu::SharedPointer<RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) : _device(device), _resourceViewType(type), _heap(customHeap) {};
+		explicit GPUResourceView(const gu::SharedPointer<RHIDevice>& device, const core::ResourceViewType type,
+			const gu::uint32 mipSlice = 0, const gu::uint32 planeSlice = 0,
+			const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) : _device(device), _resourceViewType(type), _heap(customHeap), _mipSlice(mipSlice), _planeSlice(planeSlice)
+		{
+		};
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -103,7 +111,11 @@ namespace rhi::core
 
 		core::ResourceViewType      _resourceViewType = core::ResourceViewType::Unknown;
 		
-		std::uint32_t _descriptorID = 0;
+		gu::uint32 _descriptorID = 0;
+
+		gu::uint32 _mipSlice = 0;
+
+		gu::uint32 _planeSlice = 0;
 	};
 }
 

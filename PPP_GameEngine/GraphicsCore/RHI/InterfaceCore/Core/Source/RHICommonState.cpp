@@ -91,12 +91,12 @@ GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::Resource
 	ByteSize = Stride * Count;
 }
 
-GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const InputFormat format, const size_t count, const MemoryHeap heap, void* initData)
-{
-	auto info = GPUBufferMetaData(InputFormatSizeOf::Get(format), count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
-	info.Format = format;
-	return info;
-}
+//GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const PixelFormat format, const size_t count, const MemoryHeap heap, void* initData)
+//{
+//	auto info = GPUBufferMetaData(InputFormatSizeOf::Get(format), count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
+//	//info.Format = format;
+//	return info;
+//}
 
 GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
 {

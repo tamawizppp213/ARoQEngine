@@ -194,14 +194,14 @@ gu::SharedPointer<core::GPUSampler> RHIDevice::CreateSampler(const core::Sampler
 	return gu::StaticPointerCast<core::GPUSampler>(gu::MakeShared<vulkan::GPUSampler>(SharedFromThis(), samplerInfo));
 }
 
-gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
+gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::uint32 mipSlice, const gu::uint32 planeSlice, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
 {
-	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<vulkan::GPUResourceView>(SharedFromThis(), viewType, texture, customHeap));
+	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<vulkan::GPUResourceView>(SharedFromThis(), viewType, texture, mipSlice, planeSlice, customHeap));
 }
 
-gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
+gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::uint32 mipSlice, const gu::uint32 planeSlice, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
 {
-	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<vulkan::GPUResourceView>(SharedFromThis(), viewType, buffer, customHeap));
+	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<vulkan::GPUResourceView>(SharedFromThis(), viewType, buffer, mipSlice, planeSlice, customHeap));
 }
 
 gu::SharedPointer<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name)

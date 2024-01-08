@@ -199,8 +199,8 @@ void Bloom::PrepareResourceView(const std::wstring& name)
 	{
 		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess);
 		const auto texture = device->CreateTexture(metaData,name+L"Luminance");
-		_luminanceSRV = device->CreateResourceView(ResourceViewType::Texture  , texture, nullptr);
-		_luminanceUAV = device->CreateResourceView(ResourceViewType::RWTexture, texture, nullptr);
+		_luminanceSRV = device->CreateResourceView(ResourceViewType::Texture  , texture,0,0, nullptr);
+		_luminanceUAV = device->CreateResourceView(ResourceViewType::RWTexture, texture,0,0, nullptr);
 	}
 }
 #pragma endregion Set up Function

@@ -213,7 +213,7 @@ void SSAO::PrepareSSAOSettings(const std::wstring& name)
 	buffer->Pack(&_setting, nullptr);
 
 	// create constant buffer view.
-	_settingView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, nullptr);
+	_settingView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer,0,0, nullptr);
 }
 
 /****************************************************************************
@@ -243,7 +243,7 @@ void SSAO::PrepareBlurMode(const std::wstring& name)
 		buffer->Pack(&blurMode, nullptr);
 
 		// create constant buffer view
-		_blurVerticalModeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, nullptr);
+		_blurVerticalModeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, 0,0,nullptr);
 	}
 
 	//horizontal blur view
@@ -258,7 +258,7 @@ void SSAO::PrepareBlurMode(const std::wstring& name)
 		buffer->Pack(&blurMode, nullptr);
 
 		// create constant buffer view
-		_blurHorizontalModeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, nullptr);
+		_blurHorizontalModeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer,0,0, nullptr);
 	}
 }
 
@@ -277,7 +277,7 @@ void SSAO::PrepareRandomTexture(const std::wstring& name)
 
 	texture->Write(_engine->GetCommandList(CommandListType::Graphics), pixel);
 
-	_randomMap = device->CreateResourceView(ResourceViewType::Texture, texture, nullptr);
+	_randomMap = device->CreateResourceView(ResourceViewType::Texture, texture, 0,0,nullptr);
 
 	delete[] pixel;
 

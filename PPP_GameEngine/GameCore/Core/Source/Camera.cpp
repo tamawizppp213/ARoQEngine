@@ -53,7 +53,7 @@ Camera::Camera(const LowLevelGraphicsEnginePtr& engine) : _engine(engine), _type
 	GPUBufferMetaData metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SceneConstants), 1);
 	_sceneConstantBuffer = device->CreateBuffer(metaData, L"SceneConstants");
 
-	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer, nullptr);
+	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer, 0,0,nullptr);
 }
 
 Camera::Camera(const LowLevelGraphicsEnginePtr& engine, const PerspectiveInfo& info)
@@ -74,7 +74,7 @@ Camera::Camera(const LowLevelGraphicsEnginePtr& engine, const PerspectiveInfo& i
 	GPUBufferMetaData metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SceneConstants), 1);
 	_sceneConstantBuffer = device->CreateBuffer(metaData, L"SceneConstants");
 
-	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer, nullptr);
+	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer,0,0, nullptr);
 
 }
 
@@ -96,7 +96,7 @@ Camera::Camera(const LowLevelGraphicsEnginePtr& engine, const OrthographicInfo& 
 	GPUBufferMetaData metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SceneConstants), 1);
 	_sceneConstantBuffer = device->CreateBuffer(metaData, L"SceneConstants");
 
-	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer, nullptr);
+	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer, 0,0,nullptr);
 }
 
 #pragma endregion Constructor and Destructor

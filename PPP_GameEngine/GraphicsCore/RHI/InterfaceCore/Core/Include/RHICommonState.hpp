@@ -258,7 +258,13 @@ namespace rhi::core
 		// Single format
 		D32_FLOAT,
 		R32_FLOAT,
+		R32_SINT,
+		R32_UINT,
 		R16_FLOAT,
+		R16_SINT,
+		R16_UINT,
+		R8_SINT,
+		R8_UINT,
 
 		// Block compression format (画像を4x4ピクセル単位のブロックに分割して, それぞれのブロックごとに圧縮を行う方式)
 		// https://www.webtech.co.jp/blog/optpix_labs/format/6993/
@@ -1135,7 +1141,7 @@ namespace rhi::core
 		ResourceState  State         = ResourceState::GeneralRead; // resource layout
 		MemoryHeap     HeapType      = MemoryHeap::Default;         // memory heap type
 		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
-		InputFormat    Format        = InputFormat::Unknown;        // 基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある
+		PixelFormat    Format        = PixelFormat::Unknown;        // 基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある
 		void*          InitData      = nullptr; // Init Data
 
 		/****************************************************************************
@@ -1156,7 +1162,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
-		static GPUBufferMetaData UploadBuffer(const InputFormat format, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
+		//static GPUBufferMetaData UploadBuffer(const PixelFormat format, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
 		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
 		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, void* initData = nullptr);
 		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 

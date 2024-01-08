@@ -243,7 +243,7 @@ namespace gc::rendering
 			const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(TLight), count);
 			const auto buffer     = device->CreateBuffer(bufferInfo, L"LightData");
 
-			_lightDataView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, nullptr);
+			_lightDataView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer,0,0, nullptr);
 		}
 
 		/*-------------------------------------------------------------------
@@ -259,7 +259,7 @@ namespace gc::rendering
 			const auto buffer        = device->CreateBuffer(bufferInfo, L"LightID");
 
 			// Create light id uav resource view
-			_hitLightIDListsInTile = device->CreateResourceView(ResourceViewType::RWStructuredBuffer, buffer, nullptr);
+			_hitLightIDListsInTile = device->CreateResourceView(ResourceViewType::RWStructuredBuffer, buffer,0,0, nullptr);
 		}
 	}
 }

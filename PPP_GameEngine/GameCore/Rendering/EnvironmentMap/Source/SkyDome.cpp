@@ -225,10 +225,10 @@ void SkyDome::PrepareResourceView(const gu::SharedPointer<GPUTexture>& texture)
 	_resourceViews.resize(2);
 	// sky object
 	_resourceViews[0].first  = 1; // resource view array index (please see resource layout)
-	_resourceViews[0].second = device->CreateResourceView(ResourceViewType::ConstantBuffer, _skyObject, nullptr);
+	_resourceViews[0].second = device->CreateResourceView(ResourceViewType::ConstantBuffer, _skyObject,0,0, nullptr);
 
 	// cubemap
 	_resourceViews[1].first  = 2;
-	_resourceViews[1].second = device->CreateResourceView(ResourceViewType::Texture, texture, nullptr);
+	_resourceViews[1].second = device->CreateResourceView(ResourceViewType::Texture, texture,0,0, nullptr);
 }
 #pragma endregion Private Function
