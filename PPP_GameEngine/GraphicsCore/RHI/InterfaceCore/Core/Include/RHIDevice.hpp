@@ -53,6 +53,7 @@ namespace rhi::core
 	class GPUSampler;
 	class GPUBuffer;
 	class GPUTexture;
+	class RHIQuery;
 	class GPUPipelineFactory;
 	class RayTracingGeometry;
 	class BLASBuffer;
@@ -140,6 +141,7 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) = 0;
 		
+		virtual gu::SharedPointer<RHIQuery> CreateQuery(const core::QueryHeapType heapType) = 0;
 #pragma endregion Create Resource
 		/****************************************************************************
 		**                Public Member Variables

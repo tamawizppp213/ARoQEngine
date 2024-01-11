@@ -100,6 +100,7 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
 
+		gu::SharedPointer<core::RHIQuery> CreateQuery(const core::QueryHeapType heapType) override;
 		/*----------------------------------------------------------------------
 		*  @brief : Heap領域の確保と実際にGPUにデータをメモリに確保するのを両方行う関数
 		/*----------------------------------------------------------------------*/
@@ -360,6 +361,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Private Enum Class
 		*****************************************************************************/
+		// Descriotor heap
 		enum DefaultHeapType
 		{
 			CBV_SRV_UAV,
@@ -401,6 +403,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		/*----------------------------------------------------------------------
+		*  @brief : Defaultのディスクリプタヒープ
+		*----------------------------------------------------------------------*/
 		std::map<DefaultHeapType, gu::SharedPointer<core::RHIDescriptorHeap>> _defaultHeap;
 	};
 }

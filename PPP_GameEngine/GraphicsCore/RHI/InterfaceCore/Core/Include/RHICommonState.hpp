@@ -1406,7 +1406,8 @@ namespace rhi::core
 		Occulusion,         // 遮蔽されていたら0, それ以外は遮蔽されていないことを示す
 		TimeStamp,          // GPU, CPUのタイムスタンプに使用します
 		PipelineStatistics, // Graphics pipelineの統計を示します
-		CopyQueueTimeStamp  // copy queue用のタイムスタンプ
+		CopyQueueTimeStamp, // copy queue用のタイムスタンプ
+		CountOf,
 	};
 
 #pragma endregion Query

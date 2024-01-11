@@ -47,6 +47,7 @@ GPUResourceView::GPUResourceView(
 	if (_buffer) { CreateView(heap); }
 
 }
+
 GPUResourceView::GPUResourceView(
 	const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUTexture>& texture, 
 	const gu::uint32 mipSlice, const gu::uint32 planeSlice,
@@ -87,7 +88,7 @@ GPUResourceView::~GPUResourceView()
               index : resource layout array index
 
 *  @param[in] const gu::SharedPointer<core::RHICommandList>& commandList pointer
-*  @param[in] const std::uint32_t resource layout array index.
+*  @param[in] const gu::uint32_t resource layout array index.
 *
 *  @return 　　void
 *****************************************************************************/
@@ -166,6 +167,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 		resourceViewDesc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
 		
 		// For depth stencil texture
+		// EnumConverterではD32が渡されてしまうため, 特別に以下の対応を行いました. 
 		if (_texture->GetPixelFormat() == core::PixelFormat::D32_FLOAT)
 		{
 			resourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
@@ -186,7 +188,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 				resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2D;
 				resourceViewDesc.Texture2D.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
 				resourceViewDesc.Texture2D.MostDetailedMip     = 0; 
-				resourceViewDesc.Texture2D.PlaneSlice          = 0;
+				resourceViewDesc.Texture2D.PlaneSlice          = static_cast<UINT>(_planeSlice);
 				resourceViewDesc.Texture2D.ResourceMinLODClamp = 0; // Accessible all the mipmap level resources. 
 
 				break;
@@ -224,7 +226,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 				resourceViewDesc.Texture2DArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
 				resourceViewDesc.Texture2DArray.MostDetailedMip     = 0;
 				resourceViewDesc.Texture2DArray.ArraySize           = static_cast<UINT>(_texture->GetArrayLength());
-				resourceViewDesc.Texture2DArray.PlaneSlice          = 0;
+				resourceViewDesc.Texture2DArray.PlaneSlice          = _planeSlice;
 				resourceViewDesc.Texture2DArray.ResourceMinLODClamp = 0;
 				break;
 			}
@@ -304,16 +306,23 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 *                     CreateRAS
 *************************************************************************//**
 *  @fn        void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+* 
 *  @brief     Create raytracing acceleration structure
+
 *  @param[in] const gu::SharedPointer<directX12::RHIDescriptorHeap>
+* 
 *  @return 　　void
 *****************************************************************************/
 void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 {
 	if (!_buffer) { return; }
 
-	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
-	const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
+	const auto rhiDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device);
+	const auto dxDevice  = rhiDevice->GetDevice();
+	const auto dxBuffer  = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
+
+	// enable to use the ray tracing
+	if (!rhiDevice->IsSupportedDxr()) { return; }
 
 	/*-------------------------------------------------------------------
 	-             Set up resource view descriptor
@@ -321,13 +330,17 @@ void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptor
 	D3D12_SHADER_RESOURCE_VIEW_DESC resourceViewDesc = {};
 	resourceViewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	resourceViewDesc.ViewDimension           = D3D12_SRV_DIMENSION_RAYTRACING_ACCELERATION_STRUCTURE;
+
+	// offsetは今回は考えない. 
 	resourceViewDesc.RaytracingAccelerationStructure.Location = dxBuffer->GetResource()->GetGPUVirtualAddress(); // tras用のbuffer
 
-	std::uint32_t descriptorID = heap->Allocate(core::DescriptorHeapType::SRV);
+	// shader resource viewとして作成する.
+	gu::uint32 descriptorID = heap->Allocate(core::DescriptorHeapType::SRV);
 	dxDevice->CreateShaderResourceView( dxBuffer->GetResourcePtr(), &resourceViewDesc, 
 		heap->GetCPUDescHandler(core::DescriptorHeapType::SRV, descriptorID));
 
 }
+
 /****************************************************************************
 *                     CreateUAV
 *************************************************************************//**

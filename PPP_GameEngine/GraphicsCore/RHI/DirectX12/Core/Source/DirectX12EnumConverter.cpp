@@ -143,6 +143,12 @@ DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 		case R32_FLOAT          : return DXGI_FORMAT_R32_FLOAT;
 		case B8G8R8A8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 		case BC1_UNORM          : return DXGI_FORMAT_BC1_UNORM;
+		case BC2_UNORM          : return DXGI_FORMAT_BC2_UNORM;          
+		case BC3_UNORM          : return DXGI_FORMAT_BC3_UNORM;
+		case BC4_UNORM          : return DXGI_FORMAT_BC4_UNORM;
+		case BC5_UNORM          : return DXGI_FORMAT_BC5_UNORM;
+		case BC7_UNORM          : return DXGI_FORMAT_BC7_UNORM;
+		case BC6H_UNORM         : return DXGI_FORMAT_BC6H_UF16;
 		case Unknown            : return DXGI_FORMAT_UNKNOWN;
 
 		default:

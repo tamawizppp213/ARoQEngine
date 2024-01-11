@@ -55,7 +55,7 @@ namespace gc::rendering
 
 		bool Capture(const std::vector<TexturePtr>& textures);
 
-		bool Capture(const FrameBufferPtr& frameBuffer);
+		bool Capture([[maybe_unused]]const FrameBufferPtr& frameBuffer);
 
 		/****************************************************************************
 		**                Public Member Variables

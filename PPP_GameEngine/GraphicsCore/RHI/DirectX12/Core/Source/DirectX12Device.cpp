@@ -19,7 +19,8 @@
 #include "../Include/DirectX12RenderPass.hpp"
 #include "../Include/DirectX12ResourceLayout.hpp"
 #include "../Include/DirectX12FrameBuffer.hpp"
-#include "../Include//DirectX12Instance.hpp"
+#include "../Include/DirectX12Instance.hpp"
+#include "../Include/DirectX12Query.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
@@ -341,6 +342,11 @@ gu::SharedPointer<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const
 gu::SharedPointer<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
 {
 	return gu::StaticPointerCast<core::TLASBuffer>(gu::MakeShared<directX12::TLASBuffer>(SharedFromThis(), asInstances, flags));
+}
+
+gu::SharedPointer<core::RHIQuery> RHIDevice::CreateQuery(const core::QueryHeapType heapType)
+{
+	return gu::StaticPointerCast<core::RHIQuery>(gu::MakeShared<directX12::RHIQuery>(SharedFromThis(), heapType));
 }
 
 /****************************************************************************

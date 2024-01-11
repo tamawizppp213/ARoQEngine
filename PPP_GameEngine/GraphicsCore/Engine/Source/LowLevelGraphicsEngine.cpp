@@ -130,6 +130,10 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 	---------------------------------------------------------------------*/
 	SetUpRenderResource();
 
+	/*-------------------------------------------------------------------
+	-      Set up query heap
+	---------------------------------------------------------------------*/
+	SetUpQuery();
 
 	_hasInitialized = true;
 }
@@ -348,6 +352,8 @@ void LowLevelGraphicsEngine::ShutDown()
 
 	if (_renderPass) { _renderPass.Reset(); }
 
+	_queryHeaps.clear();
+
 	/*-------------------------------------------------------------------
 	-      Clear command list
 	---------------------------------------------------------------------*/
@@ -394,6 +400,14 @@ void LowLevelGraphicsEngine::SetUpHeap()
 	heapCount.SamplerDescCount = MAX_SAMPLER_STATE;
 	_device->SetUpDefaultHeap(heapCount);
 
+}
+
+void LowLevelGraphicsEngine::SetUpQuery()
+{
+	_queryHeaps[QueryHeapType::Occulusion]         = _device->CreateQuery(QueryHeapType::Occulusion);
+	_queryHeaps[QueryHeapType::TimeStamp]          = _device->CreateQuery(QueryHeapType::TimeStamp);
+	_queryHeaps[QueryHeapType::CopyQueueTimeStamp] = _device->CreateQuery(QueryHeapType::CopyQueueTimeStamp);
+	_queryHeaps[QueryHeapType::PipelineStatistics] = _device->CreateQuery(QueryHeapType::PipelineStatistics);
 }
 
 void LowLevelGraphicsEngine::SetUpFence()

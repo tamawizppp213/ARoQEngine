@@ -107,6 +107,7 @@ namespace rhi::vulkan
 		
 		gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
 
+		gu::SharedPointer<core::RHIQuery> CreateQuery([[maybe_unused]] const core::QueryHeapType heapType) override { return nullptr; };
 #pragma endregion Create Resource
 		size_t GetQueueFamilyIndex(const core::CommandListType type) { return _commandQueueInfo[type].QueueFamilyIndex; }
 		
