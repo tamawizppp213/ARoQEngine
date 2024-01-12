@@ -16,6 +16,7 @@
 #include "../Include/DirectX12Fence.hpp"
 #include "../Include/DirectX12Device.hpp"
 #include "../Include/DirectX12Debug.hpp"
+#include "GameUtility/Base/Include/GUAssert.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <memory>
@@ -32,10 +33,8 @@ using namespace Microsoft::WRL;
 #pragma region Constructor and Destructor
 RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, core::CommandListType type, const std::wstring& name) : rhi::core::RHICommandQueue(device, type)
 {
-#ifdef _DEBUG
-	assert(device);
-	assert(type != core::CommandListType::Unknown);
-#endif
+	Check(device);
+	Check(type != core::CommandListType::Unknown);
 
 	const auto dxDevice = static_cast<RHIDevice*>(device.Get())->GetDevice();
 
@@ -104,6 +103,7 @@ void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, std
 	FenceComPtr dxFence = gu::StaticPointerCast<RHIFence>(fence)->GetFence();
 	ThrowIfFailed(_commandQueue->Signal(dxFence.Get(), value));
 }
+
 /****************************************************************************
 *							Execute
 *************************************************************************//**
@@ -136,6 +136,62 @@ void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHI
 	_commandQueue->ExecuteCommandLists(static_cast<UINT>(dxCommandLists.size()), dxCommandLists.data());
 }
 
+/****************************************************************************
+*							GetTimestampFrequency
+*************************************************************************//**
+*  @fn        gu::uint64 RHICommandQueue::GetTimestampFrequency()
+*
+*  @brief     コマンドキュー中のGPUタイムスタンプをHz単位で返します.
+*
+*  @param[in] void
+*
+*  @return 　　gu::uint64 timestamp[Hz]
+*****************************************************************************/
+gu::uint64 RHICommandQueue::GetTimestampFrequency()
+{
+	gu::uint64 frequency = 0;
+	_commandQueue->GetTimestampFrequency(&frequency);
+	return frequency;
+}
+
+
+/****************************************************************************
+*							GetCalibrationTimestamp
+*************************************************************************//**
+*  @fn        core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
+*
+*  @brief     GPUとCPUの計測時間を取得します
+*
+*  @param[in] void
+*
+*  @return 　　core::GPUTimingCalibrationTimestamp
+*****************************************************************************/
+core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
+{
+	/*-------------------------------------------------------------------
+	-                  Frequencyの取得
+	---------------------------------------------------------------------*/
+	auto gpuTimestampFrequency = GetTimestampFrequency();
+	
+	LARGE_INTEGER cpuTimestampFrequency ;
+	QueryPerformanceFrequency(&cpuTimestampFrequency);
+
+	/*-------------------------------------------------------------------
+	-                  Timestampの取得
+	---------------------------------------------------------------------*/
+	gu::uint64 gpuTimestamp = 0;
+	gu::uint64 cpuTimestamp = 0;
+
+	ThrowIfFailed(_commandQueue->GetClockCalibration(&gpuTimestamp, &cpuTimestamp));
+
+	/*-------------------------------------------------------------------
+	-                  計測時間の取得
+	---------------------------------------------------------------------*/
+	core::GPUTimingCalibrationTimestamp timestampResult;
+	timestampResult.GPUMicroseconds = static_cast<gu::uint64>(gpuTimestamp * (1e6 / gpuTimestampFrequency));
+	timestampResult.CPUMicroseconds = static_cast<gu::uint64>(cpuTimestamp * (1e6 / cpuTimestampFrequency.QuadPart));
+	return timestampResult;
+}
 #pragma endregion Execute
 
 #pragma region Property

@@ -61,6 +61,16 @@ namespace rhi::vulkan
 		std::uint32_t GetQueueIndex() const noexcept { return _queueIndex; }
 		
 		void SetName(const std::wstring& name) override;
+
+		/*----------------------------------------------------------------------
+		*  @brief :  コマンドキュー中のGPUタイムスタンプをHz単位で返します.
+		/*----------------------------------------------------------------------*/
+		gu::uint64 GetTimestampFrequency() override { return 0; }
+
+		core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
+		{
+			return core::GPUTimingCalibrationTimestamp();
+		}
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

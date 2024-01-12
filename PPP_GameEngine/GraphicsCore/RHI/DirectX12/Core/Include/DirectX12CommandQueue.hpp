@@ -47,7 +47,7 @@ namespace rhi::directX12
 		
 		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
 		void Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
-		
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -55,6 +55,15 @@ namespace rhi::directX12
 
 		void SetName(const std::wstring& name) override;
 
+		/*----------------------------------------------------------------------
+		*  @brief :  コマンドキュー中のGPUタイムスタンプをHz単位で返します.
+		/*----------------------------------------------------------------------*/
+		gu::uint64 GetTimestampFrequency() override;
+
+		/*----------------------------------------------------------------------
+		*  @brief : GPUとCPUの計測時間を取得します
+		/*----------------------------------------------------------------------*/
+		core::GPUTimingCalibrationTimestamp GetCalibrationTimestamp() override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

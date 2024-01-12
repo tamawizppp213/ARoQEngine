@@ -947,6 +947,7 @@ namespace rhi::core
 		ShadingRateSource,
 		CountOfResourceLayout
 	};
+
 	/****************************************************************************
 	*				  			MemoryHeap
 	*************************************************************************//**
@@ -1409,6 +1410,27 @@ namespace rhi::core
 		CopyQueueTimeStamp, // copy queue用のタイムスタンプ
 		CountOf,
 	};
+
+	/****************************************************************************
+	*				  			GPUTimingCalibrationTimestamp
+	*************************************************************************//**
+	*  @enum      GPUTimingCalibrationTimestamp
+	*  @brief     GPUとCPUの時間計測
+	*****************************************************************************/
+	struct GPUTimingCalibrationTimestamp
+	{
+		gu::uint64 GPUMicroseconds = 0;
+		gu::uint64 CPUMicroseconds = 0;
+
+		GPUTimingCalibrationTimestamp() = default;
+
+		GPUTimingCalibrationTimestamp(const gu::uint64 gpuMicroseconds, const gu::uint64 cpuMicroseconds)
+		{
+			GPUMicroseconds = gpuMicroseconds;
+			CPUMicroseconds = cpuMicroseconds;
+		}
+	};
+
 
 #pragma endregion Query
 }
