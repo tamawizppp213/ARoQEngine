@@ -55,10 +55,10 @@ namespace rhi::vulkan
 		VkQueue GetQueue() const noexcept { return _queue; }
 		
 		/* @brief : Return the index which specifies the queue type.*/
-		std::uint32_t GetQueueFamilyIndex() const noexcept { return _queueFamilyIndex; }
+		gu::uint32 GetQueueFamilyIndex() const noexcept { return _queueFamilyIndex; }
 		
 		/* @brief : Return the queue array index in the queue family.*/
-		std::uint32_t GetQueueIndex() const noexcept { return _queueIndex; }
+		gu::uint32 GetQueueIndex() const noexcept { return _queueIndex; }
 		
 		void SetName(const std::wstring& name) override;
 
@@ -67,6 +67,9 @@ namespace rhi::vulkan
 		/*----------------------------------------------------------------------*/
 		gu::uint64 GetTimestampFrequency() override { return 0; }
 
+		/*----------------------------------------------------------------------
+		*  @brief :  CPU‚ÆGPU‚ÌŒv‘ªŽžŠÔ‚ðMicroseconds’PˆÊ‚ÅŽæ“¾‚µ‚Ü‚·
+		/*----------------------------------------------------------------------*/
 		core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
 		{
 			return core::GPUTimingCalibrationTimestamp();

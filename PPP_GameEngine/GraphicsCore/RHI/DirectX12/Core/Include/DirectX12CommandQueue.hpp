@@ -38,14 +38,20 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @ brief : Used to wait for another Command queue to complete execution. (in GPU)
-		             他のコマンドキューとの実行順序を保証するために使用する.*/
+		/*----------------------------------------------------------------------
+		*  @brief :  他のコマンドキューとの実行順序を保証するため, ほかのコマンドキューの実行完了を待つ
+		/*----------------------------------------------------------------------*/
 		void Wait  (const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value) override;
 		
-		/* @ brief : Update the fence value (value) when the submitted Command Queue execution completes.*/
+		/*----------------------------------------------------------------------
+		*  @brief :  コマンドキューの実行が完了したら、フェンスの値（value）を更新する
+		/*----------------------------------------------------------------------*/
 		void Signal(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value) override;
 		
-		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
+		/*----------------------------------------------------------------------
+		*  @brief :  コマンドリストの内容を実行する. 
+		             通常はset graphics, compute, transfer commandlist。
+		/*----------------------------------------------------------------------*/
 		void Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
 
 		/****************************************************************************
@@ -61,7 +67,7 @@ namespace rhi::directX12
 		gu::uint64 GetTimestampFrequency() override;
 
 		/*----------------------------------------------------------------------
-		*  @brief : GPUとCPUの計測時間を取得します
+		*  @brief : GPUとCPUの計測時間をMicroSeconds単位で取得します
 		/*----------------------------------------------------------------------*/
 		core::GPUTimingCalibrationTimestamp GetCalibrationTimestamp() override;
 		/****************************************************************************
