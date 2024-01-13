@@ -262,7 +262,6 @@ using IRootSignature    = ID3D12RootSignature;
 using IPipelineState    = ID3D12PipelineState;
 using IDescriptorHeap   = ID3D12DescriptorHeap;
 using IBlob             = ID3D10Blob;
-using IHeap             = ID3D12Heap;
 using ICommandSignature = ID3D12CommandSignature;
 using IQueryHeap        = ID3D12QueryHeap;
 

@@ -205,10 +205,12 @@ std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAda
 void RHIInstance::LogAdapters()
 {
 	auto adapterList = EnumrateAdapters();
+	
 	for (auto& adapter : adapterList)
 	{
 		adapter->PrintInfo();
 	}
+
 }
 #pragma endregion Public Function
 

@@ -68,10 +68,10 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 	---------------------------------------------------------------------*/
 #if _DEBUG
 	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, true, false, false);
+	_instance->LogAdapters();
 #else
 	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, false, false, false);
 #endif
-	_instance->LogAdapters();
 
 	/*-------------------------------------------------------------------
 	-      Select proper physical device 
