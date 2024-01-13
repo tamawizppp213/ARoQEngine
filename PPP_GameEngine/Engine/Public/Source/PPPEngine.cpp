@@ -208,7 +208,6 @@ void PPPEngine::ShutDown()
 	// グラフィックエンジンの破棄
 	_graphicsEngine->ShutDown();
 
-
 	_mainWindow.Reset();
 	_platformCommand.Reset();
 	_platformApplication.Reset();

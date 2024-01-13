@@ -68,7 +68,7 @@ namespace engine::core
 		*****************************************************************************/
 		EngineThreadManager();
 
-		~EngineThreadManager();
+		virtual ~EngineThreadManager();
 
 	protected:
 		/****************************************************************************

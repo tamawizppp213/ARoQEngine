@@ -358,8 +358,8 @@ void LowLevelGraphicsEngine::ShutDown()
 	-      Clear command list
 	---------------------------------------------------------------------*/
 	if (_fence) { _fence.Reset(); }
-	
-	_commandLists.clear(); 
+
+	if(!_commandLists.empty()){_commandLists.clear(); }
 
 	if (!_commandQueues.empty()) { _commandQueues.clear(); }
 
