@@ -73,8 +73,7 @@ namespace gu
 			**                Protected Member Variables
 			*****************************************************************************/
 			ElementType* _element = nullptr;
-			Deleter
-				_deleter;
+			Deleter _deleter;
 		};
 	}
 }

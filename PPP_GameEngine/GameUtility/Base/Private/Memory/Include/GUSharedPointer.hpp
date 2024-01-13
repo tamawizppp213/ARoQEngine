@@ -236,7 +236,10 @@ namespace gu
 
 		}
 
-		~EnableSharedFromThis() = default;
+		virtual ~EnableSharedFromThis()
+		{
+			_weakPointer = nullptr;
+		}
 
 		EnableSharedFromThis& operator=(EnableSharedFromThis const&) { return *this; }
 
