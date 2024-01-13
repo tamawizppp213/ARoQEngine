@@ -34,9 +34,9 @@ using namespace rhi::directX12;
 using namespace DirectX;
 #pragma warning(disable: 4099)
 #ifdef _DEBUG
-#pragma comment(lib, "Pluguins/DirectXTex.lib")
+#pragma comment(lib, "Plugins/DirectXTex.lib")
 #else
-#pragma comment(lib, "Pluguins/DirectXTexd.lib")
+#pragma comment(lib, "Plugins/DirectXTexd.lib")
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////

@@ -37,10 +37,13 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <vector>
+#include <INTC/igdext.h>
 
 #if PLATFORM_OS_WINDOWS
 #include <Windows.h>
 #endif
+
+#pragma comment(lib, "Plugins/INTC/igdext64.lib")
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -56,7 +59,7 @@ using namespace gu;
 #pragma region Constructor and Destructor
 RHIDevice::RHIDevice()
 {
-
+	
 }
 
 RHIDevice::~RHIDevice()
@@ -67,6 +70,7 @@ RHIDevice::~RHIDevice()
 RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, const core::RHIMultiGPUMask& mask) :
 	core::RHIDevice(adapter, mask)
 {
+
 	/*-------------------------------------------------------------------
 	-                   Create Logical Device
 	---------------------------------------------------------------------*/
