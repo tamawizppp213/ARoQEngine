@@ -11,13 +11,20 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Instance.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Adapter.hpp"
+#include "Platform/Core/Include/CorePlatformMacros.hpp"
 #include <d3d12.h>
 #include <stdexcept>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::directX12;
+
+#if PLATFORM_CPU_X86_FAMILY && PLATFORM_DESKTOP && _WIN64
+extern "C" { _declspec(dllexport) extern const UINT  D3D12SDKVersion = 611; }
+extern "C" { _declspec(dllexport) extern const char* D3D12SDKPath = ".\\D3D12\\"; }
+#endif
 
 namespace
 {
