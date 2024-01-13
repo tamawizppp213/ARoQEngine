@@ -1752,6 +1752,7 @@
     <None Include="Shader\Effect\ShaderTonemapType.hlsli" />
     <None Include="Shader\Lighting\ShaderShadow.hlsli" />
     <None Include="Shader\Core\ShaderCore.hlsli" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc">

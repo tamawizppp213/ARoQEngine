@@ -41,12 +41,12 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------
 		*  @brief :  他のコマンドキューとの実行順序を保証するため, ほかのコマンドキューの実行完了を待つ
 		/*----------------------------------------------------------------------*/
-		void Wait  (const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value) override;
+		void Wait  (const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 value) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  コマンドキューの実行が完了したら、フェンスの値（value）を更新する
 		/*----------------------------------------------------------------------*/
-		void Signal(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value) override;
+		void Signal(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 value) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  コマンドリストの内容を実行する. 
@@ -59,7 +59,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		CommandQueueComPtr GetCommandQueue() { return _commandQueue; }
 
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::wstring& name) override;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  コマンドキュー中のGPUタイムスタンプをHz単位で返します.

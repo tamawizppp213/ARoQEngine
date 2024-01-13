@@ -18,11 +18,13 @@
 //                         Forward Declaration
 //////////////////////////////////////////////////////////////////////////////////
 #define D3D12_CORE_ENABLED              (1)
-#define D3D12_MAX_DEVICE_INTERFACE      (10)
-#define D3D12_MAX_COMMANDLIST_INTERFACE (7)
+#define D3D12_MAX_DEVICE_INTERFACE      (13)
+#define D3D12_MAX_COMMANDLIST_INTERFACE (9)
 #define D3D12_MAX_DEBUG_INTERFACE       (6)
 #define D3D12_MAX_RESOURCE_INTERFACE    (2)
 #define D3D12_MAX_INFO_QUEUE_INTERFACE  (1)
+#define D3D12_MAX_FENCE_INTERFACE       (1)
+#define D3D12_MAX_HEAP_INTERFACE        (1)
 #define DXGI_MAX_FACTORY_INTERFACE      (7)
 #define DXGI_MAX_SWAPCHAIN_INTERFACE    (4)
 #define DXGI_MAX_OUTPUT_INTERFACE       (6)
@@ -35,7 +37,10 @@
 using Microsoft::WRL::ComPtr;
 
 // device
-#if   D3D12_MAX_DEVICE_INTERFACE >= 12
+#if   D3D12_MAX_DEVICE_INTERFACE >= 13
+struct ID3D12Device13;
+using  IDevice = ID3D12Device13;
+#elif D3D12_MAX_DEVICE_INTERFACE >= 12
 struct ID3D12Device12;
 using  IDevice = ID3D12Device12;
 #elif D3D12_MAX_DEVICE_INTERFACE >= 11
@@ -131,7 +136,13 @@ using IDebug = ID3D12Debug;
 #endif
 
 // CommandList
-#if   D3D12_MAX_COMMANDLIST_INTERFACE >= 7
+#if   D3D12_MAX_COMMANDLIST_INTERFACE >= 9
+struct ID3D12GraphicsCommandList9;
+using  ICommandList = ID3D12GraphicsCommandList9;
+#elif D3D12_MAX_COMMANDLIST_INTERFACE >= 8
+struct ID3D12GraphicsCommandList8;
+using  ICommandList = ID3D12GraphicsCommandList8;
+#elif D3D12_MAX_COMMANDLIST_INTERFACE >= 7
 struct ID3D12GraphicsCommandList7;
 using  ICommandList = ID3D12GraphicsCommandList7;
 #elif D3D12_MAX_COMMANDLIST_INTERFACE >= 6
@@ -214,15 +225,31 @@ struct ID3D12InfoQueue;
 using  IInfoQueue = ID3D12InfoQueue;
 #endif
 
+// fence
+#if D3D12_MAX_FENCE_INTERFACE >= 1
+struct ID3D12Fence1;
+using  IFence = ID3D12Fence1;
+#elif  D3D12_MAX_FENCE_INTERFACE >= 0
+struct ID3D12Fence;
+using  IFence = ID3D12Fence;
+#endif
+
+// heap
+#if D3D12_MAX_HEAP_INTERFACE >= 1
+struct ID3D12Heap1;
+using  IHeap = ID3D12Heap1;
+#elif  D3D12_MAX_HEAP_INTERFACE >= 0
+struct ID3D12Heap;
+using  IHeap = ID3D12Heap;
+#endif
+
 struct ID3D12CommandQueue;
 struct ID3D12CommandAllocator;
 struct D3D12_GRAPHICS_PIPELINE_STATE_DESC;
 struct ID3D12RootSignature;
 struct ID3D12PipelineState;
 struct ID3D12DescriptorHeap;
-struct ID3D12Fence;
-struct  ID3D10Blob;
-struct ID3D12Heap;
+struct ID3D10Blob;
 struct D3D12_GLOBAL_ROOT_SIGNATURE;
 struct D3D12_LOCAL_ROOT_SIGNATURE;
 struct ID3D12CommandSignature;
@@ -234,7 +261,6 @@ using PSODesc           = D3D12_GRAPHICS_PIPELINE_STATE_DESC;
 using IRootSignature    = ID3D12RootSignature;
 using IPipelineState    = ID3D12PipelineState;
 using IDescriptorHeap   = ID3D12DescriptorHeap;
-using IFence            = ID3D12Fence;
 using IBlob             = ID3D10Blob;
 using IHeap             = ID3D12Heap;
 using ICommandSignature = ID3D12CommandSignature;

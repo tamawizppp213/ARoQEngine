@@ -78,7 +78,7 @@ RHICommandQueue::~RHICommandQueue()
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
+void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, gu::uint64 value)
 {
 	FenceComPtr dxFence = gu::StaticPointerCast<RHIFence>(fence)->GetFence();
 	ThrowIfFailed(_commandQueue->Wait(dxFence.Get(), value));
@@ -98,7 +98,7 @@ void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
+void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, gu::uint64 value)
 {
 	FenceComPtr dxFence = gu::StaticPointerCast<RHIFence>(fence)->GetFence();
 	ThrowIfFailed(_commandQueue->Signal(dxFence.Get(), value));
@@ -195,7 +195,7 @@ core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
 #pragma endregion Execute
 
 #pragma region Property
-void RHICommandQueue::SetName(const std::wstring& name)
+void RHICommandQueue::SetName(const gu::wstring& name)
 {
 	_commandQueue->SetName(name.c_str());
 }

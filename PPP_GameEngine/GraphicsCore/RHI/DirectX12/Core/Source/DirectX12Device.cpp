@@ -37,6 +37,7 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <vector>
+
 #if PLATFORM_OS_WINDOWS
 #include <Windows.h>
 #endif
@@ -55,7 +56,7 @@ using namespace gu;
 #pragma region Constructor and Destructor
 RHIDevice::RHIDevice()
 {
-	
+
 }
 
 RHIDevice::~RHIDevice()
