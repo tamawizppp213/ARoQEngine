@@ -47,15 +47,15 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
-		gu::SharedPointer<core::RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0, const std::wstring& name = L"") override;
+		gu::SharedPointer<core::RHIFence>                   CreateFence(const gu::uint64 fenceValue = 0, const gu::wstring& name = L"") override;
 		
-		gu::SharedPointer<core::RHICommandList>             CreateCommandList(const gu::SharedPointer<core::RHICommandAllocator>& commandAllocator, const std::wstring& name) override;
+		gu::SharedPointer<core::RHICommandList>             CreateCommandList(const gu::SharedPointer<core::RHICommandAllocator>& commandAllocator, const gu::wstring& name) override;
 		
-		gu::SharedPointer<core::RHICommandQueue>            CreateCommandQueue    (const core::CommandListType type, const std::wstring& name) override;
+		gu::SharedPointer<core::RHICommandQueue>            CreateCommandQueue    (const core::CommandListType type, const gu::wstring& name) override;
 		
-		gu::SharedPointer<core::RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const std::wstring& name) override;
+		gu::SharedPointer<core::RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const gu::wstring& name) override;
 		
-		gu::SharedPointer<core::RHISwapchain>               CreateSwapchain       (const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
+		gu::SharedPointer<core::RHISwapchain>               CreateSwapchain       (const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const gu::uint32 vsync = 0, const bool isValidHDR = true) override;
 		
 		gu::SharedPointer<core::RHISwapchain>               CreateSwapchain(const core::SwapchainDesc& desc) override;
 
@@ -71,7 +71,7 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 		
-		gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const std::wstring& name=L"ResourceLayout") override;
+		gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const gu::wstring& name=L"ResourceLayout") override;
 		
 		gu::SharedPointer<core::GPUPipelineFactory>         CreatePipelineFactory() override;
 		
@@ -81,9 +81,9 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo); // both
 		
-		gu::SharedPointer<core::GPUBuffer>                  CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name = L"") override;
+		gu::SharedPointer<core::GPUBuffer>                  CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::wstring& name = L"") override;
 		
-		gu::SharedPointer<core::GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name = L"") override;
+		gu::SharedPointer<core::GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::wstring& name = L"") override;
 		
 		gu::SharedPointer<core::GPUTexture>                 CreateTextureEmpty() override;
 
@@ -93,8 +93,8 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::ASInstance>                 CreateASInstance(
 			const gu::SharedPointer<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform, 
-			const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex,
-			const std::uint32_t instanceMask = 0xFF, const core::RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) override;
+			const gu::uint32 instanceID, const gu::uint32 instanceContributionToHitGroupIndex,
+			const gu::uint32 instanceMask = 0xFF, const core::RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) override;
 		
 		gu::SharedPointer<core::BLASBuffer>                 CreateRayTracingBLASBuffer(const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags) override;
 		
@@ -145,7 +145,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		DeviceComPtr  GetDevice () const noexcept { return _device; }
 
-		std::uint32_t GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
+		gu::uint32 GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
 		
 		gu::SharedPointer<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 
@@ -153,7 +153,7 @@ namespace rhi::directX12
 
 		const rhi::core::HDRDisplayInfo& GetHDRDisplayInfo() const { return _displayInfo; }
 
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::wstring& name) override;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check
@@ -174,9 +174,9 @@ namespace rhi::directX12
 
 		D3D_ROOT_SIGNATURE_VERSION GetMaxRootSignatureVersion() const { return _maxRootSignatureVersion; }
 
-		std::uint32_t MaxUsableSamplerHeapCount() const { return _maxSamplerHeapCount; }
+		gu::uint32 MaxUsableSamplerHeapCount() const { return _maxSamplerHeapCount; }
 
-		std::uint32_t MaxUsableDescriptorHeapCount() const { return _maxDescriptorHeapCount; }
+		gu::uint32 MaxUsableDescriptorHeapCount() const { return _maxDescriptorHeapCount; }
 
 		bool IsSupportedAllowTearing       () const noexcept { return _isSupportedAllowTearing; }
 
@@ -253,7 +253,7 @@ namespace rhi::directX12
 		/* @brief For the HeapTier, it checks if the buffer, RenderTarget and DepthStencil, TargetStencil and depth stencil texture rendering can be used in the same heap*/
 		D3D12_RESOURCE_HEAP_TIER    _resourceHeapTier    = D3D12_RESOURCE_HEAP_TIER_1;
 
-		std::uint32_t _deviceNodeCount = 0;
+		gu::uint32 _deviceNodeCount = 0;
 
 		/*-------------------------------------------------------------------
 		-                Descriptor Heap Info
@@ -261,8 +261,8 @@ namespace rhi::directX12
 		/* @brief Tier1 (few available pipeline resources)-> Tier3 (A lot of available pipeline resources*/
 		D3D12_RESOURCE_BINDING_TIER _resourceBindingTier = D3D12_RESOURCE_BINDING_TIER_1;
 
-		std::uint32_t _maxDescriptorHeapCount = 0;
-		std::uint32_t _maxSamplerHeapCount    = 0;
+		gu::uint32 _maxDescriptorHeapCount = 0;
+		gu::uint32 _maxSamplerHeapCount    = 0;
 
 		/*-------------------------------------------------------------------
 		-                    Bindless resource
@@ -299,16 +299,16 @@ namespace rhi::directX12
 		*----------------------------------------------------------------------*/
 		D3D12_VARIABLE_SHADING_RATE_TIER _variableRateShadingTier = D3D12_VARIABLE_SHADING_RATE_TIER_NOT_SUPPORTED;
 
-		std::uint32_t _variableRateShadingImageTileSize = 0;
+		gu::uint32 _variableRateShadingImageTileSize = 0;
 
 		bool _isSupportedLargerVariableRateShadingSize  = false;
 
 		/*-------------------------------------------------------------------
 		-                       MSAA
 		---------------------------------------------------------------------*/
-		std::uint32_t _msaaQuality     = 0;
-		std::uint32_t _maxMSAASampleCount = 0;
-		static constexpr std::uint32_t DESIRED_MAX_MSAA_SAMPLE_COUNT = 16;
+		gu::uint32 _msaaQuality     = 0;
+		gu::uint32 _maxMSAASampleCount = 0;
+		static constexpr gu::uint32 DESIRED_MAX_MSAA_SAMPLE_COUNT = 16;
 
 		/*-------------------------------------------------------------------
 		-                        HDR
@@ -330,8 +330,8 @@ namespace rhi::directX12
 		            Wave : プロセッサ上の同時に実行されるスレッドの集合
 					Lane : 個々のスレッド*/
 		bool _isSupportedWaveLane = false;
-		std::uint32_t _minWaveLaneCount = 0;
-		std::uint32_t _maxWaveLaneCount = 0;
+		gu::uint32 _minWaveLaneCount = 0;
+		gu::uint32 _maxWaveLaneCount = 0;
 
 		/*-------------------------------------------------------------------
 		-              RootSignature

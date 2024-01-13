@@ -213,7 +213,7 @@ gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::S
 	return gu::StaticPointerCast<core::RHIFrameBuffer>(gu::MakeShared<directX12::RHIFrameBuffer>(SharedFromThis(), renderPass, renderTarget, depthStencil));
 }
 
-gu::SharedPointer<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fenceValue, const std::wstring& name)
+gu::SharedPointer<core::RHIFence> RHIDevice::CreateFence(const gu::uint64 fenceValue, const std::wstring& name)
 {
 	// https://suzulang.com/stdshared_ptr%E3%81%A7this%E3%82%92%E4%BD%BF%E3%81%84%E3%81%9F%E3%81%84%E6%99%82%E3%81%AB%E6%B3%A8%E6%84%8F%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8/
 	return gu::StaticPointerCast<core::RHIFence>(gu::MakeShared<directX12::RHIFence>(SharedFromThis(), fenceValue, name));
@@ -234,7 +234,7 @@ gu::SharedPointer<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(c
 	return gu::StaticPointerCast<core::RHICommandAllocator>(gu::MakeShared<directX12::RHICommandAllocator>(SharedFromThis(), type, name));
 }
 
-gu::SharedPointer<core::RHISwapchain> RHIDevice::CreateSwapchain(const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR )
+gu::SharedPointer<core::RHISwapchain> RHIDevice::CreateSwapchain(const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const gu::uint32 vsync, const bool isValidHDR )
 {
 	return gu::StaticPointerCast<core::RHISwapchain>(gu::MakeShared<directX12::RHISwapchain>(SharedFromThis(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR));
 }
@@ -329,8 +329,8 @@ gu::SharedPointer<core::RayTracingGeometry> RHIDevice::CreateRayTracingGeometry(
 
 gu::SharedPointer<core::ASInstance> RHIDevice::CreateASInstance(
 	const gu::SharedPointer<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform,
-	const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex,
-	const std::uint32_t instanceMask, const core::RayTracingInstanceFlags flags)
+	const gu::uint32 instanceID, const gu::uint32 instanceContributionToHitGroupIndex,
+	const gu::uint32 instanceMask, const core::RayTracingInstanceFlags flags)
 {
 	return gu::StaticPointerCast<core::ASInstance>(gu::MakeShared<directX12::ASInstance>(SharedFromThis(), blasBuffer, blasTransform, instanceID, instanceContributionToHitGroupIndex, instanceMask, flags));
 }
@@ -681,7 +681,7 @@ void RHIDevice::CheckVRSSupport()
 *****************************************************************************/
 void RHIDevice::CheckMultiSampleQualityLevels()
 {
-	for (std::uint32_t sampleCount = DESIRED_MAX_MSAA_SAMPLE_COUNT; sampleCount > 0; sampleCount--)
+	for (gu::uint32 sampleCount = DESIRED_MAX_MSAA_SAMPLE_COUNT; sampleCount > 0; sampleCount--)
 	{
 		D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
 		msQualityLevels.SampleCount = sampleCount;
