@@ -212,6 +212,24 @@ void RHIInstance::LogAdapters()
 	}
 
 }
+
+/****************************************************************************
+*                     HasLoadedDirectXAgilitySDK
+*************************************************************************//**
+*  @fn        bool RHIInstance::HasLoadedDirectXAgilitySDK() const
+*
+*  @brief     DirectXのAgilitySDK (最新バージョンのDirectX12を使用するできるか)を返します
+*
+*  @param[in] void
+*
+*  @return 　　bool
+*****************************************************************************/
+#if D3D12_CORE_ENABLED
+bool RHIInstance::HasLoadedDirectXAgilitySDK() const
+{
+	return ::GetModuleHandleA("D3D12Core.dll") != NULL;
+}
+#endif
 #pragma endregion Public Function
 
 

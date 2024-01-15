@@ -30,6 +30,10 @@
 #define DXGI_MAX_OUTPUT_INTERFACE       (6)
 #define DXGI_MAX_ADAPTER_INTERFACE      (4)
 #define D3D12_MAX_GPU_COUNT             (1)
+#define USE_INTEL_EXTENSION             (1)
+#if     USE_INTEL_EXTENSION
+#define INTC_IGDEXT_D3D12               (1)
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Alias 

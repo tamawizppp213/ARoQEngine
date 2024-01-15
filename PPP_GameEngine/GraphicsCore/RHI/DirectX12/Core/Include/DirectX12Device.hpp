@@ -19,6 +19,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+#if USE_INTEL_EXTENSION
+struct INTCExtensionContext;
+struct INTCExtensionInfo;
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Device class
@@ -247,7 +251,8 @@ namespace rhi::directX12
 		/* @brief : The maximum D3D12 feature level supported. 0 if not supported*/
 		D3D_FEATURE_LEVEL _maxSupportedFeatureLevel = (D3D_FEATURE_LEVEL)0;
 
-		/*` @brief : Thre maximum Shader Model supported. 0 if not supported*/
+		/*` @brief : Thre maximum Shader Model supported. 0 i
+		f not supported*/
 		D3D_SHADER_MODEL _maxSupportedShaderModel = (D3D_SHADER_MODEL)0;
 
 		/* @brief For the HeapTier, it checks if the buffer, RenderTarget and DepthStencil, TargetStencil and depth stencil texture rendering can be used in the same heap*/
@@ -351,7 +356,10 @@ namespace rhi::directX12
 		bool _isSupportedAtomicOperation                        = false;
 		bool _isSupportedAtomicInt64OnTypedResource             = false;
 		bool _isSupportedAtomicUInt64                           = false;
-
+#if USE_INTEL_EXTENSION
+		bool _isSupportedIntelEmulatedAtomic64                  = false;
+		INTCExtensionContext* _intelExtensionContext            = nullptr;
+#endif
 		/*-------------------------------------------------------------------
 		-               IndirectDraw
 		---------------------------------------------------------------------*/
@@ -400,6 +408,25 @@ namespace rhi::directX12
 		void SetupDefaultCommandSignatures();
 		void SetGPUDebugBreak();
 
+		/*-------------------------------------------------------------------
+		-               Intel extension function
+		---------------------------------------------------------------------*/
+#if USE_INTEL_EXTENSION
+		/*----------------------------------------------------------------------
+		*  @brief :Atomic 64 bitがサポートされているかを返します. 
+		*----------------------------------------------------------------------*/
+		bool IsSupportedIntelEmulatedAtomic64();
+		
+		/*----------------------------------------------------------------------
+		*  @brief : Intel extension contextを生成します.
+		*----------------------------------------------------------------------*/
+		void CreateIntelExtensionContext();
+
+		/*----------------------------------------------------------------------
+		*  @brief : Intel extension contextを破棄します. 
+		*----------------------------------------------------------------------*/
+		void DestroyIntelExtensionContext();
+#endif
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

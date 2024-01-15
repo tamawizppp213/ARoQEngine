@@ -321,10 +321,7 @@ void RHISwapchain::SetUp()
 	-                  HDRの設定
 	---------------------------------------------------------------------*/
 	EnsureSwapChainColorSpace(rhiDevice->GetHDRDisplayInfo().ColorGamut, rhiDevice->GetHDRDisplayInfo().DisplayFormat);
-	/*if (rhiDevice->IsSupportedHDR() && _desc.IsValidHDR)
-	{
-		SetHDRMetaData();
-	}*/
+	LogHDROutput();
 
 	/*-------------------------------------------------------------------
 	-                   Set Back Buffer
@@ -412,6 +409,61 @@ bool RHISwapchain::IsSupportedHDRInCurrentDisplayOutput()
 	         (rgb color format + P2020)
 	---------------------------------------------------------------------*/
 	return outputDesc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+}
+
+/****************************************************************************
+*                      LogHDROutput
+*************************************************************************//**
+*  @fn        void RHISwapchain::LogHDROutput()
+*
+*  @brief     HDR上でのモニター設定を出力上に表示します.
+*
+*  @param[in] void
+*
+*  @return    bool
+*****************************************************************************/
+void RHISwapchain::LogHDROutput()
+{
+	/*-------------------------------------------------------------------
+	-        Acquire proper swapchain version 
+	---------------------------------------------------------------------*/
+	if constexpr (DXGI_MAX_SWAPCHAIN_INTERFACE < 4) { return; }
+
+	/*-------------------------------------------------------------------
+	-        Prepare the variables
+	---------------------------------------------------------------------*/
+	const auto rhiDevice  = gu::StaticPointerCast<RHIDevice>(_device);
+	const auto dxInstance = static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance());
+	const auto factory    = dxInstance->GetFactory();
+
+	/*-------------------------------------------------------------------
+	-        Get the display information that we are presenting to 
+	---------------------------------------------------------------------*/
+	ComPtr<IDXGIOutput> output = nullptr;
+	ThrowIfFailed(_swapchain->GetContainingOutput(output.GetAddressOf()));
+
+	ComPtr<IDXGIOutput6> output6 = nullptr;
+	if (FAILED(output->QueryInterface(IID_PPV_ARGS(output6.GetAddressOf())))) { return; }
+
+	DXGI_OUTPUT_DESC1 outputDesc = {};
+	ThrowIfFailed(output6->GetDesc1(&outputDesc));
+
+	/*-------------------------------------------------------------------
+	-        Get the display information that we are presenting to
+	---------------------------------------------------------------------*/
+	if (outputDesc.ColorSpace != DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020) { return; }
+
+	/*-------------------------------------------------------------------
+	-       Log output
+	---------------------------------------------------------------------*/
+	gu::string hdrSentense 
+		         = "////////////////////////////////////////////////\n";
+	hdrSentense += "             HDR meta data\n";
+	hdrSentense += "////////////////////////////////////////////////\n";
+	hdrSentense += "MinLuminance : " + std::to_string(outputDesc.MinLuminance) + "[nits]\n";
+	hdrSentense += "MaxLuminance : " + std::to_string(outputDesc.MaxLuminance) + "[nits]\n";
+	hdrSentense += "MaxFullFrameLuminance : " + std::to_string(outputDesc.MaxFullFrameLuminance) + "[nits]\n";
+	OutputDebugStringA(hdrSentense.c_str());
 }
 #pragma endregion Main Function
 

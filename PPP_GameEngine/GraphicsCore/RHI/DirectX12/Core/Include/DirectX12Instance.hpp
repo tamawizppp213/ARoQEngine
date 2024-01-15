@@ -54,6 +54,10 @@ namespace rhi::directX12
 		*****************************************************************************/
 		FactoryComPtr GetFactory() const noexcept { return _factory; }
 
+#if D3D12_CORE_ENABLED
+		bool HasLoadedDirectXAgilitySDK() const;
+#endif
+
 		/*IDREDSettings*  GetDREDSettings () const noexcept { return _useDRED ? _dredSettings.Get() : nullptr; }
 		IDREDSettings1* GetDREDSettings1() const noexcept { return _useDREDContext ? _dredSettings1.Get() : nullptr; }*/
 		/****************************************************************************

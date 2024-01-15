@@ -37,13 +37,15 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <vector>
-#include <INTC/igdext.h>
 
 #if PLATFORM_OS_WINDOWS
 #include <Windows.h>
 #endif
 
+#if USE_INTEL_EXTENSION
+#include <INTC/igdext.h>
 #pragma comment(lib, "Plugins/INTC/igdext64.lib")
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -56,6 +58,7 @@ using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+
 #pragma region Constructor and Destructor
 RHIDevice::RHIDevice()
 {
@@ -118,6 +121,11 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	CheckWaveLaneSupport();
 	SetupDisplayHDRMetaData();
 	SetupDefaultCommandSignatures();
+
+#if USE_INTEL_EXTENSION
+	CreateIntelExtensionContext();
+#endif
+	CheckAtomicOperation();
 }
 
 #pragma endregion Constructor and Destructor
@@ -176,6 +184,10 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 *****************************************************************************/
 void RHIDevice::Destroy()
 {
+#if USE_INTEL_EXTENSION
+	DestroyIntelExtensionContext();
+#endif
+
 	/*-------------------------------------------------------------------
 	-              Clear default descriptor heap
 	---------------------------------------------------------------------*/
@@ -1085,7 +1097,13 @@ void RHIDevice::CheckAtomicOperation()
 	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS9, &options9, sizeof(options9)))) { return; }
 	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS11, &options11, sizeof(options11)))) { return; }
 
-	_isSupportedAtomicOperation = true;
+	_isSupportedAtomicOperation = !!options9.AtomicInt64OnTypedResourceSupported
+#if USE_INTEL_EXTENSION
+		|| IsSupportedIntelEmulatedAtomic64();
+#else
+		;
+#endif
+
 	_isSupportedAtomicInt64OnTypedResource             = !!options9.AtomicInt64OnTypedResourceSupported;
 	_isSupportedAtomicInt64OnGroupSharedSupported      = !!options9.AtomicInt64OnGroupSharedSupported;
 	_isSupportedInt64OnDescriptorHeapResourceSupported = !!options11.AtomicInt64OnDescriptorHeapResourceSupported;
@@ -1117,6 +1135,200 @@ void RHIDevice::CheckMaxRootSignatureVersion()
 
 	_maxRootSignatureVersion = options.HighestVersion;
 }
+
+#if USE_INTEL_EXTENSION
+
+/****************************************************************************
+*                     CreateIntelExtensionContext
+*************************************************************************//**
+*  @fn        INTCExtensionContext* RHIDevice::CreateIntelExtensionContext(INTCExtensionInfo& intelExtensionInfo)
+*
+*  @brief     INTCExtensionContextを生成します.
+*
+*  @param[out]void
+*
+*  @return    void
+*****************************************************************************/
+void RHIDevice::CreateIntelExtensionContext()
+{
+	_isSupportedIntelEmulatedAtomic64 = false;
+
+	/*-------------------------------------------------------------------
+	-         ドライバーのインストールディレクトリを検索し, igdext64.dllを見つけます
+	---------------------------------------------------------------------*/
+	if (FAILED(INTC_LoadExtensionsLibrary(false)))
+	{
+		_RPT0(_CRT_WARN, "Failed to load Intel Extension Library\n");
+	}
+
+	/*-------------------------------------------------------------------
+	-         サポートされているバージョン数の取得
+	---------------------------------------------------------------------*/
+	std::vector<INTCExtensionVersion> supportedExtensionsVersions = {};
+	gu::uint32 supportedExtensionVersionCount = 0;
+
+	if (FAILED(INTC_D3D12_GetSupportedVersions(_device.Get(), nullptr, &supportedExtensionVersionCount)))
+	{
+		return;
+	}
+
+	// サポートされているバージョン数だけインスタンス作成
+	supportedExtensionsVersions.resize(supportedExtensionVersionCount);
+
+	// 目標のバージョン
+	const INTCExtensionVersion atomicsRequiredVersion =
+	{
+		.HWFeatureLevel = 4,
+		.APIVersion     = 8,
+		.Revision       = 0
+	};
+
+	/*-------------------------------------------------------------------
+	-         サポートされているバージョン情報を取得する
+	---------------------------------------------------------------------*/
+	if (FAILED(INTC_D3D12_GetSupportedVersions(_device.Get(), supportedExtensionsVersions.data(), &supportedExtensionVersionCount)))
+	{
+		return;
+	}
+
+	_RPT0(_CRT_WARN, "/////////////////////////////////////////////////\n");
+	_RPT0(_CRT_WARN, " Supported Extension Versions in this driver: \n");
+	_RPT0(_CRT_WARN, "/////////////////////////////////////////////////\n");
+
+	INTCExtensionInfo intelExtensionInfo = {};
+	for (uint32 i = 0; i < supportedExtensionVersionCount; ++i)
+	{
+		if((supportedExtensionsVersions[i].HWFeatureLevel >= atomicsRequiredVersion.HWFeatureLevel) && 
+		   (supportedExtensionsVersions[i].APIVersion     >= atomicsRequiredVersion.APIVersion    ) &&  
+		   (supportedExtensionsVersions[i].Revision       >= atomicsRequiredVersion.Revision     ))
+		{
+			_RPTN(_CRT_WARN, "Intel Extension loaded requested version: %u.%u.%u\n",
+				&supportedExtensionsVersions[i].HWFeatureLevel,
+				&supportedExtensionsVersions[i].APIVersion,
+				&supportedExtensionsVersions[i].Revision);
+
+			intelExtensionInfo.RequestedExtensionVersion = supportedExtensionsVersions[i];
+			break;
+		}
+	}
+
+	/*-------------------------------------------------------------------
+	-         サポートされたバージョンのDeviceを作成する
+	---------------------------------------------------------------------*/
+	INTCExtensionContext* intelExtensionContext = nullptr;
+
+	INTCExtensionAppInfo applicationInfo = {};
+	applicationInfo.pEngineName   = L"PPP_Engine";
+	applicationInfo.EngineVersion = 1;
+
+	const auto result = INTC_D3D12_CreateDeviceExtensionContext(_device.Get(), &intelExtensionContext, &intelExtensionInfo, &applicationInfo);
+	
+	if (SUCCEEDED(result))
+	{
+		_RPT0(_CRT_WARN, "Intel Extension Framework enabled.\n");
+	}
+	else
+	{
+		if (result == E_NOINTERFACE)
+		{
+			_RPT0(_CRT_WARN, "Intel Extensions Framework not supported by driver. Please check if a driver update is available\n");
+		}
+		else if (result == E_INVALIDARG)
+		{
+			_RPT0(_CRT_WARN, "Intel Extensions Framework passed invalid creation arguments\n");
+		}
+		else
+		{
+			_RPT0(_CRT_WARN, "Intel Extensions Framework failed to initialize\n");
+		}
+	}
+
+	/*-------------------------------------------------------------------
+	-         終了処理
+	---------------------------------------------------------------------*/
+	if (!supportedExtensionsVersions.empty())
+	{
+		supportedExtensionsVersions.clear();
+		supportedExtensionsVersions.shrink_to_fit();
+	}
+
+	_intelExtensionContext = intelExtensionContext;
+	_isSupportedIntelEmulatedAtomic64 = true;
+}
+
+
+/****************************************************************************
+*                     DestroyIntelExtensionContext
+*************************************************************************//**
+*  @fn        void RHIDevice::DestroyIntelExtensionContext()
+*
+*  @brief     INTCExtensionContextを破棄します. 
+*
+*  @param[in] INTCExtensionContext* 
+*
+*  @return    void
+*****************************************************************************/
+void RHIDevice::DestroyIntelExtensionContext()
+{
+	if (_intelExtensionContext == nullptr) { return; }
+
+	/*-------------------------------------------------------------------
+	-              INTCExtensionContextがあった場合は破棄を行う
+	---------------------------------------------------------------------*/
+	const auto result = INTC_DestroyDeviceExtensionContext(&_intelExtensionContext);
+
+	/*-------------------------------------------------------------------
+	-              表示
+	---------------------------------------------------------------------*/
+#if PLATFORM_OS_WINDOWS
+	if (result == S_OK)
+	{
+		OutputDebugStringA("Intel Extensions Framework unloaded\n");
+	}
+	else
+	{
+		OutputDebugStringA("Intel Extensions Framework error when unloading\n");
+	}
+#else
+	if (result == S_OK)
+	{
+		_RPT0(_CRT_WARN, "Intel Extensions Framework unloaded\n");
+	}
+	else
+	{
+		_RPT0(_CRT_WARN, "Intel Extensions Framework error when unloading\n");
+	}
+#endif // PLATFORM_OS_WINDOWS
+}
+
+/****************************************************************************
+*                     IsSupportedIntelEmulatedAtomic64
+*************************************************************************//**
+*  @fn        bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
+*
+*  @brief     Atomic 64 bitがサポートされているかを返します.
+*
+*  @param[in] void
+*
+*  @return    bool
+*****************************************************************************/
+bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
+{
+	/*-------------------------------------------------------------------
+	-          Use intel adapter
+	---------------------------------------------------------------------*/
+	const auto rhiAdapter = static_cast<directX12::RHIDisplayAdapter*>(_adapter.Get());
+
+	if (!rhiAdapter->IsAdapterIntel()) { return false; }
+
+	/*-------------------------------------------------------------------
+	-          Created intel extension context
+	---------------------------------------------------------------------*/
+	return _intelExtensionContext && _isSupportedIntelEmulatedAtomic64;
+}
+#endif // USE_INTEL_EXTENSION
+
+
 #pragma endregion  Device Support Function
 
 #pragma region Property
