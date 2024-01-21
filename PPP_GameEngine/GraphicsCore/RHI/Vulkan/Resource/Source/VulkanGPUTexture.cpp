@@ -106,7 +106,7 @@ void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core
 	assert(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
 #endif
 
-	const auto& vkDevice      = static_cast<vulkan::RHIDevice*>(_device.Get())->GetDevice();
+	const auto vkDevice      = static_cast<vulkan::RHIDevice*>(_device.Get())->GetDevice();
 	const auto vkCommandList = static_cast<vulkan::RHICommandList*>(commandList.Get())->GetCommandList();
 
 	/*-------------------------------------------------------------------

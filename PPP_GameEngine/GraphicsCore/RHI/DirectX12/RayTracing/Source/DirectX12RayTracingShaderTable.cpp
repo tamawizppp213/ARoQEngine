@@ -28,8 +28,8 @@ using namespace rhi::directX12;
 RayTracingShaderTable::RayTracingShaderTable(const gu::SharedPointer<rhi::core::RHIDevice>& device) 
 	: rhi::core::RayTracingShaderTable(device)
 {
-	const auto recordSize            = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;         // 32 byte
-	const auto shaderRecordAlignment = D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT; // 32 byte
+	//const auto recordSize            = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;         // 32 byte
+	//const auto shaderRecordAlignment = D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT; // 32 byte
 
 
 	const auto totalByteSize = 0;

@@ -51,7 +51,7 @@ RHIDescriptorHeap::~RHIDescriptorHeap()
 *
 *  @return Å@Å@DescriptorID
 *****************************************************************************/
-RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
+RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, [[maybe_unused]]const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 {
 	/*-------------------------------------------------------------------
 	-			     Check heap type

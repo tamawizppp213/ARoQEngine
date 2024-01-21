@@ -25,7 +25,7 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIMemory::RHIMemory(const gu::SharedPointer<core::RHIDevice>& device, const core::MemoryHeap heapType, const std::uint64_t memorySize, std::uint32_t memoryTypeBits)
+RHIMemory::RHIMemory(const gu::SharedPointer<core::RHIDevice>& device, const core::MemoryHeap heapType, [[maybe_unused]]const std::uint64_t memorySize, [[maybe_unused]]std::uint32_t memoryTypeBits)
 	: core::RHIMemory(device, heapType, memorySize)
 {
 	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(device)->GetDevice();

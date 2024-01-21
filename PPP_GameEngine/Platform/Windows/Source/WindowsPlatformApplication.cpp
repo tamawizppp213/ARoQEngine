@@ -668,7 +668,7 @@ void PlatformApplication::GetMonitorsInfo(std::vector<core::MonitorInfo>& monito
 			const auto inch           = sqrtf(physicalHeight * physicalHeight + physicalWidth * physicalWidth) / 2.54f;
 			
 			// モニターの物理的なDPIを取得する
-			const auto dpi = sqrtf(pixelWidth * pixelWidth + pixelHeight * pixelHeight) / inch;
+			const auto dpi = sqrtf((float)pixelWidth * pixelWidth + (float)pixelHeight * pixelHeight) / inch;
 
 			// モニターのDPIを取得する
 			if (dpi < 96 || dpi > 300)

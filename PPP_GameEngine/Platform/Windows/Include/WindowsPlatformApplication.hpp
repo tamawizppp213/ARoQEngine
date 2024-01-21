@@ -128,7 +128,7 @@ namespace platform::windows
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-		static BOOL CALLBACK MonitorEnumProcedure(HMONITOR monitor, HDC monitorDC, LPRECT rect, LPARAM userData);
+		static BOOL CALLBACK MonitorEnumProcedure(HMONITOR monitor, [[maybe_unused]]HDC monitorDC, [[maybe_unused]]LPRECT rect, LPARAM userData);
 		
 		bool RegisterWindowClass();
 

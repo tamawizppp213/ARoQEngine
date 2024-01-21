@@ -206,7 +206,7 @@ void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& applicat
 	_virtualWindowWidth  = clientWindowWidth;
 	_virtualWindowHeight = clientWindowHeight;
 
-	Resize(desc.DesiredScreenPositionX, desc.DesiredScreenPositionY, clientWindowWidth, clientWindowHeight);
+	Resize((int32)desc.DesiredScreenPositionX, (int32)desc.DesiredScreenPositionY, clientWindowWidth, clientWindowHeight);
 
 	/*-----------------------------------------------------------------
 				ìßâﬂìxÇÃê›íË
@@ -518,8 +518,8 @@ void CoreWindow::Resize(const gu::int32 x, const gu::int32 y, const gu::int32 wi
 		const auto minRetainedWidth   = _windowDesc.ExpectedMaxWidth  < 0.0f ? _windowDesc.ExpectedMaxWidth : oldWidth;
 		const auto minRetainedHeight = _windowDesc.ExpectedMaxHeight < 0.0f ? _windowDesc.ExpectedMaxHeight : oldHeight;
 
-		newWidth  = max(newWidth , min(oldWidth, minRetainedWidth));
-		newHeight = max(newHeight, min(oldHeight, minRetainedHeight));
+		newWidth  = max(newWidth , min(oldWidth, (int) minRetainedWidth));
+		newHeight = max(newHeight, min(oldHeight, (int)minRetainedHeight));
 	}
 
 	if (IsMaximized()) { ReStore(); }

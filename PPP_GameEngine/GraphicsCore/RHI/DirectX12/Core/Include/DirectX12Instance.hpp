@@ -30,7 +30,7 @@ namespace rhi::directX12
 	*  @class     RHIInstance
 	*  @brief     Select device api and select display adapter
 	*****************************************************************************/
-	class RHIInstance : public core::RHIInstance, public gu::EnableSharedFromThis<RHIInstance >
+	class RHIInstance : public core::RHIInstance, public gu::EnableSharedFromThis<RHIInstance>
 	{
 	public:
 

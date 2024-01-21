@@ -52,7 +52,7 @@ Font::~Font()
 * 
 *  @return Å@Å@bool (true : Load success, false : already loaded, error : failed to find texture image path)
 *****************************************************************************/
-bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const std::wstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth)
+bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const std::wstring& imagePath, [[maybe_unused]] const gm::Float2& pixelPerChar, const float imagePixelWidth)
 {
 	/*-------------------------------------------------------------------
 	-             Load check

@@ -35,7 +35,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Build(const gu::SharedPointer<core::RHICommandList>& commandList) override {};
+		void Build([[maybe_unused]]const gu::SharedPointer<core::RHICommandList>& commandList) override {};
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

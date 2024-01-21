@@ -24,7 +24,7 @@ GPURasterizerState::GPURasterizerState(const gu::SharedPointer<rhi::core::RHIDev
 	_rasterizerState.FillMode              = EnumConverter::Convert(_property.FillType);     // polygon filling mode
 	_rasterizerState.CullMode              = EnumConverter::Convert(_property.CullingType);  // polygon culling mode
 	_rasterizerState.FrontCounterClockwise = EnumConverter::Convert(_property.FaceType);     // polygon front face
-	_rasterizerState.DepthBias             = _property.DepthBias;                            // Depth value added to a given pixel. https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias
+	_rasterizerState.DepthBias             = static_cast<INT>(_property.DepthBias);                            // Depth value added to a given pixel. https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias
 	_rasterizerState.DepthBiasClamp        = _property.ClampMaxDepthBias;                    // 0: Non clamp, +: min(DepthBiasClamp, Bias), -: max(DepthBiasClamp, Bias) 
 	_rasterizerState.SlopeScaledDepthBias  = _property.SlopeScaleDepthBias;                  // Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope;
 	_rasterizerState.DepthClipEnable       = _property.UseDepthClamp;                        // Specifies whether to enable clipping based on distance.  

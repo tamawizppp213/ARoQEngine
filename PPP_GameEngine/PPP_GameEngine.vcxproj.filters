@@ -879,12 +879,6 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanMemory.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Pluguins\stb_image.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluguins\DDSLoader\dds_loader.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GameCore\Rendering\Effect\Include\Mosaic.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -1078,6 +1072,15 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Editor\Widget\Include\EditorWidget.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\DDSLoader\dds_loader.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\stb_image.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Base\Include\GUStringUtility.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1616,9 +1619,6 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanMemory.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Pluguins\DDSLoader\dds_loader.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -1734,6 +1734,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Editor\Widget\Source\EditorWidget.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\DDSLoader\dds_loader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

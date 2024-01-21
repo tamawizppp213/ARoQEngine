@@ -45,7 +45,7 @@ namespace rhi::vulkan
 			[[maybe_unused]] const gu::SharedPointer<core::RHICommandQueue>& commandQueue) override
 		{ printf("Non Function\n"); }
 
-		void Write(const gu::SharedPointer<core::RHICommandList>& commandList,[[maybe_unused]] const gm::RGBA* pixel) override
+		void Write([[maybe_unused]]const gu::SharedPointer<core::RHICommandList>& commandList,[[maybe_unused]] const gm::RGBA* pixel) override
 		{
 			printf("Non Function\n");
 		}
