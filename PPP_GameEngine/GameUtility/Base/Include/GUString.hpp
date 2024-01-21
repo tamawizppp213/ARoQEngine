@@ -55,8 +55,8 @@ namespace gu
 			void Append(const StringBase<Char, CharByte>& string);
 
 			/*----------------------------------------------------------------------
-			*  @brief :  Capacityやメモリは特に破棄せず、文字列の先頭のみを終端文字に変更します. 
-		    *            また、SSOなどのモード切替も行いません. 
+			*  @brief :  Capacityやメモリは特に破棄せず、文字列の先頭のみを終端文字に変更します.
+			*            また、SSOなどのモード切替も行いません.
 			/*----------------------------------------------------------------------*/
 			void Clear();
 
@@ -66,7 +66,7 @@ namespace gu
 			void Reserve(const uint64 length);
 
 			/*----------------------------------------------------------------------
-			*  @brief :  指定した文字列がこの文字列内に存在するかを判断します. 
+			*  @brief :  指定した文字列がこの文字列内に存在するかを判断します.
 			/*----------------------------------------------------------------------*/
 			__forceinline bool Contains(const Char* string, const bool useCaseSensitivity) const
 			{
@@ -78,7 +78,7 @@ namespace gu
 			}
 
 			/*----------------------------------------------------------------------
-			*  @brief :  文字列を検索し, 見つかった最初の文字のインデックスを返します. 
+			*  @brief :  文字列を検索し, 見つかった最初の文字のインデックスを返します.
 			*            見つからなかった場合は-1, stringが空文字列である場合は0
 			/*----------------------------------------------------------------------*/
 			uint64 FindFirstIndexOf(const Char* string, const uint64 startIndex = 0, const bool useCaseSensitivity = true) const;
@@ -98,9 +98,23 @@ namespace gu
 
 #pragma region Property
 			/*----------------------------------------------------------------------
+			*  @brief :  範囲チェック付きの要素アクセス
+			/*----------------------------------------------------------------------*/
+			__forceinline Char& At(const uint64 index)
+			{
+				Check(0 <= index && index <= Size());
+				return GetBuffer()[index];
+			}
+			__forceinline const Char& At(const uint64 index) const noexcept
+			{
+				Check(0 <= index && index <= Size());
+				return GetBuffer()[index];
+			}
+
+			/*----------------------------------------------------------------------
 			*  @brief :  文字列が空かどうかを判定します
 			/*----------------------------------------------------------------------*/
-			inline bool IsEmpty() const;
+			bool IsEmpty() const;
 
 			/*----------------------------------------------------------------------
 			*  @brief :  C言語としての生の文字列表現を取得します
@@ -119,12 +133,12 @@ namespace gu
 #pragma endregion Property
 
 #pragma region Operator Function
-			StringBase<Char, CharByte>& operator=(const Char* right) { Assign(right)    ; return *this; }
+			StringBase<Char, CharByte>& operator=(const Char* right) { Assign(right); return *this; }
 			StringBase<Char, CharByte>& operator=(const Char  right) { Assign(&right, 1); return *this; }
 
 			StringBase<Char, CharByte>& operator+=(const StringBase<Char, CharByte>& right)
 			{
-				Append(right.CString(), right.Size()); 
+				Append(right.CString(), right.Size());
 				return *this;
 			}
 			StringBase<Char, CharByte>& operator+=(const Char* right)
@@ -139,7 +153,17 @@ namespace gu
 			}
 
 			explicit operator bool() const noexcept { return !IsEmpty(); }
-			
+
+			// 高速化のためにチェックを入れておりません. チェックを行う場合はAtを使用してください.
+			__forceinline Char& operator[](const uint64 index) noexcept
+			{
+				return GetBuffer()[index];
+			}
+
+			__forceinline const Char& operator[](const uint64 index) const noexcept
+			{
+				return GetBuffer()[index];
+			}
 #pragma endregion Operator Function
 
 			/****************************************************************************
@@ -264,6 +288,9 @@ namespace gu
 				for (temp = string; *temp; ++temp);
 				return temp - string;
 			}
+
+			__forceinline       Char* GetBuffer()                { return IsSSOMode() ? _data.SSO.Buffer : _data.NonSSO.Pointer; }
+			__forceinline const Char* GetBuffer() const noexcept { return IsSSOMode() ? _data.SSO.Buffer : _data.NonSSO.Pointer; }
 #pragma endregion Memory
 #pragma region SSO operation
 			/*----------------------------------------------------------------------
