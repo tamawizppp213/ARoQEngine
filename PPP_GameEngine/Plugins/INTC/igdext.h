@@ -1,10 +1,10 @@
 /*
- *
- * Copyright (C) 2020 Intel Corporation
- *
- * SPDX-License-Identifier: MIT
- *
- *
+ *
+ * Copyright (C) 2020 Intel Corporation
+ *
+ * SPDX-License-Identifier: MIT
+ *
+ *
  * File Name:  igdext.h
  *
  * Abstract:   Public header for Intel Extensions Framework

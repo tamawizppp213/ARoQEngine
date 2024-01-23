@@ -75,6 +75,21 @@ namespace gu::details
 			uint64 startIndex, uint64 sortCount, const bool useCaseSensitivity) noexcept;
 
 		/*----------------------------------------------------------------------
+		*  @brief :  文字列に一致する最初のインデックスを返します.
+		/*----------------------------------------------------------------------*/
+		template<typename Char>
+		static bool IsFirstMatch(const Char* left, uint64 leftLength, const Char* right, uint64 rightLength, const bool useCaseSensitivity)
+		{
+			return Compare(left, leftLength, right, rightLength, cs) == 0;
+		}
+
+		/*----------------------------------------------------------------------
+		*  @brief :  文字列の末尾が指定した文字列と一致するかを返します
+		/*----------------------------------------------------------------------*/
+		template<typename Char>
+		static bool IsLastMatch(const Char* left, uint64 leftLength, const Char* right, uint64 rightLength, const bool useCaseSensitivity);
+
+		/*----------------------------------------------------------------------
 		*  @brief :  文字を大文字に切り替えます
 		/*----------------------------------------------------------------------*/
 		template<class Char>
@@ -340,7 +355,7 @@ namespace gu::details
 		if (end > pos) { return StringUtility::NPOS; }                       // 末尾と先頭が逆転していない
 
 		// 検索範囲が検索文字数よりも少ない場合は見つかるはずがない
-		if (pos - end < (rightLength - 1)) { return StringUtility::NPOS; }
+		if (pos - end < (int64)(rightLength - 1)) { return StringUtility::NPOS; }
 
 		pos -= (rightLength - 1);
 
@@ -370,6 +385,65 @@ namespace gu::details
 				--pos;
 			}
 		}
+
+		return NPOS;
+	}
+
+	/*----------------------------------------------------------------------
+	*  @brief :  文字列の末尾が指定した文字列と一致するかを返します
+	/*----------------------------------------------------------------------*/
+	template<typename Char>
+	static bool IsLastMatch(const Char* left, uint64 leftLength, const Char* right, uint64 rightLength, const bool useCaseSensitivity)
+	{
+		/*-------------------------------------------------------------------
+		-       長さがNPOSの場合は\0までカウントする
+		---------------------------------------------------------------------*/
+		leftLength  = leftLength  == NPOS ? Length(left)  : leftLength;
+		rightLength = rightLength == NPOS ? Length(right) : rightLength;
+
+		if (rightLength <= 0)         { return true; }
+		if (leftLength < rightLength) { return false; }
+
+		/*-------------------------------------------------------------------
+		-       一致しているかの判別
+		---------------------------------------------------------------------*/
+		const Char* positionFirst  = left  + leftLength  - 1;
+		const Char* positionSecond = right + rightLength - 1;
+
+		/*-------------------------------------------------------------------
+		-       大文字・小文字を区別する
+		---------------------------------------------------------------------*/
+		if (useCaseSensitivity)
+		{
+			while (right <= positionSecond)
+			{
+				if (positionFirst < left || *positionFirst != *positionSecond)
+				{
+					return false;
+				}
+
+				positionFirst--;
+				positionSecond--;
+			}
+			return true;
+		}
+		/*-------------------------------------------------------------------
+		-       大文字・小文字を区別しない
+		---------------------------------------------------------------------*/
+		else
+		{
+			while (right <= positionSecond)
+			{
+				if (positionFirst < left || ToUpper(*positionFirst) != ToUpper(*positionSecond))
+				{
+					return false;
+				}
+
+				positionFirst--;
+				positionSecond--;
+			}
+			return true;
+		}
 	}
 
 	/*----------------------------------------------------------------------
@@ -398,6 +472,8 @@ namespace gu::details
 		}
 		return ch;
 	}
+
+
 #pragma endregion Implement
 }
 

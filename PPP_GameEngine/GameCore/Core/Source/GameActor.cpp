@@ -58,7 +58,7 @@ void GameActor::Update(const float deltaTime, const bool enableUpdateChild)
 *  @param[in] float deltaTime
 *  @return Å@Å@void
 *****************************************************************************/
-void GameActor::UpdateComponents(float deltaTime)
+void GameActor::UpdateComponents([[maybe_unused]]float deltaTime)
 {
 	/*for (auto component : _components)
 	{

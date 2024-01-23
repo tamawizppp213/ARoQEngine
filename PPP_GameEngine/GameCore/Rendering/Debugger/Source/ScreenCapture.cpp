@@ -69,7 +69,7 @@ bool ScreenCapture::Capture(const std::vector<TexturePtr>& textures)
 	return true;
 }
 
-bool ScreenCapture::Capture(const FrameBufferPtr& frameBuffer)
+bool ScreenCapture::Capture([[maybe_unused]]const FrameBufferPtr& frameBuffer)
 {
 	if (!IsTriggerPrintScreenKey()) { return false; }
 

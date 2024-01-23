@@ -67,6 +67,11 @@ namespace gu
 
 			/*----------------------------------------------------------------------
 			*  @brief :  指定した文字列がこの文字列内に存在するかを判断します.
+			*  
+			*  @param[in] : const Char* string              検索文字列
+			*  @param[in] : const bool  useCaseSensitivity  大文字と小文字の区別 
+			* 
+			*  @return    : 文字列が存在すればtrue, stringが空文字列である場合はtrueとなる
 			/*----------------------------------------------------------------------*/
 			__forceinline bool Contains(const Char* string, const bool useCaseSensitivity) const
 			{
@@ -80,6 +85,12 @@ namespace gu
 			/*----------------------------------------------------------------------
 			*  @brief :  文字列を検索し, 見つかった最初の文字のインデックスを返します.
 			*            見つからなかった場合は-1, stringが空文字列である場合は0
+			*  
+			*  @param[in] : const Char* 検索文字列
+			*  @param[in] : const uint64 検索を開始するインデックス (省略した場合は先頭から検索します)
+			*  @param[in] : const bool 大文字と小文字の区別
+			* 
+			*  @return 見つからなかったらNPOS, stringが空文字列である場合は0
 			/*----------------------------------------------------------------------*/
 			uint64 FindFirstIndexOf(const Char* string, const uint64 startIndex = 0, const bool useCaseSensitivity = true) const;
 			uint64 FindFirstIndexOf(const StringBase<Char, CharByte>& string, const uint64 startIndex = 0, const bool useCaseSensititivity = true) const;
@@ -90,6 +101,28 @@ namespace gu
 			/*----------------------------------------------------------------------*/
 			uint64 FindLastIndexOf(const Char* string, const uint64 startIndex = NPOS, const uint64 count = NPOS, const bool useCaseSensitivity = true) const;
 			uint64 FindLastIndexOf(const StringBase<Char, CharByte>& string, const uint64 startIndex = NPOS, const uint64 count = NPOS, const bool useCaseSensitivity = true) const;
+
+			/*----------------------------------------------------------------------
+			*  @brief :  文字列の先頭が指定した文字列と一致するかを判断します
+			/*----------------------------------------------------------------------*/
+			__forceinline bool IsFirstMatch(const Char* string, const bool useCaseSensitivity = true)
+			{
+				return StringUtility::IsFirstMatch(CString(), Size(), string, StringUtility::Length(string), useCaseSensitivity);
+			}
+			__forceinline bool IsFirstMatch(const StringBase<Char, CharByte>& string, const bool useCaseSensitivity = true)
+			{
+				return StringUtility::IsFirstMatch(CString(), Size(), string.CString(), string.Size(), useCaseSensitivity);
+			}
+
+			/*----------------------------------------------------------------------
+			*  @brief :  文字列の部分文字列を抽出します
+			* 
+			*  @param[in] const uint64 startIndex 検索を開始するインデックス
+			*  @param[in] const uint64 count      文字数(NPOSの場合, 末尾まで抽出する)
+			* 
+			*  @param[in] 抽出された文字列
+			/*----------------------------------------------------------------------*/
+			StringBase<Char, CharByte> SubString(const uint64 startIndex, const uint64 count = NPOS) const;
 
 			/****************************************************************************
 			**                Public Member Variables

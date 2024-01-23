@@ -89,7 +89,6 @@ void Sobel::Draw(const ResourceViewPtr& sourceSRV)
 	const auto device          = _engine->GetDevice();
 	const auto computeCommand  = _engine->GetCommandList(CommandListType::Compute);
 	const auto graphicsCommand = _engine->GetCommandList(CommandListType::Graphics);
-	const auto& frameIndex      = _engine->GetCurrentFrameIndex();
 
 	/*-------------------------------------------------------------------
 	-               Pause current render pass

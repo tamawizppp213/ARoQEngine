@@ -696,7 +696,7 @@ void PlatformApplication::GetMonitorsInfo(std::vector<core::MonitorInfo>& monito
 }
 
 
-BOOL CALLBACK PlatformApplication::MonitorEnumProcedure(HMONITOR monitor, HDC monitorDC, LPRECT rect, LPARAM userData)
+BOOL CALLBACK PlatformApplication::MonitorEnumProcedure(HMONITOR monitor, [[maybe_unused]]HDC monitorDC, [[maybe_unused]]LPRECT rect, LPARAM userData)
 {
 	MONITORINFOEX monitorInfoExtension;
 	monitorInfoExtension.cbSize = sizeof(monitorInfoExtension);

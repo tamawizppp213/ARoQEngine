@@ -37,7 +37,7 @@ GPUShaderState::~GPUShaderState()
 	}
 }
 
-void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint, const float version, const std::vector<std::wstring>& includeDirectories, const std::vector<std::wstring>& defines)
+void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint, const float version, const std::vector<std::wstring>& includeDirectories, [[maybe_unused]]const std::vector<std::wstring>& defines)
 {
 #if __DEBUG
 	assert(0.0f < version && version <= NEWEST_VERSION);

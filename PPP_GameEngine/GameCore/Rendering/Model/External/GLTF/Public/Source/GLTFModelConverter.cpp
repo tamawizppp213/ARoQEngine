@@ -73,7 +73,7 @@ bool GLTFConverter::Load(const std::wstring& filePath, GameModelPtr model)
 *
 *  @return 　　void
 *****************************************************************************/
-void GLTFConverter::PrepareTotalMesh(const GameModelPtr model, gltf::GLTFFile& file)
+void GLTFConverter::PrepareTotalMesh([[maybe_unused]]const GameModelPtr model, [[maybe_unused]] gltf::GLTFFile& file)
 {
 	///*-------------------------------------------------------------------
 	//-            Copy PMXvertex -> skin vertex
@@ -110,7 +110,7 @@ void GLTFConverter::PrepareTotalMesh(const GameModelPtr model, gltf::GLTFFile& f
 *
 *  @return 　　void
 *****************************************************************************/
-void GLTFConverter::PrepareEachMaterialMesh(const GameModelPtr model, gltf::GLTFFile& file)
+void GLTFConverter::PrepareEachMaterialMesh([[maybe_unused]]const GameModelPtr model, [[maybe_unused]]gltf::GLTFFile& file)
 {
 	//model->_materialCount = file.Materials.size();
 	//model->_meshes.resize(file.Materials.size());

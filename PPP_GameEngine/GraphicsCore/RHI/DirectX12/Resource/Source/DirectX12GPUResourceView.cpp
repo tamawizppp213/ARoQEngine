@@ -92,7 +92,7 @@ GPUResourceView::~GPUResourceView()
 *
 *  @return Å@Å@void
 *****************************************************************************/
-void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, const gu::SharedPointer<core::RHIResourceLayout>& layout)
+void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, [[maybe_unused]]const gu::SharedPointer<core::RHIResourceLayout>& layout)
 {
 	/*-------------------------------------------------------------------
 	-             Set Descirptor Table
