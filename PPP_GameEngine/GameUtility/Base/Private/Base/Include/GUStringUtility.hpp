@@ -25,6 +25,14 @@
 
 namespace gu::details
 {
+	enum class NumberConversionResult
+	{
+		Success        = 0,
+		ArgumentsError = 1,
+		FormatError    = 2,
+		Overflow       = 3,
+	};
+
 	/****************************************************************************
 	*				  			   GUStringUtility
 	*************************************************************************//**
@@ -75,6 +83,24 @@ namespace gu::details
 			uint64 startIndex, uint64 sortCount, const bool useCaseSensitivity) noexcept;
 
 		/*----------------------------------------------------------------------
+		*  @brief :  文字列の部分文字列を抽出します
+		/*----------------------------------------------------------------------*/
+		template<typename Char>
+		static void SubString(const Char* string, const uint64 stringLength, uint64 startIndex, uint64 count, const Char** outBegin, const Char** outEnd);
+
+		/*----------------------------------------------------------------------
+		*  @brief : 文字列の先頭から指定した文字数を抽出します. 
+		/*----------------------------------------------------------------------*/
+		template<typename Char>
+		static void Left(const Char* string, const uint64 count, const Char** outBegin, const Char** outEnd);
+
+		/*----------------------------------------------------------------------
+		*  @brief : 文字列の末尾から指定した文字数を抽出します.
+		/*----------------------------------------------------------------------*/
+		template<typename Char>
+		static void Right(const Char* string, const uint64 count, const Char** outBegin, const Char** outEnd);
+
+		/*----------------------------------------------------------------------
 		*  @brief :  文字列に一致する最初のインデックスを返します.
 		/*----------------------------------------------------------------------*/
 		template<typename Char>
@@ -101,6 +127,212 @@ namespace gu::details
 		template<class Char>
 		static Char ToLower(Char ch) noexcept;
 
+		/*----------------------------------------------------------------------
+		*  @brief :  空白行か
+		/*----------------------------------------------------------------------*/
+		template<typename Char>
+		static bool IsSpace(const Char ch) noexcept { return (0 < ch && ch <= 255) ? isspace(ch) != 0 : false; }
+
+		/*----------------------------------------------------------------------
+		*  @brief :  空白行か
+		/*----------------------------------------------------------------------*/
+		template<typename Char>
+		static void Trim(const Char* begin, uint64 length, const Char** outBegin, uint64* outLength)
+		{
+			if (begin     == nullptr) { return; }
+			if (outBegin  == nullptr) { return; }
+			if (outLength == nullptr) { return; }
+
+			if (length == 0)
+			{
+				*outBegin  = begin;
+				*outLength = 0;
+				return;
+			}
+
+			const Char* end = begin + length;
+
+			// left部分
+			while (*begin)
+			{
+				if (!IsSpace(*begin)) { break; }
+				++begin;
+			}
+
+			// right部分
+			while (begin < end)
+			{
+				if (!IsSpace(*(end - 1))) { break; }
+				--end;
+			}
+
+			*outBegin = begin;
+			*outLength = (uint64)(end - begin);
+		}
+#pragma region Convert number
+		template<typename Char>
+		static int8 ToInt8(const Char* string, uint64 stringLength, uint64 radix, const Char** outEndPointer, NumberConversionResult* outResult)
+		{
+			uint8 number = 0;
+			NumberConversionResult result = StringToNumberInternal<Char, int8, uint8, MIN_INT8, MAX_INT8, MAX_UINT8>(string, stringLength, radix, false, outEndPointer, &number);
+			if (outResult != nullptr)
+			{
+				*outResult = result;
+			}
+			return (int8)number;
+		}
+
+		template<typename Char>
+		static int16 ToInt16(const Char* string, uint64 stringLength, uint64 radix, const Char** outEndPointer, NumberConversionResult* outResult)
+		{
+			uint16 number = 0;
+			NumberConversionResult result = StringToNumberInternal<Char, int16, uint16, MIN_INT16, MAX_INT16, MAX_UINT16>(string, stringLength, radix, false, outEndPointer, &number);
+			if (outResult != nullptr)
+			{
+				*outResult = result;
+			}
+			return (int16)number;
+		}
+
+		template<typename Char>
+		static int32 ToInt32(const Char* string, uint64 stringLength, uint64 radix, const Char** outEndPointer, NumberConversionResult* outResult)
+		{
+			uint32 number = 0;
+			NumberConversionResult result = StringToNumberInternal<Char, int32, uint32, MIN_INT32, MAX_INT32, MAX_UINT32>(string, stringLength, radix, false, outEndPointer, &number);
+			if (outResult != nullptr)
+			{
+				*outResult = result;
+			}
+			return (int32)number;
+		}
+
+		template<typename Char>
+		static int64 ToInt64(const Char* string, uint64 stringLength, uint64 radix, const Char** outEndPointer, NumberConversionResult* outResult)
+		{
+			uint64 number = 0;
+			NumberConversionResult result = StringToNumberInternal<Char, int64, uint64, MIN_INT64, MAX_INT64, MAX_UINT64>(string, stringLength, radix, false, outEndPointer,&number);
+			if (outResult != nullptr)
+			{
+				*outResult = result;
+			}
+			return (int64)number;
+		}
+
+		template<typename Char>
+		static uint8 ToUInt8(const Char* string, uint64 stringLength, uint64 radix, const Char** outEndPointer, NumberConversionResult* outResult)
+		{
+			uint8 number = 0;
+			NumberConversionResult result = StringToNumberInternal<Char, int8, uint8, MIN_INT8, MAX_INT8, MAX_UINT8>(string, stringLength, radix, true, outEndPointer, &number);
+			if (outResult != nullptr)
+			{
+				*outResult = result;
+			}
+			return number;
+		}
+
+		template<typename Char>
+		static uint16 ToUInt16(const Char* string, uint64 stringLength, uint64 radix, const Char** outEndPointer, NumberConversionResult* outResult)
+		{
+			uint16 number = 0;
+			NumberConversionResult result = StringToNumberInternal<Char, int16, uint16, MIN_INT16, MAX_INT16, MAX_UINT16>(string, stringLength, radix, true, outEndPointer, &number);
+			if (outResult != nullptr)
+			{
+				*outResult = result;
+			}
+			return number;
+		}
+
+		template<typename Char>
+		static uint32 ToUInt32(const Char* string, uint64 stringLength, uint64 radix, const Char** outEndPointer, NumberConversionResult* outResult)
+		{
+			uint32 number = 0;
+			NumberConversionResult result = StringToNumberInternal<Char, int32, uint32, MIN_INT32, MAX_INT32, MAX_UINT32>(string, stringLength, radix, true, outEndPointer,&number);
+			if (outResult != nullptr)
+			{
+				*outResult = result;
+			}
+			return number;
+		}
+
+		template<typename Char>
+		static uint64 ToUInt64(const Char* string, uint64 stringLength, uint64 radix, const Char** outEndPointer, NumberConversionResult* outResult)
+		{
+			uint64 number = 0;
+			NumberConversionResult result = StringToNumberInternal<Char, int64, uint64, MIN_INT64, MAX_INT64, MAX_UINT64>(string, stringLength, radix, true, outEndPointer, &number);
+			if (outResult != nullptr)
+			{
+				*outResult = result;
+			}
+			return number;
+		}
+
+		template<typename Char>
+		static double ToDouble(const Char* string, uint64 stringLength, const Char** outEndPointer, NumberConversionResult* outResult)
+		{
+			if (outResult != nullptr) { *outResult = NumberConversionResult::Success; }
+			if (string == nullptr)
+			{
+				if (outResult != nullptr) { *outResult = NumberConversionResult::ArgumentsError; }
+				return 0.0;
+			}
+
+			stringLength = stringLength == NPOS ? Length(string) : stringLength;
+
+			if (stringLength >= 512)
+			{
+				if (outResult != nullptr)
+				{
+					*outResult != NumberConversionResult::ArgumentsError;
+				}
+				return 0.0;
+			}
+
+			// 標準関数の strtod は長さを渡せないので一時バッファにコピーして終端\0にする。
+			// 最大長さはとりあえず 512。
+			// IEEE 形式では仮数部の桁数は 2^53=9007199254740992 で16桁で、指数部は 308。
+			// IBM 形式では仮数部の桁数は 2^24=16777216 で8桁で、指数部は 16^63で、7.237005577332262213973186563043e+75。
+			// 0 は 308 個並べられることになるが、512 文字分のサイズがあれば十分。
+			char temp[512] = {};
+			CopySimpleAsciiString(temp, 512, string, stringLength);
+			temp[stringLength] = '0';
+
+			char* end    = nullptr;
+			double value = strtod(temp, &end);
+
+			if (outEndPointer != nullptr)
+			{
+				*outEndPointer = string + (end - temp);
+			}
+
+			if (value == HUGE_VAL || value == -HUGE_VAL)
+			{
+				if (outResult != nullptr)
+				{
+					*outResult = NumberConversionResult::Overflow;
+				}
+
+				return value;
+			}
+
+			return value;
+		}
+
+		template<typename Char>
+		static double ToFloat(const Char* string, uint64 stringLength, const Char** outEndPointer, NumberConversionResult* outResult)
+		{
+			double value = ToDouble(string, stringLength, outEndPointer, outResult);
+
+			if (outResult != nullptr &&
+				*outResult == NumberConversionResult::Success &&
+				-FLT_MAX <= value && value <= FLT_MAX)
+			{
+				*outResult = NumberConversionResult::Overflow;
+			}
+
+			return (float)value;
+		}
+
+#pragma endregion Convert number
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -141,6 +373,32 @@ namespace gu::details
 			}
 			return 0;
 		}
+
+		/*----------------------------------------------------------------------
+		*  @brief :　文字列 -> 数値に変換する
+		/*----------------------------------------------------------------------*/
+		template<typename Char, typename SignedType, typename UnsignedType, SignedType SignedMin = 0, SignedType SignedMax = 0, UnsignedType UnsignedMax=0>
+		static NumberConversionResult StringToNumberInternal
+		(
+			const Char*  string,
+			uint64 stringLength,
+			uint64 radix,
+			bool   useUnsigned,
+			const Char** outEndPointer,
+			UnsignedType* outNumber
+		);
+
+		template<class DestinationType, class SourceType>
+		static void CopySimpleAsciiString(DestinationType* destination, uint64 destinationLength, const SourceType* source, uint64 sourceLength)
+		{
+			while (destinationLength && sourceLength && *source)
+			{
+				destinationLength--;
+				sourceLength--;
+				*destination++ = static_cast<DestinationType*>(*source++);
+			}
+		}
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
@@ -390,10 +648,65 @@ namespace gu::details
 	}
 
 	/*----------------------------------------------------------------------
+	*  @brief :  文字列の部分文字列を抽出します
+	/*----------------------------------------------------------------------*/
+	template<typename Char>
+	void StringUtility::SubString(const Char* string, const uint64 stringLength, uint64 startIndex, 
+		uint64 count, const Char** outBegin, const Char** outEnd)
+	{
+		if (startIndex == NPOS) { startIndex = 0; }
+		if (count      == NPOS) { count = stringLength - startIndex;}
+		if (startIndex + count > stringLength)
+		{
+			count = stringLength - startIndex;
+		}
+		if (startIndex > stringLength) { count = 0; }
+
+		if (startIndex == 0 && count == stringLength)
+		{
+			*outBegin = string;
+			*outEnd   = string + stringLength;
+		}
+		else
+		{
+			*outBegin = string + startIndex;
+			*outEnd   = string + startIndex + count;
+		}
+	}
+
+	/*----------------------------------------------------------------------
+	*  @brief : 文字列の先頭から指定した文字数を抽出します.
+	/*----------------------------------------------------------------------*/
+	template<typename Char>
+	void StringUtility::Left(const Char* string, uint64 count, const Char** outBegin, const Char** outEnd)
+	{
+		if (stringLength == NPOS) { count = 0; }
+
+		auto length = Length(string);
+		length      = min(length, count);
+		*outBegin   = string;
+		*outEnd     = string + length;
+	}
+
+	/*----------------------------------------------------------------------
+	*  @brief : 文字列の末尾から指定した文字数を抽出します.
+	/*----------------------------------------------------------------------*/
+	template<typename Char>
+	void StringUtility::Right(const Char* string, uint64 count, const Char** outBegin, const Char** outEnd)
+	{
+		if (stringLength == NPOS) { count = 0; }
+
+		auto length = Length(string);
+		length      = min(length, count);
+		*outBegin   = string + length - count;
+		*outEnd     = string + length;
+	}
+
+	/*----------------------------------------------------------------------
 	*  @brief :  文字列の末尾が指定した文字列と一致するかを返します
 	/*----------------------------------------------------------------------*/
 	template<typename Char>
-	static bool IsLastMatch(const Char* left, uint64 leftLength, const Char* right, uint64 rightLength, const bool useCaseSensitivity)
+	bool StringUtility::IsLastMatch(const Char* left, uint64 leftLength, const Char* right, uint64 rightLength, const bool useCaseSensitivity)
 	{
 		/*-------------------------------------------------------------------
 		-       長さがNPOSの場合は\0までカウントする
@@ -473,7 +786,210 @@ namespace gu::details
 		return ch;
 	}
 
+	template<typename Char, typename SignedType, typename UnsignedType, SignedType SignedMin, SignedType SignedMax, UnsignedType UnsignedMax>
+	NumberConversionResult StringUtility::StringToNumberInternal
+	(
+		const Char*  string,
+		uint64 stringLength,
+		uint64 radix,
+		bool   useUnsigned,
+		const Char** outEndPointer,
+		UnsignedType* outNumber
+	)
+	{
+		/*-------------------------------------------------------------------
+		-       OutNumberの初期化
+		---------------------------------------------------------------------*/
+		if (outNumber != nullptr) 
+		{
+			*outNumber = 0; 
+		}
 
+		/*-------------------------------------------------------------------
+		-       基数チェック
+		---------------------------------------------------------------------*/
+		if (!(radix == 0 || radix == 2 || radix == 8 || radix == 10 || radix == 16))
+		{
+			return NumberConversionResult::ArgumentsError;
+		}
+
+		/*-------------------------------------------------------------------
+		-       空白をスキップする
+		---------------------------------------------------------------------*/
+		const Char* pos = string;
+		const Char* end = string + (stringLength == NPOS ? Length(string) : stringLength);
+
+		while (IsSpace(*pos)) { ++pos; }
+
+		/*-------------------------------------------------------------------
+		-       符号の正負を確認する
+		---------------------------------------------------------------------*/
+		bool isNegative = false;
+		if (*pos == '-')
+		{
+			isNegative = true;
+			++pos;
+		}
+		else if (*pos == '+')
+		{
+			++pos;
+		}
+
+		// 符号しかなかった場合
+		if (pos >= end)
+		{
+			return NumberConversionResult::FormatError;
+		}
+
+		/*-------------------------------------------------------------------
+		-       基数が0の場合は自動判別を行う
+		---------------------------------------------------------------------*/
+		if (radix == 0)
+		{
+			if (pos[0] != '0')
+			{
+				radix = 10;
+			}
+			else if (pos[1] == 'x' || pos[1] == 'X')
+			{
+				radix = 16;
+			}
+			else
+			{
+				radix = 8;
+			}
+		}
+
+		/*-------------------------------------------------------------------
+		-       基数によってプレフィックスをスキップする
+		---------------------------------------------------------------------*/
+		if (radix == 8)
+		{
+			if (pos[0] == '0')
+			{
+				++pos;
+
+				if (pos >= end)
+				{
+					if (outEndPointer != nullptr)
+					{
+						*outEndPointer = pos;
+					}
+					*outEndPointer = 0;
+					return NumberConversionResult::Success;
+				}
+			}
+		}
+		else if (radix == 16)
+		{
+			if (pos[0] == '0' && (pos[1] == 'x' || pos[1] == 'X'))
+			{
+				++pos;
+				++pos;
+				if (pos >= end)
+				{
+					return NumberConversionResult::FormatError;
+				}
+			}
+		}
+
+		/*-------------------------------------------------------------------
+		-       基数によってプレフィックスをスキップする
+		---------------------------------------------------------------------*/
+		UnsignedType value = 0;
+		UnsignedType overflowMax = UnsignedMax / radix; // 乗算しようとするとき, この値以上であれば次の乗算でオーバーフローする
+		UnsignedType radixMax    = UnsignedMax % radix;
+		uint64       count = 0;
+		bool         isOverflow = false;
+
+		for (;;)
+		{
+			UnsignedType digit = 0;
+
+			if (isdigit(*pos))
+			{
+				digit = static_cast<UnsignedType>(*pos - '0');
+			}
+			else if ('A' <= *pos && *pos <= 'F')
+			{
+				digit = static_cast<UnsignedType>(*pos - 'A' + 10);
+			}
+			else if('a' <= *pos && *pos <= 'f')
+			{
+				digit = static_cast<UnsignedType>(*pos - 'a' + 10);
+			}
+			else
+			{
+				break;
+			}
+
+			// 基数より大きい桁が見つかった (10進数なのに)
+			if (digit >= (UnsignedType)radix)
+			{
+				return NumberConversionResult::FormatError;
+			}
+
+			++count;
+
+			// 計算する前にオーバーフローを確認する
+			if (value < overflowMax ||
+				(value == overflowMax && digit <= radixMax))
+			{
+				value = value * radix + digit;
+			}
+			else
+			{
+				isOverflow = true;
+			}
+
+			// 次の文字へ
+			++pos;
+			if (pos >= end) { break; }
+		}
+
+		if (outEndPointer != nullptr)
+		{
+			*outEndPointer = pos;
+		}
+
+		/*-------------------------------------------------------------------
+		-       オーバーフローしていたら最大値に丸めておく
+		---------------------------------------------------------------------*/
+		NumberConversionResult result = NumberConversionResult::Success;
+		if (isOverflow)
+		{
+			value = UnsignedMax;
+			result = NumberConversionResult::Overflow;
+		}
+		else if (!useUnsigned)
+		{
+			if (isNegative && value > (UnsignedType)(-SignedMin))
+			{
+				value = (UnsignedType)(-SignedMin);
+				result = NumberConversionResult::Overflow;
+			}
+			else if (!isNegative && value > (UnsignedType)SignedMax)
+			{
+				value = SignedMax;
+				result = NumberConversionResult::Overflow;
+			}
+		}
+
+		/*-------------------------------------------------------------------
+		-       マイナス符号である場合は, Singed値をunsignedとして返し, 呼び出し側でsignedでキャストして返す
+		---------------------------------------------------------------------*/
+		if (isNegative)
+		{
+			value = (UnsignedType)(-(SignedType)value);
+		}
+
+		if (outNumber != nullptr)
+		{
+			*outNumber = value;
+		}
+		return result;
+
+	}
 #pragma endregion Implement
 }
 

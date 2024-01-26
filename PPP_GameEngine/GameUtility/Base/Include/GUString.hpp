@@ -66,6 +66,22 @@ namespace gu
 			void Reserve(const uint64 length);
 
 			/*----------------------------------------------------------------------
+			*  @brief :  この文字列から指定した文字を全て取り除いた新しい文字列を返します
+			*  
+			*  @param[in] const Char* string 削除文字列
+			*  @param[in] const bool useCaseSensitivity
+			/*----------------------------------------------------------------------*/
+			StringBase<Char, CharByte> Remove(const Char* string, const bool useCaseSensitivity);
+
+			/*----------------------------------------------------------------------
+			*  @brief :  文字列を置換します
+			*
+			*  @param[in] const Char* from 置換される文字列
+			*  @param[in] const Char* to   置換する文字列
+			/*----------------------------------------------------------------------*/
+			StringBase<Char, CharByte> Replace(const Char* from, const Char* to, const bool useCaseSensitivity);
+
+			/*----------------------------------------------------------------------
 			*  @brief :  指定した文字列がこの文字列内に存在するかを判断します.
 			*  
 			*  @param[in] : const Char* string              検索文字列
@@ -122,8 +138,76 @@ namespace gu
 			* 
 			*  @param[in] 抽出された文字列
 			/*----------------------------------------------------------------------*/
-			StringBase<Char, CharByte> SubString(const uint64 startIndex, const uint64 count = NPOS) const;
+			__forceinline StringBase<Char, CharByte> SubString(const uint64 startIndex, const uint64 count = NPOS) const
+			{
+				const Char* begin = nullptr;
+				const Char* end   = nullptr;
+				StringUtility::SubString(CString(), Size(), startIndex, count, &begin, &end);
+				return StringBase<Char, CharByte>(begin, end);
+			}
 
+			/*----------------------------------------------------------------------
+			*  @brief :  文字列の先頭から指定した文字数を抽出します. 
+			/*----------------------------------------------------------------------*/
+			__forceinline StringBase<Char, CharByte> Left(const uint64 count) const
+			{
+				const Char* begin = nullptr;
+				const Char* end   = nullptr;
+				StringUtility::Left(CString(), count, &count, &end);
+				return StringBase<Char, CharByte>(begin, end);
+			}
+
+			/*----------------------------------------------------------------------
+			*  @brief :  文字列の末尾から指定した文字数を抽出します.
+			/*----------------------------------------------------------------------*/
+			StringBase<Char, CharByte> Right(const uint64 count) const
+			{
+				const Char* begin = nullptr;
+				const Char* end   = nullptr;
+				StringUtility::Right(CString(), count, &count, &end);
+				return StringBase<Char, CharByte>(begin, end);
+			}
+
+			/*----------------------------------------------------------------------
+			*  @brief :  小文字を全て大文字に変換した文字列を返します
+			/*----------------------------------------------------------------------*/
+			StringBase<Char, CharByte> ToUpper() const;
+
+			/*----------------------------------------------------------------------
+			*  @brief :  大文字を全て小文字に変換した文字列を返します
+			/*----------------------------------------------------------------------*/
+			StringBase<Char, CharByte> ToLower() const;
+
+			/*----------------------------------------------------------------------
+			*  @brief :  文字列の先頭と末尾の空白を全て削除した文字列を返します
+			/*----------------------------------------------------------------------*/
+			StringBase<Char, CharByte> Trim() const
+			{
+				Char*  begin  = nullptr;
+				uint64 length = 0;
+				StringUtility::Trim(CString(), Size(), &begin, &length);
+				return StringBase<Char, CharByte>(begin, length);
+			}
+
+#pragma region Convert number
+			int8   ToInt8(const uint64 radix = 0) const;
+			int16  ToInt16(const uint64 radix = 0) const;
+			int32  ToInt32(const uint64 radix = 0) const;
+			int64  ToInt64(const uint64 radix = 0) const;
+			uint8  ToUInt8 (const uint64 radix = 0) const;
+			uint16 ToUInt16(const uint64 radix = 0) const;
+			uint32 ToUInt32(const uint64 radix = 0) const;
+			uint64 ToUInt64(const uint64 radix = 0) const;
+
+			bool TryToInt8  (int8* outValue, const uint64 radix = 0) const;
+			bool TryToInt16 (int16* outValue, const uint64 radix = 0) const;
+			bool TryToInt32 (int32* outValue, const uint64 radix = 0) const;
+			bool TryToInt64 (int64* outValue, const uint64 radix = 0) const;
+			bool TryToUInt8 (uint8* outValue, const uint64 radix = 0) const;
+			bool TryToUInt16(uint16* outValue, const uint64 radix = 0) const;
+			bool TryToUInt32(uint32* outValue, const uint64 radix = 0) const;
+			bool TryToUInt64(uint64* outValue, const uint64 radix = 0) const;
+#pragma endregion Convert number
 			/****************************************************************************
 			**                Public Member Variables
 			*****************************************************************************/
@@ -559,6 +643,165 @@ namespace gu
 			return StringUtility::FindLastIndexOf(CString(), Size(), string, string.Size(), startIndex, count, useCaseSensitivity);
 		}
 
+		/*----------------------------------------------------------------------
+		*  @brief :  小文字を全て大文字に変換した文字列を返します
+		/*----------------------------------------------------------------------*/
+		template<class Char, int CharByte>
+		StringBase<Char, CharByte> StringBase<Char, CharByte>::ToUpper() const
+		{
+			StringBase<Char, CharByte> result(CString(), Size());
+			for (uint64 i = 0; i < Size(); ++i)
+			{
+				result[i] = StringUtility::ToUpper<Char>(result[i]);
+			}
+			return result;
+		}
+
+		/*----------------------------------------------------------------------
+		*  @brief :  大文字を全て小文字に変換した文字列を返します
+		/*----------------------------------------------------------------------*/
+		template<class Char, int CharByte>
+		StringBase<Char, CharByte> StringBase<Char, CharByte>::ToLower() const
+		{
+			StringBase<Char, CharByte> result(CString(), Size());
+			for (uint64 i = 0; i < Size(); ++i)
+			{
+				result[i] = StringUtility::ToLower<Char>(result[i]);
+			}
+			return result;
+		}
+
+#pragma region Covert Number
+#define TO_INT_DEF(Type, Func)                                               \
+		const  Char* begin = nullptr;                                        \
+		const  Char* end   = nullptr;                                        \
+		uint64 length      = 0;                                              \
+		NumberConversionResult result = NumberConversionResult::Success;     \
+		StringUtility::Trim(CString(), Size(), &begin, &length);             \
+		Type num = StringUtility::Func(begin, length, radix, &end, &result); \
+		if (result == NumberConversionResult::ArgumentsError)                \
+		{                                                                    \
+			Ensure(0);                                                       \
+		}                                                                    \
+		if (result == NumberConversionResult::FormatError)                   \
+		{                                                                    \
+			Ensure(0);                                                       \
+		}                                                                    \
+		if (result == NumberConversionResult::Overflow)                      \
+		{                                                                    \
+			Ensure(0);                                                       \
+		}                                                                    \
+		Ensure(end == begin + length);                                       \
+		return num;
+
+#define TRY_TO_INT_DEF(Type, Func)                                           \
+		const  Char* begin = nullptr;                                        \
+		const  Char* end   = nullptr;                                        \
+		uint64 length      = 0;                                              \
+		NumberConversionResult result = NumberConversionResult::Success;     \
+		StringUtility::Trim(CString(), Size(), &begin, &length);             \
+		Type num = StringUtility::Func(begin, length, radix, &end, &result); \
+		if(end != begin + length)                  {return false;}           \
+        if(res != NumberConversionResult::Success) {return false;}           \
+		if(outValue != nullptr){*outValue = num;}                            \
+		return num;
+
+		template<class Char, int CharByte>
+		int8   StringBase<Char, CharByte>::ToInt8(const uint64 radix) const
+		{
+			TO_INT_DEF(int8, ToInt8);
+		}
+
+		template<class Char, int CharByte>
+		int16  StringBase<Char, CharByte>::ToInt16(const uint64 radix) const
+		{
+			TO_INT_DEF(int16, ToInt16);
+		}
+
+		template<class Char, int CharByte>
+		int32  StringBase<Char, CharByte>::ToInt32(const uint64 radix) const
+		{
+			TO_INT_DEF(int32, ToInt32);
+		}
+
+		template<class Char, int CharByte>
+		int64  StringBase<Char, CharByte>::ToInt64(const uint64 radix) const
+		{
+			TO_INT_DEF(int64, ToInt64);
+		}
+
+		template<class Char, int CharByte>
+		uint8  StringBase<Char, CharByte>::ToUInt8(const uint64 radix) const
+		{
+			TO_INT_DEF(uint8, ToUInt8);
+		}
+
+		template<class Char, int CharByte>
+		uint16 StringBase<Char, CharByte>::ToUInt16(const uint64 radix) const
+		{
+			TO_INT_DEF(uint16, ToUInt16);
+		}
+
+		template<class Char, int CharByte>
+		uint32 StringBase<Char, CharByte>::ToUInt32(const uint64 radix) const
+		{
+			TO_INT_DEF(uint32, ToUInt32);
+		}
+
+		template<class Char, int CharByte>
+		uint64 StringBase<Char, CharByte>::ToUInt64(const uint64 radix) const
+		{
+			TO_INT_DEF(uint64, ToUInt64);
+		}
+
+		template<class Char, int CharByte>
+		bool StringBase<Char, CharByte>::TryToInt8(int8* outValue, const uint64 radix) const
+		{
+			TRY_TO_INT_DEF(int8, ToInt8);
+		}
+
+		template<class Char, int CharByte>
+		bool StringBase<Char, CharByte>::TryToInt16(int16* outValue, const uint64 radix) const
+		{
+			TRY_TO_INT_DEF(int16, ToInt16);
+		}
+
+		template<class Char, int CharByte>
+		bool StringBase<Char, CharByte>::TryToInt32(int32* outValue, const uint64 radix) const
+		{
+			TRY_TO_INT_DEF(int32, ToInt32);
+		}
+
+		template<class Char, int CharByte>
+		bool StringBase<Char, CharByte>::TryToInt64(int64* outValue, const uint64 radix) const
+		{
+			TRY_TO_INT_DEF(int64, ToInt64);
+		}
+
+		template<class Char, int CharByte>
+		bool StringBase<Char, CharByte>::TryToUInt8(uint8* outValue, const uint64 radix) const
+		{
+			TRY_TO_INT_DEF(uint8, ToUInt8);
+		}
+
+		template<class Char, int CharByte>
+		bool StringBase<Char, CharByte>::TryToUInt16(uint16* outValue, const uint64 radix) const
+		{
+			TRY_TO_INT_DEF(int16, ToUInt16);
+		}
+
+		template<class Char, int CharByte>
+		bool StringBase<Char, CharByte>::TryToUInt32(uint32* outValue, const uint64 radix) const
+		{
+			TRY_TO_INT_DEF(uint32, ToUInt32);
+		}
+
+		template<class Char, int CharByte>
+		bool StringBase<Char, CharByte>::TryToUInt64(uint64* outValue, const uint64 radix) const
+		{
+			TRY_TO_INT_DEF(uint64, ToUInt64);
+		}
+#pragma endregion Convert Number
 #pragma endregion Main Function
 #pragma region Property
 		/*----------------------------------------------------------------------
