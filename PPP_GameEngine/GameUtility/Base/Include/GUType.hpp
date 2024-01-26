@@ -51,7 +51,20 @@ namespace gu
 	/*---------------------------------------------------------------
 		äeç≈ëÂíl/ç≈è¨ílÇéÊìæÇ∑ÇÈ
 	-----------------------------------------------------------------*/
-	#define FLOAT32_MAX (3.402823466e+38F)
-	#define FLOAT32_MIN (1.175494351e-38F)
+	#define MAX_FLOAT32 (3.402823466e+38F)
+	#define MIN_FLOAT32 (1.175494351e-38F)
+	#define MIN_INT8    (-127i8 - 1)
+	#define MIN_INT16   (-32767i16 - 1)
+	#define MIN_INT32   (-2147483647i32 - 1)
+	#define MIN_INT64   (-9223372036854775807i64 - 1)
+	#define MAX_INT8         (127i8)
+	#define MAX_INT16        (32767i16)
+	#define MAX_INT32        (2147483647i32)
+	#define MAX_INT64        (9223372036854775807i64)
+	#define MAX_UINT8        (0xffui8)
+	#define MAX_UINT16       (0xffffui16)
+	#define MAX_UINT32       (0xffffffffui32)
+	#define MAX_UINT64       (0xffffffffffffffffui64)
+
 }
 #endif
