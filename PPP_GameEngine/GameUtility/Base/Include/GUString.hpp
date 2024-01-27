@@ -40,6 +40,11 @@ namespace gu
 			/****************************************************************************
 			**                Public Function
 			*****************************************************************************/
+			/*----------------------------------------------------------------------
+			*  @brief :  文字列を連結します
+			/*----------------------------------------------------------------------*/
+			static StringBase<Char, CharByte> Concat(const StringBase<Char, CharByte>& left, const StringBase<Char, CharByte>& right);
+			static StringBase<Char, CharByte> Concat(const Char* left, const Char* right);
 
 			/*----------------------------------------------------------------------
 			*  @brief :  文字列を代入します
@@ -66,20 +71,13 @@ namespace gu
 			void Reserve(const uint64 length);
 
 			/*----------------------------------------------------------------------
-			*  @brief :  この文字列から指定した文字を全て取り除いた新しい文字列を返します
-			*  
-			*  @param[in] const Char* string 削除文字列
-			*  @param[in] const bool useCaseSensitivity
-			/*----------------------------------------------------------------------*/
-			StringBase<Char, CharByte> Remove(const Char* string, const bool useCaseSensitivity);
-
-			/*----------------------------------------------------------------------
 			*  @brief :  文字列を置換します
 			*
 			*  @param[in] const Char* from 置換される文字列
 			*  @param[in] const Char* to   置換する文字列
 			/*----------------------------------------------------------------------*/
 			StringBase<Char, CharByte> Replace(const Char* from, const Char* to, const bool useCaseSensitivity);
+			StringBase<Char, CharByte> Replace(const StringBase<Char, CharByte>& from, const StringBase<Char, CharByte>& to, const bool useCaseSensitivity);
 
 			/*----------------------------------------------------------------------
 			*  @brief :  指定した文字列がこの文字列内に存在するかを判断します.
@@ -281,6 +279,31 @@ namespace gu
 			{
 				return GetBuffer()[index];
 			}
+
+			__forceinline bool operator==(const StringBase<Char, CharByte>& right) const 
+			{
+				return StringUtility::Compare(CString(), Size(), right.CString(), right.Size(), NPOS, true) == 0;
+			}
+			__forceinline bool operator==(const Char* right)
+			{
+				return StringUtility::Compare(CString(), Size(), right, StringUtility::Length(right), NPOS, true) == 0;
+			}
+			__forceinline bool operator!=(const StringBase<Char, CharByte>& right) const
+			{
+				return StringUtility::Compare(CString(), Size(), right.CString(), right.Size(), NPOS, true) != 0;
+			}
+			__forceinline bool operator!=(const Char* right)
+			{
+				return StringUtility::Compare(CString(), Size(), right, StringUtility::Length(right), NPOS, true) != 0;
+			}
+			__forceinline StringBase<Char, CharByte> operator+(const StringBase<Char, CharByte>& right) const
+			{
+				return Concat(this->CString(), right.CString());
+			}
+			__forceinline StringBase<Char, CharByte> operator+(const Char* right) const
+			{
+				return Concat(this->CString(), right);
+			}
 #pragma endregion Operator Function
 
 			/****************************************************************************
@@ -303,9 +326,9 @@ namespace gu
 				Assign(begin, static_cast<uint64>(end - begin));
 			}
 
-			explicit StringBase(const StringBase<Char, CharByte>& string) : StringBase<Char, CharByte>()
+			StringBase(const StringBase<Char, CharByte>& string) : StringBase<Char, CharByte>()
 			{
-				Copy(string);
+				CopyFrom(string);
 			}
 
 			explicit StringBase(StringBase<Char, CharByte>&& string) noexcept : StringBase<Char, CharByte>()
@@ -377,6 +400,7 @@ namespace gu
 			/*----------------------------------------------------------------------*/
 			__forceinline void Initialize() noexcept
 			{
+				_data.SSO.Size = 0;
 				SetSSOMode();
 				Memory::Zero(_data.SSO.Buffer, SSO_CAPACITY + 1);
 			}
@@ -389,7 +413,7 @@ namespace gu
 			/*----------------------------------------------------------------------
 			*  @brief :  文字列のコピー
 			/*----------------------------------------------------------------------*/
-			void CopyTo(const StringBase<Char, CharByte>& destination);
+			void CopyFrom(const StringBase<Char, CharByte>& source);
 
 			/*----------------------------------------------------------------------
 			*  @brief :  メモリを移動する
@@ -671,6 +695,101 @@ namespace gu
 			return result;
 		}
 
+		/*----------------------------------------------------------------------
+		*  @brief :  文字列を連結します
+		/*----------------------------------------------------------------------*/
+		template<typename Char, int CharByte>
+		StringBase<Char, CharByte> StringBase<Char, CharByte>::Concat(const StringBase<Char, CharByte>& left, const StringBase<Char, CharByte>& right)
+		{
+			StringBase<Char, CharByte> string;
+			string.Reserve(left.Size()   + right.Size());
+			string.Append(left.CString() , left .Size());
+			string.Append(right.CString(), right.Size());
+			return string;
+		}
+
+		/*----------------------------------------------------------------------
+		*  @brief :  文字列を連結します
+		/*----------------------------------------------------------------------*/
+		template<typename Char, int CharByte>
+		StringBase<Char, CharByte> StringBase<Char, CharByte>::Concat(const Char* left, const Char* right)
+		{
+			StringBase<Char, CharByte> string;
+
+			const auto leftLength  = StringUtility::Length(left);
+			const auto rightLength = StringUtility::Length(right);
+			string.Reserve(leftLength + rightLength);
+			string.Append(left, leftLength);
+			string.Append(right, rightLength);
+			return string;
+		}
+
+
+		/*----------------------------------------------------------------------
+		*  @brief :  文字列を置換します
+		*
+		*  @param[in] const Char* from 置換される文字列
+		*  @param[in] const Char* to   置換する文字列
+		/*----------------------------------------------------------------------*/
+		template<typename Char, int CharByte>
+		StringBase<Char, CharByte> StringBase<Char, CharByte>::Replace(const Char* from, const Char* to, const bool useCaseSensitivity)
+		{
+			StringBase<Char, CharByte> result;
+			result.Reserve(Size());
+
+			uint64 position       = 0;
+			uint64 startIndex     = 0;
+			const auto fromLength = StringUtility::Length(from);
+			const auto toLength   = StringUtility::Length(to);
+
+			if (fromLength > 0)
+			{
+				do
+				{
+					position = StringUtility::FindFirstIndexOf(from, Size(), from, fromLength, startIndex, useCaseSensitivity);
+
+					if (position >= 0)
+					{
+						result.Append(CString() + startIndex, position - startIndex);
+						result.Append(to, toLength);
+						startIndex = position + fromLength;
+					}
+
+				} while (position >= 0);
+
+			}
+
+			result.Append(CString() + startIndex, Size() - startIndex);
+		}
+		template<typename Char, int CharByte>
+		StringBase<Char, CharByte> StringBase<Char, CharByte>::Replace(const StringBase<Char, CharByte>& from, const StringBase<Char, CharByte>& to, const bool useCaseSensitivity)
+		{
+			StringBase<Char, CharByte> result;
+			result.Reserve(Size());
+
+			uint64 position   = 0;
+			uint64 startIndex = 0;
+			
+			if (from.Size() > 0)
+			{
+				do
+				{
+					position = StringUtility::FindFirstIndexOf(CString(), Size(), from.CString(), from.Size(), startIndex, useCaseSensitivity);
+
+					if (position >= 0)
+					{
+						result.Append(CString() + startIndex, position - startIndex);
+						result.Append(to.CString(), to.Size());
+						startIndex = position + from.Size();
+					}
+
+				} while (position >= 0);
+
+			}
+
+			result.Append(CString() + startIndex, Size() - startIndex);
+		}
+
 #pragma region Covert Number
 #define TO_INT_DEF(Type, Func)                                               \
 		const  Char* begin = nullptr;                                        \
@@ -834,20 +953,21 @@ namespace gu
 		*  @brief :  メモリをコピーする
 		/*----------------------------------------------------------------------*/
 		template<class Char, int CharByte>
-		void StringBase<Char, CharByte>::CopyTo(const StringBase<Char, CharByte>& destination)
+		void StringBase<Char, CharByte>::CopyFrom(const StringBase<Char, CharByte>& source)
 		{
-			if (this == &destination) { return; }
+			if (this == &source) { return; }
 
-			if (IsSSO())
+			if (IsSSOMode())
 			{
-				Memory::Copy(&destination._data.SSO, this->_data.SSO, sizeof(SSOString));
+				Memory::Copy(&this->_data.SSO, &source._data.SSO, sizeof(SSOString));
 			}
 			else
 			{
-				if (destination._data.NonSSO.Pointer != nullptr) { delete[] this->_data.NonSSO.Pointer; }
-				destination._data.NonSSO.Capacity = this->_data.NonSSO.Capacity;
-				destination._data.NonSSO.Size     = this->_data.NonSSO.Size;
-				destination._data.NonSSO.Pointer  = new Char[this->_data.NonSSO.Size + 1];
+				if (this->_data.NonSSO.Pointer != nullptr) { delete[] this->_data.NonSSO.Pointer; }
+
+				this->_data.NonSSO.Capacity = source._data.NonSSO.Capacity;
+				this->_data.NonSSO.Size     = source._data.NonSSO.Size;
+				this->_data.NonSSO.Pointer  = new Char[source._data.NonSSO.Size + 1];
 			}
 		}
 

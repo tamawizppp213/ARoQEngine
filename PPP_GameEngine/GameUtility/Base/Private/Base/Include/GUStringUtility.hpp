@@ -423,8 +423,8 @@ namespace gu::details
 		---------------------------------------------------------------------*/
 		leftLength   = (leftLength == NPOS) ? Length(left) : leftLength;
 		rightLength  = (rightLength == NPOS) ? Length(right) : rightLength;
-		auto minCount = min(leftLength, rightLength);
-		auto maxCount = max(leftLength, rightLength);
+		auto minCount = leftLength < rightLength ? leftLength : rightLength;
+		auto maxCount = leftLength < rightLength ? rightLength : leftLength ;
 		
 		if (count == NPOS)
 		{
@@ -433,7 +433,7 @@ namespace gu::details
 		else
 		{
 			maxCount = count;
-			count    = min(minCount, count);
+			count    = minCount < count ? minCount : count;
 		}
 		
 		if (useCaseSensitivity)
@@ -453,7 +453,7 @@ namespace gu::details
 		{
 			while (count > 0)
 			{
-				if (ToUpper(*left) != ToUpper(right))
+				if (ToUpper(*left) != ToUpper(*right))
 				{
 					return (ToUpper(*left) - ToUpper(*right));
 				}

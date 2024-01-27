@@ -814,14 +814,6 @@ void RHIDevice::CheckMeshShadingSupport()
 	}
 
 	_isSupportedMeshShading = options.MeshShaderTier >= D3D12_MESH_SHADER_TIER_1;
-
-	gu::details::StringBase<wchar, 2> test;
-	test.Assign(L"abcdfgagahahagagagaga");
-	const auto a  =test.FindLastIndexOf(L"aga");
-
-	
-	printf("%llu", test.Size());
-
 }
 
 /****************************************************************************
