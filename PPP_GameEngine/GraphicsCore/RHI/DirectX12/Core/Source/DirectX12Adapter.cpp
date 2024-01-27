@@ -33,7 +33,8 @@ RHIDisplayAdapter::RHIDisplayAdapter(const gu::SharedPointer<core::RHIInstance>&
 	DXGI_ADAPTER_DESC desc = {};
 	adapter->GetDesc(&desc);
 	
-	_name     = unicode::ToUtf8String(desc.Description);
+	const auto utf8Name = unicode::ToUtf8String(desc.Description);
+	_name     = gu::string(utf8Name.c_str(), utf8Name.length());
 	_venderID = desc.VendorId;
 	_deviceID = desc.DeviceId; 
 	_isDiscreteGPU = desc.DedicatedVideoMemory != 0;

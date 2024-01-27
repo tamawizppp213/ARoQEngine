@@ -83,7 +83,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 		IID_PPV_ARGS(&_device)));
 
 	const auto& gpuName    = adapter->GetName();
-	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName);
+	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName.CString());
 	_device->SetName(deviceName.c_str());
 
 	/*-------------------------------------------------------------------

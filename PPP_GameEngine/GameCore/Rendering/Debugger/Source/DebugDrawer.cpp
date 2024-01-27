@@ -61,7 +61,6 @@ DebugDrawer::~DebugDrawer()
 void DebugDrawer::Draw(const GPUResourceViewPtr& scene)
 {
 #ifdef _DEBUG
-	const gu::uint32 currentFrame = _engine->GetCurrentFrameIndex();
 	const auto commandList        = _engine->GetCommandList(CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------

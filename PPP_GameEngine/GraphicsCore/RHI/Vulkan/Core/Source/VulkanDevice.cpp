@@ -70,7 +70,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter) 
 	CreateLogicalDevice();
 	
 	const auto& gpuName    = adapter->GetName();
-	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName);
+	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName.CString());
 	SetName(deviceName);
 }
 

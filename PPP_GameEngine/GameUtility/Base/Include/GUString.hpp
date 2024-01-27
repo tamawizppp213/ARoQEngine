@@ -51,6 +51,7 @@ namespace gu
 			/*----------------------------------------------------------------------*/
 			void Assign(const Char* string);
 			void Assign(const Char* string, const uint64 length) noexcept;
+			void Assign(const StringBase<Char, CharByte>& string) { Assign(string.CString(), string.Size()); }
 
 			/*----------------------------------------------------------------------
 			*  @brief :  •¶Žš—ñ‚ð’Ç‰Á‚µ‚Ü‚·
@@ -248,6 +249,7 @@ namespace gu
 #pragma endregion Property
 
 #pragma region Operator Function
+			StringBase<Char, CharByte>& operator=(const StringBase<Char, CharByte>& right) { Assign(right); return *this; }
 			StringBase<Char, CharByte>& operator=(const Char* right) { Assign(right); return *this; }
 			StringBase<Char, CharByte>& operator=(const Char  right) { Assign(&right, 1); return *this; }
 
@@ -999,7 +1001,7 @@ namespace gu
 #pragma endregion Implement
 	}
 	
-	using string  = std::string;
+	using string  = gu::details::StringBase<char, 1>;
 
 	using wstring = std::wstring;
 #if NEED_WIDE_CHAR

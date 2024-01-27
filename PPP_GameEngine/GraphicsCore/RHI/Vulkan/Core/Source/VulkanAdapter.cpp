@@ -115,7 +115,7 @@ void RHIDisplayAdapter::PrintInfo()
 	---------------------------------------------------------------------*/
 	std::string adapterName
 		= "\n//////////////////////////\n Adapter : ";
-	adapterName += _name;
+	adapterName += std::string(_name.CString());
 	adapterName += "\n//////////////////////////\n";
 	OutputDebugStringA(adapterName.c_str());
 
