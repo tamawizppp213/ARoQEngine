@@ -14,8 +14,8 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <vector>
-#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName = L"");
+		DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& addName = L"");
 
 		~DebugDrawer();
 
@@ -86,7 +86,7 @@ namespace gc::rendering
 		**                Protected Function
 		*****************************************************************************/
 		
-		void PreparePipelineState(const std::wstring& name);
+		void PreparePipelineState(const gu::wstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

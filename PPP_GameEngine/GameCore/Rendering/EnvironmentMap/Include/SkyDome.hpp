@@ -12,8 +12,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include <vector>
-#include <string>
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -64,18 +64,18 @@ namespace gc
 
 		~SkyDome();
 
-		SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cubeMapPath, const std::wstring& addName = L"");
+		SkyDome(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& cubeMapPath, const gu::wstring& addName = L"");
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		void PrepareResourceView(const gu::SharedPointer<rhi::core::GPUTexture>& texture);
 		
-		void PreparePipelineState(const std::wstring& addName);
+		void PreparePipelineState(const gu::wstring& addName);
 		
-		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
+		void PrepareVertexAndIndexBuffer(const gu::wstring& addName);
 		
-		void PrepareSkyObject(const std::wstring& addName);
+		void PrepareSkyObject(const gu::wstring& addName);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

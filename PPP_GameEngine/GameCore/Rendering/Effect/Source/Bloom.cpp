@@ -31,13 +31,13 @@ using namespace gc;
 Bloom::Bloom(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const float power, 
 	const ResourceViewPtr& customLuminanceSRV,
 	const ResourceViewPtr& customLuminanceUAV,
-	const std::wstring& addName)
+	const gu::wstring& addName)
 	:_engine(engine), _explosion(power)
 {
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"GaussianBlur::";
 	
 	if (customLuminanceSRV && customLuminanceUAV) 
@@ -135,7 +135,7 @@ void Bloom::UpdateBloomPower(const float power)
 #pragma endregion Main Function
 
 #pragma region Set up Function
-void Bloom::PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t height, const std::wstring& name)
+void Bloom::PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name)
 {
 	_gaussianBlur[0] = gu::MakeShared<GaussianBlur>(_engine, width, height, true, name + L"GaussianBlur");
 	for (std::uint32_t i = 1; i < _countof(_gaussianBlur); ++i)
@@ -148,9 +148,9 @@ void Bloom::PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t 
 	}
 }
 
-void Bloom::PreparePipelineState(const std::wstring& name)
+void Bloom::PreparePipelineState(const gu::wstring& name)
 {
-	const std::wstring defaultPath = L"Shader\\Effect\\ShaderBloom.hlsl";
+	const gu::wstring defaultPath = L"Shader\\Effect\\ShaderBloom.hlsl";
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 
@@ -184,7 +184,7 @@ void Bloom::PreparePipelineState(const std::wstring& name)
 	_finalBloomPipeline->SetName(name + L"FinalBloomPSO");
 }
 
-void Bloom::PrepareResourceView(const std::wstring& name)
+void Bloom::PrepareResourceView(const gu::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto format = _engine->GetBackBufferFormat();
@@ -198,7 +198,7 @@ void Bloom::PrepareResourceView(const std::wstring& name)
 	if (!_luminanceSRV || !_luminanceUAV)
 	{
 		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess);
-		const auto texture = device->CreateTexture(metaData,name+L"Luminance");
+		const auto texture = device->CreateTexture(metaData, name + L"Luminance");
 		_luminanceSRV = device->CreateResourceView(ResourceViewType::Texture  , texture,0,0, nullptr);
 		_luminanceUAV = device->CreateResourceView(ResourceViewType::RWTexture, texture,0,0, nullptr);
 	}

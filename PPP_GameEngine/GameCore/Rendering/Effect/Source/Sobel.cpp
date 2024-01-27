@@ -26,7 +26,7 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
-Sobel::Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gm::Float4& color, const std::wstring& addName)
+Sobel::Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gm::Float4& color, const gu::wstring& addName)
 	: _engine(engine), _width(width), _height(height), _outlineInfo({ color })
 {
 #ifdef _DEBUG
@@ -35,7 +35,7 @@ Sobel::Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width,
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"Sobel::";
 
 	/*-------------------------------------------------------------------
@@ -127,15 +127,15 @@ void Sobel::SetColor(const gm::Float4& color)
 /****************************************************************************
 *							PrepareOutlineInfo
 *************************************************************************//**
-*  @fn        void Sobel::PrepareOutlineInfo(const std::wstring& name)
+*  @fn        void Sobel::PrepareOutlineInfo(const gu::wstring& name)
 *
 *  @brief     Prepare outline info structure and GPU buffer
 *
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::wstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void Sobel::PrepareOutlineInfo(const std::wstring& name)
+void Sobel::PrepareOutlineInfo(const gu::wstring& name)
 {
 	const auto device   = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(OutlineInfo), 1, MemoryHeap::Upload, ResourceState::Common);
@@ -181,17 +181,17 @@ void Sobel::PrepareResourceView()
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
-*  @fn        void Sobel::PreparePipelineState(const std::wstring& name)
+*  @fn        void Sobel::PreparePipelineState(const gu::wstring& name)
 *
 *  @brief     Prepare Compute pipeline state
 *
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::wstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void Sobel::PreparePipelineState(const std::wstring& name)
+void Sobel::PreparePipelineState(const gu::wstring& name)
 {
-	const std::wstring defaultPath = L"Shader\\Effect\\ShaderSobel.hlsl";
+	const gu::wstring defaultPath = L"Shader\\Effect\\ShaderSobel.hlsl";
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 

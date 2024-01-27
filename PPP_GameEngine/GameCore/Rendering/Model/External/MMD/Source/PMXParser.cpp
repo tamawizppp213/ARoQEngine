@@ -15,30 +15,31 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace pmx;
-bool ReadPMXString(FILE* filePtr, std::string* string, PMXEncode encode);
+bool ReadPMXString(FILE* filePtr, gu::string* string, PMXEncode encode);
 bool ReadPMXIndex(FILE* filePtr, INT32* pmxIndex, UINT8 indexSize);
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-bool PMXFile::Load(const std::wstring& filePath)
+bool PMXFile::Load(const gu::wstring& filePath)
 {
 	/*-------------------------------------------------------------------
 	-             Open File
 	---------------------------------------------------------------------*/
-	if (file::FileSystem::GetExtension(filePath) != L"pmx") 
+	const auto stdFilePath = std::wstring(filePath.CString());
+	if (file::FileSystem::GetExtension(stdFilePath) != L"pmx") 
 	{ 
 		OutputDebugStringA("pmx error: wrong extension type");
 		return false; 
 	};
 
-	FILE* filePtr = file::FileSystem::OpenFile(filePath);
+	FILE* filePtr = file::FileSystem::OpenFile(stdFilePath);
 	if (filePtr == nullptr) 
 	{ 
 		OutputDebugStringA("failed to open file");
 		return false; 
 	}
 
-	Directory     = file::FileSystem::GetDirectory(unicode::ToUtf8String(filePath));
+	Directory     = gu::string(file::FileSystem::GetDirectory(unicode::ToUtf8String(stdFilePath)).c_str());
 	/*-------------------------------------------------------------------
 	-             Read Data
 	---------------------------------------------------------------------*/
@@ -525,7 +526,7 @@ void PMXMorph       ::Read(FILE* filePtr, const PMXSetting* setting)
 	ReadPMXString(filePtr, &Name, setting->Encode);
 	ReadPMXString(filePtr, &EnglishName, setting->Encode);
 
-	Name = unicode::ToUtf8String(unicode::ToWString(Name));
+	Name = gu::string(unicode::ToUtf8String(unicode::ToWString(std::string(Name.CString()))).c_str());
 		
 	fread_s(&FacePart , sizeof(FacePart ), sizeof(pmx::PMXFacePart ), 1, filePtr);
 	fread_s(&MorphType, sizeof(MorphType), sizeof(pmx::PMXMorphType), 1, filePtr);
@@ -702,8 +703,8 @@ void PMXRigidBody   ::Read(FILE* filePtr, const PMXSetting* setting)
 {
 	ReadPMXString(filePtr, &Name, setting->Encode);
 	ReadPMXString(filePtr, &EnglishName, setting->Encode);
-	Name        = unicode::ToUtf8String(unicode::ToWString(Name));
-	EnglishName = unicode::ToUtf8String(unicode::ToWString(EnglishName));
+	Name        = gu::string(unicode::ToUtf8String(unicode::ToWString(Name.CString())).c_str());
+	EnglishName = gu::string(unicode::ToUtf8String(unicode::ToWString(EnglishName.CString())).c_str());
 	ReadPMXIndex(filePtr, &BoneIndex, setting->BoneIndexSize);
 	fread_s(&Group             , sizeof(Group)             , sizeof(UINT8)   , 1, filePtr);
 	fread_s(&CollisionGroup    , sizeof(CollisionGroup)    , sizeof(UINT16)  , 1, filePtr);
@@ -722,8 +723,8 @@ void PMXJoint       ::Read(FILE* filePtr, const PMXSetting* setting)
 {
 	ReadPMXString(filePtr, &Name, setting->Encode);
 	ReadPMXString(filePtr, &EnglishName, setting->Encode);
-	Name        = unicode::ToUtf8String(unicode::ToWString(Name));
-	EnglishName = unicode::ToUtf8String(unicode::ToWString(EnglishName));
+	Name        = gu::string(unicode::ToUtf8String(unicode::ToWString(Name.CString())).c_str());
+	EnglishName = gu::string(unicode::ToUtf8String(unicode::ToWString(EnglishName.CString())).c_str());
 	fread_s(&JointType              , sizeof(JointType)              , sizeof(UINT8)   , 1, filePtr);
 	ReadPMXIndex(filePtr, &RigidBodyIndex_A, setting->RigidBodyIndexSize);
 	ReadPMXIndex(filePtr, &RigidBodyIndex_B, setting->RigidBodyIndexSize);
@@ -814,12 +815,12 @@ void PMXSoftBody    ::Read(FILE* filePtr, const PMXSetting* setting)
 /****************************************************************************
 *							ReadPMXString
 *************************************************************************//**
-*  @fn            bool PMXData::ReadPMXString(FILE* filePtr, std::string* string)
+*  @fn            bool PMXData::ReadPMXString(FILE* filePtr, gu::string* string)
 *  @brief         Load PMX Header
 *  @param[in,out] FILE* filePtr
 *  @return @    @bool
 *****************************************************************************/
-bool ReadPMXString(FILE* filePtr, std::string* string, PMXEncode encode)
+bool ReadPMXString(FILE* filePtr, gu::string* string, PMXEncode encode)
 {
 	using namespace pmx;
 
@@ -844,14 +845,14 @@ bool ReadPMXString(FILE* filePtr, std::string* string, PMXEncode encode)
 		{
 			std::u16string utf16String(bufferSize / 2, u'\0');
 			fread_s(utf16String.data(), sizeof(char16_t) * utf16String.size(), sizeof(char16_t), utf16String.size(), filePtr);
-			if (!unicode::ConvertU16ToU8(utf16String, *string)) { return false; }
+			if (!unicode::ConvertU16ToU8(utf16String, std::string(string->CString()))) { return false; }
 			break;
 		}
 		case PMXEncode::UTF8:
 		{
 			std::string utf8String(bufferSize, '\0');
 			fread_s(utf8String.data(), sizeof(char8_t) * utf8String.size(), sizeof(char8_t), utf8String.size(), filePtr);
-			*string = utf8String;
+			*string = gu::string(utf8String.c_str());
 			break;
 		}
 		default:

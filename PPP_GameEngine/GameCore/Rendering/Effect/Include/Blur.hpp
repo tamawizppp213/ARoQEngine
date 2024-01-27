@@ -14,7 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -90,21 +90,21 @@ namespace gc
 		
 		~GaussianBlur();
 		
-		GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS = true, const std::wstring& addName = L"");
+		GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS = true, const gu::wstring& addName = L"");
 	
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareBlurParameters(const std::wstring& name);
+		void PrepareBlurParameters(const gu::wstring& name);
 		
-		void PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const std::wstring& name);
+		void PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name);
 		
-		void PreparePipelineState(const std::wstring& name);
+		void PreparePipelineState(const gu::wstring& name);
 		
 		void PrepareResourceView();
 
-		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
+		void PrepareVertexAndIndexBuffer(const gu::wstring& addName);
 		
 		/****************************************************************************
 		**                Protected Member Variables
@@ -129,7 +129,7 @@ namespace gc
 
 		bool _useCS = true;
 
-		std::wstring _addName = L"";
+		gu::wstring _addName = L"";
 
 		/*-------------------------------------------------------------------
 		-               Compute Shader Variables

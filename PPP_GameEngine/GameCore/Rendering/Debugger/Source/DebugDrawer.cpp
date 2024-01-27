@@ -27,13 +27,13 @@ using namespace gc::rendering;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-DebugDrawer::DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName)
+DebugDrawer::DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& addName)
 	: _engine(engine)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"DebugDrawer::";
 
 	PreparePipelineState(name);
@@ -119,7 +119,7 @@ void DebugDrawer::Clear(const GameModelPtr& model)
 #pragma endregion Main Function
 
 #pragma region Set up
-void DebugDrawer::PreparePipelineState(const std::wstring& name)
+void DebugDrawer::PreparePipelineState(const gu::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();

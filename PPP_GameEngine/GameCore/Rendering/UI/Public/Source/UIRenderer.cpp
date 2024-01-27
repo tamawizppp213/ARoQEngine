@@ -29,13 +29,13 @@ using namespace gm;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-UIRenderer::UIRenderer(const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName, const std::uint32_t maxUICount)
+UIRenderer::UIRenderer(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& addName, const std::uint32_t maxUICount)
 	: _engine(engine), _maxWritableUICount(maxUICount)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"UIRenderer::";
 
 	/*-------------------------------------------------------------------
@@ -227,15 +227,15 @@ void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t 
 /****************************************************************************
 *						PrepareMaxImageBuffer
 *************************************************************************//**
-*  @fn        void UIRenderer::PrepareMaxImageBuffer(const std::wstring& name)
+*  @fn        void UIRenderer::PrepareMaxImageBuffer(const gu::wstring& name)
 *
 *  @brief     Prepare max writable ui count size buffer
 *
-*  @param[in] std::wstring& name
+*  @param[in] gu::wstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void UIRenderer::PrepareMaxImageBuffer(const std::wstring& name)
+void UIRenderer::PrepareMaxImageBuffer(const gu::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -289,15 +289,15 @@ void UIRenderer::PrepareMaxImageBuffer(const std::wstring& name)
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
-*  @fn        void Skybox::PreparePipelineState(const std::wstring& name)
+*  @fn        void Skybox::PreparePipelineState(const gu::wstring& name)
 * 
 *  @brief     Prepare pipelineState
 * 
-*  @param[in] std::wstring& name
+*  @param[in] gu::wstring& name
 * 
 *  @return 　　void
 *****************************************************************************/
-void UIRenderer::PreparePipelineState(const std::wstring& name)
+void UIRenderer::PreparePipelineState(const gu::wstring& name)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();

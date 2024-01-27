@@ -84,7 +84,7 @@ void RHIDisplayAdapter::PrintInfo()
 	/*-------------------------------------------------------------------
 	-                  Print Adapter Name
 	---------------------------------------------------------------------*/
-	gu::wstring adapterName  
+	std::wstring adapterName  
 		         = L"\n//////////////////////////\n Adapter : ";
 	adapterName += desc.Description;
 	adapterName += L"\n//////////////////////////\n";
@@ -98,9 +98,9 @@ void RHIDisplayAdapter::PrintInfo()
 	/*-------------------------------------------------------------------
 	-                  memory description
 	---------------------------------------------------------------------*/
-	const gu::wstring systemMemoryStr       = L"System memory: "         + std::to_wstring(desc.DedicatedSystemMemory) + L"\n";
-	const gu::wstring videoMemoryStr        = L"Video memory : "         + std::to_wstring(desc.DedicatedVideoMemory) + L"\n";
-	const gu::wstring sharedSystemMemoryStr = L"Shared system memory : " + std::to_wstring(desc.SharedSystemMemory) + L"\n";
+	const auto systemMemoryStr       = L"System memory: "         + std::to_wstring(desc.DedicatedSystemMemory) + L"\n";
+	const auto videoMemoryStr        = L"Video memory : "         + std::to_wstring(desc.DedicatedVideoMemory) + L"\n";
+	const auto sharedSystemMemoryStr = L"Shared system memory : " + std::to_wstring(desc.SharedSystemMemory) + L"\n";
 	
 #if PLATFORM_OS_WINDOWS
 	OutputDebugString(systemMemoryStr.c_str());

@@ -28,13 +28,13 @@ using namespace rhi::core;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const gc::rendering::GBufferDesc& desc, const std::wstring& addName)
+GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const gc::rendering::GBufferDesc& desc, const gu::wstring& addName)
 	: gc::rendering::GBuffer(engine, desc, addName)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"GBuffer::";
 
 	PrepareFrameBuffers(name);
@@ -85,15 +85,15 @@ void GBuffer::Draw(const GPUResourceViewPtr& scene)
 /****************************************************************************
 *                          PreparePipelineState
 *************************************************************************//**
-*  @fn        void GBuffer::PreparePipelineState(const std::wstring& name)
+*  @fn        void GBuffer::PreparePipelineState(const gu::wstring& name)
 *
 *  @brief     Prepare pipeline state
 *
-*  @param[in] std::wstring& name
+*  @param[in] gu::wstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void GBuffer::PreparePipelineState(const std::wstring& name)
+void GBuffer::PreparePipelineState(const gu::wstring& name)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -148,11 +148,11 @@ void GBuffer::PreparePipelineState(const std::wstring& name)
 *
 *  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
 *
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::wstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void GBuffer::PrepareFrameBuffers(const std::wstring& name)
+void GBuffer::PrepareFrameBuffers(const gu::wstring& name)
 {
 	const auto frameCount      = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto device          = _engine->GetDevice();

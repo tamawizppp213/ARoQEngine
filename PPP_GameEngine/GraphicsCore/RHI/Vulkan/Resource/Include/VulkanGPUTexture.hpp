@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
 #include <vulkan/vulkan.h>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,11 +37,11 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		void Load(
-			[[maybe_unused]] const std::wstring& filePath,
+			[[maybe_unused]] const gu::wstring& filePath,
 			[[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList) override;
 
 		void Save(
-			[[maybe_unused]]const std::wstring& filePath, 
+			[[maybe_unused]]const gu::wstring& filePath, 
 			[[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList,
 			[[maybe_unused]] const gu::SharedPointer<core::RHICommandQueue>& commandQueue) override
 		{ printf("Non Function\n"); }
@@ -59,7 +60,7 @@ namespace rhi::vulkan
 		
 		const VkImageViewCreateInfo& GetImageInfo() const noexcept { return _imageViewDesc; }
 		
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::wstring& name) override;
 		
 		// SetMetaDataçÏÇ¡ÇΩï˚Ç™ÇÊÇ¢.
 		/****************************************************************************
@@ -69,11 +70,11 @@ namespace rhi::vulkan
 		
 		~GPUTexture();
 		 
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const std::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::wstring& name = L"Texture");
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::wstring& name = L"Texture");
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const std::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const gu::wstring& name = L"Texture");
 
 	protected:
 		/****************************************************************************

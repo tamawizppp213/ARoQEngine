@@ -130,7 +130,7 @@ namespace rhi::core
 		InputFormat         Format         = InputFormat::Unknown;
 		InputClassification Classification = InputClassification::PerVertex;
 		size_t              Slot           = 0;
-		std::string         SemanticName   = "";
+		gu::string          SemanticName   = "";
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -139,22 +139,22 @@ namespace rhi::core
 
 		~InputLayoutElement() = default;
 
-		explicit InputLayoutElement(const std::string& name, const InputFormat format, const InputClassification classification = InputClassification::PerVertex,  const size_t slot = 0) : Format(format), SemanticName(name), Classification(classification), Slot(slot) {};
+		explicit InputLayoutElement(const gu::string& name, const InputFormat format, const InputClassification classification = InputClassification::PerVertex,  const size_t slot = 0) : Format(format), SemanticName(name), Classification(classification), Slot(slot) {};
 	};
 
 	struct Value32Bit
 	{
 		union
 		{
-			std::uint32_t UInt;
-			std::int32_t  Int;
+			gu::uint32 UInt;
+			gu::int32  Int;
 			float         Float;
 		};
 		Value32Bit() = default;
 
-		explicit Value32Bit(const std::uint32_t uint32) :UInt(uint32){};
+		explicit Value32Bit(const gu::uint32 uint32) :UInt(uint32){};
 
-		explicit Value32Bit(const std::int32_t int32) : Int(int32){}
+		explicit Value32Bit(const gu::int32 int32) : Int(int32){}
 
 		explicit Value32Bit(const float fValue) : Float(fValue) {};
 	};

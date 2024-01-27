@@ -30,7 +30,7 @@ std::uint64_t gc::core::Material::InstanceCount = 0;
 gc::core::Material::GPUResourceCachePtr gc::core::Material::ResourceCache = nullptr;
 
 #pragma region Constructor and Destructor 
-Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaData& bufferInfo, const std::wstring& addName, 
+Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaData& bufferInfo, const gu::wstring& addName, 
 	const RHIDescriptorHeapPtr& customHeap): _engine(engine), _customHeap(customHeap)
 {
 #ifdef _DEBUG
@@ -42,7 +42,7 @@ Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaD
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"Material::";
 
 	/*-------------------------------------------------------------------
@@ -138,16 +138,16 @@ void Material::PackMaterial(const void* data)
 /****************************************************************************
 *					LoadTexture
 *************************************************************************//**
-*  @fn        Material::GPUResourceViewPtr Material::LoadTexture(const std::wstring& filePath, const UsageTexture textureType)
+*  @fn        Material::GPUResourceViewPtr Material::LoadTexture(const gu::wstring& filePath, const UsageTexture textureType)
 *
 *  @brief     Load texture according to the usage texture.
 *
-*  @param[in] const std::wstring& filePath
+*  @param[in] const gu::wstring& filePath
 *  @param[in] const UsageTexture texture Type
 *
 *  @return 　　GPUResourceViewPtr (std::shard_ptr<GPUResourceView>)
 *****************************************************************************/
-Material::GPUResourceViewPtr Material::LoadTexture(const std::wstring& filePath, const UsageTexture textureType)
+Material::GPUResourceViewPtr Material::LoadTexture(const gu::wstring& filePath, const UsageTexture textureType)
 {
 	const auto resourceView = ResourceCache->Load(filePath);
 
@@ -161,16 +161,16 @@ Material::GPUResourceViewPtr Material::LoadTexture(const std::wstring& filePath,
 /****************************************************************************
 *					SetUpBuffer
 *************************************************************************//**
-*  @fn        void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const std::wstring& name)
+*  @fn        void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::wstring& name)
 *
 *  @brief     Set up cbv buffer (for material)
 *
 *  @param[in] const GPUBufferMetaData& bufferInfo, 
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::wstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const std::wstring& name)
+void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::wstring& name)
 {
 	if (bufferInfo.BufferType != BufferType::Constant)
 	{

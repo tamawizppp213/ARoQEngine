@@ -21,15 +21,15 @@ using namespace file;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-void ReadPMDString(FILE* filePtr, std::string* string, UINT32 bufferSize);
-bool PMDFile::Load(const std::wstring& filePath)
+void ReadPMDString(FILE* filePtr, gu::string* string, UINT32 bufferSize);
+bool PMDFile::Load(const gu::wstring& filePath)
 {
 	/*-------------------------------------------------------------------
 	-             Open File
 	---------------------------------------------------------------------*/
-	FILE* filePtr = file::FileSystem::OpenFile(filePath);
+	FILE* filePtr = file::FileSystem::OpenFile(std::wstring(filePath.CString()));
 	if (filePtr == nullptr) { return false; }
-	Directory = file::FileSystem::GetDirectory(unicode::ToUtf8String(filePath));
+	Directory = gu::string(file::FileSystem::GetDirectory(unicode::ToUtf8String(std::wstring(filePath.CString()))).c_str());
 	/*-------------------------------------------------------------------
 	-             Read Data
 	---------------------------------------------------------------------*/
@@ -184,8 +184,8 @@ void PMDFile::ReadToonTextures       (FILE* filePtr)
 			std::stringstream stringStream;
 			stringStream << "toon" << std::setfill('0') << std::setw(2) << toonTextureIndex << ".bmp";
 
-			std::string fileName = Directory + "toon/" + stringStream.str();
-			name = fileName;
+			std::string fileName = std::string(Directory.CString()) + "toon/" + stringStream.str();
+			name = gu::string(fileName.c_str());
 			toonTextureIndex++;
 		}
 	}
@@ -199,9 +199,9 @@ void PMDFile::ReadToonTextures       (FILE* filePtr)
 			char temp[100];
 			fread_s(&temp, sizeof(temp), sizeof(char), sizeof(temp), filePtr);
 
-			std::string filePath = Directory + "/";
+			std::string filePath = std::string(Directory.CString()) + "/";
 			filePath += std::string(temp, '\0');
-			toonTextureName = filePath;
+			toonTextureName = gu::string(filePath.c_str());
 		}
 	}
 	
@@ -244,7 +244,7 @@ void PMDVertex         ::Read(FILE* filePtr)
 {
 	fread_s(this, sizeof(pmd::PMDVertex), sizeof(pmd::PMDVertex), 1, filePtr);
 }
-void PMDMaterial       ::Read(FILE* filePtr, const std::string& directory)
+void PMDMaterial       ::Read(FILE* filePtr, const gu::string& directory)
 {
 	fread_s(&Diffuse      , sizeof(Diffuse      ), sizeof(Float4), 1, filePtr);
 	fread_s(&SpecularPower, sizeof(SpecularPower), sizeof(float ), 1, filePtr);
@@ -253,7 +253,7 @@ void PMDMaterial       ::Read(FILE* filePtr, const std::string& directory)
 	fread_s(&ToonID       , sizeof(ToonID       ), sizeof(UINT8 ), 1, filePtr);
 	fread_s(&EdgeFlag     , sizeof(EdgeFlag     ), sizeof(UINT8 ), 1, filePtr);
 	fread_s(&IndexCount   , sizeof(IndexCount   ), sizeof(UINT32), 1, filePtr);
-	std::string textureName; ReadPMDString(filePtr, &textureName, 20);
+	gu::string textureName; ReadPMDString(filePtr, &textureName, 20);
 	ReadTextureName(directory, textureName);
 }
 void PMDBone           ::Read(FILE* filePtr)
@@ -359,9 +359,10 @@ void PMDBoneDisplayName::ReadExtension(FILE* filePtr)
 	ReadPMDString(filePtr, &BoneDisplayEnglishName, 50);
 }
 
-void PMDMaterial::ReadTextureName(const std::string& directory, const std::string& textureName)
+void PMDMaterial::ReadTextureName(const gu::string& directory, const gu::string& textureName)
 {
-	if (textureName.length() != 0) // Whether the file exists or not
+	const auto stdTextureName = std::string(textureName.CString());
+	if (textureName.Size() != 0) // Whether the file exists or not
 	{
 		/*-------------------------------------------------------------------
 		-             Exist Check Splitter and Get FilePath Name
@@ -369,32 +370,32 @@ void PMDMaterial::ReadTextureName(const std::string& directory, const std::strin
 		/*-------------------------------------------------------------------
 		-             In case existance splitter
 		---------------------------------------------------------------------*/
-		if (std::count(textureName.begin(), textureName.end(), '*') > 0)
+		if (std::count(stdTextureName.begin(), stdTextureName.end(), '*') > 0)
 		{
-			auto fileNamePair = FileSystem::Split(textureName);
+			auto fileNamePair = FileSystem::Split(stdTextureName);
 			/*-------------------------------------------------------------------
 			-             Get FilePath Name
 			---------------------------------------------------------------------*/
 			if (FileSystem::GetExtension(fileNamePair.first) == "sph")
 			{
-				TextureFileName = directory + fileNamePair.second;
-				SphereFileName  = directory + fileNamePair.first;
+				TextureFileName = directory + gu::string(fileNamePair.second.c_str());
+				SphereFileName  = directory + gu::string(fileNamePair.first.c_str());
 			}
 			else if (FileSystem::GetExtension(fileNamePair.first) == "spa")
 			{
-				TextureFileName = directory  + fileNamePair.second;
-				SphereFileName  = directory  + fileNamePair.first;
+				TextureFileName = directory  + gu::string(fileNamePair.second.c_str());
+				SphereFileName  = directory  + gu::string(fileNamePair.first.c_str());
 			}
 			else
 			{
-				TextureFileName = directory  + fileNamePair.first;
+				TextureFileName = directory  + gu::string(fileNamePair.first.c_str());
 				if (FileSystem::GetExtension(fileNamePair.second) == "sph")
 				{
-					SphereFileName = directory  + fileNamePair.second;
+					SphereFileName = directory  + gu::string(fileNamePair.second.c_str());
 				}
 				else if (FileSystem::GetExtension(fileNamePair.second) == "spa")
 				{
-					SphereFileName = directory  + fileNamePair.second;
+					SphereFileName = directory  + gu::string(fileNamePair.second.c_str());
 				}
 				else
 				{
@@ -411,12 +412,12 @@ void PMDMaterial::ReadTextureName(const std::string& directory, const std::strin
 			/*-------------------------------------------------------------------
 			-             Get FilePath Name
 			---------------------------------------------------------------------*/
-			if (FileSystem::GetExtension(textureName) == "sph")
+			if (FileSystem::GetExtension(stdTextureName) == "sph")
 			{
 				SphereFileName  = directory + textureName;
 				TextureFileName = "";
 			}
-			else if (FileSystem::GetExtension(textureName) == "spa")
+			else if (FileSystem::GetExtension(stdTextureName) == "spa")
 			{
 				SphereFileName = directory  + textureName;
 				TextureFileName = "";
@@ -429,9 +430,9 @@ void PMDMaterial::ReadTextureName(const std::string& directory, const std::strin
 	}
 }
 #pragma endregion EachReadFunction
-void ReadPMDString(FILE* filePtr, std::string* string, UINT32 bufferSize)
+void ReadPMDString(FILE* filePtr, gu::string* string, UINT32 bufferSize)
 {
 	std::string utf8String(bufferSize, '\0');
 	fread_s(utf8String.data(), sizeof(char8_t) * utf8String.size(), sizeof(char8_t), utf8String.size(), filePtr);
-	*string = utf8String;
+	*string = gu::string(utf8String.c_str());
 }

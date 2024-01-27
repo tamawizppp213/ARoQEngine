@@ -113,11 +113,11 @@ void RHIDisplayAdapter::PrintInfo()
 	/*-------------------------------------------------------------------
 	-                  Print Adapter Name
 	---------------------------------------------------------------------*/
-	std::string adapterName
+	gu::string adapterName
 		= "\n//////////////////////////\n Adapter : ";
-	adapterName += std::string(_name.CString());
+	adapterName += gu::string(_name.CString());
 	adapterName += "\n//////////////////////////\n";
-	OutputDebugStringA(adapterName.c_str());
+	OutputDebugStringA(adapterName.CString());
 
 	for (std::uint32_t i = 0; i < memoryProperties.memoryHeapCount; ++i)
 	{
@@ -253,7 +253,7 @@ std::vector<VkExtensionProperties> RHIDisplayAdapter::GetExtensionProperties() c
 * 
 *  @return Å@  std::vector<const char*>
 *****************************************************************************/
-std::vector<std::string> RHIDisplayAdapter::GetExtensionNameList() const noexcept
+std::vector<gu::string> RHIDisplayAdapter::GetExtensionNameList() const noexcept
 {
 	/*-------------------------------------------------------------------
 	-               Acquire extension infomation
@@ -262,7 +262,7 @@ std::vector<std::string> RHIDisplayAdapter::GetExtensionNameList() const noexcep
 	/*-------------------------------------------------------------------
 	-               All Device Extensions : Enabled
 	---------------------------------------------------------------------*/
-	std::vector<std::string> extensions;
+	std::vector<gu::string> extensions;
 	for (const auto& prop : extensionProperties)
 	{
 		extensions.push_back(prop.extensionName);

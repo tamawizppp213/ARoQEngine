@@ -13,9 +13,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <cstdint>
 #include <vector>
-#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ namespace gc::basepass
 		*****************************************************************************/
 		ZPrepass() = default;
 
-		ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName = L"");
+		ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gu::wstring& addName = L"");
 
 		~ZPrepass();
 
@@ -92,9 +92,9 @@ namespace gc::basepass
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PreparePipelineState(const std::wstring& name);
+		void PreparePipelineState(const gu::wstring& name);
 		
-		void PrepareFrameBuffers(const std::wstring& name);
+		void PrepareFrameBuffers(const gu::wstring& name);
 		
 		/****************************************************************************
 		**                Protected Member Variables

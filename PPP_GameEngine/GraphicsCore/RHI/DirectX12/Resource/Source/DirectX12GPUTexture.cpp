@@ -64,12 +64,12 @@ namespace
 	}
 }
 
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const std::wstring& name) : core::GPUTexture(device, name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::wstring& name) : core::GPUTexture(device, name)
 {
 	
 }
 
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::wstring& name)
 	: core::GPUTexture(device, metaData, name)
 {
 	
@@ -90,7 +90,7 @@ GPUTexture::~GPUTexture()
 	if (_resource) { _resource.Reset(); }
 }
 
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const std::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const gu::wstring& name)
 	: core::GPUTexture(device, metaData, name), _resource(texture)
 {
 	const auto dxDevice     = static_cast<directX12::RHIDevice*>(_device.Get())->GetDevice();
@@ -105,24 +105,24 @@ GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const R
 }
 
 #pragma region Public Function
-void GPUTexture::SetName(const std::wstring& name)
+void GPUTexture::SetName(const gu::wstring& name)
 {
-	ThrowIfFailed(_resource->SetName(name.c_str()));
+	ThrowIfFailed(_resource->SetName(name.CString()));
 }
 
 /****************************************************************************
 *                     Load
 *************************************************************************//**
-*  @fn        void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
+*  @fn        void GPUTexture::Load(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 *
 *  @brief     Load texture 
 *
-*  @param[in] const std::wstring& filePath
+*  @param[in] const gu::wstring& filePath
 *  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
+void GPUTexture::Load(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 {
 
 #ifdef _DEBUG
@@ -137,8 +137,9 @@ void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core
 	/*-------------------------------------------------------------------
 	-                Choose Extension and Load Texture Data
 	---------------------------------------------------------------------*/
-	const std::wstring extension    = file::FileSystem::GetExtension(filePath);
-	const std::wstring fileName     = file::FileSystem::GetFileName(filePath, false);
+	const auto stdFilePath  = std::wstring(filePath.CString());
+	const auto extension    = file::FileSystem::GetExtension(stdFilePath);
+	const auto fileName     = file::FileSystem::GetFileName(stdFilePath, false);
 	
 	TexMetadata  dxMetaData   = {};
 	ScratchImage scratchImage = {};
@@ -150,20 +151,20 @@ void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core
 	---------------------------------------------------------------------*/
 	if (extension == L"tga")
 	{
-		ThrowIfFailed(LoadFromTGAFile(filePath.c_str(), TGA_FLAGS_NONE, &dxMetaData, scratchImage));
+		ThrowIfFailed(LoadFromTGAFile(filePath.CString(), TGA_FLAGS_NONE, &dxMetaData, scratchImage));
 	}
 	else if (extension == L"dds")
 	{
-		ThrowIfFailed(LoadFromDDSFile(filePath.c_str(),DDS_FLAGS_NONE, &dxMetaData, scratchImage));
+		ThrowIfFailed(LoadFromDDSFile(filePath.CString(),DDS_FLAGS_NONE, &dxMetaData, scratchImage));
 		isDXT = true;
 	}
 	else if (extension == L"hdr")
 	{
-		ThrowIfFailed(LoadFromHDRFile(filePath.c_str(), &dxMetaData, scratchImage));
+		ThrowIfFailed(LoadFromHDRFile(filePath.CString(), &dxMetaData, scratchImage));
 	}
 	else
 	{
-		ThrowIfFailed(LoadFromWICFile(filePath.c_str(), WIC_FLAGS_NONE, &dxMetaData, scratchImage));
+		ThrowIfFailed(LoadFromWICFile(filePath.CString(), WIC_FLAGS_NONE, &dxMetaData, scratchImage));
 	}
 
 	auto image = scratchImage.GetImage(0, 0, 0);
@@ -345,17 +346,17 @@ void GPUTexture::Write(const gu::SharedPointer<core::RHICommandList>& commandLis
 /****************************************************************************
 *                     Save
 *************************************************************************//**
-*  @fn        void GPUTexture::Save(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
+*  @fn        void GPUTexture::Save(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
 *
 *  @brief     Save the texture already stored in the GPU and record it to the specified file.
 *
-*  @param[in] const std::wstring& filePath
+*  @param[in] const gu::wstring& filePath
 *  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *  @param[in] const gu::SharedPointer<core::RHICommandQueue> graphics type command queue
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUTexture::Save(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
+void GPUTexture::Save(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
 {
 #ifdef _DEBUG
 	assert(commandList->GetType() == core::CommandListType::Graphics);
@@ -432,46 +433,46 @@ void GPUTexture::Save(const std::wstring& filePath, const gu::SharedPointer<core
 	image.pixels = buffer->GetCPUMemory();
 	buffer->CopyEnd();
 
-
-	std::wstring extension = file::FileSystem::GetExtension(filePath);
+	const auto stdFilePath = std::wstring(filePath.CString());
+	const auto extension = file::FileSystem::GetExtension(stdFilePath);
 	/*-------------------------------------------------------------------
 	-    Select the appropriate texture loading function for each extension
 	---------------------------------------------------------------------*/
 	if (extension == L"tga")
 	{
-		ThrowIfFailed(DirectX::SaveToTGAFile(image, filePath.c_str()));
+		ThrowIfFailed(DirectX::SaveToTGAFile(image, filePath.CString()));
 	}
 	else if (extension == L"dds")
 	{
-		ThrowIfFailed(DirectX::SaveToDDSFile(image, DDS_FLAGS_NONE, filePath.c_str()));
+		ThrowIfFailed(DirectX::SaveToDDSFile(image, DDS_FLAGS_NONE, filePath.CString()));
 	}
 	else if (extension == L"hdr")
 	{
-		ThrowIfFailed(DirectX::SaveToHDRFile(image, filePath.c_str()));
+		ThrowIfFailed(DirectX::SaveToHDRFile(image, filePath.CString()));
 	}
 	else if (extension == L"png")
 	{
-		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatPng, filePath.c_str()));
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatPng, filePath.CString()));
 	}
 	else if (extension == L"bmp")
 	{
-		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatBmp, filePath.c_str()));
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatBmp, filePath.CString()));
 	}
 	else if (extension == L"jpeg" || extension == L"jpg")
 	{
-		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatJpeg, filePath.c_str()));
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatJpeg, filePath.CString()));
 	}
 	else if (extension == L"ico")
 	{
-		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatIco, filePath.c_str()));
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatIco, filePath.CString()));
 	}
 	else if (extension == L"tiff")
 	{
-		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatTiff, filePath.c_str()));
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatTiff, filePath.CString()));
 	}
 	else if (extension == L"gif")
 	{
-		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatGif, filePath.c_str()));
+		ThrowIfFailed(DirectX::SaveToWICFile(image, WIC_FLAGS_NONE, GUID_ContainerFormatGif, filePath.CString()));
 	}
 	else
 	{
@@ -495,7 +496,7 @@ void GPUTexture::Pack([[maybe_unused]]const gu::SharedPointer<core::RHICommandLi
 *
 *  @brief     Allocate texture buffer in GPU memory
 *
-*  @param[in] const std::wstring& filePath
+*  @param[in] const gu::wstring& filePath
 *  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *
 *  @return 　　void

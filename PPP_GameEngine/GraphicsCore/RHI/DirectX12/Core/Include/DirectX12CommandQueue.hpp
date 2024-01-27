@@ -77,7 +77,7 @@ namespace rhi::directX12
 		
 		~RHICommandQueue();
 		
-		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::wstring& name);
+		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const gu::wstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function

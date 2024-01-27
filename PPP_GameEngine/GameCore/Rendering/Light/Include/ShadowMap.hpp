@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -68,7 +68,7 @@ namespace gc::rendering
 		ShadowMap(const LowLevelGraphicsEnginePtr& engine, 
 			const std::uint32_t width, 
 			const std::uint32_t height,
-			const std::wstring& addName = L"");
+			const gu::wstring& addName = L"");
 		
 		~ShadowMap();
 
@@ -76,9 +76,9 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareVertexAndIndexBuffer(const std::wstring& name);
-		void PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const std::wstring& name);
-		void PreparePipelineState(const std::wstring& name);
+		void PrepareVertexAndIndexBuffer(const gu::wstring& name);
+		void PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name);
+		void PreparePipelineState(const gu::wstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

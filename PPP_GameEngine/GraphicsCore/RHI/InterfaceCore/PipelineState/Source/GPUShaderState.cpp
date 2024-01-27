@@ -22,7 +22,7 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-std::wstring GPUShaderState::GetShaderTypeName(core::ShaderType shaderType)
+gu::wstring GPUShaderState::GetShaderTypeName(core::ShaderType shaderType)
 {
 	switch (shaderType)
 	{
@@ -44,9 +44,10 @@ std::wstring GPUShaderState::GetShaderTypeName(core::ShaderType shaderType)
 	}
 }
 
-std::wstring GPUShaderState::Format(float version)
+gu::wstring GPUShaderState::Format(float version)
 {
 	std::wstringstream stream;
 	stream << std::fixed << std::setprecision(1) << version;
-	return stream.str().substr(0, 1) + L"_" + stream.str().substr(2, 1); // main version 5, 6, sub version .1, .2
+	std::wstring temp = stream.str().substr(0, 1) + L"_" + stream.str().substr(2, 1); // main version 5, 6, sub version .1, .2
+	return gu::wstring(temp.c_str());
 }

@@ -14,7 +14,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Private/Base/Include/GUStringUtility.hpp"
 #include "../../Memory/Include/GUMemory.hpp"
-#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -335,7 +334,7 @@ namespace gu
 
 			explicit StringBase(StringBase<Char, CharByte>&& string) noexcept : StringBase<Char, CharByte>()
 			{
-				Move(string);
+				Move(std::move(string));
 			}
 
 			~StringBase() 
@@ -959,7 +958,7 @@ namespace gu
 		{
 			if (this == &source) { return; }
 
-			if (IsSSOMode())
+			if (source.IsSSOMode())
 			{
 				Memory::Copy(&this->_data.SSO, &source._data.SSO, sizeof(SSOString));
 			}
@@ -970,6 +969,7 @@ namespace gu
 				this->_data.NonSSO.Capacity = source._data.NonSSO.Capacity;
 				this->_data.NonSSO.Size     = source._data.NonSSO.Size;
 				this->_data.NonSSO.Pointer  = new Char[source._data.NonSSO.Size + 1];
+				SetNonSSOMode();
 			}
 		}
 
@@ -979,7 +979,7 @@ namespace gu
 		template<class Char, int CharByte>
 		void StringBase<Char, CharByte>::Move(StringBase<Char, CharByte>&& source) noexcept
 		{
-			Memory::Copy(this, source, sizeof(source));
+			Memory::Copy(this, &source, sizeof(source));
 			source.Initialize();
 		}
 
@@ -1001,13 +1001,16 @@ namespace gu
 #pragma endregion Implement
 	}
 	
-	using string  = gu::details::StringBase<char, 1>;
+	using string    = gu::details::StringBase<char, 1>;
+	using wstring   = gu::details::StringBase<wchar, 2>;
+	using u8string  = gu::details::StringBase<char8, 1>;
+	using u16string = gu::details::StringBase<char16, 2>;
+	using u32string = gu::details::StringBase<char32, 4>;
 
-	using wstring = std::wstring;
 #if NEED_WIDE_CHAR
-	using tstring = std::wstring;
+	using tstring = gu::wstring;
 #else 
-	using tstring = std::u16string;
+	using tstring = gu::u16string;
 #endif
 
 }

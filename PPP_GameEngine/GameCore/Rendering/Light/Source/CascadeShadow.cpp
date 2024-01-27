@@ -32,7 +32,7 @@ using namespace gm;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const std::wstring& addName)
+CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const gu::wstring& addName)
 	: _engine(engine), _shadowDesc(desc)
 {
 	/*-------------------------------------------------------------------
@@ -47,7 +47,7 @@ CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const Casc
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (name != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (name != L"") { name += addName; name += L"::"; }
 	name += L"CascadeShadow::";
 
 	/*-------------------------------------------------------------------
@@ -130,7 +130,7 @@ void CascadeShadow::Add(const GameModelPtr& gameModel)
 #pragma endregion Main Function
 
 #pragma region SetUp Function
-void CascadeShadow::PrepareResourceView(const std::wstring& name)
+void CascadeShadow::PrepareResourceView(const gu::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 

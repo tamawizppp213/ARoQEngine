@@ -16,8 +16,8 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
+#include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <string>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -70,7 +70,7 @@ namespace gc::core
 
 		void PackMaterial(const void* data);
 
-		GPUResourceViewPtr LoadTexture(const std::wstring& filePath, const UsageTexture textureType);
+		GPUResourceViewPtr LoadTexture(const gu::wstring& filePath, const UsageTexture textureType);
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -84,9 +84,11 @@ namespace gc::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		Material() = default;
+
 		Material(const LowLevelGraphicsEnginePtr& engine, 
 			const rhi::core::GPUBufferMetaData& bufferInfo, 
-			const std::wstring& addName = L"",
+			const gu::wstring& addName = L"",
 			const RHIDescriptorHeapPtr& customHeap = nullptr);
 
 		~Material();
@@ -95,7 +97,7 @@ namespace gc::core
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void SetUpBuffer(const rhi::core::GPUBufferMetaData& bufferInfo, const std::wstring& name);
+		void SetUpBuffer(const rhi::core::GPUBufferMetaData& bufferInfo, const gu::wstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

@@ -56,13 +56,13 @@ GaussianBlur::~GaussianBlur()
 	_textureSizeView.Reset();
 	_blurParameterView.Reset();
 }
-GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS, const std::wstring& addName)
+GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS, const gu::wstring& addName)
 	: _engine(engine), _useCS(useCS)
 {
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"GaussianBlur::";
 	_addName = name;
 	/*-------------------------------------------------------------------
@@ -257,10 +257,10 @@ void GaussianBlur::SetUpWeightTable(float sigma)
 *************************************************************************//**
 *  @fn        void GaussianBlur::PrepareBlurParameters()
 *  @brief     Prepare Blur Parameter
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::wstring& name
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::PrepareBlurParameters(const std::wstring& name)
+void GaussianBlur::PrepareBlurParameters(const gu::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -287,7 +287,7 @@ void GaussianBlur::PrepareBlurParameters(const std::wstring& name)
 *  @param[in] std::uint32_t height
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const std::wstring& name)
+void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name)
 {
 	const auto device   = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(TextureSizeParameter), 1, MemoryHeap::Upload, ResourceState::Common);
@@ -319,9 +319,9 @@ void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std
 * 
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::PreparePipelineState(const std::wstring& name)
+void GaussianBlur::PreparePipelineState(const gu::wstring& name)
 {
-	std::wstring defaultPath = L"Shader\\Effect\\ShaderGaussianBlur.hlsl";
+	gu::wstring defaultPath = L"Shader\\Effect\\ShaderGaussianBlur.hlsl";
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 	/*-------------------------------------------------------------------
@@ -455,7 +455,7 @@ void GaussianBlur::PrepareResourceView()
 	}
 }
 
-void GaussianBlur::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
 {
 	if (_useCS) { return; }
 

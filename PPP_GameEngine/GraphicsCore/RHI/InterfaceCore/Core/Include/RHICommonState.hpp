@@ -30,7 +30,7 @@ namespace rhi::core
 	* 
 	*  @brief     Graphics api version (Add as needed.)
 	*****************************************************************************/
-	enum class APIVersion : std::uint8_t
+	enum class APIVersion : gu::uint8
 	{
 		Unknown    = 0,
 		DirectX12  = 1,
@@ -343,7 +343,7 @@ namespace rhi::core
 			Color[0] = red; Color[1] = green; Color[2] = blue; Color[3] = alpha;
 		};
 		
-		explicit ClearValue(float depth, std::uint8_t stencil = 0)
+		explicit ClearValue(float depth, gu::uint8 stencil = 0)
 		{
 			Depth = depth; Stencil = stencil; 
 		}
@@ -423,7 +423,7 @@ namespace rhi::core
 	*  @class     SamplerAddressMode
 	*  @brief     Texture addressing mode // reference : https://learn.microsoft.com/ja-jp/windows/uwp/graphics-concepts/texture-addressing-modes
 	*****************************************************************************/
-	enum class SamplerAddressMode : std::uint8_t
+	enum class SamplerAddressMode : gu::uint8
 	{
 		Wrap    = 1, // repeat texture pattern
 		Mirror  = 2, // mirror and repeat texture pattern
@@ -437,7 +437,7 @@ namespace rhi::core
 	*  @class     BorderColor
 	*  @brief     Specifies the border color for a sampler
 	*****************************************************************************/
-	enum class BorderColor : std::uint8_t
+	enum class BorderColor : gu::uint8
 	{
 		TransparentBlack, // Indicates black, with the alpha component as fully transparent
 		OpaqueBlack,      // Indicates black, with the alpha component as fully opaque(Š®‘S•s“§–¾)
@@ -450,7 +450,7 @@ namespace rhi::core
 	*  @class     FilterMask
 	*  @brief     Sample mask
 	*****************************************************************************/
-	enum class FilterMask : std::uint8_t
+	enum class FilterMask : gu::uint8
 	{
 		Mip = 0x1,
 		Mag = 0x2,
@@ -463,7 +463,7 @@ namespace rhi::core
 	*  @class     FilterOption
 	*  @brief     Sampling filter option. linear -> linear sampling, point -> point sampling
 	*****************************************************************************/
-	enum class FilterOption : std::uint8_t
+	enum class FilterOption : gu::uint8
 	{
 		MinPointMagPointMipPoint    = 0,
 		MinPointMagPointMipLinear   = 1,
@@ -540,7 +540,7 @@ namespace rhi::core
 		}
 
 		explicit SamplerInfo(
-			const std::uint32_t maxAnisotropy,
+			const gu::uint32 maxAnisotropy,
 			const SamplerAddressMode addressU = SamplerAddressMode::Wrap,
 			const SamplerAddressMode addressV = SamplerAddressMode::Wrap,
 			const SamplerAddressMode addressW = SamplerAddressMode::Wrap,
@@ -603,7 +603,7 @@ namespace rhi::core
 	*  @class     ColorMask 
 	*  @brief     Color mask bit flag
 	*****************************************************************************/
-	enum class ColorMask : std::uint8_t
+	enum class ColorMask : gu::uint8
 	{
 		None  = 0,   // All Disable 
 		Red   = 0x1, // Red WriteEnable
@@ -673,7 +673,7 @@ namespace rhi::core
 	*  @class     MultiSample
 	*  @brief     Basically use count1 , in use MSAA, we use count4 
 	*****************************************************************************/
-	enum class MultiSample : std::uint8_t
+	enum class MultiSample : gu::uint8
 	{
 		Count1 = 1,       // 1
 		Count2 = 2,       // 2
@@ -874,7 +874,7 @@ namespace rhi::core
 
 #pragma endregion  DepthStencilState
 #pragma region InputAssemblyState
-	enum class PrimitiveTopology : std::uint8_t
+	enum class PrimitiveTopology : gu::uint8
 	{
 		Undefined     = 0,
 		PointList     = 1,
@@ -885,7 +885,7 @@ namespace rhi::core
 		CountOfPrimitiveTopology
 	};
 
-	enum class InputClassification : std::uint8_t
+	enum class InputClassification : gu::uint8
 	{
 		PerVertex   = 0,
 		PerInstance = 1,
@@ -900,7 +900,7 @@ namespace rhi::core
 		RayTracingLocal
 	};
 
-	enum class ResourceDimension : std::uint8_t
+	enum class ResourceDimension : gu::uint8
 	{
 		Buffer,
 		Dimension1D,
@@ -908,7 +908,7 @@ namespace rhi::core
 		Dimension3D
 	};
 
-	enum class ResourceType : std::uint8_t
+	enum class ResourceType : gu::uint8
 	{
 		Unknown                           = 0,
 		Buffer                            = 1,
@@ -930,7 +930,7 @@ namespace rhi::core
 	*  @class     ResourceState
 	*  @brief     How to use resource
 	*****************************************************************************/
-	enum class ResourceState : std::uint32_t
+	enum class ResourceState : gu::uint32
 	{
 		Common,
 		GeneralRead,
@@ -954,7 +954,7 @@ namespace rhi::core
 	*  @class     MemoryHeap
 	*  @brief     memory type
 	*****************************************************************************/
-	enum class MemoryHeap : std::uint8_t
+	enum class MemoryHeap : gu::uint8
 	{
 		Default, // Memory area visible only from GPU  
 		Upload,  // Memory area visible to CPU and GPU (Read from GPU is used for one time.)
@@ -976,12 +976,12 @@ namespace rhi::core
 
 	struct DefaultHeapCount
 	{
-		std::uint32_t CBVDescCount = 0;
-		std::uint32_t SRVDescCount = 0;
-		std::uint32_t UAVDescCount = 0;
-		std::uint32_t SamplerDescCount = 0;
-		std::uint32_t RTVDescCount = 0;
-		std::uint32_t DSVDescCount = 0;
+		gu::uint32 CBVDescCount = 0;
+		gu::uint32 SRVDescCount = 0;
+		gu::uint32 UAVDescCount = 0;
+		gu::uint32 SamplerDescCount = 0;
+		gu::uint32 RTVDescCount = 0;
+		gu::uint32 DSVDescCount = 0;
 	};
 	/****************************************************************************
 	*				  			ResourceViewType
@@ -1288,15 +1288,15 @@ namespace rhi::core
 	*****************************************************************************/
 	struct RayTracingASPrebuildInfo
 	{
-		std::uint64_t AccelerationStructureSize = 0;
-		std::uint64_t BuildScratchDataSize      = 0;
-		std::uint64_t UpdateScratchDataSize    = 0;
+		gu::uint64 AccelerationStructureSize = 0;
+		gu::uint64 BuildScratchDataSize      = 0;
+		gu::uint64 UpdateScratchDataSize    = 0;
 	};
 	
 #pragma endregion RayTracing
 #pragma endregion GPUResource
 #pragma region Render Pass
-	enum class AttachmentLoad : std::uint8_t
+	enum class AttachmentLoad : gu::uint8
 	{
 		Clear,    // at the beginning of a render path, erase already existing data with a specific value
 		Load,     

@@ -73,7 +73,7 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const cor
 	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get());
 	ThrowIfFailed( dxDevice->CreateCommittedResource(_resource, resourceDesc, heapProp, EnumConverter::Convert(metaData.State)));
 
-	_resource->SetName(name.c_str());
+	_resource->SetName(name.CString());
 }
 
 GPUBuffer::~GPUBuffer()
@@ -157,9 +157,9 @@ void GPUBuffer::CopyEnd()
 	_resource->Unmap(0, nullptr);
 }
 
-void GPUBuffer::SetName(const std::wstring& name)
+void GPUBuffer::SetName(const gu::wstring& name)
 {
-	ThrowIfFailed(_resource->SetName(name.c_str()));
+	ThrowIfFailed(_resource->SetName(name.CString()));
 }
 
 void GPUBuffer::Pack(const void* data, const gu::SharedPointer<core::RHICommandList>& copyCommandList)

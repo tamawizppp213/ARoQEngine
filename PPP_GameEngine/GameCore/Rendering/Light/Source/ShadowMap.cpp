@@ -29,7 +29,7 @@ using namespace gm;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
-ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName)
+ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gu::wstring& addName)
 	: _engine(engine)
 {
 	/*-------------------------------------------------------------------
@@ -42,7 +42,7 @@ ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (name != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (name != L"") { name += addName; name += L"::"; }
 	name += L"ShadowMap::";
 
 	/*-------------------------------------------------------------------
@@ -133,15 +133,15 @@ void ShadowMap::Add(const GameModelPtr& gameModel)
 /****************************************************************************
 *                     PrepareVertexAndIndexBuffer
 *************************************************************************//**
-*  @fn        void ShadowMap::PrepareVertexAndIndexBuffer(const std::wstring& name)
+*  @fn        void ShadowMap::PrepareVertexAndIndexBuffer(const gu::wstring& name)
 *
 *  @brief     Prepare the vertex and index buffers. These buffers were created for the frame count.
 *
-*  @param[in] const std::wstring& debug name
+*  @param[in] const gu::wstring& debug name
 *
 *  @return 　　void
 *****************************************************************************/
-void ShadowMap::PrepareVertexAndIndexBuffer(const std::wstring& name)
+void ShadowMap::PrepareVertexAndIndexBuffer(const gu::wstring& name)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
@@ -188,17 +188,17 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const std::wstring& name)
 /****************************************************************************
 *                     PrepareRenderResource
 *************************************************************************//**
-*  @fn        void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const std::wstring& name)
+*  @fn        void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name)
 *
 *  @brief     Prepare the renderPass and frame buffer
 *
 *  @param[in] const std::uint32_t textureWidth
 *  @param[in] const std::uint32_t textureHeight
-*  @param[in] const std::wstring& debug name
+*  @param[in] const gu::wstring& debug name
 *
 *  @return 　　void
 *****************************************************************************/
-void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const std::wstring& name)
+void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -228,15 +228,15 @@ void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint
 /****************************************************************************
 *                     PreparePipelineState
 *************************************************************************//**
-*  @fn        void ShadowMap::PreparePipelineState(const std::wstring& name)
+*  @fn        void ShadowMap::PreparePipelineState(const gu::wstring& name)
 * 
 *  @brief     Prepare the vertex and index buffers. These buffers we
 *
-*  @param[in] const std::wstring& debugName
+*  @param[in] const gu::wstring& debugName
 *
 *  @return 　　void
 *****************************************************************************/
-void ShadowMap::PreparePipelineState(const std::wstring& name)
+void ShadowMap::PreparePipelineState(const gu::wstring& name)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -256,7 +256,7 @@ void ShadowMap::PreparePipelineState(const std::wstring& name)
 	/*-------------------------------------------------------------------
 	-			Load Blob data
 	---------------------------------------------------------------------*/
-	std::wstring defaultPath = L"Shader\\Lighting\\ShaderShadowMap.hlsl";
+	gu::wstring defaultPath = L"Shader\\Lighting\\ShaderShadowMap.hlsl";
 	
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();

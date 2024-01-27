@@ -48,7 +48,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkCommandPool GetCommandAllocator() const noexcept { return _commandPool; }
 
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::wstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -59,7 +59,7 @@ namespace rhi::vulkan
 			const gu::SharedPointer<rhi::core::RHIDevice>& device, 
 			const core::CommandListType type, 
 			const std::uint32_t queueFamilyIndex,
-			const std::wstring& name);
+			const gu::wstring& name);
 
 		~RHICommandAllocator();
 

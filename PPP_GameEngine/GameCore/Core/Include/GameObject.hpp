@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMTransform.hpp"
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <vector>
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -64,10 +64,10 @@ namespace gc::core
 		-                       Find
 		---------------------------------------------------------------------*/
 		/* @brief : Obtain a gameObject matching the name*/
-		static GameObjectPtr Find(const std::wstring& name);
+		static GameObjectPtr Find(const gu::wstring& name);
 
 		/* @brief : This function returns the gameobject list with the same tag as the assign tag.*/
-		static std::vector<GameObjectPtr> GameObjectsWithTag(const std::wstring& tag);
+		static std::vector<GameObjectPtr> GameObjectsWithTag(const gu::wstring& tag);
 
 		/*-------------------------------------------------------------------
 		-               Destroy and Clear
@@ -79,7 +79,7 @@ namespace gc::core
 		static void DestroyWithChildren(GameObjectPtr& parent);
 
 		/* @brief : destroy all objects have the tag*/
-		static void DestroyAllTagObjects(const std::wstring& tag);
+		static void DestroyAllTagObjects(const gu::wstring& tag);
 
 		/* @brief : Clear all game objects*/
 		static void ClearAllGameObjects();
@@ -128,19 +128,19 @@ namespace gc::core
 		/*-------------------------------------------------------------------
 		-               GameObject Default Infomation
 		---------------------------------------------------------------------*/
-		inline std::wstring GetName() const { return _name; }
+		inline gu::wstring GetName() const { return _name; }
 
-		inline std::wstring GetTag() const { return _tag; }
+		inline gu::wstring GetTag() const { return _tag; }
 
-		inline std::wstring GetLayerName() const { return LayerList[_layer]; }
+		inline gu::wstring GetLayerName() const { return LayerList[_layer]; }
 
 		inline ObjectType GetType() const { return _type; }
 
-		inline void SetName(const std::wstring& name) { _name = name; }
+		inline void SetName(const gu::wstring& name) { _name = name; }
 
-		inline void SetTag(const std::wstring& name) { _tag = name; }
+		inline void SetTag(const gu::wstring& name) { _tag = name; }
 
-		inline void SetLayer(const std::wstring& name) { int bit = GetLayerBit(name); if (bit >= 0) { _layer = (1 << bit); } }
+		inline void SetLayer(const gu::wstring& name) { int bit = GetLayerBit(name); if (bit >= 0) { _layer = (1 << bit); } }
 
 
 		/*-------------------------------------------------------------------
@@ -173,9 +173,9 @@ namespace gc::core
 		/*-------------------------------------------------------------------
 		-           gameObject default info
 		---------------------------------------------------------------------*/
-		std::wstring _name = L""; // object name
+		gu::wstring _name = L""; // object name
 
-		std::wstring _tag  = L""; // object tag
+		gu::wstring _tag  = L""; // object tag
 
 		int          _layer = 0;
 
@@ -204,13 +204,13 @@ namespace gc::core
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-		int GetLayerBit(const std::wstring& layer);
+		int GetLayerBit(const gu::wstring& layer);
 
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
 		static std::vector<GameObjectPtr> GameObjects;
-		static std::vector<std::wstring>  LayerList;
+		static std::vector<gu::wstring>  LayerList;
 	};
 }
 #endif

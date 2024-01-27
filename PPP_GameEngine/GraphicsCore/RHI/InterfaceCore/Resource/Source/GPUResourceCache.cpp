@@ -22,13 +22,14 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const std::wstring& filePath)
+GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const gu::wstring& filePath)
 {
 	/*-------------------------------------------------------------------
 	-           Get hash code 
 	---------------------------------------------------------------------*/
 	const auto name = filePath + L"_SRV";
-	size_t hashCode = std::hash<std::wstring>()(name);
+	const auto stdName = std::wstring(name.CString());
+	size_t hashCode = std::hash<std::wstring>()(stdName);
 	if (_resourceViews.contains(hashCode))
 	{
 		return _resourceViews.at(hashCode);
@@ -52,10 +53,11 @@ GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const std::wstring& 
 
 }
 
-bool GPUResourceCache::Find(const std::wstring& filePath)
+bool GPUResourceCache::Find(const gu::wstring& filePath)
 {
-	const auto name = filePath + L"_SRV";
-	size_t hashCode = std::hash<std::wstring>()(name);
+	const auto name    = filePath + L"_SRV";
+	const auto stdName = std::wstring(name.CString());
+	size_t hashCode = std::hash<std::wstring>()(stdName);
 	
 	return _resourceViews.contains(hashCode);
 }

@@ -14,6 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Core.hpp"
 #include <d3d12.h>
+#include <utility>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +88,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		std::pair<core::DescriptorHeapType, std::uint32_t> _heapOffset = {};
+		std::pair<core::DescriptorHeapType, gu::uint32> _heapOffset = {};
 		bool _hasCreated = false;
 	};
 }

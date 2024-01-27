@@ -27,7 +27,7 @@ RHICommandQueue::~RHICommandQueue()
 	
 }
 
-RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex, const std::wstring& name) : rhi::core::RHICommandQueue(device, type)
+RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex, const gu::wstring& name) : rhi::core::RHICommandQueue(device, type)
 {
 	const auto vkDevice = gu::StaticPointerCast<RHIDevice>(device);
 	_queueFamilyIndex = queueFamilyIndex;
@@ -183,7 +183,7 @@ void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHI
 	}
 }
 
-void RHICommandQueue::SetName(const std::wstring& name)
+void RHICommandQueue::SetName(const gu::wstring& name)
 {
 	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_QUEUE, reinterpret_cast<std::uint64_t>(_queue));

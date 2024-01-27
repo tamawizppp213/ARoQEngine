@@ -41,7 +41,7 @@ namespace
 }
 
 #pragma region Constructor and Destructor
-SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const std::wstring& addName)
+SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const gu::wstring& addName)
 	: _engine(engine), _normalMap(normalMap), _depthMap(depthMap)
 {
 #ifdef _DEBUG
@@ -52,7 +52,7 @@ SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& norma
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"SSAO::";
 
 	/*-------------------------------------------------------------------
@@ -163,15 +163,15 @@ void SSAO::SetSurfaceEpsilon(const float epsilonDepth)
 /****************************************************************************
 *							PrepareSSAOSettings
 *************************************************************************//**
-*  @fn        void SSAO::PrepareSSAOSettings(const std::wstring& name)
+*  @fn        void SSAO::PrepareSSAOSettings(const gu::wstring& name)
 * 
 *  @brief     Prepare SSAO setting buffer and constant buffer view.
 * 
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::wstring& name
 * 
 *  @return 　　void
 *****************************************************************************/
-void SSAO::PrepareSSAOSettings(const std::wstring& name)
+void SSAO::PrepareSSAOSettings(const gu::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -219,15 +219,15 @@ void SSAO::PrepareSSAOSettings(const std::wstring& name)
 /****************************************************************************
 *							PrepareBlurMode
 *************************************************************************//**
-*  @fn        void SSAO::PrepareBlurMode(const std::wstring& name)
+*  @fn        void SSAO::PrepareBlurMode(const gu::wstring& name)
 *
 *  @brief     Prepare blur mode buffer and constant buffer view.
 *
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::wstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void SSAO::PrepareBlurMode(const std::wstring& name)
+void SSAO::PrepareBlurMode(const gu::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -262,7 +262,7 @@ void SSAO::PrepareBlurMode(const std::wstring& name)
 	}
 }
 
-void SSAO::PrepareRandomTexture(const std::wstring& name)
+void SSAO::PrepareRandomTexture(const gu::wstring& name)
 {
 	const auto device   = _engine->GetDevice();
 	const auto metaData = GPUTextureMetaData::Texture2D(256, 256, PixelFormat::R8G8B8A8_UNORM);
@@ -282,9 +282,9 @@ void SSAO::PrepareRandomTexture(const std::wstring& name)
 	delete[] pixel;
 
 }
-void SSAO::PreparePipelineState(const std::wstring& name)
+void SSAO::PreparePipelineState(const gu::wstring& name)
 {
-	std::wstring defaultPath = L"Shader\\Lighting\\ShaderSSAO.hlsl";
+	gu::wstring defaultPath = L"Shader\\Lighting\\ShaderSSAO.hlsl";
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 
@@ -353,10 +353,10 @@ void SSAO::PreparePipelineState(const std::wstring& name)
 *************************************************************************//**
 *  @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
 *  @brief     Prepare Rect Vertex and Index Buffer
-*  @param[in] const std::wstring& addName
+*  @param[in] const gu::wstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SSAO::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+void SSAO::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);

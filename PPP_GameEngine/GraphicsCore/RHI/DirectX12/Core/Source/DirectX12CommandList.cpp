@@ -45,7 +45,7 @@ RHICommandList::~RHICommandList()
 	if (_commandList) { _commandList.Reset(); _commandList = nullptr; }
 }
 
-RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, const std::wstring& name) : 
+RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, const gu::wstring& name) : 
 	rhi::core::RHICommandList(device, commandAllocator)
 {
 	/*-------------------------------------------------------------------
@@ -70,7 +70,7 @@ RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& de
 		nullptr,                                  // Initial PipeLine State Object
 		IID_PPV_ARGS(_commandList.GetAddressOf())));
 
-	ThrowIfFailed(_commandList->SetName(name.c_str()));
+	ThrowIfFailed(_commandList->SetName(name.CString()));
 	ThrowIfFailed(_commandList->Close());
 	_isOpen = false;
 }
@@ -711,7 +711,7 @@ void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& 
 #pragma region Property
 void RHICommandList::SetName(const gu::wstring& name)
 {
-	_commandList->SetName(name.c_str());
+	_commandList->SetName(name.CString());
 }
 
 #pragma endregion Property

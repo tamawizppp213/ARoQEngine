@@ -42,7 +42,7 @@ namespace rhi::vulkan
 
 		std::vector<VkClearValue> GetVkClearValues() const;
 
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::wstring& name) override;
 
 		/****************************************************************************
 		**                Constructor and Destructor

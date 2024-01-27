@@ -42,7 +42,7 @@ Mosaic::~Mosaic()
 
 }
 
-Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, const std::wstring& addName)
+Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, const gu::wstring& addName)
 	: IFullScreenEffector(engine)
 {
 #ifdef _DEBUG
@@ -92,7 +92,7 @@ void Mosaic::Draw()
 
 #pragma region Set up function
 
-void Mosaic::PrepareBuffer(const float blockSize, const std::wstring& name)
+void Mosaic::PrepareBuffer(const float blockSize, const gu::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(MosaicInfo), 1);
@@ -112,7 +112,7 @@ void Mosaic::PrepareBuffer(const float blockSize, const std::wstring& name)
 }
 
 
-void Mosaic::PreparePipelineState(const std::wstring& addName)
+void Mosaic::PreparePipelineState(const gu::wstring& addName)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();

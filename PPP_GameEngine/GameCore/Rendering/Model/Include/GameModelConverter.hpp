@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <memory>
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,9 +29,9 @@ namespace gc::core
 	protected:
 		using GameModelPtr = GameModel*;
 	public:
-		virtual bool Load(const std::wstring& filePath, GameModelPtr model) = 0;
+		virtual bool Load(const gu::wstring& filePath, GameModelPtr model) = 0;
 		
-		virtual bool Save(const std::wstring& filePath, const GameModelPtr model) = 0;
+		virtual bool Save(const gu::wstring& filePath, const GameModelPtr model) = 0;
 	};
 }
 

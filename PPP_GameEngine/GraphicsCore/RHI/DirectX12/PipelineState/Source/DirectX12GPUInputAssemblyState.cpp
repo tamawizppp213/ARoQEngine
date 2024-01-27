@@ -37,7 +37,7 @@ rhi::directX12::GPUInputAssemblyState::GPUInputAssemblyState(
 
 		_inputLayoutElements.push_back(
 			{
-				element.SemanticName.c_str(),                // SemanticName
+				element.SemanticName.CString(),                // SemanticName
 				0,                                           // SemanticIndex
 				EnumConverter::Convert(element.Format),      // Format
 				static_cast<std::uint32_t>(element.Slot),    // InputSlot

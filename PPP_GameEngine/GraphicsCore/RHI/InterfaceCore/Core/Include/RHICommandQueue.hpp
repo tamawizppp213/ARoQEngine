@@ -65,7 +65,7 @@ namespace rhi::core
 		*****************************************************************************/
 		core::CommandListType GetType() const { return _commandListType; }
 		
-		virtual void SetName(const std::wstring& name) = 0;
+		virtual void SetName(const gu::wstring& name) = 0;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  Return the gpu timestamp frequency [Hz] of the command queue

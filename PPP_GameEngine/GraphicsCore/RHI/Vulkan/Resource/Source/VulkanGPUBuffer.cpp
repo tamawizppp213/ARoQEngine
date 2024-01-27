@@ -27,7 +27,7 @@ using namespace rhi::vulkan;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const std::wstring& name)
+GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::wstring& name)
 	: core::GPUBuffer(device, metaData, name)
 {
 #ifdef _DEBUG
@@ -196,15 +196,15 @@ void GPUBuffer::CopyEnd()
 /****************************************************************************
 *                     SetName
 *************************************************************************//**
-*  @fn        void GPUBuffer::SetName(const std::wstring& name)
+*  @fn        void GPUBuffer::SetName(const gu::wstring& name)
 * 
 *  @brief     Set Buffer Name
 * 
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::wstring& name
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-void GPUBuffer::SetName(const std::wstring& name)
+void GPUBuffer::SetName(const gu::wstring& name)
 {
 	const auto vkDevice  = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 

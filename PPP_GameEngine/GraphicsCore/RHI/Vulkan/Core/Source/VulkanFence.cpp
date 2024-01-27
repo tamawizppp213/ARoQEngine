@@ -21,7 +21,7 @@ using namespace rhi;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFence::RHIFence(const gu::SharedPointer<core::RHIDevice>& device, const std::uint64_t initialValue, const std::wstring& name)
+RHIFence::RHIFence(const gu::SharedPointer<core::RHIDevice>& device, const std::uint64_t initialValue, const gu::wstring& name)
 	: core::RHIFence(device)
 {
 	VkDevice vkDevice = nullptr;
@@ -154,7 +154,7 @@ void RHIFence::Signal(const std::uint64_t value)
 #pragma endregion Public Function
 
 #pragma region Property
-void RHIFence::SetName(const std::wstring& name)
+void RHIFence::SetName(const gu::wstring& name)
 {
 	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_SEMAPHORE, reinterpret_cast<std::uint64_t>(_timelineSemaphore));

@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/HLSLUtility.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -103,22 +103,22 @@ namespace gc
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const std::wstring& addName = L"");
+		SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const gu::wstring& addName = L"");
 
 		~SSAO();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareSSAOSettings(const std::wstring& name);
+		void PrepareSSAOSettings(const gu::wstring& name);
 
-		void PrepareBlurMode(const std::wstring& name);
+		void PrepareBlurMode(const gu::wstring& name);
 
-		void PrepareRandomTexture(const std::wstring& name);
+		void PrepareRandomTexture(const gu::wstring& name);
 
-		void PreparePipelineState(const std::wstring& name);
+		void PreparePipelineState(const gu::wstring& name);
 
-		void PrepareVertexAndIndexBuffer(const std::wstring& name);
+		void PrepareVertexAndIndexBuffer(const gu::wstring& name);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

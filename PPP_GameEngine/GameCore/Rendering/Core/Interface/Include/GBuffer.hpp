@@ -14,8 +14,8 @@
 #include "GBufferDesc.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <vector>
-#include <string>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -86,7 +86,7 @@ namespace gc::rendering
 
 		GBuffer(const LowLevelGraphicsEnginePtr& engine,
 			const GBufferDesc& desc = GBufferDesc(),
-			[[maybe_unused]]const std::wstring& addName = L"");
+			[[maybe_unused]]const gu::wstring& addName = L"");
 
 		virtual ~GBuffer();
 
@@ -94,9 +94,9 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		virtual void PreparePipelineState(const std::wstring& name) = 0;
+		virtual void PreparePipelineState(const gu::wstring& name) = 0;
 
-		virtual void PrepareFrameBuffers(const std::wstring& name) = 0;
+		virtual void PrepareFrameBuffers(const gu::wstring& name) = 0;
 
 		/****************************************************************************
 		**                Protected Member Variables

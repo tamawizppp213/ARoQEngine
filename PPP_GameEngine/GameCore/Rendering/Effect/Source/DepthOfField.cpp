@@ -30,10 +30,10 @@ using namespace gc;
 #pragma region Constructor and Destructor
 Dof::Dof(const LowLevelGraphicsEnginePtr& engine,
 	const float width, const float height, const float radius,
-	const float nearClip, const float farClip, const std::wstring& addName)
+	const float nearClip, const float farClip, const gu::wstring& addName)
 	: _engine(engine)
 {
-	std::wstring name = L"";
+	gu::wstring name = L"";
 	if (addName != L"") { name = addName; name += L"::"; }
 	name += L"Dof::";
 
@@ -202,7 +202,7 @@ void Dof::PrepareRenderBuffer(const size_t width, const size_t height)
 /****************************************************************************
 *							PrepareBlurParameterBuffer
 *************************************************************************//**
-*  @fn        void Dof::PrepareBlurParameterBuffer(const float width, const float height, const float radius, const std::wstring& name)
+*  @fn        void Dof::PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::wstring& name)
 * 
 *  @brief     Prepare Blur Parameter Buffer
 * 
@@ -212,11 +212,11 @@ void Dof::PrepareRenderBuffer(const size_t width, const size_t height)
 * 
 *  @param[in] const float radius
 *  
-*  @param[in] const std::wstring name
+*  @param[in] const gu::wstring name
 * 
 *  @return 　　void
 *****************************************************************************/
-void Dof::PrepareBlurParameterBuffer(const float width, const float height, const float radius, const std::wstring& name)
+void Dof::PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::wstring& name)
 {
 	const auto device     = _engine->GetDevice();
 	const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(BlurParameter), 1);
@@ -229,7 +229,7 @@ void Dof::PrepareBlurParameterBuffer(const float width, const float height, cons
 /****************************************************************************
 *							PrepareClipSizeBuffer
 *************************************************************************//**
-*  @fn        void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const std::wstring& name)
+*  @fn        void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const gu::wstring& name)
 * 
 *  @brief     Prepare Clip Size
 * 
@@ -241,7 +241,7 @@ void Dof::PrepareBlurParameterBuffer(const float width, const float height, cons
 * 
 *  @return 　　void
 *****************************************************************************/
-void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const std::wstring& name)
+void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const gu::wstring& name)
 {
 	const auto device     = _engine->GetDevice();
 	const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(ClipSize), 1);
@@ -253,17 +253,17 @@ void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const std::wstrin
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
-*  @fn        void Dof::PreparePipelineState(const std::wstring& name)
+*  @fn        void Dof::PreparePipelineState(const gu::wstring& name)
 * 
 *  @brief     Prepare vertical, rhomboid, finalRender PSO
 * 
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::wstring& name
 * 
 *  @return 　　void
 *****************************************************************************/
-void Dof::PreparePipelineState(const std::wstring& name)
+void Dof::PreparePipelineState(const gu::wstring& name)
 {
-	std::wstring defaultPath = L"Shader\\Effect\\ShaderDepthOfField.hlsl";
+	gu::wstring defaultPath = L"Shader\\Effect\\ShaderDepthOfField.hlsl";
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 	/*-------------------------------------------------------------------

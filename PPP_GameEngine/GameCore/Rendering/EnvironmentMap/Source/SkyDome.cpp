@@ -39,13 +39,13 @@ SkyDome::~SkyDome()
 	_pipeline.Reset();
 }
 #pragma region Constructor and Destructor 
-SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cubeMapPath, const std::wstring& addName)
+SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& cubeMapPath, const gu::wstring& addName)
 	:_engine(engine)
 {
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"Skybox::";
 
 	/*-------------------------------------------------------------------
@@ -92,12 +92,12 @@ void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView)
 /****************************************************************************
 *							PrepareVertexAndIndexBuffer
 *************************************************************************//**
-*  @fn        void Skybox::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+*  @fn        void Skybox::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
 *  @brief     Prepare Sphere Vertex Buffer
-*  @param[in] const std::wstring& addName
+*  @param[in] const gu::wstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+void SkyDome::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy); 
@@ -144,12 +144,12 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 /****************************************************************************
 *							PrepareSkyObject
 *************************************************************************//**
-*  @fn        void Skybox::PrepareSkyObject(const std::wstring& addName)
+*  @fn        void Skybox::PrepareSkyObject(const gu::wstring& addName)
 *  @brief     Build World Matrix Infomation
-*  @param[in] std::wstring& addName
+*  @param[in] gu::wstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SkyDome::PrepareSkyObject(const std::wstring& addName)
+void SkyDome::PrepareSkyObject(const gu::wstring& addName)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
@@ -172,12 +172,12 @@ void SkyDome::PrepareSkyObject(const std::wstring& addName)
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
-*  @fn        void Skybox::PreparePipelineState(const std::wstring& addName)
+*  @fn        void Skybox::PreparePipelineState(const gu::wstring& addName)
 *  @brief     Prepare pipelineState
-*  @param[in] std::wstring& addName
+*  @param[in] gu::wstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SkyDome::PreparePipelineState(const std::wstring& addName)
+void SkyDome::PreparePipelineState(const gu::wstring& addName)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();

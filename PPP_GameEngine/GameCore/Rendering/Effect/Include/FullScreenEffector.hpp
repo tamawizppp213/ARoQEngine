@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -74,15 +74,15 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		virtual void PreparePipelineState(const std::wstring& addName) = 0;
+		virtual void PreparePipelineState(const gu::wstring& addName) = 0;
 
 		virtual void PrepareResourceView() = 0;
 		
-		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
+		void PrepareVertexAndIndexBuffer(const gu::wstring& addName);
 		
-		std::wstring DefineDebugName(const std::wstring& addName = L"")
+		gu::wstring DefineDebugName(const gu::wstring& addName = L"")
 		{
-			std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+			gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 			name += L"FSEffector::"; // 後に各リソース名称が追加されます.
 			return name;
 		}

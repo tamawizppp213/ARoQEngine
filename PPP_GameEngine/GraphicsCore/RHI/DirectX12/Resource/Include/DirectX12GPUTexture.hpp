@@ -52,7 +52,7 @@ namespace rhi::directX12
 		
 		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return _resource->GetGPUVirtualAddress(); }
 		
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::wstring& name) override;
 		
 		/****************************************************************************
 		**                Constructor and Destructor

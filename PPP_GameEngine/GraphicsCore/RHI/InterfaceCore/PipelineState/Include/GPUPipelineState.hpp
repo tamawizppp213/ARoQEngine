@@ -139,7 +139,7 @@ namespace rhi::core
 		inline void SetDomainShader  (const gu::SharedPointer<GPUShaderState>& domainShader)   { _domainShaderState   = (domainShader  ->GetShaderType() == ShaderType::Domain  ) ? domainShader   : nullptr; }
 		
 		// @brief : This function is needed to call after calling completeSetting function 
-		virtual void SetName(const std::wstring& name) = 0;
+		virtual void SetName(const gu::wstring& name) = 0;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -188,7 +188,7 @@ namespace rhi::core
 		*****************************************************************************/
 		void SetComputeShader(const gu::SharedPointer<GPUShaderState>& shaderState) { _computeShaderState = shaderState; };
 		
-		virtual void SetName(const std::wstring& name) = 0;
+		virtual void SetName(const gu::wstring& name) = 0;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -230,7 +230,7 @@ namespace rhi::core
 		*****************************************************************************/
 		void SetShader(const gu::SharedPointer<GPUShaderState>& shaderState) { _rayTracingShaderState = shaderState; };
 		
-		virtual void SetName(const std::wstring& name) const = 0;
+		virtual void SetName(const gu::wstring& name) const = 0;
 		
 		/****************************************************************************
 		**                Constructor and Destructor

@@ -49,7 +49,7 @@ namespace gc::core
 		void Load(const PrimitiveMeshType type, const MaterialPtr& material = nullptr);
 
 		/* @brief : Load model according to the extension.*/
-		void Load(const std::wstring& filePath);
+		void Load(const gu::wstring& filePath);
 		
 		/* @brief : Update motion*/
 		virtual void Update(const float deltaTime, const bool enableUpdateChild = false) override;

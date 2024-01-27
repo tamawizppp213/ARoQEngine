@@ -57,10 +57,10 @@ IFullScreenEffector::IFullScreenEffector(const LowLevelGraphicsEnginePtr& engine
 *************************************************************************//**
 *  @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
 *  @brief     Prepare Rect Vertex and Index Buffer
-*  @param[in] const std::wstring& addName
+*  @param[in] const gu::wstring& addName
 *  @return @@void
 *****************************************************************************/
-void IFullScreenEffector::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
 {
 	const auto device     = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);

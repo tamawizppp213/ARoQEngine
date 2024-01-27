@@ -108,22 +108,22 @@ void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
 /****************************************************************************
 *					Load
 *************************************************************************//**
-*  @fn        void Model::Load(const std::wstring& filePath)
+*  @fn        void Model::Load(const gu::wstring& filePath)
 *
 *  @brief     Load model mesh
 *
-*  @param[in] const std::wstring& filePath
+*  @param[in] const gu::wstring& filePath
 *
 *  @return Å@Å@void
 *****************************************************************************/
-void GameModel::Load(const std::wstring& filePath)
+void GameModel::Load(const gu::wstring& filePath)
 {
     std::unique_ptr<IGameModelConverter> loader = nullptr;
 
     /*-------------------------------------------------------------------
     -              Load
     ---------------------------------------------------------------------*/
-    const auto extension = file::FileSystem::GetExtension(filePath);
+    const auto extension = file::FileSystem::GetExtension(std::wstring(filePath.CString()));
 
     if (extension == L"pmx") { loader = std::make_unique<PMXConverter>(); }
     else

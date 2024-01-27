@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <vector>
 #include "GameUtility/Math/Include/GMMatrix.hpp"
 
@@ -89,7 +89,7 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const std::wstring& addName = L"");
+		CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const gu::wstring& addName = L"");
 
 		~CascadeShadow();
 
@@ -97,7 +97,7 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareResourceView(const std::wstring& name);
+		void PrepareResourceView(const gu::wstring& name);
 
 		void Update(const gu::SharedPointer<GameTimer>& gameTimer, const gm::Float3& direction);
 

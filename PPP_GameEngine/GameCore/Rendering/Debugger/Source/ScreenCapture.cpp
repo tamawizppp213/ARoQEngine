@@ -41,7 +41,7 @@ bool ScreenCapture::Capture(const TexturePtr& texture)
 	const auto commandQueue = _engine->GetCommandQueue(CommandListType::Graphics);
 
 	const auto filePath = CreateFileDirectoryAndPath();
-	texture->Save(filePath, commandList, commandQueue);
+	texture->Save(gu::wstring(filePath.c_str(), filePath.size()), commandList, commandQueue);
 	
 	commandList->BeginRecording(true);
 	commandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), _engine->GetFrameBuffer(_engine->GetCurrentFrameIndex()));
@@ -60,7 +60,7 @@ bool ScreenCapture::Capture(const std::vector<TexturePtr>& textures)
 		const auto commandQueue = _engine->GetCommandQueue(CommandListType::Graphics);
 
 		const auto filePath = CreateFileDirectoryAndPath(i);
-		textures[i]->Save(filePath, _engine->GetCommandList(rhi::core::CommandListType::Graphics), _engine->GetCommandQueue(CommandListType::Graphics));
+		textures[i]->Save(gu::wstring(filePath.c_str(), filePath.size()), _engine->GetCommandList(rhi::core::CommandListType::Graphics), _engine->GetCommandQueue(CommandListType::Graphics));
 		
 		commandList->BeginRecording(true);
 		commandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), _engine->GetFrameBuffer(_engine->GetCurrentFrameIndex()));

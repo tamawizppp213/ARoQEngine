@@ -14,7 +14,7 @@
 #include "UIImage.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <vector>
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -77,7 +77,7 @@ namespace gc::ui
 		virtual ~UIRenderer();
 		
 		explicit UIRenderer(const LowLevelGraphicsEnginePtr& engine,
-			const std::wstring& addName = L"",
+			const gu::wstring& addName = L"",
 			const std::uint32_t maxUICount = 1024);
 
 	protected:
@@ -85,10 +85,10 @@ namespace gc::ui
 		**                Protected Function
 		*****************************************************************************/
 		/* @brief: Prepare max writable ui count size buffer*/
-		void PrepareMaxImageBuffer(const std::wstring& name);
+		void PrepareMaxImageBuffer(const gu::wstring& name);
 
 		/* @brief: Prepare graphics pipeline state objects. */
-		void PreparePipelineState(const std::wstring& name);
+		void PreparePipelineState(const gu::wstring& name);
 
 		/* @brief: Clear gpu vertex buffer */
 		void ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount);

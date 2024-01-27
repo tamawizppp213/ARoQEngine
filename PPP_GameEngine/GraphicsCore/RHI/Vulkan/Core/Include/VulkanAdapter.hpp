@@ -87,7 +87,7 @@ namespace rhi::vulkan
 		
 		/* return all available extension name list*/
 		std::vector<VkExtensionProperties>   GetExtensionProperties  () const noexcept;
-		std::vector<std::string>             GetExtensionNameList    () const noexcept;
+		std::vector<gu::string>              GetExtensionNameList    () const noexcept;
 		
 		/* return queue family characteristics*/
 		std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties() const noexcept;

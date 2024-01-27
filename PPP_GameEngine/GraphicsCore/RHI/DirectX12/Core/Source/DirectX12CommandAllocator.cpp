@@ -33,7 +33,7 @@ RHICommandAllocator::~RHICommandAllocator()
 	if (_commandAllocator) { _commandAllocator.Reset(); }
 }
 
-RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::wstring& name) : rhi::core::RHICommandAllocator(device, type)
+RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const gu::wstring& name) : rhi::core::RHICommandAllocator(device, type)
 {
 	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get())->GetDevice();
 
@@ -41,7 +41,7 @@ RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHID
 		EnumConverter::Convert(type),              // Enable to execute all command 
 		IID_PPV_ARGS(&_commandAllocator)));
 
-	_commandAllocator->SetName(name.c_str());
+	_commandAllocator->SetName(name.CString());
 }
 #pragma endregion Constructor and Desturctor
 
@@ -77,7 +77,7 @@ void RHICommandAllocator::CleanUp()
 *****************************************************************************/
 void RHICommandAllocator::SetName(const gu::wstring& name)
 {
-	_commandAllocator->SetName(name.c_str());
+	_commandAllocator->SetName(name.CString());
 }
 
 #pragma endregion Main Function

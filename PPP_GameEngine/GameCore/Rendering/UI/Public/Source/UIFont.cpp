@@ -24,7 +24,7 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
 /* @brief : Load font constructor*/
-Font::Font(const LowLevelGraphicsEnginePtr& engine, const std::wstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth)
+Font::Font(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth)
 	: _engine(engine), _pixelPerChar(pixelPerChar), _imagePixelWidth(imagePixelWidth)
 {
 	Load(engine, imagePath, pixelPerChar, imagePixelWidth);
@@ -41,7 +41,7 @@ Font::~Font()
 /****************************************************************************
 *					Load
 *************************************************************************//**
-*  @fn        bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const std::wstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth)
+*  @fn        bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth)
 *  
 *  @brief     Load font texture
 * 
@@ -52,7 +52,7 @@ Font::~Font()
 * 
 *  @return Å@Å@bool (true : Load success, false : already loaded, error : failed to find texture image path)
 *****************************************************************************/
-bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const std::wstring& imagePath, [[maybe_unused]] const gm::Float2& pixelPerChar, [[maybe_unused]]const float imagePixelWidth)
+bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& imagePath, [[maybe_unused]] const gm::Float2& pixelPerChar, [[maybe_unused]]const float imagePixelWidth)
 {
 	/*-------------------------------------------------------------------
 	-             Load check

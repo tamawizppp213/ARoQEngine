@@ -61,13 +61,13 @@ namespace gc
 
 		~ColorChange();
 
-		ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName = L"");
+		ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const gu::wstring& addName = L"");
 
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PreparePipelineState(const std::wstring& addName) override;
+		void PreparePipelineState(const gu::wstring& addName) override;
 		
 		void PrepareResourceView() override;
 		

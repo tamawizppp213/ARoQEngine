@@ -74,15 +74,15 @@ namespace gc
 
 		~Vignette();
 
-		Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettings& settings, const std::wstring& addName = L"");
+		Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettings& settings, const gu::wstring& addName = L"");
 
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareBuffer(const std::wstring& addName);
+		void PrepareBuffer(const gu::wstring& addName);
 
-		void PreparePipelineState(const std::wstring& addName) override;
+		void PreparePipelineState(const gu::wstring& addName) override;
 
 		void PrepareResourceView() override;
 

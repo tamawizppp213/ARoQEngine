@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -72,7 +72,7 @@ namespace gc
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gm::Float4& color = gm::Float4(1,1,1,1), const std::wstring& addName = L"");
+		Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gm::Float4& color = gm::Float4(1,1,1,1), const gu::wstring& addName = L"");
 
 		~Sobel();
 
@@ -80,11 +80,11 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareOutlineInfo(const std::wstring& name);
+		void PrepareOutlineInfo(const gu::wstring& name);
 
 		void PrepareResourceView();
 
-		void PreparePipelineState(const std::wstring& name);
+		void PreparePipelineState(const gu::wstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

@@ -12,9 +12,9 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Math/Include/GMVector.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <Windows.h>
 #include <vector>
-#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,10 +30,10 @@ namespace pmd
 	{
 		char  Signature[3];
 		float Version;
-		std::string ModelName;
-		std::string ModelEnglishName;
-		std::string ModelComment;
-		std::string ModelEnglishComment;
+		gu::string ModelName;
+		gu::string ModelEnglishName;
+		gu::string ModelComment;
+		gu::string ModelEnglishComment;
 
 		void Read(FILE* filePtr);
 		void ReadExtension(FILE* filePtr);
@@ -60,24 +60,24 @@ namespace pmd
 		UINT8       ToonID;
 		UINT8       EdgeFlag;
 		UINT32      IndexCount;
-		std::string TextureFileName;
-		std::string SphereFileName;
+		gu::string TextureFileName;
+		gu::string SphereFileName;
 
-		void Read(FILE* filePtr, const std::string& directory);
+		void Read(FILE* filePtr, const gu::string& directory);
 
 	private:
-		void ReadTextureName(const std::string& directory, const std::string& texture);
+		void ReadTextureName(const gu::string& directory, const gu::string& texture);
 	};
 
 	struct PMDBone
 	{
-		std::string BoneName;
+		gu::string BoneName;
 		UINT16      ParentBoneID; // If there is no Parent, this value needs to set 0xFFFF
 		UINT16      ChildBoneID;
 		UINT8       BoneType;
 		UINT16      IKBoneID;     // If there is no Parent, this value needs to set 0;
 		Float3      BoneHeadPosition;
-		std::string EnglishBoneName;
+		gu::string EnglishBoneName;
 
 		void Read(FILE* filePtr);
 		void ReadExtension(FILE* filePtr);
@@ -113,12 +113,12 @@ namespace pmd
 		using FaceVertexList = std::vector<Float3>;
 		using FaceIndexList = std::vector<UINT32>;
 
-		std::string    FaceExpressionName;
+		gu::string    FaceExpressionName;
 		UINT32         VertexNum;
 		FacePart       FaceExpressionType;
 		FaceVertexList Vertices;
 		FaceIndexList  Indices;
-		std::string    FaceExpressionEnglishName;
+		gu::string    FaceExpressionEnglishName;
 
 		void Read(FILE* filePtr);
 		void ReadExtension(FILE* filePtr);
@@ -132,8 +132,8 @@ namespace pmd
 
 	struct PMDBoneDisplayName
 	{
-		std::string BoneDisplayName;
-		std::string BoneDisplayEnglishName;
+		gu::string BoneDisplayName;
+		gu::string BoneDisplayEnglishName;
 		void Read(FILE* filePtr);
 		void ReadExtension(FILE* filePtr);
 	};
@@ -159,7 +159,7 @@ namespace pmd
 			DynamicAdjustBone
 		};
 
-		std::string           RigidBodyName;
+		gu::string           RigidBodyName;
 		UINT16                RelationBoneIndex;
 		UINT8                 GroupIndex;
 		UINT16                GroupTarget;
@@ -179,7 +179,7 @@ namespace pmd
 
 	struct PMDJoint
 	{
-		std::string JointName;
+		gu::string JointName;
 		UINT32      RigidBodyA;
 		UINT32      RigidBodyB;
 		Float3      JointTranslation;
@@ -206,7 +206,7 @@ namespace pmd
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Load(const std::wstring& filePath);
+		bool Load(const gu::wstring& filePath);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -222,8 +222,8 @@ namespace pmd
 		std::vector<PMDBoneDisplay>     BoneDisplayList;
 		std::vector<PMDRigidBody>       RigidBodies;
 		std::vector<PMDJoint>           Joints;
-		std::vector<std::string>        ToonTextureList;
-		std::string Directory;
+		std::vector<gu::string>        ToonTextureList;
+		gu::string Directory;
 
 		/****************************************************************************
 		**                Constructor and Destructor

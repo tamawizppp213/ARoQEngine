@@ -37,7 +37,7 @@ GPUShaderState::~GPUShaderState()
 	}
 }
 
-void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint, const float version, const std::vector<std::wstring>& includeDirectories, [[maybe_unused]]const std::vector<std::wstring>& defines)
+void GPUShaderState::Compile(const core::ShaderType type, const gu::wstring& fileName, const gu::wstring& entryPoint, const float version, const std::vector<gu::wstring>& includeDirectories, [[maybe_unused]]const std::vector<gu::wstring>& defines)
 {
 #if __DEBUG
 	assert(0.0f < version && version <= NEWEST_VERSION);
@@ -45,7 +45,7 @@ void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fi
 	_shaderType = type; _version = version;
 
 	// Set target Name ex) vs_6.0, ps_6.1...
-	std::wstring target = GetShaderTypeName(type) + L"_" + Format(_version);
+	gu::wstring target = GetShaderTypeName(type) + L"_" + Format(_version);
 
 	VkCompile(fileName, entryPoint, target, includeDirectories);
 
@@ -53,12 +53,12 @@ void GPUShaderState::Compile(const core::ShaderType type, const std::wstring& fi
 /****************************************************************************
 *                       Compile Shader
 *************************************************************************//**
-*  @fn        BlobComPtr CompileShader( const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target)
+*  @fn        BlobComPtr CompileShader( const gu::wstring& fileName, const gu::wstring& entryPoint, const gu::wstring& target)
 *  @brief     Compile shader
 *  @param[in] test
 *  @return 　　void
 *****************************************************************************/
-void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target, const std::vector<std::wstring>& includeDirectories)
+void GPUShaderState::VkCompile(const gu::wstring& fileName, const gu::wstring& entryPoint, const gu::wstring& target, const std::vector<gu::wstring>& includeDirectories)
 {
 	/*-------------------------------------------------------------------
 	-            Create blob data from shader text file.
@@ -84,7 +84,7 @@ void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring&
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcBlobEncoding> sourceBlob = nullptr;
 	UINT32 codePage = DXC_CP_ACP;
-	ThrowIfFailed(utils->LoadFile(fileName.c_str(), &codePage, &sourceBlob));
+	ThrowIfFailed(utils->LoadFile(fileName.CString(), &codePage, &sourceBlob));
 
 	ComPtr<IDxcIncludeHandler> dxcIncludeHandler = nullptr;
 	dxcLibrary->CreateIncludeHandler(&dxcIncludeHandler);
@@ -96,14 +96,16 @@ void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring&
 	buffer.Ptr      = sourceBlob->GetBufferPointer();
 	buffer.Size     = sourceBlob->GetBufferSize();
 
+	gu::wstring versionName = L"-fspv-target-env=";
+	versionName += _apiVersion;
 	/*-------------------------------------------------------------------
 	-      Configure the compiler arguments for compiling the HLSL shader to SPIR-V
 	---------------------------------------------------------------------*/
 	std::vector<LPCWSTR> arguments = {
-		fileName.c_str(),          // (optional) name of the shader file to be displayed e.g. in an error message
-		L"-E", entryPoint.c_str(), // shader main entry point
-		L"-T", target.c_str(),     // shader target profile,
-		std::wstring(L"-fspv-target-env=" + _apiVersion).c_str(),// Vulkan version
+		fileName.CString(),          // (optional) name of the shader file to be displayed e.g. in an error message
+		L"-E", entryPoint.CString(), // shader main entry point
+		L"-T", target.CString(),     // shader target profile,
+		versionName.CString(),// Vulkan version
 		L"-spirv",                  // compile to SPIRV,
 		L"-all-resources-bound",   // nVidia: This allows for the compiler to do a better job at optimizing texture accesses. We have seen frame rate improvements of > 1% when toggling this flag on.
 		L"-enable-16bit-types",    // VK_KHR_shader_float16_int8
@@ -118,7 +120,7 @@ void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring&
 	for (const auto& directory : includeDirectories)
 	{
 		arguments.push_back(L"-I");
-		arguments.push_back(directory.c_str());
+		arguments.push_back(directory.CString());
 	}
 
 #ifdef _DEBUG
@@ -184,14 +186,14 @@ void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring&
 	/*-------------------------------------------------------------------
 	-      Create a Vulkan shader module from the compilation result
 	---------------------------------------------------------------------*/
-	_name = unicode::ToUtf8String(entryPoint);
+	_name = gu::string(unicode::ToUtf8String(std::wstring(entryPoint.CString())).c_str());
 	_stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	_stage.flags = 0;
 	_stage.module = _module;
 	_stage.pNext = nullptr;
 	_stage.pSpecializationInfo = nullptr;
 	_stage.stage = EnumConverter::Convert(_shaderType);
-	_stage.pName = _name.c_str();
+	_stage.pName = _name.CString();
 	
 
 	_blobData.BufferPointer= byteCode->GetBufferPointer();
@@ -202,20 +204,20 @@ void GPUShaderState::VkCompile(const std::wstring& fileName, const std::wstring&
 /****************************************************************************
 *							LoadBinary
 *************************************************************************//**
-*  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const std::wstring& fileName)
+*  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::wstring& fileName)
 *  @brief     Load Binary Data (Offline Compile)
 *  @param[in] core::ShaderType type
-*  @param[in] std::wstring& fileName : filePath
+*  @param[in] gu::wstring& fileName : filePath
 *  @return 　　void
 *****************************************************************************/
-void GPUShaderState::LoadBinary(const core::ShaderType type, const std::wstring& fileName)
+void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::wstring& fileName)
 {
 	_shaderType = type;
 
 	/*-------------------------------------------------------------------
 	-          Open file
 	---------------------------------------------------------------------*/
-	std::ifstream fin(fileName, std::ios::binary);
+	std::ifstream fin(fileName.CString(), std::ios::binary);
 	/*-------------------------------------------------------------------
 	-          Calculate buffer byte size
 	---------------------------------------------------------------------*/

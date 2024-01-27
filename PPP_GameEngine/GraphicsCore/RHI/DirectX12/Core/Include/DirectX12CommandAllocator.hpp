@@ -69,7 +69,7 @@ namespace rhi::directX12
 		explicit RHICommandAllocator(
 			const gu::SharedPointer<rhi::core::RHIDevice>& device, 
 			const core::CommandListType type,
-			const std::wstring& name);
+			const gu::wstring& name);
 
 	protected:
 		/****************************************************************************

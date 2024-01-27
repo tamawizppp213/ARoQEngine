@@ -88,8 +88,8 @@ void GPUComputePipelineState::CompleteSetting()
 
 }
 
-void GPUComputePipelineState::SetName(const std::wstring& name)
+void GPUComputePipelineState::SetName(const gu::wstring& name)
 {
-	_computePipeline->SetName(name.c_str());
+	_computePipeline->SetName(name.CString());
 }
 #pragma endregion Compute PSO

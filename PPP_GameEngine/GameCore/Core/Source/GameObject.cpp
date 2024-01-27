@@ -24,7 +24,7 @@ static constexpr int INVALID_VALUE = -1;
 namespace gc::core
 {
 	std::vector<GameObject::GameObjectPtr> GameObject::GameObjects = {};
-	std::vector<std::wstring> GameObject::LayerList = {};
+	std::vector<gu::wstring> GameObject::LayerList = {};
 }
 
 #pragma region Constructor and Destructor 
@@ -49,15 +49,15 @@ GameObject::~GameObject()
 /****************************************************************************
 *                          Find
 *************************************************************************//**
-*  @fn        GameObject* GameObject::Find(const std::string& name)
+*  @fn        GameObject* GameObject::Find(const gu::string& name)
 * 
 *  @brief     This function returns the gameObject with the same name as the assign name.
 * 
-*  @param[in] std::string name
+*  @param[in] gu::string name
 * 
 *  @return 　　GameObject*
 *****************************************************************************/
-GameObject::GameObjectPtr GameObject::Find(const std::wstring& name)
+GameObject::GameObjectPtr GameObject::Find(const gu::wstring& name)
 {
 	for (auto it = GameObjects.begin(); it != GameObjects.end(); ++it)
 	{
@@ -72,15 +72,15 @@ GameObject::GameObjectPtr GameObject::Find(const std::wstring& name)
 /****************************************************************************
 *                          GameObjectsWithTag
 *************************************************************************//**
-*  @fn        std::vector<GameObject*> GameObject::GameObjectsWithTag(const std::string& tag)
+*  @fn        std::vector<GameObject*> GameObject::GameObjectsWithTag(const gu::string& tag)
 * 
 *  @brief     This function returns the gameObject list with the same tag as the assign tag.
 * 
-*  @param[in] std::string tag
+*  @param[in] gu::string tag
 * 
 *  @return 　　std::vector<GameObject*>
 *****************************************************************************/
-std::vector<GameObject::GameObjectPtr> GameObject::GameObjectsWithTag(const std::wstring& tag)
+std::vector<GameObject::GameObjectPtr> GameObject::GameObjectsWithTag(const gu::wstring& tag)
 {
 	std::vector<GameObjectPtr> gameObjects = {};
 
@@ -123,15 +123,15 @@ bool GameObject::Destroy(GameObjectPtr& gameObject)
 /****************************************************************************
 *                          DestroyAllTagObject
 *************************************************************************//**
-*  @fn        void GameObject::DestroyAllTagObject(const std::string& tag)
+*  @fn        void GameObject::DestroyAllTagObject(const gu::string& tag)
 * 
 *  @brief     This function destroys all objects with the tag
 * 
-*  @param[in] std::string tag
+*  @param[in] gu::string tag
 * 
 *  @return 　　void
 *****************************************************************************/
-void GameObject::DestroyAllTagObjects(const std::wstring& tag)
+void GameObject::DestroyAllTagObjects(const gu::wstring& tag)
 {
 	std::erase_if(GameObjects,[&](const GameObjectPtr& gameObject) 
 	{
@@ -266,7 +266,7 @@ void GameObject::ClearAllGameObjects()
 //}
 #pragma endregion Component
 #pragma region Private Function
-int gc::core::GameObject::GetLayerBit(const std::wstring& layer)
+int gc::core::GameObject::GetLayerBit(const gu::wstring& layer)
 {
 	if (layer == L"") { return INVALID_VALUE; }
 	for (int i = 0; i < 31; ++i) // 4byte

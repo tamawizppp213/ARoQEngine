@@ -30,7 +30,7 @@ using namespace gc::core;
 
 namespace
 {
-	std::wstring s_ShaderFunctionName[ColorChangeType::CountOfType] = 
+	gu::wstring s_ShaderFunctionName[ColorChangeType::CountOfType] = 
 	{ 
 		L"None",
 		L"PSMonochrome",
@@ -57,7 +57,7 @@ ColorChange::~ColorChange()
 	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
 	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
 }
-ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName) 
+ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const gu::wstring& addName) 
 	: IFullScreenEffector(engine), _colorType(type)
 {
 	assert(_colorType != ColorChangeType::None);
@@ -135,11 +135,11 @@ void ColorChange::Draw()
 * 
 *  @param[in] ColorChangeType type
 * 
-*  @param[in] const std::wstring& addName
+*  @param[in] const gu::wstring& addName
 * 
 *  @return @@void
 *****************************************************************************/
-void ColorChange::PreparePipelineState(const std::wstring& addName)
+void ColorChange::PreparePipelineState(const gu::wstring& addName)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();

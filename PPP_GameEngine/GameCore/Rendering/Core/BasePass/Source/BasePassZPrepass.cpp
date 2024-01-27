@@ -32,13 +32,13 @@ using namespace gc::basepass;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
-ZPrepass::ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName):
+ZPrepass::ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gu::wstring& addName):
 	_engine(engine), _width(width), _height(height)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
 	name += L"ZPrepass::";
 
 	PrepareFrameBuffers(name);
@@ -151,13 +151,13 @@ ZPrepass::GPUResourceViewPtr ZPrepass::GetRenderedTextureView() const noexcept
 *************************************************************************//**
 *  @fn        void ZPrepass::PrepareFrameBuffers()
 *
-*  @brief     void ZPrepass::PreparePipelineState(const std::wstring& name)
+*  @brief     void ZPrepass::PreparePipelineState(const gu::wstring& name)
 *
-*  @param[in] std::wstring& name
+*  @param[in] gu::wstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void ZPrepass::PreparePipelineState(const std::wstring& name)
+void ZPrepass::PreparePipelineState(const gu::wstring& name)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -202,11 +202,11 @@ void ZPrepass::PreparePipelineState(const std::wstring& name)
 *
 *  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
 *
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::wstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void ZPrepass::PrepareFrameBuffers(const std::wstring& name)
+void ZPrepass::PrepareFrameBuffers(const gu::wstring& name)
 {
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto device     = _engine->GetDevice();
@@ -236,7 +236,7 @@ void ZPrepass::PrepareFrameBuffers(const std::wstring& name)
 		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 
 		const auto renderTexture = device->CreateTexture(renderInfo, name + L"RenderTarget");
-		const auto depthTexture  = device->CreateTexture(depthInfo, name + L"DepthStencil");
+		const auto depthTexture  = device->CreateTexture(depthInfo , name + L"DepthStemcil");
 		
 		_frameBuffers[i] = device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
 	}

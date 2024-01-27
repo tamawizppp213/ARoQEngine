@@ -12,9 +12,9 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Math/Include/GMVector.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <Windows.h>
 #include <vector>
-#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -62,10 +62,10 @@ namespace pmx
 	*****************************************************************************/
 	struct PMXInfo
 	{
-		std::string ModelName;
-		std::string EngliseModelName;
-		std::string Comment;
-		std::string EnglishComment;
+		gu::string ModelName;
+		gu::string EngliseModelName;
+		gu::string Comment;
+		gu::string EnglishComment;
 
 		bool Read(FILE* file, const PMXSetting* setting);
 	};
@@ -133,8 +133,8 @@ namespace pmx
 			Common
 		};
 
-		std::string        MaterialName;
-		std::string        EnglishName;
+		gu::string        MaterialName;
+		gu::string        EnglishName;
 		Float4             Diffuse;
 		float              SpecularPower;
 		Float3             Specular;
@@ -147,7 +147,7 @@ namespace pmx
 		PMXSphereMapMode   SphereMapMode;
 		PMXToonTextureMode ToonTextureMode;
 		INT32              ToonTextureIndex;
-		std::string        Memo;
+		gu::string        Memo;
 		INT32              FaceIndicesCount;
 
 		void Read(FILE* file, const PMXSetting* setting);
@@ -192,8 +192,8 @@ namespace pmx
 			DeformAfterPhisics = 0x1000, // deform after phisics
 			DeformOuterParent  = 0x2000, // deform outer parent
 		};
-		std::string BoneName;
-		std::string EnglishName;
+		gu::string BoneName;
+		gu::string EnglishName;
 		Float3      Position;
 		INT32       ParentBoneIndex;
 		INT32       DeformDepth;
@@ -298,8 +298,8 @@ namespace pmx
 			Float3   RotateTorque;
 		};
 
-		std::string  Name;
-		std::string  EnglishName;
+		gu::string  Name;
+		gu::string  EnglishName;
 		PMXFacePart  FacePart;
 		PMXMorphType MorphType;
 		std::vector<PositionMorph> PositionMorphs;
@@ -347,8 +347,8 @@ namespace pmx
 			SpecialFrame
 		};
 
-		std::string         Name;
-		std::string         EnglishName;
+		gu::string         Name;
+		gu::string         EnglishName;
 		FrameType           Flag;
 		std::vector<Target> Targets;
 		void Read(FILE* file, const PMXSetting* setting);
@@ -377,8 +377,8 @@ namespace pmx
 			Dynamic,
 			DynamicAndBoneMerge
 		};
-		std::string           Name;
-		std::string           EnglishName;
+		gu::string           Name;
+		gu::string           EnglishName;
 		INT32                 BoneIndex;
 		UINT8                 Group;
 		UINT16                CollisionGroup;
@@ -412,8 +412,8 @@ namespace pmx
 	};
 	struct PMXJoint
 	{
-		std::string  Name;
-		std::string  EnglishName;
+		gu::string  Name;
+		gu::string  EnglishName;
 		PMXJointType JointType;
 		INT32        RigidBodyIndex_A;
 		INT32        RigidBodyIndex_B;
@@ -499,8 +499,8 @@ namespace pmx
 			float SHR; // Soft contacts hardness;
 			float AHR; // Anchors hardness;
 		};
-		std::string          Name;
-		std::string          EnglishName;
+		gu::string          Name;
+		gu::string          EnglishName;
 		PMXSoftBodyType      SoftBodyType;
 		INT32                MaterialIndex;
 		UINT8                Group;
@@ -538,7 +538,7 @@ namespace pmx
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Load(const std::wstring& filePath);
+		bool Load(const gu::wstring& filePath);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -546,7 +546,7 @@ namespace pmx
 		PMXInfo                      Infomation;
 		std::vector<PMXVertex>       Vertices;
 		std::vector<UINT32>          Indices;
-		std::vector<std::string>     TexturePathList;
+		std::vector<gu::string>     TexturePathList;
 		std::vector<PMXMaterial>     Materials;
 		std::vector<PMXBone>         Bones;
 		std::vector<PMXMorph>        Morphs;
@@ -554,7 +554,7 @@ namespace pmx
 		std::vector<PMXRigidBody>    RigidBodies;
 		std::vector<PMXJoint>        Joints;
 		std::vector<PMXSoftBody>     SoftBodies;
-		std::string Directory;
+		gu::string Directory;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

@@ -33,20 +33,20 @@ RHIResourceLayout::~RHIResourceLayout()
 {
 	if (_rootSignature) { _rootSignature.Reset(); }
 }
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::wstring& name)
 	: core::RHIResourceLayout(device, elements, samplers, constant32Bits)
 {
 	SetUp();
 	SetName(name);
 }
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant32Bits, const gu::wstring& name)
 	: core::RHIResourceLayout(device, element, sampler, constant32Bits)
 {
 	SetUp();
 	SetName(name);
 }
 
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const rhi::core::RHIResourceLayoutDesc& desc, const std::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const rhi::core::RHIResourceLayoutDesc& desc, const gu::wstring& name)
 	: core::RHIResourceLayout(device, desc)
 {
 	SetUp();
@@ -334,9 +334,9 @@ void RHIResourceLayout::SetUp()
 	
 }
 
-void RHIResourceLayout::SetName(const std::wstring& name)
+void RHIResourceLayout::SetName(const gu::wstring& name)
 {
-	_rootSignature->SetName(name.c_str());
+	_rootSignature->SetName(name.CString());
 }
 
 HRESULT RHIResourceLayout::SerializeVersionedRootSignature(

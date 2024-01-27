@@ -24,7 +24,7 @@ using namespace rhi;
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
-RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::wstring& name) 
+RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const gu::wstring& name) 
 	: core::RHICommandAllocator(device, type)
 {
 	Checkf(device, "device is nullptr.");
@@ -107,7 +107,7 @@ void RHICommandAllocator::Trim(const VkCommandPoolTrimFlags flags)
 *
 *  @return Å@Å@void
 *****************************************************************************/
-void RHICommandAllocator::SetName(const std::wstring& name)
+void RHICommandAllocator::SetName(const gu::wstring& name)
 {
 	const auto vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	vkDevice->SetVkResourceName(name, VK_OBJECT_TYPE_COMMAND_POOL, reinterpret_cast<std::uint64_t>(_commandPool));

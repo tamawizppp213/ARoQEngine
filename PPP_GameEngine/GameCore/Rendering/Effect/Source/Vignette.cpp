@@ -42,7 +42,7 @@ Vignette::~Vignette()
 
 }
 
-Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettings& settings, const std::wstring& addName)
+Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettings& settings, const gu::wstring& addName)
 	: IFullScreenEffector(engine), _settings(settings)
 {
 	/*-------------------------------------------------------------------
@@ -94,13 +94,14 @@ void Vignette::Draw()
 
 #pragma region Set up function
 
-void Vignette::PrepareBuffer(const std::wstring& name)
+void Vignette::PrepareBuffer(const gu::wstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(VignetteSettings), 1);
 
 	const auto buffer = device->CreateBuffer(metaData);
-	buffer->SetName(name + L"VignetteSettings");
+	const auto bufferName = name + L"VignetteSettings";
+	buffer->SetName(bufferName);
 
 	/*-------------------------------------------------------------------
 	-			Set Information
@@ -110,7 +111,7 @@ void Vignette::PrepareBuffer(const std::wstring& name)
 }
 
 
-void Vignette::PreparePipelineState(const std::wstring& addName)
+void Vignette::PreparePipelineState(const gu::wstring& addName)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
