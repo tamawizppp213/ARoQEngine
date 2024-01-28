@@ -74,16 +74,16 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		virtual void PreparePipelineState(const gu::wstring& addName) = 0;
+		virtual void PreparePipelineState(const gu::tstring& addName) = 0;
 
 		virtual void PrepareResourceView() = 0;
 		
-		void PrepareVertexAndIndexBuffer(const gu::wstring& addName);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& addName);
 		
-		gu::wstring DefineDebugName(const gu::wstring& addName = L"")
+		gu::tstring DefineDebugName(const gu::tstring& addName = SP(""))
 		{
-			gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-			name += L"FSEffector::"; // 後に各リソース名称が追加されます.
+			gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+			name += SP("FSEffector::"); // 後に各リソース名称が追加されます.
 			return name;
 		}
 

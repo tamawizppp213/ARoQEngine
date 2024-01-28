@@ -43,11 +43,11 @@ namespace gu
 	#define NEED_WIDE_CHAR (1)
 
 	// SP‚Æ‚ÍString Prefix‚Ì—ª‚Å‚·. 
-	#define SP(str) L ##str 
+	#define SP(str) L##str 
 #else 
 	using tchar = char16;
 	#define NEED_WIDE_CHAR (0)
-	#define SP(str) u ##str
+	#define SP(str) u##str
 #endif
 	
 	/*---------------------------------------------------------------

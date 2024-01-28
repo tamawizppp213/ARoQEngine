@@ -59,7 +59,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		CommandQueueComPtr GetCommandQueue() { return _commandQueue; }
 
-		void SetName(const gu::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  コマンドキュー中のGPUタイムスタンプをHz単位で返します.
@@ -77,7 +77,7 @@ namespace rhi::directX12
 		
 		~RHICommandQueue();
 		
-		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const gu::wstring& name);
+		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const gu::tstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function

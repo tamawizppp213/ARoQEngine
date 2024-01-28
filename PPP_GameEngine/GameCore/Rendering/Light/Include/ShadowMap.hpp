@@ -68,7 +68,7 @@ namespace gc::rendering
 		ShadowMap(const LowLevelGraphicsEnginePtr& engine, 
 			const std::uint32_t width, 
 			const std::uint32_t height,
-			const gu::wstring& addName = L"");
+			const gu::tstring& addName = SP(""));
 		
 		~ShadowMap();
 
@@ -76,9 +76,9 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareVertexAndIndexBuffer(const gu::wstring& name);
-		void PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name);
-		void PreparePipelineState(const gu::wstring& name);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& name);
+		void PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

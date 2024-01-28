@@ -72,7 +72,7 @@ namespace gc
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gm::Float4& color = gm::Float4(1,1,1,1), const gu::wstring& addName = L"");
+		Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gm::Float4& color = gm::Float4(1,1,1,1), const gu::tstring& addName = SP(""));
 
 		~Sobel();
 
@@ -80,11 +80,11 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareOutlineInfo(const gu::wstring& name);
+		void PrepareOutlineInfo(const gu::tstring& name);
 
 		void PrepareResourceView();
 
-		void PreparePipelineState(const gu::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

@@ -123,12 +123,12 @@ void SampleModel::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Skybox
 	---------------------------------------------------------------------*/
-	_skybox = gu::MakeShared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
+	_skybox = gu::MakeShared<SkyDome>(_engine, SP("Resources/grasscube1024.dds"));
 	/*-------------------------------------------------------------------
 	-           Model
 	---------------------------------------------------------------------*/
 	_model = GameObject::Create<GameModel>(_engine);
-	_model->Load(L"Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx");
+	_model->Load(SP("Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx"));
 	_model->SetDebugColor(gm::Float4(1, 0, 0, 1));
 
 	zprepass = gu::MakeShared<basepass::ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());

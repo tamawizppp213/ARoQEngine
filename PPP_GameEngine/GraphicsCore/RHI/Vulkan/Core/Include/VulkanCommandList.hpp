@@ -128,7 +128,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkCommandBuffer GetCommandList() { return _commandBuffer; }
 		
-		void SetName(const gu::wstring& name);
+		void SetName(const gu::tstring& name);
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -139,7 +139,7 @@ namespace rhi::vulkan
 		explicit RHICommandList(
 			const gu::SharedPointer<core::RHIDevice>& device,
 			const gu::SharedPointer<core::RHICommandAllocator>& allocator,
-			const gu::wstring& name);
+			const gu::tstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function

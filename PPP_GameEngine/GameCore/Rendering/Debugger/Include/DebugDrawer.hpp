@@ -77,7 +77,7 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& addName = L"");
+		DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& addName = SP(""));
 
 		~DebugDrawer();
 
@@ -86,7 +86,7 @@ namespace gc::rendering
 		**                Protected Function
 		*****************************************************************************/
 		
-		void PreparePipelineState(const gu::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

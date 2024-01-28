@@ -108,15 +108,15 @@ void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
 /****************************************************************************
 *					Load
 *************************************************************************//**
-*  @fn        void Model::Load(const gu::wstring& filePath)
+*  @fn        void Model::Load(const gu::tstring& filePath)
 *
 *  @brief     Load model mesh
 *
-*  @param[in] const gu::wstring& filePath
+*  @param[in] const gu::tstring& filePath
 *
 *  @return Å@Å@void
 *****************************************************************************/
-void GameModel::Load(const gu::wstring& filePath)
+void GameModel::Load(const gu::tstring& filePath)
 {
     std::unique_ptr<IGameModelConverter> loader = nullptr;
 
@@ -125,7 +125,7 @@ void GameModel::Load(const gu::wstring& filePath)
     ---------------------------------------------------------------------*/
     const auto extension = file::FileSystem::GetExtension(std::wstring(filePath.CString()));
 
-    if (extension == L"pmx") { loader = std::make_unique<PMXConverter>(); }
+    if (extension == SP("pmx")) { loader = std::make_unique<PMXConverter>(); }
     else
     {
         throw std::runtime_error("not support extension type");

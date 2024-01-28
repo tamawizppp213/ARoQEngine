@@ -103,22 +103,22 @@ namespace gc
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const gu::wstring& addName = L"");
+		SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const gu::tstring& addName = SP(""));
 
 		~SSAO();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareSSAOSettings(const gu::wstring& name);
+		void PrepareSSAOSettings(const gu::tstring& name);
 
-		void PrepareBlurMode(const gu::wstring& name);
+		void PrepareBlurMode(const gu::tstring& name);
 
-		void PrepareRandomTexture(const gu::wstring& name);
+		void PrepareRandomTexture(const gu::tstring& name);
 
-		void PreparePipelineState(const gu::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 
-		void PrepareVertexAndIndexBuffer(const gu::wstring& name);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& name);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

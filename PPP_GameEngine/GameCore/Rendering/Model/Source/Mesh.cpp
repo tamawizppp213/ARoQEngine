@@ -29,14 +29,14 @@ Mesh::~Mesh()
 	_indexBuffer.Reset();
 }
 
-Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const MaterialPtr& material, const std::wstring& addName)
+Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const MaterialPtr& material, const gu::tstring& addName)
 	: _engine(engine), _material(material)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"Mesh::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("Mesh::");
 
 	/*-------------------------------------------------------------------
 	-            Prepare each buffer
@@ -48,14 +48,14 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine,
 	const rhi::core::GPUBufferMetaData& vertexInfo,
 	const rhi::core::GPUBufferMetaData& indexInfo,
 	const MaterialPtr& material,
-	const std::wstring& addName)
+	const gu::tstring& addName)
 	: _engine(engine), _material(material)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"Mesh::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("Mesh::");
 
 	/*-------------------------------------------------------------------
 	-            Prepare each buffer
@@ -112,16 +112,16 @@ void Mesh::Draw(const gu::SharedPointer<RHICommandList>& commandList, const std:
 /****************************************************************************
 *					Prepare
 *************************************************************************//**
-*  @fn        void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const std::wstring& name)
+*  @fn        void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const gu::tstring& name)
 *
 *  @brief     Prepare vertex and index buffer
 *
 *  @param[in] const PrimitiveMesh& mesh
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::tstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void Mesh::Prepare(const PrimitiveMesh& mesh, const std::wstring& name)
+void Mesh::Prepare(const PrimitiveMesh& mesh, const gu::tstring& name)
 {
 	const auto totalFrameSize  = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto device          = _engine->GetDevice();
@@ -134,9 +134,8 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const std::wstring& name)
 	for (size_t i = 0; i < totalFrameSize; ++i)
 	{
 		const auto metaData = GPUBufferMetaData::VertexBuffer(sizeof(gm::Vertex), mesh.Vertices.size(), rhi::core::MemoryHeap::Upload);
-		const auto bufferName = name + L"VB";
 		_vertexBuffers[i] = device->CreateBuffer(metaData);
-		_vertexBuffers[i]->SetName(gu::wstring(bufferName.c_str(), bufferName.size()));
+		_vertexBuffers[i]->SetName(name + SP("VB"));
 		_vertexBuffers[i]->Pack(mesh.Vertices.data());
 	}
 
@@ -145,11 +144,10 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const std::wstring& name)
 	---------------------------------------------------------------------*/
 	{
 		const auto metaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), mesh.Indices.size(), MemoryHeap::Default, ResourceState::Common);
-		const auto bufferName = name + L"IB";
 		_indexCount = mesh.Indices.size();
 
 		_indexBuffer = device->CreateBuffer(metaData);
-		_indexBuffer->SetName(gu::wstring(bufferName.c_str(), bufferName.size()));
+		_indexBuffer->SetName(name + SP("IB"));
 		_indexBuffer->Pack(mesh.Indices.data(), copyCommandList);
 	}
 
@@ -159,17 +157,17 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const std::wstring& name)
 /****************************************************************************
 *					Prepare
 *************************************************************************//**
-*  @fn        void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const std::wstring& name)
+*  @fn        void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const gu::tstring& name)
 * 
 *  @brief     Prepare vertex and index buffer
 * 
 *  @param[in] const GPUBufferMetaData vertexInfo
 *  @param[in] const GPUBufferMetaData indexInfo
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::tstring& name
 * 
 *  @return 　　void
 *****************************************************************************/
-void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const std::wstring& name)
+void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const gu::tstring& name)
 {
 	if (vertexInfo.BufferType != BufferType::Vertex) { OutputDebugStringA("Please set vertex buffer\n"); return; }
 	if (indexInfo .BufferType != BufferType::Index)  { OutputDebugStringA("Please set index buffer\n "); return ;}
@@ -184,11 +182,9 @@ void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData&
 	_vertexBuffers.resize(totalFrameSize);
 	for (size_t i = 0; i < totalFrameSize; ++i)
 	{
-		const auto bufferName = name + L"VB";
-
 		_vertexBuffers[i] = device->CreateBuffer(vertexInfo);
 
-		_vertexBuffers[i]->SetName(gu::wstring(bufferName.c_str(), bufferName.size()));
+		_vertexBuffers[i]->SetName(name + SP("VB"));
 
 		if (vertexInfo.InitData) { _vertexBuffers[i]->Pack(vertexInfo.InitData, copyCommandList); }
 	}
@@ -197,11 +193,9 @@ void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData&
 	-              Index Buffer
 	---------------------------------------------------------------------*/
 	{
-		const auto bufferName = name + L"IB";
-
 		_indexBuffer = device->CreateBuffer(indexInfo);
 
-		_indexBuffer->SetName(gu::wstring(bufferName.c_str(), bufferName.size()));
+		_indexBuffer->SetName(name + SP("IB"));
 
 		_indexCount = indexInfo.Count;
 

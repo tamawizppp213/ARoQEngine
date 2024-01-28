@@ -60,7 +60,7 @@ namespace rhi::vulkan
 		/* @brief : Return the queue array index in the queue family.*/
 		gu::uint32 GetQueueIndex() const noexcept { return _queueIndex; }
 		
-		void SetName(const gu::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  コマンドキュー中のGPUタイムスタンプをHz単位で返します.
@@ -79,7 +79,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		RHICommandQueue() = default;
 		
-		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex = 0, const gu::wstring& name = L"");
+		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex = 0, const gu::tstring& name = SP(""));
 		
 		~RHICommandQueue();
 	protected:

@@ -87,13 +87,13 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
 		
-		virtual gu::SharedPointer<RHIFence>                   CreateFence(const gu::uint64 fenceValue = 0, const gu::wstring& name = L"Fence") = 0;
+		virtual gu::SharedPointer<RHIFence>                   CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("Fence")) = 0;
 		
-		virtual gu::SharedPointer<RHICommandList>             CreateCommandList(const gu::SharedPointer<RHICommandAllocator>& commandAllocator, const gu::wstring& name = L"CommandList") = 0;
+		virtual gu::SharedPointer<RHICommandList>             CreateCommandList(const gu::SharedPointer<RHICommandAllocator>& commandAllocator, const gu::tstring& name = SP("CommandList")) = 0;
 		
-		virtual gu::SharedPointer<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type, const gu::wstring& name = L"CommandQueue") = 0;
+		virtual gu::SharedPointer<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type, const gu::tstring& name = SP("CommandQueue")) = 0;
 		
-		virtual gu::SharedPointer<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const gu::wstring& name = L"CommandAllocator") = 0;
+		virtual gu::SharedPointer<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name = SP("CommandAllocator")) = 0;
 		
 		virtual gu::SharedPointer<RHISwapchain>               CreateSwapchain(const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const gu::uint32 vsync = 0, const bool isValidHDR = true) = 0;
 		
@@ -103,7 +103,7 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;
 		
-		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt, const gu::wstring& name = L"ResourceLayout") = 0;
+		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name = SP("ResourceLayout")) = 0;
 		
 		virtual gu::SharedPointer<GPUPipelineFactory>         CreatePipelineFactory() = 0;
 		
@@ -121,9 +121,9 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
 		
-		virtual gu::SharedPointer<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData, const gu::wstring& name = L"") = 0;
+		virtual gu::SharedPointer<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) = 0;
 		
-		virtual gu::SharedPointer<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::wstring& name = L"") = 0;
+		virtual gu::SharedPointer<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("")) = 0;
 		
 		virtual gu::SharedPointer<GPUTexture>                 CreateTextureEmpty() = 0;
 		
@@ -158,7 +158,7 @@ namespace rhi::core
 		      RHIMultiGPUMask& GetGPUMask()       { return _gpuMask; }
 		const RHIMultiGPUMask& GetGPUMask() const { return _gpuMask; }
 
-		virtual void SetName(const gu::wstring& name) = 0;
+		virtual void SetName(const gu::tstring& name) = 0;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check

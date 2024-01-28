@@ -132,10 +132,10 @@ void SampleUI::LoadMaterials()
 	---------------------------------------------------------------------*/
 	// Create Texture
 	_resourceCache = gu::MakeShared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
-	_resourceView = _resourceCache->Load(L"Resources/BackGround2.png");
-	_resourceCache->Load(L"Resources/Cubemap.jpg");
+	_resourceView = _resourceCache->Load(SP("Resources/BackGround2.png"));
+	_resourceCache->Load(SP("Resources/Cubemap.jpg"));
 
-	_font = gu::MakeShared<Font>(_engine, L"Resources/Font/GennokakuEnglish.png", gm::Float2(35.0f, 64.0f), 3325.0f);
+	_font = gu::MakeShared<Font>(_engine, SP("Resources/Font/GennokakuEnglish.png"), gm::Float2(35.0f, 64.0f), 3325.0f);
 
 	// button 
 	_button = gu::MakeShared<Button>(_gameInput.GetMouse());
@@ -144,8 +144,8 @@ void SampleUI::LoadMaterials()
 	// slider
 	_slider = gu::MakeShared<Slider>();
 	_slider->CreateInNDCSpace({ -0.65f, 0.8f, 0.0f }, { 0.3f, 0.1f }, { 0, 1, 0.2f, 1.0f });
-	_slider->SetTexture(Slider::BackGround, _resourceCache->Load(L"Resources/Preset/DefaultSlider.png"));
-	_slider->SetTexture(Slider::Color     , _resourceCache->Load(L"Resources/Preset/NullAlbedoMap.png"));
+	_slider->SetTexture(Slider::BackGround, _resourceCache->Load(SP("Resources/Preset/DefaultSlider.png")));
+	_slider->SetTexture(Slider::Color     , _resourceCache->Load(SP("Resources/Preset/NullAlbedoMap.png")));
 
 	// Slider‚Ì’l‚ª•Ï‚í‚Á‚½Žž‚Ìˆ—
 	_slider->AddListener(gu::MakeShared<std::function<void(float)>>(DebugTest));

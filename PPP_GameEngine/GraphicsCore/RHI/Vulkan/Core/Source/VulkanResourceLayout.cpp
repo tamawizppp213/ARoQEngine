@@ -35,14 +35,14 @@ RHIResourceLayout::~RHIResourceLayout()
 	}
 }
 
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constants, const gu::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constants, const gu::tstring& name)
 	:core::RHIResourceLayout(device, elements, samplers, constants)
 {
 	SetUp();
 	SetName(name);
 }
 
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant, const gu::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant, const gu::tstring& name)
 	: core::RHIResourceLayout(device, element, sampler, constant)
 {
 	SetUp();
@@ -157,7 +157,7 @@ void RHIResourceLayout::SetUp()
 	}
 }
 
-void RHIResourceLayout::SetName(const gu::wstring& name)
+void RHIResourceLayout::SetName(const gu::tstring& name)
 {
 	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_PIPELINE_LAYOUT, reinterpret_cast<std::uint64_t>(_pipelineLayout));

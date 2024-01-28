@@ -44,7 +44,7 @@ ScreenSpaceReflection::~ScreenSpaceReflection()
 	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
 }
 
-ScreenSpaceReflection::ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const SSRSettings& settings, const gu::wstring& addName)
+ScreenSpaceReflection::ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const SSRSettings& settings, const gu::tstring& addName)
 	: _engine(engine), _normalMap(normalMap), _depthMap(depthMap)
 {
 	assert(("engine is nullptr", _engine));
@@ -54,8 +54,8 @@ ScreenSpaceReflection::ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& en
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"SSR::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("SSR::");
 
 	/*-------------------------------------------------------------------
 	-           Prepare Pipeline
@@ -108,13 +108,13 @@ void ScreenSpaceReflection::Draw(const ResourceViewPtr& scene)
 
 #pragma region Set up function
 
-void ScreenSpaceReflection::PrepareBuffer(const SSRSettings& settings, const gu::wstring& name)
+void ScreenSpaceReflection::PrepareBuffer(const SSRSettings& settings, const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SSRSettings), 1);
 
 	const auto buffer     = device->CreateBuffer(metaData);
-	buffer->SetName(name + L"ScreenSpaceReflectionInfo");
+	buffer->SetName(name + SP("ScreenSpaceReflectionInfo"));
 
 	/*-------------------------------------------------------------------
 	-			Set Information
@@ -125,7 +125,7 @@ void ScreenSpaceReflection::PrepareBuffer(const SSRSettings& settings, const gu:
 }
 
 
-void ScreenSpaceReflection::PreparePipelineState(const gu::wstring& addName)
+void ScreenSpaceReflection::PreparePipelineState(const gu::tstring& addName)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -155,8 +155,8 @@ void ScreenSpaceReflection::PreparePipelineState(const gu::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Effect\\ShaderSSR.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel, L"Shader\\Effect\\ShaderSSR.hlsl", L"ExecuteSSR", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Effect\\ShaderSSR.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel, SP("Shader\\Effect\\ShaderSSR.hlsl"), SP("ExecuteSSR"), 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
@@ -169,7 +169,7 @@ void ScreenSpaceReflection::PreparePipelineState(const gu::wstring& addName)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(addName + L"PSO");
+	_pipeline->SetName(addName + SP("PSO"));
 }
 
 /****************************************************************************
@@ -177,10 +177,10 @@ void ScreenSpaceReflection::PreparePipelineState(const gu::wstring& addName)
 *************************************************************************//**
 *  @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
 *  @brief     Prepare Rect Vertex and Index Buffer
-*  @param[in] const gu::wstring& addName
+*  @param[in] const gu::tstring& addName
 *  @return @@void
 *****************************************************************************/
-void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
+void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 {
 	const auto device = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
@@ -210,9 +210,9 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::wstring& addNa
 		---------------------------------------------------------------------*/
 		{
 			const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
-			const auto bufferName = addName + L"VB";
+			const auto bufferName = addName + SP("VB");
 			_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
-			_vertexBuffers[i]->SetName(gu::wstring(bufferName));
+			_vertexBuffers[i]->SetName(gu::tstring(bufferName));
 			_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
 
 		}
@@ -222,7 +222,7 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::wstring& addNa
 		---------------------------------------------------------------------*/
 		{
 			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
-			const auto bufferName = addName + L"IB";
+			const auto bufferName = addName + SP("IB");
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(bufferName);
 			_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);

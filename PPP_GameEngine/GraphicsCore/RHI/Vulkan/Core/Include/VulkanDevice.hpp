@@ -53,13 +53,13 @@ namespace rhi::vulkan
 
 		gu::SharedPointer<core::RHIFrameBuffer>          CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
-		gu::SharedPointer<core::RHIFence>                CreateFence(const std::uint64_t fenceValue = 0, const gu::wstring& name = L"")          override;
+		gu::SharedPointer<core::RHIFence>                CreateFence(const std::uint64_t fenceValue = 0, const gu::tstring& name = SP(""))          override;
 		
-		gu::SharedPointer<core::RHICommandList>          CreateCommandList(const gu::SharedPointer<rhi::core::RHICommandAllocator>& allocator, const gu::wstring& name) override;
+		gu::SharedPointer<core::RHICommandList>          CreateCommandList(const gu::SharedPointer<rhi::core::RHICommandAllocator>& allocator, const gu::tstring& name) override;
 		
-		gu::SharedPointer<core::RHICommandQueue>         CreateCommandQueue(const core::CommandListType type, const gu::wstring& name) override;
+		gu::SharedPointer<core::RHICommandQueue>         CreateCommandQueue(const core::CommandListType type, const gu::tstring& name) override;
 		
-		gu::SharedPointer<core::RHICommandAllocator>     CreateCommandAllocator(const core::CommandListType type, const gu::wstring& name) override;
+		gu::SharedPointer<core::RHICommandAllocator>     CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name) override;
 		
 		gu::SharedPointer<core::RHISwapchain>            CreateSwapchain(const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 3, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
 		
@@ -69,7 +69,7 @@ namespace rhi::vulkan
 		
 		gu::SharedPointer<core::RHIDescriptorHeap>       CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
-		gu::SharedPointer<core::RHIResourceLayout>       CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const gu::wstring& name=L"ResourceLayout") override;
+		gu::SharedPointer<core::RHIResourceLayout>       CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name=SP("ResourceLayout")) override;
 
 		gu::SharedPointer<core::GPUPipelineFactory>      CreatePipelineFactory() override;
 
@@ -90,9 +90,9 @@ namespace rhi::vulkan
 		
 		gu::SharedPointer<core::GPUSampler>              CreateSampler(const core::SamplerInfo& samplerInfo) override; // both
 		
-		gu::SharedPointer<core::GPUBuffer>               CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::wstring& name = L"Buffer") override;
+		gu::SharedPointer<core::GPUBuffer>               CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("Buffer")) override;
 		
-		gu::SharedPointer<core::GPUTexture>              CreateTexture(const core::GPUTextureMetaData& metaData, const gu::wstring& name = L"Texture") override;
+		gu::SharedPointer<core::GPUTexture>              CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("Texture")) override;
 		
 		gu::SharedPointer<core::GPUTexture>              CreateTextureEmpty() override;
 		
@@ -129,10 +129,10 @@ namespace rhi::vulkan
 		
 		std::uint64_t GetDeviceAddress(VkBuffer buffer);
 
-		void SetName(const gu::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 
 		// @note : !!! prohibit japanese name. To convert utf8f string!!!
-		void SetVkResourceName(const gu::wstring& name, const VkObjectType type, const std::uint64_t objectHandle);
+		void SetVkResourceName(const gu::tstring& name, const VkObjectType type, const std::uint64_t objectHandle);
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check

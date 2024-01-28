@@ -28,14 +28,14 @@ using namespace rhi::core;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const gc::rendering::GBufferDesc& desc, const gu::wstring& addName)
+GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const gc::rendering::GBufferDesc& desc, const gu::tstring& addName)
 	: gc::rendering::GBuffer(engine, desc, addName)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"GBuffer::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("GBuffer::");
 
 	PrepareFrameBuffers(name);
 	PreparePipelineState(name);
@@ -85,15 +85,15 @@ void GBuffer::Draw(const GPUResourceViewPtr& scene)
 /****************************************************************************
 *                          PreparePipelineState
 *************************************************************************//**
-*  @fn        void GBuffer::PreparePipelineState(const gu::wstring& name)
+*  @fn        void GBuffer::PreparePipelineState(const gu::tstring& name)
 *
 *  @brief     Prepare pipeline state
 *
-*  @param[in] gu::wstring& name
+*  @param[in] gu::tstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void GBuffer::PreparePipelineState(const gu::wstring& name)
+void GBuffer::PreparePipelineState(const gu::tstring& name)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -119,8 +119,8 @@ void GBuffer::PreparePipelineState(const gu::wstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Lighting\\ShaderGBuffer.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel , L"Shader\\Lighting\\ShaderGBuffer.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Lighting\\ShaderGBuffer.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel , SP("Shader\\Lighting\\ShaderGBuffer.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-             Setup blend state (all alpha blend)
@@ -138,7 +138,7 @@ void GBuffer::PreparePipelineState(const gu::wstring& name)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(name + L"PSO");
+	_pipeline->SetName(name + SP("PSO"));
 }
 
 /****************************************************************************
@@ -148,11 +148,11 @@ void GBuffer::PreparePipelineState(const gu::wstring& name)
 *
 *  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
 *
-*  @param[in] const gu::wstring& name
+*  @param[in] const gu::tstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void GBuffer::PrepareFrameBuffers(const gu::wstring& name)
+void GBuffer::PrepareFrameBuffers(const gu::tstring& name)
 {
 	const auto frameCount      = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto device          = _engine->GetDevice();
@@ -182,9 +182,9 @@ void GBuffer::PrepareFrameBuffers(const gu::wstring& name)
 		std::vector<TexturePtr> renderTexture(_desc.BufferCount);
 		for (size_t j = 0; j < _desc.BufferCount; ++j)
 		{
-			renderTexture[j] = device->CreateTexture(renderInfo, name + L"RenderTarget");
+			renderTexture[j] = device->CreateTexture(renderInfo, name + SP("RenderTarget"));
 		}
-		const auto depthTexture = device->CreateTexture(depthInfo, name + L"DepthStencil");
+		const auto depthTexture = device->CreateTexture(depthInfo, name + SP("DepthStencil"));
 
 		_frameBuffers[i] = device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
 	}

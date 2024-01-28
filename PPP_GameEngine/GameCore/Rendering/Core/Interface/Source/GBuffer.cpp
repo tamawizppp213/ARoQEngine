@@ -24,7 +24,7 @@ using namespace rhi::core;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const GBufferDesc& desc, [[maybe_unused]]const gu::wstring& addName)
+GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const GBufferDesc& desc, [[maybe_unused]]const gu::tstring& addName)
 	: _engine(engine), _desc(desc)
 {
 	

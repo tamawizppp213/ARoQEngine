@@ -30,12 +30,12 @@ using namespace gc;
 #pragma region Constructor and Destructor
 Dof::Dof(const LowLevelGraphicsEnginePtr& engine,
 	const float width, const float height, const float radius,
-	const float nearClip, const float farClip, const gu::wstring& addName)
+	const float nearClip, const float farClip, const gu::tstring& addName)
 	: _engine(engine)
 {
-	gu::wstring name = L"";
-	if (addName != L"") { name = addName; name += L"::"; }
-	name += L"Dof::";
+	gu::tstring name = SP("");
+	if (addName != SP("")) { name = addName; name += SP("::"); }
+	name += SP("Dof::");
 
 	PrepareRenderBuffer((size_t)width, (size_t)height);
 	PrepareBlurParameterBuffer(width, height, radius, name);
@@ -188,13 +188,13 @@ void Dof::PrepareRenderBuffer(const size_t width, const size_t height)
 	for (size_t i = 0; i < _shaderResourceViews.size(); ++i)
 	{
 		const auto textureInfo   = GPUTextureMetaData::Texture2D(width, height, format, 1, ResourceUsage::UnorderedAccess);
-		const auto texture       = device->CreateTexture(textureInfo, L"Dof::RWTexture");
+		const auto texture       = device->CreateTexture(textureInfo, SP("Dof::RWTexture"));
 		_unorderedAccessViews[i] = device->CreateResourceView(ResourceViewType::Texture, texture);
 		_shaderResourceViews[i]  = device->CreateResourceView(ResourceViewType::Texture, texture);
 	}
 	{
 		const auto textureInfo = GPUTextureMetaData::Texture2D(width, height, format, 1, ResourceUsage::UnorderedAccess);
-		const auto texture     = device->CreateTexture(textureInfo, L"Dof::FinalBuffer");
+		const auto texture     = device->CreateTexture(textureInfo, SP("Dof::FinalBuffer"));
 		_unorderedAccessViews[3] = device->CreateResourceView(ResourceViewType::Texture, texture);
 	}
 }
@@ -202,7 +202,7 @@ void Dof::PrepareRenderBuffer(const size_t width, const size_t height)
 /****************************************************************************
 *							PrepareBlurParameterBuffer
 *************************************************************************//**
-*  @fn        void Dof::PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::wstring& name)
+*  @fn        void Dof::PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::tstring& name)
 * 
 *  @brief     Prepare Blur Parameter Buffer
 * 
@@ -212,16 +212,16 @@ void Dof::PrepareRenderBuffer(const size_t width, const size_t height)
 * 
 *  @param[in] const float radius
 *  
-*  @param[in] const gu::wstring name
+*  @param[in] const gu::tstring name
 * 
 *  @return 　　void
 *****************************************************************************/
-void Dof::PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::wstring& name)
+void Dof::PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::tstring& name)
 {
 	const auto device     = _engine->GetDevice();
 	const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(BlurParameter), 1);
 	const auto buffer     = device->CreateBuffer(bufferInfo);
-	buffer->SetName(name + L"BlurParameter");
+	buffer->SetName(name + SP("BlurParameter"));
 	_blurParameterView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 	SetUpBlurParameter(width, height, radius);
 }
@@ -229,7 +229,7 @@ void Dof::PrepareBlurParameterBuffer(const float width, const float height, cons
 /****************************************************************************
 *							PrepareClipSizeBuffer
 *************************************************************************//**
-*  @fn        void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const gu::wstring& name)
+*  @fn        void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const gu::tstring& name)
 * 
 *  @brief     Prepare Clip Size
 * 
@@ -241,29 +241,29 @@ void Dof::PrepareBlurParameterBuffer(const float width, const float height, cons
 * 
 *  @return 　　void
 *****************************************************************************/
-void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const gu::wstring& name)
+void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const gu::tstring& name)
 {
 	const auto device     = _engine->GetDevice();
 	const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(ClipSize), 1);
 	const auto buffer     = device->CreateBuffer(bufferInfo);
-	buffer->SetName(name + L"ClipSize");
+	buffer->SetName(name + SP("ClipSize"));
 	_clipSizeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 	SetUpClipSize(nearClip, farClip);
 }
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
-*  @fn        void Dof::PreparePipelineState(const gu::wstring& name)
+*  @fn        void Dof::PreparePipelineState(const gu::tstring& name)
 * 
 *  @brief     Prepare vertical, rhomboid, finalRender PSO
 * 
-*  @param[in] const gu::wstring& name
+*  @param[in] const gu::tstring& name
 * 
 *  @return 　　void
 *****************************************************************************/
-void Dof::PreparePipelineState(const gu::wstring& name)
+void Dof::PreparePipelineState(const gu::tstring& name)
 {
-	gu::wstring defaultPath = L"Shader\\Effect\\ShaderDepthOfField.hlsl";
+	gu::tstring defaultPath = SP("Shader\\Effect\\ShaderDepthOfField.hlsl");
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 	/*-------------------------------------------------------------------
@@ -291,9 +291,9 @@ void Dof::PreparePipelineState(const gu::wstring& name)
 	const auto verticalCS    = factory->CreateShaderState();
 	const auto rhomboidCS    = factory->CreateShaderState();
 	const auto finalRenderCS = factory->CreateShaderState();
-	verticalCS   ->Compile(ShaderType::Compute, defaultPath, L"VerticalBlur", 6.4f, { L"Shader\\Core" });
-	rhomboidCS   ->Compile(ShaderType::Compute, defaultPath, L"RhomboidBlur", 6.4f, { L"Shader\\Core" });
-	finalRenderCS->Compile(ShaderType::Compute, defaultPath, L"FinalRender" , 6.4f, { L"Shader\\Core" });
+	verticalCS   ->Compile(ShaderType::Compute, defaultPath, SP("VerticalBlur"), 6.4f, { SP("Shader\\Core") });
+	rhomboidCS   ->Compile(ShaderType::Compute, defaultPath, SP("RhomboidBlur"), 6.4f, { SP("Shader\\Core") });
+	finalRenderCS->Compile(ShaderType::Compute, defaultPath, SP("FinalRender") , 6.4f, { SP("Shader\\Core") });
 	
 	/*-------------------------------------------------------------------
 	-			Load pipeline state
@@ -310,8 +310,8 @@ void Dof::PreparePipelineState(const gu::wstring& name)
 	_rhomboidPipeline   ->CompleteSetting();
 	_finalRenderPipeline->CompleteSetting();
 
-	_verticalPipeline   ->SetName(name + L"Vertical Blur PipelineState");
-	_rhomboidPipeline   ->SetName(name + L"Rhomboid Blur PipelineState");
-	_finalRenderPipeline->SetName(name + L"Final Render PipelineState");
+	_verticalPipeline   ->SetName(name + SP("Vertical Blur PipelineState"));
+	_rhomboidPipeline   ->SetName(name + SP("Rhomboid Blur PipelineState"));
+	_finalRenderPipeline->SetName(name + SP("Final Render PipelineState"));
 }
 #pragma endregion Protected Function

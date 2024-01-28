@@ -64,12 +64,12 @@ namespace
 	}
 }
 
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::wstring& name) : core::GPUTexture(device, name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::tstring& name) : core::GPUTexture(device, name)
 {
 	
 }
 
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::tstring& name)
 	: core::GPUTexture(device, metaData, name)
 {
 	
@@ -90,7 +90,7 @@ GPUTexture::~GPUTexture()
 	if (_resource) { _resource.Reset(); }
 }
 
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const gu::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const gu::tstring& name)
 	: core::GPUTexture(device, metaData, name), _resource(texture)
 {
 	const auto dxDevice     = static_cast<directX12::RHIDevice*>(_device.Get())->GetDevice();
@@ -105,7 +105,7 @@ GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const R
 }
 
 #pragma region Public Function
-void GPUTexture::SetName(const gu::wstring& name)
+void GPUTexture::SetName(const gu::tstring& name)
 {
 	ThrowIfFailed(_resource->SetName(name.CString()));
 }
@@ -113,16 +113,16 @@ void GPUTexture::SetName(const gu::wstring& name)
 /****************************************************************************
 *                     Load
 *************************************************************************//**
-*  @fn        void GPUTexture::Load(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
+*  @fn        void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 *
 *  @brief     Load texture 
 *
-*  @param[in] const gu::wstring& filePath
+*  @param[in] const gu::tstring& filePath
 *  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUTexture::Load(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
+void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 {
 
 #ifdef _DEBUG
@@ -346,17 +346,17 @@ void GPUTexture::Write(const gu::SharedPointer<core::RHICommandList>& commandLis
 /****************************************************************************
 *                     Save
 *************************************************************************//**
-*  @fn        void GPUTexture::Save(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
+*  @fn        void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
 *
 *  @brief     Save the texture already stored in the GPU and record it to the specified file.
 *
-*  @param[in] const gu::wstring& filePath
+*  @param[in] const gu::tstring& filePath
 *  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *  @param[in] const gu::SharedPointer<core::RHICommandQueue> graphics type command queue
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUTexture::Save(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
+void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
 {
 #ifdef _DEBUG
 	assert(commandList->GetType() == core::CommandListType::Graphics);
@@ -496,7 +496,7 @@ void GPUTexture::Pack([[maybe_unused]]const gu::SharedPointer<core::RHICommandLi
 *
 *  @brief     Allocate texture buffer in GPU memory
 *
-*  @param[in] const gu::wstring& filePath
+*  @param[in] const gu::tstring& filePath
 *  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *
 *  @return 　　void

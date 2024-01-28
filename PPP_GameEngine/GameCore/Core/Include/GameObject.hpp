@@ -64,10 +64,10 @@ namespace gc::core
 		-                       Find
 		---------------------------------------------------------------------*/
 		/* @brief : Obtain a gameObject matching the name*/
-		static GameObjectPtr Find(const gu::wstring& name);
+		static GameObjectPtr Find(const gu::tstring& name);
 
 		/* @brief : This function returns the gameobject list with the same tag as the assign tag.*/
-		static std::vector<GameObjectPtr> GameObjectsWithTag(const gu::wstring& tag);
+		static std::vector<GameObjectPtr> GameObjectsWithTag(const gu::tstring& tag);
 
 		/*-------------------------------------------------------------------
 		-               Destroy and Clear
@@ -79,7 +79,7 @@ namespace gc::core
 		static void DestroyWithChildren(GameObjectPtr& parent);
 
 		/* @brief : destroy all objects have the tag*/
-		static void DestroyAllTagObjects(const gu::wstring& tag);
+		static void DestroyAllTagObjects(const gu::tstring& tag);
 
 		/* @brief : Clear all game objects*/
 		static void ClearAllGameObjects();
@@ -128,19 +128,19 @@ namespace gc::core
 		/*-------------------------------------------------------------------
 		-               GameObject Default Infomation
 		---------------------------------------------------------------------*/
-		inline gu::wstring GetName() const { return _name; }
+		inline gu::tstring GetName() const { return _name; }
 
-		inline gu::wstring GetTag() const { return _tag; }
+		inline gu::tstring GetTag() const { return _tag; }
 
-		inline gu::wstring GetLayerName() const { return LayerList[_layer]; }
+		inline gu::tstring GetLayerName() const { return LayerList[_layer]; }
 
 		inline ObjectType GetType() const { return _type; }
 
-		inline void SetName(const gu::wstring& name) { _name = name; }
+		inline void SetName(const gu::tstring& name) { _name = name; }
 
-		inline void SetTag(const gu::wstring& name) { _tag = name; }
+		inline void SetTag(const gu::tstring& name) { _tag = name; }
 
-		inline void SetLayer(const gu::wstring& name) { int bit = GetLayerBit(name); if (bit >= 0) { _layer = (1 << bit); } }
+		inline void SetLayer(const gu::tstring& name) { int bit = GetLayerBit(name); if (bit >= 0) { _layer = (1 << bit); } }
 
 
 		/*-------------------------------------------------------------------
@@ -173,9 +173,9 @@ namespace gc::core
 		/*-------------------------------------------------------------------
 		-           gameObject default info
 		---------------------------------------------------------------------*/
-		gu::wstring _name = L""; // object name
+		gu::tstring _name = SP(""); // object name
 
-		gu::wstring _tag  = L""; // object tag
+		gu::tstring _tag  = SP(""); // object tag
 
 		int          _layer = 0;
 
@@ -204,13 +204,13 @@ namespace gc::core
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-		int GetLayerBit(const gu::wstring& layer);
+		int GetLayerBit(const gu::tstring& layer);
 
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
 		static std::vector<GameObjectPtr> GameObjects;
-		static std::vector<gu::wstring>  LayerList;
+		static std::vector<gu::tstring>  LayerList;
 	};
 }
 #endif

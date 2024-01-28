@@ -24,7 +24,7 @@ static constexpr int INVALID_VALUE = -1;
 namespace gc::core
 {
 	std::vector<GameObject::GameObjectPtr> GameObject::GameObjects = {};
-	std::vector<gu::wstring> GameObject::LayerList = {};
+	std::vector<gu::tstring> GameObject::LayerList = {};
 }
 
 #pragma region Constructor and Destructor 
@@ -57,7 +57,7 @@ GameObject::~GameObject()
 * 
 *  @return 　　GameObject*
 *****************************************************************************/
-GameObject::GameObjectPtr GameObject::Find(const gu::wstring& name)
+GameObject::GameObjectPtr GameObject::Find(const gu::tstring& name)
 {
 	for (auto it = GameObjects.begin(); it != GameObjects.end(); ++it)
 	{
@@ -80,7 +80,7 @@ GameObject::GameObjectPtr GameObject::Find(const gu::wstring& name)
 * 
 *  @return 　　std::vector<GameObject*>
 *****************************************************************************/
-std::vector<GameObject::GameObjectPtr> GameObject::GameObjectsWithTag(const gu::wstring& tag)
+std::vector<GameObject::GameObjectPtr> GameObject::GameObjectsWithTag(const gu::tstring& tag)
 {
 	std::vector<GameObjectPtr> gameObjects = {};
 
@@ -131,7 +131,7 @@ bool GameObject::Destroy(GameObjectPtr& gameObject)
 * 
 *  @return 　　void
 *****************************************************************************/
-void GameObject::DestroyAllTagObjects(const gu::wstring& tag)
+void GameObject::DestroyAllTagObjects(const gu::tstring& tag)
 {
 	std::erase_if(GameObjects,[&](const GameObjectPtr& gameObject) 
 	{
@@ -266,7 +266,7 @@ void GameObject::ClearAllGameObjects()
 //}
 #pragma endregion Component
 #pragma region Private Function
-int gc::core::GameObject::GetLayerBit(const gu::wstring& layer)
+int gc::core::GameObject::GetLayerBit(const gu::tstring& layer)
 {
 	if (layer == L"") { return INVALID_VALUE; }
 	for (int i = 0; i < 31; ++i) // 4byte

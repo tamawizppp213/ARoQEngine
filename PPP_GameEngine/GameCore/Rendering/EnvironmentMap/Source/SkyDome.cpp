@@ -39,14 +39,14 @@ SkyDome::~SkyDome()
 	_pipeline.Reset();
 }
 #pragma region Constructor and Destructor 
-SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& cubeMapPath, const gu::wstring& addName)
+SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& cubeMapPath, const gu::tstring& addName)
 	:_engine(engine)
 {
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"Skybox::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("Skybox::");
 
 	/*-------------------------------------------------------------------
 	-           Load Texture
@@ -92,12 +92,12 @@ void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView)
 /****************************************************************************
 *							PrepareVertexAndIndexBuffer
 *************************************************************************//**
-*  @fn        void Skybox::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
+*  @fn        void Skybox::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 *  @brief     Prepare Sphere Vertex Buffer
-*  @param[in] const gu::wstring& addName
+*  @param[in] const gu::tstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SkyDome::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
+void SkyDome::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy); 
@@ -128,7 +128,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
 		---------------------------------------------------------------------*/
 		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
-		_vertexBuffers[i]->SetName(addName + L"VB");
+		_vertexBuffers[i]->SetName(addName + SP("VB"));
 		_vertexBuffers[i]->Pack(sphereMesh.Vertices.data()); // Map
 
 		/*-------------------------------------------------------------------
@@ -136,7 +136,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
 		---------------------------------------------------------------------*/
 		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
-		_indexBuffers[i]->SetName(addName + L"IB");
+		_indexBuffers[i]->SetName(addName + SP("IB"));
 		_indexBuffers[i]->Pack(sphereMesh.Indices.data(), commandList);
 
 	}
@@ -144,12 +144,12 @@ void SkyDome::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
 /****************************************************************************
 *							PrepareSkyObject
 *************************************************************************//**
-*  @fn        void Skybox::PrepareSkyObject(const gu::wstring& addName)
+*  @fn        void Skybox::PrepareSkyObject(const gu::tstring& addName)
 *  @brief     Build World Matrix Infomation
-*  @param[in] gu::wstring& addName
+*  @param[in] gu::tstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SkyDome::PrepareSkyObject(const gu::wstring& addName)
+void SkyDome::PrepareSkyObject(const gu::tstring& addName)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
@@ -165,19 +165,19 @@ void SkyDome::PrepareSkyObject(const gu::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto cbMetaData = GPUBufferMetaData::ConstantBuffer(sizeof(Matrix4), 1, MemoryHeap::Upload, ResourceState::Common);
 	_skyObject = device->CreateBuffer(cbMetaData);
-	_skyObject->SetName(addName + L"CB");
+	_skyObject->SetName(addName + SP("CB"));
 	_skyObject->Pack(&skyData, commandList);
 }
 
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
-*  @fn        void Skybox::PreparePipelineState(const gu::wstring& addName)
+*  @fn        void Skybox::PreparePipelineState(const gu::tstring& addName)
 *  @brief     Prepare pipelineState
-*  @param[in] gu::wstring& addName
+*  @param[in] gu::tstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SkyDome::PreparePipelineState(const gu::wstring& addName)
+void SkyDome::PreparePipelineState(const gu::tstring& addName)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -200,8 +200,8 @@ void SkyDome::PreparePipelineState(const gu::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\EnvironmentMap\\ShaderSkybox.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel , L"Shader\\EnvironmentMap\\ShaderSkybox.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\EnvironmentMap\\ShaderSkybox.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel , SP("Shader\\EnvironmentMap\\ShaderSkybox.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
 
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::AlphaBlend()));
@@ -211,7 +211,7 @@ void SkyDome::PreparePipelineState(const gu::wstring& addName)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(addName + L"PSO");
+	_pipeline->SetName(addName + SP("PSO"));
 }
 
 void SkyDome::PrepareResourceView(const gu::SharedPointer<GPUTexture>& texture)

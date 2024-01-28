@@ -58,7 +58,7 @@ namespace rhi::directX12
 		/*---------------------------------------------------------------
 		　　　　　@brief : デバッグ用の表示名を設定します
 		-----------------------------------------------------------------*/
-		void SetName(const gu::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -69,7 +69,7 @@ namespace rhi::directX12
 		explicit RHICommandAllocator(
 			const gu::SharedPointer<rhi::core::RHIDevice>& device, 
 			const core::CommandListType type,
-			const gu::wstring& name);
+			const gu::tstring& name);
 
 	protected:
 		/****************************************************************************

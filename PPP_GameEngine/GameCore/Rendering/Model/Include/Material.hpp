@@ -70,7 +70,7 @@ namespace gc::core
 
 		void PackMaterial(const void* data);
 
-		GPUResourceViewPtr LoadTexture(const gu::wstring& filePath, const UsageTexture textureType);
+		GPUResourceViewPtr LoadTexture(const gu::tstring& filePath, const UsageTexture textureType);
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -88,7 +88,7 @@ namespace gc::core
 
 		Material(const LowLevelGraphicsEnginePtr& engine, 
 			const rhi::core::GPUBufferMetaData& bufferInfo, 
-			const gu::wstring& addName = L"",
+			const gu::tstring& addName = SP(""),
 			const RHIDescriptorHeapPtr& customHeap = nullptr);
 
 		~Material();
@@ -97,7 +97,7 @@ namespace gc::core
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void SetUpBuffer(const rhi::core::GPUBufferMetaData& bufferInfo, const gu::wstring& name);
+		void SetUpBuffer(const rhi::core::GPUBufferMetaData& bufferInfo, const gu::tstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

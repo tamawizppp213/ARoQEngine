@@ -29,7 +29,7 @@ using namespace gm;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
-ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gu::wstring& addName)
+ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gu::tstring& addName)
 	: _engine(engine)
 {
 	/*-------------------------------------------------------------------
@@ -42,8 +42,8 @@ ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (name != L"") { name += addName; name += L"::"; }
-	name += L"ShadowMap::";
+	gu::tstring name = SP(""); if (name != SP("")) { name += addName; name += SP("::"); }
+	name += SP("ShadowMap::");
 
 	/*-------------------------------------------------------------------
 	-            Prepare render resource
@@ -133,15 +133,15 @@ void ShadowMap::Add(const GameModelPtr& gameModel)
 /****************************************************************************
 *                     PrepareVertexAndIndexBuffer
 *************************************************************************//**
-*  @fn        void ShadowMap::PrepareVertexAndIndexBuffer(const gu::wstring& name)
+*  @fn        void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
 *
 *  @brief     Prepare the vertex and index buffers. These buffers were created for the frame count.
 *
-*  @param[in] const gu::wstring& debug name
+*  @param[in] const gu::tstring& debug name
 *
 *  @return 　　void
 *****************************************************************************/
-void ShadowMap::PrepareVertexAndIndexBuffer(const gu::wstring& name)
+void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
@@ -171,7 +171,7 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const gu::wstring& name)
 		---------------------------------------------------------------------*/
 		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
-		_vertexBuffers[i]->SetName(name + L"VB");
+		_vertexBuffers[i]->SetName(name + SP("VB"));
 		_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
 
 		/*-------------------------------------------------------------------
@@ -179,7 +179,7 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const gu::wstring& name)
 		---------------------------------------------------------------------*/
 		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
-		_indexBuffers[i]->SetName(name + L"IB");
+		_indexBuffers[i]->SetName(name + SP("IB"));
 		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
 
 	}
@@ -188,17 +188,17 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const gu::wstring& name)
 /****************************************************************************
 *                     PrepareRenderResource
 *************************************************************************//**
-*  @fn        void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name)
+*  @fn        void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name)
 *
 *  @brief     Prepare the renderPass and frame buffer
 *
 *  @param[in] const std::uint32_t textureWidth
 *  @param[in] const std::uint32_t textureHeight
-*  @param[in] const gu::wstring& debug name
+*  @param[in] const gu::tstring& debug name
 *
 *  @return 　　void
 *****************************************************************************/
-void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name)
+void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -220,23 +220,23 @@ void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint
 	---------------------------------------------------------------------*/
 	const auto renderInfo    = GPUTextureMetaData::RenderTarget(width, height, renderFormat, clearColor);
 	const auto depthInfo     = GPUTextureMetaData::DepthStencil(width, height, depthFormat , clearDepth);
-	const auto renderTexture = device->CreateTexture(renderInfo, name + L"FrameBuffer");
-	const auto depthTexture  = device->CreateTexture(depthInfo , name + L"FrameBufferDepth");
+	const auto renderTexture = device->CreateTexture(renderInfo, name + SP("FrameBuffer"));
+	const auto depthTexture  = device->CreateTexture(depthInfo , name + SP("FrameBufferDepth"));
 	_frameBuffer = device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
 }
 
 /****************************************************************************
 *                     PreparePipelineState
 *************************************************************************//**
-*  @fn        void ShadowMap::PreparePipelineState(const gu::wstring& name)
+*  @fn        void ShadowMap::PreparePipelineState(const gu::tstring& name)
 * 
 *  @brief     Prepare the vertex and index buffers. These buffers we
 *
-*  @param[in] const gu::wstring& debugName
+*  @param[in] const gu::tstring& debugName
 *
 *  @return 　　void
 *****************************************************************************/
-void ShadowMap::PreparePipelineState(const gu::wstring& name)
+void ShadowMap::PreparePipelineState(const gu::tstring& name)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -256,12 +256,12 @@ void ShadowMap::PreparePipelineState(const gu::wstring& name)
 	/*-------------------------------------------------------------------
 	-			Load Blob data
 	---------------------------------------------------------------------*/
-	gu::wstring defaultPath = L"Shader\\Lighting\\ShaderShadowMap.hlsl";
+	gu::tstring defaultPath = SP("Shader\\Lighting\\ShaderShadowMap.hlsl");
 	
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, defaultPath, L"VSMain", 6.4f , {L"Shader\\Core"});
-	ps->Compile(ShaderType::Pixel , defaultPath, L"PSMain", 6.4f,  {L"Shader\\Core"});
+	vs->Compile(ShaderType::Vertex, defaultPath, SP("VSMain"), 6.4f , {SP("Shader\\Core")});
+	ps->Compile(ShaderType::Pixel , defaultPath, SP("PSMain"), 6.4f,  {SP("Shader\\Core")});
 
 	/*-------------------------------------------------------------------
 	-			Create graphics pipeline
@@ -274,6 +274,6 @@ void ShadowMap::PreparePipelineState(const gu::wstring& name)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader (ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(name + L"PSO");
+	_pipeline->SetName(name + SP("PSO"));
 }
 #pragma endregion Set Up Function

@@ -32,14 +32,14 @@ using namespace gc::basepass;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor 
-ZPrepass::ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gu::wstring& addName):
+ZPrepass::ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gu::tstring& addName):
 	_engine(engine), _width(width), _height(height)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"ZPrepass::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("ZPrepass::");
 
 	PrepareFrameBuffers(name);
 	PreparePipelineState(name);
@@ -151,13 +151,13 @@ ZPrepass::GPUResourceViewPtr ZPrepass::GetRenderedTextureView() const noexcept
 *************************************************************************//**
 *  @fn        void ZPrepass::PrepareFrameBuffers()
 *
-*  @brief     void ZPrepass::PreparePipelineState(const gu::wstring& name)
+*  @brief     void ZPrepass::PreparePipelineState(const gu::tstring& name)
 *
-*  @param[in] gu::wstring& name
+*  @param[in] gu::tstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void ZPrepass::PreparePipelineState(const gu::wstring& name)
+void ZPrepass::PreparePipelineState(const gu::tstring& name)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -178,8 +178,8 @@ void ZPrepass::PreparePipelineState(const gu::wstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Lighting\\ShaderZPrepass.hlsl", L"VSMain", 6.4f, { L"Shader\\Core"});
-	ps->Compile(ShaderType::Pixel , L"Shader\\Lighting\\ShaderZPrepass.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Lighting\\ShaderZPrepass.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core")});
+	ps->Compile(ShaderType::Pixel , SP("Shader\\Lighting\\ShaderZPrepass.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
@@ -192,7 +192,7 @@ void ZPrepass::PreparePipelineState(const gu::wstring& name)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(name + L"PSO");
+	_pipeline->SetName(name + SP("PSO"));
 }
 
 /****************************************************************************
@@ -202,11 +202,11 @@ void ZPrepass::PreparePipelineState(const gu::wstring& name)
 *
 *  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
 *
-*  @param[in] const gu::wstring& name
+*  @param[in] const gu::tstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void ZPrepass::PrepareFrameBuffers(const gu::wstring& name)
+void ZPrepass::PrepareFrameBuffers(const gu::tstring& name)
 {
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto device     = _engine->GetDevice();
@@ -235,8 +235,8 @@ void ZPrepass::PrepareFrameBuffers(const gu::wstring& name)
 
 		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
 
-		const auto renderTexture = device->CreateTexture(renderInfo, name + L"RenderTarget");
-		const auto depthTexture  = device->CreateTexture(depthInfo , name + L"DepthStemcil");
+		const auto renderTexture = device->CreateTexture(renderInfo, name + SP("RenderTarget"));
+		const auto depthTexture  = device->CreateTexture(depthInfo , name + SP("DepthStemcil"));
 		
 		_frameBuffers[i] = device->CreateFrameBuffer(_renderPass, renderTexture, depthTexture);
 	}

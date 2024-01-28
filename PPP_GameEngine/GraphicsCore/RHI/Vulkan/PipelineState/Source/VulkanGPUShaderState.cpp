@@ -37,7 +37,7 @@ GPUShaderState::~GPUShaderState()
 	}
 }
 
-void GPUShaderState::Compile(const core::ShaderType type, const gu::wstring& fileName, const gu::wstring& entryPoint, const float version, const std::vector<gu::wstring>& includeDirectories, [[maybe_unused]]const std::vector<gu::wstring>& defines)
+void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version, const std::vector<gu::tstring>& includeDirectories, [[maybe_unused]]const std::vector<gu::tstring>& defines)
 {
 #if __DEBUG
 	assert(0.0f < version && version <= NEWEST_VERSION);
@@ -45,7 +45,7 @@ void GPUShaderState::Compile(const core::ShaderType type, const gu::wstring& fil
 	_shaderType = type; _version = version;
 
 	// Set target Name ex) vs_6.0, ps_6.1...
-	gu::wstring target = GetShaderTypeName(type) + L"_" + Format(_version);
+	gu::tstring target = GetShaderTypeName(type) + L"_" + Format(_version);
 
 	VkCompile(fileName, entryPoint, target, includeDirectories);
 
@@ -53,12 +53,12 @@ void GPUShaderState::Compile(const core::ShaderType type, const gu::wstring& fil
 /****************************************************************************
 *                       Compile Shader
 *************************************************************************//**
-*  @fn        BlobComPtr CompileShader( const gu::wstring& fileName, const gu::wstring& entryPoint, const gu::wstring& target)
+*  @fn        BlobComPtr CompileShader( const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target)
 *  @brief     Compile shader
 *  @param[in] test
 *  @return 　　void
 *****************************************************************************/
-void GPUShaderState::VkCompile(const gu::wstring& fileName, const gu::wstring& entryPoint, const gu::wstring& target, const std::vector<gu::wstring>& includeDirectories)
+void GPUShaderState::VkCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const std::vector<gu::tstring>& includeDirectories)
 {
 	/*-------------------------------------------------------------------
 	-            Create blob data from shader text file.
@@ -204,13 +204,13 @@ void GPUShaderState::VkCompile(const gu::wstring& fileName, const gu::wstring& e
 /****************************************************************************
 *							LoadBinary
 *************************************************************************//**
-*  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::wstring& fileName)
+*  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& fileName)
 *  @brief     Load Binary Data (Offline Compile)
 *  @param[in] core::ShaderType type
-*  @param[in] gu::wstring& fileName : filePath
+*  @param[in] gu::tstring& fileName : filePath
 *  @return 　　void
 *****************************************************************************/
-void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::wstring& fileName)
+void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& fileName)
 {
 	_shaderType = type;
 

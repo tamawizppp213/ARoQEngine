@@ -15,8 +15,9 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Math/Include/GMVertex.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <vector>
-#include <string>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -64,14 +65,14 @@ namespace gc::core
 		*****************************************************************************/
 		Mesh() = default;
 		
-		Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const MaterialPtr& material = nullptr, const std::wstring& addName = L"");
+		Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const MaterialPtr& material = nullptr, const gu::tstring& addName = SP(""));
 
 		/* @brief : This constructor is used when creating new vb and ib*/
 		Mesh(const LowLevelGraphicsEnginePtr& engine, 
 			const rhi::core::GPUBufferMetaData& vertexInfo,
 			const rhi::core::GPUBufferMetaData& indexInfo,
 			const MaterialPtr& material = nullptr,
-			const std::wstring& addName = L"");
+			const gu::tstring& addName = SP(""));
 
 		// @brief : This constructor is used, when sharing one VB and Index and separating each material. (e.g. Model drawing)
 		Mesh(const LowLevelGraphicsEnginePtr& engine,
@@ -87,9 +88,9 @@ namespace gc::core
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void Prepare(const PrimitiveMesh& mesh, const std::wstring& name);
+		void Prepare(const PrimitiveMesh& mesh, const gu::tstring& name);
 		
-		void Prepare(const rhi::core::GPUBufferMetaData& vertexInfo, const rhi::core::GPUBufferMetaData& indexInfo, const std::wstring& name);
+		void Prepare(const rhi::core::GPUBufferMetaData& vertexInfo, const rhi::core::GPUBufferMetaData& indexInfo, const gu::tstring& name);
 
 
 		/****************************************************************************

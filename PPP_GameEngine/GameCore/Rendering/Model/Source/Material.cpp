@@ -30,7 +30,7 @@ std::uint64_t gc::core::Material::InstanceCount = 0;
 gc::core::Material::GPUResourceCachePtr gc::core::Material::ResourceCache = nullptr;
 
 #pragma region Constructor and Destructor 
-Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaData& bufferInfo, const gu::wstring& addName, 
+Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaData& bufferInfo, const gu::tstring& addName, 
 	const RHIDescriptorHeapPtr& customHeap): _engine(engine), _customHeap(customHeap)
 {
 #ifdef _DEBUG
@@ -42,7 +42,7 @@ Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaD
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
 	name += L"Material::";
 
 	/*-------------------------------------------------------------------
@@ -60,9 +60,9 @@ Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaD
 		ResourceCache = gu::MakeShared<GPUResourceCache>(device, commandList);
 	}
 
-	_textures[(int)UsageTexture::Diffuse]  = ResourceCache->Load(L"Resources/Preset/NullAlbedoMap.png");
-	_textures[(int)UsageTexture::Normal]   = ResourceCache->Load(L"Resources/Preset/NullNormalMap.DDS");
-	_textures[(int)UsageTexture::Specular] = ResourceCache->Load(L"Resources/Preset/NullSpecMap.DDS");
+	_textures[(int)UsageTexture::Diffuse]  = ResourceCache->Load(SP("Resources/Preset/NullAlbedoMap.png"));
+	_textures[(int)UsageTexture::Normal]   = ResourceCache->Load(SP("Resources/Preset/NullNormalMap.DDS"));
+	_textures[(int)UsageTexture::Specular] = ResourceCache->Load(SP("Resources/Preset/NullSpecMap.DDS"));
 
 	InstanceCount++;
 }
@@ -138,16 +138,16 @@ void Material::PackMaterial(const void* data)
 /****************************************************************************
 *					LoadTexture
 *************************************************************************//**
-*  @fn        Material::GPUResourceViewPtr Material::LoadTexture(const gu::wstring& filePath, const UsageTexture textureType)
+*  @fn        Material::GPUResourceViewPtr Material::LoadTexture(const gu::tstring& filePath, const UsageTexture textureType)
 *
 *  @brief     Load texture according to the usage texture.
 *
-*  @param[in] const gu::wstring& filePath
+*  @param[in] const gu::tstring& filePath
 *  @param[in] const UsageTexture texture Type
 *
 *  @return 　　GPUResourceViewPtr (std::shard_ptr<GPUResourceView>)
 *****************************************************************************/
-Material::GPUResourceViewPtr Material::LoadTexture(const gu::wstring& filePath, const UsageTexture textureType)
+Material::GPUResourceViewPtr Material::LoadTexture(const gu::tstring& filePath, const UsageTexture textureType)
 {
 	const auto resourceView = ResourceCache->Load(filePath);
 
@@ -161,16 +161,16 @@ Material::GPUResourceViewPtr Material::LoadTexture(const gu::wstring& filePath, 
 /****************************************************************************
 *					SetUpBuffer
 *************************************************************************//**
-*  @fn        void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::wstring& name)
+*  @fn        void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::tstring& name)
 *
 *  @brief     Set up cbv buffer (for material)
 *
 *  @param[in] const GPUBufferMetaData& bufferInfo, 
-*  @param[in] const gu::wstring& name
+*  @param[in] const gu::tstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::wstring& name)
+void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::tstring& name)
 {
 	if (bufferInfo.BufferType != BufferType::Constant)
 	{
@@ -184,7 +184,7 @@ void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::wstrin
 	-            Get material buffer
 	---------------------------------------------------------------------*/
 	const auto materialBuffer = device->CreateBuffer(bufferInfo);
-	materialBuffer->SetName(name + L"CB");
+	materialBuffer->SetName(name + SP("CB"));
 	if (bufferInfo.InitData)
 	{
 		materialBuffer->Update(bufferInfo.InitData, 1);

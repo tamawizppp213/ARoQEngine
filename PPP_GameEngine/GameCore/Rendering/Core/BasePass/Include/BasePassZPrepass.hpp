@@ -84,7 +84,7 @@ namespace gc::basepass
 		*****************************************************************************/
 		ZPrepass() = default;
 
-		ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gu::wstring& addName = L"");
+		ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gu::tstring& addName = SP(""));
 
 		~ZPrepass();
 
@@ -92,9 +92,9 @@ namespace gc::basepass
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PreparePipelineState(const gu::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 		
-		void PrepareFrameBuffers(const gu::wstring& name);
+		void PrepareFrameBuffers(const gu::tstring& name);
 		
 		/****************************************************************************
 		**                Protected Member Variables

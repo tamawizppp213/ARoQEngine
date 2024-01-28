@@ -71,7 +71,7 @@ namespace rhi::directX12
 
 		D3D12_GPU_VIRTUAL_ADDRESS GetDxGPUVirtualAddress() const { return _resource->GetGPUVirtualAddress(); }
 
-		void SetName(const gu::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -80,7 +80,7 @@ namespace rhi::directX12
 		
 		~GPUBuffer();
 		
-		explicit GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::wstring& name = L"Buffer");
+		explicit GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("Buffer"));
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor

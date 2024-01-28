@@ -78,7 +78,7 @@ namespace rhi::core
 		/* @brief : Return color attachment size*/
 		size_t GetColorAttachmentSize() const noexcept { return _colorAttachments.size(); }
 
-		virtual void SetName(const gu::wstring& name) = 0;
+		virtual void SetName(const gu::tstring& name) = 0;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

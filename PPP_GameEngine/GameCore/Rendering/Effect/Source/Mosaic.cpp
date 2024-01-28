@@ -42,7 +42,7 @@ Mosaic::~Mosaic()
 
 }
 
-Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, const gu::wstring& addName)
+Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, const gu::tstring& addName)
 	: IFullScreenEffector(engine)
 {
 #ifdef _DEBUG
@@ -92,13 +92,13 @@ void Mosaic::Draw()
 
 #pragma region Set up function
 
-void Mosaic::PrepareBuffer(const float blockSize, const gu::wstring& name)
+void Mosaic::PrepareBuffer(const float blockSize, const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(MosaicInfo), 1);
 
 	const auto buffer = device->CreateBuffer(metaData);
-	buffer->SetName(name + L"MosaicInfo");
+	buffer->SetName(name + SP("MosaicInfo"));
 
 	/*-------------------------------------------------------------------
 	-			Set Information
@@ -112,7 +112,7 @@ void Mosaic::PrepareBuffer(const float blockSize, const gu::wstring& name)
 }
 
 
-void Mosaic::PreparePipelineState(const gu::wstring& addName)
+void Mosaic::PreparePipelineState(const gu::tstring& addName)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -134,8 +134,8 @@ void Mosaic::PreparePipelineState(const gu::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Effect\\ShaderMosaic.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel , L"Shader\\Effect\\ShaderMosaic.hlsl",L"PSMain", 6.4f, {L"Shader\\Core"});
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Effect\\ShaderMosaic.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel , SP("Shader\\Effect\\ShaderMosaic.hlsl"),SP("PSMain"), 6.4f, {SP("Shader\\Core")});
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
@@ -148,7 +148,7 @@ void Mosaic::PreparePipelineState(const gu::wstring& addName)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(addName + L"PSO");
+	_pipeline->SetName(addName + SP("PSO"));
 }
 
 void Mosaic::PrepareResourceView()

@@ -89,7 +89,7 @@ namespace gc
 		*****************************************************************************/
 		Dof(const LowLevelGraphicsEnginePtr& engine, 
 			const float width, const float height, const float radius = 10.0f, 
-			const float nearClip = 0.2f, const float farClip = 0.8f, const gu::wstring& addName = L"");
+			const float nearClip = 0.2f, const float farClip = 0.8f, const gu::tstring& addName = SP(""));
 
 		virtual ~Dof();
 	protected:
@@ -98,11 +98,11 @@ namespace gc
 		*****************************************************************************/
 		void PrepareRenderBuffer(const size_t width , const size_t height);
 
-		void PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::wstring& name);
+		void PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::tstring& name);
 
-		void PrepareClipSizeBuffer(const float nearClip, const float farClip, const gu::wstring& name);
+		void PrepareClipSizeBuffer(const float nearClip, const float farClip, const gu::tstring& name);
 
-		void PreparePipelineState(const gu::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

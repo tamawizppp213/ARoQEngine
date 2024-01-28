@@ -42,7 +42,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkPipeline GetPipeline() const noexcept { return _pipeline; }
 
-		void SetName(const gu::wstring& name)override;
+		void SetName(const gu::tstring& name)override;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -87,7 +87,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void SetName(const gu::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		
 		/****************************************************************************
 		**                Constructor and Destructor

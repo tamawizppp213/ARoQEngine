@@ -29,9 +29,9 @@ namespace gc::core
 	protected:
 		using GameModelPtr = GameModel*;
 	public:
-		virtual bool Load(const gu::wstring& filePath, GameModelPtr model) = 0;
+		virtual bool Load(const gu::tstring& filePath, GameModelPtr model) = 0;
 		
-		virtual bool Save(const gu::wstring& filePath, const GameModelPtr model) = 0;
+		virtual bool Save(const gu::tstring& filePath, const GameModelPtr model) = 0;
 	};
 }
 

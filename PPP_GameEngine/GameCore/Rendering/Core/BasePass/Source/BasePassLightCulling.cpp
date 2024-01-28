@@ -124,7 +124,7 @@ void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 		bufferInfo.ResourceUsage = ResourceUsage::UnorderedAccess;
 
 		const auto bufferName = L"LightCulling::LightIDLists::" + std::to_wstring(i);
-		const auto buffer = device->CreateBuffer(bufferInfo, gu::wstring(bufferName.c_str(), bufferName.size()));
+		const auto buffer = device->CreateBuffer(bufferInfo, gu::tstring(bufferName.c_str(), bufferName.size()));
 		_lightIDLists[i] = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 	}
 

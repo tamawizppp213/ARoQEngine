@@ -45,7 +45,7 @@ RHICommandList::~RHICommandList()
 	if (_commandList) { _commandList.Reset(); _commandList = nullptr; }
 }
 
-RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, const gu::wstring& name) : 
+RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, const gu::tstring& name) : 
 	rhi::core::RHICommandList(device, commandAllocator)
 {
 	/*-------------------------------------------------------------------
@@ -709,7 +709,7 @@ void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& 
 #pragma endregion Copy
 #pragma endregion GPU Command
 #pragma region Property
-void RHICommandList::SetName(const gu::wstring& name)
+void RHICommandList::SetName(const gu::tstring& name)
 {
 	_commandList->SetName(name.CString());
 }

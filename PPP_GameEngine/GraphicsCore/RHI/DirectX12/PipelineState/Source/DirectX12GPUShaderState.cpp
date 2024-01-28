@@ -32,21 +32,21 @@ using namespace rhi::directX12;
 /****************************************************************************
 *                           Compile
 *************************************************************************//**
-*  @fn        void GPUShaderState::Compile(const core::ShaderType type, const gu::wstring& fileName, const gu::wstring& entryPoint, const float version)
+*  @fn        void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version)
 * 
 *  @brief     Online Compile 
 * 
 *  @param[in] core::ShaderType type
 * 
-*  @param[in] gu::wstring& fileName : filePath
+*  @param[in] gu::tstring& fileName : filePath
 * 
-*  @param[in] gu::wstring& entryPoint (Main Shader Function Name)
+*  @param[in] gu::tstring& entryPoint (Main Shader Function Name)
 * 
 *  @param[in] float version (current newest version : 6.6f)
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUShaderState::Compile(const core::ShaderType type, const gu::wstring& fileName, const gu::wstring& entryPoint, const float version, const std::vector<gu::wstring>& includeDirectories, const std::vector<gu::wstring>& defines)
+void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version, const std::vector<gu::tstring>& includeDirectories, const std::vector<gu::tstring>& defines)
 {
 #if __DEBUG
 	assert(0.0f < version && version <= NEWEST_VERSION);
@@ -54,7 +54,7 @@ void GPUShaderState::Compile(const core::ShaderType type, const gu::wstring& fil
 	_shaderType = type; _version = version;
 
 	// Set target Name ex) vs_6.0, ps_6.1...
-	gu::wstring target = GetShaderTypeName(type) + L"_" + gu::wstring(Format(version).CString());
+	gu::tstring target = GetShaderTypeName(type) + SP("_") + gu::tstring(Format(version).CString());
 	/*-------------------------------------------------------------------
 	-          Select Compile Mode Based on Shader Version
 	---------------------------------------------------------------------*/
@@ -83,17 +83,17 @@ void GPUShaderState::Compile(const core::ShaderType type, const gu::wstring& fil
 /****************************************************************************
 *							LoadBinary
 *************************************************************************//**
-*  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::wstring& fileName)
+*  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& fileName)
 * 
 *  @brief     Load Binary Data (Offline Compile)
 * 
 *  @param[in] core::ShaderType type
 * 
-*  @param[in] gu::wstring& fileName : filePath
+*  @param[in] gu::tstring& fileName : filePath
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::wstring& fileName)
+void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& fileName)
 {
 	_shaderType = type;
 
@@ -128,7 +128,7 @@ void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::wstring& 
 }
 
 #pragma region DxCompile
-BlobComPtr GPUShaderState::DxCompile(const gu::wstring& fileName, const gu::wstring& entryPoint, const gu::wstring& target, const std::vector<gu::wstring>& includeDirectories, const std::vector<gu::wstring>& defines)
+BlobComPtr GPUShaderState::DxCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const std::vector<gu::tstring>& includeDirectories, const std::vector<gu::tstring>& defines)
 {
 	/*-------------------------------------------------------------------
 	-            Create blob data from shader text file.
@@ -213,7 +213,7 @@ BlobComPtr GPUShaderState::DxCompile(const gu::wstring& fileName, const gu::wstr
 	return byteCode;
 }
 
-BlobComPtr GPUShaderState::DxCompile(const gu::wstring& fileName, const D3D_SHADER_MACRO* defines, const gu::wstring& entryPoint, const gu::wstring& target)
+BlobComPtr GPUShaderState::DxCompile(const gu::tstring& fileName, const D3D_SHADER_MACRO* defines, const gu::tstring& entryPoint, const gu::tstring& target)
 {
 	UINT compileFlags = 0;
 #if _DEBUG

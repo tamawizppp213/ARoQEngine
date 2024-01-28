@@ -89,7 +89,7 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const gu::wstring& addName = L"");
+		CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const gu::tstring& addName = SP(""));
 
 		~CascadeShadow();
 
@@ -97,7 +97,7 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareResourceView(const gu::wstring& name);
+		void PrepareResourceView(const gu::tstring& name);
 
 		void Update(const gu::SharedPointer<GameTimer>& gameTimer, const gm::Float3& direction);
 

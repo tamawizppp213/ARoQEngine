@@ -85,16 +85,16 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 	/*-------------------------------------------------------------------
 	-      Get command queue (Graphics, compute, copy command queue )
 	---------------------------------------------------------------------*/
-	_commandQueues[CommandListType::Graphics] = _device->CreateCommandQueue(CommandListType::Graphics, L"GraphicsQueue");
-	_commandQueues[CommandListType::Compute]  = _device->CreateCommandQueue(CommandListType::Compute , L"ComputeQueue");
-	_commandQueues[CommandListType::Copy]     = _device->CreateCommandQueue(CommandListType::Copy    , L"CopyQueue");
+	_commandQueues[CommandListType::Graphics] = _device->CreateCommandQueue(CommandListType::Graphics, SP("GraphicsQueue"));
+	_commandQueues[CommandListType::Compute]  = _device->CreateCommandQueue(CommandListType::Compute , SP("ComputeQueue"));
+	_commandQueues[CommandListType::Copy]     = _device->CreateCommandQueue(CommandListType::Copy    , SP("CopyQueue"));
 
 	/*-------------------------------------------------------------------
 	-      Set up command list
 	---------------------------------------------------------------------*/
-	_commandLists[core::CommandListType::Graphics] = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Graphics, L"GraphicsAllocator"), L"GraphicsCommandList");
-	_commandLists[core::CommandListType::Compute]  = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Compute , L"ComputeAllocator") , L"ComputeCommandList");
-	_commandLists[core::CommandListType::Copy]     = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Copy    , L"CopyAllocator")    , L"CopyCommandList");
+	_commandLists[core::CommandListType::Graphics] = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Graphics, SP("GraphicsAllocator")), SP("GraphicsCommandList"));
+	_commandLists[core::CommandListType::Compute]  = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Compute , SP("ComputeAllocator")) , SP("ComputeCommandList"));
+	_commandLists[core::CommandListType::Copy]     = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Copy    , SP("CopyAllocator"))    , SP("CopyCommandList"));
 
 	/*-------------------------------------------------------------------
 	-      Create fence
@@ -480,8 +480,8 @@ void LowLevelGraphicsEngine::SetFrameBuffers(const int width, const int height, 
 		auto depthInfo  = core::GPUTextureMetaData::DepthStencil( width, height, 
 			_depthStencilFormat, clearDepthColor);
 
-		const auto renderTexture = _device->CreateTexture(renderInfo, L"FrameBuffer");
-		const auto depthTexture  = _device->CreateTexture(depthInfo , L"FrameBufferDepth");
+		const auto renderTexture = _device->CreateTexture(renderInfo, SP("FrameBuffer"));
+		const auto depthTexture  = _device->CreateTexture(depthInfo , SP("FrameBufferDepth"));
 
 		/*-------------------------------------------------------------------
 		-      Create Frame Buffer

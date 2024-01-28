@@ -40,7 +40,7 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		/* @brief : set debugging name. */
-		void SetName(const gu::wstring& name) { _name = name; };
+		void SetName(const gu::tstring& name) { _name = name; };
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -63,7 +63,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		gu::wstring _name = L"";
+		gu::tstring _name = L"";
 	};
 }
 #endif

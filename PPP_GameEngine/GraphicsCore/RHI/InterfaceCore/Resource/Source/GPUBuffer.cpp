@@ -23,7 +23,7 @@ namespace
 	static inline std::uint32_t AlignmentValue(std::uint32_t size, std::uint32_t alignment) { return (size + alignment - (size % alignment)); }
 }
 
-GPUBuffer::GPUBuffer(const gu::SharedPointer<RHIDevice>& device, const core::GPUBufferMetaData& metaData, [[maybe_unused]]const gu::wstring& name)
+GPUBuffer::GPUBuffer(const gu::SharedPointer<RHIDevice>& device, const core::GPUBufferMetaData& metaData, [[maybe_unused]]const gu::tstring& name)
 	: GPUResource(device), _metaData(metaData)
 {
 	/*-------------------------------------------------------------------

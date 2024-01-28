@@ -33,7 +33,7 @@ namespace
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Main Function
-bool PMXConverter::Load(const gu::wstring& filePath, GameModelPtr model)
+bool PMXConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 {
 	if (model == nullptr)          { OutputDebugStringA("model is nullptr.");  return false; }
 	if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }
@@ -59,7 +59,7 @@ bool PMXConverter::Load(const gu::wstring& filePath, GameModelPtr model)
 }
 
 
-bool PMDConverter::Load(const gu::wstring& filePath, GameModelPtr model)
+bool PMDConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 {
 	if (model == nullptr)          { OutputDebugStringA("model is nullptr") ; return false; }
 	if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }
@@ -155,7 +155,7 @@ void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFil
 		GPUBufferMetaData bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1, MemoryHeap::Upload, ResourceState::Common, &pbrMaterial);
 
 		// material buffer
-		material = gu::MakeShared<Material>(model->_engine, bufferInfo, gu::wstring(unicode::ToWString(std::string(file.Materials[i].MaterialName.CString())).c_str()));
+		material = gu::MakeShared<Material>(model->_engine, bufferInfo, gu::tstring(unicode::ToWString(std::string(file.Materials[i].MaterialName.CString())).c_str()));
 
 		/*-------------------------------------------------------------------
 		-            Set up texture
@@ -163,12 +163,12 @@ void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFil
 		if (file.Materials[i].TextureIndex != INVALID_ID)
 		{
 			const auto stdPathName = unicode::ToWString(std::string(file.TexturePathList[file.Materials[i].TextureIndex].CString()));
-			material->LoadTexture(gu::wstring(stdPathName.c_str()), UsageTexture::Diffuse);
+			material->LoadTexture(gu::tstring(stdPathName.c_str()), UsageTexture::Diffuse);
 		}
 		if (file.Materials[i].SphereMapTextureIndex != INVALID_ID)
 		{
 			const auto stdPathName = unicode::ToWString(std::string(file.TexturePathList[file.Materials[i].TextureIndex].CString()));
-			material->LoadTexture(gu::wstring(stdPathName.c_str()), UsageTexture::Specular);
+			material->LoadTexture(gu::tstring(stdPathName.c_str()), UsageTexture::Specular);
 		}
 
 		/*-------------------------------------------------------------------

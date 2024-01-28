@@ -85,7 +85,7 @@ std::vector<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const
 	return clearValues;
 }
 
-void RHIRenderPass::SetName(const gu::wstring& name)
+void RHIRenderPass::SetName(const gu::tstring& name)
 {
 	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_RENDER_PASS, reinterpret_cast<std::uint64_t>(_renderPass));

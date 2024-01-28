@@ -32,7 +32,7 @@ using namespace gm;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const gu::wstring& addName)
+CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const gu::tstring& addName)
 	: _engine(engine), _shadowDesc(desc)
 {
 	/*-------------------------------------------------------------------
@@ -47,8 +47,8 @@ CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const Casc
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (name != L"") { name += addName; name += L"::"; }
-	name += L"CascadeShadow::";
+	gu::tstring name = SP(""); if (name != SP("")) { name += addName; name += SP("::"); }
+	name += SP("CascadeShadow::");
 
 	/*-------------------------------------------------------------------
 	-        Shadow map
@@ -130,7 +130,7 @@ void CascadeShadow::Add(const GameModelPtr& gameModel)
 #pragma endregion Main Function
 
 #pragma region SetUp Function
-void CascadeShadow::PrepareResourceView(const gu::wstring& name)
+void CascadeShadow::PrepareResourceView(const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -146,7 +146,7 @@ void CascadeShadow::PrepareResourceView(const gu::wstring& name)
 
 		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(CascadeShadowInfo), 1, MemoryHeap::Upload, ResourceState::Common);
 		const auto buffer   = device->CreateBuffer(metaData);
-		buffer->SetName(name + L"ShadowInfo");
+		buffer->SetName(name + SP("ShadowInfo"));
 		buffer->Pack(&shadowInfo, nullptr);
 		_shadowInfoView = device->CreateResourceView(ResourceViewType::Buffer, buffer, 0, 0, nullptr);
 	}

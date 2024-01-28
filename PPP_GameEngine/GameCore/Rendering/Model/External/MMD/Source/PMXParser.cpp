@@ -20,7 +20,7 @@ bool ReadPMXIndex(FILE* filePtr, INT32* pmxIndex, UINT8 indexSize);
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-bool PMXFile::Load(const gu::wstring& filePath)
+bool PMXFile::Load(const gu::tstring& filePath)
 {
 	/*-------------------------------------------------------------------
 	-             Open File

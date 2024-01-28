@@ -37,10 +37,10 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-		void Compile(const core::ShaderType type, const gu::wstring& fileName, const gu::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<gu::wstring>& includeDirectories = {}, const std::vector<gu::wstring>& defines = {}) override;
+		void Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint = SP("main"), const float version = 6.0f, const std::vector<gu::tstring>& includeDirectories = {}, const std::vector<gu::tstring>& defines = {}) override;
 		
 		// @brief : Offline Compile, already compiled fileName(filePath)
-		void LoadBinary(const core::ShaderType type, const gu::wstring& fileName) override;
+		void LoadBinary(const core::ShaderType type, const gu::tstring& fileName) override;
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -71,12 +71,12 @@ namespace rhi::vulkan
 
 		VkShaderModule _module     = nullptr;
 
-		gu::wstring   _apiVersion = L"vulkan1.3";
+		gu::tstring   _apiVersion = SP("vulkan1.3");
 
 		gu::string   _name = "";
 
 	private:
-		void VkCompile(const gu::wstring& fileName, const gu::wstring& entryPoint, const gu::wstring& target, const std::vector<gu::wstring>& includeDirectories);
+		void VkCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const std::vector<gu::tstring>& includeDirectories);
 	};
 }
 #endif

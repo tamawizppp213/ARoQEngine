@@ -31,7 +31,7 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, core::CommandListType type, const gu::wstring& name) : rhi::core::RHICommandQueue(device, type)
+RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, core::CommandListType type, const gu::tstring& name) : rhi::core::RHICommandQueue(device, type)
 {
 	Check(device);
 	Check(type != core::CommandListType::Unknown);
@@ -195,7 +195,7 @@ core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
 #pragma endregion Execute
 
 #pragma region Property
-void RHICommandQueue::SetName(const gu::wstring& name)
+void RHICommandQueue::SetName(const gu::tstring& name)
 {
 	_commandQueue->SetName(name.CString());
 }

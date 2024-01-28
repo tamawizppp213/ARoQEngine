@@ -151,7 +151,7 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	}
 }
 
-void GPUGraphicsPipelineState::SetName(const gu::wstring& name)
+void GPUGraphicsPipelineState::SetName(const gu::tstring& name)
 {
 	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_PIPELINE, reinterpret_cast<std::uint64_t>(_pipeline));
@@ -189,7 +189,7 @@ void GPUComputePipelineState::CompleteSetting()
 	}
 }
 
-void GPUComputePipelineState::SetName(const gu::wstring& name)
+void GPUComputePipelineState::SetName(const gu::tstring& name)
 {
 	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_PIPELINE, reinterpret_cast<std::uint64_t>(_pipeline));

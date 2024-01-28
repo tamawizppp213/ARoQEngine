@@ -71,7 +71,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter) 
 	
 	const auto& gpuName    = adapter->GetName();
 	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName.CString());
-	SetName(gu::wstring(deviceName.c_str()));
+	SetName(gu::tstring(deviceName.c_str()));
 }
 
 void RHIDevice::Destroy()
@@ -128,12 +128,12 @@ gu::SharedPointer<core::RHISwapchain>  RHIDevice::CreateSwapchain(const core::Sw
 	return gu::StaticPointerCast<core::RHISwapchain>(gu::MakeShared<vulkan::RHISwapchain>(SharedFromThis(), desc));
 }
 
-gu::SharedPointer<core::RHICommandList> RHIDevice::CreateCommandList(const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, const gu::wstring& name)
+gu::SharedPointer<core::RHICommandList> RHIDevice::CreateCommandList(const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::RHICommandList>(gu::MakeShared<vulkan::RHICommandList>(SharedFromThis(), commandAllocator, name));
 }
 
-gu::SharedPointer<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type, const gu::wstring& name)
+gu::SharedPointer<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type, const gu::tstring& name)
 {
 	const auto queueFamilyIndex = _commandQueueInfo[type].QueueFamilyIndex;
 	const auto queueIndex = _newCreateCommandQueueIndex[type];
@@ -142,7 +142,7 @@ gu::SharedPointer<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const cor
 	return gu::StaticPointerCast<core::RHICommandQueue>(gu::MakeShared<vulkan::RHICommandQueue>(SharedFromThis(),type, queueFamilyIndex, queueIndex, name));
 }
 
-gu::SharedPointer<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type, const gu::wstring& name)
+gu::SharedPointer<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::RHICommandAllocator>(gu::MakeShared<vulkan::RHICommandAllocator>(SharedFromThis(), type, _commandQueueInfo[type].QueueFamilyIndex, name));
 }
@@ -185,7 +185,7 @@ gu::SharedPointer<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 	return gu::StaticPointerCast<core::GPUPipelineFactory>(gu::MakeShared<vulkan::GPUPipelineFactory>(SharedFromThis()));
 }
 
-gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::wstring& name)
+gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::RHIResourceLayout>(gu::MakeShared<vulkan::RHIResourceLayout>(SharedFromThis(), elements, samplers, constant32Bits, name));
 }
@@ -204,12 +204,12 @@ gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const cor
 	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<vulkan::GPUResourceView>(SharedFromThis(), viewType, buffer, mipSlice, planeSlice, customHeap));
 }
 
-gu::SharedPointer<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::wstring& name)
+gu::SharedPointer<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::GPUBuffer>(gu::MakeShared<vulkan::GPUBuffer>(SharedFromThis(), metaData));
 }
 
-gu::SharedPointer<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData, const gu::wstring& name)
+gu::SharedPointer<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::GPUTexture>(gu::MakeShared<vulkan::GPUTexture>(SharedFromThis(), metaData));
 }
@@ -219,7 +219,7 @@ gu::SharedPointer<core::GPUTexture> RHIDevice::CreateTextureEmpty()
 	return gu::StaticPointerCast<core::GPUTexture>(gu::MakeShared<vulkan::GPUTexture>(SharedFromThis()));
 }
 
-gu::SharedPointer<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fenceValue, const gu::wstring& name)
+gu::SharedPointer<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fenceValue, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::RHIFence>(gu::MakeShared<vulkan::RHIFence>(SharedFromThis(), fenceValue, name));
 }
@@ -608,15 +608,15 @@ std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t requiredTypeBits, cons
 /****************************************************************************
 *                     SetName
 *************************************************************************//**
-*  @fn        void RHIDevice::SetName(const gu::wstring& name)
+*  @fn        void RHIDevice::SetName(const gu::tstring& name)
 *
 *  @brief     Set Logical device name
 *
-*  @param[in] const gu::wstring& name
+*  @param[in] const gu::tstring& name
 *
 *  @return    void
 *****************************************************************************/
-void RHIDevice::SetName(const gu::wstring& name)
+void RHIDevice::SetName(const gu::tstring& name)
 {
 	SetVkResourceName(name, VK_OBJECT_TYPE_DEVICE, reinterpret_cast<std::uint64_t>(_logicalDevice));
 }
@@ -624,17 +624,17 @@ void RHIDevice::SetName(const gu::wstring& name)
 /****************************************************************************
 *                     SetVkResourceName
 *************************************************************************//**
-*  @fn        void RHIDevice::SetVkResourceName(const gu::wstring& name, const VkObjectType type, const std::uint64_t objectHandle)
+*  @fn        void RHIDevice::SetVkResourceName(const gu::tstring& name, const VkObjectType type, const std::uint64_t objectHandle)
 *
 *  @brief     Set Vulkan resource name. 
 *
-*  @param[in] const gu::wstring& name for debug
+*  @param[in] const gu::tstring& name for debug
 *  @param[in] const VkObjectType type 
 *  @param[in] const std::uint64_t objectPointer  
 * 
 *  @return    void
 *****************************************************************************/
-void RHIDevice::SetVkResourceName(const gu::wstring& name, const VkObjectType type, const std::uint64_t objectHandle)
+void RHIDevice::SetVkResourceName(const gu::tstring& name, const VkObjectType type, const std::uint64_t objectHandle)
 {
 	std::wstring stdName = std::wstring(name.CString());
 	std::string utf8Name = unicode::ToUtf8String(stdName);

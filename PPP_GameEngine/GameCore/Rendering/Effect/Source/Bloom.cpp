@@ -31,14 +31,14 @@ using namespace gc;
 Bloom::Bloom(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const float power, 
 	const ResourceViewPtr& customLuminanceSRV,
 	const ResourceViewPtr& customLuminanceUAV,
-	const gu::wstring& addName)
+	const gu::tstring& addName)
 	:_engine(engine), _explosion(power)
 {
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"GaussianBlur::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("GaussianBlur::");
 	
 	if (customLuminanceSRV && customLuminanceUAV) 
 	{ 
@@ -135,22 +135,22 @@ void Bloom::UpdateBloomPower(const float power)
 #pragma endregion Main Function
 
 #pragma region Set up Function
-void Bloom::PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name)
+void Bloom::PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name)
 {
-	_gaussianBlur[0] = gu::MakeShared<GaussianBlur>(_engine, width, height, true, name + L"GaussianBlur");
+	_gaussianBlur[0] = gu::MakeShared<GaussianBlur>(_engine, width, height, true, name + SP("GaussianBlur"));
 	for (std::uint32_t i = 1; i < _countof(_gaussianBlur); ++i)
 	{
 		_gaussianBlur[i] = gu::MakeShared<GaussianBlur>(_engine, 
 			(std::uint32_t)(width / pow(2, i)),
 			(std::uint32_t)(height / pow(2, i)),
 			true,
-			name + L"GaussianBlur");
+			name + SP("GaussianBlur"));
 	}
 }
 
-void Bloom::PreparePipelineState(const gu::wstring& name)
+void Bloom::PreparePipelineState(const gu::tstring& name)
 {
-	const gu::wstring defaultPath = L"Shader\\Effect\\ShaderBloom.hlsl";
+	const gu::tstring defaultPath = SP("Shader\\Effect\\ShaderBloom.hlsl");
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 
@@ -168,8 +168,8 @@ void Bloom::PreparePipelineState(const gu::wstring& name)
 
 	const auto luminanceCS  = factory->CreateShaderState();
 	const auto finalBloomCS = factory->CreateShaderState();
-	luminanceCS->Compile(ShaderType::Compute, defaultPath, L"SamplingLuminance", 6.4f, {});
-	finalBloomCS->Compile(ShaderType::Compute, defaultPath, L"FinalBloom", 6.4f, {});
+	luminanceCS->Compile(ShaderType::Compute, defaultPath, SP("SamplingLuminance"), 6.4f, {});
+	finalBloomCS->Compile(ShaderType::Compute, defaultPath, SP("FinalBloom"), 6.4f, {});
 
 	_luminancePipeline  = device->CreateComputePipelineState(_resourceLayout);
 	_finalBloomPipeline = device->CreateComputePipelineState(_resourceLayout);
@@ -180,11 +180,11 @@ void Bloom::PreparePipelineState(const gu::wstring& name)
 	_luminancePipeline->CompleteSetting();
 	_finalBloomPipeline->CompleteSetting();
 
-	_luminancePipeline ->SetName(name + L"SamplingLuminancePSO");
-	_finalBloomPipeline->SetName(name + L"FinalBloomPSO");
+	_luminancePipeline ->SetName(name + SP("SamplingLuminancePSO"));
+	_finalBloomPipeline->SetName(name + SP("FinalBloomPSO"));
 }
 
-void Bloom::PrepareResourceView(const gu::wstring& name)
+void Bloom::PrepareResourceView(const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto format = _engine->GetBackBufferFormat();
@@ -198,7 +198,7 @@ void Bloom::PrepareResourceView(const gu::wstring& name)
 	if (!_luminanceSRV || !_luminanceUAV)
 	{
 		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess);
-		const auto texture = device->CreateTexture(metaData, name + L"Luminance");
+		const auto texture = device->CreateTexture(metaData, name + SP("Luminance"));
 		_luminanceSRV = device->CreateResourceView(ResourceViewType::Texture  , texture,0,0, nullptr);
 		_luminanceUAV = device->CreateResourceView(ResourceViewType::RWTexture, texture,0,0, nullptr);
 	}

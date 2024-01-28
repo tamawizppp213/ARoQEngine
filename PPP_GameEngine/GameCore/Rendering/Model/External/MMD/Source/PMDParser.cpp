@@ -22,7 +22,7 @@ using namespace file;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 void ReadPMDString(FILE* filePtr, gu::string* string, UINT32 bufferSize);
-bool PMDFile::Load(const gu::wstring& filePath)
+bool PMDFile::Load(const gu::tstring& filePath)
 {
 	/*-------------------------------------------------------------------
 	-             Open File

@@ -29,7 +29,7 @@ using namespace rhi;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHICommandList::RHICommandList(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHICommandAllocator>& allocator, const gu::wstring& name): 
+RHICommandList::RHICommandList(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHICommandAllocator>& allocator, const gu::tstring& name): 
 	core::RHICommandList(device, allocator)
 {
 	VkDevice      vkDevice    = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
@@ -372,7 +372,7 @@ VkAccessFlags RHICommandList::SelectVkAccessFlag(const VkImageLayout imageLayout
 #pragma endregion GPU Command
 
 #pragma region Property
-void RHICommandList::SetName(const gu::wstring& name)
+void RHICommandList::SetName(const gu::tstring& name)
 {
 	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_COMMAND_BUFFER, reinterpret_cast<std::uint64_t>(_commandBuffer));

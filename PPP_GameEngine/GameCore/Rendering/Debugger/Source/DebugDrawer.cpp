@@ -27,14 +27,14 @@ using namespace gc::rendering;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-DebugDrawer::DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& addName)
+DebugDrawer::DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& addName)
 	: _engine(engine)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"DebugDrawer::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("DebugDrawer::");
 
 	PreparePipelineState(name);
 }
@@ -119,7 +119,7 @@ void DebugDrawer::Clear(const GameModelPtr& model)
 #pragma endregion Main Function
 
 #pragma region Set up
-void DebugDrawer::PreparePipelineState(const gu::wstring& name)
+void DebugDrawer::PreparePipelineState(const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -140,8 +140,8 @@ void DebugDrawer::PreparePipelineState(const gu::wstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Core\\ShaderDebug.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel , L"Shader\\Core\\ShaderDebug.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Core\\ShaderDebug.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel , SP("Shader\\Core\\ShaderDebug.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-             Setup blend state (all alpha blend)
@@ -154,7 +154,7 @@ void DebugDrawer::PreparePipelineState(const gu::wstring& name)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(name + L"pso");
+	_pipeline->SetName(name + SP("pso"));
 
 }
 

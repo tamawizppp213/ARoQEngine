@@ -47,9 +47,9 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		GPUResourceViewPtr Load(const gu::wstring& filePath);
+		GPUResourceViewPtr Load(const gu::tstring& filePath);
 
-		bool Find(const gu::wstring& filePath);
+		bool Find(const gu::tstring& filePath);
 
 		//DescriptorID Regist(const gu::SharedPointer<core::GPUResourceView>& view); 
 		/****************************************************************************

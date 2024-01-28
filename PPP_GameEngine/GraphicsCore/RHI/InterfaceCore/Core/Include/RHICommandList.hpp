@@ -203,7 +203,7 @@ namespace rhi::core
 		/* @brief : デバイスをセットします. */
 		void SetDevice(gu::SharedPointer<RHIDevice> device) { _device = device; }
 
-		virtual void SetName(const gu::wstring& name) = 0;
+		virtual void SetName(const gu::tstring& name) = 0;
 
 		/****************************************************************************
 		**                Constructor and Destructor

@@ -55,7 +55,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkBuffer GetBuffer() const noexcept { return _buffer; }
 
-		void SetName(const gu::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -64,7 +64,7 @@ namespace rhi::vulkan
 
 		~GPUBuffer();
 
-		explicit GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::wstring& name = L"Buffer");
+		explicit GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("Buffer"));
 		
 	protected:
 		/****************************************************************************

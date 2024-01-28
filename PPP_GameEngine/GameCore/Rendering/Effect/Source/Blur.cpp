@@ -56,14 +56,14 @@ GaussianBlur::~GaussianBlur()
 	_textureSizeView.Reset();
 	_blurParameterView.Reset();
 }
-GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS, const gu::wstring& addName)
+GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS, const gu::tstring& addName)
 	: _engine(engine), _useCS(useCS)
 {
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"GaussianBlur::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("GaussianBlur::");
 	_addName = name;
 	/*-------------------------------------------------------------------
 	-            Prepare resource
@@ -257,10 +257,10 @@ void GaussianBlur::SetUpWeightTable(float sigma)
 *************************************************************************//**
 *  @fn        void GaussianBlur::PrepareBlurParameters()
 *  @brief     Prepare Blur Parameter
-*  @param[in] const gu::wstring& name
+*  @param[in] const gu::tstring& name
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::PrepareBlurParameters(const gu::wstring& name)
+void GaussianBlur::PrepareBlurParameters(const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -272,7 +272,7 @@ void GaussianBlur::PrepareBlurParameters(const gu::wstring& name)
 	
 	const auto blurParameter = _engine->GetDevice()->CreateBuffer(metaData);
 	// Blur parameter gpu resource name 
-	blurParameter->SetName(name + L"BlurParameter");
+	blurParameter->SetName(name + SP("BlurParameter"));
 	// Pack blur paramter init data 
 	blurParameter->Pack(&parameter, nullptr);
 
@@ -287,13 +287,13 @@ void GaussianBlur::PrepareBlurParameters(const gu::wstring& name)
 *  @param[in] std::uint32_t height
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name)
+void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name)
 {
 	const auto device   = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(TextureSizeParameter), 1, MemoryHeap::Upload, ResourceState::Common);
 	
 	const auto textureSizeBuffer = device->CreateBuffer(metaData);
-	textureSizeBuffer->SetName(name + L"TextureSize");
+	textureSizeBuffer->SetName(name + SP("TextureSize"));
 	/*-------------------------------------------------------------------
 	-			Set Texture Size Parameter
 	---------------------------------------------------------------------*/
@@ -319,9 +319,9 @@ void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std
 * 
 *  @return 　　void
 *****************************************************************************/
-void GaussianBlur::PreparePipelineState(const gu::wstring& name)
+void GaussianBlur::PreparePipelineState(const gu::tstring& name)
 {
-	gu::wstring defaultPath = L"Shader\\Effect\\ShaderGaussianBlur.hlsl";
+	gu::tstring defaultPath = SP("Shader\\Effect\\ShaderGaussianBlur.hlsl");
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 	/*-------------------------------------------------------------------
@@ -346,12 +346,12 @@ void GaussianBlur::PreparePipelineState(const gu::wstring& name)
 	if (_useCS)
 	{
 		const auto blurCS = factory->CreateShaderState();
-		blurCS->Compile(ShaderType::Compute, defaultPath, L"ExecuteBlur", 6.4f, { L"Shader\\Core" });
+		blurCS->Compile(ShaderType::Compute, defaultPath, SP("ExecuteBlur"), 6.4f, { SP("Shader\\Core") });
 
 		_computePipeline = device->CreateComputePipelineState(_resourceLayout);
 		_computePipeline->SetComputeShader(blurCS);
 		_computePipeline->CompleteSetting();
-		_computePipeline->SetName(name + L"BlurPSO");
+		_computePipeline->SetName(name + SP("BlurPSO"));
 	}
 	else
 	{
@@ -366,11 +366,11 @@ void GaussianBlur::PreparePipelineState(const gu::wstring& name)
 		const auto blurPS   = factory->CreateShaderState();
 		const auto mainPS   = factory->CreateShaderState();
 		const auto mainVS   = factory->CreateShaderState();
-		blurVS_X->Compile(ShaderType::Vertex, defaultPath, L"VS_XBlur", 6.4f, { L"Shader\\Core" });
-		blurVS_Y->Compile(ShaderType::Vertex, defaultPath, L"VS_YBlur", 6.4f, { L"Shader\\Core" });
-		blurPS  ->Compile(ShaderType::Pixel, defaultPath,  L"PSBlur"  , 6.4f, { L"Shader\\Core" });
-		mainVS  ->Compile(ShaderType::Vertex, defaultPath, L"VSFinal", 6.4f, { L"Shader\\Core" });
-		mainPS  ->Compile(ShaderType::Pixel, defaultPath, L"PSFinal", 6.4f, {L"Shader\\Core"});
+		blurVS_X->Compile(ShaderType::Vertex, defaultPath, SP("VS_XBlur"), 6.4f, { SP("Shader\\Core") });
+		blurVS_Y->Compile(ShaderType::Vertex, defaultPath, SP("VS_YBlur"), 6.4f, { SP("Shader\\Core") });
+		blurPS  ->Compile(ShaderType::Pixel, defaultPath,  SP("PSBlur")  , 6.4f, { SP("Shader\\Core") });
+		mainVS  ->Compile(ShaderType::Vertex, defaultPath, SP("VSFinal"), 6.4f, { SP("Shader\\Core") });
+		mainPS  ->Compile(ShaderType::Pixel, defaultPath, SP("PSFinal"), 6.4f, {SP("Shader\\Core")});
 
 		// XBlur
 		_xBlur.Pipeline = device->CreateGraphicPipelineState(_xBlur.RenderPass, _resourceLayout);
@@ -380,7 +380,7 @@ void GaussianBlur::PreparePipelineState(const gu::wstring& name)
 		_xBlur.Pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
 		_xBlur.Pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
 		_xBlur.Pipeline->CompleteSetting();
-		_xBlur.Pipeline->SetName(name + L"XBlurPipeline");
+		_xBlur.Pipeline->SetName(name + SP("XBlurPipeline"));
 
 		// YBlur
 		_yBlur.Pipeline = device->CreateGraphicPipelineState(_yBlur.RenderPass, _resourceLayout);
@@ -390,7 +390,7 @@ void GaussianBlur::PreparePipelineState(const gu::wstring& name)
 		_yBlur.Pipeline->SetVertexShader(blurVS_Y);
 		_yBlur.Pipeline->SetPixelShader(blurPS);
 		_yBlur.Pipeline->CompleteSetting();
-		_yBlur.Pipeline->SetName(name + L"YBlurPipeline");
+		_yBlur.Pipeline->SetName(name + SP("YBlurPipeline"));
 
 		// Final Blur
 		_graphicsPipeline = device->CreateGraphicPipelineState(_engine->GetDrawContinueRenderPass(), _resourceLayout);
@@ -400,7 +400,7 @@ void GaussianBlur::PreparePipelineState(const gu::wstring& name)
 		_graphicsPipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
 		_graphicsPipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
 		_graphicsPipeline->CompleteSetting();
-		_graphicsPipeline->SetName(name + L"MainPS");
+		_graphicsPipeline->SetName(name + SP("MainPS"));
 	}
 	
 }
@@ -455,7 +455,7 @@ void GaussianBlur::PrepareResourceView()
 	}
 }
 
-void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
+void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 {
 	if (_useCS) { return; }
 
@@ -491,7 +491,7 @@ void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
 		---------------------------------------------------------------------*/
 		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
-		_vertexBuffers[i]->SetName(addName + L"FinalVB");
+		_vertexBuffers[i]->SetName(addName + SP("FinalVB"));
 		_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
 		_xBlur.VB[i] = device->CreateBuffer(vbMetaData);
 		_yBlur.VB[i] = device->CreateBuffer(vbMetaData);
@@ -503,16 +503,16 @@ void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::wstring& addName)
 		---------------------------------------------------------------------*/
 		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
-		_indexBuffers[i]->SetName(addName + L"FinalIB");
+		_indexBuffers[i]->SetName(addName + SP("FinalIB"));
 		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
 		_xBlur.IB[i] = device->CreateBuffer(vbMetaData);
 		_yBlur.IB[i] = device->CreateBuffer(vbMetaData);
 		_xBlur.IB[i]->Pack(rectMesh.Indices.data(), commandList);
 		_yBlur.IB[i]->Pack(rectMesh.Indices.data(), commandList);
-		_xBlur.VB[i]->SetName(addName + L"XVB");
-		_yBlur.VB[i]->SetName(addName + L"YVB");
-		_xBlur.IB[i]->SetName(addName + L"XIB");
-		_yBlur.IB[i]->SetName(addName + L"YVB");
+		_xBlur.VB[i]->SetName(addName + SP("XVB"));
+		_yBlur.VB[i]->SetName(addName + SP("YVB"));
+		_xBlur.IB[i]->SetName(addName + SP("XIB"));
+		_yBlur.IB[i]->SetName(addName + SP("YVB"));
 	}
 }
 #pragma endregion Protected Function

@@ -38,9 +38,9 @@ namespace gc::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Load(const gu::wstring& filePath, GameModelPtr model) override;
+		bool Load(const gu::tstring& filePath, GameModelPtr model) override;
 
-		bool Save([[maybe_unused]] const gu::wstring& filePath, [[maybe_unused]] const GameModelPtr model) override { return false; };
+		bool Save([[maybe_unused]] const gu::tstring& filePath, [[maybe_unused]] const GameModelPtr model) override { return false; };
 
 
 		/****************************************************************************
@@ -68,9 +68,9 @@ namespace gc::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Load([[maybe_unused]] const gu::wstring& filePath, [[maybe_unused]] GameModelPtr model) override;
+		bool Load([[maybe_unused]] const gu::tstring& filePath, [[maybe_unused]] GameModelPtr model) override;
 
-		bool Save([[maybe_unused]] const gu::wstring& filePath, [[maybe_unused]] const GameModelPtr model) override { return false; };
+		bool Save([[maybe_unused]] const gu::tstring& filePath, [[maybe_unused]] const GameModelPtr model) override { return false; };
 
 
 		/****************************************************************************

@@ -25,7 +25,7 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::wstring& name)
+GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::tstring& name)
 	:core::GPUBuffer(device, metaData, name)
 {
 	using enum core::ResourceUsage;
@@ -157,7 +157,7 @@ void GPUBuffer::CopyEnd()
 	_resource->Unmap(0, nullptr);
 }
 
-void GPUBuffer::SetName(const gu::wstring& name)
+void GPUBuffer::SetName(const gu::tstring& name)
 {
 	ThrowIfFailed(_resource->SetName(name.CString()));
 }

@@ -61,7 +61,7 @@ namespace rhi::core
 		/*---------------------------------------------------------------
 		　　　　　@brief : For Debugging name
 		-----------------------------------------------------------------*/
-		virtual void SetName(const gu::wstring& name) = 0;
+		virtual void SetName(const gu::tstring& name) = 0;
 
 		/****************************************************************************
 		**                Constructor and Destructor

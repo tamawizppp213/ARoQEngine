@@ -33,7 +33,7 @@ RHICommandAllocator::~RHICommandAllocator()
 	if (_commandAllocator) { _commandAllocator.Reset(); }
 }
 
-RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const gu::wstring& name) : rhi::core::RHICommandAllocator(device, type)
+RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const gu::tstring& name) : rhi::core::RHICommandAllocator(device, type)
 {
 	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get())->GetDevice();
 
@@ -71,11 +71,11 @@ void RHICommandAllocator::CleanUp()
 *
 *  @brief     デバッグ表示名の設定
 *
-*  @param[in] const gu::wstring& name
+*  @param[in] const gu::tstring& name
 *
 *  @return    void
 *****************************************************************************/
-void RHICommandAllocator::SetName(const gu::wstring& name)
+void RHICommandAllocator::SetName(const gu::tstring& name)
 {
 	_commandAllocator->SetName(name.CString());
 }

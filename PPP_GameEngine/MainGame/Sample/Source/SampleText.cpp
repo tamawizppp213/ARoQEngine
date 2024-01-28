@@ -133,15 +133,15 @@ void SampleText::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-             SetUp Resources
 	---------------------------------------------------------------------*/
-	_font = gu::MakeShared<Font>(_engine, L"Resources/Font/GennokakuEnglish.png", gm::Float2(35.0f, 64.0f), 3325.0f);
+	_font = gu::MakeShared<Font>(_engine, SP("Resources/Font/GennokakuEnglish.png"), gm::Float2(35.0f, 64.0f), 3325.0f);
 	// Create image sprite
 	StringInfo info = { .String = "Text Sample", .SizePerChar = {0.1f, 0.15f}, .StartPosition = {-0.6f, 0.0f, 1.0f}, .Space = 0.0f, .Color = {1,1,1,1} };
 	_text = gu::MakeShared<Text>(CoordinateType::NDC, _font, info);
 
 	// Create Texture
 	_resourceCache = gu::MakeShared<GPUResourceCache>(_engine->GetDevice(), graphicsCommandList);
-	_resourceView  = _resourceCache->Load(L"Resources/BackGround2.png");
-	_resourceCache->Load(L"Resources/Cubemap.jpg");
+	_resourceView  = _resourceCache->Load(SP("Resources/BackGround2.png"));
+	_resourceCache->Load(SP("Resources/Cubemap.jpg"));
 
 	// Create UI Renderer
 	_renderer = gu::MakeShared<gc::ui::UIRenderer>(_engine);

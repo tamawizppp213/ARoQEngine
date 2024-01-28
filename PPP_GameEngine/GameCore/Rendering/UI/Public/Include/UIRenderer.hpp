@@ -77,7 +77,7 @@ namespace gc::ui
 		virtual ~UIRenderer();
 		
 		explicit UIRenderer(const LowLevelGraphicsEnginePtr& engine,
-			const gu::wstring& addName = L"",
+			const gu::tstring& addName = SP(""),
 			const std::uint32_t maxUICount = 1024);
 
 	protected:
@@ -85,10 +85,10 @@ namespace gc::ui
 		**                Protected Function
 		*****************************************************************************/
 		/* @brief: Prepare max writable ui count size buffer*/
-		void PrepareMaxImageBuffer(const gu::wstring& name);
+		void PrepareMaxImageBuffer(const gu::tstring& name);
 
 		/* @brief: Prepare graphics pipeline state objects. */
-		void PreparePipelineState(const gu::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 
 		/* @brief: Clear gpu vertex buffer */
 		void ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount);

@@ -25,7 +25,7 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFence::RHIFence(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::uint64_t initialValue, const gu::wstring& name)
+RHIFence::RHIFence(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::uint64_t initialValue, const gu::tstring& name)
 {
 	auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(device.Get())->GetDevice();
 	
@@ -109,7 +109,7 @@ void RHIFence::Wait(const std::uint64_t value)
 #pragma endregion Public Function
 
 #pragma region Property
-void RHIFence::SetName(const gu::wstring& name)
+void RHIFence::SetName(const gu::tstring& name)
 {
 	_fence->SetName(name.CString());
 }

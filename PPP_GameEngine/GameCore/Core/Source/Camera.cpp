@@ -51,7 +51,7 @@ Camera::Camera(const LowLevelGraphicsEnginePtr& engine) : _engine(engine), _type
 	-               Create scece constant buffer and view
 	---------------------------------------------------------------------*/
 	GPUBufferMetaData metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SceneConstants), 1);
-	_sceneConstantBuffer = device->CreateBuffer(metaData, L"SceneConstants");
+	_sceneConstantBuffer = device->CreateBuffer(metaData, SP("SceneConstants"));
 
 	_resourceView = device->CreateResourceView(ResourceViewType::ConstantBuffer, _sceneConstantBuffer, 0,0,nullptr);
 }

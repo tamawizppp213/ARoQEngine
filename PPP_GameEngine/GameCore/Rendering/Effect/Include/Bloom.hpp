@@ -68,7 +68,7 @@ namespace gc
 			const float power = 10.0f, 
 			const ResourceViewPtr& customLuminanceSRV = nullptr,
 			const ResourceViewPtr& customLuminanceUAV = nullptr,
-			const gu::wstring& addName = L"");
+			const gu::tstring& addName = SP(""));
 
 		~Bloom();
 
@@ -76,11 +76,11 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name);
+		void PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name);
 
-		void PreparePipelineState(const gu::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 
-		void PrepareResourceView(const gu::wstring& name);
+		void PrepareResourceView(const gu::tstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

@@ -57,17 +57,17 @@ namespace
 }
 
 #pragma region Constructor and Destructor
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::tstring& name)
 	: core::GPUTexture(device, metaData, name)
 {
 	Prepare();
 }
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::tstring& name)
 	: core::GPUTexture(device, name)
 {
 	_memory = nullptr;
 }
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const gu::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const gu::tstring& name)
 	: core::GPUTexture(device, metaData, name), _image(image)
 {
 	_memory = nullptr;
@@ -89,16 +89,16 @@ GPUTexture::~GPUTexture()
 /****************************************************************************
 *                     Load
 *************************************************************************//**
-*  @fn        void GPUTexture::Load(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
+*  @fn        void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 *
 *  @brief     Load texture
 *
-*  @param[in] const gu::wstring& filePath
+*  @param[in] const gu::tstring& filePath
 *  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUTexture::Load(const gu::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
+void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 {
 #ifdef _DEBUG
 	assert(_device);
@@ -290,12 +290,12 @@ void GPUTexture::Prepare()
 /****************************************************************************
 *                     SetName
 *************************************************************************//**
-*  @fn        void GPUBuffer::SetName(const gu::wstring& name)
+*  @fn        void GPUBuffer::SetName(const gu::tstring& name)
 *  @brief     Set Buffer Name
-*  @param[in] const gu::wstring& name
+*  @param[in] const gu::tstring& name
 *  @return 　　void
 *****************************************************************************/
-void GPUTexture::SetName(const gu::wstring& name)
+void GPUTexture::SetName(const gu::tstring& name)
 {
 	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_IMAGE, reinterpret_cast<std::uint64_t>(_image));

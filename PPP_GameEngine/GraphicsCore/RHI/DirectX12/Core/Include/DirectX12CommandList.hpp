@@ -177,7 +177,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		CommandListComPtr GetCommandList() const noexcept { return _commandList; }
 
-		void SetName(const gu::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -186,7 +186,7 @@ namespace rhi::directX12
 		~RHICommandList();
 
 		explicit RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, 
-			const gu::wstring& name);
+			const gu::tstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function

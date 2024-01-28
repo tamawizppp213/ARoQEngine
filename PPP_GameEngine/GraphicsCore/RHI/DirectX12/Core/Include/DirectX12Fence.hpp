@@ -49,7 +49,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		FenceComPtr GetFence() const noexcept { return _fence;}
 		
-		void SetName(const gu::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -57,7 +57,7 @@ namespace rhi::directX12
 
 		~RHIFence();
 
-		explicit RHIFence(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::uint64_t initialValue = 0, const gu::wstring& name = L"Fence");
+		explicit RHIFence(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::uint64_t initialValue = 0, const gu::tstring& name = SP("Fence"));
 	protected:
 		/****************************************************************************
 		**                Protected Function

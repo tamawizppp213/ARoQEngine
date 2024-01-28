@@ -64,18 +64,18 @@ namespace gc
 
 		~SkyDome();
 
-		SkyDome(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& cubeMapPath, const gu::wstring& addName = L"");
+		SkyDome(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& cubeMapPath, const gu::tstring& addName = SP(""));
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		void PrepareResourceView(const gu::SharedPointer<rhi::core::GPUTexture>& texture);
 		
-		void PreparePipelineState(const gu::wstring& addName);
+		void PreparePipelineState(const gu::tstring& addName);
 		
-		void PrepareVertexAndIndexBuffer(const gu::wstring& addName);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& addName);
 		
-		void PrepareSkyObject(const gu::wstring& addName);
+		void PrepareSkyObject(const gu::tstring& addName);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

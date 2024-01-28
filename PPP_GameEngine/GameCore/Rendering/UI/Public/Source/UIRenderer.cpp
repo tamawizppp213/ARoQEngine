@@ -29,14 +29,14 @@ using namespace gm;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-UIRenderer::UIRenderer(const LowLevelGraphicsEnginePtr& engine, const gu::wstring& addName, const std::uint32_t maxUICount)
+UIRenderer::UIRenderer(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& addName, const std::uint32_t maxUICount)
 	: _engine(engine), _maxWritableUICount(maxUICount)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"UIRenderer::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("UIRenderer::");
 
 	/*-------------------------------------------------------------------
 	-            Prepare Resources
@@ -227,15 +227,15 @@ void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t 
 /****************************************************************************
 *						PrepareMaxImageBuffer
 *************************************************************************//**
-*  @fn        void UIRenderer::PrepareMaxImageBuffer(const gu::wstring& name)
+*  @fn        void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 *
 *  @brief     Prepare max writable ui count size buffer
 *
-*  @param[in] gu::wstring& name
+*  @param[in] gu::tstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void UIRenderer::PrepareMaxImageBuffer(const gu::wstring& name)
+void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -272,7 +272,7 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::wstring& name)
 			const auto vbMetaData = GPUBufferMetaData::VertexBuffer(sizeof(gm::Vertex), totalCount, core::MemoryHeap::Upload);
 			
 			_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
-			_vertexBuffers[i]->SetName(name + L"VB");
+			_vertexBuffers[i]->SetName(name + SP("VB"));
 			ClearVertexBuffer(i, totalCount);
 		}
 
@@ -280,7 +280,7 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::wstring& name)
 			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), indices.size(), MemoryHeap::Default, ResourceState::Common);
 			
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
-			_indexBuffers[i]->SetName(name + L"IB");
+			_indexBuffers[i]->SetName(name + SP("IB"));
 			_indexBuffers[i]->Pack(indices.data(), _engine->GetCommandList(CommandListType::Copy));
 		}
 	}
@@ -289,15 +289,15 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::wstring& name)
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
-*  @fn        void Skybox::PreparePipelineState(const gu::wstring& name)
+*  @fn        void Skybox::PreparePipelineState(const gu::tstring& name)
 * 
 *  @brief     Prepare pipelineState
 * 
-*  @param[in] gu::wstring& name
+*  @param[in] gu::tstring& name
 * 
 *  @return 　　void
 *****************************************************************************/
-void UIRenderer::PreparePipelineState(const gu::wstring& name)
+void UIRenderer::PreparePipelineState(const gu::tstring& name)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -316,8 +316,8 @@ void UIRenderer::PreparePipelineState(const gu::wstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Sprite\\ShaderDefault2D.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel , L"Shader\\Sprite\\ShaderDefault2D.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Sprite\\ShaderDefault2D.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel , SP("Shader\\Sprite\\ShaderDefault2D.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
@@ -330,7 +330,7 @@ void UIRenderer::PreparePipelineState(const gu::wstring& name)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(name + L"PSO");
+	_pipeline->SetName(name + SP("PSO"));
 }
 #pragma endregion Protected Function
 

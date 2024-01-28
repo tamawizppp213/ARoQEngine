@@ -26,7 +26,7 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
-Sobel::Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gm::Float4& color, const gu::wstring& addName)
+Sobel::Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gm::Float4& color, const gu::tstring& addName)
 	: _engine(engine), _width(width), _height(height), _outlineInfo({ color })
 {
 #ifdef _DEBUG
@@ -35,8 +35,8 @@ Sobel::Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width,
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	gu::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"Sobel::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("Sobel::");
 
 	/*-------------------------------------------------------------------
 	-            Prepare resource
@@ -127,20 +127,20 @@ void Sobel::SetColor(const gm::Float4& color)
 /****************************************************************************
 *							PrepareOutlineInfo
 *************************************************************************//**
-*  @fn        void Sobel::PrepareOutlineInfo(const gu::wstring& name)
+*  @fn        void Sobel::PrepareOutlineInfo(const gu::tstring& name)
 *
 *  @brief     Prepare outline info structure and GPU buffer
 *
-*  @param[in] const gu::wstring& name
+*  @param[in] const gu::tstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void Sobel::PrepareOutlineInfo(const gu::wstring& name)
+void Sobel::PrepareOutlineInfo(const gu::tstring& name)
 {
 	const auto device   = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(OutlineInfo), 1, MemoryHeap::Upload, ResourceState::Common);
 	const auto buffer   = device->CreateBuffer(metaData);
-	buffer->SetName(name + L"OutlineInfo");
+	buffer->SetName(name + SP("OutlineInfo"));
 
 	/*-------------------------------------------------------------------
 	-			Set OutlineInfo Parameter
@@ -181,17 +181,17 @@ void Sobel::PrepareResourceView()
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
-*  @fn        void Sobel::PreparePipelineState(const gu::wstring& name)
+*  @fn        void Sobel::PreparePipelineState(const gu::tstring& name)
 *
 *  @brief     Prepare Compute pipeline state
 *
-*  @param[in] const gu::wstring& name
+*  @param[in] const gu::tstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void Sobel::PreparePipelineState(const gu::wstring& name)
+void Sobel::PreparePipelineState(const gu::tstring& name)
 {
-	const gu::wstring defaultPath = L"Shader\\Effect\\ShaderSobel.hlsl";
+	const gu::tstring defaultPath = SP("Shader\\Effect\\ShaderSobel.hlsl");
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 
@@ -212,7 +212,7 @@ void Sobel::PreparePipelineState(const gu::wstring& name)
 	-			Load Blob data
 	---------------------------------------------------------------------*/
 	const auto sobelCS = factory->CreateShaderState();
-	sobelCS->Compile(ShaderType::Compute, defaultPath, L"ExecuteSobel", 6.4f, {});
+	sobelCS->Compile(ShaderType::Compute, defaultPath, SP("ExecuteSobel"), 6.4f, {});
 
 	/*-------------------------------------------------------------------
 	-			Set pipeline state
@@ -220,6 +220,6 @@ void Sobel::PreparePipelineState(const gu::wstring& name)
 	_pipeline = device->CreateComputePipelineState(_resourceLayout);
 	_pipeline->SetComputeShader(sobelCS);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(name + L"PSO");
+	_pipeline->SetName(name + SP("PSO"));
 }
 #pragma endregion SetUp Function

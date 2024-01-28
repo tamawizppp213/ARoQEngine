@@ -33,7 +33,7 @@ namespace
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Main Function
-bool GLTFConverter::Load(const gu::wstring& filePath, GameModelPtr model)
+bool GLTFConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 {
 	if (model == nullptr) { OutputDebugStringA("model is nullptr.");  return false; }
 	if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }

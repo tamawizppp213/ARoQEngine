@@ -37,11 +37,11 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		void Load(
-			[[maybe_unused]] const gu::wstring& filePath,
+			[[maybe_unused]] const gu::tstring& filePath,
 			[[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList) override;
 
 		void Save(
-			[[maybe_unused]]const gu::wstring& filePath, 
+			[[maybe_unused]]const gu::tstring& filePath, 
 			[[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList,
 			[[maybe_unused]] const gu::SharedPointer<core::RHICommandQueue>& commandQueue) override
 		{ printf("Non Function\n"); }
@@ -60,7 +60,7 @@ namespace rhi::vulkan
 		
 		const VkImageViewCreateInfo& GetImageInfo() const noexcept { return _imageViewDesc; }
 		
-		void SetName(const gu::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		
 		// SetMetaDataçÏÇ¡ÇΩï˚Ç™ÇÊÇ¢.
 		/****************************************************************************
@@ -70,11 +70,11 @@ namespace rhi::vulkan
 		
 		~GPUTexture();
 		 
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::tstring& name = SP("Texture"));
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("Texture"));
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const gu::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const gu::tstring& name = SP("Texture"));
 
 	protected:
 		/****************************************************************************

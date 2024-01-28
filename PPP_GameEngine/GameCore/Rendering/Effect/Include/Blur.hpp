@@ -90,21 +90,21 @@ namespace gc
 		
 		~GaussianBlur();
 		
-		GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS = true, const gu::wstring& addName = L"");
+		GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS = true, const gu::tstring& addName = SP(""));
 	
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareBlurParameters(const gu::wstring& name);
+		void PrepareBlurParameters(const gu::tstring& name);
 		
-		void PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const gu::wstring& name);
+		void PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name);
 		
-		void PreparePipelineState(const gu::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 		
 		void PrepareResourceView();
 
-		void PrepareVertexAndIndexBuffer(const gu::wstring& addName);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& addName);
 		
 		/****************************************************************************
 		**                Protected Member Variables
@@ -129,7 +129,7 @@ namespace gc
 
 		bool _useCS = true;
 
-		gu::wstring _addName = L"";
+		gu::tstring _addName = SP("");
 
 		/*-------------------------------------------------------------------
 		-               Compute Shader Variables
