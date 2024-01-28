@@ -542,25 +542,27 @@ namespace gu
 			/*-------------------------------------------------------------------
 			-        TotalがSSOであった場合は, そのまま配列の後ろに追加する
 			---------------------------------------------------------------------*/
-			if (totalLength <= SSO_CAPACITY)
+			if (IsSSOMode())
 			{
-				Memory::Copy(&this->_data.SSO.Buffer[firstLength], string, length * sizeof(Char));
-				SetSSOLength(totalLength);
-				SetSSOMode();
-				return;
+				if (totalLength <= SSO_CAPACITY)
+				{
+					Memory::Copy(&this->_data.SSO.Buffer[firstLength], string, length * sizeof(Char));
+					SetSSOLength(totalLength);
+					SetSSOMode();
+					return;
+				}
+				else 
+				{
+					auto temp = new Char[totalLength + 1];
+					_data.NonSSO.Capacity = totalLength;
+					Memory::Copy(&temp[0], this->_data.SSO.Buffer, firstLength * sizeof(Char));
+					Memory::Copy(&temp[firstLength], string, length * sizeof(Char));
+					_data.NonSSO.Pointer = temp;
+				}
 			}
-
 			/*-------------------------------------------------------------------
 			-        TotalがNonSSOであるが,SSOであった場合は, 強制的にヒープを作成する
 			---------------------------------------------------------------------*/
-			if (IsSSOMode())
-			{
-				auto temp = new Char[totalLength + 1];
-				_data.NonSSO.Capacity = totalLength;
-				Memory::Copy(&temp[0], this->_data.SSO.Buffer, firstLength * sizeof(Char));
-				Memory::Copy(&temp[firstLength], string, length * sizeof(Char));
-				_data.NonSSO.Pointer = temp;
-			}
 			else
 			{
 				/*-------------------------------------------------------------------
@@ -632,8 +634,10 @@ namespace gu
 				delete[](_data.NonSSO.Pointer);
 			}
 
-			_data.NonSSO.Capacity = length;
-			_data.NonSSO.Pointer  = temp;
+			_data.NonSSO.Capacity   = length;
+			_data.NonSSO.Pointer    = temp;
+			_data.NonSSO.Pointer[0] = '\0';
+			SetNonSSOMode();
 		}
 
 		/*----------------------------------------------------------------------
