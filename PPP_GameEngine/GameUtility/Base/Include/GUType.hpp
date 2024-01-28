@@ -41,13 +41,15 @@ namespace gu
 #if defined(_WIN32) || defined(_WIN64)
 	using tchar = wchar;
 	#define NEED_WIDE_CHAR (1)
-	#define TCHAR_TEXT(str) L ##str
+
+	// SP‚Æ‚ÍString Prefix‚Ì—ª‚Å‚·. 
+	#define SP(str) L ##str 
 #else 
 	using tchar = char16;
 	#define NEED_WIDE_CHAR (0)
-	#define TCHAR_TEXT(str) u ##str
+	#define SP(str) u ##str
 #endif
-
+	
 	/*---------------------------------------------------------------
 		ŠeÅ‘å’l/Å¬’l‚ğæ“¾‚·‚é
 	-----------------------------------------------------------------*/
