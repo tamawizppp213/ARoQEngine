@@ -290,7 +290,15 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUDeque.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUList.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUPair.hpp">
       <SubType>
       </SubType>
     </ClInclude>
