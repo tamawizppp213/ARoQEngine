@@ -400,7 +400,7 @@ namespace gu::details
 		{
 			_data.SSO.Size = 0;
 			SetSSOMode();
-			Memory::Zero(_data.SSO.Buffer, SSO_CAPACITY + 1);
+			Memory::Zero(_data.SSO.Buffer, (SSO_CAPACITY + 1) * sizeof(Char));
 		}
 
 		/*----------------------------------------------------------------------
@@ -970,6 +970,7 @@ namespace gu::details
 			this->_data.NonSSO.Capacity = source._data.NonSSO.Capacity;
 			this->_data.NonSSO.Size     = source._data.NonSSO.Size;
 			this->_data.NonSSO.Pointer  = new Char[source._data.NonSSO.Size + 1];
+			Memory::Copy(this->_data.NonSSO.Pointer, source._data.NonSSO.Pointer, sizeof(Char) * (source._data.NonSSO.Size + 1));
 			SetNonSSOMode();
 		}
 	}
