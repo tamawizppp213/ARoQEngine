@@ -37,27 +37,39 @@ namespace gu
 		/*---------------------------------------------------------------
 			@brief :  指定した分だけメモリの初期化を行います.
 		-----------------------------------------------------------------*/
-		static void* Set(void* destination, const uint8 oneByteValue, const size_t byteLength);
+		static void* Set(void* destination, const uint8 oneByteValue, const uint64 byteLength);
 
 		/*---------------------------------------------------------------
 			@brief :  指定したバイト長だけゼロに初期化します.
 		-----------------------------------------------------------------*/
-		static void* Zero(void* destination, const size_t byteLength);
+		static void* Zero(void* destination, const uint64 byteLength);
 
 		/*---------------------------------------------------------------
 			@brief :  指定した分だけメモリを移動します.
 		-----------------------------------------------------------------*/
-		static void* Move(void* destination, const void* source, const size_t byteLength);
+		static void* Move(void* destination, const void* source, const uint64 byteLength);
 
 		/*---------------------------------------------------------------
 			@brief :  メモリを指定したバイト数分だけコピー
 		-----------------------------------------------------------------*/
-		static void* Copy(void* destination, const void* source, const size_t byteLength);
+		static void* Copy(void* destination, const void* source, const uint64 byteLength);
 
 		/*---------------------------------------------------------------
 			@brief :  文字を比較する (+) left > right, (0) left == right (-) left < right
 		-----------------------------------------------------------------*/
-		static int32 Compare(const void* left, const void* right, const size_t byteLength);
+		static int32 Compare(const void* left, const void* right, const uint64 byteLength);
+
+		/*---------------------------------------------------------------
+			@brief :  メモリをコンストラクタを呼び出すことなくメモリ領域だけを確保します (Malloc)
+		-----------------------------------------------------------------*/
+		static void* Allocate       (const uint64 byteLength);
+		static void* AllocateAligned(const uint64 byteLength, const uint64 alignment);
+
+		/*---------------------------------------------------------------
+			@brief :  メモリをデストラクタを呼び出すことなくメモリ領域だけを破棄します (Free)
+		-----------------------------------------------------------------*/
+		static void Free(void* pointer);
+		static void FreeAligned(void* pointer);
 
 		/****************************************************************************
 		**                Public Member Variables

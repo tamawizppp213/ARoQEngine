@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/GUMemory.hpp"
 #include <string.h>
-
+#include <malloc.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@ using namespace gu;
 /*---------------------------------------------------------------
 	@brief :  指定した分だけメモリの初期化を行います.
 -----------------------------------------------------------------*/
-void* Memory::Set(void* destination, const uint8 oneByteValue, const size_t byteLength)
+void* Memory::Set(void* destination, const uint8 oneByteValue, const uint64 byteLength)
 {
 	return memset(destination, oneByteValue, byteLength);
 }
@@ -35,7 +35,7 @@ void* Memory::Set(void* destination, const uint8 oneByteValue, const size_t byte
 /*---------------------------------------------------------------
 	@brief :  指定したバイト長だけゼロに初期化します.
 -----------------------------------------------------------------*/
-void* Memory::Zero(void* destination, const size_t byteLength)
+void* Memory::Zero(void* destination, const uint64 byteLength)
 {
 	return memset(destination, 0, byteLength);
 }
@@ -43,7 +43,7 @@ void* Memory::Zero(void* destination, const size_t byteLength)
 /*---------------------------------------------------------------
 	@brief :  指定した分だけメモリを移動します.
 -----------------------------------------------------------------*/
-void* Memory::Move(void* destination, const void* source, const size_t byteLength)
+void* Memory::Move(void* destination, const void* source, const uint64 byteLength)
 {
 	return memmove(destination, source, byteLength);
 }
@@ -51,7 +51,7 @@ void* Memory::Move(void* destination, const void* source, const size_t byteLengt
 /*---------------------------------------------------------------
 	@brief :  メモリを指定したバイト数分だけコピー
 -----------------------------------------------------------------*/
-void* Memory::Copy(void* destination, const void* source, const size_t byteLength)
+void* Memory::Copy(void* destination, const void* source, const uint64 byteLength)
 {
 	return memcpy(destination, source, byteLength);
 }
@@ -59,14 +59,14 @@ void* Memory::Copy(void* destination, const void* source, const size_t byteLengt
 /*---------------------------------------------------------------
 	@brief :   文字を比較する (+) left > right, (0) left == right (-) left < right
 -----------------------------------------------------------------*/
-int32 Memory::Compare(const void* left, const void* right, const size_t byteLength)
+int32 Memory::Compare(const void* left, const void* right, const uint64 byteLength)
 {
 	return memcmp(left, right, byteLength);
 }
 /*---------------------------------------------------------------
 	@brief :  指定したバイトがゼロに設定されているか
 -----------------------------------------------------------------*/
-bool Memory::IsZero(const void* pointer, const size_t byteLength)
+bool Memory::IsZero(const void* pointer, const uint64 byteLength)
 {
 	uint8* start = (uint8*)pointer;
 	uint8* end   = start + byteLength;
@@ -75,5 +75,25 @@ bool Memory::IsZero(const void* pointer, const size_t byteLength)
 		if((*start++) != 0){return false;}
 	}
 	return true;
+}
+
+void* Memory::Allocate(const uint64 byteLength)
+{
+	return ::malloc(byteLength);
+}
+
+void* Memory::AllocateAligned(const uint64 byteLength, const uint64 alignment)
+{
+	return ::_aligned_malloc(byteLength, alignment);
+}
+
+void Memory::Free(void* pointer)
+{
+	::free(pointer);
+}
+
+void Memory::FreeAligned(void* pointer)
+{
+	::_aligned_free(pointer);
 }
 #pragma endregion Main Function
