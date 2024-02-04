@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/GUType.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 #include "GameUtility/Memory/Include/GUMemory.hpp"
-
+#include <initializer_list>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -123,6 +123,16 @@ namespace gu
 		explicit Deque(const uint64 capacity) { Reserve(capacity); }
 
 		Deque(const Deque<ElementType>& deque) { CopyFrom(deque); }
+
+		Deque(const std::initializer_list<ElementType> list)
+		{
+			if (_data) { delete[](_data); }
+			_data = new ElementType[list.size() * 2]; // capacity—p
+			Memory::Copy(_data, list.begin(), list.size() * sizeof(ElementType));
+			_capacity   = list.size() * 2;
+			_queueSize  = list.size();
+			_frontIndex = 0;
+		}
 
 		Deque(Deque<ElementType>&& deque) noexcept 
 		{
