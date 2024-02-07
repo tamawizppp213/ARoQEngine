@@ -231,7 +231,7 @@ namespace gu
 	constexpr bool IS_POD = details::IsPODClass<T>::Value;
 
 	/*---------------------------------------------------------------
-					Å@ílå^Ç©
+					Å@éQè∆å^Ç©
 	-----------------------------------------------------------------*/
 	template<class T>
 	constexpr bool IS_REFERENCE_TYPE = details::IsReferenceTypeClass<T>::Value;
