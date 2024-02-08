@@ -29,7 +29,8 @@ namespace gu
 	*				  			   GUStack
 	*************************************************************************//**
 	*  @class     GUStack
-	*  @brief     temp
+	*  @brief     リスト構造を使った実装です.
+　　　　　　　　　　　　バッファベースのものはdequeを使用してください
 	*****************************************************************************/
 	template<class ElementType>
 	class Stack : public NonCopyable
