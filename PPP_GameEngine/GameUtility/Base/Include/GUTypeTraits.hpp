@@ -60,6 +60,12 @@ namespace gu
 	constexpr bool IS_ENUM = details::IsEnumType<T>::Value;
 
 	/*---------------------------------------------------------------
+					 ƒ|ƒCƒ“ƒ^‚©
+	-----------------------------------------------------------------*/
+	template<typename T>
+	constexpr bool IS_POINTER = details::IsPointerType<T>::Value;
+
+	/*---------------------------------------------------------------
 						Union‚Å‚ ‚é‚©
 	-----------------------------------------------------------------*/
 	template<typename T>

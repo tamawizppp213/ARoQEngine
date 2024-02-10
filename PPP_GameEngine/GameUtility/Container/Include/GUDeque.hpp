@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/GUType.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 #include "GameUtility/Memory/Include/GUMemory.hpp"
-#include <initializer_list>
+#include "GameUtility/Container/Include/GUInitializerList.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -63,9 +63,9 @@ namespace gu
 		void Reserve(const uint64 capacity);
 
 		/*-------------------------------------------------------------------
-		-           @brief : サイズを0にします.
+		-           @brief : サイズを0にしますが, Capacity領域はそのままにします
 		---------------------------------------------------------------------*/
-		void Clear() { _queueSize = 0; }
+		void Clear();
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -81,8 +81,11 @@ namespace gu
 		/*-------------------------------------------------------------------
 		-           @brief : return the queue front (=_tail) element
 		---------------------------------------------------------------------*/
-		__forceinline       ElementType& Back()       { return _data[_frontIndex + _queueSize - 1]; }
-		__forceinline const ElementType& Back() const { return _data[_frontIndex + _queueSize - 1]; }
+		__forceinline       ElementType& Back()       { return _data[(_frontIndex + _capacity + _queueSize - 1) % _capacity]; }
+		__forceinline const ElementType& Back() const { return _data[(_frontIndex + _capacity + _queueSize - 1) % _capacity]; }
+
+		__forceinline       ElementType* Data()       { return &_data[_frontIndex]; }
+		__forceinline const ElementType* Data() const { return &_data[_frontIndex]; }
 
 		/*-------------------------------------------------------------------
 		-           @brief : 現在格納されているキューのサイズを取得します
@@ -102,12 +105,16 @@ namespace gu
 #pragma region Operator 
 		__forceinline       ElementType& operator[](const uint64 index)       noexcept { return _data[(_frontIndex + _capacity + index) % _capacity]; }
 		__forceinline const ElementType& operator[](const uint64 index) const noexcept { return _data[(_frontIndex + _capacity + index) % _capacity]; }
-		Deque<ElementType>& operator=(const Deque<ElementType>& right) { CopyFrom(right); return *this; }
+		Deque<ElementType>& operator=(const Deque<ElementType>& right) 
+		{ 
+			CopyFrom(right); 
+			return *this; 
+		}
 		Deque<ElementType>& operator=(Deque<ElementType>&& right)
 		{
 			if(this != &right)
 			{
-				if (_data) { delete[](_data); }
+				if (_data) { Memory::Free(_data); }
 				Memory::Copy(this, &right, sizeof(right));
 				right.Initialize();
 			} 
@@ -126,43 +133,40 @@ namespace gu
 
 		Deque(const std::initializer_list<ElementType> list)
 		{
-			if (_data) { delete[](_data); }
-			_data = new ElementType[list.size() * 2]; // capacity用
-			Memory::Copy(_data, list.begin(), list.size() * sizeof(ElementType));
-			_capacity   = list.size() * 2;
-			_queueSize  = list.size();
+			if (_data) { Memory::Free(_data); }
+
+			const auto listSize     = list.size();
+			const auto capacitySize = listSize * 2;
+
+			_data = (ElementType*)Memory::Allocate(capacitySize * sizeof(ElementType)); // capacity用
+			Memory::ForceExecuteCopyConstructors(_data, list.begin(), list.size());
+			
+			_capacity   = capacitySize;
+			_queueSize  = listSize;
 			_frontIndex = 0;
 		}
 
 		Deque(Deque<ElementType>&& deque) noexcept 
 		{
-			if (_data) { delete[](_data); }
-			Memory::Copy(this, &deque, sizeof(deque));
+			if (_data) { Memory::Free(_data); }
+			
+			Memory::ForceExecuteMoveConstructors(_data, deque, deque.Size());
 			deque.Initialize();
 		}
 
 		~Deque()
 		{
-			if (_data) 
-			{ 
-				delete[] _data;
-			}
+			if (Capacity() == 0) { return; }
+
+			Clear();
+			Memory::Free(_data);
 		}
 
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void CopyFrom(const Deque<ElementType>& deque) 
-		{
-			if (_data) { delete[](_data); }
-
-			_data = new ElementType[deque.Capacity()];
-			Memory::Copy(_data, deque._data, sizeof(ElementType) * deque.Capacity());
-			_capacity   = deque._capacity;
-			_queueSize  = deque._queueSize;
-			_frontIndex = deque._frontIndex;
-		}
+		void CopyFrom(const Deque<ElementType>& deque);
 
 		__forceinline void Initialize() noexcept
 		{
@@ -186,6 +190,63 @@ namespace gu
 		// @brief : 要素を格納する配列
 		ElementType* _data = nullptr;
 	};
+
+	/*-------------------------------------------------------------------
+	-           @brief : メモリをコピーします
+	---------------------------------------------------------------------*/
+	template<class ElementType>
+	void Deque<ElementType>::CopyFrom(const Deque<ElementType>& deque)
+	{
+		/*-------------------------------------------------------------------
+		-           メモリが既に存在していたらメモリを破棄する
+		---------------------------------------------------------------------*/
+		if (Size())
+		{
+			Clear();
+			Memory::Free(_data);
+		}
+
+		/*-------------------------------------------------------------------
+		-           メモリ領域を確保
+		---------------------------------------------------------------------*/
+		_data = Memory::Allocate(deque.Capacity() * sizeof(ElementType));
+
+		/*-------------------------------------------------------------------
+		-           CopyConsturctorを呼び出す
+		---------------------------------------------------------------------*/
+		Memory::ForceExecuteCopyConstructors(_data, deque.Data(), deque.Size());
+
+		/*-------------------------------------------------------------------
+		-           設定
+		---------------------------------------------------------------------*/
+		_capacity   = deque._capacity;
+		_queueSize  = deque._queueSize;
+		_frontIndex = deque._frontIndex;
+	}
+
+	template<class ElementType>
+	void Deque<ElementType>::Clear()
+	{
+		if (Size())
+		{
+			// 循環バッファを採用しているため, BackがFrontよりも前のポインタになっている場合がある
+			ElementType* frontPointer = &Front();
+			ElementType* backPointer  = &Back();
+
+			if (frontPointer < backPointer)
+			{
+				Memory::ForceExecuteDestructors(frontPointer, Size());
+			}
+			else
+			{
+				Memory::ForceExecuteDestructors(frontPointer, &_data[_capacity] - frontPointer);
+				Memory::ForceExecuteDestructors(_data, backPointer - _data);
+			}
+		}
+
+		_queueSize  = 0;
+		_frontIndex = 0;
+	}
 
 	/*-------------------------------------------------------------------
 	-           @brief : キューの先頭に要素を追加します.
@@ -227,6 +288,7 @@ namespace gu
 	{
 		if (_queueSize == 0) { return false; }
 
+		Memory::ForceExecuteDestructors(&Front(), 1);
 		_frontIndex = (_frontIndex + 1) % _capacity;
 		--_queueSize;
 		return true;
@@ -237,6 +299,7 @@ namespace gu
 	{
 		if (_queueSize == 0) { return false; }
 
+		Memory::ForceExecuteDestructors(&Back(), 1);
 		--_queueSize;
 		return true;
 	}
@@ -251,14 +314,14 @@ namespace gu
 		if (capacity <= _capacity) { return; }
 
 		/*-------------------------------------------------------------------
-		-           もともと配列が存在していればメモリをコピーしたうえで削除
+		-           もともと配列が存在していれば全てのメモリをコピーしたうえで削除
 		---------------------------------------------------------------------*/
 		auto newData = new ElementType[capacity];
 		
 		if (_data != nullptr && _capacity > 0)
 		{
 			Memory::Copy(newData, _data, _capacity * sizeof(ElementType));
-			delete[](_data);
+			Memory::Free(_data);
 		}
 
 		/*-------------------------------------------------------------------

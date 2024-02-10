@@ -22,7 +22,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-
 namespace gu::details
 {
 #pragma region TrueFalse
@@ -139,6 +138,23 @@ namespace gu::details
 	template<typename T>
 	struct IsArithmeticType : Conditional<IsIntegralType<T>::Value || IsFloatingPointType<T>::Value, TrueType, FalseType>::ValueType{};
 #pragma endregion IsArithmetic
+#pragma region IsPointer
+	template<typename T>
+	struct IsPointerType : FalseType{};
+
+	template<typename T>
+	struct IsPointerType<T*> : TrueType{};
+
+	template<typename T>
+	struct IsPointerType<T* const> : TrueType{};
+
+	template<typename T>
+	struct IsPointerType<T* volatile> : TrueType{};
+
+	template<typename T>
+	struct IsPointerType<T* const volatile> : TrueType{};
+
+#pragma endregion IsPointer
 #pragma region IsArrayType
 	/*---------------------------------------------------------------
 						”z—ñ‚©‚ð”»’è‚µ‚Ü‚·
