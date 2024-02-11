@@ -82,6 +82,11 @@ void* Memory::Allocate(const uint64 byteLength)
 	return ::malloc(byteLength);
 }
 
+void* Memory::Reallocate(void* pointer, const uint64 byteLength)
+{
+	return realloc(pointer, byteLength);
+}
+
 void* Memory::AllocateAligned(const uint64 byteLength, const uint64 alignment)
 {
 	return ::_aligned_malloc(byteLength, alignment);

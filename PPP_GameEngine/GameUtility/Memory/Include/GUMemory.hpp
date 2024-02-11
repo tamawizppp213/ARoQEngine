@@ -67,6 +67,16 @@ namespace gu
 		static void* AllocateAligned(const uint64 byteLength, const uint64 alignment);
 
 		/*---------------------------------------------------------------
+			@brief :  メモリ領域を再割り当てします
+			          pointer == nullptr -> mallocと同じ
+					  byteLength < 既存のメモリ : アドレスのサイズ情報を書き換えて既存のポインタを返す
+					  byteLength = 既存のメモリ : 何もしないで返す
+					  byteLength > 既存のメモリ : 拡張可能であればサイズ変更, 不可能だけでメモリは足りてれば, 新しいアドレスにMoveして確保, メモリ不足はnullを返す
+			　　　　　　https://qiita.com/sawasaka/items/2df474fc00ec2105acab
+		-----------------------------------------------------------------*/
+		static void* Reallocate(void* pointer, const uint64 byteLength);
+
+		/*---------------------------------------------------------------
 			@brief :  メモリをデストラクタを呼び出すことなくメモリ領域だけを破棄します (Free)
 		-----------------------------------------------------------------*/
 		static void Free(void* pointer);
@@ -180,12 +190,14 @@ namespace gu
 	template<class ElementType>
 	void Memory::ForceExecuteDestructors(ElementType* element, const uint64 count)
 	{
-		if constexpr (HAS_TRIVIAL_DESTRUCTOR<ElementType>) { return; }
-
-		for (uint64 i = 0; i < count; ++i)
+		// 早期リターンを行うとコンパイラが制御が渡らないコードですと警告が出る場合があるため, 早期リターンを行わない
+		if constexpr (!HAS_TRIVIAL_DESTRUCTOR<ElementType>)
 		{
-			element->ElementType::~ElementType();
-			++element;
+			for (uint64 i = 0; i < count; ++i)
+			{
+				element->ElementType::~ElementType();
+				++element;
+			}
 		}
 	}
 
