@@ -315,8 +315,9 @@ namespace gu
 
 		/*-------------------------------------------------------------------
 		-           もともと配列が存在していれば全てのメモリをコピーしたうえで削除
+		            (こ)
 		---------------------------------------------------------------------*/
-		auto newData = new ElementType[capacity];
+		auto newData = Memory::Allocate(capacity);
 		
 		if (_data != nullptr && _capacity > 0)
 		{
