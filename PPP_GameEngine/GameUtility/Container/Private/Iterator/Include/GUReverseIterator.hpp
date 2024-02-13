@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   ConstIterator.hpp
+///             @file   ReverseIterator.hpp
 ///             @brief  vector
 ///             @author toide
 ///             @date   2024/02/12 3:19:34
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GU_CONST_ITERATOR_HPP
-#define GU_CONST_ITERATOR_HPP
+#ifndef GU_REVERSE_ITERATOR_HPP
+#define GU_REVERSE_ITERATOR_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -23,13 +23,13 @@
 namespace gu
 {
 	/****************************************************************************
-	*				  			   ConstIterator
+	*				  			   ReverseIterator
 	*************************************************************************//**
-	*  @class     ConstIterator
-	*  @brief     値の書き換え不可のイテレータ
+	*  @class     ReverseIterator
+	*  @brief     逆方向に進むイテレータ. 書き換え可
 	*****************************************************************************/
 	template<class ElementType>
-	class ConstIterator
+	class ReverseIterator
 	{
 	public:
 		using DifferenceType = int64;
@@ -41,62 +41,63 @@ namespace gu
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		__forceinline ConstIterator& operator++() { _pointer++; return *this; }
+		__forceinline ReverseIterator& operator++() { _pointer--; return *this; }
 
-		__forceinline ConstIterator operator++(DifferenceType)
+		__forceinline ReverseIterator operator++(DifferenceType)
 		{
-			ConstIterator result = *this;
-			_pointer++;
-			return result;
-		}
-
-		__forceinline ConstIterator operator+(const DifferenceType& x) const { return ConstIterator(*this) += x; }
-
-		__forceinline ConstIterator& operator+=(const DifferenceType& x) { _pointer += x; return *this; }
-
-		__forceinline ConstIterator& operator--() { _pointer--; return *this; }
-
-		__forceinline ConstIterator operator--(DifferenceType)
-		{
-			ConstIterator result = *this;
+			ReverseIterator result = *this;
 			_pointer--;
 			return result;
 		}
 
-		__forceinline ConstIterator operator-(const DifferenceType& x) const { return ConstIterator(*this) -= x; }
+		__forceinline ReverseIterator operator+(const DifferenceType& x) const { return ReverseIterator(*this) += x; }
 
-		__forceinline DifferenceType operator-(const ConstIterator& iterator) const { _pointer - iterator._pointer; }
+		__forceinline ReverseIterator& operator+=(const DifferenceType& x) { _pointer -= x; return *this; }
 
-		__forceinline ConstIterator& operator-=(const DifferenceType& x) { _pointer -= x; return *this; }
+		__forceinline ReverseIterator& operator--() { _pointer++; return *this; }
+
+		__forceinline ReverseIterator operator--(DifferenceType)
+		{
+			ReverseIterator result = *this;
+			_pointer++;
+			return result;
+		}
+
+		__forceinline ReverseIterator operator-(const DifferenceType& x) const { return ReverseIterator(*this) -= x; }
+
+		__forceinline DifferenceType operator-(const ReverseIterator& iterator) const { _pointer + iterator._pointer; }
+
+		__forceinline ReverseIterator& operator-=(const DifferenceType& x) { _pointer += x; return *this; }
 
 		ElementType& operator*() const { return *_pointer; }
 
 		ElementType& operator[] (const DifferenceType& x) const
 		{
-			return *(*this + x);
+			return *(*this - x);
 		}
 
-		bool operator<(const ConstIterator& iterator) const { return _pointer < iterator._pointer; }
+		// 逆向きなので注意 (不等号はreverseIteratorの進行方向に大きいとみなす)
+		bool operator<(const ReverseIterator& iterator) const { return _pointer > iterator._pointer; }
 
-		bool operator<= (const ConstIterator& iterator) const { return _pointer <= iterator._pointer; }
+		bool operator<= (const ReverseIterator& iterator) const { return _pointer >= iterator._pointer; }
 
-		bool operator==(const ConstIterator& iterator) const { return _pointer == iterator._pointer; }
+		bool operator==(const ReverseIterator& iterator) const { return _pointer == iterator._pointer; }
 
-		bool operator>(const ConstIterator& iterator) const { return _pointer > iterator._pointer; }
+		bool operator>(const ReverseIterator& iterator) const { return _pointer < iterator._pointer; }
 
-		bool operator>=(const ConstIterator& iterator) const { return _pointer >= iterator._pointer; }
+		bool operator>=(const ReverseIterator& iterator) const { return _pointer <= iterator._pointer; }
 
-		bool operator!=(const ConstIterator& iterator) const { return _pointer != iterator._pointer; }
+		bool operator!=(const ReverseIterator& iterator) const { return _pointer != iterator._pointer; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		ConstIterator() noexcept : _pointer(nullptr) {};
+		ReverseIterator() noexcept : _pointer(nullptr) {};
 
-		ConstIterator(const ElementType* begin, const DifferenceType index) noexcept :
-			_pointer(begin + index) {};
+		ReverseIterator(ElementType* rbegin, const DifferenceType index) noexcept :
+			_pointer(rbegin - index) {};
 
-		ConstIterator(const ConstIterator& iterator) : _pointer(iterator._pointer) {};
+		ReverseIterator(const ReverseIterator& iterator) : _pointer(iterator._pointer) {};
 
 	protected:
 		/****************************************************************************
@@ -106,7 +107,7 @@ namespace gu
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		const ElementType* _pointer = nullptr;
+		ElementType* _pointer = nullptr;
 	};
 }
 
