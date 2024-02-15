@@ -14,7 +14,7 @@
 #include "GameUtility/Thread/Public/Include/GUThreadPool.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ namespace engine::core
 		*****************************************************************************/
 		std::vector<ThreadPoolPtr> _threadPools = {};
 
-		std::vector<bool> _hasCompletedExecution = {};
+		gu::DynamicArray<bool> _hasCompletedExecution = {};
 		SemaphorePtr      _hasCompletedSemaphore = nullptr;
 		gu::uint64        _fenceValue = 0;
 	};

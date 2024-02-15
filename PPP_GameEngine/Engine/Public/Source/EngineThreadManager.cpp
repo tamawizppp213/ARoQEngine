@@ -22,7 +22,7 @@ using namespace gu;
 EngineThreadManager::EngineThreadManager()
 {
 	_threadPools.resize(static_cast<int>(ThreadPoolType::CountOf));
-	_hasCompletedExecution.resize(static_cast<int>(ThreadPoolType::CountOf));
+	_hasCompletedExecution.Resize(static_cast<int>(ThreadPoolType::CountOf));
 
 	_threadPools[(int)ThreadPoolType::RenderMain] = gu::MakeShared<ThreadPool>(1);
 	_threadPools[(int)ThreadPoolType::UpdateMain] = gu::MakeShared<ThreadPool>(1);
