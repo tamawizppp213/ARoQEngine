@@ -57,9 +57,9 @@ public:
 	/****************************************************************************
 	**                Static Configuration
 	*****************************************************************************/
-	static constexpr std::uint32_t FRAME_BUFFER_COUNT = 3;
+	static constexpr gu::uint32 FRAME_BUFFER_COUNT = 3;
 
-	static constexpr std::uint32_t VSYNC = 0; // 0: don't wait, 1:wait(60fps)
+	static constexpr gu::uint32 VSYNC = 0; // 0: don't wait, 1:wait(60fps)
 
 	/****************************************************************************
 	**                Public Function

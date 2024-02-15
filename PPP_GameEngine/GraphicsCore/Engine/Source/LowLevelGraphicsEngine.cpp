@@ -62,7 +62,6 @@ LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hInstance)
 {
 	_apiVersion = apiVersion;
-
 	/*-------------------------------------------------------------------
 	-      Create Instance
 	---------------------------------------------------------------------*/

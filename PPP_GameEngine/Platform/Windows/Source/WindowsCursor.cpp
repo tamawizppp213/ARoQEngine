@@ -13,7 +13,7 @@
 #include "../../Windows/Include/WindowsError.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 #include "GameUtility/Math/Include/GMColor.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -134,13 +134,13 @@ void* ICursor::CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int3
 	Check(width > 0);
 	Check(height > 0);
 
-	std::vector<gm::BGRA>  bgraPixels(width * height);
-	std::vector<gu::uint8> maskPixels(width * height);
+	gu::DynamicArray<gm::BGRA>  bgraPixels(width * height);
+	gu::DynamicArray<gu::uint8> maskPixels(width * height);
 
 	/*---------------------------------------------------------------
 			BGRA情報に変換
 	-----------------------------------------------------------------*/
-	for (int i = 0; i < bgraPixels.size(); ++i)
+	for (int i = 0; i < bgraPixels.Size(); ++i)
 	{
 		bgraPixels[i] = gm::BGRA(pixels[i].B, pixels[i].G, pixels[i].R, pixels[i].A);
 		maskPixels[i] = 255;
@@ -149,8 +149,8 @@ void* ICursor::CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int3
 	/*---------------------------------------------------------------
 			ビットマップの作成
 	-----------------------------------------------------------------*/
-	const auto cursorColor = ::CreateBitmap(width, height, 1, 32, bgraPixels.data());
-	const auto cursorMask  = ::CreateBitmap(width, height, 1, 8, maskPixels.data());
+	const auto cursorColor = ::CreateBitmap(width, height, 1, 32, bgraPixels.Data());
+	const auto cursorMask  = ::CreateBitmap(width, height, 1, 8, maskPixels.Data());
 
 	ICONINFO iconInfo =
 	{
@@ -169,8 +169,8 @@ void* ICursor::CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int3
 	::DeleteObject(cursorColor);
 	::DeleteObject(cursorMask);
 
-	bgraPixels.clear(); bgraPixels.shrink_to_fit();
-	maskPixels.clear(); maskPixels.shrink_to_fit();
+	bgraPixels.Clear(); bgraPixels.ShrinkToFit();
+	maskPixels.Clear(); maskPixels.ShrinkToFit();
 	return nullptr;
 }
 

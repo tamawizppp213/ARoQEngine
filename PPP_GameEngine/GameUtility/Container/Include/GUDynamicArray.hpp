@@ -35,6 +35,8 @@ namespace gu
 	class DynamicArray
 	{
 	public:
+		static constexpr uint64 INDEX_NONE = static_cast<uint64>(-1);
+
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
@@ -84,6 +86,31 @@ namespace gu
 		/*----------------------------------------------------------------------*/
 		bool Contains(const ElementType& element) const;
 
+		/*----------------------------------------------------------------------
+		*  @brief : 指定した配列インデックスを順方向から見つけます. 見つからなかった場合はIndexNoneを渡します
+		/*----------------------------------------------------------------------*/
+		uint64 FindFromBegin(const ElementType& element) const;
+
+		/*----------------------------------------------------------------------
+		*  @brief : 指定した配列インデックスを逆方向から見つけます. 見つからなかった場合はIndexNoneを渡します
+		/*----------------------------------------------------------------------*/
+		uint64 FindFromEnd(const ElementType& element) const;
+
+		/*----------------------------------------------------------------------
+		*  @brief : 指定したIndexにある要素を削除します
+		/*----------------------------------------------------------------------*/
+		void RemoveAt(const uint64 index) { RemoveAtImplement(index, 1, true); }
+
+		void RemoveAt(const uint64 index, const uint64 removeCount, const bool allowShrinking = true) { RemoveAtImplement(index, removeCount, allowShrinking); }
+
+		/*----------------------------------------------------------------------
+		*  @brief : 指定した要素を削除します
+		/*----------------------------------------------------------------------*/
+		void Remove(const ElementType& element) 
+		{
+			const auto index = FindFromBegin(element);
+			if (index != INDEX_NONE) { RemoveAtImplement(index, 1, true); }
+		}
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -263,6 +290,8 @@ namespace gu
 		**                Private Function
 		*****************************************************************************/
 		void CreateFromOtherArray(const ElementType* pointer, const uint64 count);
+
+		void RemoveAtImplement(const uint64 index, const uint64 count, const bool allowShrinking);
 
 		/****************************************************************************
 		**                Private Member Variables
@@ -490,6 +519,107 @@ namespace gu
 			}
 		}
 		return false;
+	}
+
+	/****************************************************************************
+	*                    RemoveAtImplement
+	*************************************************************************//**
+	*  @fn        void RemoveAtImplement(const uint64 index, const uint64 count, const bool allowShrinking)
+	*
+	*  @brief     Removeの実装
+	*
+	*  @param[in] const uint64 index
+	*  @param[in] const uint64 size
+	*  @param[in] const bool allowShrinking
+	*
+	*  @return 　　void
+	*****************************************************************************/
+	template<class ElementType>
+	void DynamicArray<ElementType>::RemoveAtImplement(const uint64 index, const uint64 removeCount, const bool allowShrinking)
+	{
+		/*-------------------------------------------------------------------
+		-           範囲チェック
+		---------------------------------------------------------------------*/
+		if (removeCount > 0)                      { return; }
+		if (!InRange(index + removeCount)) { return; }
+
+		/*-------------------------------------------------------------------
+		-           終了処理
+		---------------------------------------------------------------------*/
+		Memory::ForceExecuteDestructors(Data() + index, removeCount);
+
+		/*-------------------------------------------------------------------
+		-           メモリの移動
+		---------------------------------------------------------------------*/
+		const auto moveCount = _size - index - removeCount;
+		
+		if (moveCount > 0)
+		{
+			Memory::Move(&_data[index], &_data[index + removeCount], moveCount * sizeof(ElementType));
+		}
+
+		_size -= removeCount;
+
+		if (allowShrinking)
+		{
+			ShrinkToFit();
+		}
+	}
+
+	/****************************************************************************
+	*                    FindFromBegin
+	*************************************************************************//**
+	*  @fn        uint64 DynamicArray<ElementType>::FindFromBegin(const ElementType& element) const
+	*
+	*  @brief     指定した配列インデックスを順方向に見つけます. 見つからなかった場合は-1を渡します
+	*
+	*  @param[in] const ElementType& element
+	*
+	*  @return 　　uint64
+	*****************************************************************************/
+	template<class ElementType>
+	uint64 DynamicArray<ElementType>::FindFromBegin(const ElementType& element) const
+	{
+		ElementType* start = _data;
+
+		for (ElementType* data = start; data != &_data[_size]; ++data)
+		{
+			if (*data == element)
+			{
+				return static_cast<uint64>(data - start);
+			}
+		}
+
+		return INDEX_NONE;
+	}
+
+	/****************************************************************************
+	*                    FindFromEnd
+	*************************************************************************//**
+	*  @fn        uint64 DynamicArray<ElementType>::FindFromEnd(const ElementType& element) const
+	*
+	*  @brief     指定した配列インデックスを逆方向に見つけます. 見つからなかった場合は-1を渡します
+	*
+	*  @param[in] const ElementType& element
+	*
+	*  @return 　　uint64
+	*****************************************************************************/
+	template<class ElementType>
+	uint64 DynamicArray<ElementType>::FindFromEnd(const ElementType& element) const
+	{
+		const ElementType* end = Data() + _size;
+
+		for (const ElementType* data = end; data != _data; )
+		{
+			--data;
+
+			if (*data == element)
+			{
+				return static_cast<uint64>(data - start);
+			}
+		}
+
+		return INDEX_NONE;
 	}
 #pragma endregion Implement
 }
