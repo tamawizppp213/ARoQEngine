@@ -32,7 +32,7 @@ namespace gu
 	class ReverseConstIterator
 	{
 	public:
-		using DifferenceType = int64;
+		using DifferenceType = int;
 
 		/****************************************************************************
 		**                Public Function

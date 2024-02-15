@@ -29,6 +29,7 @@ namespace gu
 	*************************************************************************//**
 	*  @class     DynamicArray
 	*  @brief     動的配列
+	* 　　　　　　　　https://qiita.com/ageprocpp/items/16aa225a1194fa0cf450
 	*****************************************************************************/
 	template<class ElementType>
 	class DynamicArray
@@ -150,12 +151,12 @@ namespace gu
 		__forceinline const ElementType& At(const uint64 index) const { CheckRange(index); return _data[index]; }
 
 #pragma region Iterator Function
-		Iterator             Begin       ()       { return Iterator            (_data); }
-		ConstIterator        Begin       () const { return ConstIterator       (_data); }
-		Iterator             End         ()       { return Iterator            (_data + _size); }
-		ConstIterator        End         () const { return ConstIterator       (_data + _size); }
-		ReverseIterator      ReverseBegin()       { return ReverseIterator     (_data + _size); }
-		ReverseConstIterator ReverseBegin() const { return ReverseConstIterator(_data + _size); }
+		Iterator<ElementType>             Begin       ()       { return Iterator            (_data); }
+		ConstIterator<ElementType>        Begin       () const { return ConstIterator       (_data); }
+		Iterator<ElementType>             End         ()       { return Iterator            (_data + _size); }
+		ConstIterator<ElementType>        End         () const { return ConstIterator       (_data + _size); }
+		ReverseIterator<ElementType>      ReverseBegin()       { return ReverseIterator     (_data + _size); }
+		ReverseConstIterator<ElementType> ReverseBegin() const { return ReverseConstIterator(_data + _size); }
 #pragma endregion Iterator Function
 #pragma region Operator Function
 		// 高速化のために範囲チェックを施していません. 範囲チェックを行いたい場合はAtを使用してください
@@ -211,6 +212,8 @@ namespace gu
 		{
 			CreateFromOtherArray(pointer, count);
 		}
+
+		DynamicArray(const uint64 size) { Resize(size); }
 
 		// 波括弧で初期化が出来るコンストラクタ
 		DynamicArray(std::initializer_list<ElementType> list)
@@ -319,7 +322,7 @@ namespace gu
 			}
 			else
 			{
-				for (uint64 i = 0; i < size; ++i)
+				for (uint64 i = _size; i < _size + residueSize; ++i)
 				{
 					_data[i] = defaultElement;
 				}
