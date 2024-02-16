@@ -78,7 +78,7 @@ namespace engine::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<ThreadPoolPtr> _threadPools = {};
+		gu::DynamicArray<ThreadPoolPtr> _threadPools = {};
 
 		gu::DynamicArray<bool> _hasCompletedExecution = {};
 		SemaphorePtr      _hasCompletedSemaphore = nullptr;

@@ -21,7 +21,7 @@ using namespace gu;
 #pragma region Constructor and Destructor
 EngineThreadManager::EngineThreadManager()
 {
-	_threadPools.resize(static_cast<int>(ThreadPoolType::CountOf));
+	_threadPools.Resize(static_cast<int>(ThreadPoolType::CountOf));
 	_hasCompletedExecution.Resize(static_cast<int>(ThreadPoolType::CountOf));
 
 	_threadPools[(int)ThreadPoolType::RenderMain] = gu::MakeShared<ThreadPool>(1);
@@ -32,8 +32,8 @@ EngineThreadManager::EngineThreadManager()
 
 EngineThreadManager::~EngineThreadManager()
 {
-	_threadPools.clear();
-	_threadPools.shrink_to_fit();
+	_threadPools.Clear();
+	_threadPools.ShrinkToFit();
 }
 #pragma endregion Constructor and Destructor
 
@@ -53,9 +53,9 @@ bool EngineThreadManager::CallExecuteComplete(const ThreadPoolType type)
 
 void EngineThreadManager::ShutDown()
 {
-	_hasCompletedSemaphore->Wait(_threadPools.size());
+	_hasCompletedSemaphore->Wait(_threadPools.Size());
 
-	_threadPools.clear();
-	_threadPools.shrink_to_fit();
+	_threadPools.Clear();
+	_threadPools.ShrinkToFit();
 }
 #pragma endregion Main Function

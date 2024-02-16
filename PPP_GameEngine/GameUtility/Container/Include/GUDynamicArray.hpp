@@ -178,12 +178,12 @@ namespace gu
 		__forceinline const ElementType& At(const uint64 index) const { CheckRange(index); return _data[index]; }
 
 #pragma region Iterator Function
-		Iterator<ElementType>             Begin       ()       { return Iterator            (_data); }
-		ConstIterator<ElementType>        Begin       () const { return ConstIterator       (_data); }
-		Iterator<ElementType>             End         ()       { return Iterator            (_data + _size); }
-		ConstIterator<ElementType>        End         () const { return ConstIterator       (_data + _size); }
-		ReverseIterator<ElementType>      ReverseBegin()       { return ReverseIterator     (_data + _size); }
-		ReverseConstIterator<ElementType> ReverseBegin() const { return ReverseConstIterator(_data + _size); }
+		Iterator<ElementType>             begin       ()       { return Iterator<ElementType>            (_data); }
+		ConstIterator<ElementType>        begin       () const { return ConstIterator<ElementType>       (_data); }
+		Iterator<ElementType>             end         ()       { return Iterator<ElementType>            (_data + _size); }
+		ConstIterator<ElementType>        end         () const { return ConstIterator<ElementType>       (_data + _size); }
+		ReverseIterator<ElementType>      rbegin      ()       { return ReverseIterator<ElementType>     (_data + _size); }
+		ReverseConstIterator<ElementType> rbegin      () const { return ReverseConstIterator<ElementType>(_data + _size); }
 #pragma endregion Iterator Function
 #pragma region Operator Function
 		// 高速化のために範囲チェックを施していません. 範囲チェックを行いたい場合はAtを使用してください
@@ -384,7 +384,7 @@ namespace gu
 		/*-------------------------------------------------------------------
 		-           もともと配列が存在していれば全てのメモリをコピーしたうえで削除する
 		---------------------------------------------------------------------*/
-		auto newData = Memory::Allocate(capacity);
+		auto newData = Memory::Allocate(capacity * sizeof(ElementType));
 
 		if (_data != nullptr && _capacity)
 		{
@@ -450,7 +450,18 @@ namespace gu
 		-           今回の場合は_capacityの方が常にsizeより大きいことが分かっているため, 
 		            _dataに直接代入を行っている. 
 		---------------------------------------------------------------------*/
-		_data     = (ElementType*)Memory::Reallocate(_data, _size * sizeof(ElementType));
+		if (_size != 0)
+		{
+			_data = (ElementType*)Memory::Reallocate(_data, _size * sizeof(ElementType));
+		}
+		else
+		{
+			if (_data)
+			{
+				Memory::Free(_data);
+				_data = nullptr;
+			}
+		}
 		_capacity = _size;
 	}
 

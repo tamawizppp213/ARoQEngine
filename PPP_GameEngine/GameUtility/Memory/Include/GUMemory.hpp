@@ -193,9 +193,12 @@ namespace gu
 		// 早期リターンを行うとコンパイラが制御が渡らないコードですと警告が出る場合があるため, 早期リターンを行わない
 		if constexpr (!HAS_TRIVIAL_DESTRUCTOR<ElementType>)
 		{
+			// ここでは, ElementTypeというメンバがあった場合にコンパイルをしてくれないという記述がUE5にあったため.
+			using DestructItemsElementType = ElementType;
+
 			for (uint64 i = 0; i < count; ++i)
 			{
-				element->ElementType::~ElementType();
+				element->DestructItemsElementType::~DestructItemsElementType();
 				++element;
 			}
 		}
