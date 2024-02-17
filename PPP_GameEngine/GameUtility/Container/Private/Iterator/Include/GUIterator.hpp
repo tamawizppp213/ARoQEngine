@@ -98,6 +98,7 @@ namespace gu
 
 		Iterator(const Iterator& iterator) : _pointer(iterator._pointer) {};
 
+		Iterator(ElementType* begin) noexcept : _pointer(begin) {};
 	protected:
 		/****************************************************************************
 		**                Protected Function

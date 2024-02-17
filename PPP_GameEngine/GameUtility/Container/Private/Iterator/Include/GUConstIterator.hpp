@@ -69,9 +69,9 @@ namespace gu
 
 		__forceinline ConstIterator& operator-=(const DifferenceType& x) { _pointer -= x; return *this; }
 
-		ElementType& operator*() const { return *_pointer; }
+		const ElementType& operator*() const { return *_pointer; }
 
-		ElementType& operator[] (const DifferenceType& x) const
+		const ElementType& operator[] (const DifferenceType& x) const
 		{
 			return *(*this + x);
 		}
@@ -98,6 +98,7 @@ namespace gu
 
 		ConstIterator(const ConstIterator& iterator) : _pointer(iterator._pointer) {};
 
+		ConstIterator(const ElementType* begin) noexcept : _pointer(begin) {};
 	protected:
 		/****************************************************************************
 		**                Protected Function
