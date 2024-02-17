@@ -15,7 +15,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ namespace rhi::core
 		*  @brief :  Execute command list contents. normally set graphics, compute, transfer commandlist
 		             All CommandLists to be assigned must be Closed.
 		/*----------------------------------------------------------------------*/
-		virtual void Execute(const std::vector<gu::SharedPointer<RHICommandList>>& commandLists) = 0;
+		virtual void Execute(const gu::DynamicArray<gu::SharedPointer<RHICommandList>>& commandLists) = 0;
 
 		/****************************************************************************
 		**                Public Member Variables

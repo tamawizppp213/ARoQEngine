@@ -16,7 +16,7 @@
 #include "GameUtility/Math/Include/GMVertex.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -52,7 +52,7 @@ namespace gc::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		const std::vector<VertexBufferPtr>& GetVertexBuffers() const noexcept { return _vertexBuffers; }
+		const gu::DynamicArray<VertexBufferPtr>& GetVertexBuffers() const noexcept { return _vertexBuffers; }
 
 		IndexBufferPtr GetIndexBuffer() const noexcept { return _indexBuffer; }
 
@@ -76,7 +76,7 @@ namespace gc::core
 
 		// @brief : This constructor is used, when sharing one VB and Index and separating each material. (e.g. Model drawing)
 		Mesh(const LowLevelGraphicsEnginePtr& engine,
-			const std::vector<VertexBufferPtr>& vertexBuffers,
+			const gu::DynamicArray<VertexBufferPtr>& vertexBuffers,
 			const IndexBufferPtr& indexBuffer,
 			const std::uint64_t indexCount = 0,
 			const std::uint32_t indexOffset = 0,
@@ -99,7 +99,7 @@ namespace gc::core
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
 		/* @brief : frame count size vertex buffer*/
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 
 		/* @brief : index data buffer*/
 		IndexBufferPtr _indexBuffer  = nullptr;

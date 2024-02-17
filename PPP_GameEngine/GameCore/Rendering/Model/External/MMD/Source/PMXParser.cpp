@@ -60,15 +60,15 @@ bool PMXFile::Load(const gu::tstring& filePath)
 }
 PMXFile::~PMXFile()
 {
-	Vertices       .clear(); Vertices       .shrink_to_fit();
-	Indices        .clear(); Indices        .shrink_to_fit();
-	TexturePathList.clear(); TexturePathList.shrink_to_fit();
-	Materials      .clear(); Materials      .shrink_to_fit();
-	Bones          .clear(); Bones          .shrink_to_fit();
-	Morphs         .clear(); Morphs         .shrink_to_fit();
-	DisplayFrames  .clear(); DisplayFrames  .shrink_to_fit();
-	RigidBodies    .clear(); RigidBodies    .shrink_to_fit();
-	Joints         .clear(); Joints         .shrink_to_fit();
+	Vertices       .Clear(); Vertices       .ShrinkToFit();
+	Indices        .Clear(); Indices        .ShrinkToFit();
+	TexturePathList.Clear(); TexturePathList.ShrinkToFit();
+	Materials      .Clear(); Materials      .ShrinkToFit();
+	Bones          .Clear(); Bones          .ShrinkToFit();
+	Morphs         .Clear(); Morphs         .ShrinkToFit();
+	DisplayFrames  .Clear(); DisplayFrames  .ShrinkToFit();
+	RigidBodies    .Clear(); RigidBodies    .ShrinkToFit();
+	Joints         .Clear(); Joints         .ShrinkToFit();
 }
 #pragma region PMXFileFunction
 void PMXFile::ReadVertices     (FILE* filePtr)
@@ -76,7 +76,7 @@ void PMXFile::ReadVertices     (FILE* filePtr)
 	INT32 vertexCount = 0;
 	fread_s(&vertexCount, sizeof(vertexCount), sizeof(INT32), 1, filePtr);
 
-	Vertices.resize(vertexCount);
+	Vertices.Resize(vertexCount);
 	for (auto& vertex : Vertices) { vertex.Read(filePtr, &Setting); }
 }
 void PMXFile::ReadIndices      (FILE* filePtr)
@@ -90,13 +90,13 @@ void PMXFile::ReadIndices      (FILE* filePtr)
 	/*-------------------------------------------------------------------
 	-             Load Face Data
 	---------------------------------------------------------------------*/
-	Indices.resize(indexCount);
+	Indices.Resize(indexCount);
 	switch (Setting.VertexIndexSize)
 	{
 		case 1:
 		{
-			std::vector<UINT8> indices(indexCount);
-			fread_s(indices.data(), sizeof(UINT8) * indices.size(), sizeof(UINT8), indices.size(), filePtr);
+			gu::DynamicArray<UINT8> indices(indexCount);
+			fread_s(indices.Data(), sizeof(UINT8) * indices.Size(), sizeof(UINT8), indices.Size(), filePtr);
 			for (int i = 0; i < indexCount; ++i)
 			{
 				Indices[i] = indices[i];
@@ -105,8 +105,8 @@ void PMXFile::ReadIndices      (FILE* filePtr)
 		}
 		case 2:
 		{
-			std::vector<UINT16> indices(indexCount);
-			fread_s(indices.data(), sizeof(UINT16) * indices.size(), sizeof(UINT16), indices.size(), filePtr);
+			gu::DynamicArray<UINT16> indices(indexCount);
+			fread_s(indices.Data(), sizeof(UINT16) * indices.Size(), sizeof(UINT16), indices.Size(), filePtr);
 			for (int i = 0; i < indexCount; ++i)
 			{
 				Indices[i] = indices[i];
@@ -115,8 +115,8 @@ void PMXFile::ReadIndices      (FILE* filePtr)
 		}
 		case 4:
 		{
-			std::vector<UINT32> indices(indexCount);
-			fread_s(indices.data(), sizeof(UINT32) * indices.size(), sizeof(UINT32), indices.size(), filePtr);
+			gu::DynamicArray<UINT32> indices(indexCount);
+			fread_s(indices.Data(), sizeof(UINT32) * indices.Size(), sizeof(UINT32), indices.Size(), filePtr);
 			Indices = std::move(indices);
 			break;
 		}
@@ -137,7 +137,7 @@ void PMXFile::ReadTextureList  (FILE* filePtr)
 	/*-------------------------------------------------------------------
 	-             Load Texture Data
 	---------------------------------------------------------------------*/
-	TexturePathList.resize(textureCount);
+	TexturePathList.Resize(textureCount);
 	for (auto& texture : TexturePathList)
 	{
 		ReadPMXString(filePtr, &texture, Setting.Encode);
@@ -155,7 +155,7 @@ void PMXFile::ReadMaterials    (FILE* filePtr)
 	/*-------------------------------------------------------------------
 	-             Load Material Data
 	---------------------------------------------------------------------*/
-	Materials.resize(materialCount);
+	Materials.Resize(materialCount);
 	for (auto& material : Materials)
 	{
 		material.Read(filePtr, &Setting);
@@ -172,7 +172,7 @@ void PMXFile::ReadBones        (FILE* filePtr)
 	/*-------------------------------------------------------------------
 	-             Load Bone Data
 	---------------------------------------------------------------------*/
-	Bones.resize(boneCount);
+	Bones.Resize(boneCount);
 	for (auto& bone : Bones)
 	{
 		bone.Read(filePtr, &Setting);
@@ -188,7 +188,7 @@ void PMXFile::ReadMorphs       (FILE* filePtr)
 	/*-------------------------------------------------------------------
 	-             Load Morph Data
 	---------------------------------------------------------------------*/
-	Morphs.resize(morphCount);
+	Morphs.Resize(morphCount);
 	for (auto& morph : Morphs)
 	{
 		morph.Read(filePtr, &Setting);
@@ -205,7 +205,7 @@ void PMXFile::ReadDisplayFrames(FILE* filePtr)
 	/*-------------------------------------------------------------------
 	-             Load display frame data
 	---------------------------------------------------------------------*/
-	DisplayFrames.resize(displayFrameCount);
+	DisplayFrames.Resize(displayFrameCount);
 	for (auto& frame : DisplayFrames)
 	{
 		frame.Read(filePtr, &Setting);
@@ -222,7 +222,7 @@ void PMXFile::ReadRigidBodies  (FILE* filePtr)
 	/*-------------------------------------------------------------------
 	-             Load rigid body Config
 	---------------------------------------------------------------------*/
-	RigidBodies.resize(rigidBodyCount);
+	RigidBodies.Resize(rigidBodyCount);
 	for (auto& rigidBody : RigidBodies)
 	{
 		rigidBody.Read(filePtr, &Setting);
@@ -239,7 +239,7 @@ void PMXFile::ReadJoints       (FILE* filePtr)
 	/*-------------------------------------------------------------------
 	-             Load joint data
 	---------------------------------------------------------------------*/
-	Joints.resize(jointCount);
+	Joints.Resize(jointCount);
 	for (auto& joint : Joints)
 	{
 		joint.Read(filePtr, &Setting);
@@ -256,7 +256,7 @@ void PMXFile::ReadSoftBodies   (FILE* filePtr)
 	/*-------------------------------------------------------------------
 	-             Load Soft Body Data
 	---------------------------------------------------------------------*/
-	SoftBodies.resize(softBodyCount);
+	SoftBodies.Resize(softBodyCount);
 	for (auto& softBody : SoftBodies)
 	{
 		softBody.Read(filePtr, &Setting);
@@ -511,7 +511,7 @@ void PMXBone        ::Read(FILE* filePtr, const PMXSetting* setting)
 		/*-------------------------------------------------------------------
 		-             Load IKLink
 		---------------------------------------------------------------------*/
-		IKLinks.resize(linkCount);
+		IKLinks.Resize(linkCount);
 		for (auto& ikLink : IKLinks)
 		{
 			ikLink.Read(filePtr, setting);
@@ -544,7 +544,7 @@ void PMXMorph       ::Read(FILE* filePtr, const PMXSetting* setting)
 		---------------------------------------------------------------------*/
 		case PMXMorphType::Position:
 		{
-			PositionMorphs.resize(dataCount);
+			PositionMorphs.Resize(dataCount);
 			for (auto& positionMorph : PositionMorphs)
 			{
 				ReadPMXIndex(filePtr, &positionMorph.VertexIndex, setting->VertexIndexSize);
@@ -561,7 +561,7 @@ void PMXMorph       ::Read(FILE* filePtr, const PMXSetting* setting)
 		case PMXMorphType::AddUV3:
 		case PMXMorphType::AddUV4:
 		{
-			UVMorphs.resize(dataCount);
+			UVMorphs.Resize(dataCount);
 			for (auto& uvMorph : UVMorphs)
 			{
 				ReadPMXIndex(filePtr, &uvMorph.VertexIndex, setting->VertexIndexSize);
@@ -573,7 +573,7 @@ void PMXMorph       ::Read(FILE* filePtr, const PMXSetting* setting)
 		---------------------------------------------------------------------*/
 		case PMXMorphType::Bone:
 		{
-			BoneMorphs.resize(dataCount);
+			BoneMorphs.Resize(dataCount);
 			for (auto& boneMorph : BoneMorphs)
 			{
 				ReadPMXIndex(filePtr, &boneMorph.BoneIndex, setting->BoneIndexSize);
@@ -587,7 +587,7 @@ void PMXMorph       ::Read(FILE* filePtr, const PMXSetting* setting)
 		---------------------------------------------------------------------*/
 		case PMXMorphType::Material:
 		{
-			MaterialMorphs.resize(dataCount);
+			MaterialMorphs.Resize(dataCount);
 			for (auto& materialMorph : MaterialMorphs)
 			{
 				ReadPMXIndex(filePtr, &materialMorph.MaterialIndex, setting->MaterialIndexSize);
@@ -609,7 +609,7 @@ void PMXMorph       ::Read(FILE* filePtr, const PMXSetting* setting)
 		---------------------------------------------------------------------*/
 		case PMXMorphType::Group:
 		{
-			GroupMorphs.resize(dataCount);
+			GroupMorphs.Resize(dataCount);
 			for (auto& groupMorph : GroupMorphs)
 			{
 				ReadPMXIndex(filePtr, &groupMorph.MorphIndex, setting->FaceIndexSize);
@@ -622,7 +622,7 @@ void PMXMorph       ::Read(FILE* filePtr, const PMXSetting* setting)
 		---------------------------------------------------------------------*/
 		case PMXMorphType::Flip:
 		{
-			FlipMorphs.resize(dataCount);
+			FlipMorphs.Resize(dataCount);
 			for (auto& flipMorph : FlipMorphs)
 			{
 				ReadPMXIndex(filePtr, &flipMorph.MorphIndex, setting->FaceIndexSize);
@@ -635,7 +635,7 @@ void PMXMorph       ::Read(FILE* filePtr, const PMXSetting* setting)
 		---------------------------------------------------------------------*/
 		case PMXMorphType::Impulse:
 		{
-			ImpulseMorphs.resize(dataCount);
+			ImpulseMorphs.Resize(dataCount);
 			for (auto& impulseMorph : ImpulseMorphs)
 			{
 				ReadPMXIndex(filePtr, &impulseMorph.RigidBodyIndex, setting->RigidBodyIndexSize);
@@ -675,7 +675,7 @@ void PMXDisplayFrame::Read(FILE* filePtr, const PMXSetting* setting)
 	/*-------------------------------------------------------------------
 	-             Load display frame targets data
 	---------------------------------------------------------------------*/
-	Targets.resize(targetCount);
+	Targets.Resize(targetCount);
 	for (auto& target : Targets)
 	{
 		fread_s(&target.Type, sizeof(target.Type), sizeof(UINT8), 1, filePtr);
@@ -786,7 +786,7 @@ void PMXSoftBody    ::Read(FILE* filePtr, const PMXSetting* setting)
 	/*-------------------------------------------------------------------
 	-             Load SoftBody Count
 	---------------------------------------------------------------------*/
-	Anchor.resize(anchorCount);
+	Anchor.Resize(anchorCount);
 
 	/*-------------------------------------------------------------------
 	-             Load Anchor
@@ -805,7 +805,7 @@ void PMXSoftBody    ::Read(FILE* filePtr, const PMXSetting* setting)
 	/*-------------------------------------------------------------------
 	-             Load vertex count
 	---------------------------------------------------------------------*/
-	VertexIndices.resize(vertexCount);
+	VertexIndices.Resize(vertexCount);
 	for (auto& index : VertexIndices)
 	{
 		ReadPMXIndex(filePtr, &index, setting->VertexIndexSize);

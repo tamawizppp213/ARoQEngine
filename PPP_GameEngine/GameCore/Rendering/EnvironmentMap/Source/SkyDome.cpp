@@ -32,9 +32,9 @@ SkyDome::SkyDome() {};
 SkyDome::~SkyDome()
 {
 	_skyObject.Reset();
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
-	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
-	_resourceViews.clear(); _resourceViews.shrink_to_fit();
+	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
+	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
+	_resourceViews.Clear(); _resourceViews.ShrinkToFit();
 	_resourceLayout.Reset();
 	_pipeline.Reset();
 }
@@ -78,10 +78,10 @@ void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView)
 	commandList->SetGraphicsPipeline(_pipeline);
 	commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
 	commandList->SetIndexBuffer (_indexBuffers[currentFrame]);
-	for (size_t i = 0; i < _resourceViews.size(); ++i) 
+	for (size_t i = 0; i < _resourceViews.Size(); ++i) 
 	{
-		commandList->SetDescriptorHeap(_resourceViews[i].second->GetHeap());
-		_resourceViews[i].second->Bind(commandList, _resourceViews[i].first);
+		commandList->SetDescriptorHeap(_resourceViews[i].Value->GetHeap());
+		_resourceViews[i].Value->Bind(commandList, _resourceViews[i].Key);
 	}
 	cameraResourceView->Bind(commandList, 0);
 	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexBuffers[currentFrame]->GetElementCount()), 1);
@@ -110,8 +110,8 @@ void SkyDome::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers .resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers .Resize(frameCount);
 	
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
@@ -185,6 +185,7 @@ void SkyDome::PreparePipelineState(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-             Setup resource layout elements
 	---------------------------------------------------------------------*/
+	const auto sampler = device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap));
 	_resourceLayout = device->CreateResourceLayout
 	(
 		{
@@ -192,7 +193,9 @@ void SkyDome::PreparePipelineState(const gu::tstring& addName)
 			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // sky object
 			ResourceLayoutElement(DescriptorHeapType::SRV, 0)  // cubemap
 		},
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)), 0) }
+		{ 
+			SamplerLayoutElement(sampler, 0) 
+		}
 	);
 
 	/*-------------------------------------------------------------------
@@ -222,13 +225,13 @@ void SkyDome::PrepareResourceView(const gu::SharedPointer<GPUTexture>& texture)
 	/*-------------------------------------------------------------------
 	-           Prepare Resource View
 	---------------------------------------------------------------------*/
-	_resourceViews.resize(2);
+	_resourceViews.Resize(2);
 	// sky object
-	_resourceViews[0].first  = 1; // resource view array index (please see resource layout)
-	_resourceViews[0].second = device->CreateResourceView(ResourceViewType::ConstantBuffer, _skyObject,0,0, nullptr);
+	_resourceViews[0].Key = 1; // resource view array index (please see resource layout)
+	_resourceViews[0].Value = device->CreateResourceView(ResourceViewType::ConstantBuffer, _skyObject,0,0, nullptr);
 
 	// cubemap
-	_resourceViews[1].first  = 2;
-	_resourceViews[1].second = device->CreateResourceView(ResourceViewType::Texture, texture,0,0, nullptr);
+	_resourceViews[1].Key  = 2;
+	_resourceViews[1].Value = device->CreateResourceView(ResourceViewType::Texture, texture,0,0, nullptr);
 }
 #pragma endregion Private Function

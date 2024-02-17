@@ -64,7 +64,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<VkDynamicState> _dynamicStates = {};
+		gu::DynamicArray<VkDynamicState> _dynamicStates = {};
 
 		VkPipeline _pipeline = nullptr;
 

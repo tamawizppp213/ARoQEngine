@@ -119,13 +119,13 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 	/*-------------------------------------------------------------------
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
-	//std::vector<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
+	//gu::DynamicArray<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
 	//TransitionResourceStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().data(), states.data());
 
 	/*-------------------------------------------------------------------
 	-               Set clear values
 	---------------------------------------------------------------------*/
-	std::vector<VkClearValue> clearValues = vkRenderPass->GetVkClearValues();
+	gu::DynamicArray<VkClearValue> clearValues = vkRenderPass->GetVkClearValues();
 
 	/*-------------------------------------------------------------------
 	-               Set Up VkRenderPassBeginInfo
@@ -134,8 +134,8 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 	beginInfo.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	beginInfo.renderPass        = vkRenderPass->GetRenderPass();
 	beginInfo.framebuffer       = vkFrameBuffer->GetFrameBuffer();
-	beginInfo.pClearValues      = clearValues.data();
-	beginInfo.clearValueCount   = static_cast<std::uint32_t>(clearValues.size());
+	beginInfo.pClearValues      = clearValues.Data();
+	beginInfo.clearValueCount   = static_cast<std::uint32_t>(clearValues.Size());
 	beginInfo.renderArea.extent = vkFrameBuffer->GetExtent2D();
 	beginInfo.pNext             = nullptr;
 	/*-------------------------------------------------------------------
@@ -155,7 +155,7 @@ void RHICommandList::EndRenderPass()
 	/*-------------------------------------------------------------------
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
-	//std::vector<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
+	//gu::DynamicArray<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
 	//TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
 }
 #pragma endregion SetUp Draw Frame
@@ -171,7 +171,7 @@ void RHICommandList::EndRenderPass()
 *****************************************************************************/
 void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint32_t numViewport)
 {
-	std::vector<VkViewport> v(numViewport);
+	gu::DynamicArray<VkViewport> v(numViewport);
 	for (std::uint32_t i = 0; i < numViewport; ++i)
 	{
 		v[i].x        = viewport->TopLeftX;
@@ -181,7 +181,7 @@ void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint
 		v[i].maxDepth = viewport->MaxDepth;
 		v[i].minDepth = viewport->MinDepth;
  	}
-	vkCmdSetViewport(_commandBuffer, 0, numViewport, v.data());
+	vkCmdSetViewport(_commandBuffer, 0, numViewport, v.Data());
 }
 /****************************************************************************
 *                       SetScissorRect
@@ -194,7 +194,7 @@ void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint
 *****************************************************************************/
 void RHICommandList::SetScissor(const core::ScissorRect* rect, const std::uint32_t numRect)
 {
-	std::vector<VkRect2D> r(numRect);
+	gu::DynamicArray<VkRect2D> r(numRect);
 	for (UINT i = 0; i < numRect; ++i)
 	{
 		r[i].offset.x      = rect->Left;
@@ -202,7 +202,7 @@ void RHICommandList::SetScissor(const core::ScissorRect* rect, const std::uint32
 		r[i].extent.width  = rect->Right;
 		r[i].extent.height = rect->Bottom;
 	}
-	vkCmdSetScissor(_commandBuffer, 0, numRect, r.data());
+	vkCmdSetScissor(_commandBuffer, 0, numRect, r.Data());
 }
 /****************************************************************************
 *                       SetViewportAndScissor
@@ -264,18 +264,18 @@ void RHICommandList::SetVertexBuffer(const gu::SharedPointer<core::GPUBuffer>& b
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(_commandBuffer, 0, 1, &vkBuffer, offsets);
 }
-void RHICommandList::SetVertexBuffers(const std::vector<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot)
+void RHICommandList::SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot)
 {
-	auto vkBuffers = std::vector<VkBuffer>(buffers.size());
-	auto offsets   = std::vector<VkDeviceSize>(buffers.size(), 0);
+	auto vkBuffers = gu::DynamicArray<VkBuffer>(buffers.Size());
+	auto offsets   = gu::DynamicArray<VkDeviceSize>(buffers.Size(), 0);
 
-	for (size_t i = 0; i < vkBuffers.size(); ++i)
+	for (size_t i = 0; i < vkBuffers.Size(); ++i)
 	{
 		vkBuffers[i] = gu::StaticPointerCast<vulkan::GPUBuffer>(buffers[i])->GetBuffer();
 	}
 
 	vkCmdBindVertexBuffers(_commandBuffer, static_cast<std::uint32_t>(startSlot), 
-		static_cast<std::uint32_t>(vkBuffers.size()), vkBuffers.data(), offsets.data());
+		static_cast<std::uint32_t>(vkBuffers.Size()), vkBuffers.Data(), offsets.Data());
 }
 void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType)
 {
@@ -318,7 +318,7 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 {
 	if (numStates <= 0) { return; }
 
-	std::vector<VkImageMemoryBarrier> imageMemoryBarriers(numStates);
+	gu::DynamicArray<VkImageMemoryBarrier> imageMemoryBarriers(numStates);
 	for (size_t i = 0; i < numStates; ++i)
 	{
 		const auto vkTexture = gu::StaticPointerCast<vulkan::GPUTexture>(textures[i]);
@@ -348,7 +348,7 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 		VkDependencyFlagBits::VK_DEPENDENCY_BY_REGION_BIT,
 		0, nullptr, // memory barrier
 		0, nullptr,  // buffer memory barrier
-		static_cast<std::uint32_t>(imageMemoryBarriers.size()), imageMemoryBarriers.data()
+		static_cast<std::uint32_t>(imageMemoryBarriers.Size()), imageMemoryBarriers.Data()
 	);
 }
 

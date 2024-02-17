@@ -47,7 +47,7 @@ namespace rhi::vulkan
 		~BLASBuffer() = default;
 		BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 			//const gu::SharedPointer<core::GPUBuffer>& source,
-			const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
+			const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
 			const core::BuildAccelerationStructureFlags flags);
 
 	protected:

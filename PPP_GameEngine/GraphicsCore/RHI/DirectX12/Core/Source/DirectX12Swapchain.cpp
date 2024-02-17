@@ -95,7 +95,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
-	for (size_t index = 0; index < _backBuffers.size(); ++index)
+	for (size_t index = 0; index < _backBuffers.Size(); ++index)
 	{
 		ResourceComPtr backBuffer = nullptr;
 		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(index), IID_PPV_ARGS(backBuffer.GetAddressOf())));
@@ -326,7 +326,7 @@ void RHISwapchain::SetUp()
 	/*-------------------------------------------------------------------
 	-                   Set Back Buffer
 	---------------------------------------------------------------------*/
-	_backBuffers.resize(_desc.FrameBufferCount);
+	_backBuffers.Resize(_desc.FrameBufferCount);
 	for (size_t i = 0; i < _desc.FrameBufferCount; ++i)
 	{
 		ResourceComPtr backBuffer = nullptr;

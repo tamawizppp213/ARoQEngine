@@ -13,7 +13,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -91,15 +91,15 @@ namespace gc
 		**                Protected Member Variables
 		*****************************************************************************/
 		/* @brief : frame resources*/
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 		
-		std::vector<IndexBufferPtr>  _indexBuffers = {};
+		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
 		
 		PipelineStatePtr  _pipeline       = nullptr;
 		
 		ResourceLayoutPtr _resourceLayout = nullptr;
 		
-		std::vector<ResourceViewPtr> _resourceViews = {};
+		gu::DynamicArray<ResourceViewPtr> _resourceViews = {};
 
 		std::int32_t _width  = 0;
 		std::int32_t _height = 0;

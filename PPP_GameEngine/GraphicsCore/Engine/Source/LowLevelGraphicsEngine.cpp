@@ -346,8 +346,8 @@ void LowLevelGraphicsEngine::ShutDown()
 	{
 		frameBuffer.Reset();
 	}
-	_frameBuffers.clear(); 
-	_frameBuffers.shrink_to_fit();
+	_frameBuffers.Clear(); 
+	_frameBuffers.ShrinkToFit();
 
 	if (_renderPass) { _renderPass.Reset(); }
 
@@ -462,7 +462,7 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 	/*-------------------------------------------------------------------
 	-      Create frame buffer
 	---------------------------------------------------------------------*/
-	_frameBuffers.resize(FRAME_BUFFER_COUNT);
+	_frameBuffers.Resize(FRAME_BUFFER_COUNT);
 	SetFrameBuffers(Screen::GetScreenWidth(), Screen::GetScreenHeight(), clearColor, clearDepthColor);
 }
 
@@ -470,7 +470,7 @@ void LowLevelGraphicsEngine::SetFrameBuffers(const int width, const int height, 
 {
 	_width = width;
 	_height = height;
-	for (size_t i = 0; i < _frameBuffers.size(); ++i)
+	for (size_t i = 0; i < _frameBuffers.Size(); ++i)
 	{
 		/*-------------------------------------------------------------------
 		-      Create Depth Texture

@@ -42,7 +42,7 @@ GPUGraphicsPipelineState::~GPUGraphicsPipelineState()
 	vkDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 
 	vkDestroyPipeline(vkDevice, _pipeline, nullptr);
-	_dynamicStates.clear(); _dynamicStates.shrink_to_fit();
+	_dynamicStates.Clear(); _dynamicStates.ShrinkToFit();
 }
 
 void GPUGraphicsPipelineState::CompleteSetting()
@@ -60,12 +60,12 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	/*-------------------------------------------------------------------
 	-           Add shader 
 	---------------------------------------------------------------------*/
-	std::vector<VkPipelineShaderStageCreateInfo> shaderStates = {};
-	if (_vertexShaderState)   { shaderStates.push_back(gu::StaticPointerCast<vulkan::GPUShaderState>(_vertexShaderState)  ->GetStage()); }
-	if (_pixelShaderState)    { shaderStates.push_back(gu::StaticPointerCast<vulkan::GPUShaderState>(_pixelShaderState)   ->GetStage()); }
-	if (_geometryShaderState) { shaderStates.push_back(gu::StaticPointerCast<vulkan::GPUShaderState>(_geometryShaderState)->GetStage()); }
-	if (_hullShaderState)     { shaderStates.push_back(gu::StaticPointerCast<vulkan::GPUShaderState>(_hullShaderState)    ->GetStage()); }
-	if (_domainShaderState)   { shaderStates.push_back(gu::StaticPointerCast<vulkan::GPUShaderState>(_domainShaderState)  ->GetStage()); }
+	gu::DynamicArray<VkPipelineShaderStageCreateInfo> shaderStates = {};
+	if (_vertexShaderState)   { shaderStates.Push(gu::StaticPointerCast<vulkan::GPUShaderState>(_vertexShaderState)  ->GetStage()); }
+	if (_pixelShaderState)    { shaderStates.Push(gu::StaticPointerCast<vulkan::GPUShaderState>(_pixelShaderState)   ->GetStage()); }
+	if (_geometryShaderState) { shaderStates.Push(gu::StaticPointerCast<vulkan::GPUShaderState>(_geometryShaderState)->GetStage()); }
+	if (_hullShaderState)     { shaderStates.Push(gu::StaticPointerCast<vulkan::GPUShaderState>(_hullShaderState)    ->GetStage()); }
+	if (_domainShaderState)   { shaderStates.Push(gu::StaticPointerCast<vulkan::GPUShaderState>(_domainShaderState)  ->GetStage()); }
 	
 	/*-------------------------------------------------------------------
 	-           Set up Viewport
@@ -112,8 +112,8 @@ void GPUGraphicsPipelineState::CompleteSetting()
 		.sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
 		.pNext             = nullptr,
 		.flags             = 0,
-		.dynamicStateCount = static_cast<std::uint32_t>(_dynamicStates.size()),
-		.pDynamicStates    = _dynamicStates.data()
+		.dynamicStateCount = static_cast<std::uint32_t>(_dynamicStates.Size()),
+		.pDynamicStates    = _dynamicStates.Data()
 	};
 
 	/*-------------------------------------------------------------------
@@ -124,8 +124,8 @@ void GPUGraphicsPipelineState::CompleteSetting()
 		.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 		.pNext = nullptr,
 		.flags = 0,
-		.stageCount          = static_cast<std::uint32_t>(shaderStates.size()),
-		.pStages             = shaderStates.data(),
+		.stageCount          = static_cast<std::uint32_t>(shaderStates.Size()),
+		.pStages             = shaderStates.Data(),
 		.pVertexInputState   = _inputAssemblyState ? &vkInputAssemblyState->GetVertexInput()       : nullptr,
 		.pInputAssemblyState = _inputAssemblyState ? &vkInputAssemblyState->GetInputAssembly()     : nullptr,
 		.pTessellationState  = nullptr,

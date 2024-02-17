@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -58,9 +58,9 @@ namespace gc
 			GraphicsPipelinePtr Pipeline    = nullptr;
 			RenderPassPtr       RenderPass  = nullptr;
 			FrameBufferPtr      FrameBuffer = nullptr;
-			std::vector<BufferPtr> VB = {};
-			std::vector<BufferPtr> IB = {};
-			~PSResource() { VB.clear(); IB.clear(); VB.shrink_to_fit(); IB.shrink_to_fit(); }
+			gu::DynamicArray<BufferPtr> VB = {};
+			gu::DynamicArray<BufferPtr> IB = {};
+			~PSResource() { VB.Clear(); IB.Clear(); VB.ShrinkToFit(); IB.ShrinkToFit(); }
 		};
 
 	public:
@@ -143,8 +143,8 @@ namespace gc
 		PSResource _yBlur;
 		GraphicsPipelinePtr _graphicsPipeline = nullptr;
 
-		std::vector<BufferPtr> _vertexBuffers = {};
-		std::vector<BufferPtr> _indexBuffers  = {};
+		gu::DynamicArray<BufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<BufferPtr> _indexBuffers  = {};
 
 		ResourceViewPtr _shaderResourceViews[ViewCount];
 		ResourceViewPtr _unorderedResourceViews[ViewCount];

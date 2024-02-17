@@ -37,7 +37,7 @@ GPUShaderState::~GPUShaderState()
 	}
 }
 
-void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version, const std::vector<gu::tstring>& includeDirectories, [[maybe_unused]]const std::vector<gu::tstring>& defines)
+void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version, const gu::DynamicArray<gu::tstring>& includeDirectories, [[maybe_unused]]const gu::DynamicArray<gu::tstring>& defines)
 {
 #if __DEBUG
 	assert(0.0f < version && version <= NEWEST_VERSION);
@@ -58,7 +58,7 @@ void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fil
 *  @param[in] test
 *  @return @@void
 *****************************************************************************/
-void GPUShaderState::VkCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const std::vector<gu::tstring>& includeDirectories)
+void GPUShaderState::VkCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const gu::DynamicArray<gu::tstring>& includeDirectories)
 {
 	/*-------------------------------------------------------------------
 	-            Create blob data from shader text file.
@@ -101,7 +101,7 @@ void GPUShaderState::VkCompile(const gu::tstring& fileName, const gu::tstring& e
 	/*-------------------------------------------------------------------
 	-      Configure the compiler arguments for compiling the HLSL shader to SPIR-V
 	---------------------------------------------------------------------*/
-	std::vector<LPCWSTR> arguments = {
+	gu::DynamicArray<LPCWSTR> arguments = {
 		fileName.CString(),          // (optional) name of the shader file to be displayed e.g. in an error message
 		L"-E", entryPoint.CString(), // shader main entry point
 		L"-T", target.CString(),     // shader target profile,
@@ -119,13 +119,13 @@ void GPUShaderState::VkCompile(const gu::tstring& fileName, const gu::tstring& e
 
 	for (const auto& directory : includeDirectories)
 	{
-		arguments.push_back(L"-I");
-		arguments.push_back(directory.CString());
+		arguments.Push(L"-I");
+		arguments.Push(directory.CString());
 	}
 
 #ifdef _DEBUG
-	arguments.push_back(L"-D");
-	arguments.push_back(L"_DEBUG");
+	arguments.Push(L"-D");
+	arguments.Push(L"_DEBUG");
 #endif
 
 	/*-------------------------------------------------------------------
@@ -135,8 +135,8 @@ void GPUShaderState::VkCompile(const gu::tstring& fileName, const gu::tstring& e
 	HRESULT hresult = TRUE;
 	dxcCompiler->Compile(
 		&buffer,
-		arguments.data(),
-		static_cast<std::uint32_t>(arguments.size()),
+		arguments.Data(),
+		static_cast<std::uint32_t>(arguments.Size()),
 		dxcIncludeHandler.Get(), IID_PPV_ARGS(result.GetAddressOf())
 	);
 

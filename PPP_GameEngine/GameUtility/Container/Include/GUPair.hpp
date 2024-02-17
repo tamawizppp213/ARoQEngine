@@ -54,7 +54,7 @@ namespace gu
 
 		Pair(const KeyType& key) : Key(key) {};
 
-		Pair() = default;
+		Pair() : Key(KeyType()), Value(ValueType()) {};
 
 	protected:
 		/****************************************************************************

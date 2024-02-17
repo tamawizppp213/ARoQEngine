@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ namespace rhi::core
 		gu::SharedPointer<GPUTexture> GetBuffer(const size_t index) { return _backBuffers[index]; }
 		
 		/* @biref : Return back buffer's total frame count*/
-		size_t      GetBufferCount() const noexcept { return _backBuffers.size(); }
+		size_t      GetBufferCount() const noexcept { return _backBuffers.Size(); }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -133,7 +133,7 @@ namespace rhi::core
 
 		virtual ~RHISwapchain()
 		{
-			_backBuffers.clear(); _backBuffers.shrink_to_fit();
+			_backBuffers.Clear(); _backBuffers.ShrinkToFit();
 			if (_device)       { _device.Reset(); }
 		};
 
@@ -154,7 +154,7 @@ namespace rhi::core
 		*****************************************************************************/
 		gu::SharedPointer<RHIDevice>       _device = nullptr;
 		
-		std::vector<gu::SharedPointer<GPUTexture>> _backBuffers; //[0] : render target 
+		gu::DynamicArray<gu::SharedPointer<GPUTexture>> _backBuffers; //[0] : render target 
 		
 		SwapchainDesc _desc = {};
 

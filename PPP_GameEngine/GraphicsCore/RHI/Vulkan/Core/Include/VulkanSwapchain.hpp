@@ -18,7 +18,7 @@
 #define VK_USE_PLATFORM_XLIB_KHR
 #endif
 #include <vulkan/vulkan.h>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ namespace rhi::vulkan
 		
 		std::uint32_t _currentBufferIndex = 0;
 		
-		std::vector<VkImage> _vkImages;
+		gu::DynamicArray<VkImage> _vkImages;
 	private:
 		/****************************************************************************
 		**                Protected Function
@@ -114,10 +114,10 @@ namespace rhi::vulkan
 		void UpdateCurrentFrameIndex();
 		
 		/** @brief Select color format and color space format*/
-		VkSurfaceFormatKHR SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& format);
+		VkSurfaceFormatKHR SelectSwapchainFormat(const gu::DynamicArray<VkSurfaceFormatKHR>& format);
 		
 		/** @brief Select vsync mode*/
-		VkPresentModeKHR   SelectSwapchainPresentMode(const std::vector<VkPresentModeKHR>& presentMode);
+		VkPresentModeKHR   SelectSwapchainPresentMode(const gu::DynamicArray<VkPresentModeKHR>& presentMode);
 		
 		/** @brief Select swapchain screen size*/
 		VkExtent2D         SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);

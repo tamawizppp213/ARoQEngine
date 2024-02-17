@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GPUState.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -38,7 +38,7 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-		virtual void Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint = SP("main"), const float version = NEWEST_VERSION, const std::vector<gu::tstring>& includeDirectories = {}, const std::vector<gu::tstring>& defines = {}) = 0;
+		virtual void Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint = SP("main"), const float version = NEWEST_VERSION, const gu::DynamicArray<gu::tstring>& includeDirectories = {}, const gu::DynamicArray<gu::tstring>& defines = {}) = 0;
 
 		// @brief : Offline Compile, already compiled fileName(filePath)
 		virtual void LoadBinary(const core::ShaderType type, const gu::tstring& fileName) = 0;

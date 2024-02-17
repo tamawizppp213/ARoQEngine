@@ -15,6 +15,7 @@
 #include "GameUtility/Base/Include/GUString.hpp"
 #include <Windows.h>
 #include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +86,7 @@ namespace pmd
 
 	struct PMDBoneIK
 	{
-		using ChainList = std::vector<UINT16>;
+		using ChainList = gu::DynamicArray<UINT16>;
 
 		UINT16    IKBoneID;
 		UINT16    IKTargetBoneID;
@@ -96,7 +97,7 @@ namespace pmd
 
 		void Read(FILE* filePtr);
 
-		~PMDBoneIK() { Chains.clear(); Chains.shrink_to_fit(); }
+		~PMDBoneIK() { Chains.Clear(); Chains.ShrinkToFit(); }
 	};
 
 	enum class FacePart : UINT8
@@ -110,8 +111,8 @@ namespace pmd
 
 	struct PMDFaceExpression
 	{
-		using FaceVertexList = std::vector<Float3>;
-		using FaceIndexList = std::vector<UINT32>;
+		using FaceVertexList = gu::DynamicArray<Float3>;
+		using FaceIndexList = gu::DynamicArray<UINT32>;
 
 		gu::string    FaceExpressionName;
 		UINT32         VertexNum;
@@ -125,8 +126,8 @@ namespace pmd
 
 		~PMDFaceExpression()
 		{
-			Vertices.clear(); Vertices.shrink_to_fit();
-			Indices.clear(); Indices.shrink_to_fit();
+			Vertices.Clear(); Vertices.ShrinkToFit();
+			Indices.Clear(); Indices.ShrinkToFit();
 		}
 	};
 
@@ -211,18 +212,18 @@ namespace pmd
 		**                Public Member Variables
 		*****************************************************************************/
 		PMDHeader   Header;
-		std::vector<PMDVertex>          Vertices;
-		std::vector<UINT16>             Indices;
-		std::vector<PMDMaterial>        Materials;
-		std::vector<PMDBone>            Bones;
-		std::vector<PMDBoneIK>          BoneIKs;
-		std::vector<PMDFaceExpression>  FaceExpressions;
-		std::vector<UINT16>             FaceLabelIndices;
-		std::vector<PMDBoneDisplayName> BoneDisplayNameList;
-		std::vector<PMDBoneDisplay>     BoneDisplayList;
-		std::vector<PMDRigidBody>       RigidBodies;
-		std::vector<PMDJoint>           Joints;
-		std::vector<gu::string>        ToonTextureList;
+		gu::DynamicArray<PMDVertex>          Vertices;
+		gu::DynamicArray<UINT16>             Indices;
+		gu::DynamicArray<PMDMaterial>        Materials;
+		gu::DynamicArray<PMDBone>            Bones;
+		gu::DynamicArray<PMDBoneIK>          BoneIKs;
+		gu::DynamicArray<PMDFaceExpression>  FaceExpressions;
+		gu::DynamicArray<UINT16>             FaceLabelIndices;
+		gu::DynamicArray<PMDBoneDisplayName> BoneDisplayNameList;
+		gu::DynamicArray<PMDBoneDisplay>     BoneDisplayList;
+		gu::DynamicArray<PMDRigidBody>       RigidBodies;
+		gu::DynamicArray<PMDJoint>           Joints;
+		gu::DynamicArray<gu::string>        ToonTextureList;
 		gu::string Directory;
 
 		/****************************************************************************

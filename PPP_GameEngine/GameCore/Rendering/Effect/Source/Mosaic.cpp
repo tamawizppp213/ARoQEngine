@@ -108,7 +108,7 @@ void Mosaic::PrepareBuffer(const float blockSize, const gu::tstring& name)
 	_mosaicInfo.Padding    = 0.0f;
 
 	buffer->Pack(&_mosaicInfo, nullptr);
-	_resourceViews.push_back(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
+	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 
 

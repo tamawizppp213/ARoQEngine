@@ -171,7 +171,7 @@ protected:
 	/* @brief : Default rendering pass*/
 	gu::SharedPointer<rhi::core::RHIRenderPass> _renderPass = { nullptr }; 
 	gu::SharedPointer<rhi::core::RHIRenderPass> _drawContinueRenderPass = nullptr;
-	std::vector<gu::SharedPointer<rhi::core::RHIFrameBuffer>> _frameBuffers = { nullptr };
+	gu::DynamicArray<gu::SharedPointer<rhi::core::RHIFrameBuffer>> _frameBuffers = { nullptr };
 	
 	/* @brief : current frame index*/
 	gu::uint32 _currentFrameIndex = 0;

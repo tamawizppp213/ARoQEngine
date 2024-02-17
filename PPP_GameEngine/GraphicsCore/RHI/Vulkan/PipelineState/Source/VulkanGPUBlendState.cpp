@@ -20,10 +20,10 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 GPUBlendState::~GPUBlendState()
 {
-	_attachments.clear(); _attachments.shrink_to_fit();
+	_attachments.Clear(); _attachments.ShrinkToFit();
 }
 
-GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties)
+GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::DynamicArray<rhi::core::BlendProperty>& blendProperties)
 	: rhi::core::GPUBlendState(device, blendProperties)
 {
 	Prepare();
@@ -37,8 +37,8 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 
 void GPUBlendState::Prepare()
 {
-	_attachments.resize(_blendProperties.size());
-	for (size_t index = 0; index < _blendProperties.size(); index++)
+	_attachments.Resize(_blendProperties.Size());
+	for (size_t index = 0; index < _blendProperties.Size(); index++)
 	{
 		const auto& prop = _blendProperties[index];
 		_attachments[index].colorWriteMask      = EnumConverter::Convert(prop.ColorMask);
@@ -52,8 +52,8 @@ void GPUBlendState::Prepare()
 	}
 
 	_blendDesc.sType           = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-	_blendDesc.attachmentCount = static_cast<std::uint32_t>(_blendProperties.size());
-	_blendDesc.pAttachments    = _attachments.data();
+	_blendDesc.attachmentCount = static_cast<std::uint32_t>(_blendProperties.Size());
+	_blendDesc.pAttachments    = _attachments.Data();
 	_blendDesc.logicOpEnable   = VK_FALSE;
 	_blendDesc.logicOp         = VkLogicOp::VK_LOGIC_OP_NO_OP;
 	_blendDesc.blendConstants[0] = 1.0f;

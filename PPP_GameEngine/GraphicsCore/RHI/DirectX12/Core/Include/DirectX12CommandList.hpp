@@ -107,7 +107,7 @@ namespace rhi::directX12
 		
 		void SetVertexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer) override ;
 		
-		void SetVertexBuffers(const std::vector<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
+		void SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
 		
 		void SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
 		
@@ -152,7 +152,7 @@ namespace rhi::directX12
 
 		void TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override ;
 
-		void TransitionResourceStates(const std::vector<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters);
+		void TransitionResourceStates(const gu::DynamicArray<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters);
 		
 		/*-------------------------------------------------------------------
 		-                Copy

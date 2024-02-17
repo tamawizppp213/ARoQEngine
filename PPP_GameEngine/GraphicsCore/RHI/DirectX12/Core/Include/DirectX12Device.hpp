@@ -47,7 +47,7 @@ namespace rhi::directX12
 #pragma region Create Function
 		void                                              SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) override;
 
-		gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
+		gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
 		gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
@@ -67,7 +67,7 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
-		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
+		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
 		
 		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
 		
@@ -75,7 +75,7 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 		
-		gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name=SP("ResourceLayout")) override;
+		gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name=SP("ResourceLayout")) override;
 		
 		gu::SharedPointer<core::GPUPipelineFactory>         CreatePipelineFactory() override;
 		
@@ -100,9 +100,9 @@ namespace rhi::directX12
 			const gu::uint32 instanceID, const gu::uint32 instanceContributionToHitGroupIndex,
 			const gu::uint32 instanceMask = 0xFF, const core::RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) override;
 		
-		gu::SharedPointer<core::BLASBuffer>                 CreateRayTracingBLASBuffer(const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags) override;
+		gu::SharedPointer<core::BLASBuffer>                 CreateRayTracingBLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags) override;
 		
-		gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
+		gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
 
 		gu::SharedPointer<core::RHIQuery> CreateQuery(const core::QueryHeapType heapType) override;
 		/*----------------------------------------------------------------------

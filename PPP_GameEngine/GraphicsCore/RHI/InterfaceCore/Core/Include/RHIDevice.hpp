@@ -15,7 +15,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIMultiGPUMask.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <optional>
 #include <map> // vulkan‚¾‚ß‚¾‚Á‚½‚çunordered_map‚à’Ç‰Á.
 
@@ -83,7 +83,7 @@ namespace rhi::core
 #pragma region Create Resource
 		virtual void                                        SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) = 0;
 		
-		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
+		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
 		
 		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
 		
@@ -103,7 +103,7 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;
 		
-		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name = SP("ResourceLayout")) = 0;
+		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<ResourceLayoutElement>& elements = {}, const gu::DynamicArray<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name = SP("ResourceLayout")) = 0;
 		
 		virtual gu::SharedPointer<GPUPipelineFactory>         CreatePipelineFactory() = 0;
 		
@@ -111,7 +111,7 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
 		
-		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const std::vector<Attachment>& colors, const std::optional<Attachment>& depth) = 0;
+		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<Attachment>& colors, const std::optional<Attachment>& depth) = 0;
 		
 		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const Attachment& color, const std::optional<Attachment>& depth) = 0;
 		
@@ -137,9 +137,9 @@ namespace rhi::core
 			const gu::uint32 instanceMask = 0xFF, 
 			const RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) = 0;
 		
-		virtual gu::SharedPointer<BLASBuffer>                 CreateRayTracingBLASBuffer(const std::vector<gu::SharedPointer<RayTracingGeometry>>& geometryDesc, const BuildAccelerationStructureFlags flags) = 0;
+		virtual gu::SharedPointer<BLASBuffer>                 CreateRayTracingBLASBuffer(const gu::DynamicArray<gu::SharedPointer<RayTracingGeometry>>& geometryDesc, const BuildAccelerationStructureFlags flags) = 0;
 		
-		virtual gu::SharedPointer<TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) = 0;
+		virtual gu::SharedPointer<TLASBuffer>                 CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) = 0;
 		
 		virtual gu::SharedPointer<RHIQuery> CreateQuery(const core::QueryHeapType heapType) = 0;
 #pragma endregion Create Resource

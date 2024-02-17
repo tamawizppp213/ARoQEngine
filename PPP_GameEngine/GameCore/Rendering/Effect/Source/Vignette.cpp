@@ -107,7 +107,7 @@ void Vignette::PrepareBuffer(const gu::tstring& name)
 	-			Set Information
 	---------------------------------------------------------------------*/
 	buffer->Pack(&_settings, nullptr);
-	_resourceViews.push_back(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
+	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 
 

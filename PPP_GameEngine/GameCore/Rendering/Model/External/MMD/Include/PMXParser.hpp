@@ -15,6 +15,7 @@
 #include "GameUtility/Base/Include/GUString.hpp"
 #include <Windows.h>
 #include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -209,10 +210,10 @@ namespace pmx
 		INT32       IKTargetBoneIndex; // PMXBoneFlag: IKBone is enabled
 		INT32       IKIterationCount;  // PMXBoneFlag: IKBone is enabled
 		float       IKAngleLimit;      // PMXBoneFlag: IKBone is enabled (radian)
-		std::vector<PMXIKLink> IKLinks;
+		gu::DynamicArray<PMXIKLink> IKLinks;
 
 		void Read(FILE* filePtr, const PMXSetting* setting);
-		~PMXBone() { IKLinks.clear(); IKLinks.shrink_to_fit(); }
+		~PMXBone() { IKLinks.Clear(); IKLinks.ShrinkToFit(); }
 	};
 	/****************************************************************************
 	*				  			PMXMorph
@@ -302,24 +303,24 @@ namespace pmx
 		gu::string  EnglishName;
 		PMXFacePart  FacePart;
 		PMXMorphType MorphType;
-		std::vector<PositionMorph> PositionMorphs;
-		std::vector<UVMorph>       UVMorphs;
-		std::vector<BoneMorph>     BoneMorphs;
-		std::vector<MaterialMorph> MaterialMorphs;
-		std::vector<GroupMorph>    GroupMorphs;
-		std::vector<FlipMorph>     FlipMorphs;
-		std::vector<ImpulseMorph>  ImpulseMorphs;
+		gu::DynamicArray<PositionMorph> PositionMorphs;
+		gu::DynamicArray<UVMorph>       UVMorphs;
+		gu::DynamicArray<BoneMorph>     BoneMorphs;
+		gu::DynamicArray<MaterialMorph> MaterialMorphs;
+		gu::DynamicArray<GroupMorph>    GroupMorphs;
+		gu::DynamicArray<FlipMorph>     FlipMorphs;
+		gu::DynamicArray<ImpulseMorph>  ImpulseMorphs;
 
 		void Read(FILE* filePtr, const PMXSetting* setting);
 		~PMXMorph()
 		{
-			PositionMorphs.clear(); PositionMorphs.shrink_to_fit();
-			UVMorphs      .clear(); UVMorphs      .shrink_to_fit();
-			BoneMorphs    .clear(); BoneMorphs    .shrink_to_fit();
-			MaterialMorphs.clear(); MaterialMorphs.shrink_to_fit();
-			GroupMorphs   .clear(); GroupMorphs   .shrink_to_fit();
-			FlipMorphs    .clear(); FlipMorphs    .shrink_to_fit();
-			ImpulseMorphs .clear(); ImpulseMorphs .shrink_to_fit();
+			PositionMorphs.Clear(); PositionMorphs.ShrinkToFit();
+			UVMorphs      .Clear(); UVMorphs      .ShrinkToFit();
+			BoneMorphs    .Clear(); BoneMorphs    .ShrinkToFit();
+			MaterialMorphs.Clear(); MaterialMorphs.ShrinkToFit();
+			GroupMorphs   .Clear(); GroupMorphs   .ShrinkToFit();
+			FlipMorphs    .Clear(); FlipMorphs    .ShrinkToFit();
+			ImpulseMorphs .Clear(); ImpulseMorphs .ShrinkToFit();
 		};
 	};
 	/****************************************************************************
@@ -350,11 +351,11 @@ namespace pmx
 		gu::string         Name;
 		gu::string         EnglishName;
 		FrameType           Flag;
-		std::vector<Target> Targets;
+		gu::DynamicArray<Target> Targets;
 		void Read(FILE* file, const PMXSetting* setting);
 		~PMXDisplayFrame()
 		{
-			Targets.clear(); Targets.shrink_to_fit();
+			Targets.Clear(); Targets.ShrinkToFit();
 		}
 	};
 	/****************************************************************************
@@ -515,14 +516,14 @@ namespace pmx
 		PMXSoftBodyCluster   Cluster;
 		PMXSoftBodyIteration Iteration;
 		PMXSoftBodyMaterial  Material;
-		std::vector<PMXSoftBodyAnchorRigidBody> Anchor;
-		std::vector<INT32>   VertexIndices;
+		gu::DynamicArray<PMXSoftBodyAnchorRigidBody> Anchor;
+		gu::DynamicArray<INT32>   VertexIndices;
 
 		void Read(FILE* filePtr, const PMXSetting* setting);
 		~PMXSoftBody()
 		{
-			Anchor.clear(); Anchor.shrink_to_fit();
-			VertexIndices.clear(); VertexIndices.shrink_to_fit();
+			Anchor.Clear(); Anchor.ShrinkToFit();
+			VertexIndices.Clear(); VertexIndices.ShrinkToFit();
 		}
 	};
 
@@ -544,16 +545,16 @@ namespace pmx
 		*****************************************************************************/
 		PMXSetting                   Setting;
 		PMXInfo                      Infomation;
-		std::vector<PMXVertex>       Vertices;
-		std::vector<UINT32>          Indices;
-		std::vector<gu::string>     TexturePathList;
-		std::vector<PMXMaterial>     Materials;
-		std::vector<PMXBone>         Bones;
-		std::vector<PMXMorph>        Morphs;
-		std::vector<PMXDisplayFrame> DisplayFrames;
-		std::vector<PMXRigidBody>    RigidBodies;
-		std::vector<PMXJoint>        Joints;
-		std::vector<PMXSoftBody>     SoftBodies;
+		gu::DynamicArray<PMXVertex>       Vertices;
+		gu::DynamicArray<UINT32>          Indices;
+		gu::DynamicArray<gu::string>     TexturePathList;
+		gu::DynamicArray<PMXMaterial>     Materials;
+		gu::DynamicArray<PMXBone>         Bones;
+		gu::DynamicArray<PMXMorph>        Morphs;
+		gu::DynamicArray<PMXDisplayFrame> DisplayFrames;
+		gu::DynamicArray<PMXRigidBody>    RigidBodies;
+		gu::DynamicArray<PMXJoint>        Joints;
+		gu::DynamicArray<PMXSoftBody>     SoftBodies;
 		gu::string Directory;
 		/****************************************************************************
 		**                Constructor and Destructor

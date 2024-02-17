@@ -45,10 +45,10 @@ Dof::Dof(const LowLevelGraphicsEnginePtr& engine,
 
 Dof::~Dof()
 {
-	_shaderResourceViews.clear();
-	_unorderedAccessViews.clear();
-	_shaderResourceViews.shrink_to_fit();
-	_unorderedAccessViews.shrink_to_fit();
+	_shaderResourceViews.Clear();
+	_unorderedAccessViews.Clear();
+	_shaderResourceViews.ShrinkToFit();
+	_unorderedAccessViews.ShrinkToFit();
 }
 
 #pragma endregion Constructor and Destructor
@@ -183,9 +183,9 @@ void Dof::PrepareRenderBuffer(const size_t width, const size_t height)
 	const auto device = _engine->GetDevice();
 	const auto format = _engine->GetBackBufferFormat();
 
-	_shaderResourceViews.resize(3);
-	_unorderedAccessViews.resize(4);
-	for (size_t i = 0; i < _shaderResourceViews.size(); ++i)
+	_shaderResourceViews.Resize(3);
+	_unorderedAccessViews.Resize(4);
+	for (size_t i = 0; i < _shaderResourceViews.Size(); ++i)
 	{
 		const auto textureInfo   = GPUTextureMetaData::Texture2D(width, height, format, 1, ResourceUsage::UnorderedAccess);
 		const auto texture       = device->CreateTexture(textureInfo, SP("Dof::RWTexture"));

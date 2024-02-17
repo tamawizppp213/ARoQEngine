@@ -12,8 +12,9 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIAdapter.hpp"
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <vulkan/vulkan.h>
-#include <vector>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +38,7 @@ namespace rhi::vulkan
 			// memory 
 			VkPhysicalDeviceMemoryProperties MemoryProperties = {};
 
-			std::vector<VkQueueFamilyProperties> QueueFamilyProperties = {};
+			gu::DynamicArray<VkQueueFamilyProperties> QueueFamilyProperties = {};
 
 			// vulkanÇÃversionÇ…çáÇÌÇπÇΩFeature list
 			VkPhysicalDeviceFeatures         Features10 = {};
@@ -86,11 +87,11 @@ namespace rhi::vulkan
 		VkPhysicalDeviceMemoryProperties     GetMemoryProperties() const noexcept;
 		
 		/* return all available extension name list*/
-		std::vector<VkExtensionProperties>   GetExtensionProperties  () const noexcept;
-		std::vector<gu::string>              GetExtensionNameList    () const noexcept;
+		gu::DynamicArray<VkExtensionProperties>   GetExtensionProperties  () const noexcept;
+		gu::DynamicArray<gu::string>              GetExtensionNameList    () const noexcept;
 		
 		/* return queue family characteristics*/
-		std::vector<VkQueueFamilyProperties> GetQueueFamilyProperties() const noexcept;
+		gu::DynamicArray<VkQueueFamilyProperties> GetQueueFamilyProperties() const noexcept;
 		
 		bool IsPresentSupported(VkSurfaceKHR surface, std::uint32_t queueFamilyIndex) const;
 		/****************************************************************************

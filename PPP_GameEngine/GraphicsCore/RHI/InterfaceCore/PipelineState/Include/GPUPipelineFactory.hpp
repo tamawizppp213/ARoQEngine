@@ -15,7 +15,7 @@
 #include "../../Core/Include/RHIResourceLayoutElement.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -45,7 +45,7 @@ namespace rhi::core
 		*****************************************************************************/
 		/* @brief : Create and return input assembly state pointer*/
 		virtual gu::SharedPointer<GPUInputAssemblyState> CreateInputAssemblyState(
-			const std::vector<InputLayoutElement>& elements,
+			const gu::DynamicArray<InputLayoutElement>& elements,
 			const PrimitiveTopology primitiveTopology = PrimitiveTopology::TriangleList) = 0;
 
 		/* @brief : Create and return rasterizer state pointer*/
@@ -61,7 +61,7 @@ namespace rhi::core
 
 		/* @brief : Create and return multiple blend states pointer. */
 		virtual gu::SharedPointer<GPUBlendState> CreateBlendState(
-			const std::vector<BlendProperty>& properties = { BlendProperty() }) = 0;
+			const gu::DynamicArray<BlendProperty>& properties = { BlendProperty() }) = 0;
 
 		/* @brief : Create and return blend state pointer*/
 		virtual gu::SharedPointer<GPUBlendState> CreateSingleBlendState(

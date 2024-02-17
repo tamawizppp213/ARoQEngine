@@ -47,7 +47,7 @@ ZPrepass::ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t 
 
 ZPrepass::~ZPrepass()
 {
-	_gameModels.clear(); _gameModels.shrink_to_fit();
+	_gameModels.Clear(); _gameModels.ShrinkToFit();
 }
 #pragma endregion Constructor and Destructor
 
@@ -109,7 +109,7 @@ void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 *****************************************************************************/
 void ZPrepass::Add(const GameModelPtr& actor)
 {
-	_gameModels.emplace_back(actor);
+	_gameModels.Push(actor);
 }
 
 /****************************************************************************
@@ -125,13 +125,13 @@ void ZPrepass::Add(const GameModelPtr& actor)
 *****************************************************************************/
 void ZPrepass::Clear()
 {
-	_gameModels.clear();
-	_gameModels.shrink_to_fit();
+	_gameModels.Clear();
+	_gameModels.ShrinkToFit();
 }
 
 void ZPrepass::Clear(const GameModelPtr& actor)
 {
-	std::erase(_gameModels, actor);
+	_gameModels.Remove(actor);
 }
 
 ZPrepass::TexturePtr ZPrepass::GetRenderedTexture() const noexcept
@@ -227,7 +227,7 @@ void ZPrepass::PrepareFrameBuffers(const gu::tstring& name)
 	/*-------------------------------------------------------------------
 	-             Setup frame buffer
 	---------------------------------------------------------------------*/
-	_frameBuffers.resize(frameCount);
+	_frameBuffers.Resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
 		auto renderInfo    = GPUTextureMetaData::RenderTarget(_width, _height, PixelFormat::R32_FLOAT, clearColor);

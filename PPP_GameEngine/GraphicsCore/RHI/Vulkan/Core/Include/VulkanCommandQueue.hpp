@@ -46,7 +46,7 @@ namespace rhi::vulkan
 		void Signal(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value) override;
 		
 		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
-		void Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
+		void Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
 		
 		/****************************************************************************
 		**                Public Member Variables

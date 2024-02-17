@@ -46,8 +46,8 @@ GaussianBlur::GaussianBlur()
 }
 GaussianBlur::~GaussianBlur()
 {
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
-	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
+	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
+	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
 	_computePipeline.Reset();
 	_xBlur.Pipeline.Reset();
 	_yBlur.Pipeline.Reset();
@@ -470,12 +470,12 @@ void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers .resize(frameCount);
-	_xBlur.VB.resize(frameCount);
-	_xBlur.IB.resize(frameCount);
-	_yBlur.VB.resize(frameCount);
-	_yBlur.IB.resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers .Resize(frameCount);
+	_xBlur.VB.Resize(frameCount);
+	_xBlur.IB.Resize(frameCount);
+	_yBlur.VB.Resize(frameCount);
+	_yBlur.IB.Resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------

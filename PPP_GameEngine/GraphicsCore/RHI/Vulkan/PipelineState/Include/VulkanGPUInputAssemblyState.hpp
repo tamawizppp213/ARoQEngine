@@ -50,7 +50,7 @@ namespace rhi::vulkan
 		
 		~GPUInputAssemblyState() = default;
 		
-		explicit GPUInputAssemblyState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::vector<core::InputLayoutElement>& elements,
+		explicit GPUInputAssemblyState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::DynamicArray<core::InputLayoutElement>& elements,
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList);
 
 	protected:
@@ -62,10 +62,10 @@ namespace rhi::vulkan
 		**                Protected Member Variables
 		*****************************************************************************/
 		/* @brief : Set the vertex attribute information contained in each vertex stream.*/
-		std::vector<VkVertexInputAttributeDescription> _vertexAttributes = {};
+		gu::DynamicArray<VkVertexInputAttributeDescription> _vertexAttributes = {};
 
 		/* @brief : how each vertex stream is to be read*/
-		std::vector<VkVertexInputBindingDescription>   _vertexBinding    = {};
+		gu::DynamicArray<VkVertexInputBindingDescription>   _vertexBinding    = {};
 
 		VkPipelineInputAssemblyStateCreateInfo         _inputAssembly    = {};
 		VkPipelineVertexInputStateCreateInfo           _vertexInput      = {};

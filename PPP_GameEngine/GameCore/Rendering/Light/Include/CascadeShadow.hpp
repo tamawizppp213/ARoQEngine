@@ -14,7 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ namespace gc::rendering
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		std::vector<GameModelPtr> _gameModels = {};
+		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		// GPU binding resource
 		ResourceLayoutPtr   _resourceLayout = nullptr;
@@ -117,7 +117,7 @@ namespace gc::rendering
 		CameraPtr        _lightCamera   = nullptr;
 
 		// shadowMap
-		std::vector<ShadowMapPtr> _shadowMaps = {};
+		gu::DynamicArray<ShadowMapPtr> _shadowMaps = {};
 
 		CascadeShadowDesc _shadowDesc = {};
 

@@ -57,8 +57,8 @@ ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_
 
 ShadowMap::~ShadowMap()
 {
-	_gameModels.clear();
-	_gameModels.shrink_to_fit();
+	_gameModels.Clear();
+	_gameModels.ShrinkToFit();
 }
 
 #pragma endregion Constructor and Destructor 
@@ -99,7 +99,7 @@ void ShadowMap::Draw(const ResourceViewPtr& scene)
 	commandList->SetGraphicsPipeline(_pipeline);
 	commandList->SetResourceLayout  (_resourceLayout);
 	scene->Bind(commandList, 0);
-	for (size_t i = 0; i < _gameModels.size(); ++i)
+	for (size_t i = 0; i < _gameModels.Size(); ++i)
 	{
 		_gameModels[i]->Draw(false);
 	}
@@ -125,7 +125,7 @@ void ShadowMap::Add(const GameModelPtr& gameModel)
 {
 	if (!gameModel) { return; }
 
-	_gameModels.push_back(gameModel);
+	_gameModels.Push(gameModel);
 }
 #pragma endregion Main Function
 
@@ -154,8 +154,8 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers .resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers .Resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------

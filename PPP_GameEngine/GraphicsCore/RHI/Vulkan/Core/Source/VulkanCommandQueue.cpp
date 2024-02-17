@@ -136,27 +136,27 @@ void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, con
 /****************************************************************************
 *							Execute
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
+*  @fn        void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 *
 *  @brief     Execute command list contents. normally set graphics, compute, transfer commandlist
 *             All CommandLists to be assigned must be Closed.
 *
-*  @param[in] const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists
+*  @param[in] const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists
 *
 *  @return Å@Å@void
 *****************************************************************************/
-void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
+void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 {
-	if (commandLists.empty()) { return; }
+	if (commandLists.IsEmpty()) { return; }
 
 	/*-------------------------------------------------------------------
 	-               Push back vulkan command lists
 	-                to use VkCommandBuffer
 	---------------------------------------------------------------------*/
-	std::vector<VkCommandBuffer> vkLists;
+	gu::DynamicArray<VkCommandBuffer> vkLists;
 	for (auto& commandList : commandLists)
 	{
-		vkLists.push_back(gu::StaticPointerCast<rhi::vulkan::RHICommandList>(commandList)->GetCommandList());
+		vkLists.Push(gu::StaticPointerCast<rhi::vulkan::RHICommandList>(commandList)->GetCommandList());
 	}
 
 	/*-------------------------------------------------------------------
@@ -165,8 +165,8 @@ void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHI
 	VkPipelineStageFlags waitDestStageMask = VkPipelineStageFlagBits::VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submitInfo.commandBufferCount      = static_cast<std::uint32_t>(vkLists.size());
-	submitInfo.pCommandBuffers         = vkLists.data();
+	submitInfo.commandBufferCount      = static_cast<std::uint32_t>(vkLists.Size());
+	submitInfo.pCommandBuffers         = vkLists.Data();
 	submitInfo.pWaitDstStageMask       = &waitDestStageMask;
 	submitInfo.waitSemaphoreCount      = 0;
 	submitInfo.pWaitSemaphores         = nullptr;

@@ -46,8 +46,8 @@ LightCulling::LightCulling(const LowLevelGraphicsEnginePtr& engine, const LightC
 
 LightCulling::~LightCulling()
 {
-	_lightIDLists.clear();
-	_lightIDLists.shrink_to_fit();
+	_lightIDLists.Clear();
+	_lightIDLists.ShrinkToFit();
 }
 
 #pragma endregion Constructor and Destructor
@@ -117,8 +117,8 @@ void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 	/*-------------------------------------------------------------------
 	-			Set up 
 	---------------------------------------------------------------------*/
-	_lightIDLists.resize(CullingLightType::CountOf);
-	for (size_t i = 0; i < _lightIDLists.size(); ++i)
+	_lightIDLists.Resize(CullingLightType::CountOf);
+	for (size_t i = 0; i < _lightIDLists.Size(); ++i)
 	{
 		auto bufferInfo          = GPUBufferMetaData::UploadBuffer(sizeof(int), desc.LightCounts[i] * tileCount);
 		bufferInfo.ResourceUsage = ResourceUsage::UnorderedAccess;

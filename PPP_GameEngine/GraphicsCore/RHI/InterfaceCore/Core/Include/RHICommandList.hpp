@@ -14,7 +14,7 @@
 #include "RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ namespace rhi::core
 		---------------------------------------------------------------------*/
 		virtual void SetResourceLayout(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0;
 		virtual void SetDescriptorHeap(const gu::SharedPointer<RHIDescriptorHeap>& heap) = 0;
-		//virtual void SetConstant32Bits(std::vector<Value32Bit>& values) = 0;
+		//virtual void SetConstant32Bits(gu::DynamicArray<Value32Bit>& values) = 0;
 		//virtual void CopyBuffer(const gu::SharedPointer<GPUBuffer>& source, const gu::SharedPointer<GPUBuffer>& destination, const size_t size, const size_t sourceOffset = 0, const size_t destinationOffset = 0) = 0;*/
 		//virtual void TransitLayout(const gu::SharedPointer<GPUTexture>& texture, const ResourceLayout& newLayout) = 0;
 		//virtual void TransitLayout(const gu::SharedPointer<GPUBuffer>& buffer, const ResourceLayout& newLayout) = 0;
@@ -120,7 +120,7 @@ namespace rhi::core
 		
 		virtual void SetVertexBuffer      (const gu::SharedPointer<GPUBuffer>& buffer) = 0;
 		
-		virtual void SetVertexBuffers     (const std::vector<gu::SharedPointer<GPUBuffer>>& buffers, const size_t startSlot = 0) = 0;
+		virtual void SetVertexBuffers     (const gu::DynamicArray<gu::SharedPointer<GPUBuffer>>& buffers, const size_t startSlot = 0) = 0;
 		
 		virtual void SetIndexBuffer       (const gu::SharedPointer<GPUBuffer>& buffer, const IndexType indexType = IndexType::UInt32) = 0;
 		

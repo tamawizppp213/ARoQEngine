@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMTransform.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -56,7 +56,7 @@ namespace gc::core
 		static gu::SharedPointer<T> Create(const LowLevelGraphicsEnginePtr& engine)
 		{
 			const auto gameObject = gu::MakeShared<T>(engine);
-			GameObjects.push_back(gameObject);
+			GameObjects.Push(gameObject);
 			return gameObject;
 		}
 
@@ -67,7 +67,7 @@ namespace gc::core
 		static GameObjectPtr Find(const gu::tstring& name);
 
 		/* @brief : This function returns the gameobject list with the same tag as the assign tag.*/
-		static std::vector<GameObjectPtr> GameObjectsWithTag(const gu::tstring& tag);
+		static gu::DynamicArray<GameObjectPtr> GameObjectsWithTag(const gu::tstring& tag);
 
 		/*-------------------------------------------------------------------
 		-               Destroy and Clear
@@ -146,15 +146,15 @@ namespace gc::core
 		/*-------------------------------------------------------------------
 		-               GameObject Child
 		---------------------------------------------------------------------*/
-		GameObjectPtr GetChild(int index) { return  (index < _children.size()) ? _children[index] : nullptr; }
+		GameObjectPtr GetChild(int index) { return  (index < _children.Size()) ? _children[index] : nullptr; }
 
-		void AddChild(const GameObjectPtr& child) { _children.emplace_back(child); }
+		void AddChild(const GameObjectPtr& child) { _children.Push(child); }
 		
 		bool RemoveChild(GameObjectPtr& child);
 
 		void ClearChildren();
 
-		inline int  GetChildCount() const { return static_cast<int>(_children.size()); }
+		inline int  GetChildCount() const { return static_cast<int>(_children.Size()); }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -198,7 +198,7 @@ namespace gc::core
 
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		std::vector<GameObjectPtr> _children = {};
+		gu::DynamicArray<GameObjectPtr> _children = {};
 		
 	private:
 		/****************************************************************************
@@ -209,8 +209,8 @@ namespace gc::core
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		static std::vector<GameObjectPtr> GameObjects;
-		static std::vector<gu::tstring>  LayerList;
+		static gu::DynamicArray<GameObjectPtr> GameObjects;
+		static gu::DynamicArray<gu::tstring>  LayerList;
 	};
 }
 #endif

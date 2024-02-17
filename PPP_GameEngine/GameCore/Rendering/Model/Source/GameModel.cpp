@@ -40,17 +40,17 @@ GameModel::GameModel(const LowLevelGraphicsEnginePtr& engine, const MeshPtr& mes
     : GameActor(engine), _gameWorld(customGameWorldInfo)
 {
     if (customGameWorldInfo) { _hasCustomGameWorld = true; }
-    _meshes.push_back(mesh);
+    _meshes.Push(mesh);
     PrepareGameWorldBuffer();
 }
 
 
 GameModel::~GameModel()
 {
-    _materials.clear();
-    _materials.shrink_to_fit();
-    _meshes.clear();
-    _meshes.shrink_to_fit();
+    _materials.Clear();
+    _materials.ShrinkToFit();
+    _meshes.Clear();
+    _meshes.ShrinkToFit();
 }
 
 #pragma endregion Constructor and Destructor 
@@ -94,13 +94,13 @@ void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
     }
 
     const auto mesh = gu::MakeShared<Mesh>(_engine, primitiveMesh, material);
-    _meshes.push_back(mesh);
+    _meshes.Push(mesh);
     _totalMesh = mesh;
     
     if (material) 
     {
         _materialCount = 1; 
-        _materials.push_back(material);
+        _materials.Push(material);
     }
     
 }
@@ -199,7 +199,7 @@ void GameModel::DrawWithMaterials(const std::uint32_t materialOffsetID)
     /*-------------------------------------------------------------------
     -              Get texture ids Shift by 1 from the next to the materialID
     ---------------------------------------------------------------------*/
-    std::vector<std::uint32_t> textureIDs((std::uint32_t)UsageTexture::CountOf);
+    gu::DynamicArray<std::uint32_t> textureIDs((std::uint32_t)UsageTexture::CountOf);
     for (std::uint32_t i = 0; i < (std::uint32_t)UsageTexture::CountOf; ++i)
     {
         textureIDs[i] = materialOffsetID + i + 1;

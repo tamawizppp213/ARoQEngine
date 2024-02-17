@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <optional>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -34,8 +34,8 @@ namespace rhi::core
 	*****************************************************************************/
 	struct RHIResourceLayoutDesc
 	{
-		std::vector<core::ResourceLayoutElement> Elements = {};
-		std::vector<core::SamplerLayoutElement>  Samplers = {};
+		gu::DynamicArray<core::ResourceLayoutElement> Elements = {};
+		gu::DynamicArray<core::SamplerLayoutElement>  Samplers = {};
 		std::optional<core::Constant32Bits>      Constant32Bits = std::nullopt;
 		RootSignatureType ResourceLayoutType = RootSignatureType::Rasterize;
 		bool UseDirectlyIndexedResourceHeap  = false;
@@ -43,8 +43,8 @@ namespace rhi::core
 		bool UseIAInputLayout                = true;
 
 		RHIResourceLayoutDesc(
-			const std::vector<core::ResourceLayoutElement>& elements = {},
-			const std::vector<core::SamplerLayoutElement>& samplers = {},
+			const gu::DynamicArray<core::ResourceLayoutElement>& elements = {},
+			const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {},
 			const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt,
 			const RootSignatureType resourceLayoutType = RootSignatureType::Rasterize,
 			const bool useDirectlyIndexedResourceHeap = false,
@@ -60,8 +60,8 @@ namespace rhi::core
 
 		~RHIResourceLayoutDesc()
 		{
-			Elements.clear(); Elements.shrink_to_fit();
-			Samplers.clear(); Samplers.shrink_to_fit();
+			Elements.Clear(); Elements.ShrinkToFit();
+			Samplers.Clear(); Samplers.ShrinkToFit();
 		}
 	};
 
@@ -99,12 +99,12 @@ namespace rhi::core
 		/*----------------------------------------------------------------------
 		*  @brief :  Return All gpu resource shader binding elements
 		/*----------------------------------------------------------------------*/
-		const std::vector<ResourceLayoutElement>& GetResourceElements() const{ return _desc.Elements; }
+		const gu::DynamicArray<ResourceLayoutElement>& GetResourceElements() const{ return _desc.Elements; }
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Return all sampler state shader binding elements
 		/*----------------------------------------------------------------------*/
-		const std::vector<SamplerLayoutElement>&  GetSamplerElements () const{ return _desc.Samplers; }
+		const gu::DynamicArray<SamplerLayoutElement>&  GetSamplerElements () const{ return _desc.Samplers; }
 		
 		virtual void SetName(const gu::tstring& name) = 0;
 		/****************************************************************************
@@ -129,8 +129,8 @@ namespace rhi::core
 
 		explicit RHIResourceLayout(
 			const gu::SharedPointer<RHIDevice>& device,
-			const std::vector<core::ResourceLayoutElement>& elements = {},
-			const std::vector<core::SamplerLayoutElement>&  samplers = {},
+			const gu::DynamicArray<core::ResourceLayoutElement>& elements = {},
+			const gu::DynamicArray<core::SamplerLayoutElement>&  samplers = {},
 			const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt
 		) : _device(device)
 		{

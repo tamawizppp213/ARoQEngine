@@ -49,7 +49,7 @@ namespace rhi::directX12
 
 		~RHIRenderPass() = default;
 
-		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth = std::nullopt) : 
+		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth = std::nullopt) : 
 			core::RHIRenderPass(device, colors, depth){}
 
 		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth = std::nullopt) :

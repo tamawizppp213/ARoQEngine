@@ -13,7 +13,7 @@
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanDevice.hpp"
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanEnumConverter.hpp"
 #include <stdexcept>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -66,8 +66,8 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 		.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
 		.pNext              = nullptr,
 		.descriptorPool     = _descriptorPool,
-		.descriptorSetCount = static_cast<std::uint32_t>(vkLayout->GetDescriptorSetLayouts().size()),
-		.pSetLayouts        = vkLayout->GetDescriptorSetLayouts().data()
+		.descriptorSetCount = static_cast<std::uint32_t>(vkLayout->GetDescriptorSetLayouts().Size()),
+		.pSetLayouts        = vkLayout->GetDescriptorSetLayouts().Data()
 	};
 	
 	/*-------------------------------------------------------------------
@@ -156,7 +156,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	/*-------------------------------------------------------------------
 	-               Get descriptor pool size
 	---------------------------------------------------------------------*/
-	std::vector<VkDescriptorPoolSize> poolSizes = {};
+	gu::DynamicArray<VkDescriptorPoolSize> poolSizes = {};
 	size_t totalHeapCount = 0;
 	for (auto& heapInfo : heapInfos)
 	{
@@ -165,7 +165,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 			.type            = EnumConverter::Convert(heapInfo.first),
 			.descriptorCount = static_cast<std::uint32_t>(heapInfo.second)
 		};
-		poolSizes.emplace_back(poolSize);
+		poolSizes.Push(poolSize);
 		totalHeapCount += poolSize.descriptorCount;
 	}
 	_heapInfo = heapInfos;
@@ -175,7 +175,7 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	---------------------------------------------------------------------*/
 	if (_totalHeapCount > totalHeapCount) 
 	{ 
-		poolSizes.clear(); poolSizes.shrink_to_fit();
+		poolSizes.Clear(); poolSizes.ShrinkToFit();
 		return; 
 	}
 
@@ -188,8 +188,8 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 		.pNext         = nullptr,
 		.flags         = 0,
 		.maxSets       = static_cast<std::uint32_t>(totalHeapCount),
-		.poolSizeCount = static_cast<std::uint32_t>(poolSizes.size()),
-		.pPoolSizes    = poolSizes.data()
+		.poolSizeCount = static_cast<std::uint32_t>(poolSizes.Size()),
+		.pPoolSizes    = poolSizes.Data()
 	};
 
 	if (vkCreateDescriptorPool(vkDevice, &createInfo, nullptr, &_descriptorPool) != VK_SUCCESS)

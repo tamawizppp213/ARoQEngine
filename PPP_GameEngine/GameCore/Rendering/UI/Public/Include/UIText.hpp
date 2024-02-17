@@ -16,7 +16,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIImage.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <string>
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ namespace gc::ui
 		**                Public Member Variables
 		*****************************************************************************/
 		/* @brief : Get text image list*/
-		const std::vector<Image>& GetTextImages() const { return _images; }
+		const gu::DynamicArray<Image>& GetTextImages() const { return _images; }
 
 		const gu::SharedPointer<Font> GetFont() const noexcept { return _font; }
 
@@ -96,7 +96,7 @@ namespace gc::ui
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<Image>  _images = {};
+		gu::DynamicArray<Image>  _images = {};
 
 		gu::SharedPointer<Font> _font = nullptr;
 

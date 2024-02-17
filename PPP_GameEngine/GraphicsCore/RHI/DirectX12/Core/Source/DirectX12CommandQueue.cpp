@@ -107,33 +107,33 @@ void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, gu:
 /****************************************************************************
 *							Execute
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
+*  @fn        void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 * 
 *  @brief     Execute command list contents. normally set graphics, compute, transfer commandlist
 * 
-*  @param[in] const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists
+*  @param[in] const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
+void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 {
-	if (commandLists.empty()) { return; }
+	if (commandLists.IsEmpty()) { return; }
 
 	/*-------------------------------------------------------------------
 	-           Push back command list pointer 
 	-      to use directX12 commandlist (ID3D12CommandList pointer)
 	---------------------------------------------------------------------*/
-	std::vector<ID3D12CommandList*> dxCommandLists;
+	gu::DynamicArray<ID3D12CommandList*> dxCommandLists;
 	for (auto& list : commandLists)
 	{
-		dxCommandLists.push_back(gu::StaticPointerCast<rhi::directX12::RHICommandList>(list)->GetCommandList().Get());
+		dxCommandLists.Push(gu::StaticPointerCast<rhi::directX12::RHICommandList>(list)->GetCommandList().Get());
 	}
 
 	/*-------------------------------------------------------------------
 	-                   Execute command lists
 	---------------------------------------------------------------------*/
-	if (dxCommandLists.empty()) { return; }
-	_commandQueue->ExecuteCommandLists(static_cast<UINT>(dxCommandLists.size()), dxCommandLists.data());
+	if (dxCommandLists.IsEmpty()) { return; }
+	_commandQueue->ExecuteCommandLists(static_cast<UINT>(dxCommandLists.Size()), dxCommandLists.Data());
 }
 
 /****************************************************************************

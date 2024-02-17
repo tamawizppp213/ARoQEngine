@@ -44,7 +44,7 @@ namespace rhi::directX12
 		gu::SharedPointer<core::RHIDisplayAdapter> SearchMinimumPowerAdapter ()override;
 		
 		/* return all available display adapter*/
-		std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
 		
 		/* OutputDebugString : adapter list*/
 		void LogAdapters() override;

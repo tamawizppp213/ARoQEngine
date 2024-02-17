@@ -21,15 +21,15 @@ using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties)
+GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::DynamicArray<rhi::core::BlendProperty>& blendProperties)
 : rhi::core::GPUBlendState(device, blendProperties)
 {
 	/*-------------------------------------------------------------------
 	-        無効入力チェック
 	---------------------------------------------------------------------*/
 	Checkf(device, "Device is nullptr");
-	Checkf(blendProperties.size() > 0, "Blend properties are empty.");
-	Checkf(blendProperties.size() <= _countof(_blendState.RenderTarget), "BlendProperty exceeds the max render target");
+	Checkf(blendProperties.Size() > 0, "Blend properties are empty.");
+	Checkf(blendProperties.Size() <= _countof(_blendState.RenderTarget), "BlendProperty exceeds the max render target");
 
 	/*-------------------------------------------------------------------
 	-        Blendingの設定
@@ -38,7 +38,7 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 	_blendState.AlphaToCoverageEnable  = blendProperties[0].AlphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
 
-	for (size_t index = 0; index < _blendProperties.size(); index++)
+	for (size_t index = 0; index < _blendProperties.Size(); index++)
 	{
 		const auto& blendProperty = _blendProperties[index];
 
@@ -69,7 +69,7 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 	_blendState.AlphaToCoverageEnable  = blendProperty.AlphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
 
-	for (size_t index = 0; index < _blendProperties.size(); index++)
+	for (size_t index = 0; index < _blendProperties.Size(); index++)
 	{
 		const auto& prop = _blendProperties[index];
 

@@ -46,7 +46,7 @@ namespace rhi::vulkan
 		TLASBuffer() = default;
 		~TLASBuffer();
 		TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
-			const std::vector<gu::SharedPointer<core::ASInstance>>& blasBuffers,
+			const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& blasBuffers,
 			const core::BuildAccelerationStructureFlags flags);
 	protected:
 		/****************************************************************************

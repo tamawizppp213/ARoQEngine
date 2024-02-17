@@ -14,7 +14,7 @@
 #include "../../Core/Include/RHICommonState.hpp"
 #include "../../Core/Include/RHIResourceLayoutElement.hpp"
 #include "GPUState.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <algorithm>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -41,8 +41,8 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		// Note : êVÇΩÇ…VertexÇGameCoreÇ≈íËã`Ç∑ÇÈèÍçáÇÕÇ±ÇÃä÷êîÇéÊÇËèúÇ´, à⁄ìÆÇ∑ÇÈ. 
-		static std::vector<InputLayoutElement> GetDefaultVertexElement()     { return DEFAULT_VERTEX_ELEMENTS; }
-		static std::vector<InputLayoutElement> GetDefaultSkinVertexElement() { return DEFAULT_SKINVERTEX_ELEMENTS; }
+		static gu::DynamicArray<InputLayoutElement> GetDefaultVertexElement()     { return DEFAULT_VERTEX_ELEMENTS; }
+		static gu::DynamicArray<InputLayoutElement> GetDefaultSkinVertexElement() { return DEFAULT_SKINVERTEX_ELEMENTS; }
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -53,7 +53,7 @@ namespace rhi::core
 		const InputLayoutElement& GetElement(const size_t index) const { return _elements[index]; }
 		
 		/* @brief return input layout elements*/
-		const std::vector<InputLayoutElement>& GetElements() const { return _elements; }
+		const gu::DynamicArray<InputLayoutElement>& GetElements() const { return _elements; }
 		
 		/* @brief return primitive topology*/
 		PrimitiveTopology GetPrimitiveTopology() const { return _primitiveTopology; }
@@ -72,7 +72,7 @@ namespace rhi::core
 
 		explicit GPUInputAssemblyState(
 			const gu::SharedPointer<RHIDevice>& device,
-			const std::vector<InputLayoutElement>& elements,
+			const gu::DynamicArray<InputLayoutElement>& elements,
 			const PrimitiveTopology primitiveTopology = PrimitiveTopology::TriangleList
 		) : GPUState(device), _elements(elements), _primitiveTopology(primitiveTopology)
 		{
@@ -90,15 +90,15 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<InputLayoutElement> _elements = {};
+		gu::DynamicArray<InputLayoutElement> _elements = {};
 
 		size_t                          _slotCount = 1;
 
 		core::PrimitiveTopology _primitiveTopology = PrimitiveTopology::TriangleList;
 
 	private:
-		static const std::vector<InputLayoutElement> DEFAULT_VERTEX_ELEMENTS;
-		static const std::vector<InputLayoutElement> DEFAULT_SKINVERTEX_ELEMENTS;
+		static const gu::DynamicArray<InputLayoutElement> DEFAULT_VERTEX_ELEMENTS;
+		static const gu::DynamicArray<InputLayoutElement> DEFAULT_SKINVERTEX_ELEMENTS;
 	};
 
 }

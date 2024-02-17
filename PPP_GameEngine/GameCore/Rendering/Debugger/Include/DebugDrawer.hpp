@@ -15,7 +15,7 @@
 #include "GameUtility/Math/Include/GMVector.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ namespace gc::rendering
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		std::vector<GameModelPtr> _gameModels = {};
+		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		/*-------------------------------------------------------------------
 		-          Render Resource

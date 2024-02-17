@@ -110,7 +110,7 @@ void WhiteBalance::PrepareBuffer(const WhiteBalanceSettings& settings, const gu:
 	---------------------------------------------------------------------*/
 	_settings = settings;
 	buffer->Pack(&_settings, nullptr);
-	_resourceViews.push_back(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
+	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 
 

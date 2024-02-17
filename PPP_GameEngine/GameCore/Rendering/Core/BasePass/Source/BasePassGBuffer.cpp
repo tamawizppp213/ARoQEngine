@@ -125,7 +125,7 @@ void GBuffer::PreparePipelineState(const gu::tstring& name)
 	/*-------------------------------------------------------------------
 	-             Setup blend state (all alpha blend)
 	---------------------------------------------------------------------*/
-	std::vector<BlendProperty> blends(_desc.BufferCount, BlendProperty::AlphaBlend());
+	gu::DynamicArray<BlendProperty> blends(_desc.BufferCount, BlendProperty::AlphaBlend());
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
@@ -163,23 +163,23 @@ void GBuffer::PrepareFrameBuffers(const gu::tstring& name)
 	-             Setup render pass
 	---------------------------------------------------------------------*/
 	{
-		std::vector<Attachment> colorAttachment(_desc.BufferCount, Attachment::RenderTarget(PixelFormat::R32G32B32A32_FLOAT));
+		gu::DynamicArray<Attachment> colorAttachment(_desc.BufferCount, Attachment::RenderTarget(PixelFormat::R32G32B32A32_FLOAT));
 		Attachment depthAttachment = Attachment::DepthStencil(PixelFormat::D32_FLOAT);
 
 		_renderPass = device->CreateRenderPass(colorAttachment, depthAttachment);
-		_renderPass->SetClearValue(std::vector<ClearValue>(_desc.BufferCount, clearColor), depthClearColor);
+		_renderPass->SetClearValue(gu::DynamicArray<ClearValue>(_desc.BufferCount, clearColor), depthClearColor);
 	}
 
 	/*-------------------------------------------------------------------
 	-             Setup frame buffer
 	---------------------------------------------------------------------*/
-	_frameBuffers.resize(frameCount);
+	_frameBuffers.Resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
 		auto renderInfo = GPUTextureMetaData::RenderTarget(_desc.Width, _desc.Height, PixelFormat::R32G32B32A32_FLOAT, clearColor);
 		auto depthInfo  = GPUTextureMetaData::DepthStencil(_desc.Width, _desc.Height, PixelFormat::D32_FLOAT, depthClearColor);
 		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
-		std::vector<TexturePtr> renderTexture(_desc.BufferCount);
+		gu::DynamicArray<TexturePtr> renderTexture(_desc.BufferCount);
 		for (size_t j = 0; j < _desc.BufferCount; ++j)
 		{
 			renderTexture[j] = device->CreateTexture(renderInfo, name + SP("RenderTarget"));

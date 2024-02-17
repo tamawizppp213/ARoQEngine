@@ -50,7 +50,7 @@ using namespace rhi::vulkan;
 
 namespace
 {
-	std::unordered_map<core::CommandListType, std::vector<float>> queuePriorities;
+	std::unordered_map<core::CommandListType, gu::DynamicArray<float>> queuePriorities;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ void RHIDevice::Destroy()
 
 	for (auto& queuePriority : queuePriorities)
 	{
-		queuePriority.second.clear();
+		queuePriority.second.Clear();
 	}
 	queuePriorities.clear();
 
@@ -108,7 +108,7 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	_defaultHeap->Resize(heapInfoList);
 }
 
-gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
+gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
 {
 	return gu::StaticPointerCast<core::RHIFrameBuffer>(gu::MakeShared<vulkan::RHIFrameBuffer>(SharedFromThis(), renderPass, renderTargets, depthStencil));
 }
@@ -160,7 +160,7 @@ gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const
 	heapPtr->Resize(heapInfo);
 	return heapPtr;
 }
-gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
 {
 	return gu::StaticPointerCast<core::RHIRenderPass>(gu::MakeShared<vulkan::RHIRenderPass>(SharedFromThis(), colors, depth));
 }
@@ -185,7 +185,7 @@ gu::SharedPointer<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 	return gu::StaticPointerCast<core::GPUPipelineFactory>(gu::MakeShared<vulkan::GPUPipelineFactory>(SharedFromThis()));
 }
 
-gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
+gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::RHIResourceLayout>(gu::MakeShared<vulkan::RHIResourceLayout>(SharedFromThis(), elements, samplers, constant32Bits, name));
 }
@@ -237,12 +237,12 @@ gu::SharedPointer<core::ASInstance> RHIDevice::CreateASInstance(
 	return gu::StaticPointerCast<core::ASInstance>(gu::MakeShared<vulkan::ASInstance>(SharedFromThis(), blasBuffer, blasTransform, instanceID, instanceContributionToHitGroupIndex, instanceMask, flags));
 }
 
-gu::SharedPointer<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
+gu::SharedPointer<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
 {
 	return gu::StaticPointerCast<core::BLASBuffer>(gu::MakeShared<vulkan::BLASBuffer>(SharedFromThis(), geometryDesc, flags));
 }
 
-gu::SharedPointer<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
+gu::SharedPointer<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
 {
 	return gu::StaticPointerCast<core::TLASBuffer>(gu::MakeShared<vulkan::TLASBuffer>(SharedFromThis(), asInstances, flags));
 }
@@ -324,7 +324,7 @@ void RHIDevice::SetUpCommandQueueInfo()
 	/*-------------------------------------------------------------------
 	-     Get each queueFamilyIndex and queue count (Graphics, Compute, Copy)
 	---------------------------------------------------------------------*/
-	for (size_t i = 0; i < queueFamilies.size(); ++i)
+	for (size_t i = 0; i < queueFamilies.Size(); ++i)
 	{
 		const auto& queue = queueFamilies[i];
 		// ‚È‚ñ‚Å‚àƒLƒ…[‚ðGraphics‚ÉÝ’è‚·‚é.
@@ -391,13 +391,13 @@ void RHIDevice::CreateLogicalDevice()
 	-               Get Extension name list
 	---------------------------------------------------------------------*/
 	const auto& extensionNameList = vkAdapter->GetExtensionNameList();
-	std::vector<const char*> reviseExtensionNameList = {}; // convert const char* 
+	gu::DynamicArray<const char*> reviseExtensionNameList = {}; // convert const char* 
 	for (const auto& name : extensionNameList)
 	{
 		// ignore
 		if (name == "VK_EXT_buffer_device_address"){ continue;}
 		if (name == "VK_NV_cuda_kernel_launch") { continue; }
-		reviseExtensionNameList.push_back(name.CString());
+		reviseExtensionNameList.Push(name.CString());
 	}
 
 	/*-------------------------------------------------------------------
@@ -413,7 +413,7 @@ void RHIDevice::CreateLogicalDevice()
 	/*-------------------------------------------------------------------
 	-               Default extension
 	---------------------------------------------------------------------*/
-	std::vector<ExtensionHeader*> featureStructs = {};
+	gu::DynamicArray<ExtensionHeader*> featureStructs = {};
 
 	VkPhysicalDeviceFeatures2 features2 =
 	{
@@ -421,19 +421,19 @@ void RHIDevice::CreateLogicalDevice()
 		.pNext    = nullptr,
 		.features = physicalDeviceInfo.Features10
 	};
-	featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&features2));
+	featureStructs.Push(reinterpret_cast<ExtensionHeader*>(&features2));
 
 	if (vkInstance->MeetRequiredVersion(1, 1))
 	{
-		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&physicalDeviceInfo.Features11));
+		featureStructs.Push(reinterpret_cast<ExtensionHeader*>(&physicalDeviceInfo.Features11));
 	}
 	if (vkInstance->MeetRequiredVersion(1, 2))
 	{
-		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&physicalDeviceInfo.Features12));
+		featureStructs.Push(reinterpret_cast<ExtensionHeader*>(&physicalDeviceInfo.Features12));
 	}
 	if (vkInstance->MeetRequiredVersion(1, 3))
 	{
-		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&physicalDeviceInfo.Features13));
+		featureStructs.Push(reinterpret_cast<ExtensionHeader*>(&physicalDeviceInfo.Features13));
 	}
 
 	/*-------------------------------------------------------------------
@@ -450,7 +450,7 @@ void RHIDevice::CreateLogicalDevice()
 			.pNext = nullptr,
 			.attachmentFragmentShadingRate = VK_TRUE
 		};
-		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&fragmentShadingRateFeatures));
+		featureStructs.Push(reinterpret_cast<ExtensionHeader*>(&fragmentShadingRateFeatures));
 	}
 	
 	/*-------------------------------------------------------------------
@@ -466,7 +466,7 @@ void RHIDevice::CreateLogicalDevice()
 			.pNext              = nullptr,
 			.rayTracingPipeline = VK_TRUE,
 		};
-		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&rayTracingPipelineFeature));
+		featureStructs.Push(reinterpret_cast<ExtensionHeader*>(&rayTracingPipelineFeature));
 
 		// This class is used to bulid acceleration structures
 		VkPhysicalDeviceAccelerationStructureFeaturesKHR accelerationStructureFeature =
@@ -475,7 +475,7 @@ void RHIDevice::CreateLogicalDevice()
 			.pNext                 = nullptr,
 			.accelerationStructure = VK_TRUE
 		};
-		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&accelerationStructureFeature));
+		featureStructs.Push(reinterpret_cast<ExtensionHeader*>(&accelerationStructureFeature));
 
 		// Ray query
 		if (_isSupportedRayQuery)
@@ -486,7 +486,7 @@ void RHIDevice::CreateLogicalDevice()
 				.pNext    = nullptr,
 				.rayQuery = VK_TRUE
 			};
-			featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&rayQueryPipelineFeature));
+			featureStructs.Push(reinterpret_cast<ExtensionHeader*>(&rayQueryPipelineFeature));
 			rayTracingPipelineFeature.rayTraversalPrimitiveCulling = VK_TRUE;
 		}
 	}
@@ -502,18 +502,18 @@ void RHIDevice::CreateLogicalDevice()
 			.taskShader = true,
 			.meshShader = true
 		};
-		featureStructs.push_back(reinterpret_cast<ExtensionHeader*>(&meshShaderFeature));
+		featureStructs.Push(reinterpret_cast<ExtensionHeader*>(&meshShaderFeature));
 	}
 	
 	/*-------------------------------------------------------------------
 	-            Set next pointer list
 	---------------------------------------------------------------------*/
-	if (!featureStructs.empty())
+	if (!featureStructs.IsEmpty())
 	{
-		for (size_t i = 0; i < featureStructs.size(); ++i)
+		for (size_t i = 0; i < featureStructs.Size(); ++i)
 		{
 			auto* header = reinterpret_cast<ExtensionHeader*>(featureStructs[i]);
-			header->Next = i < featureStructs.size() - 1 ? featureStructs[i + 1] : nullptr;
+			header->Next = i < featureStructs.Size() - 1 ? featureStructs[i + 1] : nullptr;
 		}
 
 		vkGetPhysicalDeviceFeatures2(vkAdapter->GetPhysicalDevice(), &features2);
@@ -522,18 +522,20 @@ void RHIDevice::CreateLogicalDevice()
 	/*-------------------------------------------------------------------
 	-               Set device queue create info
 	---------------------------------------------------------------------*/
-	std::vector<VkDeviceQueueCreateInfo> deviceQueueCreateInfo = {};
+	gu::DynamicArray<VkDeviceQueueCreateInfo> deviceQueueCreateInfo = {};
 
 	for (const auto& queueInfo : _commandQueueInfo)
 	{
-		queuePriorities[queueInfo.first] = std::vector<float>(queueInfo.second.QueueCount, 1.0f);
+		queuePriorities[queueInfo.first] = gu::DynamicArray<float>(queueInfo.second.QueueCount, 1.0f);
 		_newCreateCommandQueueIndex[queueInfo.first] = 0;
 
-		VkDeviceQueueCreateInfo& createInfo = deviceQueueCreateInfo.emplace_back();
+		VkDeviceQueueCreateInfo createInfo;
 		createInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;  // structure type
 		createInfo.queueFamilyIndex = queueInfo.second.QueueFamilyIndex;           // queue index
 		createInfo.queueCount       = queueInfo.second.QueueCount;                 // queue count : 1
-		createInfo.pQueuePriorities = queuePriorities[queueInfo.first].data();      // queue property : 1.0
+		createInfo.pQueuePriorities = queuePriorities[queueInfo.first].Data();      // queue property : 1.0
+
+		deviceQueueCreateInfo.Push(createInfo);
 	}
 
 	/*-------------------------------------------------------------------
@@ -544,12 +546,12 @@ void RHIDevice::CreateLogicalDevice()
 		.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,   // structure type
 		.pNext                   = &features2,
 		.flags                   = 0,
-		.queueCreateInfoCount    = static_cast<std::uint32_t>(deviceQueueCreateInfo.size()),
-		.pQueueCreateInfos       = deviceQueueCreateInfo.data(),
+		.queueCreateInfoCount    = static_cast<std::uint32_t>(deviceQueueCreateInfo.Size()),
+		.pQueueCreateInfos       = deviceQueueCreateInfo.Data(),
 		.enabledLayerCount       = 0,
 		.ppEnabledLayerNames     = nullptr,
-		.enabledExtensionCount   = static_cast<UINT32>(reviseExtensionNameList.size()),
-		.ppEnabledExtensionNames = reviseExtensionNameList.data(),
+		.enabledExtensionCount   = static_cast<UINT32>(reviseExtensionNameList.Size()),
+		.ppEnabledExtensionNames = reviseExtensionNameList.Data(),
 		.pEnabledFeatures        = nullptr
 	};
 

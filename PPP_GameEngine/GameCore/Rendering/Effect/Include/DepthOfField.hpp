@@ -128,8 +128,8 @@ namespace gc
 
 
 		/* @brief : Texture rendering setting*/
-		std::vector<ResourceViewPtr> _shaderResourceViews = {};
-		std::vector<ResourceViewPtr> _unorderedAccessViews = {};
+		gu::DynamicArray<ResourceViewPtr> _shaderResourceViews = {};
+		gu::DynamicArray<ResourceViewPtr> _unorderedAccessViews = {};
 
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

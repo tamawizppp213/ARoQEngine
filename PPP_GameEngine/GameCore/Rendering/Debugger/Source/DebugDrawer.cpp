@@ -41,8 +41,8 @@ DebugDrawer::DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const gu::tstr
 
 DebugDrawer::~DebugDrawer()
 {
-	_gameModels.clear();
-	_gameModels.shrink_to_fit();
+	_gameModels.Clear();
+	_gameModels.ShrinkToFit();
 }
 #pragma endregion Constructor and Destructor
 
@@ -90,7 +90,7 @@ void DebugDrawer::Draw(const GPUResourceViewPtr& scene)
 *****************************************************************************/
 void DebugDrawer::Add(const GameModelPtr& model)
 {
-	_gameModels.emplace_back(model);
+	_gameModels.Push(model);
 }
 
 /****************************************************************************
@@ -106,13 +106,13 @@ void DebugDrawer::Add(const GameModelPtr& model)
 *****************************************************************************/
 void DebugDrawer::Clear()
 {
-	_gameModels.clear();
-	_gameModels.shrink_to_fit();
+	_gameModels.Clear();
+	_gameModels.ShrinkToFit();
 }
 
 void DebugDrawer::Clear(const GameModelPtr& model)
 {
-	std::erase(_gameModels, model);
+	_gameModels.Remove(model);
 }
 
 

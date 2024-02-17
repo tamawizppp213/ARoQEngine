@@ -152,17 +152,17 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI
 /****************************************************************************
 *                     EnumrateAdapters
 *************************************************************************//**
-*  @fn        std::vector<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
+*  @fn        gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
 * 
 *  @brief     Return all availablle adapter lists
 * 
 *  @param[in] void
 * 
-*  @return 　　std::vector<gu::SharedPointer<core::RHIAdapter>>
+*  @return 　　gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>>
 *****************************************************************************/
-std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
 {
-	std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
+	gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
 	/*-------------------------------------------------------------------
 	-                  Define Proceed next adapter function
@@ -184,7 +184,7 @@ std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAda
 	{
 		const auto thisInstance = SharedFromThis();
 		const auto rhiAdapter = gu::MakeShared<RHIDisplayAdapter>(thisInstance, adapter);
-		adapterLists.emplace_back(rhiAdapter);
+		adapterLists.Push(rhiAdapter);
 		adapter.Reset(); // memory leakに対処
 	}
 

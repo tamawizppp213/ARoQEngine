@@ -23,8 +23,8 @@ static constexpr int INVALID_VALUE = -1;
 //////////////////////////////////////////////////////////////////////////////////
 namespace gc::core
 {
-	std::vector<GameObject::GameObjectPtr> GameObject::GameObjects = {};
-	std::vector<gu::tstring> GameObject::LayerList = {};
+	gu::DynamicArray<GameObject::GameObjectPtr> GameObject::GameObjects = {};
+	gu::DynamicArray<gu::tstring> GameObject::LayerList = {};
 }
 
 #pragma region Constructor and Destructor 
@@ -39,8 +39,8 @@ GameObject::GameObject(const LowLevelGraphicsEnginePtr& engine) : _engine(engine
 
 GameObject::~GameObject()
 {
-	_children.clear();
-	_children.shrink_to_fit();
+	_children.Clear();
+	_children.ShrinkToFit();
 }
 
 #pragma endregion Constructor and Destructor
@@ -72,23 +72,23 @@ GameObject::GameObjectPtr GameObject::Find(const gu::tstring& name)
 /****************************************************************************
 *                          GameObjectsWithTag
 *************************************************************************//**
-*  @fn        std::vector<GameObject*> GameObject::GameObjectsWithTag(const gu::string& tag)
+*  @fn        gu::DynamicArray<GameObject*> GameObject::GameObjectsWithTag(const gu::string& tag)
 * 
 *  @brief     This function returns the gameObject list with the same tag as the assign tag.
 * 
 *  @param[in] gu::string tag
 * 
-*  @return 　　std::vector<GameObject*>
+*  @return 　　gu::DynamicArray<GameObject*>
 *****************************************************************************/
-std::vector<GameObject::GameObjectPtr> GameObject::GameObjectsWithTag(const gu::tstring& tag)
+gu::DynamicArray<GameObject::GameObjectPtr> GameObject::GameObjectsWithTag(const gu::tstring& tag)
 {
-	std::vector<GameObjectPtr> gameObjects = {};
+	gu::DynamicArray<GameObjectPtr> gameObjects = {};
 
 	for (auto it = GameObjects.begin(); it != GameObjects.end(); ++it)
 	{
 		if ((*it)->GetTag() == tag)
 		{
-			gameObjects.emplace_back((*it));
+			gameObjects.Push((*it));
 		}
 	}
 
@@ -113,7 +113,7 @@ bool GameObject::Destroy(GameObjectPtr& gameObject)
 {
 	if (!gameObject) { return false; }
 
-	const auto foundCount = std::erase(GameObjects, gameObject);
+	const auto foundCount = GameObjects.RemoveAll(gameObject);
 	if (foundCount == 0) { return false; }
 	gameObject.Reset();
 
@@ -133,10 +133,21 @@ bool GameObject::Destroy(GameObjectPtr& gameObject)
 *****************************************************************************/
 void GameObject::DestroyAllTagObjects(const gu::tstring& tag)
 {
-	std::erase_if(GameObjects,[&](const GameObjectPtr& gameObject) 
+	gu::uint64 findCount = 0;
+
+	for (gu::uint64 i = 0; i < GameObjects.Size(); ++i)
+	{
+		if (GameObjects[i]->GetTag() == tag)
+		{
+			GameObjects.RemoveAt(i, 1, false);
+			findCount++;
+		}
+	}
+
+	/*GameObjects.RemoveIf([&](const GameObjectPtr& gameObject) 
 	{
 		return gameObject->GetTag() == tag; 
-	});
+	});*/
 }
 
 /****************************************************************************
@@ -174,16 +185,20 @@ void GameObject::DestroyWithChildren(GameObjectPtr& gameObject)
 *****************************************************************************/
 bool GameObject::RemoveChild(GameObjectPtr& child)
 {
-	for (auto it = _children.begin(); it != _children.end(); ++it)
+	const auto previousSize = _children.Size();
+	_children.Remove(child);
+	const auto currentSize  = _children.Size();
+
+	if (previousSize != currentSize)
 	{
-		if (*it == child)
-		{
-			_children.erase(it);
-			child = nullptr;
-			return true;
-		}
+		child = nullptr;
+		return true;
 	}
-	return false;
+	else
+	{
+		return false;
+	}
+
 }
 
 /****************************************************************************
@@ -199,8 +214,8 @@ bool GameObject::RemoveChild(GameObjectPtr& child)
 *****************************************************************************/
 void GameObject::ClearChildren()
 {
-	_children.clear();
-	_children.shrink_to_fit();
+	_children.Clear();
+	_children.ShrinkToFit();
 }
 
 /****************************************************************************
@@ -216,8 +231,8 @@ void GameObject::ClearChildren()
 *****************************************************************************/
 void GameObject::ClearAllGameObjects()
 {
-	GameObjects.clear();
-	GameObjects.shrink_to_fit();
+	GameObjects.Clear();
+	GameObjects.ShrinkToFit();
 }
 
 #pragma endregion Destroy Function

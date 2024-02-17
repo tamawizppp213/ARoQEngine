@@ -53,7 +53,7 @@ bool PMXConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 	/*-------------------------------------------------------------------
 	-            Check skin mesh model
 	---------------------------------------------------------------------*/
-	model->_hasSkin = !file.Bones.empty();
+	model->_hasSkin = !file.Bones.IsEmpty();
 
 	return true;
 }
@@ -95,8 +95,8 @@ void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file
 	/*-------------------------------------------------------------------
 	-            Copy PMXvertex -> skin vertex
 	---------------------------------------------------------------------*/
-	std::unique_ptr<gm::SkinMeshVertex[]> vertices = std::make_unique<gm::SkinMeshVertex[]>(file.Vertices.size());
-	for (size_t i = 0; i < file.Vertices.size(); ++i)
+	std::unique_ptr<gm::SkinMeshVertex[]> vertices = std::make_unique<gm::SkinMeshVertex[]>(file.Vertices.Size());
+	for (size_t i = 0; i < file.Vertices.Size(); ++i)
 	{
 		const auto& pmxVertex = file.Vertices[i];
 
@@ -110,8 +110,8 @@ void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file
 	/*-------------------------------------------------------------------
 	-            Total mesh
 	---------------------------------------------------------------------*/
-	const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.size(), MemoryHeap::Upload , ResourceState::Common, vertices.get());
-	const auto ibData = GPUBufferMetaData::IndexBuffer (sizeof(UINT32)            , file.Indices .size(), MemoryHeap::Default, ResourceState::Common, file.Indices.data());
+	const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.Size(), MemoryHeap::Upload , ResourceState::Common, vertices.get());
+	const auto ibData = GPUBufferMetaData::IndexBuffer (sizeof(UINT32)            , file.Indices .Size(), MemoryHeap::Default, ResourceState::Common, file.Indices.Data());
 	model->_totalMesh = gu::MakeShared<Mesh>(model->_engine, vbData, ibData);	
 }
 
@@ -129,9 +129,9 @@ void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file
 *****************************************************************************/
 void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFile& file)
 {
-	model->_materialCount = file.Materials.size();
-	model->_meshes.resize(file.Materials.size());
-	model->_materials.resize(file.Materials.size());
+	model->_materialCount = file.Materials.Size();
+	model->_meshes.Resize(file.Materials.Size());
+	model->_materials.Resize(file.Materials.Size());
 
 	size_t indexOffset = 0;
 	for (size_t i = 0; i < model->_materialCount; ++i)

@@ -14,7 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIInstance.hpp"
 #include "VulkanHelper.hpp"
 #include <vulkan/vulkan.h>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		/* return all available display adapter*/
-		std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
 		
 		/*vulkan : dGPU (not : first select gpu) */
 		gu::SharedPointer<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
@@ -54,7 +54,7 @@ namespace rhi::vulkan
 		
 		const VkInstance GetVkInstance() const { return _instance; }
 
-		std::vector<VkLayerProperties> GetInstanceLayers() const;
+		gu::DynamicArray<VkLayerProperties> GetInstanceLayers() const;
 
 		// Vulkan version check. 
 		bool MeetRequiredVersion(const std::uint32_t major, const std::uint32_t minor, const std::uint32_t patch = 0)
@@ -86,7 +86,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkInstance               _instance         = nullptr;
 		VkDebugUtilsMessengerEXT _debugMessenger   = nullptr;
-		std::vector<const char*> _instanceLayers   = {};
+		gu::DynamicArray<const char*> _instanceLayers   = {};
 		
 		// current version
 		std::uint32_t _majorVersion = 0;
@@ -98,19 +98,19 @@ namespace rhi::vulkan
 		**                Private Function
 		*****************************************************************************/
 		// Set up
-		std::vector<std::string>      AcquireExtensionList();
+		gu::DynamicArray<std::string>      AcquireExtensionList();
 
-		std::vector<VkPhysicalDevice> EnumratePhysicalDevices();
+		gu::DynamicArray<VkPhysicalDevice> EnumratePhysicalDevices();
 
 		// push back name array list
-		VkResult FillFilteredNameArray(std::vector<std::string>& used, 
-			const std::vector<VkLayerProperties>& properties, 
-			const std::vector<Entry>& requestedLayers);
+		VkResult FillFilteredNameArray(gu::DynamicArray<std::string>& used, 
+			const gu::DynamicArray<VkLayerProperties>& properties, 
+			const gu::DynamicArray<Entry>& requestedLayers);
 
-		VkResult FillFilteredNameArray(std::vector<std::string>& used,
-			const std::vector<VkExtensionProperties>& properties,
-			const std::vector<Entry>& requested,
-			std::vector<void*>& featureStructs);
+		VkResult FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+			const gu::DynamicArray<VkExtensionProperties>& properties,
+			const gu::DynamicArray<Entry>& requested,
+			gu::DynamicArray<void*>& featureStructs);
 
 		// debugging
 		void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);

@@ -36,9 +36,9 @@ IFullScreenEffector::~IFullScreenEffector()
 {
 	_pipeline.Reset();
 	_resourceLayout.Reset();
-	_resourceViews.clear(); _resourceViews.shrink_to_fit();
-	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
+	_resourceViews.Clear(); _resourceViews.ShrinkToFit();
+	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
+	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
 }
 
 IFullScreenEffector::IFullScreenEffector(const LowLevelGraphicsEnginePtr& engine) : _engine(engine)
@@ -73,8 +73,8 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers .resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers .Resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------

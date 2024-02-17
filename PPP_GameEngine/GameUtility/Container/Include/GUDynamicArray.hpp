@@ -75,6 +75,7 @@ namespace gu
 		*  @brief : 配列を後ろに追加する. Capacityを超えた場合, 全体のメモリを2倍の大きさで再割り当てを行う.
 		/*----------------------------------------------------------------------*/
 		void Push(const ElementType& element);
+		void Push(      ElementType&& element);
 
 		/*----------------------------------------------------------------------
 		*  @brief : 配列を後ろから取り出す. その際, デストラクタを呼び出す.
@@ -106,14 +107,21 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  @brief : 指定した要素を削除します
 		/*----------------------------------------------------------------------*/
-		void Remove(const ElementType& element) 
+		void Remove(const ElementType& element, const bool allowShrinking = true) 
 		{
 			const auto index = FindFromBegin(element);
 			if (index != INDEX_NONE)
 			{ 
-				RemoveAtImplement(index, 1, true); 
+				RemoveAtImplement(index, 1, allowShrinking); 
 			}
 		}
+
+		/*----------------------------------------------------------------------
+		*  @brief : 指定した要素を全て削除します. 返り値は削除した個数です.
+		/*----------------------------------------------------------------------*/
+		gu::uint64 RemoveAll(const ElementType& element, const bool allowShrinking = true);
+
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -310,12 +318,13 @@ namespace gu
 	template<class ElementType>
 	void DynamicArray<ElementType>::CreateFromOtherArray(const ElementType* pointer, const uint64 count)
 	{
-		Check(pointer != nullptr);
+		if (pointer == nullptr) { return; };
+
 		Resize(count, false);
 
 		if constexpr (IS_ARITHMETIC<ElementType>)
 		{
-			Memory::Copy(_data, pointer, sizeof(ElementType) * count)
+			Memory::Copy(_data, pointer, sizeof(ElementType) * count);
 		}
 		else
 		{
@@ -492,6 +501,16 @@ namespace gu
 		_data[_size] = element;
 		++_size;
 	}
+	template<class ElementType>
+	void DynamicArray<ElementType>::Push(ElementType&& element)
+	{
+		if (_capacity <= _size)
+		{
+			Reserve(_capacity == 0 ? 1 : _size * 2);
+		}
+		_data[_size] = Forward<ElementType>(element);
+		++_size;
+	}
 
 	/****************************************************************************
 	*                    Pop
@@ -637,6 +656,45 @@ namespace gu
 
 		return INDEX_NONE;
 	}
+
+	/****************************************************************************
+	*                    RemoveAll
+	*************************************************************************//**
+	*  @fn        gu::uint64 DynamicArray<ElementType>::RemoveAll(const ElementType& element)
+	*
+	*  @brief     指定した要素を全て削除します.
+	*
+	*  @param[in] const ElementType& element
+	*  @param[in] const bool allowShrinking (capacityを切り詰めるか)
+	*
+	*  @return 　　uint64
+	*****************************************************************************/
+	template<class ElementType>
+	gu::uint64 DynamicArray<ElementType>::RemoveAll(const ElementType& element, const bool allowShrinking)
+	{
+		ElementType* start = _data;
+
+		uint64 index = 0;
+		uint64 findCounter = 0;
+
+		for (ElementType* data = start; data != &_data[_size]; ++data, ++index)
+		{
+			if (*data == element)
+			{
+				RemoveAtImplement(findCounter, 1, false);
+				index--;
+				findCounter++;
+			}
+		}
+
+		if (findCounter)
+		{
+			ShrinkToFit();
+		}
+
+		return findCounter;
+	}
+
 #pragma endregion Implement
 }
 

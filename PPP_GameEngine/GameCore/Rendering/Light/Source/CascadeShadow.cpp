@@ -54,8 +54,8 @@ CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const Casc
 	-        Shadow map
 	---------------------------------------------------------------------*/
 	_lightCamera = gu::MakeShared<gc::Camera>(_engine);
-	_shadowMaps.resize(SHADOW_MAP_COUNT);
-	for (size_t i = 0; i < _shadowMaps.size(); ++i)
+	_shadowMaps.Resize(SHADOW_MAP_COUNT);
+	for (size_t i = 0; i < _shadowMaps.Size(); ++i)
 	{
 		_shadowMaps[i] = gu::MakeShared<rendering::ShadowMap>(_engine, (std::uint32_t)(desc.MaxResolution / pow(2, i)), (std::uint32_t)(desc.MaxResolution / pow(2,i)));
 	}
@@ -125,7 +125,7 @@ void CascadeShadow::Add(const GameModelPtr& gameModel)
 		shadowMap->Add(gameModel);
 	}
 
-	_gameModels.push_back(gameModel);
+	_gameModels.Push(gameModel);
 }
 #pragma endregion Main Function
 

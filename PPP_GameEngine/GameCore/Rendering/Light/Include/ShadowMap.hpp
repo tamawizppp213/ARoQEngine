@@ -14,7 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -92,11 +92,11 @@ namespace gc::rendering
 		ResourceLayoutPtr   _resourceLayout = nullptr;
 
 		// texture rectangle mesh
-		std::vector<BufferPtr> _vertexBuffers = {};
-		std::vector<BufferPtr> _indexBuffers = {};
+		gu::DynamicArray<BufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<BufferPtr> _indexBuffers = {};
 
 		// registered game models.
-		std::vector<GameModelPtr> _gameModels = {};
+		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		// gaussian blur for the VSM method.
 		GaussianBlurPtr _gaussianBlur = nullptr;

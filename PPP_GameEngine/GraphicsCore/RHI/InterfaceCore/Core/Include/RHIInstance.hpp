@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ namespace rhi::core
 		virtual gu::SharedPointer<RHIDisplayAdapter>  SearchMinimumPowerAdapter() = 0;
 		
 		/* return all available display adapter*/
-		virtual std::vector<gu::SharedPointer<RHIDisplayAdapter>> EnumrateAdapters() = 0;
+		virtual gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> EnumrateAdapters() = 0;
 		
 		/* OutputDebugString : adapter list*/
 		virtual void LogAdapters() = 0;

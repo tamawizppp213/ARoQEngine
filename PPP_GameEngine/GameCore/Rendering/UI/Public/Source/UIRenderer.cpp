@@ -48,8 +48,8 @@ UIRenderer::UIRenderer(const LowLevelGraphicsEnginePtr& engine, const gu::tstrin
 
 UIRenderer::~UIRenderer()
 {
-	if (!_vertexBuffers.empty()) { _vertexBuffers.clear(); _vertexBuffers.shrink_to_fit(); }
-	if (!_indexBuffers .empty()) { _indexBuffers .clear(), _indexBuffers .shrink_to_fit(); }
+	if (!_vertexBuffers.IsEmpty()) { _vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit(); }
+	if (!_indexBuffers .IsEmpty()) { _indexBuffers .Clear(), _indexBuffers .ShrinkToFit(); }
 } 
 
 #pragma endregion Constructor and Destructor 
@@ -64,17 +64,17 @@ void UIRenderer::Clear()
 /****************************************************************************
 *					AddFrameObject
 *************************************************************************//**
-*  @fn        void UIRenderer::AddFrameObject(const std::vector<ui::Image>& images, const Texture& texture)
+*  @fn        void UIRenderer::AddFrameObject(const gu::DynamicArray<ui::Image>& images, const Texture& texture)
 * 
 *  @brief     Add Frame Object
 * 
-*  @param[in] const std::vector<ImagePtr>& image
+*  @param[in] const gu::DynamicArray<ImagePtr>& image
 * 
 *  @param[in] const ResourceViewPtr& resourceView
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-//void UIRenderer::AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view)
+//void UIRenderer::AddFrameObjects(const gu::DynamicArray<ImagePtr>& images, const ResourceViewPtr& view)
 //{
 //	/*-------------------------------------------------------------------
 //	-               sprite count check
@@ -111,12 +111,12 @@ void UIRenderer::Clear()
 //	
 //}
 
-void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const ResourceViewPtr& view)
+void UIRenderer::AddFrameObjects(const gu::DynamicArray<ui::Image>& images, const ResourceViewPtr& view)
 {
 	/*-------------------------------------------------------------------
 	-               sprite count check
 	---------------------------------------------------------------------*/
-	if (_totalImageCount + images.size() > _maxWritableUICount)
+	if (_totalImageCount + images.Size() > _maxWritableUICount)
 	{
 		throw std::runtime_error("The maximum number of sprites exceeded. \n If the maximum number is not exceeded, please check whether DrawEnd is being called. \n");
 	}
@@ -124,7 +124,7 @@ void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const Res
 	/*-------------------------------------------------------------------
 	-               Check whether spriteList is empty
 	---------------------------------------------------------------------*/
-	if (images.empty()) { return ; }
+	if (images.IsEmpty()) { return ; }
 
 	/*-------------------------------------------------------------------
 	-               Add vertex data
@@ -135,7 +135,7 @@ void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const Res
 
 	vertexBuffer->CopyStart();
 	// _maxWritableUICount - _totalImageCount is écÇËÇÃìoò^Ç≈Ç´ÇÈêî
-	for (std::uint32_t i = 0; i < std::min<std::uint32_t>((std::uint32_t)images.size(), _maxWritableUICount - _totalImageCount); ++i)
+	for (std::uint32_t i = 0; i < std::min<std::uint32_t>((std::uint32_t)images.Size(), _maxWritableUICount - _totalImageCount); ++i)
 	{
 		vertexBuffer->CopyTotalData(images[i].GetVertices(), 4, ((size_t)i + (size_t)_totalImageCount) * (size_t)oneRectVertexCount);
 	}
@@ -144,7 +144,7 @@ void UIRenderer::AddFrameObjects(const std::vector<ui::Image>& images, const Res
 	/*-------------------------------------------------------------------
 	-               Count sprite num
 	---------------------------------------------------------------------*/
-	CountUpDrawImageAndView(images.size(), view);
+	CountUpDrawImageAndView(images.Size(), view);
 }
 /****************************************************************************
 *					Draw
@@ -194,8 +194,8 @@ void UIRenderer::Draw()
 	---------------------------------------------------------------------*/
 	_totalImageCount = 0;
 	_needCallDrawIndexCount = 0;
-	_imageCountList.clear(); _imageCountList.shrink_to_fit();
-	_resourceViews.clear(); _resourceViews.shrink_to_fit();
+	_imageCountList.Clear(); _imageCountList.ShrinkToFit();
+	_resourceViews.Clear(); _resourceViews.ShrinkToFit();
 }
 
 #pragma region Protected Function
@@ -215,13 +215,13 @@ void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t 
 {
 	if (vertexCount == 0) { return; }
 
-	std::vector<gm::Vertex> v
+	gu::DynamicArray<gm::Vertex> v
 	(
 		vertexCount,
 		Vertex(Float3(0, 0, 0), Float3(0, 0, 0), Float4(1, 1, 1, 1), Float2(0, 0))
 	);
 	
-	_vertexBuffers[frameIndex]->Update(v.data(), vertexCount);
+	_vertexBuffers[frameIndex]->Update(v.Data(), vertexCount);
 }
 
 /****************************************************************************
@@ -246,7 +246,7 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 	const std::uint32_t rectIndexCount  = static_cast<std::uint32_t>(_countof(rectIndex));
 	const std::uint32_t rectVertexCount = 4;
 
-	std::vector<std::uint32_t> indices(_maxWritableUICount * rectIndexCount);
+	gu::DynamicArray<std::uint32_t> indices(_maxWritableUICount * rectIndexCount);
 	for (std::uint32_t i = 0; i < _maxWritableUICount; ++i)
 	{
 		for (std::uint32_t j = 0; j < rectIndexCount; ++j)
@@ -262,8 +262,8 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers .resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers .Resize(frameCount);
 
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
@@ -277,11 +277,11 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 		}
 
 		{
-			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), indices.size(), MemoryHeap::Default, ResourceState::Common);
+			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), indices.Size(), MemoryHeap::Default, ResourceState::Common);
 			
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(name + SP("IB"));
-			_indexBuffers[i]->Pack(indices.data(), _engine->GetCommandList(CommandListType::Copy));
+			_indexBuffers[i]->Pack(indices.Data(), _engine->GetCommandList(CommandListType::Copy));
 		}
 	}
 }
@@ -339,7 +339,7 @@ void UIRenderer::CountUpDrawImageAndView(const std::uint64_t arrayLength, const 
 {
 	_needCallDrawIndexCount++;
 	_totalImageCount += static_cast<std::uint32_t>(arrayLength);
-	_imageCountList.emplace_back(static_cast<std::uint32_t>(arrayLength));
-	_resourceViews.emplace_back(view);
+	_imageCountList.Push(static_cast<std::uint32_t>(arrayLength));
+	_resourceViews.Push(view);
 }
 #pragma endregion Private Function

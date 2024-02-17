@@ -11,9 +11,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
+#include "GameUtility/Container/Include/GUPair.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -80,9 +81,9 @@ namespace gc
 		**                Protected Member Variables
 		*****************************************************************************/
 		ObjectConstantPtr            _skyObject = nullptr;
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
-		std::vector<IndexBufferPtr>  _indexBuffers = {};
-		std::vector<std::pair<std::uint32_t, GPUResourceViewPtr>> _resourceViews = {};
+		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
+		gu::DynamicArray<gu::Pair<gu::uint32, GPUResourceViewPtr>> _resourceViews = {};
 		ResourceLayoutPtr   _resourceLayout = nullptr;
 		GraphicsPipelinePtr _pipeline = nullptr;
 		LowLevelGraphicsEnginePtr _engine = nullptr;

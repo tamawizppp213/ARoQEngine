@@ -232,7 +232,7 @@ void SampleRectangle::BuildPipelineState()
 	/*-------------------------------------------------------------------
 	-             Setup resource layout elements
 	---------------------------------------------------------------------*/
-	std::vector<SamplerLayoutElement> samplerElements(1);
+	gu::DynamicArray<SamplerLayoutElement> samplerElements(1);
 	samplerElements[0] = SamplerLayoutElement(rhiDevice->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0,0);
 
 	/*-------------------------------------------------------------------

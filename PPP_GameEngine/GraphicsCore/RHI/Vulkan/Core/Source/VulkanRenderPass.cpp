@@ -33,7 +33,7 @@ RHIRenderPass::~RHIRenderPass()
 	}
 }
 
-RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
 	: core::RHIRenderPass(device, colors, depth)
 {
 	Prepare();
@@ -49,23 +49,23 @@ RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, c
 /****************************************************************************
 *							GetVkClearValues
 *************************************************************************//**
-*  @fn        std::vector<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
+*  @fn        gu::DynamicArray<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
 *
 *  @brief     Return clear value array including each render target and depth stencil buffer
 *
 *  @param[in] void
 *
-*  @return 　　std::vector<VkClearValue>
+*  @return 　　gu::DynamicArray<VkClearValue>
 *****************************************************************************/
-std::vector<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
+gu::DynamicArray<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
 {
 	/*-------------------------------------------------------------------
 	-               Set clear values
 	---------------------------------------------------------------------*/
-	std::vector<VkClearValue> clearValues(_colorClearValues.size());
+	gu::DynamicArray<VkClearValue> clearValues(_colorClearValues.Size());
 	// render target
 	{
-		for (size_t i = 0; i < clearValues.size(); ++i)
+		for (size_t i = 0; i < clearValues.Size(); ++i)
 		{
 			clearValues[i].color.float32[0] = _colorClearValues[i].Color[core::ClearValue::Red];
 			clearValues[i].color.float32[1] = _colorClearValues[i].Color[core::ClearValue::Green];
@@ -79,7 +79,7 @@ std::vector<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const
 		VkClearValue clearValue = {};
 		clearValue.depthStencil.depth   = _depthClearValue->Depth;
 		clearValue.depthStencil.stencil = _depthClearValue->Stencil;
-		clearValues.emplace_back(clearValue);
+		clearValues.Push(clearValue);
 	}
 
 	return clearValues;
@@ -101,17 +101,17 @@ void rhi::vulkan::RHIRenderPass::Prepare()
 	/*-------------------------------------------------------------------
 	-                  Get attachment size (color + depth)
 	---------------------------------------------------------------------*/
-	size_t attachmentCount = _colorAttachments.size() + (_depthAttachment.has_value() ? 1 : 0);
+	size_t attachmentCount = _colorAttachments.Size() + (_depthAttachment.has_value() ? 1 : 0);
 	/*-------------------------------------------------------------------
 	-                  Resize Attachments
 	---------------------------------------------------------------------*/
-	std::vector<VkAttachmentDescription> attachments(attachmentCount);
-	std::vector<VkAttachmentReference>   colorsReference(_colorAttachments.size());
+	gu::DynamicArray<VkAttachmentDescription> attachments(attachmentCount);
+	gu::DynamicArray<VkAttachmentReference>   colorsReference(_colorAttachments.Size());
 	VkAttachmentReference                depthReference={};
 	/*-------------------------------------------------------------------
 	-                  Color Attachments
 	---------------------------------------------------------------------*/
-	for (size_t index = 0; index < _colorAttachments.size(); ++index)
+	for (size_t index = 0; index < _colorAttachments.Size(); ++index)
 	{
 		const auto& colorAttachment       = _colorAttachments[index];
 		colorsReference[index].attachment = static_cast<std::uint32_t>(index);
@@ -132,7 +132,7 @@ void rhi::vulkan::RHIRenderPass::Prepare()
 	---------------------------------------------------------------------*/
 	if (_depthAttachment.has_value())
 	{
-		size_t index = attachments.size() - 1;
+		size_t index = attachments.Size() - 1;
 		attachments[index].flags          = 0;
 		attachments[index].format         = EnumConverter::Convert(_depthAttachment->Format);
 		attachments[index].samples        = EnumConverter::Convert(_depthAttachment->SampleCount);
@@ -143,7 +143,7 @@ void rhi::vulkan::RHIRenderPass::Prepare()
 		attachments[index].initialLayout  = EnumConverter::Convert(_depthAttachment->InitialLayout);
 		attachments[index].finalLayout    = EnumConverter::Convert(_depthAttachment->FinalLayout);
 		
-		depthReference.attachment = static_cast<std::uint32_t>(colorsReference.size()); // sizeのタイミングでdepthになる.
+		depthReference.attachment = static_cast<std::uint32_t>(colorsReference.Size()); // sizeのタイミングでdepthになる.
 		depthReference.layout     = VkImageLayout::VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	}
 
@@ -156,8 +156,8 @@ void rhi::vulkan::RHIRenderPass::Prepare()
 		.pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS,
 		.inputAttachmentCount    = 0,
 		.pInputAttachments       = nullptr,
-		.colorAttachmentCount    = static_cast<std::uint32_t>(colorsReference.size()),
-		.pColorAttachments       = colorsReference.data(),
+		.colorAttachmentCount    = static_cast<std::uint32_t>(colorsReference.Size()),
+		.pColorAttachments       = colorsReference.Data(),
 		.pResolveAttachments     = nullptr,
 		.pDepthStencilAttachment = _depthAttachment.has_value() ? &depthReference : nullptr,
 		.preserveAttachmentCount = 0,
@@ -173,8 +173,8 @@ void rhi::vulkan::RHIRenderPass::Prepare()
 		.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
 		.pNext           = nullptr,
 		.flags           = 0,
-		.attachmentCount = static_cast<std::uint32_t>(attachments.size()),
-		.pAttachments    = attachments.data(),
+		.attachmentCount = static_cast<std::uint32_t>(attachments.Size()),
+		.pAttachments    = attachments.Data(),
 		.subpassCount    = 1,
 		.pSubpasses      = &subpassDescription,
 		.dependencyCount = 0,

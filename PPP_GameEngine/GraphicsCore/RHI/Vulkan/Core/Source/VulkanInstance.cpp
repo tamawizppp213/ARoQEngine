@@ -66,7 +66,7 @@ namespace
 	/****************************************************************************
 	*                     SkipErrorMessage
 	*************************************************************************//**
-	*  @fn        std::vector<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
+	*  @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
 	*  @brief     Return isSkip (true : skip, false: not skip)
 	*  @param[in] void
 	*  @return 　　bool
@@ -78,7 +78,7 @@ namespace
 		if (flags < VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) { return false; }
 
 		// skip error message list
-		static std::vector<std::string> mutedWarnings = {
+		static gu::DynamicArray<std::string> mutedWarnings = {
 			"UNASSIGNED-CoreValidation-Shader-InconsistentSpirv",
 			"VUID-vkCmdDrawIndexed-None-04007",
 			"VUID-vkDestroyDevice-device-00378",
@@ -104,7 +104,7 @@ namespace
 	/****************************************************************************
 	*                     DebugReportCallback
 	*************************************************************************//**
-	*  @fn        std::vector<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
+	*  @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
 	*  @brief     Report debug error message. (処理は止めない. 報告のみ)
 	*****************************************************************************/
 	static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
@@ -153,9 +153,9 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool us
 	/*-------------------------------------------------------------------
 	-          Acquire Extension Infomation (for debugging layer)
 	---------------------------------------------------------------------*/
-	std::vector<std::string> foundExtensions = AcquireExtensionList();       // 単純なconst char* 値渡しでは出来なかった. 
-	std::vector<const char*> convertFoundExtensions(foundExtensions.size()); // VKInstance create informationで使用するためにデータ成型
-	for (int i = 0; i < foundExtensions.size(); ++i)
+	gu::DynamicArray<std::string> foundExtensions = AcquireExtensionList();       // 単純なconst char* 値渡しでは出来なかった. 
+	gu::DynamicArray<const char*> convertFoundExtensions(foundExtensions.Size()); // VKInstance create informationで使用するためにデータ成型
+	for (int i = 0; i < foundExtensions.Size(); ++i)
 	{
 		convertFoundExtensions[i] = foundExtensions[i].c_str();
 	}
@@ -201,8 +201,8 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool us
 		.pApplicationInfo        = &applicationInfo,                                     // application infomation
 		.enabledLayerCount       = 0,
 		.ppEnabledLayerNames     = nullptr,
-		.enabledExtensionCount   = static_cast<UINT32>(convertFoundExtensions.size()),   // extension count
-		.ppEnabledExtensionNames = convertFoundExtensions.data(),                        // extension name list
+		.enabledExtensionCount   = static_cast<UINT32>(convertFoundExtensions.Size()),   // extension count
+		.ppEnabledExtensionNames = convertFoundExtensions.Data(),                        // extension name list
 	}; 
 	
 #ifdef _DEBUG
@@ -211,8 +211,8 @@ RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool us
 	---------------------------------------------------------------------*/
 	if (enableCPUDebugger || enableGPUDebugger)
 	{
-		createInfo.enabledLayerCount   = static_cast<std::uint32_t>(_instanceLayers.size());                 // enable layer count
-		createInfo.ppEnabledLayerNames = _instanceLayers.data();
+		createInfo.enabledLayerCount   = static_cast<std::uint32_t>(_instanceLayers.Size());                 // enable layer count
+		createInfo.ppEnabledLayerNames = _instanceLayers.Data();
 	}
 #endif
 
@@ -247,7 +247,7 @@ RHIInstance::~RHIInstance()
 #endif
 	if (_debugMessenger){DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);}
 	if (_instance)     { vkDestroyInstance(_instance, nullptr); }
-	_instanceLayers.clear(); _instanceLayers.shrink_to_fit();
+	_instanceLayers.Clear(); _instanceLayers.ShrinkToFit();
 }
 
 #pragma endregion Constructor and Destructor
@@ -255,14 +255,14 @@ RHIInstance::~RHIInstance()
 /****************************************************************************
 *                     EnumrateAdapters
 *************************************************************************//**
-*  @fn        std::vector<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
+*  @fn        gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
 *  @brief     Return all availablle adapter lists
 *  @param[in] void
-*  @return 　　std::vector<gu::SharedPointer<core::RHIAdapter>> 
+*  @return 　　gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>> 
 *****************************************************************************/
-std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
 {
-	std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
+	gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
 	/*-------------------------------------------------------------------
 	-               Acquire physical devices
@@ -274,7 +274,7 @@ std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAda
 	---------------------------------------------------------------------*/
 	for (const auto& device : devices)
 	{
-		adapterLists.emplace_back(gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), device));
+		adapterLists.Push(gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), device));
 	}
 	return adapterLists;
 }
@@ -315,11 +315,11 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapte
 gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
 {
 	const auto& devices = EnumratePhysicalDevices();
-	if (devices.size() == 0) { return nullptr; }
+	if (devices.Size() == 0) { return nullptr; }
 
 	// 必要となるものがなければ最初に見つけたAdapterを渡す. 
 	gu::SharedPointer<core::RHIDisplayAdapter> adapter = gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), devices[0]);
-	for (int i = 1; i < devices.size(); ++i)
+	for (int i = 1; i < devices.Size(); ++i)
 	{
 		/*-------------------------------------------------------------------
 		-               Get properties
@@ -359,20 +359,20 @@ void RHIInstance::LogAdapters()
 /****************************************************************************
 *                     AcquireExtensionProperties
 *************************************************************************//**
-*  @fn        std::vector<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
+*  @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
 *  @brief     Return all enable vk extension name list. 
 *  @param[in] void
-*  @return 　　std::vector<const char*>
+*  @return 　　gu::DynamicArray<const char*>
 *****************************************************************************/
-std::vector<std::string> RHIInstance::AcquireExtensionList()
+gu::DynamicArray<std::string> RHIInstance::AcquireExtensionList()
 {
-	std::vector<std::string> foundExtensions = {};
-	std::vector<VkExtensionProperties> properties;
+	gu::DynamicArray<std::string> foundExtensions = {};
+	gu::DynamicArray<VkExtensionProperties> properties;
 	{
 		UINT32 count = 0;
 		vkEnumerateInstanceExtensionProperties(nullptr, &count, nullptr);           // acqure property count
-		properties.resize(count);                                                   // set buffer region 
-		vkEnumerateInstanceExtensionProperties(nullptr, &count, properties.data()); // acquire property data
+		properties.Resize(count);                                                   // set buffer region 
+		vkEnumerateInstanceExtensionProperties(nullptr, &count, properties.Data()); // acquire property Data
 
 		for (const auto& prop : properties)
 		{
@@ -380,7 +380,7 @@ std::vector<std::string> RHIInstance::AcquireExtensionList()
 			std::wstring name = unicode::ToWString(prop.extensionName) + L"\n";
 			OutputDebugStringW(name.c_str());
 #endif
-			foundExtensions.push_back(std::string(prop.extensionName));
+			foundExtensions.Push(std::string(prop.extensionName));
 		}
 	}
 	return foundExtensions;
@@ -389,12 +389,12 @@ std::vector<std::string> RHIInstance::AcquireExtensionList()
 /****************************************************************************
 *                     EnumratePhysicalDevices
 *************************************************************************//**
-*  @fn        std::vector<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices()
+*  @fn        gu::DynamicArray<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices()
 *  @brief     Return physical device vector list
 *  @param[in] void
-*  @return 　　std::vector<VkPhysicalDevice>
+*  @return 　　gu::DynamicArray<VkPhysicalDevice>
 *****************************************************************************/
-std::vector<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices()
+gu::DynamicArray<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices()
 {
 	UINT32 deviceCount = 0;
 	vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
@@ -402,8 +402,8 @@ std::vector<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices()
 	/*error check*/
 	if (deviceCount == 0) { throw std::runtime_error("failed to find GPUs with Vulkan support."); }
 
-	std::vector<VkPhysicalDevice> devices(deviceCount);
-	vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.data());
+	gu::DynamicArray<VkPhysicalDevice> devices(deviceCount);
+	vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.Data());
 	
 	return devices;
 }
@@ -430,15 +430,15 @@ bool RHIInstance::CheckValidationLayerSupport()
 	// 1.1.106.0 のバージョンから単一のレイヤだけで旧レイヤーの全ての検証機能を使用可能
 	if constexpr (VK_HEADER_VERSION_COMPLETE >= VK_MAKE_VERSION(1, 1, 106)) 
 	{
-		_instanceLayers.push_back("VK_LAYER_KHRONOS_validation"); // normally use
+		_instanceLayers.Push("VK_LAYER_KHRONOS_validation"); // normally use
 	}
 	else
 	{
-		_instanceLayers.push_back("VK_LAYER_LUNARG_standard_validation");
+		_instanceLayers.Push("VK_LAYER_LUNARG_standard_validation");
 	}
 
-	_instanceLayers.push_back("VK_LAYER_KHRONOS_shader_object");
-	//_instanceLayers.push_back( "VK_LAYER_LUNARG_api_dump");
+	_instanceLayers.Push("VK_LAYER_KHRONOS_shader_object");
+	//_instanceLayers.Push( "VK_LAYER_LUNARG_api_dump");
 
 	/* This implementation is used because it is not used in release build.*/
 	for (const char* layerName : _instanceLayers)
@@ -458,12 +458,12 @@ bool RHIInstance::CheckValidationLayerSupport()
 	return true;
 }
 
-std::vector<VkLayerProperties> RHIInstance::GetInstanceLayers() const
+gu::DynamicArray<VkLayerProperties> RHIInstance::GetInstanceLayers() const
 {
 	std::uint32_t layerCount = 0;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-	std::vector<VkLayerProperties> availableLayers(layerCount);
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+	gu::DynamicArray<VkLayerProperties> availableLayers(layerCount);
+	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.Data());
 
 	return availableLayers;
 }
@@ -471,21 +471,21 @@ std::vector<VkLayerProperties> RHIInstance::GetInstanceLayers() const
 /****************************************************************************
 *                     FillFilteredNameArray
 *************************************************************************//**
-*  @fn        VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
-			  const std::vector<VkLayerProperties>& properties,
-		      const std::vector<Entry>& requestedLayers)
+*  @fn        VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+			  const gu::DynamicArray<VkLayerProperties>& properties,
+		      const gu::DynamicArray<Entry>& requestedLayers)
 
 *  @brief     used: layer property name vector list. 
 * 
-*  @param[out] std::vector<std::string>& used : layer property name vector.
-*  @param[in]  std::vector<VkLayerProperties>properties : VkLayerProperty
-*  @param[in]  std::vector<Entry>& requestedLayer
+*  @param[out] gu::DynamicArray<std::string>& used : layer property name vector.
+*  @param[in]  gu::DynamicArray<VkLayerProperties>properties : VkLayerProperty
+*  @param[in]  gu::DynamicArray<Entry>& requestedLayer
 * 
 *  @return 　　VkResult
 *****************************************************************************/
-VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
-	const std::vector<VkLayerProperties>& properties,
-	const std::vector<Entry>& requestedLayers)
+VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+	const gu::DynamicArray<VkLayerProperties>& properties,
+	const gu::DynamicArray<Entry>& requestedLayers)
 {
 	/* This implementation is used because it is not used in release build.*/
 	// requested layerの中から, propertiesの名前を見つける.
@@ -503,7 +503,7 @@ VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
 
 		if (layerFound)
 		{
-			used.push_back(layer.Name);
+			used.Push(layer.Name);
 		}
 		else if (layer.Optional == false)
 		{
@@ -517,23 +517,23 @@ VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
 /****************************************************************************
 *                     FillFilteredNameArray
 *************************************************************************//**
-*  @fn        VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
-			  const std::vector<VkLayerProperties>& properties,
-			  const std::vector<Entry>& requestedLayers)
+*  @fn        VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+			  const gu::DynamicArray<VkLayerProperties>& properties,
+			  const gu::DynamicArray<Entry>& requestedLayers)
 
 *  @brief     used: layer property name vector list.
 *
-*  @param[out] std::vector<std::string>& used : layer property name vector.
-*  @param[in]  std::vector<VkLayerProperties>properties : VkLayerProperty
-*  @param[in]  std::vector<Entry>& requestedLayer
-*  @param[out] std::vector<void*>& featureStructs
+*  @param[out] gu::DynamicArray<std::string>& used : layer property name vector.
+*  @param[in]  gu::DynamicArray<VkLayerProperties>properties : VkLayerProperty
+*  @param[in]  gu::DynamicArray<Entry>& requestedLayer
+*  @param[out] gu::DynamicArray<void*>& featureStructs
 *
 *  @return 　　VkResult
 *****************************************************************************/
-VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
-	const std::vector<VkExtensionProperties>& properties,
-	const std::vector<Entry>& requested,
-	std::vector<void*>& featureStructs)
+VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+	const gu::DynamicArray<VkExtensionProperties>& properties,
+	const gu::DynamicArray<Entry>& requested,
+	gu::DynamicArray<void*>& featureStructs)
 {
 	for (const auto& itr : requested)
 	{
@@ -552,10 +552,10 @@ VkResult RHIInstance::FillFilteredNameArray(std::vector<std::string>& used,
 		// feature struct push back
 		if (found)
 		{
-			used.push_back(itr.Name);
+			used.Push(itr.Name);
 			if (itr.FeatureStruct)
 			{
-				featureStructs.push_back(itr.FeatureStruct);
+				featureStructs.Push(itr.FeatureStruct);
 			}
 		}
 		else if (!itr.Optional)

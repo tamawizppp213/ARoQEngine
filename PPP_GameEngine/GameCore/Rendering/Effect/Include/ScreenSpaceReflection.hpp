@@ -119,9 +119,9 @@ namespace gc
 		ResourceLayoutPtr _resourceLayout = nullptr;
 		PipelineStatePtr _pipeline = nullptr;
 
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 
-		std::vector<IndexBufferPtr>  _indexBuffers = {};
+		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
 
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

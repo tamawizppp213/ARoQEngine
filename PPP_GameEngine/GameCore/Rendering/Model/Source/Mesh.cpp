@@ -25,7 +25,7 @@ using namespace rhi::core;
 #pragma region Constructor and Destructor
 Mesh::~Mesh()
 {
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
+	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
 	_indexBuffer.Reset();
 }
 
@@ -63,14 +63,14 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine,
 	Prepare(vertexInfo, indexInfo, name);
 }
 
-Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const std::vector<VertexBufferPtr>& vertexBuffers,
+Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const gu::DynamicArray<VertexBufferPtr>& vertexBuffers,
 	const IndexBufferPtr& indexBuffer,
 	const std::uint64_t indexCount, 
 	const std::uint32_t indexOffset,
 	const MaterialPtr& material):
 	_engine(engine), _vertexBuffers(vertexBuffers), _indexBuffer(indexBuffer), _indexCount(indexCount), _material(material), _indexOffset(indexOffset)
 {
-	if (LowLevelGraphicsEngine::FRAME_BUFFER_COUNT != vertexBuffers.size())
+	if (LowLevelGraphicsEngine::FRAME_BUFFER_COUNT != vertexBuffers.Size())
 	{
 		OutputDebugStringA("FrameBufferCount is not same with vertexBuffer size");
 		return;
@@ -130,7 +130,7 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const gu::tstring& name)
 	/*-------------------------------------------------------------------
 	-             Vertex Buffer
 	---------------------------------------------------------------------*/
-	_vertexBuffers.resize(totalFrameSize);
+	_vertexBuffers.Resize(totalFrameSize);
 	for (size_t i = 0; i < totalFrameSize; ++i)
 	{
 		const auto metaData = GPUBufferMetaData::VertexBuffer(sizeof(gm::Vertex), mesh.Vertices.size(), rhi::core::MemoryHeap::Upload);
@@ -179,7 +179,7 @@ void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData&
 	/*-------------------------------------------------------------------
 	-             Vertex Buffer
 	---------------------------------------------------------------------*/
-	_vertexBuffers.resize(totalFrameSize);
+	_vertexBuffers.Resize(totalFrameSize);
 	for (size_t i = 0; i < totalFrameSize; ++i)
 	{
 		_vertexBuffers[i] = device->CreateBuffer(vertexInfo);

@@ -19,7 +19,7 @@
 #include "GameUtility/Base/Include/Screen.hpp"
 #include <algorithm>
 #include <stdexcept>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -43,20 +43,20 @@ namespace
 	/*-------------------------------------------------------------------
 	-       HDR and SDR pixel format and color space
 	---------------------------------------------------------------------*/
-	const std::vector<VkFormat> g_HDRFormat =
+	const gu::DynamicArray<VkFormat> g_HDRFormat =
 	{
 		 VK_FORMAT_R16G16B16A16_SFLOAT,
 		 VK_FORMAT_A2B10G10R10_UNORM_PACK32,
 		 VK_FORMAT_R32G32B32A32_SFLOAT
 	};
 
-	const std::vector<VkFormat> g_SDRFormat =
+	const gu::DynamicArray<VkFormat> g_SDRFormat =
 	{
 		VK_FORMAT_B8G8R8A8_UNORM,
 		VK_FORMAT_B8G8R8A8_SRGB
 	};
 
-	const std::vector<VkColorSpaceKHR> g_HDRColorSpace =
+	const gu::DynamicArray<VkColorSpaceKHR> g_HDRColorSpace =
 	{
 		VK_COLOR_SPACE_EXTENDED_SRGB_LINEAR_EXT,
 		VK_COLOR_SPACE_HDR10_ST2084_EXT,
@@ -64,12 +64,12 @@ namespace
 		VK_COLOR_SPACE_DOLBYVISION_EXT
 	};
 
-	const std::vector<VkColorSpaceKHR> g_SDRColorSpace =
+	const gu::DynamicArray<VkColorSpaceKHR> g_SDRColorSpace =
 	{
 		VK_COLOR_SPACE_SRGB_NONLINEAR_KHR
 	};
 
-	bool CheckColorFormat(const std::vector<VkFormat>& formats, VkFormat desiredFormat)
+	bool CheckColorFormat(const gu::DynamicArray<VkFormat>& formats, VkFormat desiredFormat)
 	{
 		for (const auto format : formats)
 		{
@@ -78,7 +78,7 @@ namespace
 		return false;
 	}
 
-	bool CheckColorSpace(const std::vector<VkColorSpaceKHR>& colorSpaces, VkColorSpaceKHR desiredColorSpace)
+	bool CheckColorSpace(const gu::DynamicArray<VkColorSpaceKHR>& colorSpaces, VkColorSpaceKHR desiredColorSpace)
 	{
 		for (const auto colorSpace : colorSpaces)
 		{
@@ -99,8 +99,8 @@ namespace
 	struct SwapchainSupportDetails
 	{
 		VkSurfaceCapabilitiesKHR         Capabilities = {}; // surface image presentation capability (image count, extent, composit alpha..)
-		std::vector<VkSurfaceFormatKHR>  Formats      = {}; // available surface color format list
-		std::vector<VkPresentModeKHR>    PresentModes = {}; // available surface present mode list 
+		gu::DynamicArray<VkSurfaceFormatKHR>  Formats      = {}; // available surface color format list
+		gu::DynamicArray<VkPresentModeKHR>    PresentModes = {}; // available surface present mode list 
 
 		static SwapchainSupportDetails Query(VkPhysicalDevice device, VkSurfaceKHR surface)
 		{
@@ -116,8 +116,8 @@ namespace
 			vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
 			if (formatCount != 0)
 			{
-				details.Formats.resize(formatCount);
-				vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.Formats.data());
+				details.Formats.Resize(formatCount);
+				vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.Formats.Data());
 			}
 			/*-------------------------------------------------------------------
 			-               Acquire Surface Presnent Mode
@@ -126,8 +126,8 @@ namespace
 			vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
 			if (presentModeCount != 0)
 			{
-				details.PresentModes.resize(presentModeCount);
-				vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.PresentModes.data());
+				details.PresentModes.Resize(presentModeCount);
+				vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.PresentModes.Data());
 			}
 			return details;
 		}
@@ -155,7 +155,7 @@ RHISwapchain::~RHISwapchain()
 {
 	const auto vkDevice  = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	const auto vkAdapter = gu::StaticPointerCast<rhi::vulkan::RHIDisplayAdapter>(vkDevice->GetDisplayAdapter());
-	_vkImages.clear(); _vkImages.shrink_to_fit();
+	_vkImages.Clear(); _vkImages.ShrinkToFit();
 	if (_renderingFinishedSemaphore) 
 	{ 
 		vkDestroySemaphore(vkDevice->GetDevice(), _renderingFinishedSemaphore, nullptr); 
@@ -496,14 +496,14 @@ void RHISwapchain::InitializeSwapchain()
 	/*-------------------------------------------------------------------
 	-               Get swapchain images
 	---------------------------------------------------------------------*/
-	_vkImages     .resize(imageCount);
-	_backBuffers.resize(imageCount);
-	if (vkGetSwapchainImagesKHR(vkDevice->GetDevice(), _swapchain, &imageCount, _vkImages.data()) != VK_SUCCESS)
+	_vkImages     .Resize(imageCount);
+	_backBuffers.Resize(imageCount);
+	if (vkGetSwapchainImagesKHR(vkDevice->GetDevice(), _swapchain, &imageCount, _vkImages.Data()) != VK_SUCCESS)
 	{
 		throw std::runtime_error("failed to get swapchain images");
 	}
 
-	for (size_t index = 0; index < _vkImages.size(); ++index)
+	for (size_t index = 0; index < _vkImages.Size(); ++index)
 	{
 		auto info = core::GPUTextureMetaData::Texture2D(
 			static_cast<size_t>(_desc.WindowInfo.Width), static_cast<size_t>(_desc.WindowInfo.Height),
@@ -555,15 +555,15 @@ void RHISwapchain::UpdateCurrentFrameIndex()
 /****************************************************************************
 *                     SelectSwapchainFormat
 *************************************************************************//**
-*  @fn        VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& format)
+*  @fn        VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const gu::DynamicArray<VkSurfaceFormatKHR>& format)
 * 
 *  @brief     Select swapchain format
 * 
-*  @param[in] const std::vector<VkSurfaceFormatKHR>& format
+*  @param[in] const gu::DynamicArray<VkSurfaceFormatKHR>& format
 * 
 *  @return 　　VkSurfaceFormatKHR
 *****************************************************************************/
-VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& formats)
+VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const gu::DynamicArray<VkSurfaceFormatKHR>& formats)
 {
 	const auto vkDevice = gu::StaticPointerCast<rhi::vulkan::RHIDevice>(_device);
 
@@ -603,12 +603,12 @@ void RHISwapchain::ChangeSDRFormat(const VkFormat format)
 /****************************************************************************
 *                     SelectSwapchainPresentMode
 *************************************************************************//**
-*  @fn        VkPresentModeKHR GraphicsDeviceVulkan::SelectSwapchainPresentMode(const std::vector<VkPresentModeKHR>& presentMode)
+*  @fn        VkPresentModeKHR GraphicsDeviceVulkan::SelectSwapchainPresentMode(const gu::DynamicArray<VkPresentModeKHR>& presentMode)
 *  @brief     Select vsync mode
-*  @param[in] const std::vector<VkPresentModeKHR>& presentMode
+*  @param[in] const gu::DynamicArray<VkPresentModeKHR>& presentMode
 *  @return 　　VkPresentModeKHR
 *****************************************************************************/
-VkPresentModeKHR RHISwapchain::SelectSwapchainPresentMode(const std::vector<VkPresentModeKHR>& presentModes)
+VkPresentModeKHR RHISwapchain::SelectSwapchainPresentMode(const gu::DynamicArray<VkPresentModeKHR>& presentModes)
 {
 	for (const auto& presentMode : presentModes)
 	{
@@ -623,7 +623,7 @@ VkPresentModeKHR RHISwapchain::SelectSwapchainPresentMode(const std::vector<VkPr
 *************************************************************************//**
 *  @fn        VkExtent2D  GraphicsDeviceVulkan::SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 *  @brief     Select swapchain screen size
-*  @param[in] const std::vector<VkPresentModeKHR>& presentMode
+*  @param[in] const gu::DynamicArray<VkPresentModeKHR>& presentMode
 *  @return 　　VkExtent2D
 *****************************************************************************/
 VkExtent2D RHISwapchain::SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)

@@ -40,8 +40,8 @@ ScreenSpaceReflection::ScreenSpaceReflection()
 
 ScreenSpaceReflection::~ScreenSpaceReflection()
 {
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
-	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
+	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
+	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
 }
 
 ScreenSpaceReflection::ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const SSRSettings& settings, const gu::tstring& addName)
@@ -193,8 +193,8 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addNa
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers.resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers.Resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------

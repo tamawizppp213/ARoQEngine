@@ -21,13 +21,13 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 rhi::directX12::GPUInputAssemblyState::GPUInputAssemblyState(
 	const gu::SharedPointer<core::RHIDevice>& device, 
-	const std::vector<core::InputLayoutElement>& elements,
+	const gu::DynamicArray<core::InputLayoutElement>& elements,
 	const core::PrimitiveTopology primitiveTopology
 ) : core::GPUInputAssemblyState(device, elements, primitiveTopology)
 {
-	auto offsetInBytes = std::vector<std::uint32_t>(_slotCount); // slot‚²‚Æ‚ÌOffset
+	auto offsetInBytes = gu::DynamicArray<std::uint32_t>(_slotCount); // slot‚²‚Æ‚ÌOffset
 
-	std::vector<std::pair<bool, core::InputClassification>> inputTypes(
+	gu::DynamicArray<std::pair<bool, core::InputClassification>> inputTypes(
 		_slotCount,
 		std::pair<bool, core::InputClassification>(false, core::InputClassification::PerVertex));
 
@@ -35,7 +35,7 @@ rhi::directX12::GPUInputAssemblyState::GPUInputAssemblyState(
 	{
 		const auto slot = element.Slot;
 
-		_inputLayoutElements.push_back(
+		_inputLayoutElements.Push(
 			{
 				element.SemanticName.CString(),                // SemanticName
 				0,                                           // SemanticIndex
@@ -66,6 +66,6 @@ rhi::directX12::GPUInputAssemblyState::GPUInputAssemblyState(
 		offsetInBytes[element.Slot] += static_cast<std::uint32_t>(core::InputFormatSizeOf::Get(element.Format));
 	}
 
-	_inputLayout.NumElements        = static_cast<std::uint32_t>(_inputLayoutElements.size());
-	_inputLayout.pInputElementDescs = _inputLayoutElements.data();
+	_inputLayout.NumElements        = static_cast<std::uint32_t>(_inputLayoutElements.Size());
+	_inputLayout.pInputElementDescs = _inputLayoutElements.Data();
 }

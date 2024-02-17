@@ -86,7 +86,7 @@ namespace rhi::vulkan
 		
 		void SetVertexBuffer (const gu::SharedPointer<core::GPUBuffer>& buffer) override;
 		
-		void SetVertexBuffers(const std::vector<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
+		void SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
 		
 		void SetIndexBuffer  (const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
 		

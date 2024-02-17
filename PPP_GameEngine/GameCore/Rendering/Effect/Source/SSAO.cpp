@@ -369,8 +369,8 @@ void SSAO::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers .resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers .Resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------

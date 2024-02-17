@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include <cstdint>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -101,7 +101,7 @@ namespace gc::basepass
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		std::vector<GameModelPtr> _gameModels = {};
+		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		std::uint32_t _width = 0;
 		std::uint32_t _height = 0;
@@ -115,7 +115,7 @@ namespace gc::basepass
 
 		RenderPassPtr _renderPass = nullptr;
 
-		std::vector<FrameBufferPtr> _frameBuffers = {};
+		gu::DynamicArray<FrameBufferPtr> _frameBuffers = {};
 	};
 }
 #endif

@@ -40,7 +40,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkRenderPass GetRenderPass() const noexcept { return _renderPass; }
 
-		std::vector<VkClearValue> GetVkClearValues() const;
+		gu::DynamicArray<VkClearValue> GetVkClearValues() const;
 
 		void SetName(const gu::tstring& name) override;
 
@@ -51,7 +51,7 @@ namespace rhi::vulkan
 
 		~RHIRenderPass();
 		
-		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth = std::nullopt);
+		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth = std::nullopt);
 		
 		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth = std::nullopt);
 	

@@ -48,11 +48,11 @@ bool ScreenCapture::Capture(const TexturePtr& texture)
 	return true;
 }
 
-bool ScreenCapture::Capture(const std::vector<TexturePtr>& textures)
+bool ScreenCapture::Capture(const gu::DynamicArray<TexturePtr>& textures)
 {
 	if (!IsTriggerPrintScreenKey()) { return false; }
 
-	for (size_t i = 0; i < textures.size(); ++i)
+	for (size_t i = 0; i < textures.Size(); ++i)
 	{
 		if (!textures[i]) { return false; }
 

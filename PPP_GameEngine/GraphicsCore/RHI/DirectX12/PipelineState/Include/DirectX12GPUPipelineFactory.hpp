@@ -35,7 +35,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		/* @brief : Create and return input assembly state pointer*/
 		gu::SharedPointer<core::GPUInputAssemblyState> CreateInputAssemblyState(
-			const std::vector<core::InputLayoutElement>& elements,
+			const gu::DynamicArray<core::InputLayoutElement>& elements,
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList) override;
 
 		/* @brief : Create and return rasterizer state pointer*/
@@ -51,7 +51,7 @@ namespace rhi::directX12
 
 		/* @brief : Create and return multiple blend states pointer. */
 		gu::SharedPointer<core::GPUBlendState> CreateBlendState(
-			const std::vector<core::BlendProperty>& properties) override;
+			const gu::DynamicArray<core::BlendProperty>& properties) override;
 
 		/* @brief : Create and return blend state pointer*/
 		gu::SharedPointer<core::GPUBlendState> CreateSingleBlendState(

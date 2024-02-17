@@ -34,14 +34,14 @@ TLASBuffer::~TLASBuffer()
 
 }
 TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
-	const std::vector<gu::SharedPointer<core::ASInstance>>& asInstance,
+	const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& asInstance,
 	const core::BuildAccelerationStructureFlags flags,
 	const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
 	: core::TLASBuffer(device, asInstance, flags, customHeap)
 {
 	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device);
 
-	const auto numInstance = static_cast<std::uint32_t>(asInstance.size());
+	const auto numInstance = static_cast<std::uint32_t>(asInstance.Size());
 	/*-------------------------------------------------------------------
 	-         Set up acceleration structure inputs
 	---------------------------------------------------------------------*/
@@ -80,7 +80,7 @@ TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	/*-------------------------------------------------------------------
 	-         Instance Desc
 	---------------------------------------------------------------------*/
-	std::vector<D3D12_RAYTRACING_INSTANCE_DESC> dxDescs(numInstance);
+	gu::DynamicArray<D3D12_RAYTRACING_INSTANCE_DESC> dxDescs(numInstance);
 	for (std::uint64_t i = 0; i < numInstance; ++i)
 	{
 		dxDescs[i] = gu::StaticPointerCast<directX12::ASInstance>(_asInstance[i])->GetDesc();
@@ -94,7 +94,7 @@ TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 			sizeof(D3D12_RAYTRACING_INSTANCE_DESC), numInstance);
 		metaData.State = core::ResourceState::GeneralRead;
 		_asInstanceDescsBuffer = dxDevice->CreateBuffer(metaData);
-		_asInstanceDescsBuffer->Pack(dxDescs.data(), nullptr); // upload bufferÇÃÇΩÇﬂÅAnullptr
+		_asInstanceDescsBuffer->Pack(dxDescs.Data(), nullptr); // upload bufferÇÃÇΩÇﬂÅAnullptr
 	}
 
 	/*-------------------------------------------------------------------

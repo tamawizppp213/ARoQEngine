@@ -37,7 +37,7 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-		void Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint = SP("main"), const float version = 6.0f, const std::vector<gu::tstring>& includeDirectories = {}, const std::vector<gu::tstring>& defines = {}) override;
+		void Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint = SP("main"), const float version = 6.0f, const gu::DynamicArray<gu::tstring>& includeDirectories = {}, const gu::DynamicArray<gu::tstring>& defines = {}) override;
 		
 		// @brief : Offline Compile, already compiled fileName(filePath)
 		void LoadBinary(const core::ShaderType type, const gu::tstring& fileName) override;
@@ -76,7 +76,7 @@ namespace rhi::vulkan
 		gu::string   _name = "";
 
 	private:
-		void VkCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const std::vector<gu::tstring>& includeDirectories);
+		void VkCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const gu::DynamicArray<gu::tstring>& includeDirectories);
 	};
 }
 #endif

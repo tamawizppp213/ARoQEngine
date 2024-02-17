@@ -53,9 +53,9 @@ ColorChange::~ColorChange()
 {
 	_pipeline.Reset();
 	_resourceLayout.Reset();
-	_resourceViews.clear(); _resourceViews.shrink_to_fit();
-	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
+	_resourceViews.Clear(); _resourceViews.ShrinkToFit();
+	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
+	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
 }
 ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const gu::tstring& addName) 
 	: IFullScreenEffector(engine), _colorType(type)

@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ namespace rhi::core
 		TLASBuffer() = default;
 		~TLASBuffer() = default;
 		TLASBuffer(const gu::SharedPointer<RHIDevice>& device,
-			const std::vector<gu::SharedPointer<ASInstance>>& asInstance,
+			const gu::DynamicArray<gu::SharedPointer<ASInstance>>& asInstance,
 			const core::BuildAccelerationStructureFlags flags,
 			const gu::SharedPointer<RHIDescriptorHeap>& customHeap = nullptr) : _device(device), _asInstance(asInstance), _flags(flags), _customHeap(customHeap)
 		{
@@ -75,7 +75,7 @@ namespace rhi::core
 		gu::SharedPointer<GPUBuffer> _asInstanceDescsBuffer = nullptr;
 		gu::SharedPointer<GPUResourceView> _resourceView    = nullptr;
 		gu::SharedPointer<RHIDescriptorHeap> _customHeap    = nullptr;
-		std::vector<gu::SharedPointer<core::ASInstance>> _asInstance;
+		gu::DynamicArray<gu::SharedPointer<core::ASInstance>> _asInstance;
 		BuildAccelerationStructureFlags _flags  = BuildAccelerationStructureFlags::None;
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 

@@ -27,7 +27,7 @@
 #include <stdexcept>
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -213,8 +213,8 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 	/*-------------------------------------------------------------------
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
-	std::vector<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
-	TransitionResourceStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().data(), states.data());
+	gu::DynamicArray<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
+	TransitionResourceStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().Data(), states.Data());
 
 	/*-------------------------------------------------------------------
 	-          Select renderpass and frame buffer action
@@ -249,8 +249,8 @@ void RHICommandList::EndRenderPass()
 	/*-------------------------------------------------------------------
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
-	std::vector<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
-	TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
+	gu::DynamicArray<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
+	TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().Data(), states.Data());
 	_beginRenderPass = false;
 }
 
@@ -365,7 +365,7 @@ void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology
 *****************************************************************************/
 void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint32_t numViewport)
 {
-	std::vector<D3D12_VIEWPORT> v(numViewport);
+	gu::DynamicArray<D3D12_VIEWPORT> v(numViewport);
 	for (UINT i = 0; i < numViewport; ++i)
 	{
 		v[i].TopLeftX = viewport->TopLeftX;
@@ -375,7 +375,7 @@ void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint
 		v[i].MaxDepth = viewport->MaxDepth;
 		v[i].MinDepth = viewport->MinDepth;
 	}
-	_commandList->RSSetViewports(numViewport, v.data());
+	_commandList->RSSetViewports(numViewport, v.Data());
 }
 /****************************************************************************
 *                       SetScissorRect
@@ -388,7 +388,7 @@ void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint
 *****************************************************************************/
 void RHICommandList::SetScissor(const core::ScissorRect* rect, const std::uint32_t numRect)
 {
-	std::vector<D3D12_RECT> r(numRect);
+	gu::DynamicArray<D3D12_RECT> r(numRect);
 	for (UINT i = 0; i < numRect; ++i)
 	{
 		r[i].left = rect->Left;
@@ -396,7 +396,7 @@ void RHICommandList::SetScissor(const core::ScissorRect* rect, const std::uint32
 		r[i].bottom = rect->Bottom;
 		r[i].top = rect->Top;
 	}
-	_commandList->RSSetScissorRects(numRect, r.data());
+	_commandList->RSSetScissorRects(numRect, r.Data());
 }
 /****************************************************************************
 *                       SetViewportAndScissor
@@ -464,10 +464,10 @@ void RHICommandList::SetComputePipeline(const gu::SharedPointer<core::GPUCompute
 {
 	_commandList->SetPipelineState(gu::StaticPointerCast<directX12::GPUComputePipelineState>(pipelineState)->GetPipeline().Get());
 }
-void RHICommandList::SetVertexBuffers(const std::vector<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot)
+void RHICommandList::SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot)
 {
-	auto views = std::vector<D3D12_VERTEX_BUFFER_VIEW>(buffers.size());
-	for (size_t i = 0; i < views.size(); ++i)
+	auto views = gu::DynamicArray<D3D12_VERTEX_BUFFER_VIEW>(buffers.Size());
+	for (size_t i = 0; i < views.Size(); ++i)
 	{
 #if __DEBUG
 		assert(buffers[i]->GetUsage() == core::ResourceUsage::VertexBuffer);
@@ -477,7 +477,7 @@ void RHICommandList::SetVertexBuffers(const std::vector<gu::SharedPointer<core::
 		views[i].StrideInBytes  = static_cast<UINT>(buffers[i]->GetElementByteSize());
 	}
 
-	_commandList->IASetVertexBuffers(static_cast<UINT>(startSlot), static_cast<UINT>(views.size()), views.data());
+	_commandList->IASetVertexBuffers(static_cast<UINT>(startSlot), static_cast<UINT>(views.Size()), views.Data());
 }
 
 void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType)
@@ -558,21 +558,21 @@ void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTe
 *****************************************************************************/
 void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
 {
-	std::vector<BARRIER> barriers = {};
+	gu::DynamicArray<BARRIER> barriers = {};
 	for (std::uint32_t i = 0; i < numStates; ++i)
 	{
 		BARRIER barrier = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(textures[i])->GetResource().Get(),
 			EnumConverter::Convert(textures[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
 		textures[i]->TransitionResourceState(afters[i]);
-		barriers.emplace_back(barrier);
+		barriers.Push(barrier);
 	}
-	_commandList->ResourceBarrier(numStates, barriers.data());
+	_commandList->ResourceBarrier(numStates, barriers.Data());
 }
 
-void RHICommandList::TransitionResourceStates(const std::vector<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters)
+void RHICommandList::TransitionResourceStates(const gu::DynamicArray<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters)
 {
-	std::vector<BARRIER> barriers(resources.size());
-	for (uint32 i = 0; i < resources.size(); ++i)
+	gu::DynamicArray<BARRIER> barriers(resources.Size());
+	for (uint32 i = 0; i < resources.Size(); ++i)
 	{
 		if (resources[i]->IsTexture())
 		{
@@ -587,7 +587,7 @@ void RHICommandList::TransitionResourceStates(const std::vector<gu::SharedPointe
 			resources[i]->TransitionResourceState(afters[i]);
 		}
 	}
-	_commandList->ResourceBarrier((UINT)barriers.size(), barriers.data());
+	_commandList->ResourceBarrier((UINT)barriers.Size(), barriers.Data());
 }
 
 #pragma endregion Transition Resource State
@@ -737,8 +737,8 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 	-          Set CPU rtv and dsv descriptor handle
 	---------------------------------------------------------------------*/
 	// render target 
-	std::vector<D3D12_RENDER_PASS_RENDER_TARGET_DESC> rtvDescs(frameBuffer->GetRenderTargetSize());
-	for (size_t i = 0; i < rtvDescs.size(); ++i)
+	gu::DynamicArray<D3D12_RENDER_PASS_RENDER_TARGET_DESC> rtvDescs(frameBuffer->GetRenderTargetSize());
+	for (size_t i = 0; i < rtvDescs.Size(); ++i)
 	{
 		// get rtv handle
 		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
@@ -794,7 +794,7 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 		dsvDesc.cpuDescriptor          = dsvHandle;
 	}
 
-	_commandList->BeginRenderPass(static_cast<std::uint32_t>(rtvDescs.size()), hasRTV ? rtvDescs.data() : nullptr, hasDSV ? &dsvDesc : nullptr, D3D12_RENDER_PASS_FLAG_NONE);
+	_commandList->BeginRenderPass(static_cast<std::uint32_t>(rtvDescs.Size()), hasRTV ? rtvDescs.Data() : nullptr, hasDSV ? &dsvDesc : nullptr, D3D12_RENDER_PASS_FLAG_NONE);
 }
 
 /****************************************************************************
@@ -819,8 +819,8 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 	/*-------------------------------------------------------------------
 	-          Set CPU rtv and dsv descriptor handle
 	---------------------------------------------------------------------*/
-	std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> rtvHandle(renderTargets.size());
-	for (size_t i = 0; i < rtvHandle.size(); ++i)
+	gu::DynamicArray<D3D12_CPU_DESCRIPTOR_HANDLE> rtvHandle(renderTargets.Size());
+	for (size_t i = 0; i < rtvHandle.Size(); ++i)
 	{
 		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
 
@@ -843,7 +843,7 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 	-          Clear frame buffer resources
 	---------------------------------------------------------------------*/
 	// render target
-	for (int i = 0; i < rtvHandle.size(); ++i)
+	for (int i = 0; i < rtvHandle.Size(); ++i)
 	{
 		const auto colorAttachment = renderPass->GetColorAttachment(i);
 		if (colorAttachment->LoadOp != core::AttachmentLoad::Clear) { continue; }
@@ -867,7 +867,7 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 	/*-------------------------------------------------------------------
 	-          Set render target and depth stencil
 	---------------------------------------------------------------------*/
-	_commandList->OMSetRenderTargets(static_cast<std::uint32_t>(rtvHandle.size()), hasRTV ? rtvHandle.data() : nullptr, FALSE, hasDSV ? &dsvHandle : nullptr);
+	_commandList->OMSetRenderTargets(static_cast<std::uint32_t>(rtvHandle.Size()), hasRTV ? rtvHandle.Data() : nullptr, FALSE, hasDSV ? &dsvHandle : nullptr);
 }
 
 #pragma endregion Private Function

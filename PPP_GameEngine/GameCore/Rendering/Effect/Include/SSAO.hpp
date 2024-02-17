@@ -16,7 +16,7 @@
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -150,9 +150,9 @@ namespace gc
 		/* @brief : CPU calculate random value map. */
 		ResourceViewPtr _randomMap = nullptr;
 
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 
-		std::vector<IndexBufferPtr>  _indexBuffers = {};
+		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
 
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 	};

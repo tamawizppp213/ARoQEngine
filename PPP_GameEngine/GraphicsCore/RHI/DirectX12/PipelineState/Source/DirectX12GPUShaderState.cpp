@@ -46,7 +46,7 @@ using namespace rhi::directX12;
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version, const std::vector<gu::tstring>& includeDirectories, const std::vector<gu::tstring>& defines)
+void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version, const gu::DynamicArray<gu::tstring>& includeDirectories, const gu::DynamicArray<gu::tstring>& defines)
 {
 #if __DEBUG
 	assert(0.0f < version && version <= NEWEST_VERSION);
@@ -64,9 +64,9 @@ void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fil
 	}
 	else
 	{
-		std::vector<D3D_SHADER_MACRO> dxMacros(defines.size());
-		std::vector<std::string> nameList(defines.size()); //ダンぐリング対策
-		for (int i = 0; i < defines.size(); ++i)
+		gu::DynamicArray<D3D_SHADER_MACRO> dxMacros(defines.Size());
+		gu::DynamicArray<std::string> nameList(defines.Size()); //ダンぐリング対策
+		for (int i = 0; i < defines.Size(); ++i)
 		{
 			const auto temp = std::wstring(defines[i].CString());
 			nameList[i]            = unicode::ToUtf8String(temp);
@@ -74,7 +74,7 @@ void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fil
 			dxMacros[i].Definition = nullptr; // 後々
 		}
 
-		_dxBlob = DxCompile(fileName,dxMacros.data(), entryPoint, target);
+		_dxBlob = DxCompile(fileName,dxMacros.Data(), entryPoint, target);
 	}
 
 	_blobData.BufferPointer = _dxBlob->GetBufferPointer();
@@ -128,7 +128,7 @@ void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& 
 }
 
 #pragma region DxCompile
-BlobComPtr GPUShaderState::DxCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const std::vector<gu::tstring>& includeDirectories, const std::vector<gu::tstring>& defines)
+BlobComPtr GPUShaderState::DxCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const gu::DynamicArray<gu::tstring>& includeDirectories, const gu::DynamicArray<gu::tstring>& defines)
 {
 	/*-------------------------------------------------------------------
 	-            Create blob data from shader text file.
@@ -156,21 +156,21 @@ BlobComPtr GPUShaderState::DxCompile(const gu::tstring& fileName, const gu::tstr
 	/*-------------------------------------------------------------------
 	-                  Create Blob data of the source code
 	---------------------------------------------------------------------*/
-	std::vector<LPCWSTR> arguments = {};
+	gu::DynamicArray<LPCWSTR> arguments = {};
 	for (const auto& directory : includeDirectories)
 	{
-		arguments.push_back(L"-I");
-		arguments.push_back(directory.CString());
+		arguments.Push(L"-I");
+		arguments.Push(directory.CString());
 	}
 
-	std::vector<DxcDefine> dxcDefines(defines.size());
-	for (size_t i = 0; i < defines.size(); ++i)
+	gu::DynamicArray<DxcDefine> dxcDefines(defines.Size());
+	for (size_t i = 0; i < defines.Size(); ++i)
 	{
 		dxcDefines[i].Name = defines[i].CString();
 	}
-	dxcDefines.push_back({ .Name = L"DIRECTX" }); // default setting
+	dxcDefines.Push({ .Name = L"DIRECTX" }); // default setting
 #ifdef _DEBUG
-	dxcDefines.push_back({ .Name = L"_DEBUG" });  // debug
+	dxcDefines.Push({ .Name = L"_DEBUG" });  // debug
 #endif
 	
 	ComPtr<IDxcOperationResult> result = nullptr;
@@ -179,9 +179,9 @@ BlobComPtr GPUShaderState::DxCompile(const gu::tstring& fileName, const gu::tstr
 		fileName.CString(),
 		entryPoint.CString(),
 		target.CString(),
-		arguments.data(), static_cast<std::uint32_t>(arguments.size()),
-		dxcDefines.empty() ? nullptr : dxcDefines.data(),
-		dxcDefines.empty() ? 0 : (UINT32)dxcDefines.size(),
+		arguments.Data(), static_cast<std::uint32_t>(arguments.Size()),
+		dxcDefines.IsEmpty() ? nullptr : dxcDefines.Data(),
+		dxcDefines.IsEmpty() ? 0 : (UINT32)dxcDefines.Size(),
 		dxcIncludeHandler.Get(),
 		&result
 	);

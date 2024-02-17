@@ -52,7 +52,7 @@ namespace rhi::directX12
 		*  @brief :  コマンドリストの内容を実行する. 
 		             通常はset graphics, compute, transfer commandlist。
 		/*----------------------------------------------------------------------*/
-		void Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
+		void Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
 
 		/****************************************************************************
 		**                Public Member Variables

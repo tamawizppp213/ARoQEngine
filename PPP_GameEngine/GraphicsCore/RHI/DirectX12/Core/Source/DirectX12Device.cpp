@@ -36,7 +36,7 @@
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 
 #if PLATFORM_OS_WINDOWS
 #include <Windows.h>
@@ -219,7 +219,7 @@ void RHIDevice::Destroy()
 
 #pragma region CreateResource
 
-gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
+gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
 {
 	return gu::StaticPointerCast<core::RHIFrameBuffer>(gu::MakeShared<directX12::RHIFrameBuffer>(SharedFromThis(), renderPass, renderTargets, depthStencil));
 }
@@ -278,7 +278,7 @@ gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const
 	return heapPtr;
 }
 
-gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
 {
 	return gu::StaticPointerCast<core::RHIRenderPass>(gu::MakeShared<directX12::RHIRenderPass>(SharedFromThis(), colors, depth));
 }
@@ -298,7 +298,7 @@ gu::SharedPointer<core::GPUComputePipelineState> RHIDevice::CreateComputePipelin
 	return gu::StaticPointerCast<core::GPUComputePipelineState>(gu::MakeShared<directX12::GPUComputePipelineState>(SharedFromThis(), resourceLayout));
 }
 
-gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
+gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::RHIResourceLayout>(gu::MakeShared<directX12::RHIResourceLayout>(SharedFromThis(), elements, samplers, constant32Bits, name));
 }
@@ -355,12 +355,12 @@ gu::SharedPointer<core::ASInstance> RHIDevice::CreateASInstance(
 	return gu::StaticPointerCast<core::ASInstance>(gu::MakeShared<directX12::ASInstance>(SharedFromThis(), blasBuffer, blasTransform, instanceID, instanceContributionToHitGroupIndex, instanceMask, flags));
 }
 
-gu::SharedPointer<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
+gu::SharedPointer<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
 {
 	return gu::StaticPointerCast<core::BLASBuffer>(gu::MakeShared<directX12::BLASBuffer>(SharedFromThis(), geometryDesc, flags));
 }
 
-gu::SharedPointer<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
+gu::SharedPointer<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
 {
 	return gu::StaticPointerCast<core::TLASBuffer>(gu::MakeShared<directX12::TLASBuffer>(SharedFromThis(), asInstances, flags));
 }
@@ -1168,7 +1168,7 @@ void RHIDevice::CreateIntelExtensionContext()
 	/*-------------------------------------------------------------------
 	-         サポートされているバージョン数の取得
 	---------------------------------------------------------------------*/
-	std::vector<INTCExtensionVersion> supportedExtensionsVersions = {};
+	gu::DynamicArray<INTCExtensionVersion> supportedExtensionsVersions = {};
 	gu::uint32 supportedExtensionVersionCount = 0;
 
 	if (FAILED(INTC_D3D12_GetSupportedVersions(_device.Get(), nullptr, &supportedExtensionVersionCount)))
@@ -1177,7 +1177,7 @@ void RHIDevice::CreateIntelExtensionContext()
 	}
 
 	// サポートされているバージョン数だけインスタンス作成
-	supportedExtensionsVersions.resize(supportedExtensionVersionCount);
+	supportedExtensionsVersions.Resize(supportedExtensionVersionCount);
 
 	// 目標のバージョン
 	const INTCExtensionVersion atomicsRequiredVersion =
@@ -1190,7 +1190,7 @@ void RHIDevice::CreateIntelExtensionContext()
 	/*-------------------------------------------------------------------
 	-         サポートされているバージョン情報を取得する
 	---------------------------------------------------------------------*/
-	if (FAILED(INTC_D3D12_GetSupportedVersions(_device.Get(), supportedExtensionsVersions.data(), &supportedExtensionVersionCount)))
+	if (FAILED(INTC_D3D12_GetSupportedVersions(_device.Get(), supportedExtensionsVersions.Data(), &supportedExtensionVersionCount)))
 	{
 		return;
 	}
@@ -1250,10 +1250,10 @@ void RHIDevice::CreateIntelExtensionContext()
 	/*-------------------------------------------------------------------
 	-         終了処理
 	---------------------------------------------------------------------*/
-	if (!supportedExtensionsVersions.empty())
+	if (!supportedExtensionsVersions.IsEmpty())
 	{
-		supportedExtensionsVersions.clear();
-		supportedExtensionsVersions.shrink_to_fit();
+		supportedExtensionsVersions.Clear();
+		supportedExtensionsVersions.ShrinkToFit();
 	}
 
 	_intelExtensionContext = intelExtensionContext;

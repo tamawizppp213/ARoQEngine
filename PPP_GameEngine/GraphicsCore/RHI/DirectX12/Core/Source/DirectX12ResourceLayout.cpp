@@ -33,7 +33,7 @@ RHIResourceLayout::~RHIResourceLayout()
 {
 	if (_rootSignature) { _rootSignature.Reset(); }
 }
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
 	: core::RHIResourceLayout(device, elements, samplers, constant32Bits)
 {
 	SetUp();
@@ -57,7 +57,7 @@ RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& d
 /****************************************************************************
 *                     SetUp
 *************************************************************************//**
-*  @fn        void RHIResourceLayout::SetUp(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+*  @fn        void RHIResourceLayout::SetUp(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
 * 
 *  @brief     Set up rootsignature
 * 
@@ -76,9 +76,9 @@ void RHIResourceLayout::SetUp()
 	/*-------------------------------------------------------------------
 	-                   Prepare
 	---------------------------------------------------------------------*/
-	std::vector<D3D12_DESCRIPTOR_RANGE1>   ranges(_desc.Elements.size());
-	std::vector<D3D12_SHADER_VISIBILITY>   visibilities(_desc.Elements.size());
-	std::vector<D3D12_STATIC_SAMPLER_DESC> staticSamplerArrays = {};
+	gu::DynamicArray<D3D12_DESCRIPTOR_RANGE1>   ranges(_desc.Elements.Size());
+	gu::DynamicArray<D3D12_SHADER_VISIBILITY>   visibilities(_desc.Elements.Size());
+	gu::DynamicArray<D3D12_STATIC_SAMPLER_DESC> staticSamplerArrays = {};
 
 	/*-------------------------------------------------------------------
 	-     リソースバインディング階層に基づいて、ディスクリプタまたはそのデータが静的であるかどうかを判断します
@@ -110,12 +110,12 @@ void RHIResourceLayout::SetUp()
 
 	//const D3D12_ROOT_DESCRIPTOR_FLAGS cbvRootDescriptorFlags = 
 	//	D3D12_ROOT_DESCRIPTOR_FLAG_DATA_STATIC;	// 一度Bindされた時点で変更がないものとして扱われる.
-	// We always set the data in an upload heap before calling Set*RootConstantBufferView.
+	// We always set the Data in an upload heap before calling Set*RootConstantBufferView.
 
 	/*-------------------------------------------------------------------
 	-                   Set resource layout state
 	---------------------------------------------------------------------*/
-	std::vector<int32> shaderStageCounter((int32)core::ShaderVisibleFlag::CountOfPipeline);
+	gu::DynamicArray<int32> shaderStageCounter((int32)core::ShaderVisibleFlag::CountOfPipeline);
 	const core::ShaderVisibleFlag shaderStageFlags[] =
 	{
 		core::ShaderVisibleFlag::Vertex, 
@@ -127,7 +127,7 @@ void RHIResourceLayout::SetUp()
 		core::ShaderVisibleFlag::Mesh
 	};
 
-	for (size_t i = 0; i < _desc.Elements.size(); ++i)
+	for (size_t i = 0; i < _desc.Elements.Size(); ++i)
 	{
 		const auto visibilityValue = (int16)_desc.Elements[i].Visibility;
 		const bool hasSingleIndex = visibilityValue != 0 && ((visibilityValue & (visibilityValue - 1)) == 0);
@@ -162,7 +162,7 @@ void RHIResourceLayout::SetUp()
 		}
 		
 		// 各描画パイプラインのステージでの個数を取得
-		for (size_t j = 0; j < shaderStageCounter.size(); ++j)
+		for (size_t j = 0; j < shaderStageCounter.Size(); ++j)
 		{
 			if (visibilityValue & (int16)shaderStageFlags[j])
 			{
@@ -180,18 +180,18 @@ void RHIResourceLayout::SetUp()
 		samplerInfo.ShaderVisibility = EnumConverter::Convert(sampler.Visibility);
 		samplerInfo.ShaderRegister   = static_cast<UINT>(sampler.Binding);
 		samplerInfo.RegisterSpace    = static_cast<UINT>(sampler.RegisterSpace);
-		staticSamplerArrays.emplace_back(samplerInfo);
+		staticSamplerArrays.Push(samplerInfo);
 	}
-	_hasStaticSampler = !staticSamplerArrays.empty();
+	_hasStaticSampler = !staticSamplerArrays.IsEmpty();
 
 	/*-------------------------------------------------------------------
 	-                   Set Root Parameter
 	---------------------------------------------------------------------*/
-	std::vector<D3D12_ROOT_PARAMETER1> parameters = {};
-	if (!_desc.Elements.empty())
+	gu::DynamicArray<D3D12_ROOT_PARAMETER1> parameters = {};
+	if (!_desc.Elements.IsEmpty())
 	{
-		_elementsCount = _desc.Elements.size();
-		parameters.resize(_elementsCount);
+		_elementsCount = _desc.Elements.Size();
+		parameters.Resize(_elementsCount);
 		for (size_t i = 0; i < _elementsCount; ++i)
 		{
 			D3D12_ROOT_PARAMETER1 parameter = {};
@@ -209,7 +209,7 @@ void RHIResourceLayout::SetUp()
 	---------------------------------------------------------------------*/
 	if (_desc.Constant32Bits.has_value())
 	{
-		_constant32BitsCount = parameters.size();
+		_constant32BitsCount = parameters.Size();
 
 		D3D12_ROOT_PARAMETER1 parameter = {};
 		parameter.ParameterType            = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
@@ -217,7 +217,7 @@ void RHIResourceLayout::SetUp()
 		parameter.Constants.Num32BitValues = static_cast<UINT>(_desc.Constant32Bits->Count);
 		parameter.Constants.ShaderRegister = static_cast<UINT>(_desc.Constant32Bits->Binding);
 		parameter.Constants.RegisterSpace  = static_cast<UINT>(_desc.Constant32Bits->RegisterSpace);
-		parameters.push_back(parameter);
+		parameters.Push(parameter);
 	}
 
 	/*-------------------------------------------------------------------
@@ -254,12 +254,12 @@ void RHIResourceLayout::SetUp()
 			flags |= D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 		}
 
-		if (!_desc.Elements.empty())
+		if (!_desc.Elements.IsEmpty())
 		{
 			// Visibility部分はD3D12_ROOT_SIGNATURE_FLAGSと同じ値を採用している
 			// 各描画パイプライン上のDeny flagを立てる
 			
-			for (size_t i = 0; i < shaderStageCounter.size(); ++i)
+			for (size_t i = 0; i < shaderStageCounter.Size(); ++i)
 			{
 				// 何もShader stageにバインドするものが無ければ次に進む
 				if (shaderStageCounter[i] != 0) { continue; }
@@ -282,8 +282,8 @@ void RHIResourceLayout::SetUp()
 		// Local root signatureの場合はstatic samplerのレジスタ範囲がGlobal root signatureと
 		// 同じになってしまうため, static sampler stateは使用しないようにします
 		rootSignatureDesc.Desc_1_1.NumStaticSamplers = 0;
-		rootSignatureDesc.Desc_1_1.NumParameters     = static_cast<UINT>(parameters.size());
-		rootSignatureDesc.Desc_1_1.pParameters       = parameters.data();
+		rootSignatureDesc.Desc_1_1.NumParameters     = static_cast<UINT>(parameters.Size());
+		rootSignatureDesc.Desc_1_1.pParameters       = parameters.Data();
 		rootSignatureDesc.Desc_1_1.pStaticSamplers   = nullptr;
 		rootSignatureDesc.Desc_1_1.Flags             = flags;
 	}
@@ -291,17 +291,17 @@ void RHIResourceLayout::SetUp()
 	{
 		if (_bindingTier > D3D12_RESOURCE_BINDING_TIER_1)
 		{
-			rootSignatureDesc.Desc_1_1.NumStaticSamplers = static_cast<UINT>(staticSamplerArrays.size());
-			rootSignatureDesc.Desc_1_1.NumParameters     = static_cast<UINT>(parameters.size());
-			rootSignatureDesc.Desc_1_1.pParameters       = parameters.data();
-			rootSignatureDesc.Desc_1_1.pStaticSamplers   = staticSamplerArrays.data();
+			rootSignatureDesc.Desc_1_1.NumStaticSamplers = static_cast<UINT>(staticSamplerArrays.Size());
+			rootSignatureDesc.Desc_1_1.NumParameters     = static_cast<UINT>(parameters.Size());
+			rootSignatureDesc.Desc_1_1.pParameters       = parameters.Data();
+			rootSignatureDesc.Desc_1_1.pStaticSamplers   = staticSamplerArrays.Data();
 			rootSignatureDesc.Desc_1_1.Flags             = flags;
 		}
 		else
 		{
 			rootSignatureDesc.Desc_1_1.NumStaticSamplers = 0;
-			rootSignatureDesc.Desc_1_1.NumParameters     = static_cast<UINT>(parameters.size());
-			rootSignatureDesc.Desc_1_1.pParameters       = parameters.data();
+			rootSignatureDesc.Desc_1_1.NumParameters     = static_cast<UINT>(parameters.Size());
+			rootSignatureDesc.Desc_1_1.pParameters       = parameters.Data();
 			rootSignatureDesc.Desc_1_1.pStaticSamplers   = nullptr;
 			rootSignatureDesc.Desc_1_1.Flags             = flags;
 		}

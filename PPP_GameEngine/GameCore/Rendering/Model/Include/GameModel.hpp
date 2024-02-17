@@ -37,7 +37,7 @@ namespace gc::core
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 		using MeshPtr          = gu::SharedPointer<Mesh>; // single mesh pointer
-		using MeshArrayPtr     = std::vector<MeshPtr>; // material count array 
+		using MeshArrayPtr     = gu::DynamicArray<MeshPtr>; // material count array 
 		using MaterialPtr      = gu::SharedPointer<Material>;
 		using GameWorldInfoPtr = gu::SharedPointer<GameWorldInfo>;
 	
@@ -108,7 +108,7 @@ namespace gc::core
 		-            Material
 		---------------------------------------------------------------------*/
 		/* @brief : material */
-		std::vector<MaterialPtr> _materials = {};
+		gu::DynamicArray<MaterialPtr> _materials = {};
 
 		/* @brief : Material count*/
 		size_t  _materialCount = 0;

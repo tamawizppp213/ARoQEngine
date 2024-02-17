@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -103,7 +103,7 @@ namespace gc::rendering
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		std::vector<GameModelPtr> _gameModels = {};
+		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		GBufferDesc _desc = {};
 
@@ -116,7 +116,7 @@ namespace gc::rendering
 
 		RenderPassPtr _renderPass = nullptr;
 
-		std::vector<FrameBufferPtr> _frameBuffers = {};
+		gu::DynamicArray<FrameBufferPtr> _frameBuffers = {};
 	};
 }
 #endif

@@ -46,7 +46,7 @@ namespace rhi::directX12
 		BLASBuffer() = default;
 		~BLASBuffer();
 		BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
-			const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
+			const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
 			const core::BuildAccelerationStructureFlags flags);
 	protected:
 		/****************************************************************************
