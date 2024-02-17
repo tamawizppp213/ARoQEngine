@@ -254,7 +254,7 @@ namespace gu
 	{
 		if constexpr (HAS_TRIVIAL_COPY_CONSTRUCTOR<ElementType>)
 		{
-			Memory::Copy(destination, source, sizeof(ElementType) * count)
+			Memory::Copy(destination, source, sizeof(ElementType) * count);
 		}
 		else
 		{
