@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GUWeakPointer.hpp"
 #include "GameUtility/Base/Include/GUTypeTraits.hpp"
+#include "GameUtility/Base/Include/GUTypeCast.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -149,7 +150,7 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  Move Constructs a shared pointer
 		/*----------------------------------------------------------------------*/
-		SharedPointer(SharedPointer&& right) noexcept : ObserverPointerBase((ObserverPointerBase&&)right)
+		SharedPointer(SharedPointer&& right) noexcept : ObserverPointerBase(Forward<ObserverPointerBase>(right))
 		{
 			
 		};
@@ -278,13 +279,16 @@ namespace gu
 	*  @brief :  return the new shared pointer
 	/*----------------------------------------------------------------------*/
 	template<class ElementType, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE, class... Arguments>
-	SharedPointer<ElementType, Mode> MakeShared(Arguments... arguments)
+	SharedPointer<ElementType, Mode> MakeShared(Arguments&&... arguments)
 	{
-		auto pointer = SharedPointer<ElementType, Mode>(new ElementType(arguments...));
-		if constexpr(gu::IS_DERIVED_OF<ElementType, gu::EnableSharedFromThis<ElementType,Mode>>)
+		SharedPointer<ElementType, Mode> pointer(new ElementType(Forward<Arguments>(arguments)...));
+		
+		// EnableSharedFromThisをサポートする場合, weak_pointerを設定する
+		if constexpr(gu::IS_DERIVED_OF<ElementType, gu::EnableSharedFromThis<ElementType, Mode>>)
 		{
 			pointer->SetWeakPointer(pointer);
 		}
+
 		return pointer;
 	};
 
