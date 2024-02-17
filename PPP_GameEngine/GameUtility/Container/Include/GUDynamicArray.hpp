@@ -109,7 +109,10 @@ namespace gu
 		void Remove(const ElementType& element) 
 		{
 			const auto index = FindFromBegin(element);
-			if (index != INDEX_NONE) { RemoveAtImplement(index, 1, true); }
+			if (index != INDEX_NONE)
+			{ 
+				RemoveAtImplement(index, 1, true); 
+			}
 		}
 		/****************************************************************************
 		**                Public Member Variables
@@ -223,8 +226,8 @@ namespace gu
 			{
 				// ヒープ領域の全体私は時間がかかるため, あくまでポインタの付け替えだけで対応しました.
 				_data     = other._data;     other._data     = nullptr;
-				_size     = other._size;     other._size     = nullptr;
-				_capacity = other._capacity; other._capacity = nullptr;
+				_size     = other._size;     other._size     = 0;
+				_capacity = other._capacity; other._capacity = 0;
 			}
 			return *this;
 		}
@@ -242,6 +245,8 @@ namespace gu
 
 		DynamicArray(const uint64 size) { Resize(size); }
 
+		DynamicArray(const uint64 size, const ElementType& defaultElement) { Resize(size, true, defaultElement); }
+
 		// 波括弧で初期化が出来るコンストラクタ
 		DynamicArray(std::initializer_list<ElementType> list)
 		{
@@ -252,12 +257,12 @@ namespace gu
 		DynamicArray(const DynamicArray& other) { CreateFromOtherArray(other.Data(), other.Size()); }
 
 		// ムーブコンストラクタ
-		DynamicArray(DynamicArray&& other)
+		DynamicArray(DynamicArray&& other) noexcept
 		{
 			// ヒープ領域の全体私は時間がかかるため, あくまでポインタの付け替えだけで対応しました.
 			_data     = other._data;     other._data     = nullptr;
-			_size     = other._size;     other._size     = nullptr;
-			_capacity = other._capacity; other._capacity = nullptr;
+			_size     = other._size;     other._size     = 0;
+			_capacity = other._capacity; other._capacity = 0;
 		}
 
 		~DynamicArray()
@@ -551,7 +556,7 @@ namespace gu
 		/*-------------------------------------------------------------------
 		-           範囲チェック
 		---------------------------------------------------------------------*/
-		if (removeCount > 0)                      { return; }
+		if (removeCount <= 0)              { return; }
 		if (!InRange(index + removeCount)) { return; }
 
 		/*-------------------------------------------------------------------
