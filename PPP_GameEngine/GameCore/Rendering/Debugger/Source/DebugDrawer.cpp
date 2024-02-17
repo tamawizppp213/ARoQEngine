@@ -27,22 +27,22 @@ using namespace gc::rendering;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-DebugDrawer::DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName)
+DebugDrawer::DebugDrawer(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& addName)
 	: _engine(engine)
 {
 	/*-------------------------------------------------------------------
 	-            Set name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"DebugDrawer::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("DebugDrawer::");
 
 	PreparePipelineState(name);
 }
 
 DebugDrawer::~DebugDrawer()
 {
-	_gameModels.clear();
-	_gameModels.shrink_to_fit();
+	_gameModels.Clear();
+	_gameModels.ShrinkToFit();
 }
 #pragma endregion Constructor and Destructor
 
@@ -61,8 +61,7 @@ DebugDrawer::~DebugDrawer()
 void DebugDrawer::Draw(const GPUResourceViewPtr& scene)
 {
 #ifdef _DEBUG
-	const auto& currentFrame = _engine->GetCurrentFrameIndex();
-	const auto commandList  = _engine->GetCommandList(CommandListType::Graphics);
+	const auto commandList        = _engine->GetCommandList(CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------
 	-                 Execute command list
@@ -91,7 +90,7 @@ void DebugDrawer::Draw(const GPUResourceViewPtr& scene)
 *****************************************************************************/
 void DebugDrawer::Add(const GameModelPtr& model)
 {
-	_gameModels.emplace_back(model);
+	_gameModels.Push(model);
 }
 
 /****************************************************************************
@@ -107,20 +106,20 @@ void DebugDrawer::Add(const GameModelPtr& model)
 *****************************************************************************/
 void DebugDrawer::Clear()
 {
-	_gameModels.clear();
-	_gameModels.shrink_to_fit();
+	_gameModels.Clear();
+	_gameModels.ShrinkToFit();
 }
 
 void DebugDrawer::Clear(const GameModelPtr& model)
 {
-	std::erase(_gameModels, model);
+	_gameModels.Remove(model);
 }
 
 
 #pragma endregion Main Function
 
 #pragma region Set up
-void DebugDrawer::PreparePipelineState(const std::wstring& name)
+void DebugDrawer::PreparePipelineState(const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -141,8 +140,8 @@ void DebugDrawer::PreparePipelineState(const std::wstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Core\\ShaderDebug.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel , L"Shader\\Core\\ShaderDebug.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Core\\ShaderDebug.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel , SP("Shader\\Core\\ShaderDebug.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-             Setup blend state (all alpha blend)
@@ -155,7 +154,7 @@ void DebugDrawer::PreparePipelineState(const std::wstring& name)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(name + L"pso");
+	_pipeline->SetName(name + SP("pso"));
 
 }
 

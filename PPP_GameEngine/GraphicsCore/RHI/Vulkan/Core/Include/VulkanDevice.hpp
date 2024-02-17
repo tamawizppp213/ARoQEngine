@@ -14,7 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDevice.hpp"
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <optional>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -49,17 +49,17 @@ namespace rhi::vulkan
 #pragma region Create Resource
 		void                                           SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) override;
 
-		gu::SharedPointer<core::RHIFrameBuffer>          CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
+		gu::SharedPointer<core::RHIFrameBuffer>          CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 
 		gu::SharedPointer<core::RHIFrameBuffer>          CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
-		gu::SharedPointer<core::RHIFence>                CreateFence(const std::uint64_t fenceValue = 0, const std::wstring& name = L"")          override;
+		gu::SharedPointer<core::RHIFence>                CreateFence(const std::uint64_t fenceValue = 0, const gu::tstring& name = SP(""))          override;
 		
-		gu::SharedPointer<core::RHICommandList>          CreateCommandList(const gu::SharedPointer<rhi::core::RHICommandAllocator>& allocator, const std::wstring& name) override;
+		gu::SharedPointer<core::RHICommandList>          CreateCommandList(const gu::SharedPointer<rhi::core::RHICommandAllocator>& allocator, const gu::tstring& name) override;
 		
-		gu::SharedPointer<core::RHICommandQueue>         CreateCommandQueue(const core::CommandListType type, const std::wstring& name) override;
+		gu::SharedPointer<core::RHICommandQueue>         CreateCommandQueue(const core::CommandListType type, const gu::tstring& name) override;
 		
-		gu::SharedPointer<core::RHICommandAllocator>     CreateCommandAllocator(const core::CommandListType type, const std::wstring& name) override;
+		gu::SharedPointer<core::RHICommandAllocator>     CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name) override;
 		
 		gu::SharedPointer<core::RHISwapchain>            CreateSwapchain(const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 3, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
 		
@@ -69,7 +69,7 @@ namespace rhi::vulkan
 		
 		gu::SharedPointer<core::RHIDescriptorHeap>       CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
-		gu::SharedPointer<core::RHIResourceLayout>       CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const std::wstring& name=L"ResourceLayout") override;
+		gu::SharedPointer<core::RHIResourceLayout>       CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name=SP("ResourceLayout")) override;
 
 		gu::SharedPointer<core::GPUPipelineFactory>      CreatePipelineFactory() override;
 
@@ -77,22 +77,22 @@ namespace rhi::vulkan
 
 		gu::SharedPointer<core::GPUComputePipelineState> CreateComputePipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 
-		gu::SharedPointer<core::RHIRenderPass>           CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
+		gu::SharedPointer<core::RHIRenderPass>           CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
 		
 		gu::SharedPointer<core::RHIRenderPass>           CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
 		
 		//gu::SharedPointer<core::GPURayTracingPipelineState>CreateRayTracingPipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override { return nullptr; };
 		
 		
-		gu::SharedPointer<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
+		gu::SharedPointer<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::uint32 mipSlice = 0, const gu::uint32 planeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
-		gu::SharedPointer<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
+		gu::SharedPointer<core::GPUResourceView>         CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::uint32 mipSlice = 0, const gu::uint32 planeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
 		gu::SharedPointer<core::GPUSampler>              CreateSampler(const core::SamplerInfo& samplerInfo) override; // both
 		
-		gu::SharedPointer<core::GPUBuffer>               CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name = L"Buffer") override;
+		gu::SharedPointer<core::GPUBuffer>               CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("Buffer")) override;
 		
-		gu::SharedPointer<core::GPUTexture>              CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name = L"Texture") override;
+		gu::SharedPointer<core::GPUTexture>              CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("Texture")) override;
 		
 		gu::SharedPointer<core::GPUTexture>              CreateTextureEmpty() override;
 		
@@ -103,10 +103,11 @@ namespace rhi::vulkan
 			const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex,
 			const std::uint32_t instanceMask = 0xFF, const core::RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) override;
 		
-		gu::SharedPointer<core::BLASBuffer>                 CreateRayTracingBLASBuffer(const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags) override;
+		gu::SharedPointer<core::BLASBuffer>                 CreateRayTracingBLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags) override;
 		
-		gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
+		gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
 
+		gu::SharedPointer<core::RHIQuery> CreateQuery([[maybe_unused]] const core::QueryHeapType heapType) override { return nullptr; };
 #pragma endregion Create Resource
 		size_t GetQueueFamilyIndex(const core::CommandListType type) { return _commandQueueInfo[type].QueueFamilyIndex; }
 		
@@ -128,10 +129,10 @@ namespace rhi::vulkan
 		
 		std::uint64_t GetDeviceAddress(VkBuffer buffer);
 
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 
 		// @note : !!! prohibit japanese name. To convert utf8f string!!!
-		void SetVkResourceName(const std::wstring& name, const VkObjectType type, const std::uint64_t objectHandle);
+		void SetVkResourceName(const gu::tstring& name, const VkObjectType type, const std::uint64_t objectHandle);
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check

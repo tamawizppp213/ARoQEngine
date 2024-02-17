@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUTexture.hpp"
 #include <vulkan/vulkan.h>
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,12 +36,17 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList) override;
+		void Load(
+			[[maybe_unused]] const gu::tstring& filePath,
+			[[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList) override;
 
-		void Save(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue) override 
+		void Save(
+			[[maybe_unused]]const gu::tstring& filePath, 
+			[[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList,
+			[[maybe_unused]] const gu::SharedPointer<core::RHICommandQueue>& commandQueue) override
 		{ printf("Non Function\n"); }
 
-		void Write(const gu::SharedPointer<core::RHICommandList>& commandList, const gm::RGBA* pixel) override
+		void Write([[maybe_unused]]const gu::SharedPointer<core::RHICommandList>& commandList,[[maybe_unused]] const gm::RGBA* pixel) override
 		{
 			printf("Non Function\n");
 		}
@@ -54,7 +60,7 @@ namespace rhi::vulkan
 		
 		const VkImageViewCreateInfo& GetImageInfo() const noexcept { return _imageViewDesc; }
 		
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		
 		// SetMetaDataçÏÇ¡ÇΩï˚Ç™ÇÊÇ¢.
 		/****************************************************************************
@@ -64,11 +70,11 @@ namespace rhi::vulkan
 		
 		~GPUTexture();
 		 
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const std::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::tstring& name = SP("Texture"));
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("Texture"));
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const std::wstring& name = L"Texture");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const gu::tstring& name = SP("Texture"));
 
 	protected:
 		/****************************************************************************
@@ -78,7 +84,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void Pack(const gu::SharedPointer<core::RHICommandList>& commandList) override{};
+		void Pack([[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList) override{};
 		
 		/****************************************************************************
 		**                Protected Member Variables

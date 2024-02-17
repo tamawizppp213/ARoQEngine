@@ -30,7 +30,7 @@ GPUPipelineFactory::GPUPipelineFactory(const gu::SharedPointer<core::RHIDevice>&
 }
 
 gu::SharedPointer<core::GPUInputAssemblyState> GPUPipelineFactory::CreateInputAssemblyState(
-	const std::vector<core::InputLayoutElement>& elements,
+	const gu::DynamicArray<core::InputLayoutElement>& elements,
 	const core::PrimitiveTopology primitiveTopology)
 {
 	return gu::StaticPointerCast<core::GPUInputAssemblyState>(
@@ -57,7 +57,7 @@ gu::SharedPointer<core::GPUShaderState> GPUPipelineFactory::CreateShaderState()
 }
 
 gu::SharedPointer<core::GPUBlendState> GPUPipelineFactory::CreateBlendState(
-	const std::vector<core::BlendProperty>& properties)
+	const gu::DynamicArray<core::BlendProperty>& properties)
 {
 	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, properties));
 }
@@ -70,5 +70,5 @@ gu::SharedPointer<core::GPUBlendState> GPUPipelineFactory::CreateSingleBlendStat
 
 gu::SharedPointer<core::GPUBlendState> GPUPipelineFactory::CreateBlendState(const size_t numRenderTargets)
 {
-	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, std::vector<rhi::core::BlendProperty>(numRenderTargets)));
+	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, gu::DynamicArray<rhi::core::BlendProperty>(numRenderTargets)));
 }

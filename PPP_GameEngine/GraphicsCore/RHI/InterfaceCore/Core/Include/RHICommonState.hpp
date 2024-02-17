@@ -11,8 +11,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <cstdint>
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ namespace rhi::core
 	* 
 	*  @brief     Graphics api version (Add as needed.)
 	*****************************************************************************/
-	enum class APIVersion : std::uint8_t
+	enum class APIVersion : gu::uint8
 	{
 		Unknown    = 0,
 		DirectX12  = 1,
@@ -98,7 +98,71 @@ namespace rhi::core
 		}
 	};
 #pragma endregion         Index
+	#pragma region Window Surface
+	/****************************************************************************
+	*				  			Viewport 
+	*************************************************************************//**
+	*  @class     Viewport 
+	*  @brief     Rect Viewport 
+	*****************************************************************************/
+	struct Viewport
+	{
+		float TopLeftX  = 0.0f; 
+		float TopLeftY  = 0.0f;
+		float Width     = 0.0f;
+		float Height    = 0.0f;
+		float MinDepth  = 0.0f;
+		float MaxDepth  = 1.0f;
+		Viewport() = default;
+		Viewport(float topLeftX, float topLeftY, float width, float height, float minDepth = 0.0f, float maxDepth = 1.0f)
+		{
+			this->TopLeftX = topLeftX; this->TopLeftY = topLeftY; this->Width = width; this->Height = height; this->MinDepth = minDepth; this->MaxDepth = maxDepth;
+		}
+	};
+	/****************************************************************************
+	*				  			ScissorRect
+	*************************************************************************//**
+	*  @class     ScissorRect
+	*  @brief     Scissor Rectangle
+	*****************************************************************************/
+	struct ScissorRect
+	{
+		long Left   = 0; // Left window position
+		long Top    = 0; // top window position
+		long Right  = 0; // right window position
+		long Bottom = 0; // bottom window position
+		ScissorRect() = default;
+		ScissorRect(long left, long top, long right, long bottom)
+		{
+			this->Left = left; this->Top = top; this->Right = right; this->Bottom = bottom;
+		}
+	};
+
+	/****************************************************************************
+	*				  			WindowInfo
+	*************************************************************************//**
+	*  @struct    WindowInfo
+	*  @brief     Window size and window handle pointer
+	*****************************************************************************/
+	struct WindowInfo
+	{
+		size_t Width     = 0;       // window width
+		size_t Height    = 0;       // window height
+		void*  Handle    = nullptr; // window handle pointer 
+		void*  HInstance = nullptr; // window instance for Windows API
+
+		WindowInfo()  = default;
+
+		WindowInfo(size_t width, size_t height, void* handle, void* hInstance = nullptr)
+		{
+			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
+		}
+
+	};
+
+#pragma endregion    Window Surface
 #pragma region Pixel
+
 	enum class ShadingRate
 	{
 		K_1x1,
@@ -109,6 +173,65 @@ namespace rhi::core
 		K_4x2,
 		K_4x4
 	};
+
+	/****************************************************************************
+	*				  			DisplayOutputFormat
+	*************************************************************************//**
+	*  @enum      DisplayOutputFormat
+	*  @brief     Color format
+	*****************************************************************************/
+	enum class DisplayOutputFormat
+	{
+		SDR_SRGB,
+		SDR_Rec709,
+		HDR_ACES_1000nit_ST2084,
+		HDR_ACES_2000nit_ST2084,
+		HDR_ACES_1000nit_ScRGB,
+		HDR_ACES_2000nit_ScRGB,
+		HDR_Linear_NoToneCurve,
+		HDR_Linear_WithToneCurve
+	};
+
+	/****************************************************************************
+	*				  			DisplayColorGamut
+	*************************************************************************//**
+	*  @enum      DisplayColorGamut
+	*  @brief     Color range
+	*             https://uwatechnologies.hatenablog.com/entry/2022/04/09/001938
+	* 　　　　　 　　　https://garagefarm.net/jp-blog/what-is-color-space-and-why-you-should-use-aces
+	*             https://qiita.com/UWATechnology/items/2a40dbc66bf48041d405
+	*****************************************************************************/
+	enum class DisplayColorGamut
+	{
+		SRGB_D65,    // srgb color format    + white point D65 (Windows標準色域)
+		DCIP3_D65,   // dcpi3   color format + white point D65 (映像撮影に使われるカラーフィルムの色域に対応した広範囲の色域を表現できる規格)
+		Rec2020_D65, // rec2020 color format + white point D65 (HDR用に使われる色域)
+		ACES_D60,    // aces    color format + white point D60 (ダイナミックレンジが広い)  
+		ACEScg_D60   // aces cg color format 
+	};
+
+	/****************************************************************************
+	*				  			HDRDisplayInfo
+	*************************************************************************//**
+	*  @enum      HDRDisplayInfo
+	*  @brief     HDR display settings (RHIDeviceにて設定を行います)
+	*             https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
+	*****************************************************************************/
+	struct HDRDisplayInfo
+	{
+		DisplayColorGamut   ColorGamut    = DisplayColorGamut::SRGB_D65;
+		DisplayOutputFormat DisplayFormat = DisplayOutputFormat::SDR_SRGB;
+		float RedPrimary[2]         = {0,0}; // red   xy coordinate in the color space
+		float GreenPrimary[2]       = {0,0}; // green xy coordinate in the color space
+		float BluePrimary[2]        = {0,0}; // blue  xy coordinate in the color space
+		float WhitePoint[2]         = {0,0}; // white xy coordinate in the color space
+		float MinLuminance          = 0.0f;  // nits
+		float MaxLuminacnce         = 0.0f;  // nits
+		float MaxFullFrameLuminance = 0.0f;
+		ScissorRect Rect = {};
+	};
+
+
 	/****************************************************************************
 	*				  			PixelFormat
 	*************************************************************************//**
@@ -117,21 +240,48 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class PixelFormat
 	{
-		Unknown,   
+		Unknown,  
+
+		// RGBA format
+		R32G32B32A32_FLOAT,
+		R16G16B16A16_FLOAT, 
 		R8G8B8A8_UNORM,
 		B8G8R8A8_UNORM,
-		R10G10B10A2_UNORM,
-		R32G32B32A32_FLOAT,
-		R16G16B16A16_FLOAT,
+
+		// RGB format
+		R32G32B32_FLOAT,
+		R16G16B16_FLOAT,
+
+		// RG format
+		R32G32_FLOAT,
+
+		// Single format
 		D32_FLOAT,
 		R32_FLOAT,
+		R32_SINT,
+		R32_UINT,
+		R16_FLOAT,
+		R16_SINT,
+		R16_UINT,
+		R8_SINT,
+		R8_UINT,
+
+		// Block compression format (画像を4x4ピクセル単位のブロックに分割して, それぞれのブロックごとに圧縮を行う方式)
+		// https://www.webtech.co.jp/blog/optpix_labs/format/6993/
+		BC1_UNORM,   // 8byte : RGB, RGBA画像
+		BC2_UNORM,   // 16byte:RGBA(16諧調アルファ)
+		BC3_UNORM,   // 16byte:RGBA(多階調アルファ)
+		BC4_UNORM,   // 8byte :1成分のデータ (ハイトマップ等)
+		BC5_UNORM,   // 16byte:2成分のデータ (法線マップ等)
+		BC7_UNORM,   // 16byte:HDRのRGB画像
+		BC6H_UNORM,  // 16byte:RGB画像, RGBA画像 (多階調アルファ)
+
+		R10G10B10A2_UNORM,
 		D24_UNORM_S8_UINT,
-		R32G32B32_FLOAT,
-		R32G32_FLOAT,
 		B8G8R8A8_UNORM_SRGB,
-		BC1_UNORM,
 		CountOfPixelFormat
 	};
+
 	/****************************************************************************
 	*				  			PixelFormatSizeOf
 	*************************************************************************//**
@@ -183,9 +333,9 @@ namespace rhi::core
 	struct ClearValue
 	{
 		enum ColorType { Red, Green, Blue, Alpha };
-		float        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
-		float        Depth    = 1.0f;
-		std::uint8_t Stencil  = 0;
+		gu::float32        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
+		gu::float32        Depth    = 1.0f;
+		gu::uint8 Stencil  = 0;
 
 		ClearValue() = default;
 		ClearValue(float red, float green, float blue, float alpha)
@@ -193,30 +343,47 @@ namespace rhi::core
 			Color[0] = red; Color[1] = green; Color[2] = blue; Color[3] = alpha;
 		};
 		
-		explicit ClearValue(float depth, std::uint8_t stencil = 0)
+		explicit ClearValue(float depth, gu::uint8 stencil = 0)
 		{
-			Depth = depth; Stencil = stencil;
+			Depth = depth; Stencil = stencil; 
 		}
 	};
 #pragma endregion         Pixel
 #pragma region Shader
 	/****************************************************************************
-	*				  			ShaderVisibility
+	*				  			ShaderVisibleFlag
 	*************************************************************************//**
-	*  @enum      ShaderVisibility
+	*  @enum      ShaderVisibleFlag
 	*  @brief     Visible shader stage type
 	*****************************************************************************/
-	enum class ShaderVisibility : std::uint8_t
+	enum class ShaderVisibleFlag : gu::int16
 	{
-		All,           // all      shader stage visible
-		Vertex,        // vertex   shader stage only
-		Pixel,         // pixel    shader stage only
-		Hull,          // hull     shader stage only
-		Domain,        // domain   shader stage only
-		Geometry,      // geometry shader stage only
-		Amplification, // amplification shader stage only,
-		Mesh           // mesh shader stage only
+		// directX12に準拠しています D3D12_ROOT_SIGNATURE_FLAGS
+		Vertex        = 0x0002, // vertex   shader stage only
+		Hull          = 0x0004, // hull     shader stage only
+		Domain        = 0x0008, // domain   shader stage only
+		Geometry      = 0x0010, // geometry shader stage only
+		Pixel         = 0x0020, // pixel    shader stage only
+		Amplification = 0x0100, // amplification shader stage only,
+		Mesh          = 0x0200, // mesh shader stage only
+		All = Vertex | Pixel | Hull | Domain | Geometry | Amplification | Mesh, // all shader stage visible
+		CountOfPipeline = 7
 	};
+
+	__forceinline ShaderVisibleFlag operator | (const ShaderVisibleFlag& left, const ShaderVisibleFlag& right)
+	{
+		return static_cast<ShaderVisibleFlag>(static_cast<gu::uint8>(left) | static_cast<gu::uint8>(right));
+	}
+	__forceinline ShaderVisibleFlag operator & (const ShaderVisibleFlag& left, const ShaderVisibleFlag& right)
+	{
+		return static_cast<ShaderVisibleFlag>(static_cast<gu::uint8>(left) & static_cast<gu::uint8>(right));
+	}
+
+	__forceinline bool EnumHas(const ShaderVisibleFlag& left, const ShaderVisibleFlag& right)
+	{
+		return (left & right) == right;
+	}
+
 	/****************************************************************************
 	*				  			ShaderType
 	*************************************************************************//**
@@ -256,7 +423,7 @@ namespace rhi::core
 	*  @class     SamplerAddressMode
 	*  @brief     Texture addressing mode // reference : https://learn.microsoft.com/ja-jp/windows/uwp/graphics-concepts/texture-addressing-modes
 	*****************************************************************************/
-	enum class SamplerAddressMode : std::uint8_t
+	enum class SamplerAddressMode : gu::uint8
 	{
 		Wrap    = 1, // repeat texture pattern
 		Mirror  = 2, // mirror and repeat texture pattern
@@ -270,7 +437,7 @@ namespace rhi::core
 	*  @class     BorderColor
 	*  @brief     Specifies the border color for a sampler
 	*****************************************************************************/
-	enum class BorderColor : std::uint8_t
+	enum class BorderColor : gu::uint8
 	{
 		TransparentBlack, // Indicates black, with the alpha component as fully transparent
 		OpaqueBlack,      // Indicates black, with the alpha component as fully opaque(完全不透明)
@@ -283,7 +450,7 @@ namespace rhi::core
 	*  @class     FilterMask
 	*  @brief     Sample mask
 	*****************************************************************************/
-	enum class FilterMask : std::uint8_t
+	enum class FilterMask : gu::uint8
 	{
 		Mip = 0x1,
 		Mag = 0x2,
@@ -296,7 +463,7 @@ namespace rhi::core
 	*  @class     FilterOption
 	*  @brief     Sampling filter option. linear -> linear sampling, point -> point sampling
 	*****************************************************************************/
-	enum class FilterOption : std::uint8_t
+	enum class FilterOption : gu::uint8
 	{
 		MinPointMagPointMipPoint    = 0,
 		MinPointMagPointMipLinear   = 1,
@@ -344,9 +511,9 @@ namespace rhi::core
 		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;               // Texture addressing mode in the W direction
 		BorderColor         Border        = BorderColor::TransparentBlack;          // Border color 
 		size_t              MaxAnisotropy = 1;                                      // Max anisotropy
-		float               MipLODBias    = 0.0f;                                   // Defined LOD = normalLOD + bias
-		float               MinLOD        = 0.0f;                                   // Min LOD size
-		float               MaxLOD        = FLT_MAX;                                // Max LOD size: FLT_MAX 上限を指定しない.
+		gu::float32         MipLODBias    = 0.0f;                                   // Defined LOD = normalLOD + bias
+		gu::float32         MinLOD        = 0.0f;                                   // Min LOD size
+		gu::float32         MaxLOD        = MAX_FLOAT32;                            // Max LOD size: FLT_MAX 上限を指定しない.
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -359,7 +526,7 @@ namespace rhi::core
 			const SamplerAddressMode addressW = SamplerAddressMode::Wrap,
 			const BorderColor border = BorderColor::TransparentBlack,
 			float minLOD = 0.0f,
-			float maxLOD = FLT_MAX,
+			float maxLOD = MAX_FLOAT32,
 			float mipLODBias = 0.0f) :
 			Filter(filter),
 			AddressModeU(addressU),
@@ -373,7 +540,7 @@ namespace rhi::core
 		}
 
 		explicit SamplerInfo(
-			const std::uint32_t maxAnisotropy,
+			const gu::uint32 maxAnisotropy,
 			const SamplerAddressMode addressU = SamplerAddressMode::Wrap,
 			const SamplerAddressMode addressV = SamplerAddressMode::Wrap,
 			const SamplerAddressMode addressW = SamplerAddressMode::Wrap,
@@ -397,54 +564,61 @@ namespace rhi::core
 	*************************************************************************//**
 	*  @class     BlendFactor
 	*  @brief     Color blend factor (directX12 based)
+	*             Source : Color to be rendered from now on
+	*             Dest   : Color of rendering destination
 	*****************************************************************************/
-	enum class BlendFactor : std::uint32_t
+	enum class BlendFactor : gu::uint8
 	{
-		Zero = 1,
-		One,
-		Source_Color,
-		Inverse_Source_Color,
-		Source_Alpha,
-		Inverse_Source_Alpha,
-		Dest_Alpha,
-		Inverse_Dest_Alpha,
-		Dest_Color,
-		Inverse_Dest_Color,
-		Source_Alpha_Saturate,
+		Zero = 1,             // * 0
+		One,                  // * 1
+		Source_Color,         // * Rs, *Gs, *Bs, *As
+		Inverse_Source_Color, // * (1 - Rs), *(1 - Gs), *(1 - Bs), *(1 - As)
+		Source_Alpha,         // * As
+		Inverse_Source_Alpha, // * (1 - As)
+		Dest_Alpha,           // * Ad
+		Inverse_Dest_Alpha,   // * (1 - Ad)
+		Dest_Color,           // * Rd, *Gd, *Bd, *Ad
+		Inverse_Dest_Color,   // * (1 - Rd), *(1 - Gd), *(1 - Bd), *(1 - Ad)
+		Source_Alpha_Saturate,// * mih(1 - Ad, As)
 	};
+
 	/****************************************************************************
 	*				  			BlendOperator
 	*************************************************************************//**
 	*  @class     BlendOperator
 	*  @brief     Color blend calculate opration (directX12 based)
 	*****************************************************************************/
-	enum class BlendOperator : std::uint32_t
+	enum class BlendOperator : gu::uint8
 	{
-		Add = 1,
-		Subtract = 2,
-		Reverse_Subtract = 3,
-		Min = 4,
-		Max = 5
+		Add              = 1, // Default color blend operator : destination + source
+		Subtract         = 2, // source - destination
+		Reverse_Subtract = 3, // destination - source
+		Min              = 4, // min(destination, source)
+		Max              = 5  // max(destination, source)
 	};
+
 	/****************************************************************************
 	*				  			ColorMask
 	*************************************************************************//**
 	*  @class     ColorMask 
 	*  @brief     Color mask bit flag
 	*****************************************************************************/
-	enum class ColorMask : std::uint8_t
+	enum class ColorMask : gu::uint8
 	{
 		None  = 0,   // All Disable 
 		Red   = 0x1, // Red WriteEnable
 		Green = 0x2, // Green WriteEnable
 		Blue  = 0x4, // Blue WriteEnable
 		Alpha = 0x8, // Alpha WriteEnable
+		RGB   = Red | Green | Blue,
+		RG    = Red | Green,
+		BA    = Blue | Green,
 		All   = Red | Green | Blue | Alpha // AllEnable
 	};
 
 	inline ColorMask operator | (const ColorMask& left, const ColorMask& right)
 	{
-		return static_cast<ColorMask>( static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
+		return static_cast<ColorMask>( static_cast<gu::uint8>(left) | static_cast<gu::uint8>(right));
 	}
 
 	/****************************************************************************
@@ -452,33 +626,46 @@ namespace rhi::core
 	*************************************************************************//**
 	*  @class     BlendProperty
 	*  @brief     Property
+	*             Source      : これからレンダリングする色 (ピクセルシェーダー)
+	*             Destination : レンダリング先 (レンダーターゲット)
 	*****************************************************************************/
 	struct BlendProperty
 	{
-		BlendOperator ColorOperator    = BlendOperator::Add;   // Color Blend Type
+		BlendOperator ColorOperator    = BlendOperator::Add;   // RGB Color Blend Type 
 		BlendOperator AlphaOperator    = BlendOperator::Add;   // Alpha Blend Type
-		BlendFactor   DestinationAlpha = BlendFactor::Zero;    // 
-		BlendFactor   Destination      = BlendFactor::Zero;
-		BlendFactor   SourceAlpha      = BlendFactor::One;
-		BlendFactor   Source           = BlendFactor::One;
-		ColorMask     ColorMask        = ColorMask::All;
-		bool AlphaToConverageEnable    = false;                // Multi sample時に使用する
+		BlendFactor   DestinationAlpha = BlendFactor::Zero;    // Multiply to Render Target alpha(a) element blend mode
+		BlendFactor   DestinationRGB   = BlendFactor::Zero;    // Multiply to Render Target color(rgb) element blend mode
+		BlendFactor   SourceAlpha      = BlendFactor::One;     // Multiply to Pixel Shader alpha element(a) blend mode
+		BlendFactor   SourceRGB        = BlendFactor::One;     // Multiply to Pixel Shader color element(rgb) blend mode
+		ColorMask     ColorMask        = ColorMask::All;       // color mask
+		bool AlphaToConverageEnable    = false;                // Multi sample時に使用する. ピクセルシェーダーから出力されたあrぷふぁを取得し, Multi sanling aliasingを適用する
 
-		bool Enable = false;
+		bool Enable = false; // レンダーターゲットの独立したブレンドを使用するかを設定する
 
 		BlendProperty() = default;
 
 		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, BlendFactor destAlpha, BlendFactor dest,
 			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool alphaToConverageEnable = false, bool enable = false) :
-			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), Destination(dest), SourceAlpha(srcAlpha),
-			Source(src), ColorMask(colorMask), Enable(enable), AlphaToConverageEnable(alphaToConverageEnable) { };
+			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), DestinationRGB(dest), SourceAlpha(srcAlpha),
+			SourceRGB(src), ColorMask(colorMask), Enable(enable), AlphaToConverageEnable(alphaToConverageEnable) { };
 		
+		/*----------------------------------------------------------------------
+		*  @brief : NoColorWrite (Display the render target as it is)
+		/*----------------------------------------------------------------------*/
 		static BlendProperty NoColorWrite(const bool useAlphaToCoverage = false);
+
+		/*----------------------------------------------------------------------
+		*  @brief : OverWrite (Displays the source as it is.)
+		/*----------------------------------------------------------------------*/
 		static BlendProperty OverWrite (const bool useAlphaToCoverage = false);
+
+		/*----------------------------------------------------------------------
+		*  @brief : Alpha blending : destination * (1 - source.Alpha) + source * 1
+		/*----------------------------------------------------------------------*/
 		static BlendProperty AlphaBlend(const bool useAlphaToCoverage = false);
-		
 	};
-#pragma endregion        Blend State
+
+#pragma endregion       Blend   State
 #pragma region Rasterizer State
 	/****************************************************************************
 	*				  			MultiSample
@@ -486,7 +673,7 @@ namespace rhi::core
 	*  @class     MultiSample
 	*  @brief     Basically use count1 , in use MSAA, we use count4 
 	*****************************************************************************/
-	enum class MultiSample : std::uint8_t
+	enum class MultiSample : gu::uint8
 	{
 		Count1 = 1,       // 1
 		Count2 = 2,       // 2
@@ -507,10 +694,11 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			CullingMode
 	*************************************************************************//**
-	*  @class     CullingMode
-	*  @brief     Culling mode (left hand coordinate)
+	*  @enum      CullingMode
+	*  @brief     Sets the triangle facing the specified direction 
+	              not to be drawn in the left hand coordinate
 	*****************************************************************************/
-	enum class CullingMode : std::uint8_t
+	enum class CullingMode : gu::uint8
 	{
 		None,  // all face render
 		Front, // front culling
@@ -521,9 +709,9 @@ namespace rhi::core
 	*				  			FrontFace
 	*************************************************************************//**
 	*  @class     FrontFace
-	*  @brief     Polygon front face
+	*  @brief     Determine if all sides are counterclockwise
 	*****************************************************************************/
-	enum class FrontFace : std::uint8_t
+	enum class FrontFace : gu::uint8
 	{
 		CounterClockwise, // for right hand coordinate
 		Clockwise,        // for left  hand coordinate
@@ -550,20 +738,65 @@ namespace rhi::core
 	*****************************************************************************/
 	struct RasterizerProperty
 	{
-		FrontFace   FaceType       = FrontFace::Clockwise;
-		CullingMode CullingType    = CullingMode::None;
-		FillMode    FillType       = FillMode::Solid;
-		bool        UseDepthClamp  = true;
-		bool        UseMultiSample = true;
-		bool        UseAntiAliasLine = false; // DirectX12 only use
+		FrontFace   FaceType              = FrontFace::Clockwise; //  Determine if all sides are counterclockwise
+		CullingMode CullingType           = CullingMode::None;    // Sets the triangle facing the specified direction not to be drawn in the left hand coordinate
+		FillMode    FillType              = FillMode::Solid;      // Polygon fill mode
+		bool        UseDepthClamp         = true;                 // use clipping base on the depth length.
+		bool        UseMultiSample        = true;
+		bool        UseAntiAliasLine      = false;                // DirectX12 only use
+		bool        UseConservativeRaster = false;                // Perform rasterization if it hangs on a pixel for even a second.
+
+		// How to calculate : https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias?redirectedfrom=MSDN
+		// Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope;
+		float  DepthBias           = 0.0f;  // Depth value added to a given pixel.
+		float  SlopeScaleDepthBias = 0.0f;  // Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope;
+		float  ClampMaxDepthBias   = 0.0f;  // Clamp MaxDepth
 
 		RasterizerProperty() = default;
 
-		RasterizerProperty(const FrontFace frontFace, const CullingMode cullingMode, const FillMode fillMode, const bool useDepthClamp, const bool useMultiSample) :
-			FaceType(frontFace), CullingType(cullingMode), FillType(fillMode), UseDepthClamp(useDepthClamp), UseMultiSample(useMultiSample){};
+		RasterizerProperty
+		(
+			const FrontFace   frontFace,
+			const CullingMode cullingMode,
+			const FillMode    fillMode,
+			const bool  useDepthClamp,
+			const bool  useMultiSample,
+			const float depthBias           = 0.0f,
+			const float slopeScaleDepthBias = 0.0f,
+			const float clampMaxDepthBias   = 0.0f
+		) :
+			FaceType(frontFace), CullingType(cullingMode), FillType(fillMode), 
+			UseDepthClamp(useDepthClamp), UseMultiSample(useMultiSample),
+			DepthBias(depthBias), SlopeScaleDepthBias(slopeScaleDepthBias), 
+			ClampMaxDepthBias(clampMaxDepthBias)
+		{
+		};
 
-		static RasterizerProperty Solid(const bool useMultiSample = false, const FrontFace frontFace = FrontFace::Clockwise, const CullingMode cullingMode = CullingMode::None);
-		static RasterizerProperty WireFrame(const bool useMultiSample = false, const FrontFace frontFace = FrontFace::Clockwise, const CullingMode cullingMode = CullingMode::None);
+		/*----------------------------------------------------------------------
+		*  @brief : fill polygon face rasterize mode
+		/*----------------------------------------------------------------------*/
+		static RasterizerProperty Solid
+		(
+			const bool        useMultiSample      = false, 
+			const FrontFace   frontFace           = FrontFace::Clockwise, 
+			const CullingMode cullingMode         = CullingMode::None,
+			const float       depthBias           = 0.0f,
+			const float       slopeScaleDepthBias = 0.0f,
+			const float       clampMaxDepthBias   = 0.0f
+		);
+		
+		/*----------------------------------------------------------------------
+		*  @brief : wire frame polygon rasterize mode
+		/*----------------------------------------------------------------------*/
+		static RasterizerProperty WireFrame
+		(
+			const bool        useMultiSample      = false, 
+			const FrontFace   frontFace           = FrontFace::Clockwise, 
+			const CullingMode cullingMode         = CullingMode::None,
+			const float       depthBias           = 0.0f,
+			const float       slopeScaleDepthBias = 0.0f,
+			const float       clampMaxDepthBias   = 0.0f
+		);
 	};
 #pragma endregion   Rasterizer State
 #pragma region DepthStencilState
@@ -573,7 +806,7 @@ namespace rhi::core
 	*  @enum      CompareOperator
 	*  @brief     Compare operator
 	*****************************************************************************/
-	enum class CompareOperator : std::uint8_t
+	enum class CompareOperator : gu::uint8
 	{
 		Never,          // Always false
 		Less,           // reference < test
@@ -592,7 +825,7 @@ namespace rhi::core
 	*  @brief     Stencil operator (設定したテストが失敗, または成功した場合に格納されたステンシル値に何が起こるかを指定する) 
 	*             良い感じの説明: https://www.asawicki.info/news_1654_stencil_test_explained_using_code
 	*****************************************************************************/
-	enum class StencilOperator : std::uint8_t
+	enum class StencilOperator : gu::uint8
 	{
 		Keep,                 // keep the current value
 		Zero,                 // set the value to 0
@@ -612,11 +845,11 @@ namespace rhi::core
 	*****************************************************************************/
 	struct StencilOperatorInfo
 	{
-		CompareOperator CompareOperator   = CompareOperator::Always;
-		StencilOperator FailOperator      = StencilOperator::Keep;
-		StencilOperator PassOperator      = StencilOperator::Keep;
-		StencilOperator DepthFailOperator = StencilOperator::Keep;
-		std::uint32_t   Reference         = 0;
+		CompareOperator CompareOperator   = CompareOperator::Always; // Stencil test
+		StencilOperator FailOperator      = StencilOperator::Keep;   // Failed stencil action
+		StencilOperator PassOperator      = StencilOperator::Keep;   // Succeed stencil action
+		StencilOperator DepthFailOperator = StencilOperator::Keep;   // Failed depth test action
+		gu::uint32   Reference         = 0;
 		StencilOperatorInfo() = default;
 	};
 
@@ -630,18 +863,18 @@ namespace rhi::core
 	{
 		bool                UseDepthTest       = true;                       // Use depth test
 		bool                DepthWriteEnable   = true;                       // Enable to write depth
-		bool                StenciWriteEnable  = false;                       // Enable to write Stencil (stencil test: 描画マスクみたいなやつ)  
+		bool                StenciWriteEnable  = false;                      // Enable to write Stencil (stencil test: 描画マスクみたいなやつ)  
 		bool                UseDepthBoundsTest = false;                      // Use depth bounds test (vulkan api only)https://shikihuiku.wordpress.com/2012/06/27/depth-bounds-test1/
 		float               MinDepthBounds     = 0.0f;                       // Min depth bounds test region
 		float               MaxDepthBounds     = 0.0f;                       // Max depth bounds test region
 		CompareOperator     DepthOperator      = CompareOperator::LessEqual; // Depth test operator
-		StencilOperatorInfo Front              = StencilOperatorInfo();      
-		StencilOperatorInfo Back               = StencilOperatorInfo();
+		StencilOperatorInfo Front              = StencilOperatorInfo();      // Use depth test and stencil test results for pixels with surface normals facing the camera
+		StencilOperatorInfo Back               = StencilOperatorInfo();      // Use depth test and stencil test results for pixels where the surface normal is away from the camera
 	};
 
 #pragma endregion  DepthStencilState
 #pragma region InputAssemblyState
-	enum class PrimitiveTopology : std::uint8_t
+	enum class PrimitiveTopology : gu::uint8
 	{
 		Undefined     = 0,
 		PointList     = 1,
@@ -652,7 +885,7 @@ namespace rhi::core
 		CountOfPrimitiveTopology
 	};
 
-	enum class InputClassification : std::uint8_t
+	enum class InputClassification : gu::uint8
 	{
 		PerVertex   = 0,
 		PerInstance = 1,
@@ -660,7 +893,14 @@ namespace rhi::core
 
 	#pragma endregion InputAssemblyState
 #pragma region GPUResource
-	enum class ResourceDimension : std::uint8_t
+	enum class RootSignatureType : gu::uint8
+	{
+		Rasterize,
+		RayTracingGlobal,
+		RayTracingLocal
+	};
+
+	enum class ResourceDimension : gu::uint8
 	{
 		Buffer,
 		Dimension1D,
@@ -668,7 +908,7 @@ namespace rhi::core
 		Dimension3D
 	};
 
-	enum class ResourceType : std::uint8_t
+	enum class ResourceType : gu::uint8
 	{
 		Unknown                           = 0,
 		Buffer                            = 1,
@@ -690,7 +930,7 @@ namespace rhi::core
 	*  @class     ResourceState
 	*  @brief     How to use resource
 	*****************************************************************************/
-	enum class ResourceState : std::uint32_t
+	enum class ResourceState : gu::uint32
 	{
 		Common,
 		GeneralRead,
@@ -707,13 +947,14 @@ namespace rhi::core
 		ShadingRateSource,
 		CountOfResourceLayout
 	};
+
 	/****************************************************************************
 	*				  			MemoryHeap
 	*************************************************************************//**
 	*  @class     MemoryHeap
 	*  @brief     memory type
 	*****************************************************************************/
-	enum class MemoryHeap : std::uint8_t
+	enum class MemoryHeap : gu::uint8
 	{
 		Default, // Memory area visible only from GPU  
 		Upload,  // Memory area visible to CPU and GPU (Read from GPU is used for one time.)
@@ -735,12 +976,12 @@ namespace rhi::core
 
 	struct DefaultHeapCount
 	{
-		std::uint32_t CBVDescCount = 0;
-		std::uint32_t SRVDescCount = 0;
-		std::uint32_t UAVDescCount = 0;
-		std::uint32_t SamplerDescCount = 0;
-		std::uint32_t RTVDescCount = 0;
-		std::uint32_t DSVDescCount = 0;
+		gu::uint32 CBVDescCount = 0;
+		gu::uint32 SRVDescCount = 0;
+		gu::uint32 UAVDescCount = 0;
+		gu::uint32 SamplerDescCount = 0;
+		gu::uint32 RTVDescCount = 0;
+		gu::uint32 DSVDescCount = 0;
 	};
 	/****************************************************************************
 	*				  			ResourceViewType
@@ -748,7 +989,7 @@ namespace rhi::core
 	*  @enum      ResourceViewType
 	*  @brief     How to read gpu resource buffer
 	*****************************************************************************/
-	enum class ResourceViewType : std::uint32_t
+	enum class ResourceViewType : gu::uint32
 	{
 		Unknown,
 		ConstantBuffer       , // 256 alighment buffer
@@ -771,23 +1012,86 @@ namespace rhi::core
 	*  @enum      ResourceUsage
 	*  @brief     resource 
 	*****************************************************************************/
-	enum class ResourceUsage : std::uint32_t
+	enum class ResourceUsage : gu::uint32
 	{
 		None = 0,
-		VertexBuffer   = 0x1,
-		IndexBuffer    = 0x2,
-		ConstantBuffer = 0x4,
-		RenderTarget   = 0x8, // allow render target
-		DepthStencil   = 0x10, // allow depth stencil
-		UnorderedAccess = 0x20, // allow unordered access 
+
+		// バッファへの書き込みは一度だけ行われる
+		Static                = 0x000001,
+
+		// バッファは時々書き込まれ, GPUは読み取り専用でCPUは書き込み専用となる. 
+		Dynamic               = 0x000002,
+
+		// バッファの寿命は1フレーム. フレームごとに書き込むか新しいものを作るかの対応が必要となる.
+		Volatile              = 0x000004,
+
+		//　Unorder access viewを作成する
+		UnorderedAccess       = 0x000008,
+
+		// byte adress buffer : バイト単位でインデックスが作成される読み取り専用バッファ (基本uint32)
+		ByteAddress           = 0x000010,
+
+		// コピー元として使用するGPUバッファ
+		SourceCopy            = 0x000020,
+
+		// Stream出力ターゲットとして使用するGPUバッファ
+		StreamOutput          = 0x000040,
+
+		// DispatchIndirectまたはDrawIndirectが使用する引数を含むバッファを作成する
+		DrawIndirect          = 0x000080,
+
+		// シェーダ・リソースとしてバインドできるバッファを作成します。 
+		// 頂点バッファのような、通常はシェーダリソースとして使用されないバッファにのみ必要です。
+		ShaderResource        = 0x000100,
+
+		// CPUに直接アクセス可能なバッファ
+		CPUAccessible         = 0x000200,
+
+		// バッファは高速VRAMに置く
+		FastVRAM              = 0x000400,
+
+		// 外部のRHIやプロセスと共有できるバッファを作成する
+		Shared                = 0x000800,
+
+		// RayTracing用のAcceleration structureを作成する
+		AccelerationStructure = 0x001000,
+
+		// 頂点バッファとして使用する
+		VertexBuffer          = 0x002000,
+
+		// インデックスバッファとして使用する
+		IndexBuffer           = 0x004000,
+
+		// 構造化バッファ
+		StructuredBuffer      = 0x008000,
+
+		// 定数バッファ
+		ConstantBuffer        = 0x010000,
+
+		// レンダーターゲット
+		RenderTarget          = 0x020000, // allow render target
+
+		// デプスステンシル
+		DepthStencil          = 0x040000, // allow depth stencil
+
+		// バッファメモリは、ドライバのエイリアシングによって共有されるのではなく、複数のGPUに対して個別に割り当てられる
+		MultiGPUAllocate      = 0x080000,
+
+		// バッファをレイトレーシングのアクセラレーション構造を構築するためのスクラッチバッファとして使用できるようにします
+		// バッファのアライメントのみを変更し、他のフラグと組み合わせることができます
+		Scratch = 0x100000,
+
+		AnyDynamic = (Dynamic | Volatile),
 	};
+
 	inline ResourceUsage operator | (const ResourceUsage& left, const ResourceUsage& right)
 	{
-		return static_cast<ResourceUsage>(static_cast<std::uint32_t>(left) | static_cast<std::uint32_t>(right));
+		return static_cast<ResourceUsage>(static_cast<gu::uint32>(left) | static_cast<gu::uint32>(right));
 	}
+
 	inline ResourceUsage operator & (const ResourceUsage& left, const ResourceUsage& right)
 	{
-		return static_cast<ResourceUsage>( static_cast<std::uint32_t>(left) & static_cast<std::uint32_t>(right));
+		return static_cast<ResourceUsage>( static_cast<gu::uint32>(left) & static_cast<gu::uint32>(right));
 	}
 
 	inline bool EnumHas(const ResourceUsage& left, const ResourceUsage& right)
@@ -838,7 +1142,7 @@ namespace rhi::core
 		ResourceState  State         = ResourceState::GeneralRead; // resource layout
 		MemoryHeap     HeapType      = MemoryHeap::Default;         // memory heap type
 		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
-		InputFormat    Format        = InputFormat::Unknown;        // 基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある
+		PixelFormat    Format        = PixelFormat::Unknown;        // 基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある
 		void*          InitData      = nullptr; // Init Data
 
 		/****************************************************************************
@@ -859,7 +1163,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
-		static GPUBufferMetaData UploadBuffer(const InputFormat format, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
+		//static GPUBufferMetaData UploadBuffer(const PixelFormat format, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
 		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
 		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, void* initData = nullptr);
 		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 
@@ -984,15 +1288,15 @@ namespace rhi::core
 	*****************************************************************************/
 	struct RayTracingASPrebuildInfo
 	{
-		std::uint64_t AccelerationStructureSize = 0;
-		std::uint64_t BuildScratchDataSize      = 0;
-		std::uint64_t UpdateScratchDataSize    = 0;
+		gu::uint64 AccelerationStructureSize = 0;
+		gu::uint64 BuildScratchDataSize      = 0;
+		gu::uint64 UpdateScratchDataSize    = 0;
 	};
 	
 #pragma endregion RayTracing
 #pragma endregion GPUResource
 #pragma region Render Pass
-	enum class AttachmentLoad : std::uint8_t
+	enum class AttachmentLoad : gu::uint8
 	{
 		Clear,    // at the beginning of a render path, erase already existing data with a specific value
 		Load,     
@@ -1091,80 +1395,43 @@ namespace rhi::core
 		
 	};
 #pragma endregion       Render Pass
-#pragma region Window Surface
+#pragma region Query
 	/****************************************************************************
-	*				  			Viewport 
+	*				  			QueryType
 	*************************************************************************//**
-	*  @class     Viewport 
-	*  @brief     Rect Viewport 
+	*  @enum      QueryType
+	*  @brief     GPU情報の計測のために使用するHeapの設定
 	*****************************************************************************/
-	struct Viewport
+	enum class QueryHeapType : gu::uint8
 	{
-		float TopLeftX  = 0.0f; 
-		float TopLeftY  = 0.0f;
-		float Width     = 0.0f;
-		float Height    = 0.0f;
-		float MinDepth  = 0.0f;
-		float MaxDepth  = 1.0f;
-		Viewport() = default;
-		Viewport(float topLeftX, float topLeftY, float width, float height, float minDepth = 0.0f, float maxDepth = 1.0f)
-		{
-			this->TopLeftX = topLeftX; this->TopLeftY = topLeftY; this->Width = width; this->Height = height; this->MinDepth = minDepth; this->MaxDepth = maxDepth;
-		}
-	};
-	/****************************************************************************
-	*				  			ScissorRect
-	*************************************************************************//**
-	*  @class     ScissorRect
-	*  @brief     Scissor Rectangle
-	*****************************************************************************/
-	struct ScissorRect
-	{
-		long Left   = 0; // Left window position
-		long Top    = 0; // top window position
-		long Right  = 0; // right window position
-		long Bottom = 0; // bottom window position
-		ScissorRect() = default;
-		ScissorRect(long left, long top, long right, long bottom)
-		{
-			this->Left = left; this->Top = top; this->Right = right; this->Bottom = bottom;
-		}
-	};
-	// https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
-	struct HDRDisplayInfo
-	{
-		float RedPrimary[2]   = {0,0};   // red   xy coordinate in the color space
-		float GreenPrimary[2] = {0,0}; // green xy coordinate in the color space
-		float BluePrimary[2]  = {0,0};  // blue  xy coordinate in the color space
-		float WhitePoint[2]   = {0,0};   // white xy coordinate in the color space
-		float MinLuminance    = 0.0f;    // nits
-		float MaxLuminacnce   = 0.0f;   // nits
-		float MaxFullFrameLuminance = 0.0f;
-		ScissorRect Rect = {};
+		Occulusion,         // 遮蔽されていたら0, それ以外は遮蔽されていないことを示す
+		TimeStamp,          // GPU, CPUのタイムスタンプに使用します
+		PipelineStatistics, // Graphics pipelineの統計を示します
+		CopyQueueTimeStamp, // copy queue用のタイムスタンプ
+		CountOf,
 	};
 
 	/****************************************************************************
-	*				  			WindowInfo
+	*				  			GPUTimingCalibrationTimestamp
 	*************************************************************************//**
-	*  @struct    WindowInfo
-	*  @brief     Window size and window handle pointer
+	*  @enum      GPUTimingCalibrationTimestamp
+	*  @brief     GPUとCPUの時間計測
 	*****************************************************************************/
-	struct WindowInfo
+	struct GPUTimingCalibrationTimestamp
 	{
-		size_t Width     = 0;       // window width
-		size_t Height    = 0;       // window height
-		void*  Handle    = nullptr; // window handle pointer 
-		void*  HInstance = nullptr; // window instance for Windows API
+		gu::uint64 GPUMicroseconds = 0;
+		gu::uint64 CPUMicroseconds = 0;
 
-		WindowInfo()  = default;
+		GPUTimingCalibrationTimestamp() = default;
 
-		WindowInfo(size_t width, size_t height, void* handle, void* hInstance = nullptr)
+		GPUTimingCalibrationTimestamp(const gu::uint64 gpuMicroseconds, const gu::uint64 cpuMicroseconds)
 		{
-			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
+			GPUMicroseconds = gpuMicroseconds;
+			CPUMicroseconds = cpuMicroseconds;
 		}
-
 	};
 
-#pragma endregion    Window Surface
+
+#pragma endregion Query
 }
 #endif

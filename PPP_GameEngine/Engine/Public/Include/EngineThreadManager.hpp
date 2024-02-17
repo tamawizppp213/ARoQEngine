@@ -14,13 +14,14 @@
 #include "GameUtility/Thread/Public/Include/GUThreadPool.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 namespace gu
 {
 	class ThreadPool;
+	class Semaphore;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
@@ -32,8 +33,8 @@ namespace engine::core
 	{
 		UpdateMain,   // 座標更新等の処理を行うメインスレッド. 常にループします
 		RenderMain,   // 描画パイプラインを発行するメインスレッド. 常にループします
-		UpdateWorker, // オブジェクトの更新などを行うサブスレッド. タスクに使用します
-		RenderWorker, // コマンドリストに詰め込むなどのサブスレッド. タスクに使用します
+		//UpdateWorker, // オブジェクトの更新などを行うサブスレッド. タスクに使用します
+		//RenderWorker, // コマンドリストに詰め込むなどのサブスレッド. タスクに使用します
 		CountOf
 	};
 
@@ -47,10 +48,14 @@ namespace engine::core
 	{
 	private :
 		using ThreadPoolPtr = gu::SharedPointer<gu::ThreadPool>;
+		using SemaphorePtr  = gu::SharedPointer<gu::Semaphore>;
 	public:
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		bool CallExecuteComplete(const ThreadPoolType type);
+
+		void ShutDown();
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -63,7 +68,7 @@ namespace engine::core
 		*****************************************************************************/
 		EngineThreadManager();
 
-		~EngineThreadManager();
+		virtual ~EngineThreadManager();
 
 	protected:
 		/****************************************************************************
@@ -73,7 +78,11 @@ namespace engine::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<ThreadPoolPtr> _threadPools = {};
+		gu::DynamicArray<ThreadPoolPtr> _threadPools = {};
+
+		gu::DynamicArray<bool> _hasCompletedExecution = {};
+		SemaphorePtr      _hasCompletedSemaphore = nullptr;
+		gu::uint64        _fenceValue = 0;
 	};
 }
 #endif

@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <optional>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -25,6 +25,45 @@
 namespace rhi::core
 {
 	class RHIDevice;
+
+	/****************************************************************************
+	*				  			RHIResourceLayoutDesc
+	*************************************************************************//**
+	*  @class     RHIResourceLayoutDesc
+	*  @brief     Resource layout descriptor (set up how to bind gpu resource)
+	*****************************************************************************/
+	struct RHIResourceLayoutDesc
+	{
+		gu::DynamicArray<core::ResourceLayoutElement> Elements = {};
+		gu::DynamicArray<core::SamplerLayoutElement>  Samplers = {};
+		std::optional<core::Constant32Bits>      Constant32Bits = std::nullopt;
+		RootSignatureType ResourceLayoutType = RootSignatureType::Rasterize;
+		bool UseDirectlyIndexedResourceHeap  = false;
+		bool UseDirectlyIndexedSamplerHeap   = false;
+		bool UseIAInputLayout                = true;
+
+		RHIResourceLayoutDesc(
+			const gu::DynamicArray<core::ResourceLayoutElement>& elements = {},
+			const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {},
+			const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt,
+			const RootSignatureType resourceLayoutType = RootSignatureType::Rasterize,
+			const bool useDirectlyIndexedResourceHeap = false,
+			const bool useDirectlyIndexedSamplerHeap = false,
+			const bool useIAInputLayout = true
+		) : Elements(elements), Samplers(samplers), Constant32Bits(constant32Bits),
+			ResourceLayoutType(resourceLayoutType),
+			UseDirectlyIndexedResourceHeap(useDirectlyIndexedResourceHeap),
+			UseDirectlyIndexedSamplerHeap(useDirectlyIndexedSamplerHeap),
+			UseIAInputLayout(useIAInputLayout)
+		{
+		};
+
+		~RHIResourceLayoutDesc()
+		{
+			Elements.Clear(); Elements.ShrinkToFit();
+			Samplers.Clear(); Samplers.ShrinkToFit();
+		}
+	};
 
 	/****************************************************************************
 	*				  			RHIResourceLayout
@@ -42,22 +81,32 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		/* @brief: Return gpu resource shader binding element*/
-		const ResourceLayoutElement&  GetResourceElement(const size_t index) const { return _elements[index]; }
+		/*----------------------------------------------------------------------
+		*  @brief :  Return gpu resource shader binding element
+		/*----------------------------------------------------------------------*/
+		const ResourceLayoutElement&  GetResourceElement(const size_t index) const { return _desc.Elements[index]; }
 		
-		/* @brief : Return shader layout element of the sampler state*/
-		const SamplerLayoutElement&   GetSamplerElement (const size_t index) const { return _samplers[index]; }
+		/*----------------------------------------------------------------------
+		*  @brief :  Return shader layout element of the sampler state
+		/*----------------------------------------------------------------------*/
+		const SamplerLayoutElement&   GetSamplerElement (const size_t index) const { return _desc.Samplers[index]; }
 		
-		/* @brief : Return Constant32Bits data*/
-		std::optional<Constant32Bits> GetConstant32Bits() const noexcept { return _constant32Bits; }
+		/*----------------------------------------------------------------------
+		*  @brief :  Return Constant32Bits data
+		/*----------------------------------------------------------------------*/
+		std::optional<Constant32Bits> GetConstant32Bits() const noexcept { return _desc.Constant32Bits; }
 
-		/* @brief : Return All gpu resource shader binding elements*/
-		const std::vector<ResourceLayoutElement>& GetResourceElements() const{ return _elements; }
+		/*----------------------------------------------------------------------
+		*  @brief :  Return All gpu resource shader binding elements
+		/*----------------------------------------------------------------------*/
+		const gu::DynamicArray<ResourceLayoutElement>& GetResourceElements() const{ return _desc.Elements; }
 		
-		/* @brief : Return all sampler state shader binding elements*/
-		const std::vector<SamplerLayoutElement>&  GetSamplerElements () const{ return _samplers; }
+		/*----------------------------------------------------------------------
+		*  @brief :  Return all sampler state shader binding elements
+		/*----------------------------------------------------------------------*/
+		const gu::DynamicArray<SamplerLayoutElement>&  GetSamplerElements () const{ return _desc.Samplers; }
 		
-		virtual void SetName(const std::wstring& name) = 0;
+		virtual void SetName(const gu::tstring& name) = 0;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -70,24 +119,37 @@ namespace rhi::core
 
 		virtual ~RHIResourceLayout()
 		{
-			_elements.clear(); _elements.shrink_to_fit();
-			_samplers.clear(); _samplers.shrink_to_fit();
 			if (_device) { _device.Reset(); }
 		}
 
+		explicit RHIResourceLayout(const gu::SharedPointer<RHIDevice>& device, const RHIResourceLayoutDesc& desc)
+			: _device(device), _desc(desc)
+		{
+		};
+
 		explicit RHIResourceLayout(
 			const gu::SharedPointer<RHIDevice>& device,
-			const std::vector<core::ResourceLayoutElement>& elements = {},
-			const std::vector<core::SamplerLayoutElement>&  samplers = {},
+			const gu::DynamicArray<core::ResourceLayoutElement>& elements = {},
+			const gu::DynamicArray<core::SamplerLayoutElement>&  samplers = {},
 			const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt
-		) : _device(device), _elements(elements), _samplers(samplers), _constant32Bits(constant32Bits){ };
+		) : _device(device)
+		{
+			_desc.Elements       = elements;
+			_desc.Samplers       = samplers;
+			_desc.Constant32Bits = constant32Bits;
+		};
 		
 		explicit RHIResourceLayout(
-			const gu::SharedPointer<RHIDevice>& device, 
-			const core::ResourceLayoutElement& element, 
+			const gu::SharedPointer<RHIDevice>& device,
+			const core::ResourceLayoutElement& element,
 			const core::SamplerLayoutElement& sampler,
 			const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt
-		) : _device(device), _elements({ element }), _samplers({sampler}), _constant32Bits(constant32Bits) { }
+		) : _device(device)
+		{
+			_desc.Elements = { element };
+			_desc.Samplers = { sampler };
+			_desc.Constant32Bits = { constant32Bits };
+		}
 
 		/****************************************************************************
 		**                Protected Function
@@ -97,9 +159,8 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
-		std::vector<core::ResourceLayoutElement> _elements       = {};
-		std::vector<core::SamplerLayoutElement>  _samplers       = {};
-		std::optional<core::Constant32Bits>      _constant32Bits = std::nullopt;
+		
+		RHIResourceLayoutDesc _desc = {};
 	};
 }
 #endif

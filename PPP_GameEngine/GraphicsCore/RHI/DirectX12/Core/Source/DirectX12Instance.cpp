@@ -11,13 +11,20 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Instance.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Adapter.hpp"
+#include "Platform/Core/Include/CorePlatformMacros.hpp"
 #include <d3d12.h>
 #include <stdexcept>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::directX12;
+
+#if PLATFORM_CPU_X86_FAMILY && PLATFORM_DESKTOP && _WIN64
+extern "C" { _declspec(dllexport) extern const UINT  D3D12SDKVersion = 611; }
+extern "C" { _declspec(dllexport) extern const char* D3D12SDKPath = ".\\D3D12\\"; }
+#endif
 
 namespace
 {
@@ -145,17 +152,17 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI
 /****************************************************************************
 *                     EnumrateAdapters
 *************************************************************************//**
-*  @fn        std::vector<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
+*  @fn        gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
 * 
 *  @brief     Return all availablle adapter lists
 * 
 *  @param[in] void
 * 
-*  @return 　　std::vector<gu::SharedPointer<core::RHIAdapter>>
+*  @return 　　gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>>
 *****************************************************************************/
-std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
 {
-	std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
+	gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
 	/*-------------------------------------------------------------------
 	-                  Define Proceed next adapter function
@@ -177,7 +184,7 @@ std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAda
 	{
 		const auto thisInstance = SharedFromThis();
 		const auto rhiAdapter = gu::MakeShared<RHIDisplayAdapter>(thisInstance, adapter);
-		adapterLists.emplace_back(rhiAdapter);
+		adapterLists.Push(rhiAdapter);
 		adapter.Reset(); // memory leakに対処
 	}
 
@@ -198,11 +205,31 @@ std::vector<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAda
 void RHIInstance::LogAdapters()
 {
 	auto adapterList = EnumrateAdapters();
+	
 	for (auto& adapter : adapterList)
 	{
 		adapter->PrintInfo();
 	}
+
 }
+
+/****************************************************************************
+*                     HasLoadedDirectXAgilitySDK
+*************************************************************************//**
+*  @fn        bool RHIInstance::HasLoadedDirectXAgilitySDK() const
+*
+*  @brief     DirectXのAgilitySDK (最新バージョンのDirectX12を使用するできるか)を返します
+*
+*  @param[in] void
+*
+*  @return 　　bool
+*****************************************************************************/
+#if D3D12_CORE_ENABLED
+bool RHIInstance::HasLoadedDirectXAgilitySDK() const
+{
+	return ::GetModuleHandleA("D3D12Core.dll") != NULL;
+}
+#endif
 #pragma endregion Public Function
 
 

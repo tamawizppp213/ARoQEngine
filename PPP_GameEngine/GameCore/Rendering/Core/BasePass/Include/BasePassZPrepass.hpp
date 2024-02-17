@@ -13,9 +13,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <cstdint>
-#include <vector>
-#include <string>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +84,7 @@ namespace gc::basepass
 		*****************************************************************************/
 		ZPrepass() = default;
 
-		ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const std::wstring& addName = L"");
+		ZPrepass(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const gu::tstring& addName = SP(""));
 
 		~ZPrepass();
 
@@ -92,16 +92,16 @@ namespace gc::basepass
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PreparePipelineState(const std::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 		
-		void PrepareFrameBuffers(const std::wstring& name);
+		void PrepareFrameBuffers(const gu::tstring& name);
 		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		std::vector<GameModelPtr> _gameModels = {};
+		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		std::uint32_t _width = 0;
 		std::uint32_t _height = 0;
@@ -115,7 +115,7 @@ namespace gc::basepass
 
 		RenderPassPtr _renderPass = nullptr;
 
-		std::vector<FrameBufferPtr> _frameBuffers = {};
+		gu::DynamicArray<FrameBufferPtr> _frameBuffers = {};
 	};
 }
 #endif

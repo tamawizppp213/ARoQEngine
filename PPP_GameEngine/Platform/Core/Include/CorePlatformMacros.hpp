@@ -287,6 +287,25 @@
 #define PREPROCESSOR_TO_STRING(str) PREPROCESSOR_TO_STRING_INNER(str)
 #define PREPROCESSOR_JOIN_INNER(left, right) left##right
 #define PREPROCESSOR_JOIN(left, right) PREPROCESSOR_JOIN_INNER(left, right)
+
+// PreDirectory/PLATFORM_NAME/Include/PLATFORM_NAME + commonHeaderName
 #define PLATFORM_COMPILED_HEADER(preDirectory, commonHeaderName) PREPROCESSOR_TO_STRING(preDirectory/PLATFORM_NAME/Include/PREPROCESSOR_JOIN(PLATFORM_NAME,commonHeaderName)) 
 #pragma endregion Platform NameSpace
+#pragma region Platform Desktop
+#if PLATFORM_OS_WINDOWS 
+#define PLATFORM_DESKTOP (1)
+#elif PLATFORM_OS_ANDROID
+#define PLATFORM_DESKTOP (0)
+#elif PLATFORM_OS_LINUX
+#define PLATFORM_DESKTOP (1)
+#elif PLATFORM_OS_IOS
+#define PLATFORM_DESKTOP (0)
+#elif PLATFORM_OS_MAC
+#define PLATFORM_DESKTOP (1)
+#elif PLATFORM_OS_UNIX
+#define PLATFORM_DESKTOP (1)
+#else
+#define PLATFORM_DESKTOP (0)
+#endif
+#pragma endregion Platform Desktop
 #endif

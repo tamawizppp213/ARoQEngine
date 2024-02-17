@@ -14,8 +14,8 @@
 #include "GBufferDesc.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -86,7 +86,7 @@ namespace gc::rendering
 
 		GBuffer(const LowLevelGraphicsEnginePtr& engine,
 			const GBufferDesc& desc = GBufferDesc(),
-			[[maybe_unused]]const std::wstring& addName = L"");
+			[[maybe_unused]]const gu::tstring& addName = SP(""));
 
 		virtual ~GBuffer();
 
@@ -94,16 +94,16 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		virtual void PreparePipelineState(const std::wstring& name) = 0;
+		virtual void PreparePipelineState(const gu::tstring& name) = 0;
 
-		virtual void PrepareFrameBuffers(const std::wstring& name) = 0;
+		virtual void PrepareFrameBuffers(const gu::tstring& name) = 0;
 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		std::vector<GameModelPtr> _gameModels = {};
+		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		GBufferDesc _desc = {};
 
@@ -116,7 +116,7 @@ namespace gc::rendering
 
 		RenderPassPtr _renderPass = nullptr;
 
-		std::vector<FrameBufferPtr> _frameBuffers = {};
+		gu::DynamicArray<FrameBufferPtr> _frameBuffers = {};
 	};
 }
 #endif

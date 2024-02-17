@@ -18,13 +18,13 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-RHIRenderPass::RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const std::vector<Attachment>& colors, const std::optional<Attachment>& depth)
+RHIRenderPass::RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const gu::DynamicArray<Attachment>& colors, const std::optional<Attachment>& depth)
 	: _device(device), _colorAttachments(colors), _depthAttachment(depth), _depthClearValue(ClearValue())
 {
-	_colorClearValues = std::vector<ClearValue>(colors.size(), ClearValue());
+	_colorClearValues = gu::DynamicArray<ClearValue>(colors.Size(), ClearValue());
 
 	std::uint32_t maxSample = 1;
-	for (int i = 0; i < _colorAttachments.size(); ++i)
+	for (int i = 0; i < _colorAttachments.Size(); ++i)
 	{
 		maxSample = std::max(maxSample, static_cast<std::uint32_t>(_colorAttachments[i].SampleCount));
 	}
@@ -37,12 +37,12 @@ RHIRenderPass::RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const s
 	_maxSample = static_cast<core::MultiSample>(maxSample);
 }
 RHIRenderPass::RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const Attachment& color, const std::optional<Attachment>& depth)
-	: _device(device), _colorAttachments(std::vector<Attachment>{color}), _depthAttachment(depth)
+	: _device(device), _colorAttachments(gu::DynamicArray<Attachment>{color}), _depthAttachment(depth)
 {
-	_colorClearValues = std::vector<ClearValue>(1, ClearValue());
+	_colorClearValues = gu::DynamicArray<ClearValue>(1, ClearValue());
 
 	std::uint32_t maxSample = 1;
-	for (int i = 0; i < _colorAttachments.size(); ++i)
+	for (int i = 0; i < _colorAttachments.Size(); ++i)
 	{
 		maxSample = std::max(maxSample, static_cast<std::uint32_t>(_colorAttachments[i].SampleCount));
 	}
@@ -59,7 +59,7 @@ bool RHIRenderPass::Compatible(const gu::SharedPointer<RHIFrameBuffer>& frameBuf
 {
 	// the number of color attachments should greater than the number of render targets
 			// the depth attachment can not be null when the depth stencil is existed.
-	if (_colorAttachments.size() < frameBuffer->GetRenderTargetSize()) return false;
+	if (_colorAttachments.Size() < frameBuffer->GetRenderTargetSize()) return false;
 	if (!_depthAttachment.has_value() && frameBuffer->GetDepthStencil()) return false;
 
 	return true;

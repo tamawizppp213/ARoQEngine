@@ -30,14 +30,14 @@ using namespace gc::core;
 
 namespace
 {
-	std::wstring s_ShaderFunctionName[ColorChangeType::CountOfType] = 
+	gu::tstring s_ShaderFunctionName[ColorChangeType::CountOfType] = 
 	{ 
-		L"None",
-		L"PSMonochrome",
-		L"PSSepia",
-		L"PSGrayScale",
-		L"PSBinary",
-		L"PSInvert",
+		SP("None"),
+		SP("PSMonochrome"),
+		SP("PSSepia"),
+		SP("PSGrayScale"),
+		SP("PSBinary"),
+		SP("PSInvert"),
 	};
 }
 
@@ -53,11 +53,11 @@ ColorChange::~ColorChange()
 {
 	_pipeline.Reset();
 	_resourceLayout.Reset();
-	_resourceViews.clear(); _resourceViews.shrink_to_fit();
-	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
+	_resourceViews.Clear(); _resourceViews.ShrinkToFit();
+	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
+	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
 }
-ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const std::wstring& addName) 
+ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const gu::tstring& addName) 
 	: IFullScreenEffector(engine), _colorType(type)
 {
 	assert(_colorType != ColorChangeType::None);
@@ -135,11 +135,11 @@ void ColorChange::Draw()
 * 
 *  @param[in] ColorChangeType type
 * 
-*  @param[in] const std::wstring& addName
+*  @param[in] const gu::tstring& addName
 * 
 *  @return @@void
 *****************************************************************************/
-void ColorChange::PreparePipelineState(const std::wstring& addName)
+void ColorChange::PreparePipelineState(const gu::tstring& addName)
 {
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -158,8 +158,8 @@ void ColorChange::PreparePipelineState(const std::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Effect\\ShaderColorChange.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel , L"Shader\\Effect\\ShaderColorChange.hlsl", s_ShaderFunctionName[(int)_colorType], 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Effect\\ShaderColorChange.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel , SP("Shader\\Effect\\ShaderColorChange.hlsl"), s_ShaderFunctionName[(int)_colorType], 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
@@ -172,7 +172,7 @@ void ColorChange::PreparePipelineState(const std::wstring& addName)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader (ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(addName + L"PSO");
+	_pipeline->SetName(addName + SP("PSO"));
 }
 /****************************************************************************
 *							PrepareResourceView

@@ -38,23 +38,38 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @ brief : Used to wait for another Command queue to complete execution. (in GPU)
-		             他のコマンドキューとの実行順序を保証するために使用する.*/
-		void Wait  (const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value) override;
+		/*----------------------------------------------------------------------
+		*  @brief :  他のコマンドキューとの実行順序を保証するため, ほかのコマンドキューの実行完了を待つ
+		/*----------------------------------------------------------------------*/
+		void Wait  (const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 value) override;
 		
-		/* @ brief : Update the fence value (value) when the submitted Command Queue execution completes.*/
-		void Signal(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value) override;
+		/*----------------------------------------------------------------------
+		*  @brief :  コマンドキューの実行が完了したら、フェンスの値（value）を更新する
+		/*----------------------------------------------------------------------*/
+		void Signal(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 value) override;
 		
-		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
-		void Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
-		
+		/*----------------------------------------------------------------------
+		*  @brief :  コマンドリストの内容を実行する. 
+		             通常はset graphics, compute, transfer commandlist。
+		/*----------------------------------------------------------------------*/
+		void Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		CommandQueueComPtr GetCommandQueue() { return _commandQueue; }
 
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 
+		/*----------------------------------------------------------------------
+		*  @brief :  コマンドキュー中のGPUタイムスタンプをHz単位で返します.
+		/*----------------------------------------------------------------------*/
+		gu::uint64 GetTimestampFrequency() override;
+
+		/*----------------------------------------------------------------------
+		*  @brief : GPUとCPUの計測時間をMicroSeconds単位で取得します
+		/*----------------------------------------------------------------------*/
+		core::GPUTimingCalibrationTimestamp GetCalibrationTimestamp() override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -62,7 +77,7 @@ namespace rhi::directX12
 		
 		~RHICommandQueue();
 		
-		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::wstring& name);
+		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const gu::tstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function

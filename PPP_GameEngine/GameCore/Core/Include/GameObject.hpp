@@ -13,8 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMTransform.hpp"
-#include <string>
-#include <vector>
+#include "GameUtility/Base/Include/GUString.hpp"
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -56,7 +56,7 @@ namespace gc::core
 		static gu::SharedPointer<T> Create(const LowLevelGraphicsEnginePtr& engine)
 		{
 			const auto gameObject = gu::MakeShared<T>(engine);
-			GameObjects.push_back(gameObject);
+			GameObjects.Push(gameObject);
 			return gameObject;
 		}
 
@@ -64,10 +64,10 @@ namespace gc::core
 		-                       Find
 		---------------------------------------------------------------------*/
 		/* @brief : Obtain a gameObject matching the name*/
-		static GameObjectPtr Find(const std::wstring& name);
+		static GameObjectPtr Find(const gu::tstring& name);
 
 		/* @brief : This function returns the gameobject list with the same tag as the assign tag.*/
-		static std::vector<GameObjectPtr> GameObjectsWithTag(const std::wstring& tag);
+		static gu::DynamicArray<GameObjectPtr> GameObjectsWithTag(const gu::tstring& tag);
 
 		/*-------------------------------------------------------------------
 		-               Destroy and Clear
@@ -79,7 +79,7 @@ namespace gc::core
 		static void DestroyWithChildren(GameObjectPtr& parent);
 
 		/* @brief : destroy all objects have the tag*/
-		static void DestroyAllTagObjects(const std::wstring& tag);
+		static void DestroyAllTagObjects(const gu::tstring& tag);
 
 		/* @brief : Clear all game objects*/
 		static void ClearAllGameObjects();
@@ -128,33 +128,33 @@ namespace gc::core
 		/*-------------------------------------------------------------------
 		-               GameObject Default Infomation
 		---------------------------------------------------------------------*/
-		inline std::wstring GetName() const { return _name; }
+		inline gu::tstring GetName() const { return _name; }
 
-		inline std::wstring GetTag() const { return _tag; }
+		inline gu::tstring GetTag() const { return _tag; }
 
-		inline std::wstring GetLayerName() const { return LayerList[_layer]; }
+		inline gu::tstring GetLayerName() const { return LayerList[_layer]; }
 
 		inline ObjectType GetType() const { return _type; }
 
-		inline void SetName(const std::wstring& name) { _name = name; }
+		inline void SetName(const gu::tstring& name) { _name = name; }
 
-		inline void SetTag(const std::wstring& name) { _tag = name; }
+		inline void SetTag(const gu::tstring& name) { _tag = name; }
 
-		inline void SetLayer(const std::wstring& name) { int bit = GetLayerBit(name); if (bit >= 0) { _layer = (1 << bit); } }
+		inline void SetLayer(const gu::tstring& name) { int bit = GetLayerBit(name); if (bit >= 0) { _layer = (1 << bit); } }
 
 
 		/*-------------------------------------------------------------------
 		-               GameObject Child
 		---------------------------------------------------------------------*/
-		GameObjectPtr GetChild(int index) { return  (index < _children.size()) ? _children[index] : nullptr; }
+		GameObjectPtr GetChild(int index) { return  (index < _children.Size()) ? _children[index] : nullptr; }
 
-		void AddChild(const GameObjectPtr& child) { _children.emplace_back(child); }
+		void AddChild(const GameObjectPtr& child) { _children.Push(child); }
 		
 		bool RemoveChild(GameObjectPtr& child);
 
 		void ClearChildren();
 
-		inline int  GetChildCount() const { return static_cast<int>(_children.size()); }
+		inline int  GetChildCount() const { return static_cast<int>(_children.Size()); }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -173,9 +173,9 @@ namespace gc::core
 		/*-------------------------------------------------------------------
 		-           gameObject default info
 		---------------------------------------------------------------------*/
-		std::wstring _name = L""; // object name
+		gu::tstring _name = SP(""); // object name
 
-		std::wstring _tag  = L""; // object tag
+		gu::tstring _tag  = SP(""); // object tag
 
 		int          _layer = 0;
 
@@ -198,19 +198,19 @@ namespace gc::core
 
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		std::vector<GameObjectPtr> _children = {};
+		gu::DynamicArray<GameObjectPtr> _children = {};
 		
 	private:
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-		int GetLayerBit(const std::wstring& layer);
+		int GetLayerBit(const gu::tstring& layer);
 
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		static std::vector<GameObjectPtr> GameObjects;
-		static std::vector<std::wstring>  LayerList;
+		static gu::DynamicArray<GameObjectPtr> GameObjects;
+		static gu::DynamicArray<gu::tstring>  LayerList;
 	};
 }
 #endif

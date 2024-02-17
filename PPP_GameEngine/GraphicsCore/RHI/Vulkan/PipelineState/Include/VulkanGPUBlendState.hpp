@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUBlendState.hpp"
 #include <vulkan/vulkan.h>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +49,7 @@ namespace rhi::vulkan
 		
 		~GPUBlendState();
 		
-		explicit GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const std::vector<rhi::core::BlendProperty>& blendProperties);
+		explicit GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::DynamicArray<rhi::core::BlendProperty>& blendProperties);
 		
 		explicit GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty);
 	
@@ -61,7 +61,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<VkPipelineColorBlendAttachmentState> _attachments = {};
+		gu::DynamicArray<VkPipelineColorBlendAttachmentState> _attachments = {};
 		
 		VkPipelineColorBlendStateCreateInfo _blendDesc = {};
 

@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayout.hpp"
 #include <vulkan/vulkan.h>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,9 +41,9 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkPipelineLayout GetLayout() const noexcept { return _pipelineLayout; }
 		
-		std::vector<VkDescriptorSetLayout>& GetDescriptorSetLayouts() { return _descriptorSetLayouts; }
+		gu::DynamicArray<VkDescriptorSetLayout>& GetDescriptorSetLayouts() { return _descriptorSetLayouts; }
 		
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -51,9 +51,9 @@ namespace rhi::vulkan
 		
 		~RHIResourceLayout();
 		
-		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constants = std::nullopt, const std::wstring& name = L"ResourceLayout");
+		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constants = std::nullopt, const gu::tstring& name = SP("ResourceLayout"));
 		
-		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& layout, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant = std::nullopt, const std::wstring& name = L"ResourceLayout");
+		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& layout, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant = std::nullopt, const gu::tstring& name = SP("ResourceLayout"));
 	
 	protected:
 		/****************************************************************************
@@ -65,7 +65,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkPipelineLayout _pipelineLayout = nullptr;
 
-		std::vector<VkDescriptorSetLayout> _descriptorSetLayouts = {};
+		gu::DynamicArray<VkDescriptorSetLayout> _descriptorSetLayouts = {};
 	
 	private:
 		void SetUp();

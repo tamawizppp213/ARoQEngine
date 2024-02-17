@@ -684,7 +684,7 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Resource\Include\VulkanGPUResourceView.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Include\ValueRange.hpp">
+    <ClInclude Include="GameUtility\Base\Include\GUValueRange.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanResourceAllocator.hpp">
@@ -879,12 +879,6 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanMemory.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Pluguins\stb_image.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Pluguins\DDSLoader\dds_loader.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GameCore\Rendering\Effect\Include\Mosaic.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -1056,13 +1050,76 @@
     <ClInclude Include="GameUtility\Base\Include\GUTimeSpan.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Container\Include\GUArray.hpp">
+    <ClInclude Include="GameUtility\Container\Include\GUDynamicArray.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUPriorityQueue.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Memory\Include\GUMemory.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIMultiGPUMask.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Query.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIQuery.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12QueryAllocator.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Editor\Widget\Include\EditorWidget.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\DDSLoader\dds_loader.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Plugins\stb_image.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Base\Include\GUStringUtility.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Base\Include\GUStringBase.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUPair.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUDeque.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUTypeTraits.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Base\Include\GUTypeTraitsStruct.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUInitializerList.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUIterator.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUConstIterator.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUReverseIterator.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUReverseConstIterator.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUIteratorIncludes.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUTypeCast.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Base\Include\GUTypeReferenceStruct.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1601,9 +1658,6 @@
     <ClCompile Include="GraphicsCore\RHI\Vulkan\Core\Source\VulkanMemory.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Pluguins\DDSLoader\dds_loader.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -1709,6 +1763,21 @@
     <ClCompile Include="GameUtility\Memory\Source\GUMemory.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIMultiGPUMask.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Query.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12QueryAllocator.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Editor\Widget\Source\EditorWidget.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Plugins\DDSLoader\dds_loader.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
@@ -1725,6 +1794,7 @@
     <None Include="Shader\Effect\ShaderTonemapType.hlsli" />
     <None Include="Shader\Lighting\ShaderShadow.hlsli" />
     <None Include="Shader\Core\ShaderCore.hlsli" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MenuResource.rc">

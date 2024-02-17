@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GPUState.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -38,10 +38,10 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-		virtual void Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = NEWEST_VERSION, const std::vector<std::wstring>& includeDirectories = {}, const std::vector<std::wstring>& defines = {}) = 0;
+		virtual void Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint = SP("main"), const float version = NEWEST_VERSION, const gu::DynamicArray<gu::tstring>& includeDirectories = {}, const gu::DynamicArray<gu::tstring>& defines = {}) = 0;
 
 		// @brief : Offline Compile, already compiled fileName(filePath)
-		virtual void LoadBinary(const core::ShaderType type, const std::wstring& fileName) = 0;
+		virtual void LoadBinary(const core::ShaderType type, const gu::tstring& fileName) = 0;
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -75,9 +75,9 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		std::wstring GetShaderTypeName(ShaderType shaderType);
+		gu::tstring GetShaderTypeName(ShaderType shaderType);
 
-		std::wstring Format(float version);
+		gu::tstring Format(float version);
 
 		/****************************************************************************
 		**                Protected Member Variables

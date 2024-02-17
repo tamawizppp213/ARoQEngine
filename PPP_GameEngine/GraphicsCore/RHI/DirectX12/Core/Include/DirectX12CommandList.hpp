@@ -73,6 +73,17 @@ namespace rhi::directX12
 		---------------------------------------------------------------------*/
 		void SetDescriptorHeap(const gu::SharedPointer<core::RHIDescriptorHeap>& heap) override;
 
+#pragma region Query
+		/*----------------------------------------------------------------------
+		*  @brief : GPU情報を取得するためのクエリを開始します
+		/*----------------------------------------------------------------------*/
+		void BeginQuery(const core::QueryResultLocation& location) override;
+
+		/*----------------------------------------------------------------------
+		*  @brief : GPU情報を取得するためのクエリを終了します
+		/*----------------------------------------------------------------------*/
+		void EndQuery(const core::QueryResultLocation& location) override;
+#pragma endregion Query
 #pragma region Graphics Command Function
 		/*-------------------------------------------------------------------
 		-                Graphics Command
@@ -96,7 +107,7 @@ namespace rhi::directX12
 		
 		void SetVertexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer) override ;
 		
-		void SetVertexBuffers(const std::vector<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
+		void SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
 		
 		void SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
 		
@@ -141,19 +152,32 @@ namespace rhi::directX12
 
 		void TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override ;
 
-		void TransitionResourceStates(const std::vector<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters);
+		void TransitionResourceStates(const gu::DynamicArray<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters);
+		
 		/*-------------------------------------------------------------------
 		-                Copy
 		---------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------
+		*  @brief : バッファの領域をあるリソースから別のリソースにコピーする. GPU memcpy
+		/*----------------------------------------------------------------------*/
+		void CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) override;
+
+		/*----------------------------------------------------------------------
+		*  @brief : テクスチャの領域をまとめて別のリソースにコピーする
+		/*----------------------------------------------------------------------*/
 		void CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source) override;
 		
+		/*----------------------------------------------------------------------
+		*  @brief : あるリソースの領域をまとめて別のリソースにコピーする. 
+		*           組み合わせに応じて自動でバッファかテクスチャかを判定します
+		/*----------------------------------------------------------------------*/
 		void CopyResource(const gu::SharedPointer<core::GPUResource>& dest, const gu::SharedPointer<core::GPUResource>& source);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		CommandListComPtr GetCommandList() const noexcept { return _commandList; }
 
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -162,7 +186,7 @@ namespace rhi::directX12
 		~RHICommandList();
 
 		explicit RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, 
-			const std::wstring& name);
+			const gu::tstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function

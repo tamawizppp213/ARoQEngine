@@ -26,8 +26,14 @@ using namespace rhi::directX12;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GPUResourceView::GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type,  const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
-	: core::GPUResourceView(device, type, customHeap)
+GPUResourceView::GPUResourceView(
+	const gu::SharedPointer<core::RHIDevice>& device, 
+	const core::ResourceViewType type, 
+	const gu::SharedPointer<core::GPUBuffer>& buffer,
+	const gu::uint32 mipSlice,
+	const gu::uint32 planeSlice,
+	const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
+	: core::GPUResourceView(device, type, mipSlice, planeSlice, customHeap)
 {
 	_buffer  = buffer; 
 	_texture = nullptr;
@@ -41,8 +47,12 @@ GPUResourceView::GPUResourceView(const gu::SharedPointer<core::RHIDevice>& devic
 	if (_buffer) { CreateView(heap); }
 
 }
-GPUResourceView::GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
-	: core::GPUResourceView(device, type, customHeap)
+
+GPUResourceView::GPUResourceView(
+	const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUTexture>& texture, 
+	const gu::uint32 mipSlice, const gu::uint32 planeSlice,
+	const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
+	: core::GPUResourceView(device, type, mipSlice, planeSlice, customHeap)
 {
 	_texture = texture;
 	_buffer  = nullptr;
@@ -78,11 +88,11 @@ GPUResourceView::~GPUResourceView()
               index : resource layout array index
 
 *  @param[in] const gu::SharedPointer<core::RHICommandList>& commandList pointer
-*  @param[in] const std::uint32_t resource layout array index.
+*  @param[in] const gu::uint32_t resource layout array index.
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index, const gu::SharedPointer<core::RHIResourceLayout>& layout)
+void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, [[maybe_unused]]const gu::SharedPointer<core::RHIResourceLayout>& layout)
 {
 	/*-------------------------------------------------------------------
 	-             Set Descirptor Table
@@ -157,6 +167,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 		resourceViewDesc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
 		
 		// For depth stencil texture
+		// EnumConverterではD32が渡されてしまうため, 特別に以下の対応を行いました. 
 		if (_texture->GetPixelFormat() == core::PixelFormat::D32_FLOAT)
 		{
 			resourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
@@ -177,7 +188,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 				resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2D;
 				resourceViewDesc.Texture2D.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
 				resourceViewDesc.Texture2D.MostDetailedMip     = 0; 
-				resourceViewDesc.Texture2D.PlaneSlice          = 0;
+				resourceViewDesc.Texture2D.PlaneSlice          = static_cast<UINT>(_planeSlice);
 				resourceViewDesc.Texture2D.ResourceMinLODClamp = 0; // Accessible all the mipmap level resources. 
 
 				break;
@@ -215,7 +226,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 				resourceViewDesc.Texture2DArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
 				resourceViewDesc.Texture2DArray.MostDetailedMip     = 0;
 				resourceViewDesc.Texture2DArray.ArraySize           = static_cast<UINT>(_texture->GetArrayLength());
-				resourceViewDesc.Texture2DArray.PlaneSlice          = 0;
+				resourceViewDesc.Texture2DArray.PlaneSlice          = _planeSlice;
 				resourceViewDesc.Texture2DArray.ResourceMinLODClamp = 0;
 				break;
 			}
@@ -295,16 +306,23 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 *                     CreateRAS
 *************************************************************************//**
 *  @fn        void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+* 
 *  @brief     Create raytracing acceleration structure
+
 *  @param[in] const gu::SharedPointer<directX12::RHIDescriptorHeap>
+* 
 *  @return 　　void
 *****************************************************************************/
 void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 {
 	if (!_buffer) { return; }
 
-	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
-	const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
+	const auto rhiDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device);
+	const auto dxDevice  = rhiDevice->GetDevice();
+	const auto dxBuffer  = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
+
+	// enable to use the ray tracing
+	if (!rhiDevice->IsSupportedDxr()) { return; }
 
 	/*-------------------------------------------------------------------
 	-             Set up resource view descriptor
@@ -312,13 +330,17 @@ void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptor
 	D3D12_SHADER_RESOURCE_VIEW_DESC resourceViewDesc = {};
 	resourceViewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	resourceViewDesc.ViewDimension           = D3D12_SRV_DIMENSION_RAYTRACING_ACCELERATION_STRUCTURE;
+
+	// offsetは今回は考えない. 
 	resourceViewDesc.RaytracingAccelerationStructure.Location = dxBuffer->GetResource()->GetGPUVirtualAddress(); // tras用のbuffer
 
-	std::uint32_t descriptorID = heap->Allocate(core::DescriptorHeapType::SRV);
+	// shader resource viewとして作成する.
+	gu::uint32 descriptorID = heap->Allocate(core::DescriptorHeapType::SRV);
 	dxDevice->CreateShaderResourceView( dxBuffer->GetResourcePtr(), &resourceViewDesc, 
 		heap->GetCPUDescHandler(core::DescriptorHeapType::SRV, descriptorID));
 
 }
+
 /****************************************************************************
 *                     CreateUAV
 *************************************************************************//**
@@ -348,21 +370,21 @@ void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::Texture1D:
 			{
 				resourceViewDesc.ViewDimension = D3D12_UAV_DIMENSION::D3D12_UAV_DIMENSION_TEXTURE1D;
-				resourceViewDesc.Texture1D.MipSlice = 0;
+				resourceViewDesc.Texture1D.MipSlice = static_cast<UINT>(_mipSlice);
 				break;
 			}
 			case core::ResourceType::Texture2D:
 			{
 				resourceViewDesc.ViewDimension        = D3D12_UAV_DIMENSION::D3D12_UAV_DIMENSION_TEXTURE2D;
-				resourceViewDesc.Texture2D.MipSlice   = 0;
-				resourceViewDesc.Texture2D.PlaneSlice = 0;
+				resourceViewDesc.Texture2D.MipSlice   = static_cast<UINT>(_mipSlice);
+				resourceViewDesc.Texture2D.PlaneSlice = static_cast<UINT>(_planeSlice);
 				break;
 			}
 			case core::ResourceType::Texture3D:
 			{
 				resourceViewDesc.ViewDimension = D3D12_UAV_DIMENSION::D3D12_UAV_DIMENSION_TEXTURE3D;
 				resourceViewDesc.Texture3D.FirstWSlice = 0;
-				resourceViewDesc.Texture3D.MipSlice    = 0;
+				resourceViewDesc.Texture3D.MipSlice    = static_cast<UINT>(_mipSlice);
 				resourceViewDesc.Texture3D.WSize       = 0;
 				break;
 			}
@@ -370,7 +392,7 @@ void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptor
 			{
 				resourceViewDesc.ViewDimension = D3D12_UAV_DIMENSION::D3D12_UAV_DIMENSION_TEXTURE1DARRAY;
 				resourceViewDesc.Texture1DArray.FirstArraySlice = 0;
-				resourceViewDesc.Texture1DArray.MipSlice        = 0;
+				resourceViewDesc.Texture1DArray.MipSlice        = static_cast<UINT>(_mipSlice);
 				resourceViewDesc.Texture1DArray.ArraySize       = static_cast<UINT>(_texture->GetArrayLength());
 				break;
 			}
@@ -378,9 +400,19 @@ void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptor
 			{
 				resourceViewDesc.ViewDimension = D3D12_UAV_DIMENSION::D3D12_UAV_DIMENSION_TEXTURE2DARRAY;
 				resourceViewDesc.Texture2DArray.FirstArraySlice = 0;
-				resourceViewDesc.Texture2DArray.MipSlice   = 0;
+				resourceViewDesc.Texture2DArray.MipSlice   = static_cast<UINT>(_mipSlice);
 				resourceViewDesc.Texture2DArray.ArraySize  = static_cast<UINT>(_texture->GetArrayLength());
-				resourceViewDesc.Texture2DArray.PlaneSlice = 0;
+				resourceViewDesc.Texture2DArray.PlaneSlice = static_cast<UINT>(_planeSlice);
+				break;
+			}
+			case core::ResourceType::TextureCube:
+			case core::ResourceType::TextureCubeArray:
+			{
+				resourceViewDesc.ViewDimension = D3D12_UAV_DIMENSION::D3D12_UAV_DIMENSION_TEXTURE2DARRAY;
+				resourceViewDesc.Texture2DArray.FirstArraySlice = 0;
+				resourceViewDesc.Texture2DArray.ArraySize       = static_cast<UINT>(_texture->GetArrayLength());
+				resourceViewDesc.Texture2DArray.MipSlice        = static_cast<UINT>(_mipSlice);
+				resourceViewDesc.Texture2DArray.PlaneSlice      = static_cast<UINT>(_planeSlice);
 				break;
 			}
 			default:
@@ -398,31 +430,23 @@ void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptor
 	---------------------------------------------------------------------*/
 	else if (_buffer)
 	{
-		switch (_buffer->GetResourceType())
+		if (_buffer->GetResourceType() == core::ResourceType::Buffer)
 		{
-			case core::ResourceType::Buffer:
-			{
-				resourceViewDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
-				resourceViewDesc.Format = DXGI_FORMAT_UNKNOWN;
-				resourceViewDesc.Buffer.CounterOffsetInBytes = 0;
-				resourceViewDesc.Buffer.FirstElement         = 0;
-				resourceViewDesc.Buffer.Flags                = D3D12_BUFFER_UAV_FLAG_NONE;
-				resourceViewDesc.Buffer.NumElements          = static_cast<UINT>(_buffer->GetElementCount());
-				resourceViewDesc.Buffer.StructureByteStride  = static_cast<UINT>(_buffer->GetElementByteSize());
-				break;
-			}
-			default:
-			{
-				throw std::runtime_error("not supported buffer resource type");
-			}
+			resourceViewDesc.ViewDimension               = D3D12_UAV_DIMENSION_BUFFER;
+			resourceViewDesc.Format                      = EnumConverter::Convert(_buffer->GetMetaData().Format);
+			resourceViewDesc.Buffer.CounterOffsetInBytes = 0;
+			resourceViewDesc.Buffer.FirstElement         = 0;
+			resourceViewDesc.Buffer.Flags                = D3D12_BUFFER_UAV_FLAG_NONE;
+			resourceViewDesc.Buffer.NumElements          = static_cast<UINT>(_buffer->GetElementCount());
+			resourceViewDesc.Buffer.StructureByteStride  = static_cast<UINT>(_buffer->GetElementByteSize());
 		}
-
+		else
+		{
+			throw std::runtime_error("unknown resource type. Select resource type (texture or buffer)");
+		}
+		
 		const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(_buffer);
 		resource = dxBuffer->GetResource().Get();
-	}
-	else
-	{
-		throw std::runtime_error("unknown resource type. Select resource type (texture or buffer)");
 	}
 
 	if (resource == nullptr) { throw std::runtime_error("GPU resource is nullptr"); }
@@ -464,20 +488,20 @@ void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::Texture1D:
 			{
 				desc.ViewDimension = D3D12_RTV_DIMENSION::D3D12_RTV_DIMENSION_TEXTURE1D;
-				desc.Texture1D.MipSlice = static_cast<UINT>(0);
+				desc.Texture1D.MipSlice = static_cast<UINT>(_mipSlice);
 				break;
 			}
 			case core::ResourceType::Texture2D:
 			{
 				desc.ViewDimension        = D3D12_RTV_DIMENSION_TEXTURE2D;
-				desc.Texture2D.MipSlice   = 0;
-				desc.Texture2D.PlaneSlice = 0;
+				desc.Texture2D.MipSlice   = static_cast<UINT>(_mipSlice);
+				desc.Texture2D.PlaneSlice = static_cast<UINT>(_planeSlice);
 				break;
 			}
 			case core::ResourceType::Texture3D:
 			{
 				desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE3D;
-				desc.Texture3D.MipSlice    = 0;
+				desc.Texture3D.MipSlice    = static_cast<UINT>(_mipSlice);
 				desc.Texture3D.WSize       = 0;
 				desc.Texture3D.FirstWSlice = 0;
 				break;
@@ -491,8 +515,8 @@ void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptor
 			{
 				desc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2DARRAY;
 				desc.Texture2DArray.FirstArraySlice = 0;
-				desc.Texture2DArray.MipSlice        = 0;
-				desc.Texture2DArray.PlaneSlice      = 0;
+				desc.Texture2DArray.MipSlice        = static_cast<UINT>(_mipSlice);
+				desc.Texture2DArray.PlaneSlice      = static_cast<UINT>(_planeSlice);
 				desc.Texture2DArray.ArraySize       = static_cast<UINT>(_texture->GetArrayLength());
 				break;
 			}
@@ -577,7 +601,7 @@ void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::Texture2D:
 			{
 				desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-				desc.Texture2D.MipSlice = 0;
+				desc.Texture2D.MipSlice = static_cast<UINT>(_mipSlice);
 				break;
 			}
 			case core::ResourceType::Texture2DMultiSample:
@@ -589,7 +613,7 @@ void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptor
 			{
 				desc.ViewDimension                  = D3D12_DSV_DIMENSION_TEXTURE2DARRAY;
 				desc.Texture2DArray.FirstArraySlice = 0;
-				desc.Texture2DArray.MipSlice        = 0;
+				desc.Texture2DArray.MipSlice        = static_cast<UINT>(_mipSlice);
 				desc.Texture2DArray.ArraySize       = static_cast<UINT>(_texture->GetArrayLength());
 				break;
 			}

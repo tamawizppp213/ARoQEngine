@@ -46,7 +46,7 @@ namespace rhi::vulkan
 		void Signal(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t value) override;
 		
 		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist */
-		void Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
+		void Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -55,18 +55,31 @@ namespace rhi::vulkan
 		VkQueue GetQueue() const noexcept { return _queue; }
 		
 		/* @brief : Return the index which specifies the queue type.*/
-		std::uint32_t GetQueueFamilyIndex() const noexcept { return _queueFamilyIndex; }
+		gu::uint32 GetQueueFamilyIndex() const noexcept { return _queueFamilyIndex; }
 		
 		/* @brief : Return the queue array index in the queue family.*/
-		std::uint32_t GetQueueIndex() const noexcept { return _queueIndex; }
+		gu::uint32 GetQueueIndex() const noexcept { return _queueIndex; }
 		
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
+
+		/*----------------------------------------------------------------------
+		*  @brief :  コマンドキュー中のGPUタイムスタンプをHz単位で返します.
+		/*----------------------------------------------------------------------*/
+		gu::uint64 GetTimestampFrequency() override { return 0; }
+
+		/*----------------------------------------------------------------------
+		*  @brief :  CPUとGPUの計測時間をMicroseconds単位で取得します
+		/*----------------------------------------------------------------------*/
+		core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
+		{
+			return core::GPUTimingCalibrationTimestamp();
+		}
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		RHICommandQueue() = default;
 		
-		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex = 0, const std::wstring& name = L"");
+		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::uint32_t queueFamilyIndex, const std::uint32_t queueIndex = 0, const gu::tstring& name = SP(""));
 		
 		~RHICommandQueue();
 	protected:

@@ -14,7 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -49,13 +49,13 @@ namespace rhi::core
 		**                Public Member Variables
 		*****************************************************************************/
 		/* @brief : Render Target Size (basically one) */
-		size_t      GetRenderTargetSize() { return _renderTargets.size(); };
+		size_t      GetRenderTargetSize() { return _renderTargets.Size(); };
 
 		/* @brief : Return render target pointer*/
 		TexturePtr GetRenderTarget(const size_t index = 0) { return _renderTargets[index]; };
 
 		/* @brief : Return render target pointer list*/
-		std::vector<TexturePtr>& GetRenderTargets() { return _renderTargets; }
+		gu::DynamicArray<TexturePtr>& GetRenderTargets() { return _renderTargets; }
 
 		/* @brief : Return depth stencil pointer*/
 		TexturePtr GetDepthStencil() { return _depthStencil; };
@@ -67,7 +67,7 @@ namespace rhi::core
 		ScissorRect GetFullScissorRect(const size_t index = 0) const noexcept;
 
 		/* @brief : Return render target view pointer list*/
-		const std::vector<ResourceViewPtr>& GetRenderTargetViews() const { return _renderTargetViews; }
+		const gu::DynamicArray<ResourceViewPtr>& GetRenderTargetViews() const { return _renderTargetViews; }
 
 		/* @brief : Return render target view pointer*/
 		ResourceViewPtr GetRenderTargetView(const size_t index = 0) const { return _renderTargetViews[index]; }
@@ -82,7 +82,7 @@ namespace rhi::core
 
 		ResourceViewPtr GetDepthStencilSRV() const noexcept { return _depthStencilSRV; }
 
-		void SetRenderTargets(const std::vector<TexturePtr>& textures);
+		void SetRenderTargets(const gu::DynamicArray<TexturePtr>& textures);
 
 		void SetRenderTarget(const TexturePtr& texture, const size_t index = 0);
 
@@ -101,7 +101,7 @@ namespace rhi::core
 
 		virtual ~RHIFrameBuffer();
 
-		explicit RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr);
+		explicit RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr);
 
 		explicit RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr);
 		
@@ -111,10 +111,10 @@ namespace rhi::core
 		gu::SharedPointer<RHIDevice>     _device     = nullptr;
 		gu::SharedPointer<RHIRenderPass> _renderPass = nullptr;
 
-		std::vector<TexturePtr>      _renderTargets     = {nullptr};
-		std::vector<ResourceViewPtr> _renderTargetViews = {nullptr};
-		std::vector<ResourceViewPtr> _renderTargetSRVs = { nullptr };
-		std::vector<ResourceViewPtr> _renderTargetUAVs = { nullptr };
+		gu::DynamicArray<TexturePtr>      _renderTargets     = {nullptr};
+		gu::DynamicArray<ResourceViewPtr> _renderTargetViews = {nullptr};
+		gu::DynamicArray<ResourceViewPtr> _renderTargetSRVs = { nullptr };
+		gu::DynamicArray<ResourceViewPtr> _renderTargetUAVs = { nullptr };
 
 		TexturePtr      _depthStencil     = nullptr;
 		ResourceViewPtr _depthStencilView = nullptr;

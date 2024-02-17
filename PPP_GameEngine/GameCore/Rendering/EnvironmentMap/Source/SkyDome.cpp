@@ -32,21 +32,21 @@ SkyDome::SkyDome() {};
 SkyDome::~SkyDome()
 {
 	_skyObject.Reset();
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
-	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
-	_resourceViews.clear(); _resourceViews.shrink_to_fit();
+	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
+	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
+	_resourceViews.Clear(); _resourceViews.ShrinkToFit();
 	_resourceLayout.Reset();
 	_pipeline.Reset();
 }
 #pragma region Constructor and Destructor 
-SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cubeMapPath, const std::wstring& addName)
+SkyDome::SkyDome(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& cubeMapPath, const gu::tstring& addName)
 	:_engine(engine)
 {
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"Skybox::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("Skybox::");
 
 	/*-------------------------------------------------------------------
 	-           Load Texture
@@ -78,10 +78,10 @@ void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView)
 	commandList->SetGraphicsPipeline(_pipeline);
 	commandList->SetVertexBuffer(_vertexBuffers[currentFrame]);
 	commandList->SetIndexBuffer (_indexBuffers[currentFrame]);
-	for (size_t i = 0; i < _resourceViews.size(); ++i) 
+	for (size_t i = 0; i < _resourceViews.Size(); ++i) 
 	{
-		commandList->SetDescriptorHeap(_resourceViews[i].second->GetHeap());
-		_resourceViews[i].second->Bind(commandList, _resourceViews[i].first);
+		commandList->SetDescriptorHeap(_resourceViews[i].Value->GetHeap());
+		_resourceViews[i].Value->Bind(commandList, _resourceViews[i].Key);
 	}
 	cameraResourceView->Bind(commandList, 0);
 	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexBuffers[currentFrame]->GetElementCount()), 1);
@@ -92,12 +92,12 @@ void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView)
 /****************************************************************************
 *							PrepareVertexAndIndexBuffer
 *************************************************************************//**
-*  @fn        void Skybox::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+*  @fn        void Skybox::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 *  @brief     Prepare Sphere Vertex Buffer
-*  @param[in] const std::wstring& addName
+*  @param[in] const gu::tstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+void SkyDome::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy); 
@@ -110,8 +110,8 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers .resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers .Resize(frameCount);
 	
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
@@ -128,7 +128,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 		---------------------------------------------------------------------*/
 		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
-		_vertexBuffers[i]->SetName(addName + L"VB");
+		_vertexBuffers[i]->SetName(addName + SP("VB"));
 		_vertexBuffers[i]->Pack(sphereMesh.Vertices.data()); // Map
 
 		/*-------------------------------------------------------------------
@@ -136,7 +136,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 		---------------------------------------------------------------------*/
 		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
-		_indexBuffers[i]->SetName(addName + L"IB");
+		_indexBuffers[i]->SetName(addName + SP("IB"));
 		_indexBuffers[i]->Pack(sphereMesh.Indices.data(), commandList);
 
 	}
@@ -144,12 +144,12 @@ void SkyDome::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 /****************************************************************************
 *							PrepareSkyObject
 *************************************************************************//**
-*  @fn        void Skybox::PrepareSkyObject(const std::wstring& addName)
+*  @fn        void Skybox::PrepareSkyObject(const gu::tstring& addName)
 *  @brief     Build World Matrix Infomation
-*  @param[in] std::wstring& addName
+*  @param[in] gu::tstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SkyDome::PrepareSkyObject(const std::wstring& addName)
+void SkyDome::PrepareSkyObject(const gu::tstring& addName)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
@@ -165,19 +165,19 @@ void SkyDome::PrepareSkyObject(const std::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto cbMetaData = GPUBufferMetaData::ConstantBuffer(sizeof(Matrix4), 1, MemoryHeap::Upload, ResourceState::Common);
 	_skyObject = device->CreateBuffer(cbMetaData);
-	_skyObject->SetName(addName + L"CB");
+	_skyObject->SetName(addName + SP("CB"));
 	_skyObject->Pack(&skyData, commandList);
 }
 
 /****************************************************************************
 *							PreparePipelineState
 *************************************************************************//**
-*  @fn        void Skybox::PreparePipelineState(const std::wstring& addName)
+*  @fn        void Skybox::PreparePipelineState(const gu::tstring& addName)
 *  @brief     Prepare pipelineState
-*  @param[in] std::wstring& addName
+*  @param[in] gu::tstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SkyDome::PreparePipelineState(const std::wstring& addName)
+void SkyDome::PreparePipelineState(const gu::tstring& addName)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -185,6 +185,7 @@ void SkyDome::PreparePipelineState(const std::wstring& addName)
 	/*-------------------------------------------------------------------
 	-             Setup resource layout elements
 	---------------------------------------------------------------------*/
+	const auto sampler = device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap));
 	_resourceLayout = device->CreateResourceLayout
 	(
 		{
@@ -192,7 +193,9 @@ void SkyDome::PreparePipelineState(const std::wstring& addName)
 			ResourceLayoutElement(DescriptorHeapType::CBV, 1), // sky object
 			ResourceLayoutElement(DescriptorHeapType::SRV, 0)  // cubemap
 		},
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)), 0) }
+		{ 
+			SamplerLayoutElement(sampler, 0) 
+		}
 	);
 
 	/*-------------------------------------------------------------------
@@ -200,8 +203,8 @@ void SkyDome::PreparePipelineState(const std::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\EnvironmentMap\\ShaderSkybox.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel , L"Shader\\EnvironmentMap\\ShaderSkybox.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\EnvironmentMap\\ShaderSkybox.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel , SP("Shader\\EnvironmentMap\\ShaderSkybox.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
 
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::AlphaBlend()));
@@ -211,7 +214,7 @@ void SkyDome::PreparePipelineState(const std::wstring& addName)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(addName + L"PSO");
+	_pipeline->SetName(addName + SP("PSO"));
 }
 
 void SkyDome::PrepareResourceView(const gu::SharedPointer<GPUTexture>& texture)
@@ -222,13 +225,13 @@ void SkyDome::PrepareResourceView(const gu::SharedPointer<GPUTexture>& texture)
 	/*-------------------------------------------------------------------
 	-           Prepare Resource View
 	---------------------------------------------------------------------*/
-	_resourceViews.resize(2);
+	_resourceViews.Resize(2);
 	// sky object
-	_resourceViews[0].first  = 1; // resource view array index (please see resource layout)
-	_resourceViews[0].second = device->CreateResourceView(ResourceViewType::ConstantBuffer, _skyObject, nullptr);
+	_resourceViews[0].Key = 1; // resource view array index (please see resource layout)
+	_resourceViews[0].Value = device->CreateResourceView(ResourceViewType::ConstantBuffer, _skyObject,0,0, nullptr);
 
 	// cubemap
-	_resourceViews[1].first  = 2;
-	_resourceViews[1].second = device->CreateResourceView(ResourceViewType::Texture, texture, nullptr);
+	_resourceViews[1].Key  = 2;
+	_resourceViews[1].Value = device->CreateResourceView(ResourceViewType::Texture, texture,0,0, nullptr);
 }
 #pragma endregion Private Function

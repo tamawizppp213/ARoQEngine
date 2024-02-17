@@ -16,6 +16,7 @@
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -58,6 +59,8 @@ public:
 	*****************************************************************************/
 	void StartUp(const engine::setting::StartUpParameters& setting);
 
+	void Run();
+
 	void ExecuteMainThread();
 	void ExecuteUpdateThread();
 	void ExecuteRenderThread();
@@ -97,6 +100,9 @@ protected:
 	*****************************************************************************/
 #pragma region Variables
 #pragma region Common 
+	// @ brief : 初期設定
+	engine::setting::StartUpParameters StartUpParameter = {};
+
 	/* @brief : ウィンドウを管理するクラス*/
 	gu::SharedPointer<platform::core::PlatformApplication>  _platformApplication = nullptr;
 
@@ -124,6 +130,9 @@ protected:
 #pragma endregion Main Thread
 
 #pragma region Render Thread
+	// @brief : 描画スレッドのゲームタイマー
+	GameTimerPtr _renderThreadTimer = nullptr;
+
 	/* @brief : 描画用の低レイヤー側のエンジン*/
 	LowLevelGraphicsEnginePtr _graphicsEngine = nullptr;
 

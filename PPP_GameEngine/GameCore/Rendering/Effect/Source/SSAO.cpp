@@ -41,7 +41,7 @@ namespace
 }
 
 #pragma region Constructor and Destructor
-SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const std::wstring& addName)
+SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const gu::tstring& addName)
 	: _engine(engine), _normalMap(normalMap), _depthMap(depthMap)
 {
 #ifdef _DEBUG
@@ -52,8 +52,8 @@ SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& norma
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"SSAO::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("SSAO::");
 
 	/*-------------------------------------------------------------------
 	-            Prepare resources
@@ -163,15 +163,15 @@ void SSAO::SetSurfaceEpsilon(const float epsilonDepth)
 /****************************************************************************
 *							PrepareSSAOSettings
 *************************************************************************//**
-*  @fn        void SSAO::PrepareSSAOSettings(const std::wstring& name)
+*  @fn        void SSAO::PrepareSSAOSettings(const gu::tstring& name)
 * 
 *  @brief     Prepare SSAO setting buffer and constant buffer view.
 * 
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::tstring& name
 * 
 *  @return 　　void
 *****************************************************************************/
-void SSAO::PrepareSSAOSettings(const std::wstring& name)
+void SSAO::PrepareSSAOSettings(const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -209,25 +209,25 @@ void SSAO::PrepareSSAOSettings(const std::wstring& name)
 	// create constant buffer for ssao setting.
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SSAOSetting), 1, MemoryHeap::Upload, ResourceState::Common);
 	const auto buffer   = device->CreateBuffer(metaData);
-	buffer->SetName(name + L"SSAOSetting");
+	buffer->SetName(name + SP("SSAOSetting"));
 	buffer->Pack(&_setting, nullptr);
 
 	// create constant buffer view.
-	_settingView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, nullptr);
+	_settingView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer,0,0, nullptr);
 }
 
 /****************************************************************************
 *							PrepareBlurMode
 *************************************************************************//**
-*  @fn        void SSAO::PrepareBlurMode(const std::wstring& name)
+*  @fn        void SSAO::PrepareBlurMode(const gu::tstring& name)
 *
 *  @brief     Prepare blur mode buffer and constant buffer view.
 *
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::tstring& name
 *
 *  @return 　　void
 *****************************************************************************/
-void SSAO::PrepareBlurMode(const std::wstring& name)
+void SSAO::PrepareBlurMode(const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -239,11 +239,11 @@ void SSAO::PrepareBlurMode(const std::wstring& name)
 		// create constant buffer for blur mode setting
 		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurMode), 1, MemoryHeap::Upload, ResourceState::Common);
 		const auto buffer = device->CreateBuffer(metaData);
-		buffer->SetName(name + L"BlurMode");
+		buffer->SetName(name + SP("BlurMode"));
 		buffer->Pack(&blurMode, nullptr);
 
 		// create constant buffer view
-		_blurVerticalModeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, nullptr);
+		_blurVerticalModeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, 0,0,nullptr);
 	}
 
 	//horizontal blur view
@@ -254,19 +254,19 @@ void SSAO::PrepareBlurMode(const std::wstring& name)
 		// create constant buffer for blur mode setting
 		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurMode), 1, MemoryHeap::Upload, ResourceState::Common);
 		const auto buffer = device->CreateBuffer(metaData);
-		buffer->SetName(name + L"BlurMode");
+		buffer->SetName(name + SP("BlurMode"));
 		buffer->Pack(&blurMode, nullptr);
 
 		// create constant buffer view
-		_blurHorizontalModeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, nullptr);
+		_blurHorizontalModeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer,0,0, nullptr);
 	}
 }
 
-void SSAO::PrepareRandomTexture(const std::wstring& name)
+void SSAO::PrepareRandomTexture(const gu::tstring& name)
 {
 	const auto device   = _engine->GetDevice();
 	const auto metaData = GPUTextureMetaData::Texture2D(256, 256, PixelFormat::R8G8B8A8_UNORM);
-	const auto texture  = device->CreateTexture(metaData, name + L"Random");
+	const auto texture  = device->CreateTexture(metaData, name + SP("Random"));
 	const auto pixel    = new RGBA[256 * 256];
 	Random<float> random;
 	random.SetRange(0.0f, 1.0f);
@@ -277,14 +277,14 @@ void SSAO::PrepareRandomTexture(const std::wstring& name)
 
 	texture->Write(_engine->GetCommandList(CommandListType::Graphics), pixel);
 
-	_randomMap = device->CreateResourceView(ResourceViewType::Texture, texture, nullptr);
+	_randomMap = device->CreateResourceView(ResourceViewType::Texture, texture, 0,0,nullptr);
 
 	delete[] pixel;
 
 }
-void SSAO::PreparePipelineState(const std::wstring& name)
+void SSAO::PreparePipelineState(const gu::tstring& name)
 {
-	std::wstring defaultPath = L"Shader\\Lighting\\ShaderSSAO.hlsl";
+	gu::tstring defaultPath = SP("Shader\\Lighting\\ShaderSSAO.hlsl");
 	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 
@@ -322,9 +322,9 @@ void SSAO::PreparePipelineState(const std::wstring& name)
 	const auto mainPS = factory->CreateShaderState();
 	const auto blurPS = factory->CreateShaderState();
 
-	vs->Compile(ShaderType::Vertex   , defaultPath, L"VSMain"     , 6.4f, { L"Shader\\Core" });
-	mainPS->Compile(ShaderType::Pixel, defaultPath, L"ExecuteSSAO", 6.4f, { L"Shader\\Core" });
-	blurPS->Compile(ShaderType::Pixel, defaultPath, L"ExecuteSSAOBlur", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex   , defaultPath, SP("VSMain"), 6.4f, {SP("Shader\\Core")});
+	mainPS->Compile(ShaderType::Pixel, defaultPath, SP("ExecuteSSAO"), 6.4f, { SP("Shader\\Core") });
+	blurPS->Compile(ShaderType::Pixel, defaultPath, SP("ExecuteSSAOBlur"), 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics pipeline state
@@ -336,7 +336,7 @@ void SSAO::PreparePipelineState(const std::wstring& name)
 	_ssaoPipeline->SetVertexShader(vs);
 	_ssaoPipeline->SetPixelShader (mainPS);
 	_ssaoPipeline->CompleteSetting();
-	_ssaoPipeline->SetName(name + L"mainPSO");
+	_ssaoPipeline->SetName(name + SP("mainPSO"));
 
 	_blurPipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _ssaoResourceLayout);
 	_blurPipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
@@ -345,7 +345,7 @@ void SSAO::PreparePipelineState(const std::wstring& name)
 	_blurPipeline->SetVertexShader(vs);
 	_blurPipeline->SetPixelShader(blurPS);
 	_blurPipeline->CompleteSetting();
-	_blurPipeline->SetName(name + L"blurPSO");
+	_blurPipeline->SetName(name + SP("blurPSO"));
 }
 
 /****************************************************************************
@@ -353,10 +353,10 @@ void SSAO::PreparePipelineState(const std::wstring& name)
 *************************************************************************//**
 *  @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
 *  @brief     Prepare Rect Vertex and Index Buffer
-*  @param[in] const std::wstring& addName
+*  @param[in] const gu::tstring& addName
 *  @return 　　void
 *****************************************************************************/
-void SSAO::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+void SSAO::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
@@ -369,8 +369,8 @@ void SSAO::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers .resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers .Resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------
@@ -386,7 +386,7 @@ void SSAO::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 		---------------------------------------------------------------------*/
 		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
-		_vertexBuffers[i]->SetName(addName + L"VB");
+		_vertexBuffers[i]->SetName(addName + SP("VB"));
 		_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
 
 		/*-------------------------------------------------------------------
@@ -394,7 +394,7 @@ void SSAO::PrepareVertexAndIndexBuffer(const std::wstring& addName)
 		---------------------------------------------------------------------*/
 		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
-		_indexBuffers[i]->SetName(addName + L"IB");
+		_indexBuffers[i]->SetName(addName + SP("IB"));
 		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
 
 	}

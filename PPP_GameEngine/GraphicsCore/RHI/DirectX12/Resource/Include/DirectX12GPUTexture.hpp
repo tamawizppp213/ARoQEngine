@@ -35,9 +35,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList) override;
+		void Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList) override;
 		
-		void Save(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)override;
+		void Save(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)override;
 
 		void Write(const gu::SharedPointer<core::RHICommandList>& commandList, const gm::RGBA* pixel) override;
 
@@ -52,7 +52,7 @@ namespace rhi::directX12
 		
 		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return _resource->GetGPUVirtualAddress(); }
 		
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -61,11 +61,11 @@ namespace rhi::directX12
 
 		~GPUTexture();
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const std::wstring& name = L"");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::tstring& name = SP(""));
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP(""));
 		
-		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const std::wstring& name = L"");
+		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP(""));
 	
 	protected:
 		/****************************************************************************
@@ -75,7 +75,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void Pack(const gu::SharedPointer<core::RHICommandList>& commandList) override;
+		void Pack([[maybe_unused]]const gu::SharedPointer<core::RHICommandList>& commandList) override;
 
 		/****************************************************************************
 		**                Protected Member Variables

@@ -21,25 +21,25 @@ using namespace rhi::vulkan;
 //////////////////////////////////////////////////////////////////////////////////
 rhi::vulkan::GPUInputAssemblyState::GPUInputAssemblyState(
 	const gu::SharedPointer<core::RHIDevice>& device,
-	const std::vector<core::InputLayoutElement>& elements,
+	const gu::DynamicArray<core::InputLayoutElement>& elements,
 	const core::PrimitiveTopology primitiveTopology
 ) : core::GPUInputAssemblyState(device, elements, primitiveTopology)
 {
 	/* @brief : how each vertex stream is to be read*/
-	_vertexBinding = std::vector<VkVertexInputBindingDescription>(_slotCount);
+	_vertexBinding = gu::DynamicArray<VkVertexInputBindingDescription>(_slotCount);
 
-	std::vector<std::pair<bool, core::InputClassification>> inputTypes(
+	gu::DynamicArray<std::pair<bool, core::InputClassification>> inputTypes(
 		_slotCount, 
 		std::pair<bool, core::InputClassification>(false, core::InputClassification::PerVertex));
 	/*-------------------------------------------------------------------
 	-                      Set vertex attributes
 	---------------------------------------------------------------------*/
-	for (size_t index = 0; index < _elements.size(); ++index)
+	for (size_t index = 0; index < _elements.Size(); ++index)
 	{
 		const auto slot = _elements[index].Slot;
 
 		/* Set the vertex attribute information contained in each vertex stream.*/
-		_vertexAttributes.push_back
+		_vertexAttributes.Push
 		(
 			VkVertexInputAttributeDescription
 			(
@@ -70,7 +70,7 @@ rhi::vulkan::GPUInputAssemblyState::GPUInputAssemblyState(
 		_vertexBinding[slot].stride += static_cast<std::uint32_t>(core::InputFormatSizeOf::Get(_elements[index].Format));
 	}
 
-	for (size_t index = 0; index < _vertexBinding.size(); ++index)
+	for (size_t index = 0; index < _vertexBinding.Size(); ++index)
 	{
 		_vertexBinding[index].binding   = static_cast<std::uint32_t>(index);
 		_vertexBinding[index].inputRate = EnumConverter::Convert(inputTypes[index].second); // 各スロットごとにInputClassificationは統一する,.
@@ -82,10 +82,10 @@ rhi::vulkan::GPUInputAssemblyState::GPUInputAssemblyState(
 	_vertexInput.pNext = nullptr;
 	_vertexInput.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	_vertexInput.flags = 0;
-	_vertexInput.vertexBindingDescriptionCount   = static_cast<std::uint32_t>(_vertexBinding.size());
-	_vertexInput.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(_vertexAttributes.size());
-	_vertexInput.pVertexBindingDescriptions      = _vertexBinding.empty()    ? nullptr : _vertexBinding.data();
-	_vertexInput.pVertexAttributeDescriptions    = _vertexAttributes.empty() ? nullptr : _vertexAttributes.data();
+	_vertexInput.vertexBindingDescriptionCount   = static_cast<std::uint32_t>(_vertexBinding.Size());
+	_vertexInput.vertexAttributeDescriptionCount = static_cast<std::uint32_t>(_vertexAttributes.Size());
+	_vertexInput.pVertexBindingDescriptions      = _vertexBinding.IsEmpty()    ? nullptr : _vertexBinding.Data();
+	_vertexInput.pVertexAttributeDescriptions    = _vertexAttributes.IsEmpty() ? nullptr : _vertexAttributes.Data();
 
 	/*-------------------------------------------------------------------
 	-                  Set input assembly state create info

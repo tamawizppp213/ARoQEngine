@@ -24,7 +24,7 @@ using namespace rhi::vulkan;
 #pragma region Constructor and Destructor
 BLASBuffer::BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	//const gu::SharedPointer<core::GPUBuffer>& source,
-	const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
+	const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
 	const core::BuildAccelerationStructureFlags flags)
 	: core::BLASBuffer(device, geometryDesc, flags)
 {
@@ -33,10 +33,10 @@ BLASBuffer::BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	/*-------------------------------------------------------------------
 	-         Push backs vulkan GeometryDesc
 	---------------------------------------------------------------------*/
-	std::vector<VkAccelerationStructureGeometryKHR> vkGeometryDesc = {};
+	gu::DynamicArray<VkAccelerationStructureGeometryKHR> vkGeometryDesc = {};
 	for (const auto& desc : _geometryDescs)
 	{
-		vkGeometryDesc.emplace_back(gu::StaticPointerCast<vulkan::RayTracingGeometry>(desc)->GetDesc());
+		vkGeometryDesc.Push(gu::StaticPointerCast<vulkan::RayTracingGeometry>(desc)->GetDesc());
 	}
 
 	/*-------------------------------------------------------------------
@@ -46,8 +46,8 @@ BLASBuffer::BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	buildInfo.sType         = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR;
 	buildInfo.type          = VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR;
 	buildInfo.flags         = EnumConverter::Convert(flags);
-	buildInfo.geometryCount = static_cast<std::uint32_t>(vkGeometryDesc.size());
-	buildInfo.pGeometries   = vkGeometryDesc.data();
+	buildInfo.geometryCount = static_cast<std::uint32_t>(vkGeometryDesc.Size());
+	buildInfo.pGeometries   = vkGeometryDesc.Data();
 	buildInfo.pNext         = nullptr;
 	// –¢ŽÀ‘•
 

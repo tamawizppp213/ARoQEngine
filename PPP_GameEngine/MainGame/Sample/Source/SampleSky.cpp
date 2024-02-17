@@ -69,8 +69,6 @@ void SampleSky::Update()
 *****************************************************************************/
 void SampleSky::Draw()
 {
-	_engine->BeginDrawFrame();
-	_engine->BeginSwapchainRenderPass();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
@@ -80,7 +78,6 @@ void SampleSky::Draw()
 		core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
 
 	_skybox->Draw(_camera->GetResourceView());
-	_engine->EndDrawFrame();
 }
 /****************************************************************************
 *                       Terminate

@@ -24,7 +24,7 @@ using namespace rhi::core;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const GBufferDesc& desc, const std::wstring& addName)
+GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const GBufferDesc& desc, [[maybe_unused]]const gu::tstring& addName)
 	: _engine(engine), _desc(desc)
 {
 	
@@ -32,8 +32,8 @@ GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const GBufferDesc& des
 
 GBuffer::~GBuffer()
 {
-	_frameBuffers.clear();
-	_frameBuffers.shrink_to_fit();
+	_frameBuffers.Clear();
+	_frameBuffers.ShrinkToFit();
 	Clear();
 }
 #pragma endregion Constructor and Destructor
@@ -41,25 +41,25 @@ GBuffer::~GBuffer()
 #pragma region Main Function
 void GBuffer::Add(const GameModelPtr& model)
 {
-	_gameModels.push_back(model);
+	_gameModels.Push(model);
 }
 
 void GBuffer::Clear()
 {
-	_gameModels.clear();
-	_gameModels.shrink_to_fit();
+	_gameModels.Clear();
+	_gameModels.ShrinkToFit();
 }
 
 void GBuffer::Clear(const GameModelPtr& model)
 {
-	std::erase(_gameModels, model);
+	_gameModels.Remove(model);
 }
 
 GBuffer::TexturePtr GBuffer::GetRenderedTexture(const std::uint32_t index) const noexcept
 {
 	const auto& frameIndex = _engine->GetCurrentFrameIndex();
 	const auto& frameBuffer = _frameBuffers[frameIndex];
-	if (index >= frameBuffer->GetRenderTargets().size()) { return nullptr; }
+	if (index >= frameBuffer->GetRenderTargets().Size()) { return nullptr; }
 
 	return frameBuffer->GetRenderTargets()[index];
 }
@@ -68,7 +68,7 @@ GBuffer::GPUResourceViewPtr GBuffer::GetRenderedTextureView(const std::uint32_t 
 {
 	const auto& frameIndex = _engine->GetCurrentFrameIndex();
 	const auto& frameBuffer = _frameBuffers[frameIndex];
-	if (index >= frameBuffer->GetRenderTargets().size()) { return nullptr; }
+	if (index >= frameBuffer->GetRenderTargets().Size()) { return nullptr; }
 
 	return frameBuffer->GetRenderTargetSRV(index);
 }

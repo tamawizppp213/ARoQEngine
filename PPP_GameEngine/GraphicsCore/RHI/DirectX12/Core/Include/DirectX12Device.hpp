@@ -19,6 +19,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+#if USE_INTEL_EXTENSION
+struct INTCExtensionContext;
+struct INTCExtensionInfo;
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Device class
@@ -43,19 +47,19 @@ namespace rhi::directX12
 #pragma region Create Function
 		void                                              SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) override;
 
-		gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
+		gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
 		gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
-		gu::SharedPointer<core::RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0, const std::wstring& name = L"") override;
+		gu::SharedPointer<core::RHIFence>                   CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("")) override;
 		
-		gu::SharedPointer<core::RHICommandList>             CreateCommandList(const gu::SharedPointer<core::RHICommandAllocator>& commandAllocator, const std::wstring& name) override;
+		gu::SharedPointer<core::RHICommandList>             CreateCommandList(const gu::SharedPointer<core::RHICommandAllocator>& commandAllocator, const gu::tstring& name) override;
 		
-		gu::SharedPointer<core::RHICommandQueue>            CreateCommandQueue    (const core::CommandListType type, const std::wstring& name) override;
+		gu::SharedPointer<core::RHICommandQueue>            CreateCommandQueue    (const core::CommandListType type, const gu::tstring& name) override;
 		
-		gu::SharedPointer<core::RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const std::wstring& name) override;
+		gu::SharedPointer<core::RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name) override;
 		
-		gu::SharedPointer<core::RHISwapchain>               CreateSwapchain       (const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
+		gu::SharedPointer<core::RHISwapchain>               CreateSwapchain       (const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const gu::uint32 vsync = 0, const bool isValidHDR = true) override;
 		
 		gu::SharedPointer<core::RHISwapchain>               CreateSwapchain(const core::SwapchainDesc& desc) override;
 
@@ -63,7 +67,7 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
-		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
+		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
 		
 		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
 		
@@ -71,19 +75,19 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 		
-		gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements = {}, const std::vector<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const std::wstring& name=L"ResourceLayout") override;
+		gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name=SP("ResourceLayout")) override;
 		
 		gu::SharedPointer<core::GPUPipelineFactory>         CreatePipelineFactory() override;
 		
-		gu::SharedPointer<core::GPUResourceView>            CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
+		gu::SharedPointer<core::GPUResourceView>            CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
-		gu::SharedPointer<core::GPUResourceView>            CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
+		gu::SharedPointer<core::GPUResourceView>            CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
 		gu::SharedPointer<core::GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo); // both
 		
-		gu::SharedPointer<core::GPUBuffer>                  CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name = L"") override;
+		gu::SharedPointer<core::GPUBuffer>                  CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) override;
 		
-		gu::SharedPointer<core::GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name = L"") override;
+		gu::SharedPointer<core::GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("")) override;
 		
 		gu::SharedPointer<core::GPUTexture>                 CreateTextureEmpty() override;
 
@@ -93,13 +97,51 @@ namespace rhi::directX12
 		
 		gu::SharedPointer<core::ASInstance>                 CreateASInstance(
 			const gu::SharedPointer<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform, 
-			const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex,
-			const std::uint32_t instanceMask = 0xFF, const core::RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) override;
+			const gu::uint32 instanceID, const gu::uint32 instanceContributionToHitGroupIndex,
+			const gu::uint32 instanceMask = 0xFF, const core::RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) override;
 		
-		gu::SharedPointer<core::BLASBuffer>                 CreateRayTracingBLASBuffer(const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags) override;
+		gu::SharedPointer<core::BLASBuffer>                 CreateRayTracingBLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags) override;
 		
-		gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
+		gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
 
+		gu::SharedPointer<core::RHIQuery> CreateQuery(const core::QueryHeapType heapType) override;
+		/*----------------------------------------------------------------------
+		*  @brief : Heap領域の確保と実際にGPUにデータをメモリに確保するのを両方行う関数
+		/*----------------------------------------------------------------------*/
+		HRESULT CreateCommittedResource
+		(
+			ResourceComPtr&      resource,
+			const D3D12_RESOURCE_DESC& resourceDesc, // ほとんどはconst
+			const D3D12_HEAP_PROPERTIES& heapProp,
+			const D3D12_RESOURCE_STATES initialState,
+			const D3D12_CLEAR_VALUE* clearValue = nullptr
+		);
+
+		/*----------------------------------------------------------------------
+		*  @brief : Heap内にまだマップまでは行わない予約済みのリソースを作成
+		/*----------------------------------------------------------------------*/
+		HRESULT CreateReservedResource
+		(
+			ResourceComPtr& resource,
+			const D3D12_RESOURCE_DESC& resourceDesc, // ほとんどはconst
+			const D3D12_HEAP_PROPERTIES& heapProp,
+			const D3D12_RESOURCE_STATES initialState,
+			const D3D12_CLEAR_VALUE* clearValue = nullptr
+		);
+
+		/*----------------------------------------------------------------------
+		*  @brief : 既に作成済みのヒープに配置されるリソースを作成する. 
+		*           Committed, Reserved, Placedの中では最も高速に動作する
+		/*----------------------------------------------------------------------*/
+		HRESULT CreatePlacedResource
+		(
+			ResourceComPtr& resource,
+			const D3D12_RESOURCE_DESC& resourceDesc, // ほとんどはconst
+			const HeapComPtr& heap,
+			const gu::uint64 heapOffset,
+			const D3D12_RESOURCE_STATES initialState,
+			const D3D12_CLEAR_VALUE* clearValue = nullptr
+		);
 #pragma endregion Create Function
 
 		/****************************************************************************
@@ -107,15 +149,15 @@ namespace rhi::directX12
 		*****************************************************************************/
 		DeviceComPtr  GetDevice () const noexcept { return _device; }
 
-		std::uint32_t GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
+		gu::uint32 GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
 		
 		gu::SharedPointer<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 
-		std::uint32_t GetNodeCount() const { return _deviceNodeCount; }
+		gu::uint32 GetNodeCount() const { return _deviceNodeCount; }
 
 		const rhi::core::HDRDisplayInfo& GetHDRDisplayInfo() const { return _displayInfo; }
 
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check
@@ -134,9 +176,11 @@ namespace rhi::directX12
 
 		CommandSignaturePtr GetDefaultDrawIndexedIndirectCommandSignature() const { return _drawIndexedIndirectCommandSignature; }
 
-		std::uint32_t MaxUsableSamplerHeapCount() const { return _maxSamplerHeapCount; }
+		D3D_ROOT_SIGNATURE_VERSION GetMaxRootSignatureVersion() const { return _maxRootSignatureVersion; }
 
-		std::uint32_t MaxUsableDescriptorHeapCount() const { return _maxDescriptorHeapCount; }
+		gu::uint32 MaxUsableSamplerHeapCount() const { return _maxSamplerHeapCount; }
+
+		gu::uint32 MaxUsableDescriptorHeapCount() const { return _maxDescriptorHeapCount; }
 
 		bool IsSupportedAllowTearing       () const noexcept { return _isSupportedAllowTearing; }
 
@@ -174,7 +218,7 @@ namespace rhi::directX12
 
 		~RHIDevice();
 
-		RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter);
+		RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, const core::RHIMultiGPUMask& mask = core::RHIMultiGPUMask::SingleGPU());
 
 	protected:
 		/****************************************************************************
@@ -202,17 +246,19 @@ namespace rhi::directX12
 		bool _isSupportedBindless                 = true;
 		bool _isSupportedStencilReferenceFromPixelShader   = true;
 		bool _isSupported16bitOperation           = false;
+		bool _isSupportedHeapNotZero = false; // Heap確保のオーバーヘッドを減らすため, ゼロ初期化しないようにする
 
 		/* @brief : The maximum D3D12 feature level supported. 0 if not supported*/
 		D3D_FEATURE_LEVEL _maxSupportedFeatureLevel = (D3D_FEATURE_LEVEL)0;
 
-		/*` @brief : Thre maximum Shader Model supported. 0 if not supported*/
+		/*` @brief : Thre maximum Shader Model supported. 0 i
+		f not supported*/
 		D3D_SHADER_MODEL _maxSupportedShaderModel = (D3D_SHADER_MODEL)0;
 
 		/* @brief For the HeapTier, it checks if the buffer, RenderTarget and DepthStencil, TargetStencil and depth stencil texture rendering can be used in the same heap*/
 		D3D12_RESOURCE_HEAP_TIER    _resourceHeapTier    = D3D12_RESOURCE_HEAP_TIER_1;
 
-		std::uint32_t _deviceNodeCount = 0;
+		gu::uint32 _deviceNodeCount = 0;
 
 		/*-------------------------------------------------------------------
 		-                Descriptor Heap Info
@@ -220,8 +266,8 @@ namespace rhi::directX12
 		/* @brief Tier1 (few available pipeline resources)-> Tier3 (A lot of available pipeline resources*/
 		D3D12_RESOURCE_BINDING_TIER _resourceBindingTier = D3D12_RESOURCE_BINDING_TIER_1;
 
-		std::uint32_t _maxDescriptorHeapCount = 0;
-		std::uint32_t _maxSamplerHeapCount    = 0;
+		gu::uint32 _maxDescriptorHeapCount = 0;
+		gu::uint32 _maxSamplerHeapCount    = 0;
 
 		/*-------------------------------------------------------------------
 		-                    Bindless resource
@@ -258,16 +304,16 @@ namespace rhi::directX12
 		*----------------------------------------------------------------------*/
 		D3D12_VARIABLE_SHADING_RATE_TIER _variableRateShadingTier = D3D12_VARIABLE_SHADING_RATE_TIER_NOT_SUPPORTED;
 
-		std::uint32_t _variableRateShadingImageTileSize = 0;
+		gu::uint32 _variableRateShadingImageTileSize = 0;
 
 		bool _isSupportedLargerVariableRateShadingSize  = false;
 
 		/*-------------------------------------------------------------------
 		-                       MSAA
 		---------------------------------------------------------------------*/
-		std::uint32_t _msaaQuality     = 0;
-		std::uint32_t _maxMSAASampleCount = 0;
-		static constexpr std::uint32_t DESIRED_MAX_MSAA_SAMPLE_COUNT = 16;
+		gu::uint32 _msaaQuality     = 0;
+		gu::uint32 _maxMSAASampleCount = 0;
+		static constexpr gu::uint32 DESIRED_MAX_MSAA_SAMPLE_COUNT = 16;
 
 		/*-------------------------------------------------------------------
 		-                        HDR
@@ -289,8 +335,18 @@ namespace rhi::directX12
 		            Wave : プロセッサ上の同時に実行されるスレッドの集合
 					Lane : 個々のスレッド*/
 		bool _isSupportedWaveLane = false;
-		std::uint32_t _minWaveLaneCount = 0;
-		std::uint32_t _maxWaveLaneCount = 0;
+		gu::uint32 _minWaveLaneCount = 0;
+		gu::uint32 _maxWaveLaneCount = 0;
+
+		/*-------------------------------------------------------------------
+		-              RootSignature
+		---------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------
+		*  @brief : RootSignatureの最新バージョン
+		* 　　　　　　　1_0 or 1: Default 
+		*           1_1     : Descriptorに対して最適化を行うためのフラグを設置可能
+		/*----------------------------------------------------------------------*/
+		D3D_ROOT_SIGNATURE_VERSION _maxRootSignatureVersion = D3D_ROOT_SIGNATURE_VERSION_1;
 
 		/*-------------------------------------------------------------------
 		-               Atomic
@@ -300,7 +356,10 @@ namespace rhi::directX12
 		bool _isSupportedAtomicOperation                        = false;
 		bool _isSupportedAtomicInt64OnTypedResource             = false;
 		bool _isSupportedAtomicUInt64                           = false;
-
+#if USE_INTEL_EXTENSION
+		bool _isSupportedIntelEmulatedAtomic64                  = false;
+		INTCExtensionContext* _intelExtensionContext            = nullptr;
+#endif
 		/*-------------------------------------------------------------------
 		-               IndirectDraw
 		---------------------------------------------------------------------*/
@@ -310,6 +369,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Private Enum Class
 		*****************************************************************************/
+		// Descriotor heap
 		enum DefaultHeapType
 		{
 			CBV_SRV_UAV,
@@ -343,13 +403,36 @@ namespace rhi::directX12
 		void CheckWaveLaneSupport();
 		void CheckNative16bitOperation();
 		void CheckAtomicOperation();
+		void CheckMaxRootSignatureVersion();
 		void SetupDisplayHDRMetaData();
 		void SetupDefaultCommandSignatures();
 		void SetGPUDebugBreak();
 
+		/*-------------------------------------------------------------------
+		-               Intel extension function
+		---------------------------------------------------------------------*/
+#if USE_INTEL_EXTENSION
+		/*----------------------------------------------------------------------
+		*  @brief :Atomic 64 bitがサポートされているかを返します. 
+		*----------------------------------------------------------------------*/
+		bool IsSupportedIntelEmulatedAtomic64();
+		
+		/*----------------------------------------------------------------------
+		*  @brief : Intel extension contextを生成します.
+		*----------------------------------------------------------------------*/
+		void CreateIntelExtensionContext();
+
+		/*----------------------------------------------------------------------
+		*  @brief : Intel extension contextを破棄します. 
+		*----------------------------------------------------------------------*/
+		void DestroyIntelExtensionContext();
+#endif
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		/*----------------------------------------------------------------------
+		*  @brief : Defaultのディスクリプタヒープ
+		*----------------------------------------------------------------------*/
 		std::map<DefaultHeapType, gu::SharedPointer<core::RHIDescriptorHeap>> _defaultHeap;
 	};
 }

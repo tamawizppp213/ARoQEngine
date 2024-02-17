@@ -44,9 +44,9 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		virtual void Load(const std::wstring& filePath, const gu::SharedPointer<RHICommandList>& commandList) = 0;
+		virtual void Load(const gu::tstring& filePath, const gu::SharedPointer<RHICommandList>& commandList) = 0;
 
-		virtual void Save(const std::wstring& filePath, const gu::SharedPointer<RHICommandList>& commandList, const gu::SharedPointer<RHICommandQueue>& commandQueue) = 0;
+		virtual void Save(const gu::tstring& filePath, const gu::SharedPointer<RHICommandList>& commandList, const gu::SharedPointer<RHICommandQueue>& commandQueue) = 0;
 
 		virtual void Write(const gu::SharedPointer<RHICommandList>& commandList, const gm::RGBA* pixel) = 0;
 
@@ -124,8 +124,8 @@ namespace rhi::core
 
 		~GPUTexture() = default;
 
-		explicit GPUTexture(const gu::SharedPointer<RHIDevice>& device, [[maybe_unused]]const std::wstring& name = L"Texture") : core::GPUResource(device) {};
-		explicit GPUTexture(const gu::SharedPointer<RHIDevice>& device, const GPUTextureMetaData& metaData, [[maybe_unused]] const std::wstring& name): core::GPUResource(device), _metaData(metaData) {};
+		explicit GPUTexture(const gu::SharedPointer<RHIDevice>& device, [[maybe_unused]]const gu::tstring& name = SP("Texture")) : core::GPUResource(device) {};
+		explicit GPUTexture(const gu::SharedPointer<RHIDevice>& device, const GPUTextureMetaData& metaData, [[maybe_unused]] const gu::tstring& name): core::GPUResource(device), _metaData(metaData) {};
 		
 		/****************************************************************************
 		**                Protected Function

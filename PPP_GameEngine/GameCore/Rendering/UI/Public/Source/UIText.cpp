@@ -78,7 +78,7 @@ Text::Text(const CoordinateType type, const gu::SharedPointer<Font>& font, const
 				throw std::runtime_error("Choice wrong type");
 		}
 
-		_images.emplace_back(image);
+		_images.Push(image);
 	}
 }
 
@@ -91,12 +91,12 @@ Text::Text(const CoordinateType type, const gu::SharedPointer<Font>& font, const
 	/*-------------------------------------------------------------------
 	-              Prepare image buffer
 	---------------------------------------------------------------------*/
-	_images.resize(info.Digit);
+	_images.Resize(info.Digit);
 
 	/*-------------------------------------------------------------------
 	-              Push_back the value of each digit.
 	---------------------------------------------------------------------*/
-	std::vector<int> values(info.Digit);
+	gu::DynamicArray<int> values(info.Digit);
 
 	// push back digit value
 	int tempValue = info.Number;
@@ -139,7 +139,7 @@ Text::Text(const CoordinateType type, const gu::SharedPointer<Font>& font, const
 
 Text::~Text()
 {
-	_images.clear(); _images.shrink_to_fit();
+	_images.Clear(); _images.ShrinkToFit();
 }
 #pragma endregion Constructor and Destructor
 

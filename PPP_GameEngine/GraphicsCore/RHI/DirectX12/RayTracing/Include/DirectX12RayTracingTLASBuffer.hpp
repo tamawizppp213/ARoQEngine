@@ -46,7 +46,7 @@ namespace rhi::directX12
 		TLASBuffer() = default;
 		~TLASBuffer();
 		TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device, 
-			const std::vector<gu::SharedPointer<core::ASInstance>>& asInstance,
+			const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& asInstance,
 			const core::BuildAccelerationStructureFlags flags,
 			const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr);
 	protected:

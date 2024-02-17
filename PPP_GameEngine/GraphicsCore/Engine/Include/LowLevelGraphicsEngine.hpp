@@ -36,6 +36,7 @@ namespace rhi::core
 	class RHIDescriptorHeap;
 	class RHIRenderPass;
 	class RHIFrameBuffer;
+	class RHIQuery;
 }
 /****************************************************************************
 *				  			LowLevelGraphicsEngine
@@ -46,19 +47,19 @@ namespace rhi::core
 class LowLevelGraphicsEngine final : public NonCopyable
 {
 protected:
-	using InstancePtr    = gu::SharedPointer<rhi::core::RHIInstance>;
-	using AdapterPtr     = gu::SharedPointer<rhi::core::RHIDisplayAdapter>;
-	using DevicePtr      = gu::SharedPointer<rhi::core::RHIDevice>;
-	using CommandListPtr = gu::SharedPointer<rhi::core::RHICommandList>;
+	using InstancePtr     = gu::SharedPointer<rhi::core::RHIInstance>;
+	using AdapterPtr      = gu::SharedPointer<rhi::core::RHIDisplayAdapter>;
+	using DevicePtr       = gu::SharedPointer<rhi::core::RHIDevice>;
+	using CommandListPtr  = gu::SharedPointer<rhi::core::RHICommandList>;
 	using CommandQueuePtr = gu::SharedPointer<rhi::core::RHICommandQueue>;
 
 public:
 	/****************************************************************************
 	**                Static Configuration
 	*****************************************************************************/
-	static constexpr std::uint32_t FRAME_BUFFER_COUNT = 3;
+	static constexpr gu::uint32 FRAME_BUFFER_COUNT = 3;
 
-	static constexpr std::uint32_t VSYNC = 0; // 0: don't wait, 1:wait(60fps)
+	static constexpr gu::uint32 VSYNC = 0; // 0: don't wait, 1:wait(60fps)
 
 	/****************************************************************************
 	**                Public Function
@@ -108,11 +109,26 @@ public:
 	gu::SharedPointer<rhi::core::RHIFrameBuffer> GetFrameBuffer(const std::uint32_t frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
 
 	/* @brief : Return Current Frame Index*/
-	std::uint32_t   GetCurrentFrameIndex() const { return _currentFrameIndex; }
+	gu::uint32 GetCurrentFrameIndex() const { return _currentFrameIndex; }
 
 	rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
 
-	gu::SharedPointer<rhi::core::RHISwapchain> GetSwapchain() const noexcept { return _swapchain; }
+	/*----------------------------------------------------------------------
+	*  @brief :  描画バッファを毎フレーム交換するためのSwapchainのポインタを返します
+	*----------------------------------------------------------------------*/
+	__forceinline gu::SharedPointer<rhi::core::RHISwapchain> GetSwapchain() const noexcept 
+	{
+		return _swapchain; 
+	}
+	
+	/*----------------------------------------------------------------------
+	*  @brief : GPU計測のQueryHeapを返します
+	*----------------------------------------------------------------------*/
+	__forceinline gu::SharedPointer<rhi::core::RHIQuery> GetQuery(const rhi::core::QueryHeapType queryType) 
+	{
+		return _queryHeaps.at(queryType); 
+	}
+
 	/****************************************************************************
 	**                Constructor and Destructor
 	*****************************************************************************/
@@ -151,36 +167,67 @@ protected:
 
 	/* @brief : Command List*/
 	std::map<rhi::core::CommandListType, CommandListPtr> _commandLists;
-
-	/* @ brief : CPU-GPU synchronization*/
-	gu::SharedPointer<rhi::core::RHIFence> _fence = nullptr;
-	std::uint64_t _fenceValue = 0;  // current frame fence value
-	
-	/* @brief : Rendering swapchain*/
-	gu::SharedPointer<rhi::core::RHISwapchain> _swapchain = nullptr;
 	
 	/* @brief : Default rendering pass*/
 	gu::SharedPointer<rhi::core::RHIRenderPass> _renderPass = { nullptr }; 
 	gu::SharedPointer<rhi::core::RHIRenderPass> _drawContinueRenderPass = nullptr;
-	std::vector<gu::SharedPointer<rhi::core::RHIFrameBuffer>> _frameBuffers = { nullptr };
+	gu::DynamicArray<gu::SharedPointer<rhi::core::RHIFrameBuffer>> _frameBuffers = { nullptr };
 	
 	/* @brief : current frame index*/
-	std::uint32_t _currentFrameIndex = 0;
-	
-	/* @brief : Windows API*/
-	std::int32_t _width = 0;
-	std::int32_t _height = 0;
+	gu::uint32 _currentFrameIndex = 0;
 
-	/* @brief : Rendering Configuration*/ // 後でconfigファイルを作成する.
-	bool _useHDR             = false;
-	bool _useRayTracing      = true;
-	rhi::core::PixelFormat _pixelFormat        = rhi::core::PixelFormat::R8G8B8A8_UNORM;
+#pragma region Rendering Variables
+	/*----------------------------------------------------------------------
+	*  @brief : 描画バッファを毎フレーム交換するためのSwapchain
+	*----------------------------------------------------------------------*/
+	gu::SharedPointer<rhi::core::RHISwapchain> _swapchain = nullptr;
+
+	/*----------------------------------------------------------------------
+	*  @brief : CPUとGPU間の同期・待機処理を行うためのフェンス
+	*----------------------------------------------------------------------*/
+	gu::SharedPointer<rhi::core::RHIFence> _fence = nullptr;
+	gu::uint64 _fenceValue = 0;  // current frame fence value
+
+	/*----------------------------------------------------------------------
+	*  @brief : HDRを使用する (true : 使用, false : 使用しない)
+	*----------------------------------------------------------------------*/
+	bool _useHDR = false;
+
+	/*----------------------------------------------------------------------
+	*  @brief : レイトレーシングを使用する (true : 使用, false : 使用しない)
+	*----------------------------------------------------------------------*/
+	bool _useRayTracing = true;
+
+	/*----------------------------------------------------------------------
+	*  @brief : Swapchain等で使用するデフォルトのピクセルフォーマット
+	*           SDR想定はR8G8B8A8_UNORM
+	* 　　　　　　　HDR想定はR16G16B16A16_FLOATを使用します.
+	*----------------------------------------------------------------------*/
+	rhi::core::PixelFormat _pixelFormat = rhi::core::PixelFormat::R8G8B8A8_UNORM;
+
+	/*----------------------------------------------------------------------
+	*  @brief : 通常描画で使用するDepth Stencilフォーマット
+	*           デフォルトはStencilを使用せず, D32_FLOATを使用します
+	*----------------------------------------------------------------------*/
 	rhi::core::PixelFormat _depthStencilFormat = rhi::core::PixelFormat::D32_FLOAT;
 		
+	/*----------------------------------------------------------------------
+	*  @brief : スクリーンの縦横
+	*----------------------------------------------------------------------*/
+	gu::int32 _width  = 0;
+	gu::int32 _height = 0;
+
+#pragma endregion Rendering Variables
+
 	// shutdown check
 	bool _hasCalledShutDown = false;
 
 	bool _hasInitialized = false;
+
+	/*----------------------------------------------------------------------
+	*  @brief : GPU負荷計測のためのQueryHeap
+	*----------------------------------------------------------------------*/
+	std::map<rhi::core::QueryHeapType, gu::SharedPointer<rhi::core::RHIQuery>> _queryHeaps = {};
 
 	/****************************************************************************
 	**                Heap Config
@@ -196,6 +243,7 @@ private:
 	void SetUpRenderResource();
 	void SetUpHeap();
 	void SetUpFence();
+	void SetUpQuery();
 
 };
 

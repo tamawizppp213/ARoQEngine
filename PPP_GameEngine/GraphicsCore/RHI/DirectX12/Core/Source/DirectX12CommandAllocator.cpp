@@ -27,12 +27,13 @@ using namespace rhi;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Constructor and Destructor
 RHICommandAllocator::~RHICommandAllocator()
 {
 	if (_commandAllocator) { _commandAllocator.Reset(); }
 }
 
-RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const std::wstring& name) : rhi::core::RHICommandAllocator(device, type)
+RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const gu::tstring& name) : rhi::core::RHICommandAllocator(device, type)
 {
 	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get())->GetDevice();
 
@@ -40,15 +41,43 @@ RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHID
 		EnumConverter::Convert(type),              // Enable to execute all command 
 		IID_PPV_ARGS(&_commandAllocator)));
 
-	_commandAllocator->SetName(name.c_str());
+	_commandAllocator->SetName(name.CString());
 }
+#pragma endregion Constructor and Desturctor
 
+#pragma region Main Function
+/****************************************************************************
+*                     CleanUp
+*************************************************************************//**
+*  @fn        void RHICommandAllocator::CleanUp()
+*
+*  @brief     コマンドアロケーターをリセットします (コマンドバッファの削除)
+			  あらゆるバインドされたコマンドリストはこの関数を呼ばれる前に閉じておく必要があります
+			　加えて, GPU上のコマンドが実行されるまで, この関数は呼んではなりません
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void RHICommandAllocator::CleanUp()
 {
 	ThrowIfFailed(_commandAllocator->Reset());
 }
 
-void RHICommandAllocator::SetName(const std::wstring& name)
+/****************************************************************************
+*                     SetName
+*************************************************************************//**
+*  @fn        void RHICommandAllocator::CleanUp()
+*
+*  @brief     デバッグ表示名の設定
+*
+*  @param[in] const gu::tstring& name
+*
+*  @return    void
+*****************************************************************************/
+void RHICommandAllocator::SetName(const gu::tstring& name)
 {
-	_commandAllocator->SetName(name.c_str());
+	_commandAllocator->SetName(name.CString());
 }
+
+#pragma endregion Main Function

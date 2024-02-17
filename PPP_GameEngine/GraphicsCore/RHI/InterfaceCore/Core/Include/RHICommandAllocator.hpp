@@ -43,16 +43,25 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Reset command allocator (clear command list buffer)*/
+		/*---------------------------------------------------------------
+		　　　　　@brief : Reset command allocator (clear command list buffer)
+			   @note 　: All binded command lists must be closed before calling this function.
+					　　In addition, until command execution in GPU, this function mustn't be called.
+		-----------------------------------------------------------------*/
 		virtual void CleanUp() = 0;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/*---------------------------------------------------------------
+		　　　　　@brief : Return command list type (Graphics, compute, copy)
+		-----------------------------------------------------------------*/
 		core::CommandListType GetCommandListType() const { return _commandListType; }
 
-		/* @brief : For Debugging */
-		virtual void SetName(const std::wstring& name) = 0;
+		/*---------------------------------------------------------------
+		　　　　　@brief : For Debugging name
+		-----------------------------------------------------------------*/
+		virtual void SetName(const gu::tstring& name) = 0;
 
 		/****************************************************************************
 		**                Constructor and Destructor

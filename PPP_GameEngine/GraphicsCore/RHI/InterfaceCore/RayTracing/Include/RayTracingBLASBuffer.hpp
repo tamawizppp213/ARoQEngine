@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +49,7 @@ namespace rhi::core
 		gu::SharedPointer<GPUBuffer> GetDest   () const noexcept { return _destination; }
 		gu::SharedPointer<GPUBuffer> GetScratch() const noexcept { return _scratch; }
 		gu::SharedPointer<RayTracingGeometry> GetGeometryDesc(const std::uint64_t index = 0) const noexcept { return _geometryDescs[index]; }
-		std::uint64_t GetGeometryDescSize() const noexcept { return _geometryDescs.size(); }
+		std::uint64_t GetGeometryDescSize() const noexcept { return _geometryDescs.Size(); }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -61,7 +61,7 @@ namespace rhi::core
 		BLASBuffer() = default;
 		~BLASBuffer() = default;
 		BLASBuffer(const gu::SharedPointer<RHIDevice>& device, 
-			const std::vector<gu::SharedPointer<RayTracingGeometry>>& geometryDesc,
+			const gu::DynamicArray<gu::SharedPointer<RayTracingGeometry>>& geometryDesc,
 			const core::BuildAccelerationStructureFlags flags) : _device(device),  _geometryDescs(geometryDesc), _flags(flags) { };
 		/****************************************************************************
 		**                Protected Member Variables
@@ -70,7 +70,7 @@ namespace rhi::core
 		gu::SharedPointer<GPUBuffer> _destination   = nullptr;
 		gu::SharedPointer<GPUBuffer> _scratch       = nullptr;
 		BuildAccelerationStructureFlags _flags    = BuildAccelerationStructureFlags::None;
-		std::vector<gu::SharedPointer<RayTracingGeometry>> _geometryDescs = {};
+		gu::DynamicArray<gu::SharedPointer<RayTracingGeometry>> _geometryDescs = {};
 		gu::SharedPointer<RHIDevice> _device        = nullptr;
 
 		bool _hasBuilt = false;

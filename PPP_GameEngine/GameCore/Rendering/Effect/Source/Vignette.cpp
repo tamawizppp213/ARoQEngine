@@ -42,7 +42,7 @@ Vignette::~Vignette()
 
 }
 
-Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettings& settings, const std::wstring& addName)
+Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettings& settings, const gu::tstring& addName)
 	: IFullScreenEffector(engine), _settings(settings)
 {
 	/*-------------------------------------------------------------------
@@ -94,23 +94,24 @@ void Vignette::Draw()
 
 #pragma region Set up function
 
-void Vignette::PrepareBuffer(const std::wstring& name)
+void Vignette::PrepareBuffer(const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(VignetteSettings), 1);
 
 	const auto buffer = device->CreateBuffer(metaData);
-	buffer->SetName(name + L"VignetteSettings");
+	const auto bufferName = name + SP("VignetteSettings");
+	buffer->SetName(bufferName);
 
 	/*-------------------------------------------------------------------
 	-			Set Information
 	---------------------------------------------------------------------*/
 	buffer->Pack(&_settings, nullptr);
-	_resourceViews.push_back(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
+	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 
 
-void Vignette::PreparePipelineState(const std::wstring& addName)
+void Vignette::PreparePipelineState(const gu::tstring& addName)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -132,8 +133,8 @@ void Vignette::PreparePipelineState(const std::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Effect\\ShaderVignette.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel, L"Shader\\Effect\\ShaderVignette.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Effect\\ShaderVignette.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core")});
+	ps->Compile(ShaderType::Pixel, SP("Shader\\Effect\\ShaderVignette.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
@@ -146,7 +147,7 @@ void Vignette::PreparePipelineState(const std::wstring& addName)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(addName + L"PSO");
+	_pipeline->SetName(addName + SP("PSO"));
 }
 
 void Vignette::PrepareResourceView()

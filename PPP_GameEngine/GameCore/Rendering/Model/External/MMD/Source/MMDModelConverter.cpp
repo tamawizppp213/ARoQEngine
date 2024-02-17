@@ -18,7 +18,7 @@
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Math/Include/GMVertex.hpp"
-
+#include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ namespace
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Main Function
-bool PMXConverter::Load(const std::wstring& filePath, GameModelPtr model)
+bool PMXConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 {
 	if (model == nullptr)          { OutputDebugStringA("model is nullptr.");  return false; }
 	if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }
@@ -53,13 +53,13 @@ bool PMXConverter::Load(const std::wstring& filePath, GameModelPtr model)
 	/*-------------------------------------------------------------------
 	-            Check skin mesh model
 	---------------------------------------------------------------------*/
-	model->_hasSkin = !file.Bones.empty();
+	model->_hasSkin = !file.Bones.IsEmpty();
 
 	return true;
 }
 
 
-bool PMDConverter::Load(const std::wstring& filePath, GameModelPtr model)
+bool PMDConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 {
 	if (model == nullptr)          { OutputDebugStringA("model is nullptr") ; return false; }
 	if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }
@@ -95,8 +95,8 @@ void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file
 	/*-------------------------------------------------------------------
 	-            Copy PMXvertex -> skin vertex
 	---------------------------------------------------------------------*/
-	std::unique_ptr<gm::SkinMeshVertex[]> vertices = std::make_unique<gm::SkinMeshVertex[]>(file.Vertices.size());
-	for (size_t i = 0; i < file.Vertices.size(); ++i)
+	std::unique_ptr<gm::SkinMeshVertex[]> vertices = std::make_unique<gm::SkinMeshVertex[]>(file.Vertices.Size());
+	for (size_t i = 0; i < file.Vertices.Size(); ++i)
 	{
 		const auto& pmxVertex = file.Vertices[i];
 
@@ -110,8 +110,8 @@ void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file
 	/*-------------------------------------------------------------------
 	-            Total mesh
 	---------------------------------------------------------------------*/
-	const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.size(), MemoryHeap::Upload , ResourceState::Common, vertices.get());
-	const auto ibData = GPUBufferMetaData::IndexBuffer (sizeof(UINT32)            , file.Indices .size(), MemoryHeap::Default, ResourceState::Common, file.Indices.data());
+	const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.Size(), MemoryHeap::Upload , ResourceState::Common, vertices.get());
+	const auto ibData = GPUBufferMetaData::IndexBuffer (sizeof(UINT32)            , file.Indices .Size(), MemoryHeap::Default, ResourceState::Common, file.Indices.Data());
 	model->_totalMesh = gu::MakeShared<Mesh>(model->_engine, vbData, ibData);	
 }
 
@@ -129,9 +129,9 @@ void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file
 *****************************************************************************/
 void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFile& file)
 {
-	model->_materialCount = file.Materials.size();
-	model->_meshes.resize(file.Materials.size());
-	model->_materials.resize(file.Materials.size());
+	model->_materialCount = file.Materials.Size();
+	model->_meshes.Resize(file.Materials.Size());
+	model->_materials.Resize(file.Materials.Size());
 
 	size_t indexOffset = 0;
 	for (size_t i = 0; i < model->_materialCount; ++i)
@@ -155,18 +155,20 @@ void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFil
 		GPUBufferMetaData bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1, MemoryHeap::Upload, ResourceState::Common, &pbrMaterial);
 
 		// material buffer
-		material = gu::MakeShared<Material>(model->_engine, bufferInfo, unicode::ToWString(file.Materials[i].MaterialName));
+		material = gu::MakeShared<Material>(model->_engine, bufferInfo, gu::tstring(unicode::ToWString(std::string(file.Materials[i].MaterialName.CString())).c_str()));
 
 		/*-------------------------------------------------------------------
 		-            Set up texture
 		---------------------------------------------------------------------*/
 		if (file.Materials[i].TextureIndex != INVALID_ID)
 		{
-			material->LoadTexture(unicode::ToWString(file.TexturePathList[file.Materials[i].TextureIndex]), UsageTexture::Diffuse);
+			const auto stdPathName = unicode::ToWString(std::string(file.TexturePathList[file.Materials[i].TextureIndex].CString()));
+			material->LoadTexture(gu::tstring(stdPathName.c_str()), UsageTexture::Diffuse);
 		}
 		if (file.Materials[i].SphereMapTextureIndex != INVALID_ID)
 		{
-			material->LoadTexture(unicode::ToWString(file.TexturePathList[file.Materials[i].SphereMapTextureIndex]), UsageTexture::Specular);
+			const auto stdPathName = unicode::ToWString(std::string(file.TexturePathList[file.Materials[i].TextureIndex].CString()));
+			material->LoadTexture(gu::tstring(stdPathName.c_str()), UsageTexture::Specular);
 		}
 
 		/*-------------------------------------------------------------------

@@ -15,9 +15,9 @@
 #include "MaterialType.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <string>
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -65,12 +65,12 @@ namespace gc::core
 		*****************************************************************************/
 		virtual void Bind(const gu::SharedPointer<rhi::core::RHICommandList>& graphicsCommandList, const std::uint32_t frameIndex, 
 			const std::uint32_t materialID, // bind material constant buffer id
-			const std::vector<std::uint32_t>& textureIDs
+			const gu::DynamicArray<std::uint32_t>& textureIDs
 		);
 
 		void PackMaterial(const void* data);
 
-		GPUResourceViewPtr LoadTexture(const std::wstring& filePath, const UsageTexture textureType);
+		GPUResourceViewPtr LoadTexture(const gu::tstring& filePath, const UsageTexture textureType);
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -84,9 +84,11 @@ namespace gc::core
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		Material() = default;
+
 		Material(const LowLevelGraphicsEnginePtr& engine, 
 			const rhi::core::GPUBufferMetaData& bufferInfo, 
-			const std::wstring& addName = L"",
+			const gu::tstring& addName = SP(""),
 			const RHIDescriptorHeapPtr& customHeap = nullptr);
 
 		~Material();
@@ -95,7 +97,7 @@ namespace gc::core
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void SetUpBuffer(const rhi::core::GPUBufferMetaData& bufferInfo, const std::wstring& name);
+		void SetUpBuffer(const rhi::core::GPUBufferMetaData& bufferInfo, const gu::tstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables

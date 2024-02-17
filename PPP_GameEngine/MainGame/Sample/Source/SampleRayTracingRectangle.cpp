@@ -205,7 +205,7 @@ void SampleRayTracingRectangle::BuildBuffer()
 			rectangle.Vertices.size(),
 			rhi::core::MemoryHeap::Upload);
 		_vertexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
-		_vertexBuffer->SetName(L"VertexBuffer");
+		_vertexBuffer->SetName(SP("VertexBuffer"));
 		_vertexBuffer->Pack(rectangle.Vertices.data());
 	}
 	/*-------------------------------------------------------------------
@@ -218,7 +218,7 @@ void SampleRayTracingRectangle::BuildBuffer()
 			rhi::core::MemoryHeap::Default,
 			rhi::core::ResourceState::Common);
 		_indexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
-		_indexBuffer->SetName(L"IndexBuffer");
+		_indexBuffer->SetName(SP("IndexBuffer"));
 		_indexBuffer->Pack(rectangle.Indices.data(), _engine->GetCommandList(CommandListType::Copy));
 	
 	}
@@ -230,7 +230,7 @@ void SampleRayTracingRectangle::BuildPipelineState()
 	/*-------------------------------------------------------------------
 	-             Setup resource layout elements
 	---------------------------------------------------------------------*/
-	std::vector<SamplerLayoutElement> samplerElements(1);
+	gu::DynamicArray<SamplerLayoutElement> samplerElements(1);
 	samplerElements[0] = SamplerLayoutElement(rhiDevice->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0,0);
 
 	/*-------------------------------------------------------------------
@@ -245,8 +245,8 @@ void SampleRayTracingRectangle::BuildPipelineState()
 	const auto vertexShader = factory->CreateShaderState();
 	const auto pixelShader  = factory->CreateShaderState();
 	// Compile 
-	vertexShader->Compile(ShaderType::Vertex, L"Shader\\Sprite\\ShaderTest.hlsl", L"VSMain", 6.4f, {L"Shader\\Core"});
-	pixelShader ->Compile(ShaderType::Pixel , L"Shader\\Sprite\\ShaderTest.hlsl", L"PSTest", 6.4f, { L"Shader\\Core" });
+	vertexShader->Compile(ShaderType::Vertex, SP("Shader\\Sprite\\ShaderTest.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core")});
+	pixelShader ->Compile(ShaderType::Pixel , SP("Shader\\Sprite\\ShaderTest.hlsl"), SP("PSTest"), 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state

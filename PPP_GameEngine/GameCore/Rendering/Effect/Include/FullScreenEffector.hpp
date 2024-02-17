@@ -13,8 +13,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <vector>
-#include <string>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -74,16 +74,16 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		virtual void PreparePipelineState(const std::wstring& addName) = 0;
+		virtual void PreparePipelineState(const gu::tstring& addName) = 0;
 
 		virtual void PrepareResourceView() = 0;
 		
-		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& addName);
 		
-		std::wstring DefineDebugName(const std::wstring& addName = L"")
+		gu::tstring DefineDebugName(const gu::tstring& addName = SP(""))
 		{
-			std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-			name += L"FSEffector::"; // 後に各リソース名称が追加されます.
+			gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+			name += SP("FSEffector::"); // 後に各リソース名称が追加されます.
 			return name;
 		}
 
@@ -91,15 +91,15 @@ namespace gc
 		**                Protected Member Variables
 		*****************************************************************************/
 		/* @brief : frame resources*/
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 		
-		std::vector<IndexBufferPtr>  _indexBuffers = {};
+		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
 		
 		PipelineStatePtr  _pipeline       = nullptr;
 		
 		ResourceLayoutPtr _resourceLayout = nullptr;
 		
-		std::vector<ResourceViewPtr> _resourceViews = {};
+		gu::DynamicArray<ResourceViewPtr> _resourceViews = {};
 
 		std::int32_t _width  = 0;
 		std::int32_t _height = 0;

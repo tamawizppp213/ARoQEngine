@@ -10,6 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/DirectX12GPUDepthStencilState.hpp"
 #include "../../Core/Include/DirectX12EnumConverter.hpp"
+#include "Platform/Core/Include/CorePlatformMacros.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +24,7 @@ GPUDepthStencilState::GPUDepthStencilState(const gu::SharedPointer<rhi::core::RH
 ) :
 	core::GPUDepthStencilState(device, depthStencilProperty)
 {
-	_depthStencilDesc.DepthEnable      = _property.UseDepthTest;
+	_depthStencilDesc.DepthEnable      = _property.UseDepthTest || _property.DepthOperator != rhi::core::CompareOperator::Always;
 	_depthStencilDesc.DepthWriteMask   = _property.DepthWriteEnable ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO; // left: writable, right: not write
 	_depthStencilDesc.DepthFunc        = EnumConverter::Convert(_property.DepthOperator);
 	_depthStencilDesc.StencilEnable    = _property.StenciWriteEnable;
@@ -37,5 +38,18 @@ GPUDepthStencilState::GPUDepthStencilState(const gu::SharedPointer<rhi::core::RH
 	_depthStencilDesc.BackFace.StencilDepthFailOp  = EnumConverter::Convert(_property.Back.DepthFailOperator);
 	_depthStencilDesc.BackFace.StencilPassOp       = EnumConverter::Convert(_property.Back.PassOperator);
 	_depthStencilDesc.BackFace.StencilFailOp       = EnumConverter::Convert(_property.Back.FailOperator);
+	
+	// ‚È‚ºŒp³‚¶‚á‚È‚¢‚ñ‚¾... d3d12
+	_depthStencilDesc1.DepthEnable      = _depthStencilDesc.DepthEnable;
+	_depthStencilDesc1.DepthWriteMask   = _depthStencilDesc.DepthWriteMask;
+	_depthStencilDesc1.DepthFunc        = _depthStencilDesc.DepthFunc;
+	_depthStencilDesc1.StencilEnable    = _depthStencilDesc.StencilEnable;
+	_depthStencilDesc1.StencilReadMask  = _depthStencilDesc.StencilReadMask;
+	_depthStencilDesc1.StencilWriteMask = _depthStencilDesc.StencilWriteMask;
+	_depthStencilDesc1.FrontFace        = _depthStencilDesc.FrontFace;
+	_depthStencilDesc1.BackFace         = _depthStencilDesc.BackFace;
+#if PLATFORM_OS_WINDOWS
+	_depthStencilDesc1.DepthBoundsTestEnable = _property.UseDepthBoundsTest;
+#endif
 
 }

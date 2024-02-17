@@ -12,9 +12,10 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Math/Include/GMVector.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <Windows.h>
 #include <vector>
-#include <string>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,10 +31,10 @@ namespace pmd
 	{
 		char  Signature[3];
 		float Version;
-		std::string ModelName;
-		std::string ModelEnglishName;
-		std::string ModelComment;
-		std::string ModelEnglishComment;
+		gu::string ModelName;
+		gu::string ModelEnglishName;
+		gu::string ModelComment;
+		gu::string ModelEnglishComment;
 
 		void Read(FILE* filePtr);
 		void ReadExtension(FILE* filePtr);
@@ -60,24 +61,24 @@ namespace pmd
 		UINT8       ToonID;
 		UINT8       EdgeFlag;
 		UINT32      IndexCount;
-		std::string TextureFileName;
-		std::string SphereFileName;
+		gu::string TextureFileName;
+		gu::string SphereFileName;
 
-		void Read(FILE* filePtr, const std::string& directory);
+		void Read(FILE* filePtr, const gu::string& directory);
 
 	private:
-		void ReadTextureName(const std::string& directory, const std::string& texture);
+		void ReadTextureName(const gu::string& directory, const gu::string& texture);
 	};
 
 	struct PMDBone
 	{
-		std::string BoneName;
+		gu::string BoneName;
 		UINT16      ParentBoneID; // If there is no Parent, this value needs to set 0xFFFF
 		UINT16      ChildBoneID;
 		UINT8       BoneType;
 		UINT16      IKBoneID;     // If there is no Parent, this value needs to set 0;
 		Float3      BoneHeadPosition;
-		std::string EnglishBoneName;
+		gu::string EnglishBoneName;
 
 		void Read(FILE* filePtr);
 		void ReadExtension(FILE* filePtr);
@@ -85,7 +86,7 @@ namespace pmd
 
 	struct PMDBoneIK
 	{
-		using ChainList = std::vector<UINT16>;
+		using ChainList = gu::DynamicArray<UINT16>;
 
 		UINT16    IKBoneID;
 		UINT16    IKTargetBoneID;
@@ -96,7 +97,7 @@ namespace pmd
 
 		void Read(FILE* filePtr);
 
-		~PMDBoneIK() { Chains.clear(); Chains.shrink_to_fit(); }
+		~PMDBoneIK() { Chains.Clear(); Chains.ShrinkToFit(); }
 	};
 
 	enum class FacePart : UINT8
@@ -110,30 +111,30 @@ namespace pmd
 
 	struct PMDFaceExpression
 	{
-		using FaceVertexList = std::vector<Float3>;
-		using FaceIndexList = std::vector<UINT32>;
+		using FaceVertexList = gu::DynamicArray<Float3>;
+		using FaceIndexList = gu::DynamicArray<UINT32>;
 
-		std::string    FaceExpressionName;
+		gu::string    FaceExpressionName;
 		UINT32         VertexNum;
 		FacePart       FaceExpressionType;
 		FaceVertexList Vertices;
 		FaceIndexList  Indices;
-		std::string    FaceExpressionEnglishName;
+		gu::string    FaceExpressionEnglishName;
 
 		void Read(FILE* filePtr);
 		void ReadExtension(FILE* filePtr);
 
 		~PMDFaceExpression()
 		{
-			Vertices.clear(); Vertices.shrink_to_fit();
-			Indices.clear(); Indices.shrink_to_fit();
+			Vertices.Clear(); Vertices.ShrinkToFit();
+			Indices.Clear(); Indices.ShrinkToFit();
 		}
 	};
 
 	struct PMDBoneDisplayName
 	{
-		std::string BoneDisplayName;
-		std::string BoneDisplayEnglishName;
+		gu::string BoneDisplayName;
+		gu::string BoneDisplayEnglishName;
 		void Read(FILE* filePtr);
 		void ReadExtension(FILE* filePtr);
 	};
@@ -159,7 +160,7 @@ namespace pmd
 			DynamicAdjustBone
 		};
 
-		std::string           RigidBodyName;
+		gu::string           RigidBodyName;
 		UINT16                RelationBoneIndex;
 		UINT8                 GroupIndex;
 		UINT16                GroupTarget;
@@ -179,7 +180,7 @@ namespace pmd
 
 	struct PMDJoint
 	{
-		std::string JointName;
+		gu::string JointName;
 		UINT32      RigidBodyA;
 		UINT32      RigidBodyB;
 		Float3      JointTranslation;
@@ -206,24 +207,24 @@ namespace pmd
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Load(const std::wstring& filePath);
+		bool Load(const gu::tstring& filePath);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		PMDHeader   Header;
-		std::vector<PMDVertex>          Vertices;
-		std::vector<UINT16>             Indices;
-		std::vector<PMDMaterial>        Materials;
-		std::vector<PMDBone>            Bones;
-		std::vector<PMDBoneIK>          BoneIKs;
-		std::vector<PMDFaceExpression>  FaceExpressions;
-		std::vector<UINT16>             FaceLabelIndices;
-		std::vector<PMDBoneDisplayName> BoneDisplayNameList;
-		std::vector<PMDBoneDisplay>     BoneDisplayList;
-		std::vector<PMDRigidBody>       RigidBodies;
-		std::vector<PMDJoint>           Joints;
-		std::vector<std::string>        ToonTextureList;
-		std::string Directory;
+		gu::DynamicArray<PMDVertex>          Vertices;
+		gu::DynamicArray<UINT16>             Indices;
+		gu::DynamicArray<PMDMaterial>        Materials;
+		gu::DynamicArray<PMDBone>            Bones;
+		gu::DynamicArray<PMDBoneIK>          BoneIKs;
+		gu::DynamicArray<PMDFaceExpression>  FaceExpressions;
+		gu::DynamicArray<UINT16>             FaceLabelIndices;
+		gu::DynamicArray<PMDBoneDisplayName> BoneDisplayNameList;
+		gu::DynamicArray<PMDBoneDisplay>     BoneDisplayList;
+		gu::DynamicArray<PMDRigidBody>       RigidBodies;
+		gu::DynamicArray<PMDJoint>           Joints;
+		gu::DynamicArray<gu::string>        ToonTextureList;
+		gu::string Directory;
 
 		/****************************************************************************
 		**                Constructor and Destructor

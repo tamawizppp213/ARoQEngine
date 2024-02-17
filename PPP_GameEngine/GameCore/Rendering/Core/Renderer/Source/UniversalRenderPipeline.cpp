@@ -151,8 +151,8 @@ void URP::PrepareModelPipeline()
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Model\\ShaderURPForwardRendering.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel, L"Shader\\Model\\ShaderURPForwardRendering.hlsl",  L"PSMain", 6.4f, { L"Shader\\Core" }, {L"USE_SPECULAR_F_NONE"});
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Model\\ShaderURPForwardRendering.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel, SP("Shader\\Model\\ShaderURPForwardRendering.hlsl"),  SP("PSMain"), 6.4f, { SP("Shader\\Core" )}, {SP("USE_SPECULAR_F_NONE")});
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
@@ -169,6 +169,6 @@ void URP::PrepareModelPipeline()
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(L"URP::PSO");
+	_pipeline->SetName(SP("URP::PSO"));
 }
 #pragma endregion SetUp

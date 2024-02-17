@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <string>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -53,9 +53,9 @@ namespace gc::rendering
 		*****************************************************************************/
 		bool Capture(const TexturePtr& texture);
 
-		bool Capture(const std::vector<TexturePtr>& textures);
+		bool Capture(const gu::DynamicArray<TexturePtr>& textures);
 
-		bool Capture(const FrameBufferPtr& frameBuffer);
+		bool Capture([[maybe_unused]]const FrameBufferPtr& frameBuffer);
 
 		/****************************************************************************
 		**                Public Member Variables

@@ -62,16 +62,15 @@ LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hInstance)
 {
 	_apiVersion = apiVersion;
-
 	/*-------------------------------------------------------------------
 	-      Create Instance
 	---------------------------------------------------------------------*/
 #if _DEBUG
 	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, true, false, false);
+	_instance->LogAdapters();
 #else
 	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, false, false, false);
 #endif
-	_instance->LogAdapters();
 
 	/*-------------------------------------------------------------------
 	-      Select proper physical device 
@@ -85,16 +84,16 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 	/*-------------------------------------------------------------------
 	-      Get command queue (Graphics, compute, copy command queue )
 	---------------------------------------------------------------------*/
-	_commandQueues[CommandListType::Graphics] = _device->CreateCommandQueue(CommandListType::Graphics, L"GraphicsQueue");
-	_commandQueues[CommandListType::Compute]  = _device->CreateCommandQueue(CommandListType::Compute , L"ComputeQueue");
-	_commandQueues[CommandListType::Copy]     = _device->CreateCommandQueue(CommandListType::Copy    , L"CopyQueue");
+	_commandQueues[CommandListType::Graphics] = _device->CreateCommandQueue(CommandListType::Graphics, SP("GraphicsQueue"));
+	_commandQueues[CommandListType::Compute]  = _device->CreateCommandQueue(CommandListType::Compute , SP("ComputeQueue"));
+	_commandQueues[CommandListType::Copy]     = _device->CreateCommandQueue(CommandListType::Copy    , SP("CopyQueue"));
 
 	/*-------------------------------------------------------------------
 	-      Set up command list
 	---------------------------------------------------------------------*/
-	_commandLists[core::CommandListType::Graphics] = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Graphics, L"GraphicsAllocator"), L"GraphicsCommandList");
-	_commandLists[core::CommandListType::Compute]  = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Compute , L"ComputeAllocator") , L"ComputeCommandList");
-	_commandLists[core::CommandListType::Copy]     = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Copy    , L"CopyAllocator")    , L"CopyCommandList");
+	_commandLists[core::CommandListType::Graphics] = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Graphics, SP("GraphicsAllocator")), SP("GraphicsCommandList"));
+	_commandLists[core::CommandListType::Compute]  = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Compute , SP("ComputeAllocator")) , SP("ComputeCommandList"));
+	_commandLists[core::CommandListType::Copy]     = _device->CreateCommandList(_device->CreateCommandAllocator(core::CommandListType::Copy    , SP("CopyAllocator"))    , SP("CopyCommandList"));
 
 	/*-------------------------------------------------------------------
 	-      Create fence
@@ -112,8 +111,9 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 		.PixelFormat      = _pixelFormat,
 		.FrameBufferCount = FRAME_BUFFER_COUNT,
 		.VSync            = VSYNC,
-		.IsValidHDR       = false,
+		.IsValidHDR       = true,
 		.IsValidStereo    = false,
+		.IsFullScreen     = false,
 	};
 
 	_swapchain   = _device   ->CreateSwapchain(swapchainDesc);
@@ -129,6 +129,10 @@ void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hI
 	---------------------------------------------------------------------*/
 	SetUpRenderResource();
 
+	/*-------------------------------------------------------------------
+	-      Set up query heap
+	---------------------------------------------------------------------*/
+	SetUpQuery();
 
 	_hasInitialized = true;
 }
@@ -293,7 +297,6 @@ void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHei
 	/*-------------------------------------------------------------------
 	-          Wait Graphics Queue
 	---------------------------------------------------------------------*/
-	const std::uint32_t previousFrame = _currentFrameIndex;
 	_commandQueues[CommandListType::Graphics]->Signal(_fence, ++_fenceValue);
 	_fence->Wait(_fenceValue);
 
@@ -343,17 +346,19 @@ void LowLevelGraphicsEngine::ShutDown()
 	{
 		frameBuffer.Reset();
 	}
-	_frameBuffers.clear(); 
-	_frameBuffers.shrink_to_fit();
+	_frameBuffers.Clear(); 
+	_frameBuffers.ShrinkToFit();
 
 	if (_renderPass) { _renderPass.Reset(); }
+
+	_queryHeaps.clear();
 
 	/*-------------------------------------------------------------------
 	-      Clear command list
 	---------------------------------------------------------------------*/
 	if (_fence) { _fence.Reset(); }
-	
-	_commandLists.clear(); 
+
+	if(!_commandLists.empty()){_commandLists.clear(); }
 
 	if (!_commandQueues.empty()) { _commandQueues.clear(); }
 
@@ -394,6 +399,14 @@ void LowLevelGraphicsEngine::SetUpHeap()
 	heapCount.SamplerDescCount = MAX_SAMPLER_STATE;
 	_device->SetUpDefaultHeap(heapCount);
 
+}
+
+void LowLevelGraphicsEngine::SetUpQuery()
+{
+	_queryHeaps[QueryHeapType::Occulusion]         = _device->CreateQuery(QueryHeapType::Occulusion);
+	_queryHeaps[QueryHeapType::TimeStamp]          = _device->CreateQuery(QueryHeapType::TimeStamp);
+	_queryHeaps[QueryHeapType::CopyQueueTimeStamp] = _device->CreateQuery(QueryHeapType::CopyQueueTimeStamp);
+	_queryHeaps[QueryHeapType::PipelineStatistics] = _device->CreateQuery(QueryHeapType::PipelineStatistics);
 }
 
 void LowLevelGraphicsEngine::SetUpFence()
@@ -449,7 +462,7 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 	/*-------------------------------------------------------------------
 	-      Create frame buffer
 	---------------------------------------------------------------------*/
-	_frameBuffers.resize(FRAME_BUFFER_COUNT);
+	_frameBuffers.Resize(FRAME_BUFFER_COUNT);
 	SetFrameBuffers(Screen::GetScreenWidth(), Screen::GetScreenHeight(), clearColor, clearDepthColor);
 }
 
@@ -457,7 +470,7 @@ void LowLevelGraphicsEngine::SetFrameBuffers(const int width, const int height, 
 {
 	_width = width;
 	_height = height;
-	for (size_t i = 0; i < _frameBuffers.size(); ++i)
+	for (size_t i = 0; i < _frameBuffers.Size(); ++i)
 	{
 		/*-------------------------------------------------------------------
 		-      Create Depth Texture
@@ -466,8 +479,8 @@ void LowLevelGraphicsEngine::SetFrameBuffers(const int width, const int height, 
 		auto depthInfo  = core::GPUTextureMetaData::DepthStencil( width, height, 
 			_depthStencilFormat, clearDepthColor);
 
-		const auto renderTexture = _device->CreateTexture(renderInfo, L"FrameBuffer");
-		const auto depthTexture  = _device->CreateTexture(depthInfo , L"FrameBufferDepth");
+		const auto renderTexture = _device->CreateTexture(renderInfo, SP("FrameBuffer"));
+		const auto depthTexture  = _device->CreateTexture(depthInfo , SP("FrameBufferDepth"));
 
 		/*-------------------------------------------------------------------
 		-      Create Frame Buffer

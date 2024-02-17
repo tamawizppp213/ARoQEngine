@@ -91,12 +91,12 @@ GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::Resource
 	ByteSize = Stride * Count;
 }
 
-GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const InputFormat format, const size_t count, const MemoryHeap heap, void* initData)
-{
-	auto info = GPUBufferMetaData(InputFormatSizeOf::Get(format), count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
-	info.Format = format;
-	return info;
-}
+//GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const PixelFormat format, const size_t count, const MemoryHeap heap, void* initData)
+//{
+//	auto info = GPUBufferMetaData(InputFormatSizeOf::Get(format), count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
+//	//info.Format = format;
+//	return info;
+//}
 
 GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
 {
@@ -128,7 +128,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture1D(const size_t width, const core:
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension1D;
 	metaData.ResourceType     = core::ResourceType::Texture1D;
@@ -145,7 +145,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture1DArray(const size_t width, const 
 	metaData.DepthOrArraySize = length;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension1D;
 	metaData.ResourceType     = core::ResourceType::Texture1DArray;
@@ -162,7 +162,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture2D(const size_t width, const size_
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
@@ -179,7 +179,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture2DArray(const size_t width, const 
 	metaData.DepthOrArraySize = length;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
@@ -196,7 +196,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture3D(const size_t width, const size_
 	metaData.DepthOrArraySize = depth;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension3D;
 	metaData.ResourceType     = core::ResourceType::Texture3D;
@@ -213,7 +213,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture2DMultiSample(const size_t width, 
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
@@ -230,7 +230,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture2DArrayMultiSample(const size_t wi
 	metaData.DepthOrArraySize = length;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DArrayMultiSample;
@@ -247,7 +247,7 @@ GPUTextureMetaData GPUTextureMetaData::CubeMap(const size_t width, const size_t 
 	metaData.DepthOrArraySize = 6;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::TextureCube;
@@ -264,7 +264,7 @@ GPUTextureMetaData GPUTextureMetaData::CubeMapArray(const size_t width, const si
 	metaData.DepthOrArraySize = 6 * length;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = mipLevels;
-	metaData.ResourceUsage    = usage;
+	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::TextureCubeArray;
@@ -281,7 +281,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTarget(const size_t width, const si
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess; // for frame buffer
+	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess | ResourceUsage::ShaderResource; // for frame buffer
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
@@ -300,7 +300,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTargetMultiSample(const size_t widt
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess;
+	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
@@ -318,7 +318,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencil(const size_t width, const si
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil;
+	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::DepthStencil;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
@@ -336,7 +336,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 	metaData.DepthOrArraySize = 1;
 	metaData.PixelFormat      = format;
 	metaData.MipLevels        = 1;
-	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil;
+	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::DepthStencil;
 	metaData.Dimension        = core::ResourceDimension::Dimension2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
@@ -348,38 +348,91 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 }
 #pragma endregion GPUTexture
 #pragma region BlendProperty
+/****************************************************************************
+*                     NoColorWrite
+*************************************************************************//**
+*  @fn        BlendProperty BlendProperty::NoColorWrite(const bool useAlphaToCoverage)
+*
+*  @brief     そのままレンダーターゲットの出力を表示します
+*
+*  @param[in] bool useAlphaToCoverage
+*
+*  @return    BlendProperty
+*****************************************************************************/
 BlendProperty BlendProperty::NoColorWrite(const bool useAlphaToCoverage)
 {
-	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
-		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
-		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::None, useAlphaToCoverage, false);
+	return BlendProperty
+	(
+		BlendOperator::Add,  // color operator
+		BlendOperator::Add,  // alpha operator
+		BlendFactor::One,    // Render Target alpha(a) element blend mode
+		BlendFactor::One,    // Render Target color(rgb) element blend mode    
+		BlendFactor::Zero,   // pixel shader alpha 
+		BlendFactor::Zero,   // pixel shader color
+		ColorMask::None, useAlphaToCoverage, false
+	);
 }
 
+/****************************************************************************
+*                     OverWrite
+*************************************************************************//**
+*  @fn        BlendProperty BlendProperty::OverWrite(const bool useAlphaToCoverage)
+*
+*  @brief     そのままピクセルシェーダーの出力を上書きします
+*
+*  @param[in] bool useAlphaToCoverage
+*
+*  @return    BlendProperty
+*****************************************************************************/
 BlendProperty BlendProperty::OverWrite(const bool useAlphaToCoverage)
 {
-	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
-		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
-		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::All, useAlphaToCoverage, false);
+	return BlendProperty(
+		BlendOperator::Add, // color operator
+		BlendOperator::Add, // alpha operator
+		BlendFactor::Zero,  // Render Target alpha(a) element blend mode
+		BlendFactor::Zero,  // Render Target color(rgb) element blend mode    
+		BlendFactor::One,   // pixel shader alpha 
+		BlendFactor::One,   // pixel shader color
+		ColorMask::All,
+		useAlphaToCoverage, false);
 }
 
+/****************************************************************************
+*                     AlphaBlend
+*************************************************************************//**
+*  @fn        BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
+*
+*  @brief     Alpha blending 
+*             Destination * (1 - source.Alpha) + source * 1
+*
+*  @param[in] bool useAlphaToCoverage
+*
+*  @return    BlendProperty
+*****************************************************************************/
 BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
 {
-	return BlendProperty(BlendOperator::Add, BlendOperator::Add,
-		BlendFactor::Inverse_Source_Alpha, BlendFactor::Inverse_Source_Alpha,
-		BlendFactor::One, BlendFactor::Source_Alpha,
-		ColorMask::All, useAlphaToCoverage, true);
+	return BlendProperty
+	(
+		BlendOperator::Add,                 // color operator
+		BlendOperator::Add,                 // alpha operator
+		BlendFactor::Zero ,                 // Render Target alpha(a) element blend mode
+		BlendFactor::Inverse_Source_Alpha,  // Render Target color(rgb) element blend mode    
+		BlendFactor::One,                   // source alpha 
+		BlendFactor::Source_Alpha,          // source
+		ColorMask::All,                     // color mask
+		useAlphaToCoverage, 
+		true
+	);
 }
 #pragma endregion      BlendProperty
 #pragma region RasterizerProperty
-RasterizerProperty RasterizerProperty::Solid(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode)
+RasterizerProperty RasterizerProperty::Solid(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode, const float depthBias, const float slopeScaleDepthBias, const float clampMaxDepthBias)
 {
-	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample);
+	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample, depthBias, slopeScaleDepthBias, clampMaxDepthBias);
 }
 
-RasterizerProperty RasterizerProperty::WireFrame(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode)
+RasterizerProperty RasterizerProperty::WireFrame(const bool useMultiSample, const FrontFace frontFace, const CullingMode cullingMode, const float depthBias, const float slopeScaleDepthBias, const float clampMaxDepthBias)
 {
-	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample);
+	return RasterizerProperty(frontFace, cullingMode, FillMode::Solid, true, useMultiSample, depthBias, slopeScaleDepthBias, clampMaxDepthBias);
 }
 #pragma endregion RasterizerProperty

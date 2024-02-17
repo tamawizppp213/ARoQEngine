@@ -39,7 +39,8 @@ namespace rhi::directX12
 		static D3D12_COMMAND_LIST_TYPE    Convert(const rhi::core::CommandListType type);
 #pragma endregion CommandList
 #pragma region Shader 
-		static D3D12_SHADER_VISIBILITY    Convert(const rhi::core::ShaderVisibility visibility);
+		static D3D12_SHADER_VISIBILITY    Convert(const rhi::core::ShaderVisibleFlag visibility);
+		static D3D12_ROOT_SIGNATURE_FLAGS Convert1(const rhi::core::ShaderVisibleFlag visibility);
 #pragma endregion Shader
 #pragma region Sampler State
 		static D3D12_FILTER               Convert(const rhi::core::FilterOption filter);
@@ -89,6 +90,10 @@ namespace rhi::directX12
 		static D3D12_RAYTRACING_INSTANCE_FLAGS Convert(const rhi::core::RayTracingInstanceFlags flags);
 		static D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS Convert(const rhi::core::BuildAccelerationStructureFlags flags);
 #pragma endregion RayTracing
+#pragma region Query
+		static D3D12_QUERY_HEAP_TYPE Convert (const rhi::core::QueryHeapType heapType);
+		static D3D12_QUERY_TYPE      Convert1(const rhi::core::QueryHeapType heapType);
+#pragma endregion Query
 #pragma endregion GPUResource
 	};
 }

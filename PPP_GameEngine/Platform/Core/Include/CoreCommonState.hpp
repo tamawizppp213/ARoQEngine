@@ -11,6 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GameUtility/Base/Include/GUType.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -102,6 +103,32 @@ namespace platform::core
 	};
 
 	/****************************************************************************
+	*				  	   EngineWindowType
+	*************************************************************************//**
+	*  @class     EngineWindowType
+	*  @brief     engineで使用するwindowの種類
+	*****************************************************************************/
+	enum class EngineWindowType
+	{
+		Normal,
+		Menu,
+		Game,
+	};
+
+	/****************************************************************************
+	*				  			    WindowMode
+	*************************************************************************//**
+	*  @class     WindowMode
+	*  @brief     window mode
+	*****************************************************************************/
+	enum class WindowTransparency
+	{
+		None,      // 透過度をサポートしない
+		PerWindow, // ウィンドウ・レベルで透過度をサポートしていることを示す値（1つの不透明度がウィンドウ全体に適用される
+		PerPixel,  // ピクセル単位のアルファ混合透過をサポートしていることを示す値。
+	};
+
+	/****************************************************************************
 	*				  			  CoreWindowDesc
 	*************************************************************************//**
 	*  @struct     CoreWindowDesc
@@ -113,6 +140,10 @@ namespace platform::core
 		float DesiredScreenPositionY  = 0.0f;  // 最初に望ましいとされるスクリーンの縦の位置
 		float DesiredScreenWidth      = 0.0f;  // 最初に望ましいとされる幅
 		float DesiredScreenHeight     = 0.0f;  // 最初に望ましいとされる高さ
+		float ExpectedMaxWidth        = -1.0f; // ウィンドウの予想最大幅 (-1は無効)
+		float ExpectedMaxHeight       = -1.0f; // ウィンドウの予想最大幅 (-1は無効)
+		int   CornerRadius            = 0;     // 角の丸み
+		float Opacity                 = 1.0f;
 		wchar_t* Title                = L"PPP Game Window";
 		bool  HasWindowOSWindowBorder = true; // OSのウィンドウの境界線を使用したい場合はtrue
 		bool  IsVanillaWindow         = true;
@@ -120,10 +151,16 @@ namespace platform::core
 		bool  SupportMinimize         = true;  // ウィンドウの最小化をするか
 		bool  SupportResize           = true;  // ウィンドウのリサイズを可能にするか
 		bool  AppearsInTaskbar        = false; // タスクバーにウィンドウを表示するか
+		bool  IsTopmostWindow         = false; // 何よりも最前面にウィンドウを表示したい場合に使用します.
+		bool  AcceptInput             = true;  // interactiveにするか
 		bool  UseTouchFeedback        = false; // uiボタン等のタッチ入力を可能にするか
 		bool  ShouldPreserveAspectRatio = false; // アスペクト比を一定にするか
+		bool  SizeWillChangeOften       = false; // 頻繁にサイズ調整が入るか
+		bool  HasCloseButton            = true;  // 閉じるボタンを必要とするか
 		ActivationPolicy ActivationPolicy = ActivationPolicy::FirstOnlyShow;
-		WindowMode       WindowMode       = WindowMode::Windowed;
+		WindowMode         WindowMode       = WindowMode::Windowed;
+		WindowTransparency TransparencyType = WindowTransparency::PerWindow;
+		EngineWindowType  EngineWindowType = EngineWindowType::Normal;
 	};
 	
 	struct Rectangle
@@ -133,6 +170,25 @@ namespace platform::core
 		long Right  = 0;
 		long Bottom = 0;
 	};
+
+	/****************************************************************************
+	*				  			 MonitorInfo
+	*************************************************************************//**
+	*  @struct    MonitorInfo
+	*  @brief     使用しているモニターの情報を取得します
+	*****************************************************************************/
+	struct MonitorInfo
+	{
+		gu::tchar* Name             = nullptr;  // モニターの名前
+		gu::tchar* ID               = nullptr;  // IDの名前
+		gu::int32  NativeWidth      = 0;        // width
+		gu::int32  NativeHeight     = 0;        // height
+		gu::int32  DPI              = 0;        // Dots per inch (1インチあたりにドットが何個あるか)
+		Rectangle  DisplayRectangle = {};       // モニター全体のRectangle
+		Rectangle  WorkArea         = {};       // タスクバーとかを含まない作業領域自体のRectangle
+		bool       IsPrimary        = false;    // プライマリーモニターか
+	};
+
 #pragma endregion Window
 }
 

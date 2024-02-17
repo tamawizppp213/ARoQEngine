@@ -42,7 +42,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkPipeline GetPipeline() const noexcept { return _pipeline; }
 
-		void SetName(const std::wstring& name)override;
+		void SetName(const gu::tstring& name)override;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -64,7 +64,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::vector<VkDynamicState> _dynamicStates = {};
+		gu::DynamicArray<VkDynamicState> _dynamicStates = {};
 
 		VkPipeline _pipeline = nullptr;
 
@@ -87,7 +87,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		
 		/****************************************************************************
 		**                Constructor and Destructor

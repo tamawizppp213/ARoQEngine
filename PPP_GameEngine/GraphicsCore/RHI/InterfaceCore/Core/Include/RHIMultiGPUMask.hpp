@@ -1,19 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUArray.hpp
-///             @brief  未実装
+///             @file   RHIMultiGPUMask.hpp
+///             @brief  GPU Mask : 1つのLoginal deviceで複数のGPUを扱うときに使用します.
 ///             @author toide
-///             @date   2023/11/25 14:04:42
+///             @date   2023/12/29 23:57:52
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GU_ARRAY_HPP
-#define GU_ARRAY_HPP
+#ifndef RHI_MULTI_GPU_MASK_HPP
+#define RHI_MULTI_GPU_MASK_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/GUType.hpp"
-#include "GameUtility/Base/Include/GUAssert.hpp"
-
+#include "Platform/Core/Include/CorePlatformMacros.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -22,87 +21,77 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gu
+namespace rhi::core
 {
-
 	/****************************************************************************
-	*				  			   GUArray
+	*				  			   RHIMultiGPU
 	*************************************************************************//**
-	*  @class     GUArray
-	*  @brief     temp
+	*  @class     RHIMultiGPU
+	*  @brief     各ビットがGPUインデックスであるマスクです. 
+	              SLIでないプラットフォームが常に1になるように最適化できるように、空にはできません
 	*****************************************************************************/
-	template<class ElementType>
-	class Array
+	class RHIMultiGPUMask
 	{
 	public:
-		using SizeType = size_t;
-
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		
+		/*----------------------------------------------------------------------
+		*  @brief : Single GPUを使用します (node mask = 1)
+		/*----------------------------------------------------------------------*/
+		static const RHIMultiGPUMask SingleGPU() { return RHIMultiGPUMask(1); }
+
+		/*----------------------------------------------------------------------
+		*  @brief : 全てのGPUを使用します. 今は1で固定していますが, 必要に応じて変更します.
+		/*----------------------------------------------------------------------*/
+		static const RHIMultiGPUMask AllGPU() { return RHIMultiGPUMask(1); }
+
+		/*----------------------------------------------------------------------
+		*  @brief : 単一のGPUIndexを使ってRHIMultiGPUMaskを作成します
+		*           (何桁目にどのGPUを与えたいか)
+		/*----------------------------------------------------------------------*/
+		static RHIMultiGPUMask CreateFromIndex(const gu::uint32 index) { return RHIMultiGPUMask(1 << index); }
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		/*----------------------------------------------------------------------
-		*  @brief : ヒープ領域に格納されている先頭のポインタを返す
-		/*----------------------------------------------------------------------*/
-		__forceinline       ElementType* Data()       { return nullptr; }
-		__forceinline const ElementType* Data() const { return nullptr; }
+#if PLATFORM_DESKTOP 
+		static constexpr gu::uint32 MAX_GPU_COUNT = 8;
+#else
+		static constexpr gu::int32 MAX_GPU_COUNT = 1;
+#endif
 
 		/*----------------------------------------------------------------------
-		*  @brief : 配列が空かどうか
+		*  @brief : ビットマスクの値を取得します.
 		/*----------------------------------------------------------------------*/
-		__forceinline bool IsEmpty() const { return _elementCount == 0; }
+		__forceinline gu::uint32 Value() const { return _mask; }
 
 		/*----------------------------------------------------------------------
-		*  @brief : 配列の要素数
+		*  @brief : IDは一つだけ持っているか. (複数のビットマスクがオンになっていないか)
 		/*----------------------------------------------------------------------*/
-		__forceinline SizeType Size() const { return _elementCount; }
+		bool HasSingleIndex() const;
 
 		/*----------------------------------------------------------------------
-		*  @brief : 配列に詰め込める最大要素数
+		*  @brief : 指定したGPUのIDが含まれているか
 		/*----------------------------------------------------------------------*/
-		__forceinline SizeType Capacity() const { return _elementCapacity; }
+		bool Contain(const gu::uint32 index) const { return (_mask & (1 << index)) != 0; }
 
 		/*----------------------------------------------------------------------
-		*  @brief : 要素のバイト数を返す
+		*  @brief : 指定したGPUMaskが全て含まれているか
 		/*----------------------------------------------------------------------*/
-		__forceinline static constexpr uint32 ByteOfElement() { return sizeof(ElementType); }
+		bool ContainAll(const RHIMultiGPUMask& mask) const { return (_mask & mask._mask) == mask._mask; }
 
-		/*----------------------------------------------------------------------
-		*  @brief : 配列に詰め込める残りの要素数を返す
-		/*----------------------------------------------------------------------*/
-		__forceinline SizeType SlackCount() const { return _elementCapacity - _elementCount; }
-
-		/*----------------------------------------------------------------------
-		*  @brief : 指定したIndexが領域内かどうか, 範囲外であっても途中で止めない
-		/*----------------------------------------------------------------------*/
-		__forceinline bool InRange(const SizeType index) const { return 0 <= index && index <= _elementCount; }
-
-		/*----------------------------------------------------------------------
-		*  @brief : 指定したIndexが領域内かどうか, 範囲外であったら途中で止める
-		/*----------------------------------------------------------------------*/
-		__forceinline void CheckRange(const SizeType index) const
-		{
-			Checkf(0 <= _elementCount && _elementCount <= _elementCapacity, "element count is out of range\n");
-			Checkf(0 <= index && index <= _elementCount, "index is out of range. \n");
-		}
-
-#pragma region Operator Function
-		__forceinline const ElementType& operator[](const SizeType index) const
-		{
-			CheckRange();
-			return Data()[index];
-		}
-#pragma endregion Operator Function
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		Array() : _elementCount(0), _elementCapacity(0) {};
+		RHIMultiGPUMask() : RHIMultiGPUMask(RHIMultiGPUMask::SingleGPU()) {};
 
+		explicit RHIMultiGPUMask(const gu::uint32 gpuMask) : _mask(gpuMask) {};
 
+		bool operator ==(const RHIMultiGPUMask& right) const { return _mask == right._mask; }
+		bool operator !=(const RHIMultiGPUMask& right) const { return _mask != right._mask; }
+		void operator |=(const RHIMultiGPUMask& right) { _mask |= right._mask; }
+		void operator &=(const RHIMultiGPUMask& right) { _mask &= right._mask;}
 	protected:
 		/****************************************************************************
 		**                Protected Function
@@ -111,18 +100,8 @@ namespace gu
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		SizeType _elementCount    = 0;
-		SizeType _elementCapacity = 0;
-
-	private:
-		/****************************************************************************
-		**                Private Function
-		*****************************************************************************/
-
-		/****************************************************************************
-		**                Private Member Variables
-		*****************************************************************************/
+		gu::uint32 _mask = 0;
 	};
-}
 
+}
 #endif

@@ -36,7 +36,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief: increment and return currentID*/
+		/*----------------------------------------------------------------------
+		*  @brief :  新しいResource配列のインデックスを発行します
+		/*----------------------------------------------------------------------*/
 		inline UINT IssueID()
 		{
 			if ((UINT)_currentID + 1 > _maxDescriptorCount) { MessageBox(NULL, L"The number of IDs has exceeded the expected number. ", L"Warning", MB_ICONWARNING); }
@@ -51,6 +53,9 @@ namespace rhi::directX12
 			_currentID++; return _currentID;
 		}
 
+		/*----------------------------------------------------------------------
+		*  @brief :  IDを未使用状態に変更します
+		/*----------------------------------------------------------------------*/
 		inline void FreeID(const UINT id)
 		{
 			if (id >= _maxDescriptorCount) { OutputDebugStringA("Non available id"); return; }
@@ -58,19 +63,30 @@ namespace rhi::directX12
 			_availableID.push(id);
 		}
 
-		/* @brief: Back offset ID (The contents of the heap are not reset.)*/
+		/*----------------------------------------------------------------------
+		*  @brief :  ヒープの中身は解放せず, そのままIDのみを初期状態に戻します
+		/*----------------------------------------------------------------------*/
 		inline void ResetID(UINT offsetIndex = 0)
 		{
 			_currentID = INVALID_ID + offsetIndex;
 		}
 
-		/* @brief: Return current descriptor index */
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		/*----------------------------------------------------------------------
+		*  @brief :  現在のHeap領域の配列に対してどのインデックスに入っているかを返します.
+		/*----------------------------------------------------------------------*/
 		inline UINT GetCurrentID() const { return _currentID; }
 
-		/* @brief : Return heap size. (maxDescriptorViewCount * OneDescriptorSize)*/
+		/*----------------------------------------------------------------------
+		*  @brief :  ディスクリプタヒープのバイトサイズを返します.maxDescriptorViewCount * OneDescriptorSize
+		/*----------------------------------------------------------------------*/
 		inline UINT GetHeapSize() const { return _maxDescriptorCount * _descriptorSize; }
 		
-		/* @brief : Return max descriptor count*/
+		/*----------------------------------------------------------------------
+		*  @brief :  最大のDescriptor Countを返します.
+		/*----------------------------------------------------------------------*/
 		inline UINT GetMaxDescriptorCount() const { return _maxDescriptorCount; }
 
 		/* @brief : Return DirectX12::CPU_DESCRIPTOR_HANDLE*/
@@ -101,9 +117,6 @@ namespace rhi::directX12
 			_gpuHeapPtr         = gpuHeapPtr;
 			_currentID          = INVALID_ID;
 		}
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
 
 		/****************************************************************************
 		**                Constructor and Destructor

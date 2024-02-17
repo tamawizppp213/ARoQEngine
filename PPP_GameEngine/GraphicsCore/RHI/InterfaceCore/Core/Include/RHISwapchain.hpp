@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -44,8 +44,8 @@ namespace rhi::core
 		CommandQueuePtr CommandQueue     = nullptr;
 		WindowInfo      WindowInfo       = {};
 		PixelFormat     PixelFormat      = PixelFormat::Unknown; 
-		size_t          FrameBufferCount = 3;
-		std::uint32_t   VSync            = 0;
+		gu::uint64      FrameBufferCount = 3;
+		gu::uint32      VSync            = 0;
 		bool            IsValidHDR       = true;
 		bool            IsValidStereo    = false;
 		bool            IsFullScreen     = false;
@@ -68,19 +68,38 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
-		virtual std::uint32_t PrepareNextImage(const gu::SharedPointer<RHIFence>& fence, std::uint64_t signalValue) = 0;
+		/*----------------------------------------------------------------------
+		*  @brief :  When NextImage is ready, 
+		　　　　　　　　　Signal is issued and the next frame Index is returned.
+		/*----------------------------------------------------------------------*/
+		virtual gu::uint32 PrepareNextImage(const gu::SharedPointer<RHIFence>& fence, const gu::uint64 signalValue) = 0;
 		
-		/* @brief : Display front buffer*/
+		/*----------------------------------------------------------------------
+		*  @brief :  Display front buffer
+		/*----------------------------------------------------------------------*/
 		virtual void Present(const gu::SharedPointer<RHIFence>& fence, std::uint64_t waitValue) = 0;
 		
-		/* @brief : Resize screen size. Rebuild everything once and update again.*/
+		/*----------------------------------------------------------------------
+		*  @brief :  Resize screen size. Rebuild everything once and update again.
+		/*----------------------------------------------------------------------*/
 		virtual void Resize(const size_t width, const size_t height) = 0;
 		
-		/* @brief : Return current frame buffer*/
+		/*----------------------------------------------------------------------
+		*  @brief :  Return current frame buffer
+		/*----------------------------------------------------------------------*/
 		virtual size_t GetCurrentBufferIndex() const = 0;
 
+		/*----------------------------------------------------------------------
+		*  @brief :  Switch full screen mode
+		/*----------------------------------------------------------------------*/
 		virtual void SwitchFullScreenMode(const bool isOn) = 0;
+
+		/*----------------------------------------------------------------------
+		*  @brief :  Switch hdr mode. 
+		*            enableHDR : true -> HDR, false -> SDR
+		/*----------------------------------------------------------------------*/
+		virtual void SwitchHDRMode(const bool enableHDR) = 0;
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -100,7 +119,7 @@ namespace rhi::core
 		gu::SharedPointer<GPUTexture> GetBuffer(const size_t index) { return _backBuffers[index]; }
 		
 		/* @biref : Return back buffer's total frame count*/
-		size_t      GetBufferCount() const noexcept { return _backBuffers.size(); }
+		size_t      GetBufferCount() const noexcept { return _backBuffers.Size(); }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -114,19 +133,20 @@ namespace rhi::core
 
 		virtual ~RHISwapchain()
 		{
-			_backBuffers.clear(); _backBuffers.shrink_to_fit();
+			_backBuffers.Clear(); _backBuffers.ShrinkToFit();
 			if (_device)       { _device.Reset(); }
 		};
 
-		explicit RHISwapchain(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, size_t frameBufferCount = 3, std::uint32_t vsync = 0, bool isValidHDR = true)
+		explicit RHISwapchain(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, size_t frameBufferCount = 3, std::uint32_t vsync = 0, bool isValidHDR = true, bool isFullScreen = false)
 		{
 			_device = device; _desc.CommandQueue = commandQueue; _desc.WindowInfo = windowInfo; _desc.PixelFormat = pixelFormat; _desc.VSync = vsync; _desc.FrameBufferCount = frameBufferCount; _desc.IsValidHDR = isValidHDR;
+			_isFullScreen = isFullScreen;
 		}
 
 		explicit RHISwapchain(const gu::SharedPointer<RHIDevice>& device, const SwapchainDesc& desc):
 			_device(device), _desc(desc)
 		{
-			
+			_isFullScreen = _desc.IsFullScreen;
 		}
 
 		/****************************************************************************
@@ -134,7 +154,7 @@ namespace rhi::core
 		*****************************************************************************/
 		gu::SharedPointer<RHIDevice>       _device = nullptr;
 		
-		std::vector<gu::SharedPointer<GPUTexture>> _backBuffers; //[0] : render target 
+		gu::DynamicArray<gu::SharedPointer<GPUTexture>> _backBuffers; //[0] : render target 
 		
 		SwapchainDesc _desc = {};
 

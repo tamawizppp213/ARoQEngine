@@ -16,6 +16,7 @@
 #include "../Include/DirectX12Fence.hpp"
 #include "../Include/DirectX12Device.hpp"
 #include "../Include/DirectX12Debug.hpp"
+#include "GameUtility/Base/Include/GUAssert.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <memory>
@@ -30,12 +31,10 @@ using namespace Microsoft::WRL;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, core::CommandListType type, const std::wstring& name) : rhi::core::RHICommandQueue(device, type)
+RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, core::CommandListType type, const gu::tstring& name) : rhi::core::RHICommandQueue(device, type)
 {
-#ifdef _DEBUG
-	assert(device);
-	assert(type != core::CommandListType::Unknown);
-#endif
+	Check(device);
+	Check(type != core::CommandListType::Unknown);
 
 	const auto dxDevice = static_cast<RHIDevice*>(device.Get())->GetDevice();
 
@@ -56,7 +55,7 @@ RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& 
 	-                   Create command queue
 	---------------------------------------------------------------------*/
 	ThrowIfFailed(dxDevice->CreateCommandQueue(&cmdQDesc, IID_PPV_ARGS(&_commandQueue)));
-	_commandQueue->SetName(name.c_str());
+	_commandQueue->SetName(name.CString());
 }
 
 RHICommandQueue::~RHICommandQueue()
@@ -79,7 +78,7 @@ RHICommandQueue::~RHICommandQueue()
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
+void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, gu::uint64 value)
 {
 	FenceComPtr dxFence = gu::StaticPointerCast<RHIFence>(fence)->GetFence();
 	ThrowIfFailed(_commandQueue->Wait(dxFence.Get(), value));
@@ -99,49 +98,106 @@ void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
+void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, gu::uint64 value)
 {
 	FenceComPtr dxFence = gu::StaticPointerCast<RHIFence>(fence)->GetFence();
 	ThrowIfFailed(_commandQueue->Signal(dxFence.Get(), value));
 }
+
 /****************************************************************************
 *							Execute
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
+*  @fn        void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 * 
 *  @brief     Execute command list contents. normally set graphics, compute, transfer commandlist
 * 
-*  @param[in] const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists
+*  @param[in] const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandQueue::Execute(const std::vector<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
+void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 {
-	if (commandLists.empty()) { return; }
+	if (commandLists.IsEmpty()) { return; }
 
 	/*-------------------------------------------------------------------
 	-           Push back command list pointer 
 	-      to use directX12 commandlist (ID3D12CommandList pointer)
 	---------------------------------------------------------------------*/
-	std::vector<ID3D12CommandList*> dxCommandLists;
+	gu::DynamicArray<ID3D12CommandList*> dxCommandLists;
 	for (auto& list : commandLists)
 	{
-		dxCommandLists.push_back(gu::StaticPointerCast<rhi::directX12::RHICommandList>(list)->GetCommandList().Get());
+		dxCommandLists.Push(gu::StaticPointerCast<rhi::directX12::RHICommandList>(list)->GetCommandList().Get());
 	}
 
 	/*-------------------------------------------------------------------
 	-                   Execute command lists
 	---------------------------------------------------------------------*/
-	if (dxCommandLists.empty()) { return; }
-	_commandQueue->ExecuteCommandLists(static_cast<UINT>(dxCommandLists.size()), dxCommandLists.data());
+	if (dxCommandLists.IsEmpty()) { return; }
+	_commandQueue->ExecuteCommandLists(static_cast<UINT>(dxCommandLists.Size()), dxCommandLists.Data());
 }
 
+/****************************************************************************
+*							GetTimestampFrequency
+*************************************************************************//**
+*  @fn        gu::uint64 RHICommandQueue::GetTimestampFrequency()
+*
+*  @brief     コマンドキュー中のGPUタイムスタンプをHz単位で返します.
+*
+*  @param[in] void
+*
+*  @return 　　gu::uint64 timestamp[Hz]
+*****************************************************************************/
+gu::uint64 RHICommandQueue::GetTimestampFrequency()
+{
+	gu::uint64 frequency = 0;
+	_commandQueue->GetTimestampFrequency(&frequency);
+	return frequency;
+}
+
+
+/****************************************************************************
+*							GetCalibrationTimestamp
+*************************************************************************//**
+*  @fn        core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
+*
+*  @brief     GPUとCPUの計測時間を取得します
+*
+*  @param[in] void
+*
+*  @return 　　core::GPUTimingCalibrationTimestamp
+*****************************************************************************/
+core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
+{
+	/*-------------------------------------------------------------------
+	-                  Frequencyの取得
+	---------------------------------------------------------------------*/
+	auto gpuTimestampFrequency = GetTimestampFrequency();
+	
+	LARGE_INTEGER cpuTimestampFrequency ;
+	QueryPerformanceFrequency(&cpuTimestampFrequency);
+
+	/*-------------------------------------------------------------------
+	-                  Timestampの取得
+	---------------------------------------------------------------------*/
+	gu::uint64 gpuTimestamp = 0;
+	gu::uint64 cpuTimestamp = 0;
+
+	ThrowIfFailed(_commandQueue->GetClockCalibration(&gpuTimestamp, &cpuTimestamp));
+
+	/*-------------------------------------------------------------------
+	-                  計測時間の取得
+	---------------------------------------------------------------------*/
+	core::GPUTimingCalibrationTimestamp timestampResult;
+	timestampResult.GPUMicroseconds = static_cast<gu::uint64>(gpuTimestamp * (1e6 / gpuTimestampFrequency));
+	timestampResult.CPUMicroseconds = static_cast<gu::uint64>(cpuTimestamp * (1e6 / cpuTimestampFrequency.QuadPart));
+	return timestampResult;
+}
 #pragma endregion Execute
 
 #pragma region Property
-void RHICommandQueue::SetName(const std::wstring& name)
+void RHICommandQueue::SetName(const gu::tstring& name)
 {
-	_commandQueue->SetName(name.c_str());
+	_commandQueue->SetName(name.CString());
 }
 
 #pragma endregion Property

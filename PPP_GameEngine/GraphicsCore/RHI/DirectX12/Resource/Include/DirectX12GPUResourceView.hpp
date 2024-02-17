@@ -14,6 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Core.hpp"
 #include <d3d12.h>
+#include <utility>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,15 +37,22 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Bind resource layout array index to the command list.
-					index : resource layout array index*/
-		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index, const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
+		/*----------------------------------------------------------------------
+		*  @brief : Resource Layoutの配列インデックスをコマンドリストとバインドする
+		/*----------------------------------------------------------------------*/
+		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, [[maybe_unused]]const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
 		
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/*----------------------------------------------------------------------
+		*  @brief : CPUのポインタを返すハンドラを取得します
+		/*----------------------------------------------------------------------*/
 		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandler();
 
+		/*----------------------------------------------------------------------
+		*  @brief : GPUのポインタを返すハンドラを取得します
+		/*----------------------------------------------------------------------*/
 		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandler();
 
 		/****************************************************************************
@@ -54,9 +62,14 @@ namespace rhi::directX12
 
 		~GPUResourceView();
 
-		explicit GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr);
+		explicit GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, 
+			const gu::SharedPointer<core::GPUBuffer>& buffer, 
+			const gu::uint32 mipSlice = 0, const gu::uint32 planeSlice = 0,
+			const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr);
 		
-		explicit GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr);
+		explicit GPUResourceView(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceViewType type, const gu::SharedPointer<core::GPUTexture>& texture,
+			const gu::uint32 mipSlice = 0, const gu::uint32 planeSlice = 0,
+			const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr);
 	
 	private:
 		/****************************************************************************
@@ -75,7 +88,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		std::pair<core::DescriptorHeapType, std::uint32_t> _heapOffset = {};
+		std::pair<core::DescriptorHeapType, gu::uint32> _heapOffset = {};
 		bool _hasCreated = false;
 	};
 }

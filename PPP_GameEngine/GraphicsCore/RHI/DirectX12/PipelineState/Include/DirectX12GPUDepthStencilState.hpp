@@ -41,6 +41,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		const D3D12_DEPTH_STENCIL_DESC& GetDepthStencilState() const noexcept { return _depthStencilDesc; }
 		
+		const D3D12_DEPTH_STENCIL_DESC1& GetDepthStencilState1() const noexcept { return _depthStencilDesc1; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -60,7 +61,8 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		D3D12_DEPTH_STENCIL_DESC _depthStencilDesc = {};
+		D3D12_DEPTH_STENCIL_DESC  _depthStencilDesc  = {};
+		D3D12_DEPTH_STENCIL_DESC1 _depthStencilDesc1 = {};
 	};
 }
 #endif

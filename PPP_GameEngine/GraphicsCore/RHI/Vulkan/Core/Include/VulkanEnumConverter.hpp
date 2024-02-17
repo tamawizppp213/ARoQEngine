@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include <vulkan/vulkan.h>
+#include <utility>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +38,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 #pragma region ShaderState
 		static VkShaderStageFlagBits  Convert(const rhi::core::ShaderType type);
-		static VkShaderStageFlagBits  Convert(const rhi::core::ShaderVisibility visibility);
+		static VkShaderStageFlagBits  Convert(const rhi::core::ShaderVisibleFlag visibility);
 #pragma endregion ShaderState
 #pragma region SamplerState
 		static VkFilter               Convert(const rhi::core::FilterOption filter, const rhi::core::FilterMask mask);

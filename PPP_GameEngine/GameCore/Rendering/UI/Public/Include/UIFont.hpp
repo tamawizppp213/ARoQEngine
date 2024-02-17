@@ -14,7 +14,7 @@
 #include "GameUtility/Math/Include/GMVector.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ namespace gc::ui
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Load texture*/
-		bool Load(const LowLevelGraphicsEnginePtr& engine, const std::wstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth);
+		bool Load(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth);
 
 		/* @brief: Reset texture resource and infomation*/
 		void Reset();
@@ -74,7 +74,7 @@ namespace gc::ui
 		Font() = default;
 
 		/* @brief : Load font constructor*/
-		Font(const LowLevelGraphicsEnginePtr& engine, const std::wstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth);
+		Font(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth);
 		
 		~Font();
 

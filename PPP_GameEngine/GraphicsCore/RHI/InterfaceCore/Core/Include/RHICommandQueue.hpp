@@ -15,7 +15,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -44,22 +44,38 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Used to wait for another Command queue to complete execution. (in GPU)*/
-		virtual void Wait   (const gu::SharedPointer<RHIFence>& fence, const std::uint64_t value) = 0;
+		/*----------------------------------------------------------------------
+		*  @brief : Used to wait for another Command queue to complete execution. (in GPU)
+		/*----------------------------------------------------------------------*/
+		virtual void Wait   (const gu::SharedPointer<RHIFence>& fence, const gu::uint64 value) = 0;
 		
-		/* @brief : Update the fence value (value) when the Command Queue execution completes.*/
-		virtual void Signal (const gu::SharedPointer<RHIFence>& fence, const std::uint64_t value) = 0;
+		/*----------------------------------------------------------------------
+		*  @brief :  Update the fence value (value) when the Command Queue execution completes.
+		/*----------------------------------------------------------------------*/
+		virtual void Signal (const gu::SharedPointer<RHIFence>& fence, const gu::uint64 value) = 0;
 		
-		/* @brief : Execute command list contents. normally set graphics, compute, transfer commandlist
-		            All CommandLists to be assigned must be Closed.*/ 
-		virtual void Execute(const std::vector<gu::SharedPointer<RHICommandList>>& commandLists) = 0;
+		/*----------------------------------------------------------------------
+		*  @brief :  Execute command list contents. normally set graphics, compute, transfer commandlist
+		             All CommandLists to be assigned must be Closed.
+		/*----------------------------------------------------------------------*/
+		virtual void Execute(const gu::DynamicArray<gu::SharedPointer<RHICommandList>>& commandLists) = 0;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		core::CommandListType GetType() const { return _commandListType; }
 		
-		virtual void SetName(const std::wstring& name) = 0;
+		virtual void SetName(const gu::tstring& name) = 0;
+
+		/*----------------------------------------------------------------------
+		*  @brief :  Return the gpu timestamp frequency [Hz] of the command queue
+		/*----------------------------------------------------------------------*/
+		virtual gu::uint64 GetTimestampFrequency() = 0;
+
+		/*----------------------------------------------------------------------
+		*  @brief :  Return the gpu timestamp frequency [Hz] of the command queue
+		/*----------------------------------------------------------------------*/
+		virtual GPUTimingCalibrationTimestamp GetCalibrationTimestamp() = 0;
 
 		/****************************************************************************
 		**                Constructor and Destructor

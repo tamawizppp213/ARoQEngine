@@ -40,7 +40,7 @@ namespace rhi::directX12
 		**                Public Member Variables
 		*****************************************************************************/
 		/* @brief : set debugging name. */
-		void SetName(const std::wstring& name) { _name = name; };
+		void SetName(const gu::tstring& name) { _name = name; };
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -49,7 +49,7 @@ namespace rhi::directX12
 
 		~RHIRenderPass() = default;
 
-		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth = std::nullopt) : 
+		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth = std::nullopt) : 
 			core::RHIRenderPass(device, colors, depth){}
 
 		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth = std::nullopt) :
@@ -63,7 +63,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::wstring _name = L"";
+		gu::tstring _name = L"";
 	};
 }
 #endif

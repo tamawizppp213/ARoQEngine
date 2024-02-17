@@ -17,6 +17,7 @@
 #include "../Include/DirectX12EnumConverter.hpp"
 #include "../../Resource/Include/DirectX12GPUTexture.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
+#include "Platform/Core/Include/CorePlatformMacros.hpp"
 #include <d3d12.h>
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,15 +26,15 @@
 using namespace rhi;
 using namespace rhi::directX12;
 using namespace Microsoft::WRL;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
 RHISwapchain::RHISwapchain(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandQueue>& queue,
-	const core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR) 
-	: core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
-
+	const core::WindowInfo& windowInfo, const rhi::core::PixelFormat& pixelFormat, size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR, const bool isFullScreen) 
+	: core::RHISwapchain(device, queue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR, isFullScreen)
 {
 	SetUp();
 }
@@ -45,7 +46,11 @@ RHISwapchain::RHISwapchain(const gu::SharedPointer<core::RHIDevice>& device, con
 
 RHISwapchain::~RHISwapchain()
 {
-	if (_swapchain) { _swapchain.Reset(); }
+	if (_swapchain) 
+	{
+		SwitchFullScreenMode(false);
+		_swapchain.Reset();
+	}
 }
 
 #pragma endregion Constructor and Destructor
@@ -54,9 +59,12 @@ RHISwapchain::~RHISwapchain()
 *							Resize
 *************************************************************************//**
 *  @fn        void RHISwapchain::Resize(const size_t width, const size_t height)
+* 
 *  @brief     Resize screen size. (set resized swapchain buffers )
+* 
 *  @param[in] const size_t width
 *  @param[in] const size_t height
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHISwapchain::Resize(const size_t width, const size_t height)
@@ -87,7 +95,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
-	for (size_t index = 0; index < _backBuffers.size(); ++index)
+	for (size_t index = 0; index < _backBuffers.Size(); ++index)
 	{
 		ResourceComPtr backBuffer = nullptr;
 		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(index), IID_PPV_ARGS(backBuffer.GetAddressOf())));
@@ -109,12 +117,12 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 *  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
 *  @brief     NextImageの準備が完了したときSignalを発行し, 次のframe Indexを返す. 
 *  @param[in] const gu::SharedPointer<core::RHIFence>
-*  @param[in] std::uint64_t signalValue (Normally : ++fenceValueを代入)
-*  @return 　　std::uint32_t Backbuffer index
+*  @param[in] uint64 signalValue (Normally : ++fenceValueを代入)
+*  @return 　　uint32 Backbuffer index
 *****************************************************************************/
-std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
+gu::uint32 RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 signalValue)
 {
-	std::uint32_t frameIndex = _swapchain->GetCurrentBackBufferIndex();
+	uint32 frameIndex = _swapchain->GetCurrentBackBufferIndex();
 	_desc.CommandQueue->Signal(fence, signalValue);
 	return frameIndex;
 }
@@ -127,20 +135,29 @@ std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFe
 *  @param[in] std::uint64_t waitValue
 *  @return 　　void
 *****************************************************************************/
-void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue)
+void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 waitValue)
 {
 	/*synchronization between command queue */
 	_desc.CommandQueue->Wait(fence, waitValue);
 
 	/* present front buffer*/
-	ThrowIfFailed(_swapchain->Present(_desc.VSync, _useAllowTearing ? DXGI_PRESENT_ALLOW_TEARING : 0));
+	UINT presentFlags = 0;
+	if (!_desc.VSync && !_isFullScreen && _useAllowTearing)
+	{
+		presentFlags |= DXGI_PRESENT_ALLOW_TEARING;
+	}
+	ThrowIfFailed(_swapchain->Present(_desc.VSync, presentFlags));
 }
+
 /****************************************************************************
 *							GetCurrentBufferIndex
 *************************************************************************//**
 *  @fn        size_t RHISwapchain::GetCurrentBufferIndex() const
-*  @brief     Get current buffer 
+* 
+*  @brief     現在のバッファーのIndexを返します
+* 
 *  @param[in] void
+* 
 *  @return 　　size_t
 *****************************************************************************/
 size_t RHISwapchain::GetCurrentBufferIndex() const
@@ -148,6 +165,18 @@ size_t RHISwapchain::GetCurrentBufferIndex() const
 	return static_cast<size_t>(_swapchain->GetCurrentBackBufferIndex());
 }
 
+/****************************************************************************
+*                      SwitchFullScreenMode
+*************************************************************************//**
+*  @fn        void RHISwapchain::SwitchFullScreenMode(const bool isOn)
+*
+*  @brief     フルスクリーンモードを設定する 
+(isOn : true->フルスクリーンモードに移行する. false : windowモードに移行する)
+*
+*  @param[in] bool is Full screen mode on
+*
+*  @return    void
+*****************************************************************************/
 void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 {
 	// 現在のモードが同じときは特に何もしない. 
@@ -155,7 +184,11 @@ void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 
 	if (FAILED(_swapchain->SetFullscreenState(isOn, nullptr)))
 	{
-		OutputDebugStringA("failed to switch swapchain mode");
+#if PLATFORM_OS_WINDOWS
+		OutputDebugStringA("failed to switch swapchain mode\n");
+#else
+		_RPT0(_CRT_WARN, "failed to switch swapchain mode\n");
+#endif
 		return;
 	}
 	_isFullScreen = isOn;
@@ -174,12 +207,17 @@ void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 *****************************************************************************/
 void RHISwapchain::SetUp()
 {
+	/*-------------------------------------------------------------------
+	-        Prepare
+	---------------------------------------------------------------------*/
 	const auto rhiDevice  = gu::StaticPointerCast<RHIDevice>(_device);
 	const auto dxDevice   = rhiDevice->GetDevice();
 	const auto dxQueue    = gu::StaticPointerCast<RHICommandQueue>(_desc.CommandQueue)->GetCommandQueue();
 	const auto dxInstance = static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance());
 	const auto factory    = dxInstance->GetFactory();
 
+	Checkf(_desc.CommandQueue->GetType() == core::CommandListType::Graphics, "swapchain must be graphics type command queue");
+	
 	/*-------------------------------------------------------------------
 	-        SwapChain Flag
 	---------------------------------------------------------------------*/
@@ -235,7 +273,11 @@ void RHISwapchain::SetUp()
 		else
 		{
 			_desc.IsValidStereo = false;
+#if PLATFORM_OS_WINDOWS
 			OutputDebugStringA("Failed to use stereo rendering\n");
+#else 
+			_RPT0(_CRT_WARN, "Failed to use stereo rendering\n");
+#endif
 		}
 	}
 
@@ -248,10 +290,10 @@ void RHISwapchain::SetUp()
 		{
 			.Width            = static_cast<UINT>(_desc.WindowInfo.Width),  // Window Size Pixel Width
 			.Height           = static_cast<UINT>(_desc.WindowInfo.Height), // Window Size Pixel Height 
-			.RefreshRate      = {0, 0},
+			.RefreshRate      = {0, 0},                                     // Use 0 to avoid a potential mismatch with hw
 			.Format           = _backBufferFormat,                          // Back Buffer Format 
-			.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
-			.Scaling          = DXGI_MODE_SCALING_STRETCHED,                       // scaling: stretch
+			.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,       // 順序指定なし
+			.Scaling          = DXGI_MODE_SCALING_STRETCHED,                // 拡大スケーリングを適用する
 		};
 
 		DXGI_SWAP_CHAIN_DESC desc = 
@@ -275,16 +317,16 @@ void RHISwapchain::SetUp()
 	// 背後でウィンドウを変更しないように、DXGIメッセージフックを設定する。
 	factory->MakeWindowAssociation((HWND)_desc.WindowInfo.Handle, DXGI_MWA_NO_WINDOW_CHANGES | DXGI_MWA_NO_ALT_ENTER);
 
-	if (rhiDevice->IsSupportedHDR() && _desc.IsValidHDR)
-	{
-		EnsureSwapChainColorSpace();
-		SetHDRMetaData();
-	}
+	/*-------------------------------------------------------------------
+	-                  HDRの設定
+	---------------------------------------------------------------------*/
+	EnsureSwapChainColorSpace(rhiDevice->GetHDRDisplayInfo().ColorGamut, rhiDevice->GetHDRDisplayInfo().DisplayFormat);
+	LogHDROutput();
 
 	/*-------------------------------------------------------------------
 	-                   Set Back Buffer
 	---------------------------------------------------------------------*/
-	_backBuffers.resize(_desc.FrameBufferCount);
+	_backBuffers.Resize(_desc.FrameBufferCount);
 	for (size_t i = 0; i < _desc.FrameBufferCount; ++i)
 	{
 		ResourceComPtr backBuffer = nullptr;
@@ -301,6 +343,128 @@ void RHISwapchain::SetUp()
 	}
 
 }
+
+/****************************************************************************
+*                      StartUpHDR
+*************************************************************************//**
+*  @fn        void RHISwapchain::StartUpHDR()
+*
+*  @brief     HDRモードとSDRモードを切り替える
+*
+*  @param[in] bool enableHDR
+*
+*  @return    void
+*****************************************************************************/
+void RHISwapchain::SwitchHDRMode(const bool enableHDR)
+{
+	const auto rhiDevice = gu::StaticPointerCast<RHIDevice>(_device);
+	const auto& hdrInfo  = rhiDevice->GetHDRDisplayInfo();
+	if (rhiDevice->IsSupportedHDR() && enableHDR)
+	{
+		EnsureSwapChainColorSpace(hdrInfo.ColorGamut, hdrInfo.DisplayFormat);
+	}
+	else
+	{
+		EnsureSwapChainColorSpace(core::DisplayColorGamut::SRGB_D65, core::DisplayOutputFormat::SDR_SRGB);
+	}
+}
+
+/****************************************************************************
+*                      IsSupportedHDRInDisplayOutput
+*************************************************************************//**
+*  @fn        bool RHISwapchain::IsSupportedHDRInCurrentDisplayOutput()
+*
+*  @brief     現在のディスプレイ出力がHDR機能をサポートしているかを調べる
+*             ただし, swapchainのバージョンが4より小さい場合は常にfalseを返すので注意すること
+*
+*  @param[in] void
+*
+*  @return    bool
+*****************************************************************************/
+bool RHISwapchain::IsSupportedHDRInCurrentDisplayOutput()
+{
+	if constexpr (DXGI_MAX_SWAPCHAIN_INTERFACE < 4) { return false; }
+
+	/*-------------------------------------------------------------------
+	-        Prepare
+	---------------------------------------------------------------------*/
+	const auto rhiDevice  = gu::StaticPointerCast<RHIDevice>(_device);
+	const auto dxInstance = static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance());
+	const auto factory    = dxInstance->GetFactory();
+
+	/*-------------------------------------------------------------------
+	-        Get the display information that we are presenting to 
+	---------------------------------------------------------------------*/
+	ComPtr<IDXGIOutput> output = nullptr;
+	ThrowIfFailed(_swapchain->GetContainingOutput(output.GetAddressOf()));
+
+	ComPtr<IDXGIOutput6> output6 = nullptr;
+	if (FAILED(output->QueryInterface(IID_PPV_ARGS(output6.GetAddressOf())))) { return false; }
+
+	DXGI_OUTPUT_DESC1 outputDesc = {};
+	ThrowIfFailed(output6->GetDesc1(&outputDesc));
+
+	/*-------------------------------------------------------------------
+	-        Check the color space which is able to use in the HDR mode
+	         (rgb color format + P2020)
+	---------------------------------------------------------------------*/
+	return outputDesc.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+}
+
+/****************************************************************************
+*                      LogHDROutput
+*************************************************************************//**
+*  @fn        void RHISwapchain::LogHDROutput()
+*
+*  @brief     HDR上でのモニター設定を出力上に表示します.
+*
+*  @param[in] void
+*
+*  @return    bool
+*****************************************************************************/
+void RHISwapchain::LogHDROutput()
+{
+	/*-------------------------------------------------------------------
+	-        Acquire proper swapchain version 
+	---------------------------------------------------------------------*/
+	if constexpr (DXGI_MAX_SWAPCHAIN_INTERFACE < 4) { return; }
+
+	/*-------------------------------------------------------------------
+	-        Prepare the variables
+	---------------------------------------------------------------------*/
+	const auto rhiDevice  = gu::StaticPointerCast<RHIDevice>(_device);
+	const auto dxInstance = static_cast<directX12::RHIInstance*>(rhiDevice->GetDisplayAdapter()->GetInstance());
+	const auto factory    = dxInstance->GetFactory();
+
+	/*-------------------------------------------------------------------
+	-        Get the display information that we are presenting to 
+	---------------------------------------------------------------------*/
+	ComPtr<IDXGIOutput> output = nullptr;
+	ThrowIfFailed(_swapchain->GetContainingOutput(output.GetAddressOf()));
+
+	ComPtr<IDXGIOutput6> output6 = nullptr;
+	if (FAILED(output->QueryInterface(IID_PPV_ARGS(output6.GetAddressOf())))) { return; }
+
+	DXGI_OUTPUT_DESC1 outputDesc = {};
+	ThrowIfFailed(output6->GetDesc1(&outputDesc));
+
+	/*-------------------------------------------------------------------
+	-        Get the display information that we are presenting to
+	---------------------------------------------------------------------*/
+	if (outputDesc.ColorSpace != DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020) { return; }
+
+	/*-------------------------------------------------------------------
+	-       Log output
+	---------------------------------------------------------------------*/
+	std::string hdrSentense 
+		         = "////////////////////////////////////////////////\n";
+	hdrSentense += "             HDR meta data\n";
+	hdrSentense += "////////////////////////////////////////////////\n";
+	hdrSentense += "MinLuminance : " + std::to_string(outputDesc.MinLuminance) + "[nits]\n";
+	hdrSentense += "MaxLuminance : " + std::to_string(outputDesc.MaxLuminance) + "[nits]\n";
+	hdrSentense += "MaxFullFrameLuminance : " + std::to_string(outputDesc.MaxFullFrameLuminance) + "[nits]\n";
+	OutputDebugStringA(hdrSentense.c_str());
+}
 #pragma endregion Main Function
 
 # pragma region Color Space
@@ -310,6 +474,7 @@ void RHISwapchain::SetUp()
 *  @fn        void RHISwapchain::EnsureSwapChainColorSpace()
 * 
 *  @brief     Check SwapChain Color Space
+*             (こちらはピクセルフォーマットにのっとって移行します. 今後は未使用になります)
 * 
 *  @param[in] void
 * 
@@ -336,7 +501,75 @@ void RHISwapchain::EnsureSwapChainColorSpace()
 	}
 
 	_swapchain->SetColorSpace1(colorSpace);
+	_colorSpace = colorSpace;
+}
+
+/****************************************************************************
+*                     EnsureSwapChainColorSpace
+*************************************************************************//**
+*  @fn        void RHISwapchain::EnsureSwapChainColorSpace(const core::DisplayColorGamut colorGamut, const core::DisplayOutputFormat displayFormat)
+*
+*  @brief     Check SwapChain Color Space
+*
+*  @param[in] core::DisplayColorGamut color gamut
+*  @param[in] core::DisplayOutputFormat display format
+*
+*  @return 　　void
+*****************************************************************************/
+void RHISwapchain::EnsureSwapChainColorSpace(const core::DisplayColorGamut colorGamut, const core::DisplayOutputFormat displayFormat)
+{
+	Confirm(_swapchain);
+
+	/*-------------------------------------------------------------------
+	-                  Displayの出力フォーマットの設定
+	---------------------------------------------------------------------*/
+	auto colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709; // srgb
 	
+	switch (displayFormat)
+	{
+		// gamma 2.2
+		case core::DisplayOutputFormat::SDR_SRGB:
+		case core::DisplayOutputFormat::SDR_Rec709:
+		{
+			colorSpace = colorGamut == core::DisplayColorGamut::Rec2020_D65 ? 
+				DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P2020 : DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
+			break;
+		}
+
+		// gamma ST.2084
+		case core::DisplayOutputFormat::HDR_ACES_1000nit_ST2084:
+		case core::DisplayOutputFormat::HDR_ACES_2000nit_ST2084:
+		{
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+			break;
+		}
+
+		// gamma 1.0 (Linear)
+		case core::DisplayOutputFormat::HDR_ACES_1000nit_ScRGB:
+		case core::DisplayOutputFormat::HDR_ACES_2000nit_ScRGB:
+		{
+			colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709;
+			break;
+		}
+
+	}
+
+	/*-------------------------------------------------------------------
+	-                  色空間を設定する
+	---------------------------------------------------------------------*/
+	if (_colorSpace == colorSpace) { return; }
+
+	// color spaceがサポートされているかのチェック
+#if DXGI_MAX_SWAPCHAIN_INTERFACE >= 4
+	uint32 colorSpaceSupport = 0;
+
+	const auto result = _swapchain->CheckColorSpaceSupport(colorSpace, &colorSpaceSupport);
+	if (SUCCEEDED(result) && ((colorSpaceSupport & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT) != 0))
+#endif
+	{
+		ThrowIfFailed(_swapchain->SetColorSpace1(colorSpace));
+		_colorSpace = colorSpace;
+	}
 }
 
 /****************************************************************************

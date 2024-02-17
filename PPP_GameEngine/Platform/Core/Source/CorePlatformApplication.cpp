@@ -13,7 +13,6 @@
 #include "../../Core/Include/CoreWindowMessageHandler.hpp"
 #include "../../Core/Include/CoreWindow.hpp"
 #include PLATFORM_COMPILED_HEADER(../.., PlatformApplication.hpp)
-#include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -33,5 +32,4 @@ core::PlatformApplication::~PlatformApplication()
 gu::SharedPointer<core::PlatformApplication> core::PlatformApplication::Create()
 {
 	return gu::StaticPointerCast<core::PlatformApplication>(gu::MakeShared<PLATFORM_CLASS(PlatformApplication)>());
-
 }

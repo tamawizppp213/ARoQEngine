@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GPUState.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,11 +26,12 @@ namespace rhi::core
 	class RHIDevice;
 	enum class DefaultBlendStateType
 	{
-		NoColorWrite,
-		OverWrite,
-		AlphaBlend,
+		NoColorWrite,         // NoColorWrite (Display the render target as it is)
+		OverWrite,            // OverWrite (Displays the source as it is.)
+		AlphaBlend,           //  Alpha blending : destination * (1 - source.Alpha) + source * 1
 		CountOfBlendStateType
 	};
+
 	/****************************************************************************
 	*				  			RHIPipelineState
 	*************************************************************************//**
@@ -62,11 +63,11 @@ namespace rhi::core
 
 		virtual ~GPUBlendState();
 
-		explicit GPUBlendState(const gu::SharedPointer<RHIDevice>& device, const std::vector<BlendProperty>& properties) : GPUState(device), _blendProperties(properties), _isIndependentBlendEnable(true) {};
+		explicit GPUBlendState(const gu::SharedPointer<RHIDevice>& device, const gu::DynamicArray<BlendProperty>& properties) : GPUState(device), _blendProperties(properties), _isIndependentBlendEnable(true) {};
 		
 		explicit GPUBlendState(const gu::SharedPointer<RHIDevice>& device, const BlendProperty& blendProperty) : GPUState(device)
 		{
-			_blendProperties.push_back(blendProperty);
+			_blendProperties.Push(blendProperty);
 			_isIndependentBlendEnable = false;
 		}
 
@@ -78,7 +79,7 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		/* @brief : Blend State Properties : (Render target Ç≈ã§í ÇÃèÍçáÇÕàÍÇ¬ÇæÇØégópÇµ, isIndependentBlendEnableÇfalseÇ…ê›íË)*/
-		std::vector<core::BlendProperty> _blendProperties;
+		gu::DynamicArray<core::BlendProperty> _blendProperties;
 		
 		/* @brief : is all render target configuration the same?  */
 		bool _isIndependentBlendEnable = false;

@@ -76,21 +76,11 @@ void SampleModel::Update()
 *****************************************************************************/
 void SampleModel::Draw()
 {
-	_engine->BeginDrawFrame();
-	/*-------------------------------------------------------------------
-	-             Regist graphics pipeline command
-	---------------------------------------------------------------------*/
-	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
-	commandList->SetViewportAndScissor(
-		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
-		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
-	
-	zprepass->Draw(_camera->GetResourceView());
-	gbuffer->Draw(_camera->GetResourceView());
+	/*zprepass->Draw(_camera->GetResourceView());
+	gbuffer->Draw(_camera->GetResourceView());*/
 	_engine->BeginSwapchainRenderPass();
 	_skybox->Draw(_camera->GetResourceView());
-	_dof->Draw(zprepass->GetRenderedTextureView());
-	_engine->EndDrawFrame();
+	//_dof->Draw(zprepass->GetRenderedTextureView());
 }
 /****************************************************************************
 *                       Terminate
@@ -133,12 +123,12 @@ void SampleModel::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Skybox
 	---------------------------------------------------------------------*/
-	_skybox = gu::MakeShared<SkyDome>(_engine, L"Resources/grasscube1024.dds");
+	_skybox = gu::MakeShared<SkyDome>(_engine, SP("Resources/grasscube1024.dds"));
 	/*-------------------------------------------------------------------
 	-           Model
 	---------------------------------------------------------------------*/
 	_model = GameObject::Create<GameModel>(_engine);
-	_model->Load(L"Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx");
+	_model->Load(SP("Resources/YYB Hatsune Miku/YYB Hatsune Miku_10th_v1.02.pmx"));
 	_model->SetDebugColor(gm::Float4(1, 0, 0, 1));
 
 	zprepass = gu::MakeShared<basepass::ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight());

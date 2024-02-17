@@ -28,8 +28,10 @@
 #include "GameUtility/Base/Include/GUAssert.hpp"
 
 #include "MainGame/Core/Include/GameManager.hpp"
+#include "MainGame/Core/Include/SceneManager.hpp"
 #include "Platform/Windows/Include/WindowsCursor.hpp"
 
+#include "GameUtility/Base/Include/Screen.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -52,6 +54,8 @@ PPPEngine::~PPPEngine()
 void PPPEngine::StartUp(const StartUpParameters& setting)
 {
 	_hasShutdown = false;
+
+	StartUpParameter = setting;
 
 	/*---------------------------------------------------------------
 					  Timer
@@ -80,14 +84,17 @@ void PPPEngine::StartUp(const StartUpParameters& setting)
 					  レンダリングエンジンの作成
 	-----------------------------------------------------------------*/
 	_graphicsEngine = gu::MakeShared<LowLevelGraphicsEngine>();
-	_graphicsEngine->StartUp(setting.GraphicsSettings.APIversion, _mainWindow->GetWindowHandle(), _platformApplication->GetInstanceHandle());
-
+	_graphicsEngine->StartUp(StartUpParameter.GraphicsSettings.APIversion, _mainWindow->GetWindowHandle(), _platformApplication->GetInstanceHandle());
 
 	/*---------------------------------------------------------------
 					  Inputの作成
 	-----------------------------------------------------------------*/
 	GameInput::Instance().Initialize(_platformApplication->GetInstanceHandle(), _mainWindow->GetWindowHandle());
 
+}
+
+void PPPEngine::Run()
+{
 	/*---------------------------------------------------------------
 					  スレッドの管理
 	-----------------------------------------------------------------*/
@@ -127,12 +134,15 @@ void PPPEngine::ExecuteMainThread()
 				GameInput::Instance().Update();
 				// 現状シングルスレッドで.
 				GameManager::Instance().GameUpdateMain();
-				GameManager::Instance().GameDrawMain();
 			}
 		}
 
 	}
 	_isStoppedAllThreads.store(true);
+
+	// 全てのスレッドに対する実行完了待ち
+	_engineThreadManager->ShutDown();
+
 }
 
 void PPPEngine::ExecuteUpdateThread()
@@ -142,19 +152,46 @@ void PPPEngine::ExecuteUpdateThread()
 		
 	}
 
+	_engineThreadManager->CallExecuteComplete(ThreadPoolType::UpdateMain);
 	printf("update finish\n");
 }
 
+/****************************************************************************
+*                     ExecuteRenderThread
+*************************************************************************//**
+*  @fn        void PPPEngine::ExecuteRenderThread()
+*
+*  @brief     描画ループです
+*
+*  @param[in] void
+*
+*  @return    void
+*****************************************************************************/
 void PPPEngine::ExecuteRenderThread()
 {
+	/*---------------------------------------------------------------
+					  描画ループ
+	-----------------------------------------------------------------*/
 	while (!_isStoppedAllThreads)
 	{
-		if (!_renderPipeline) { continue; }
-		/*_graphicsEngine->BeginDrawFrame();
-		_renderPipeline->Draw();
-		_graphicsEngine->EndDrawFrame();*/
+		// 開始処理 : コマンドバッファをOpenにする
+		_graphicsEngine->BeginDrawFrame();
+
+		// 描画ループ前にウィンドウサイズが変更されていたらすぐにバッファを変えておく.
+		_graphicsEngine->OnResize(Screen::GetScreenWidth(), Screen::GetScreenHeight());
+
+		// 初期レンダーパスの設定
+		_graphicsEngine->BeginSwapchainRenderPass();
+		
+		// シーンの描画
+		GameManager::Instance().GameDrawMain();
+
+		// 終了処理, 描画コマンドを実行する
+		_graphicsEngine->EndDrawFrame();
 	}
 
+
+	_engineThreadManager->CallExecuteComplete(ThreadPoolType::RenderMain);
 	printf("draw finish\n");
 }
 
@@ -170,7 +207,6 @@ void PPPEngine::ShutDown()
 	
 	// グラフィックエンジンの破棄
 	_graphicsEngine->ShutDown();
-
 
 	_mainWindow.Reset();
 	_platformCommand.Reset();

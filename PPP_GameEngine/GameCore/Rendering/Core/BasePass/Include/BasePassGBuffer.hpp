@@ -56,7 +56,7 @@ namespace gc::basepass
 		
 		GBuffer(const LowLevelGraphicsEnginePtr& engine,
 			const gc::rendering::GBufferDesc& desc = gc::rendering::GBufferDesc((std::uint64_t)BufferType::CountOf),
-			const std::wstring& addName = L"");
+			const gu::tstring& addName = SP(""));
 
 		~GBuffer();
 		
@@ -64,9 +64,9 @@ namespace gc::basepass
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PreparePipelineState(const std::wstring& name) override;
+		void PreparePipelineState(const gu::tstring& name) override;
 
-		void PrepareFrameBuffers(const std::wstring& name) override;
+		void PrepareFrameBuffers(const gu::tstring& name) override;
 
 		/****************************************************************************
 		**                Protected Member Variables

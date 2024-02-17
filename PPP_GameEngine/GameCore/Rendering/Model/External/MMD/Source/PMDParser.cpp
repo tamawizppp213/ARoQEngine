@@ -21,15 +21,15 @@ using namespace file;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-void ReadPMDString(FILE* filePtr, std::string* string, UINT32 bufferSize);
-bool PMDFile::Load(const std::wstring& filePath)
+void ReadPMDString(FILE* filePtr, gu::string* string, UINT32 bufferSize);
+bool PMDFile::Load(const gu::tstring& filePath)
 {
 	/*-------------------------------------------------------------------
 	-             Open File
 	---------------------------------------------------------------------*/
-	FILE* filePtr = file::FileSystem::OpenFile(filePath);
+	FILE* filePtr = file::FileSystem::OpenFile(std::wstring(filePath.CString()));
 	if (filePtr == nullptr) { return false; }
-	Directory = file::FileSystem::GetDirectory(unicode::ToUtf8String(filePath));
+	Directory = gu::string(file::FileSystem::GetDirectory(unicode::ToUtf8String(std::wstring(filePath.CString()))).c_str());
 	/*-------------------------------------------------------------------
 	-             Read Data
 	---------------------------------------------------------------------*/
@@ -50,18 +50,18 @@ bool PMDFile::Load(const std::wstring& filePath)
 }
 PMDFile::~PMDFile()
 {
-	Vertices           .clear(); Vertices           .shrink_to_fit();
-	Indices            .clear(); Indices            .shrink_to_fit();
-	Materials          .clear(); Materials          .shrink_to_fit();
-	Bones              .clear(); Bones              .shrink_to_fit();
-	BoneIKs            .clear(); BoneIKs            .shrink_to_fit();
-	FaceExpressions    .clear(); FaceExpressions    .shrink_to_fit();
-	FaceLabelIndices   .clear(); FaceLabelIndices   .shrink_to_fit();
-	BoneDisplayNameList.clear(); BoneDisplayNameList.shrink_to_fit();
-	BoneDisplayList    .clear(); BoneDisplayList    .shrink_to_fit();
-	RigidBodies        .clear(); RigidBodies        .shrink_to_fit();
-	Joints             .clear(); Joints             .shrink_to_fit();
-	ToonTextureList    .clear(); ToonTextureList    .shrink_to_fit();
+	Vertices           .Clear(); Vertices           .ShrinkToFit();
+	Indices            .Clear(); Indices            .ShrinkToFit();
+	Materials          .Clear(); Materials          .ShrinkToFit();
+	Bones              .Clear(); Bones              .ShrinkToFit();
+	BoneIKs            .Clear(); BoneIKs            .ShrinkToFit();
+	FaceExpressions    .Clear(); FaceExpressions    .ShrinkToFit();
+	FaceLabelIndices   .Clear(); FaceLabelIndices   .ShrinkToFit();
+	BoneDisplayNameList.Clear(); BoneDisplayNameList.ShrinkToFit();
+	BoneDisplayList    .Clear(); BoneDisplayList    .ShrinkToFit();
+	RigidBodies        .Clear(); RigidBodies        .ShrinkToFit();
+	Joints             .Clear(); Joints             .ShrinkToFit();
+	ToonTextureList    .Clear(); ToonTextureList    .ShrinkToFit();
 }
 #pragma region PMDFileReadFunction
 void PMDFile::ReadVertices           (FILE* filePtr)
@@ -69,7 +69,7 @@ void PMDFile::ReadVertices           (FILE* filePtr)
 	UINT32 vertexCount = 0;
 	fread_s(&vertexCount, sizeof(vertexCount), sizeof(UINT32), 1, filePtr);
 
-	Vertices.resize(vertexCount);
+	Vertices.Resize(vertexCount);
 	for (auto& vertex : Vertices) { vertex.Read(filePtr); }
 }
 void PMDFile::ReadIndices            (FILE* filePtr)
@@ -77,8 +77,8 @@ void PMDFile::ReadIndices            (FILE* filePtr)
 	UINT32 count;
 	fread_s(&count, sizeof(count), sizeof(UINT32), 1, filePtr);
 
-	Indices.resize(count);
-	fread_s(Indices.data(), Indices.size() * sizeof(UINT16), sizeof(UINT16), Indices.size(), filePtr);
+	Indices.Resize(count);
+	fread_s(Indices.Data(), Indices.Size() * sizeof(UINT16), sizeof(UINT16), Indices.Size(), filePtr);
 
 }
 void PMDFile::ReadMaterials          (FILE* filePtr)
@@ -86,7 +86,7 @@ void PMDFile::ReadMaterials          (FILE* filePtr)
 	UINT32 count;
 	fread_s(&count, sizeof(count), sizeof(UINT32), 1, filePtr);
 
-	Materials.resize(count);
+	Materials.Resize(count);
 	for (auto& material : Materials)
 	{
 		material.Read(filePtr, Directory);
@@ -97,7 +97,7 @@ void PMDFile::ReadBones              (FILE* filePtr)
 	UINT16 boneCount;
 	fread_s(&boneCount, sizeof(boneCount), sizeof(UINT16), 1, filePtr);
 
-	Bones.resize(boneCount);
+	Bones.Resize(boneCount);
 	for (auto& bone : Bones) { bone.Read(filePtr); }
 }
 void PMDFile::ReadBoneIKs            (FILE* filePtr)
@@ -105,7 +105,7 @@ void PMDFile::ReadBoneIKs            (FILE* filePtr)
 	UINT16 ikCount;
 	fread_s(&ikCount, sizeof(ikCount), sizeof(UINT16), 1, filePtr);
 
-	BoneIKs.resize(ikCount);
+	BoneIKs.Resize(ikCount);
 	for (auto& ik : BoneIKs) { ik.Read(filePtr); }
 }
 void PMDFile::ReadFaceExpressions    (FILE* filePtr)
@@ -113,13 +113,13 @@ void PMDFile::ReadFaceExpressions    (FILE* filePtr)
 	UINT16 faceCount;
 	fread_s(&faceCount, sizeof(faceCount), sizeof(UINT16), 1, filePtr);
 
-	FaceExpressions.resize(faceCount);
+	FaceExpressions.Resize(faceCount);
 	for (auto& face : FaceExpressions) { face.Read(filePtr); }
 
 	UINT8 faceLabelIndexCount;
 	fread_s(&faceLabelIndexCount, sizeof(faceLabelIndexCount), sizeof(UINT8), 1, filePtr);
 
-	FaceLabelIndices.resize(faceLabelIndexCount);
+	FaceLabelIndices.Resize(faceLabelIndexCount);
 	for (auto& index : FaceLabelIndices)
 	{
 		fread_s(&index, sizeof(index), sizeof(UINT16), 1, filePtr);
@@ -130,7 +130,7 @@ void PMDFile::ReadBoneDisplayNameList(FILE* filePtr)
 	UINT8 boneDisplayNameCount;
 	fread_s(&boneDisplayNameCount, sizeof(boneDisplayNameCount), sizeof(UINT8), 1, filePtr);
 
-	BoneDisplayNameList.resize(boneDisplayNameCount);
+	BoneDisplayNameList.Resize(boneDisplayNameCount);
 	for (auto& name : BoneDisplayNameList) { name.Read(filePtr); }
 }
 void PMDFile::ReadBoneDisplayList    (FILE* filePtr)
@@ -138,7 +138,7 @@ void PMDFile::ReadBoneDisplayList    (FILE* filePtr)
 	UINT32 boneDisplayCount;
 	fread_s(&boneDisplayCount, sizeof(boneDisplayCount), sizeof(UINT32), 1, filePtr);
 
-	BoneDisplayList.resize(boneDisplayCount);
+	BoneDisplayList.Resize(boneDisplayCount);
 	for (auto& display : BoneDisplayList) { display.Read(filePtr); }
 }
 void PMDFile::ReadLocalizeData       (FILE* filePtr)
@@ -173,7 +173,7 @@ void PMDFile::ReadToonTextures       (FILE* filePtr)
 {
 	size_t toonTextureIndex = 1;
 
-	ToonTextureList.resize(10);
+	ToonTextureList.Resize(10);
 	if (feof(filePtr) == NULL)
 	{
 		/*-------------------------------------------------------------------
@@ -184,8 +184,8 @@ void PMDFile::ReadToonTextures       (FILE* filePtr)
 			std::stringstream stringStream;
 			stringStream << "toon" << std::setfill('0') << std::setw(2) << toonTextureIndex << ".bmp";
 
-			std::string fileName = Directory + "toon/" + stringStream.str();
-			name = fileName;
+			std::string fileName = std::string(Directory.CString()) + "toon/" + stringStream.str();
+			name = gu::string(fileName.c_str());
 			toonTextureIndex++;
 		}
 	}
@@ -199,9 +199,9 @@ void PMDFile::ReadToonTextures       (FILE* filePtr)
 			char temp[100];
 			fread_s(&temp, sizeof(temp), sizeof(char), sizeof(temp), filePtr);
 
-			std::string filePath = Directory + "/";
+			std::string filePath = std::string(Directory.CString()) + "/";
 			filePath += std::string(temp, '\0');
-			toonTextureName = filePath;
+			toonTextureName = gu::string(filePath.c_str());
 		}
 	}
 	
@@ -210,8 +210,8 @@ void PMDFile::ReadPhysics            (FILE* filePtr)
 {
 	if (feof(filePtr) == NULL) 
 	{
-		RigidBodies.clear(); RigidBodies.shrink_to_fit(); 
-		Joints.clear(); Joints.shrink_to_fit();
+		RigidBodies.Clear(); RigidBodies.ShrinkToFit(); 
+		Joints.Clear(); Joints.ShrinkToFit();
 		return;
 	}
 	/*-------------------------------------------------------------------
@@ -220,7 +220,7 @@ void PMDFile::ReadPhysics            (FILE* filePtr)
 	UINT32 rigidBodyCount;
 	fread_s(&rigidBodyCount, sizeof(rigidBodyCount), sizeof(UINT32), 1, filePtr);
 
-	RigidBodies.resize(rigidBodyCount);
+	RigidBodies.Resize(rigidBodyCount);
 	for (auto& rigidBody : RigidBodies) { rigidBody.Read(filePtr); }
 	/*-------------------------------------------------------------------
 	-             Read Joints
@@ -228,7 +228,7 @@ void PMDFile::ReadPhysics            (FILE* filePtr)
 	UINT32 jointCount;
 	fread_s(&jointCount, sizeof(jointCount), sizeof(UINT32), 1, filePtr);
 
-	Joints.resize(jointCount);
+	Joints.Resize(jointCount);
 	for (auto& joint : Joints) { joint.Read(filePtr); }
 }
 #pragma endregion PMDFileReadFunction
@@ -244,7 +244,7 @@ void PMDVertex         ::Read(FILE* filePtr)
 {
 	fread_s(this, sizeof(pmd::PMDVertex), sizeof(pmd::PMDVertex), 1, filePtr);
 }
-void PMDMaterial       ::Read(FILE* filePtr, const std::string& directory)
+void PMDMaterial       ::Read(FILE* filePtr, const gu::string& directory)
 {
 	fread_s(&Diffuse      , sizeof(Diffuse      ), sizeof(Float4), 1, filePtr);
 	fread_s(&SpecularPower, sizeof(SpecularPower), sizeof(float ), 1, filePtr);
@@ -253,7 +253,7 @@ void PMDMaterial       ::Read(FILE* filePtr, const std::string& directory)
 	fread_s(&ToonID       , sizeof(ToonID       ), sizeof(UINT8 ), 1, filePtr);
 	fread_s(&EdgeFlag     , sizeof(EdgeFlag     ), sizeof(UINT8 ), 1, filePtr);
 	fread_s(&IndexCount   , sizeof(IndexCount   ), sizeof(UINT32), 1, filePtr);
-	std::string textureName; ReadPMDString(filePtr, &textureName, 20);
+	gu::string textureName; ReadPMDString(filePtr, &textureName, 20);
 	ReadTextureName(directory, textureName);
 }
 void PMDBone           ::Read(FILE* filePtr)
@@ -273,7 +273,7 @@ void PMDBoneIK         ::Read(FILE* filePtr)
 	fread_s(&IterationCount, sizeof(IterationCount), sizeof(UINT16), 1, filePtr);
 	fread_s(&AngleLimit    , sizeof(AngleLimit)    , sizeof(float) , 1, filePtr);
 
-	Chains.resize(IKChainLength);
+	Chains.Resize(IKChainLength);
 	for (auto& chain : Chains)
 	{
 		fread_s(&chain, sizeof(chain), sizeof(UINT16), 1, filePtr);
@@ -284,8 +284,8 @@ void PMDFaceExpression ::Read(FILE* filePtr)
 	ReadPMDString(filePtr, &FaceExpressionName, 20);
 	fread_s(&VertexNum         , sizeof(VertexNum)         , sizeof(UINT32)       , 1 , filePtr);
 	fread_s(&FaceExpressionType, sizeof(FaceExpressionType), sizeof(pmd::FacePart), 1 , filePtr);
-	Vertices.resize(VertexNum);
-	Indices .resize(VertexNum);
+	Vertices.Resize(VertexNum);
+	Indices .Resize(VertexNum);
 	for (UINT i = 0; i < VertexNum; ++i)
 	{
 		switch (FaceExpressionType)
@@ -359,9 +359,10 @@ void PMDBoneDisplayName::ReadExtension(FILE* filePtr)
 	ReadPMDString(filePtr, &BoneDisplayEnglishName, 50);
 }
 
-void PMDMaterial::ReadTextureName(const std::string& directory, const std::string& textureName)
+void PMDMaterial::ReadTextureName(const gu::string& directory, const gu::string& textureName)
 {
-	if (textureName.length() != 0) // Whether the file exists or not
+	const auto stdTextureName = std::string(textureName.CString());
+	if (textureName.Size() != 0) // Whether the file exists or not
 	{
 		/*-------------------------------------------------------------------
 		-             Exist Check Splitter and Get FilePath Name
@@ -369,32 +370,32 @@ void PMDMaterial::ReadTextureName(const std::string& directory, const std::strin
 		/*-------------------------------------------------------------------
 		-             In case existance splitter
 		---------------------------------------------------------------------*/
-		if (std::count(textureName.begin(), textureName.end(), '*') > 0)
+		if (std::count(stdTextureName.begin(), stdTextureName.end(), '*') > 0)
 		{
-			auto fileNamePair = FileSystem::Split(textureName);
+			auto fileNamePair = FileSystem::Split(stdTextureName);
 			/*-------------------------------------------------------------------
 			-             Get FilePath Name
 			---------------------------------------------------------------------*/
 			if (FileSystem::GetExtension(fileNamePair.first) == "sph")
 			{
-				TextureFileName = directory + fileNamePair.second;
-				SphereFileName  = directory + fileNamePair.first;
+				TextureFileName = directory + gu::string(fileNamePair.second.c_str());
+				SphereFileName  = directory + gu::string(fileNamePair.first.c_str());
 			}
 			else if (FileSystem::GetExtension(fileNamePair.first) == "spa")
 			{
-				TextureFileName = directory  + fileNamePair.second;
-				SphereFileName  = directory  + fileNamePair.first;
+				TextureFileName = directory  + gu::string(fileNamePair.second.c_str());
+				SphereFileName  = directory  + gu::string(fileNamePair.first.c_str());
 			}
 			else
 			{
-				TextureFileName = directory  + fileNamePair.first;
+				TextureFileName = directory  + gu::string(fileNamePair.first.c_str());
 				if (FileSystem::GetExtension(fileNamePair.second) == "sph")
 				{
-					SphereFileName = directory  + fileNamePair.second;
+					SphereFileName = directory  + gu::string(fileNamePair.second.c_str());
 				}
 				else if (FileSystem::GetExtension(fileNamePair.second) == "spa")
 				{
-					SphereFileName = directory  + fileNamePair.second;
+					SphereFileName = directory  + gu::string(fileNamePair.second.c_str());
 				}
 				else
 				{
@@ -411,12 +412,12 @@ void PMDMaterial::ReadTextureName(const std::string& directory, const std::strin
 			/*-------------------------------------------------------------------
 			-             Get FilePath Name
 			---------------------------------------------------------------------*/
-			if (FileSystem::GetExtension(textureName) == "sph")
+			if (FileSystem::GetExtension(stdTextureName) == "sph")
 			{
 				SphereFileName  = directory + textureName;
 				TextureFileName = "";
 			}
-			else if (FileSystem::GetExtension(textureName) == "spa")
+			else if (FileSystem::GetExtension(stdTextureName) == "spa")
 			{
 				SphereFileName = directory  + textureName;
 				TextureFileName = "";
@@ -429,9 +430,9 @@ void PMDMaterial::ReadTextureName(const std::string& directory, const std::strin
 	}
 }
 #pragma endregion EachReadFunction
-void ReadPMDString(FILE* filePtr, std::string* string, UINT32 bufferSize)
+void ReadPMDString(FILE* filePtr, gu::string* string, UINT32 bufferSize)
 {
 	std::string utf8String(bufferSize, '\0');
 	fread_s(utf8String.data(), sizeof(char8_t) * utf8String.size(), sizeof(char8_t), utf8String.size(), filePtr);
-	*string = utf8String;
+	*string = gu::string(utf8String.c_str());
 }

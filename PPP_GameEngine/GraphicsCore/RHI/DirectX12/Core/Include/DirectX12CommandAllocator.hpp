@@ -40,17 +40,25 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		/* @brief : Clean up the command pool. 
-		   @note : All binded command lists must be closed before calling this function.
-		           In addition, until command execution in GPU, this function mustn't be called.*/
+		/*---------------------------------------------------------------
+		　　　　　@brief : コマンドアロケーターをリセットします (コマンドバッファの削除)
+			   @note 　: あらゆるバインドされたコマンドリストはこの関数を呼ばれる前に閉じておく必要があります
+						加えて, GPU上のコマンドが実行されるまで, この関数は呼んではなりません
+		-----------------------------------------------------------------*/
 		void CleanUp() override;
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/*---------------------------------------------------------------
+		　　　　　@brief : コマンドリストの種類を返します (Graphics, compute, copy)
+		-----------------------------------------------------------------*/
 		CommandAllocatorComPtr GetAllocator() { return _commandAllocator; }
 
-		void SetName(const std::wstring& name) override;
+		/*---------------------------------------------------------------
+		　　　　　@brief : デバッグ用の表示名を設定します
+		-----------------------------------------------------------------*/
+		void SetName(const gu::tstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -61,7 +69,7 @@ namespace rhi::directX12
 		explicit RHICommandAllocator(
 			const gu::SharedPointer<rhi::core::RHIDevice>& device, 
 			const core::CommandListType type,
-			const std::wstring& name);
+			const gu::tstring& name);
 
 	protected:
 		/****************************************************************************

@@ -11,12 +11,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "Platform/Core/Include/CorePlatformMacros.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIMultiGPUMask.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <optional>
 #include <map> // vulkanだめだったらunordered_mapも追加.
-#include <Windows.h>
+
+#if PLATFORM_OS_WINDOWS
+#include <Windows.h> // 今後Platform依存を脱却予定
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -47,6 +53,7 @@ namespace rhi::core
 	class GPUSampler;
 	class GPUBuffer;
 	class GPUTexture;
+	class RHIQuery;
 	class GPUPipelineFactory;
 	class RayTracingGeometry;
 	class BLASBuffer;
@@ -76,19 +83,19 @@ namespace rhi::core
 #pragma region Create Resource
 		virtual void                                        SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) = 0;
 		
-		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
+		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
 		
 		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
 		
-		virtual gu::SharedPointer<RHIFence>                   CreateFence(const std::uint64_t fenceValue = 0, const std::wstring& name = L"Fence") = 0;
+		virtual gu::SharedPointer<RHIFence>                   CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("Fence")) = 0;
 		
-		virtual gu::SharedPointer<RHICommandList>             CreateCommandList(const gu::SharedPointer<RHICommandAllocator>& commandAllocator, const std::wstring& name = L"CommandList") = 0;
+		virtual gu::SharedPointer<RHICommandList>             CreateCommandList(const gu::SharedPointer<RHICommandAllocator>& commandAllocator, const gu::tstring& name = SP("CommandList")) = 0;
 		
-		virtual gu::SharedPointer<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type, const std::wstring& name = L"CommandQueue") = 0;
+		virtual gu::SharedPointer<RHICommandQueue>            CreateCommandQueue(const core::CommandListType type, const gu::tstring& name = SP("CommandQueue")) = 0;
 		
-		virtual gu::SharedPointer<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const std::wstring& name = L"CommandAllocator") = 0;
+		virtual gu::SharedPointer<RHICommandAllocator>        CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name = SP("CommandAllocator")) = 0;
 		
-		virtual gu::SharedPointer<RHISwapchain>               CreateSwapchain(const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const std::uint32_t vsync = 0, const bool isValidHDR = true) = 0;
+		virtual gu::SharedPointer<RHISwapchain>               CreateSwapchain(const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const gu::uint32 vsync = 0, const bool isValidHDR = true) = 0;
 		
 		virtual gu::SharedPointer<RHISwapchain>               CreateSwapchain(const SwapchainDesc& desc) = 0;
 
@@ -96,7 +103,7 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;
 		
-		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const std::vector<ResourceLayoutElement>& elements = {}, const std::vector<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt, const std::wstring& name = L"ResourceLayout") = 0;
+		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<ResourceLayoutElement>& elements = {}, const gu::DynamicArray<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name = SP("ResourceLayout")) = 0;
 		
 		virtual gu::SharedPointer<GPUPipelineFactory>         CreatePipelineFactory() = 0;
 		
@@ -104,19 +111,19 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
 		
-		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const std::vector<Attachment>& colors, const std::optional<Attachment>& depth) = 0;
+		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<Attachment>& colors, const std::optional<Attachment>& depth) = 0;
 		
 		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const Attachment& color, const std::optional<Attachment>& depth) = 0;
 		
-		virtual gu::SharedPointer<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const gu::SharedPointer<GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) = 0;
+		virtual gu::SharedPointer<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const gu::SharedPointer<GPUTexture>& texture, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) = 0;
 		
-		virtual gu::SharedPointer<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const gu::SharedPointer<GPUBuffer>& buffer, const gu::SharedPointer<RHIDescriptorHeap>& customHeap = nullptr) = 0;
+		virtual gu::SharedPointer<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const gu::SharedPointer<GPUBuffer>& buffer, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<RHIDescriptorHeap>& customHeap = nullptr) = 0;
 		
 		virtual gu::SharedPointer<GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
 		
-		virtual gu::SharedPointer<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData, const std::wstring& name = L"") = 0;
+		virtual gu::SharedPointer<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) = 0;
 		
-		virtual gu::SharedPointer<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name = L"") = 0;
+		virtual gu::SharedPointer<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("")) = 0;
 		
 		virtual gu::SharedPointer<GPUTexture>                 CreateTextureEmpty() = 0;
 		
@@ -126,25 +133,32 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<ASInstance>                 CreateASInstance(
 			const gu::SharedPointer<BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform, 
-			const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex, 
-			const std::uint32_t instanceMask = 0xFF, 
+			const gu::uint32 instanceID, const gu::uint32 instanceContributionToHitGroupIndex, 
+			const gu::uint32 instanceMask = 0xFF, 
 			const RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) = 0;
 		
-		virtual gu::SharedPointer<BLASBuffer>                 CreateRayTracingBLASBuffer(const std::vector<gu::SharedPointer<RayTracingGeometry>>& geometryDesc, const BuildAccelerationStructureFlags flags) = 0;
+		virtual gu::SharedPointer<BLASBuffer>                 CreateRayTracingBLASBuffer(const gu::DynamicArray<gu::SharedPointer<RayTracingGeometry>>& geometryDesc, const BuildAccelerationStructureFlags flags) = 0;
 		
-		virtual gu::SharedPointer<TLASBuffer>                 CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) = 0;
+		virtual gu::SharedPointer<TLASBuffer>                 CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) = 0;
 		
+		virtual gu::SharedPointer<RHIQuery> CreateQuery(const core::QueryHeapType heapType) = 0;
 #pragma endregion Create Resource
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		virtual gu::SharedPointer<RHIDescriptorHeap> GetDefaultHeap(const core::DescriptorHeapType heapType) = 0;
 		
-		virtual std::uint32_t GetShadingRateImageTileSize() const = 0;
+		virtual gu::uint32 GetShadingRateImageTileSize() const = 0;
 		
 		gu::SharedPointer<RHIDisplayAdapter> GetDisplayAdapter() const noexcept { return _adapter; }
 		
-		virtual void SetName(const std::wstring& name) = 0;
+		/*----------------------------------------------------------------------
+		*  @brief : Deviceを使用するときにどのGPUを使用するかのビットマスクを取得します
+		/*----------------------------------------------------------------------*/
+		      RHIMultiGPUMask& GetGPUMask()       { return _gpuMask; }
+		const RHIMultiGPUMask& GetGPUMask() const { return _gpuMask; }
+
+		virtual void SetName(const gu::tstring& name) = 0;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check
@@ -176,6 +190,8 @@ namespace rhi::core
 		virtual bool IsSupportedNative16bitOperation() const = 0;
 
 		virtual bool IsSupportedAtomicOperation() const = 0;
+
+
 	protected:
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -187,8 +203,8 @@ namespace rhi::core
 			_adapter.Reset(); 
 		}
 
-		RHIDevice(const gu::SharedPointer<RHIDisplayAdapter>& adapter) 
-			: _adapter(adapter) {};
+		RHIDevice(const gu::SharedPointer<RHIDisplayAdapter>& adapter, const RHIMultiGPUMask& mask = RHIMultiGPUMask::SingleGPU()) 
+			: _adapter(adapter), _gpuMask(mask) {};
 
 		/****************************************************************************
 		**                Protected Function
@@ -200,6 +216,8 @@ namespace rhi::core
 		/* @brief : Use Display Apapter (GPU)*/
 		gu::SharedPointer<RHIDisplayAdapter> _adapter = nullptr;
 
+		// @brief : GPUのインデックス
+		RHIMultiGPUMask _gpuMask = RHIMultiGPUMask::SingleGPU();
 	};
 }
 #endif

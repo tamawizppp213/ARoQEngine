@@ -178,7 +178,7 @@ namespace gu
 		/*----------------------------------------------------------------------*/
 		__forceinline void ReleaseObserverReference() 
 		{
-			if (!_referenceController) { return; }
+			if (_referenceController == nullptr) { return; }
 			
 			_referenceController->ReleaseObserverReference(); 
 

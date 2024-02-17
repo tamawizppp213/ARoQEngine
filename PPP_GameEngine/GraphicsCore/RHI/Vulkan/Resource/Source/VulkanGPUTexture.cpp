@@ -23,7 +23,7 @@
    現時点では泣く泣くDirectXTexを使用する*/
 #include <stdexcept>
 
-
+#pragma warning(disable: 4189)
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -57,17 +57,17 @@ namespace
 }
 
 #pragma region Constructor and Destructor
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const std::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::tstring& name)
 	: core::GPUTexture(device, metaData, name)
 {
 	Prepare();
 }
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const std::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::tstring& name)
 	: core::GPUTexture(device, name)
 {
 	_memory = nullptr;
 }
-GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const std::wstring& name)
+GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const VkImage image, const gu::tstring& name)
 	: core::GPUTexture(device, metaData, name), _image(image)
 {
 	_memory = nullptr;
@@ -89,16 +89,16 @@ GPUTexture::~GPUTexture()
 /****************************************************************************
 *                     Load
 *************************************************************************//**
-*  @fn        void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
+*  @fn        void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 *
 *  @brief     Load texture
 *
-*  @param[in] const std::wstring& filePath
+*  @param[in] const gu::tstring& filePath
 *  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
+void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 {
 #ifdef _DEBUG
 	assert(_device);
@@ -106,15 +106,16 @@ void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core
 	assert(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
 #endif
 
-	const auto& vkDevice      = static_cast<vulkan::RHIDevice*>(_device.Get())->GetDevice();
+	const auto vkDevice      = static_cast<vulkan::RHIDevice*>(_device.Get())->GetDevice();
 	const auto vkCommandList = static_cast<vulkan::RHICommandList*>(commandList.Get())->GetCommandList();
 
 	/*-------------------------------------------------------------------
 	-                Choose Extension and Load Texture Data
 	---------------------------------------------------------------------*/
-	const std::wstring extension    = file::FileSystem::GetExtension(filePath);
-	const std::wstring fileName     = file::FileSystem::GetFileName(filePath, false);
-	std::string utf8FilePath        = unicode::ToUtf8String(filePath);
+	const auto stdFilePath  = std::wstring(filePath.CString());
+	const auto extension    = file::FileSystem::GetExtension(stdFilePath);
+	const auto fileName     = file::FileSystem::GetFileName(stdFilePath, false);
+	std::string utf8FilePath        = unicode::ToUtf8String(stdFilePath);
 
 	/*-------------------------------------------------------------------
 	-    Select the appropriate texture loading function for each extension
@@ -124,19 +125,19 @@ void GPUTexture::Load(const std::wstring& filePath, const gu::SharedPointer<core
 	ScratchImage scratchImage = {};
 	if (extension == L"tga")
 	{
-		LoadFromTGAFile(filePath.c_str(), TGA_FLAGS_NONE, &dxMetaData, scratchImage);
+		LoadFromTGAFile(filePath.CString(), TGA_FLAGS_NONE, &dxMetaData, scratchImage);
 	}
 	else if (extension == L"dds")
 	{
-		LoadFromDDSFile(filePath.c_str(), DDS_FLAGS_NONE, &dxMetaData, scratchImage);
+		LoadFromDDSFile(filePath.CString(), DDS_FLAGS_NONE, &dxMetaData, scratchImage);
 	}
 	else if (extension == L"hdr")
 	{
-		LoadFromHDRFile(filePath.c_str(), &dxMetaData, scratchImage);
+		LoadFromHDRFile(filePath.CString(), &dxMetaData, scratchImage);
 	}
 	else
 	{
-		LoadFromWICFile(filePath.c_str(), WIC_FLAGS_NONE, &dxMetaData, scratchImage);
+		LoadFromWICFile(filePath.CString(), WIC_FLAGS_NONE, &dxMetaData, scratchImage);
 	}
 
 	auto image = scratchImage.GetImage(0, 0, 0);
@@ -289,12 +290,12 @@ void GPUTexture::Prepare()
 /****************************************************************************
 *                     SetName
 *************************************************************************//**
-*  @fn        void GPUBuffer::SetName(const std::wstring& name)
+*  @fn        void GPUBuffer::SetName(const gu::tstring& name)
 *  @brief     Set Buffer Name
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::tstring& name
 *  @return 　　void
 *****************************************************************************/
-void GPUTexture::SetName(const std::wstring& name)
+void GPUTexture::SetName(const gu::tstring& name)
 {
 	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_IMAGE, reinterpret_cast<std::uint64_t>(_image));

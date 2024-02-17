@@ -13,8 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <string>
-#include <vector>
+#include "GameUtility/Base/Include/GUString.hpp"
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ namespace gc::rendering
 		ShadowMap(const LowLevelGraphicsEnginePtr& engine, 
 			const std::uint32_t width, 
 			const std::uint32_t height,
-			const std::wstring& addName = L"");
+			const gu::tstring& addName = SP(""));
 		
 		~ShadowMap();
 
@@ -76,9 +76,9 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareVertexAndIndexBuffer(const std::wstring& name);
-		void PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const std::wstring& name);
-		void PreparePipelineState(const std::wstring& name);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& name);
+		void PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 
 		/****************************************************************************
 		**                Protected Member Variables
@@ -92,11 +92,11 @@ namespace gc::rendering
 		ResourceLayoutPtr   _resourceLayout = nullptr;
 
 		// texture rectangle mesh
-		std::vector<BufferPtr> _vertexBuffers = {};
-		std::vector<BufferPtr> _indexBuffers = {};
+		gu::DynamicArray<BufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<BufferPtr> _indexBuffers = {};
 
 		// registered game models.
-		std::vector<GameModelPtr> _gameModels = {};
+		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		// gaussian blur for the VSM method.
 		GaussianBlurPtr _gaussianBlur = nullptr;

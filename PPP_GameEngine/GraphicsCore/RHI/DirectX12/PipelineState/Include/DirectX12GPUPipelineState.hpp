@@ -44,7 +44,7 @@ namespace rhi::directX12
 		PipelineStateComPtr GetPipeline() const noexcept { return _graphicsPipeline; }
 		
 		// @brief : This function is needed to call after calling completeSetting function 
-		void SetName(const std::wstring& name) override { _graphicsPipeline->SetName(name.c_str());}
+		void SetName(const gu::tstring& name) override { _graphicsPipeline->SetName(name.CString());}
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -89,7 +89,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		PipelineStateComPtr GetPipeline() const noexcept { return _computePipeline; }
 		
-		void SetName(const std::wstring& name) override;
+		void SetName(const gu::tstring& name) override;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

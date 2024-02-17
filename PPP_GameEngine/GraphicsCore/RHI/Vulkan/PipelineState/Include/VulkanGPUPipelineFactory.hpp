@@ -35,7 +35,7 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		gu::SharedPointer<core::GPUInputAssemblyState> CreateInputAssemblyState(
-			const std::vector<core::InputLayoutElement>& elements,
+			const gu::DynamicArray<core::InputLayoutElement>& elements,
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList) override;
 
 		gu::SharedPointer<core::GPURasterizerState> CreateRasterizerState(
@@ -47,7 +47,7 @@ namespace rhi::vulkan
 		gu::SharedPointer<core::GPUShaderState> CreateShaderState() override;
 
 		gu::SharedPointer<core::GPUBlendState> CreateBlendState(
-			const std::vector<core::BlendProperty>& properties = { core::BlendProperty() }) override;
+			const gu::DynamicArray<core::BlendProperty>& properties = { core::BlendProperty() }) override;
 
 		gu::SharedPointer<core::GPUBlendState> CreateSingleBlendState(
 			const core::BlendProperty& blendProperty = core::BlendProperty()

@@ -25,7 +25,7 @@ namespace gu
 	};
 }
 
-#define SHARED_POINTER_DEFAULT_THREAD_MODE (SharedPointerThreadMode::NotThreadSafe)
+#define SHARED_POINTER_DEFAULT_THREAD_MODE (SharedPointerThreadMode::ThreadSafe)
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////

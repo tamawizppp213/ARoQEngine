@@ -37,10 +37,10 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-		void Compile(const core::ShaderType type, const std::wstring& fileName, const std::wstring& entryPoint = L"main", const float version = 6.0f, const std::vector<std::wstring>& includeDirectories = {}, const std::vector<std::wstring>& defines = {}) override;
+		void Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint = SP("main"), const float version = 6.0f, const gu::DynamicArray<gu::tstring>& includeDirectories = {}, const gu::DynamicArray<gu::tstring>& defines = {}) override;
 
 		// @brief : Offline Compile, already compiled fileName(filePath)
-		void LoadBinary(const core::ShaderType type, const std::wstring& fileName) override ;
+		void LoadBinary(const core::ShaderType type, const gu::tstring& fileName) override ;
 		
 		/****************************************************************************
 		**                Public Member Variables
@@ -63,9 +63,9 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		BlobComPtr DxCompile(const std::wstring& fileName, const std::wstring& entryPoint, const std::wstring& target, const std::vector<std::wstring>& includeDirectories, const std::vector<std::wstring>& defines);
+		BlobComPtr DxCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const gu::DynamicArray<gu::tstring>& includeDirectories, const gu::DynamicArray<gu::tstring>& defines);
 		
-		BlobComPtr DxCompile(const std::wstring& fileName, const D3D_SHADER_MACRO* defines, const std::wstring& entryPoint, const std::wstring& target);
+		BlobComPtr DxCompile(const gu::tstring& fileName, const D3D_SHADER_MACRO* defines, const gu::tstring& entryPoint, const gu::tstring& target);
 		
 		/****************************************************************************
 		**                Protected Member Variables

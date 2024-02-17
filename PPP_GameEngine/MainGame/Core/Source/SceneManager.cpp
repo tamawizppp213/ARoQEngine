@@ -17,7 +17,7 @@
 #include "MainGame/Sample/Include/SampleUI.hpp"
 #include "MainGame/Sample/Include/SampleModel.hpp"
 #include "MainGame/Sample/Include/SampleURP.hpp"
-#include "MainGame/Sample/Include/SampleRayTracingRectangle.hpp"
+#include "MainGame/Sample/Include/SampleSky.hpp"
 #include "MainGame/Sample/Include/SampleCollisionDetection.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 
@@ -63,7 +63,6 @@ void SceneManager::CallSceneInitialize( const GameTimerPtr& gameTimer)
 {
 	if (_currentScene.empty()) { return; }
 	_currentScene.top()->Initialize(_engine, gameTimer);
-	//GraphicsCoreEngine::Instance().OnInitializeRenderScene();
 }
 void SceneManager::CallSceneUpdate()
 {

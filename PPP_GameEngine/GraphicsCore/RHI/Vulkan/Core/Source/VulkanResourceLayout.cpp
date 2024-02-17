@@ -35,14 +35,14 @@ RHIResourceLayout::~RHIResourceLayout()
 	}
 }
 
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constants, const std::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constants, const gu::tstring& name)
 	:core::RHIResourceLayout(device, elements, samplers, constants)
 {
 	SetUp();
 	SetName(name);
 }
 
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant, const std::wstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant, const gu::tstring& name)
 	: core::RHIResourceLayout(device, element, sampler, constant)
 {
 	SetUp();
@@ -52,10 +52,10 @@ RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& d
 /****************************************************************************
 *                     SetUp
 *************************************************************************//**
-*  @fn        void RHIResourceLayout::SetUp(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+*  @fn        void RHIResourceLayout::SetUp(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
 *  @brief     Set up pipeline layout
-*  @param[in] const std::vector<core::ResourceLayoutElement>& elements
-*  @param[in] const std::vector<core::SamplerLayoutElement>& samplers
+*  @param[in] const gu::DynamicArray<core::ResourceLayoutElement>& elements
+*  @param[in] const gu::DynamicArray<core::SamplerLayoutElement>& samplers
 *  @param[in] std::optional<core::Constant32Bits>& constant32Bits
 *  @return Å@Å@void
 *****************************************************************************/
@@ -68,14 +68,14 @@ void RHIResourceLayout::SetUp()
 	-                 Find the max register space
 	---------------------------------------------------------------------*/
 	size_t maxRegisterSpace = 0;
-	for (const auto& element : _elements) { maxRegisterSpace = std::max(maxRegisterSpace, element.RegisterSpace + 1); }
-	for (const auto& sampler : _samplers) { maxRegisterSpace = std::max(maxRegisterSpace, sampler.RegisterSpace + 1); }
+	for (const auto& element : _desc.Elements) { maxRegisterSpace = std::max(maxRegisterSpace, element.RegisterSpace + 1); }
+	for (const auto& sampler : _desc.Samplers) { maxRegisterSpace = std::max(maxRegisterSpace, sampler.RegisterSpace + 1); }
 
-	std::vector<std::vector<VkDescriptorSetLayoutBinding>> bindings(maxRegisterSpace);
+	gu::DynamicArray<gu::DynamicArray<VkDescriptorSetLayoutBinding>> bindings(maxRegisterSpace);
 	/*-------------------------------------------------------------------
 	-                 Generate the binding infomation of elements
 	---------------------------------------------------------------------*/
-	for (const auto& element : _elements)
+	for (const auto& element : _desc.Elements)
 	{
 		const VkDescriptorSetLayoutBinding binding =
 		{
@@ -86,13 +86,13 @@ void RHIResourceLayout::SetUp()
 			.pImmutableSamplers = nullptr
 		};
 
-		bindings[element.RegisterSpace].push_back(binding);
+		bindings[element.RegisterSpace].Push(binding);
 	}
 
 	/*-------------------------------------------------------------------
 	-                 Generate the binding infomation of samplers
 	---------------------------------------------------------------------*/
-	for (const auto& sampler : _samplers)
+	for (const auto& sampler : _desc.Samplers)
 	{
 		const VkDescriptorSetLayoutBinding binding = 
 		{
@@ -104,22 +104,22 @@ void RHIResourceLayout::SetUp()
 		};
 		
 
-		bindings[sampler.RegisterSpace].push_back(binding);
+		bindings[sampler.RegisterSpace].Push(binding);
 	}
 
 	/*-------------------------------------------------------------------
 	-                Create Descriptor set layouts
 	---------------------------------------------------------------------*/
-	_descriptorSetLayouts = std::vector<VkDescriptorSetLayout>(maxRegisterSpace);
-	for (int i = 0; i < _descriptorSetLayouts.size(); ++i)
+	_descriptorSetLayouts = gu::DynamicArray<VkDescriptorSetLayout>(maxRegisterSpace);
+	for (int i = 0; i < _descriptorSetLayouts.Size(); ++i)
 	{
 		const VkDescriptorSetLayoutCreateInfo createInfo = 
 		{
 			.sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 			.pNext        = nullptr,
 			.flags        = 0,
-			.bindingCount = static_cast<std::uint32_t>(bindings[i].size()),
-			.pBindings    = bindings[i].data()
+			.bindingCount = static_cast<std::uint32_t>(bindings[i].Size()),
+			.pBindings    = bindings[i].Data()
 		};
 
 
@@ -133,11 +133,11 @@ void RHIResourceLayout::SetUp()
 	-                Create constant range
 	---------------------------------------------------------------------*/
 	VkPushConstantRange range = {};
-	if (_constant32Bits.has_value())
+	if (_desc.Constant32Bits.has_value())
 	{
 		range.offset     = 0;
-		range.size       = static_cast<std::uint32_t>(_constant32Bits->Count * sizeof(std::uint32_t));
-		range.stageFlags = EnumConverter::Convert(_constant32Bits->Visibility);
+		range.size       = static_cast<std::uint32_t>(_desc.Constant32Bits->Count * sizeof(std::uint32_t));
+		range.stageFlags = EnumConverter::Convert(_desc.Constant32Bits->Visibility);
 	}
 
 	/*-------------------------------------------------------------------
@@ -146,9 +146,9 @@ void RHIResourceLayout::SetUp()
 	VkPipelineLayoutCreateInfo layoutInfo = {};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	layoutInfo.flags = 0;
-	layoutInfo.setLayoutCount         = static_cast<std::uint32_t>(_descriptorSetLayouts.size());
-	layoutInfo.pushConstantRangeCount = _constant32Bits.has_value() ? 1 : 0;
-	layoutInfo.pSetLayouts            = _descriptorSetLayouts.data();
+	layoutInfo.setLayoutCount         = static_cast<std::uint32_t>(_descriptorSetLayouts.Size());
+	layoutInfo.pushConstantRangeCount = _desc.Constant32Bits.has_value() ? 1 : 0;
+	layoutInfo.pSetLayouts            = _descriptorSetLayouts.Data();
 	layoutInfo.pPushConstantRanges    = &range;
 
 	if (vkCreatePipelineLayout(vkDevice, &layoutInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
@@ -157,7 +157,7 @@ void RHIResourceLayout::SetUp()
 	}
 }
 
-void RHIResourceLayout::SetName(const std::wstring& name)
+void RHIResourceLayout::SetName(const gu::tstring& name)
 {
 	const auto device = gu::StaticPointerCast<vulkan::RHIDevice>(_device);
 	device->SetVkResourceName(name, VK_OBJECT_TYPE_PIPELINE_LAYOUT, reinterpret_cast<std::uint64_t>(_pipelineLayout));

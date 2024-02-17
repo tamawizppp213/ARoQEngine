@@ -113,11 +113,11 @@ void RHIDisplayAdapter::PrintInfo()
 	/*-------------------------------------------------------------------
 	-                  Print Adapter Name
 	---------------------------------------------------------------------*/
-	std::string adapterName
+	gu::string adapterName
 		= "\n//////////////////////////\n Adapter : ";
-	adapterName += _name;
+	adapterName += gu::string(_name.CString());
 	adapterName += "\n//////////////////////////\n";
-	OutputDebugStringA(adapterName.c_str());
+	OutputDebugStringA(adapterName.CString());
 
 	for (std::uint32_t i = 0; i < memoryProperties.memoryHeapCount; ++i)
 	{
@@ -225,19 +225,19 @@ VkPhysicalDeviceMemoryProperties RHIDisplayAdapter::GetMemoryProperties() const 
 * 
 *  @param[in] void
 * 
-*  @return 　 std::vector<VkExtensionProperties>
+*  @return 　 gu::DynamicArray<VkExtensionProperties>
 *****************************************************************************/
-std::vector<VkExtensionProperties> RHIDisplayAdapter::GetExtensionProperties() const noexcept
+gu::DynamicArray<VkExtensionProperties> RHIDisplayAdapter::GetExtensionProperties() const noexcept
 {
 	/*-------------------------------------------------------------------
 	-               Acquire extension infomation
 	---------------------------------------------------------------------*/
-	std::vector<VkExtensionProperties> extensionProperties;
+	gu::DynamicArray<VkExtensionProperties> extensionProperties;
 	{
 		UINT32 count = 0;
 		vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &count, nullptr);
-		extensionProperties.resize(count);
-		vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &count, extensionProperties.data());
+		extensionProperties.Resize(count);
+		vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &count, extensionProperties.Data());
 	}
 	return extensionProperties;
 }
@@ -245,27 +245,27 @@ std::vector<VkExtensionProperties> RHIDisplayAdapter::GetExtensionProperties() c
 /****************************************************************************
 *                     GetExtensionNameList
 *************************************************************************//**
-*  @fn        std::vector<const char*> RHIDisplayAdapter::GetExtensionNameList() const noexcept
+*  @fn        gu::DynamicArray<const char*> RHIDisplayAdapter::GetExtensionNameList() const noexcept
 * 
 *  @brief     Return all extension name list. 
 * 
 *  @param[in] void
 * 
-*  @return 　  std::vector<const char*>
+*  @return 　  gu::DynamicArray<const char*>
 *****************************************************************************/
-std::vector<std::string> RHIDisplayAdapter::GetExtensionNameList() const noexcept
+gu::DynamicArray<gu::string> RHIDisplayAdapter::GetExtensionNameList() const noexcept
 {
 	/*-------------------------------------------------------------------
 	-               Acquire extension infomation
 	---------------------------------------------------------------------*/
-	std::vector<VkExtensionProperties> extensionProperties = GetExtensionProperties();
+	gu::DynamicArray<VkExtensionProperties> extensionProperties = GetExtensionProperties();
 	/*-------------------------------------------------------------------
 	-               All Device Extensions : Enabled
 	---------------------------------------------------------------------*/
-	std::vector<std::string> extensions;
+	gu::DynamicArray<gu::string> extensions;
 	for (const auto& prop : extensionProperties)
 	{
-		extensions.push_back(prop.extensionName);
+		extensions.Push(prop.extensionName);
 	}
 	return extensions;
 }
@@ -279,19 +279,19 @@ std::vector<std::string> RHIDisplayAdapter::GetExtensionNameList() const noexcep
 * 
 *  @param[in] void
 * 
-*  @return 　 std::vector<VkExtensionProperties>
+*  @return 　 gu::DynamicArray<VkExtensionProperties>
 *****************************************************************************/
-std::vector<VkQueueFamilyProperties> RHIDisplayAdapter::GetQueueFamilyProperties() const noexcept
+gu::DynamicArray<VkQueueFamilyProperties> RHIDisplayAdapter::GetQueueFamilyProperties() const noexcept
 {
 	/*-------------------------------------------------------------------
 	-               Acquire extension infomation
 	---------------------------------------------------------------------*/
-	std::vector<VkQueueFamilyProperties> queueFamilyProperties;
+	gu::DynamicArray<VkQueueFamilyProperties> queueFamilyProperties;
 	{
 		UINT32 count = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &count, nullptr);
-		queueFamilyProperties.resize(count);
-		vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &count, queueFamilyProperties.data());
+		queueFamilyProperties.Resize(count);
+		vkGetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &count, queueFamilyProperties.Data());
 	}
 	return queueFamilyProperties;
 }

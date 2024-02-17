@@ -87,17 +87,17 @@ namespace gc
 
 		~ScreenSpaceReflection();
 
-		ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const SSRSettings& settings, const std::wstring& addName = L"");
+		ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const SSRSettings& settings, const gu::tstring& addName = SP(""));
 
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareVertexAndIndexBuffer(const std::wstring& name);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& name);
 		
-		void PrepareBuffer(const SSRSettings& setting, const std::wstring& addName);
+		void PrepareBuffer(const SSRSettings& setting, const gu::tstring& addName);
 
-		void PreparePipelineState(const std::wstring& addName);
+		void PreparePipelineState(const gu::tstring& addName);
 
 		void PrepareResourceView();
 
@@ -119,9 +119,9 @@ namespace gc
 		ResourceLayoutPtr _resourceLayout = nullptr;
 		PipelineStatePtr _pipeline = nullptr;
 
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 
-		std::vector<IndexBufferPtr>  _indexBuffers = {};
+		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
 
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

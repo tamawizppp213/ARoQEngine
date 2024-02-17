@@ -110,6 +110,16 @@ namespace rhi::core
 		
 		inline gu::SharedPointer<GPUShaderState>        GetDomainShader      () const noexcept { return _domainShaderState; }
 
+		inline bool HasVertexShader() const { return _vertexShaderState; }
+
+		inline bool HasPixelShader() const { return _pixelShaderState; }
+
+		inline bool HasGeometryShader() const { return _geometryShaderState; }
+
+		inline bool HasHullShader() const { return _hullShaderState; }
+
+		inline bool HasDomainShader() const { return _domainShaderState; }
+
 		inline void SetInputAssemblyState(const gu::SharedPointer<GPUInputAssemblyState>& inputAssembly)     { _inputAssemblyState = inputAssembly; }
 		
 		inline void SetRasterizerState   (const gu::SharedPointer<GPURasterizerState>   & rasterizerState)   { _rasterizerState    = rasterizerState; }
@@ -129,7 +139,7 @@ namespace rhi::core
 		inline void SetDomainShader  (const gu::SharedPointer<GPUShaderState>& domainShader)   { _domainShaderState   = (domainShader  ->GetShaderType() == ShaderType::Domain  ) ? domainShader   : nullptr; }
 		
 		// @brief : This function is needed to call after calling completeSetting function 
-		virtual void SetName(const std::wstring& name) = 0;
+		virtual void SetName(const gu::tstring& name) = 0;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -178,7 +188,7 @@ namespace rhi::core
 		*****************************************************************************/
 		void SetComputeShader(const gu::SharedPointer<GPUShaderState>& shaderState) { _computeShaderState = shaderState; };
 		
-		virtual void SetName(const std::wstring& name) = 0;
+		virtual void SetName(const gu::tstring& name) = 0;
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -220,7 +230,7 @@ namespace rhi::core
 		*****************************************************************************/
 		void SetShader(const gu::SharedPointer<GPUShaderState>& shaderState) { _rayTracingShaderState = shaderState; };
 		
-		virtual void SetName(const std::wstring& name) const = 0;
+		virtual void SetName(const gu::tstring& name) const = 0;
 		
 		/****************************************************************************
 		**                Constructor and Destructor

@@ -12,6 +12,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GUWeakPointer.hpp"
+#include "GameUtility/Base/Include/GUTypeTraits.hpp"
+#include "GameUtility/Base/Include/GUTypeCast.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -148,10 +150,9 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  Move Constructs a shared pointer
 		/*----------------------------------------------------------------------*/
-		SharedPointer(SharedPointer&& right) noexcept 
+		SharedPointer(SharedPointer&& right) noexcept : ObserverPointerBase(Forward<ObserverPointerBase>(right))
 		{
-			_elementPointer = right._elementPointer; _referenceController = right._referenceController;
-			right._elementPointer = nullptr; right._referenceController = nullptr;
+			
 		};
 
 		SharedPointer& operator=(SharedPointer&& right) noexcept
@@ -236,7 +237,10 @@ namespace gu
 
 		}
 
-		~EnableSharedFromThis() = default;
+		virtual ~EnableSharedFromThis()
+		{
+			_weakPointer = nullptr;
+		}
 
 		EnableSharedFromThis& operator=(EnableSharedFromThis const&) { return *this; }
 
@@ -275,13 +279,16 @@ namespace gu
 	*  @brief :  return the new shared pointer
 	/*----------------------------------------------------------------------*/
 	template<class ElementType, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE, class... Arguments>
-	SharedPointer<ElementType, Mode> MakeShared(Arguments... arguments)
+	SharedPointer<ElementType, Mode> MakeShared(Arguments&&... arguments)
 	{
-		auto pointer = SharedPointer<ElementType, Mode>(new ElementType(arguments...));
-		if constexpr(std::derived_from<ElementType,gu::EnableSharedFromThis<ElementType,Mode>>)
+		SharedPointer<ElementType, Mode> pointer(new ElementType(Forward<Arguments>(arguments)...));
+		
+		// EnableSharedFromThisをサポートする場合, weak_pointerを設定する
+		if constexpr(gu::IS_DERIVED_OF<ElementType, gu::EnableSharedFromThis<ElementType, Mode>>)
 		{
 			pointer->SetWeakPointer(pointer);
 		}
+
 		return pointer;
 	};
 

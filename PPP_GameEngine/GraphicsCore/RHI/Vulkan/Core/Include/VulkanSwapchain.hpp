@@ -18,7 +18,7 @@
 #define VK_USE_PLATFORM_XLIB_KHR
 #endif
 #include <vulkan/vulkan.h>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ namespace rhi::vulkan
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : When NextImage is ready, Signal is issued and the next frame Index is returned. */
-		std::uint32_t PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue) override;
+		gu::uint32 PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 signalValue) override;
 		
 		/* @brief : Display front buffer*/
 		void Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue) override ;
@@ -52,8 +52,17 @@ namespace rhi::vulkan
 		/* @brief : Return current frame buffer*/
 		size_t GetCurrentBufferIndex() const override ;
 
-		void SwitchFullScreenMode(const bool isOn) override {};
+		/*----------------------------------------------------------------------
+		*  @brief :  フルスクリーンモードと指定された解像度のスクリーンモードを切り替える
+		* 　　　　　　  (isOn : true->フルスクリーンモードに移行する. false : windowモードに移行する)
+		/*----------------------------------------------------------------------*/
+		void SwitchFullScreenMode([[maybe_unused]] const bool isOn) override {};
 		
+		/*----------------------------------------------------------------------
+		*  @brief :  HDRモードとSDRモードを切り替える
+		/*----------------------------------------------------------------------*/
+		void SwitchHDRMode([[maybe_unused]]const bool enableHDR) override {};
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -93,7 +102,7 @@ namespace rhi::vulkan
 		
 		std::uint32_t _currentBufferIndex = 0;
 		
-		std::vector<VkImage> _vkImages;
+		gu::DynamicArray<VkImage> _vkImages;
 	private:
 		/****************************************************************************
 		**                Protected Function
@@ -105,10 +114,10 @@ namespace rhi::vulkan
 		void UpdateCurrentFrameIndex();
 		
 		/** @brief Select color format and color space format*/
-		VkSurfaceFormatKHR SelectSwapchainFormat(const std::vector<VkSurfaceFormatKHR>& format);
+		VkSurfaceFormatKHR SelectSwapchainFormat(const gu::DynamicArray<VkSurfaceFormatKHR>& format);
 		
 		/** @brief Select vsync mode*/
-		VkPresentModeKHR   SelectSwapchainPresentMode(const std::vector<VkPresentModeKHR>& presentMode);
+		VkPresentModeKHR   SelectSwapchainPresentMode(const gu::DynamicArray<VkPresentModeKHR>& presentMode);
 		
 		/** @brief Select swapchain screen size*/
 		VkExtent2D         SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);

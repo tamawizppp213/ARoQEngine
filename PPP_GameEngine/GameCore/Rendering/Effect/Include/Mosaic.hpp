@@ -57,15 +57,15 @@ namespace gc
 
 		~Mosaic();
 
-		Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize = 10.0f, const std::wstring& addName = L"");
+		Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize = 10.0f, const gu::tstring& addName = SP(""));
 
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareBuffer(const float blockSize, const std::wstring& addName);
+		void PrepareBuffer(const float blockSize, const gu::tstring& addName);
 
-		void PreparePipelineState(const std::wstring& addName) override;
+		void PreparePipelineState(const gu::tstring& addName) override;
 		
 		void PrepareResourceView() override;
 		

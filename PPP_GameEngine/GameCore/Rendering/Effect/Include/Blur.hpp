@@ -14,8 +14,8 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
-#include <string>
-#include <vector>
+#include "GameUtility/Base/Include/GUString.hpp"
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -58,9 +58,9 @@ namespace gc
 			GraphicsPipelinePtr Pipeline    = nullptr;
 			RenderPassPtr       RenderPass  = nullptr;
 			FrameBufferPtr      FrameBuffer = nullptr;
-			std::vector<BufferPtr> VB = {};
-			std::vector<BufferPtr> IB = {};
-			~PSResource() { VB.clear(); IB.clear(); VB.shrink_to_fit(); IB.shrink_to_fit(); }
+			gu::DynamicArray<BufferPtr> VB = {};
+			gu::DynamicArray<BufferPtr> IB = {};
+			~PSResource() { VB.Clear(); IB.Clear(); VB.ShrinkToFit(); IB.ShrinkToFit(); }
 		};
 
 	public:
@@ -90,21 +90,21 @@ namespace gc
 		
 		~GaussianBlur();
 		
-		GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS = true, const std::wstring& addName = L"");
+		GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width, const std::uint32_t height, const bool useCS = true, const gu::tstring& addName = SP(""));
 	
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareBlurParameters(const std::wstring& name);
+		void PrepareBlurParameters(const gu::tstring& name);
 		
-		void PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const std::wstring& name);
+		void PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name);
 		
-		void PreparePipelineState(const std::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 		
 		void PrepareResourceView();
 
-		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& addName);
 		
 		/****************************************************************************
 		**                Protected Member Variables
@@ -129,7 +129,7 @@ namespace gc
 
 		bool _useCS = true;
 
-		std::wstring _addName = L"";
+		gu::tstring _addName = SP("");
 
 		/*-------------------------------------------------------------------
 		-               Compute Shader Variables
@@ -143,8 +143,8 @@ namespace gc
 		PSResource _yBlur;
 		GraphicsPipelinePtr _graphicsPipeline = nullptr;
 
-		std::vector<BufferPtr> _vertexBuffers = {};
-		std::vector<BufferPtr> _indexBuffers  = {};
+		gu::DynamicArray<BufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<BufferPtr> _indexBuffers  = {};
 
 		ResourceViewPtr _shaderResourceViews[ViewCount];
 		ResourceViewPtr _unorderedResourceViews[ViewCount];

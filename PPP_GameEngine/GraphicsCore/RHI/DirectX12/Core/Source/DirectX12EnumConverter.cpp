@@ -37,11 +37,11 @@ D3D12_COMMAND_LIST_TYPE EnumConverter::Convert(const rhi::core::CommandListType 
 }
 #pragma endregion CommandList
 #pragma region Shader
-D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibility visibility)
+D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibleFlag visibility)
 {
 	switch (visibility)
 	{
-		using enum core::ShaderVisibility;
+		using enum core::ShaderVisibleFlag;
 
 		case All          : return D3D12_SHADER_VISIBILITY_ALL;
 		case Vertex       : return D3D12_SHADER_VISIBILITY_VERTEX;
@@ -52,6 +52,23 @@ D3D12_SHADER_VISIBILITY EnumConverter::Convert(const rhi::core::ShaderVisibility
 		case Hull         : return D3D12_SHADER_VISIBILITY_HULL;
 		case Domain       : return D3D12_SHADER_VISIBILITY_DOMAIN;
 		
+		default:
+			throw std::runtime_error("Not supported shader visibility (directX12 api)");
+	}
+}
+
+D3D12_ROOT_SIGNATURE_FLAGS EnumConverter::Convert1(const rhi::core::ShaderVisibleFlag visibility)
+{
+	switch (visibility)
+	{
+		using enum core::ShaderVisibleFlag;
+
+		case All          : return D3D12_ROOT_SIGNATURE_FLAG_NONE;
+		case Vertex       : return D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS;
+		case Pixel        : return D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+		case Geometry     : return D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+		case Mesh         : return D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS;
+		case Amplification: return D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
 		default:
 			throw std::runtime_error("Not supported shader visibility (directX12 api)");
 	}
@@ -126,6 +143,12 @@ DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 		case R32_FLOAT          : return DXGI_FORMAT_R32_FLOAT;
 		case B8G8R8A8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 		case BC1_UNORM          : return DXGI_FORMAT_BC1_UNORM;
+		case BC2_UNORM          : return DXGI_FORMAT_BC2_UNORM;          
+		case BC3_UNORM          : return DXGI_FORMAT_BC3_UNORM;
+		case BC4_UNORM          : return DXGI_FORMAT_BC4_UNORM;
+		case BC5_UNORM          : return DXGI_FORMAT_BC5_UNORM;
+		case BC7_UNORM          : return DXGI_FORMAT_BC7_UNORM;
+		case BC6H_UNORM         : return DXGI_FORMAT_BC6H_UF16;
 		case Unknown            : return DXGI_FORMAT_UNKNOWN;
 
 		default:
@@ -295,14 +318,16 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 {
 	using enum core::ResourceUsage;
 
-	static std::vector<core::ResourceUsage> sourcePool = {
+	static std::vector<core::ResourceUsage> sourcePool =
+	{
 		None,
 		VertexBuffer,
 		IndexBuffer,
 		ConstantBuffer,
 		RenderTarget,
 		DepthStencil,
-		UnorderedAccess
+		UnorderedAccess,
+		Shared,
 	};
 
 	static std::vector<D3D12_RESOURCE_FLAGS> targetPool =
@@ -314,6 +339,7 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
 		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
 		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
+		D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS
 	};
 
 	auto res = D3D12_RESOURCE_FLAG_NONE;
@@ -322,6 +348,11 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 	{
 		if (core::EnumHas(usage, sourcePool[index]))
 			res = res | targetPool[index];
+	}
+
+	if (!core::EnumHas(usage, ShaderResource))
+	{
+		res |= D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
 	}
 
 	return res;
@@ -488,3 +519,34 @@ D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS EnumConverter::Convert(const
 	}
 }
 #pragma endregion RayTracing
+#pragma region Query
+D3D12_QUERY_HEAP_TYPE EnumConverter::Convert(const rhi::core::QueryHeapType heapType)
+{
+	using enum core::QueryHeapType;
+
+	switch (heapType)
+	{
+		case Occulusion: return D3D12_QUERY_HEAP_TYPE_OCCLUSION;
+		case TimeStamp :  return D3D12_QUERY_HEAP_TYPE_TIMESTAMP;
+		case CopyQueueTimeStamp: return D3D12_QUERY_HEAP_TYPE_COPY_QUEUE_TIMESTAMP;
+		case PipelineStatistics: return D3D12_QUERY_HEAP_TYPE_PIPELINE_STATISTICS;
+		default:
+			throw std::runtime_error("not support acceleration query heap type (directX12 api)");
+	}
+}
+
+D3D12_QUERY_TYPE EnumConverter::Convert1(const rhi::core::QueryHeapType heapType)
+{
+	using enum core::QueryHeapType;
+
+	switch (heapType)
+	{
+		case Occulusion        : return D3D12_QUERY_TYPE_OCCLUSION;
+		case TimeStamp         : return D3D12_QUERY_TYPE_TIMESTAMP;
+		case CopyQueueTimeStamp: return D3D12_QUERY_TYPE_TIMESTAMP;
+		case PipelineStatistics: return D3D12_QUERY_TYPE_PIPELINE_STATISTICS;
+		default:
+			throw std::runtime_error("not support acceleration query heap type (directX12 api)");
+	}
+}
+#pragma endregion Query

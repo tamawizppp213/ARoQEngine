@@ -14,7 +14,7 @@
 #include "RHICommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +29,8 @@ namespace rhi::core
 	class RHIRenderPass;
 	class RHIFrameBuffer;
 	class RHIResourceLayout;
+	class RHIQuery;
+	struct QueryResultLocation;
 	class GPUGraphicsPipelineState;
 	class GPUComputePipelineState;
 	class GPUResource;
@@ -51,16 +53,26 @@ namespace rhi::core
 		/*-------------------------------------------------------------------
 		-               Draw Frame Function
 		---------------------------------------------------------------------*/
-		/* @brief : This function must be called at draw function initially (stillMidFrame = false). 
-		            If still mid frame is set false, this function clears the command allocator.*/
+		/*----------------------------------------------------------------------
+		*  @brief : This function must be called at draw function initially (stillMidFrame = false). 
+		            If still mid frame is set false, this function clears the command allocator.
+		/*----------------------------------------------------------------------*/
 		virtual void BeginRecording(const bool stillMidFrame = false) = 0;
 
-		/* @brief : This function must be called at draw function at end, 
-		            The command list is closed, it transits the executable state.*/
+		/*----------------------------------------------------------------------
+		*  @brief : This function must be called at draw function at end, 
+		            The command list is closed, it transits the executable state.
+		/*----------------------------------------------------------------------*/
 		virtual void EndRecording  () = 0; // Call end function at end
 
+		/*----------------------------------------------------------------------
+		*  @brief : Start the render pass. This function basically called at draw function at start
+		/*----------------------------------------------------------------------*/
 		virtual void BeginRenderPass(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<RHIFrameBuffer>& frameBuffer) = 0;
 		
+		/*----------------------------------------------------------------------
+		*  @brief : Finish the render pass. This function basically called at draw function at end
+		/*----------------------------------------------------------------------*/
 		virtual void EndRenderPass() = 0;
 
 		/* @brief : コマンドリストを詰め込み可能な状態に変更します. またコマンドアロケータ中のコマンドバッファの内容を先頭に戻します.
@@ -72,10 +84,22 @@ namespace rhi::core
 		---------------------------------------------------------------------*/
 		virtual void SetResourceLayout(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0;
 		virtual void SetDescriptorHeap(const gu::SharedPointer<RHIDescriptorHeap>& heap) = 0;
-		//virtual void SetConstant32Bits(std::vector<Value32Bit>& values) = 0;
+		//virtual void SetConstant32Bits(gu::DynamicArray<Value32Bit>& values) = 0;
 		//virtual void CopyBuffer(const gu::SharedPointer<GPUBuffer>& source, const gu::SharedPointer<GPUBuffer>& destination, const size_t size, const size_t sourceOffset = 0, const size_t destinationOffset = 0) = 0;*/
 		//virtual void TransitLayout(const gu::SharedPointer<GPUTexture>& texture, const ResourceLayout& newLayout) = 0;
 		//virtual void TransitLayout(const gu::SharedPointer<GPUBuffer>& buffer, const ResourceLayout& newLayout) = 0;
+
+#pragma region Query
+		/*----------------------------------------------------------------------
+		*  @brief :  Starts the query to get GPU information.
+		/*----------------------------------------------------------------------*/
+		virtual void BeginQuery(const QueryResultLocation& location) = 0;
+
+		/*----------------------------------------------------------------------
+		*  @brief :  End the query to get GPU information.
+		/*----------------------------------------------------------------------*/
+		virtual void EndQuery(const QueryResultLocation& location) = 0;
+#pragma endregion Query
 
 #pragma region Graphics Command Function
 		/*-------------------------------------------------------------------
@@ -96,7 +120,7 @@ namespace rhi::core
 		
 		virtual void SetVertexBuffer      (const gu::SharedPointer<GPUBuffer>& buffer) = 0;
 		
-		virtual void SetVertexBuffers     (const std::vector<gu::SharedPointer<GPUBuffer>>& buffers, const size_t startSlot = 0) = 0;
+		virtual void SetVertexBuffers     (const gu::DynamicArray<gu::SharedPointer<GPUBuffer>>& buffers, const size_t startSlot = 0) = 0;
 		
 		virtual void SetIndexBuffer       (const gu::SharedPointer<GPUBuffer>& buffer, const IndexType indexType = IndexType::UInt32) = 0;
 		
@@ -138,11 +162,18 @@ namespace rhi::core
 		-                RayTracing Command
 		---------------------------------------------------------------------*/
 		
+#pragma region Copy
 		/*-------------------------------------------------------------------
 		-                Copy Resource
 		---------------------------------------------------------------------*/
 		virtual void CopyResource(const gu::SharedPointer<GPUTexture>& dest, const gu::SharedPointer<GPUTexture>& source) = 0;
 		
+		/*----------------------------------------------------------------------
+		*  @brief : バッファの領域をあるリソースから別のリソースにコピーする. 
+		*           GPU版memcpy
+		/*----------------------------------------------------------------------*/
+		virtual void CopyBufferRegion(const gu::SharedPointer<GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) = 0;
+#pragma endregion Copys
 		/*-------------------------------------------------------------------
 		-                Transition layout
 		---------------------------------------------------------------------*/
@@ -172,7 +203,7 @@ namespace rhi::core
 		/* @brief : デバイスをセットします. */
 		void SetDevice(gu::SharedPointer<RHIDevice> device) { _device = device; }
 
-		virtual void SetName(const std::wstring& name) = 0;
+		virtual void SetName(const gu::tstring& name) = 0;
 
 		/****************************************************************************
 		**                Constructor and Destructor

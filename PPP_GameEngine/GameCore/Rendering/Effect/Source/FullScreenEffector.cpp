@@ -36,9 +36,9 @@ IFullScreenEffector::~IFullScreenEffector()
 {
 	_pipeline.Reset();
 	_resourceLayout.Reset();
-	_resourceViews.clear(); _resourceViews.shrink_to_fit();
-	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
+	_resourceViews.Clear(); _resourceViews.ShrinkToFit();
+	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
+	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
 }
 
 IFullScreenEffector::IFullScreenEffector(const LowLevelGraphicsEnginePtr& engine) : _engine(engine)
@@ -57,10 +57,10 @@ IFullScreenEffector::IFullScreenEffector(const LowLevelGraphicsEnginePtr& engine
 *************************************************************************//**
 *  @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
 *  @brief     Prepare Rect Vertex and Index Buffer
-*  @param[in] const std::wstring& addName
+*  @param[in] const gu::tstring& addName
 *  @return @@void
 *****************************************************************************/
-void IFullScreenEffector::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 {
 	const auto device     = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
@@ -73,8 +73,8 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const std::wstring& addNam
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers .resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers .Resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------
@@ -90,7 +90,7 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const std::wstring& addNam
 		---------------------------------------------------------------------*/
 		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
-		_vertexBuffers[i]->SetName(addName + L"VB");
+		_vertexBuffers[i]->SetName(addName + SP("VB"));
 		_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
 
 		/*-------------------------------------------------------------------
@@ -98,7 +98,7 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const std::wstring& addNam
 		---------------------------------------------------------------------*/
 		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
-		_indexBuffers[i]->SetName(addName + L"IB");
+		_indexBuffers[i]->SetName(addName + SP("IB"));
 		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
 
 	}

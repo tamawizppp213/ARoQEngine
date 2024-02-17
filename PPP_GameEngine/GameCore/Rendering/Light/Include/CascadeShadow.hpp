@@ -13,8 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <string>
-#include <vector>
+#include "GameUtility/Base/Include/GUString.hpp"
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const std::wstring& addName = L"");
+		CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const gu::tstring& addName = SP(""));
 
 		~CascadeShadow();
 
@@ -97,7 +97,7 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareResourceView(const std::wstring& name);
+		void PrepareResourceView(const gu::tstring& name);
 
 		void Update(const gu::SharedPointer<GameTimer>& gameTimer, const gm::Float3& direction);
 
@@ -106,7 +106,7 @@ namespace gc::rendering
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
-		std::vector<GameModelPtr> _gameModels = {};
+		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		// GPU binding resource
 		ResourceLayoutPtr   _resourceLayout = nullptr;
@@ -117,7 +117,7 @@ namespace gc::rendering
 		CameraPtr        _lightCamera   = nullptr;
 
 		// shadowMap
-		std::vector<ShadowMapPtr> _shadowMaps = {};
+		gu::DynamicArray<ShadowMapPtr> _shadowMaps = {};
 
 		CascadeShadowDesc _shadowDesc = {};
 

@@ -19,7 +19,8 @@
 #include "../Include/DirectX12RenderPass.hpp"
 #include "../Include/DirectX12ResourceLayout.hpp"
 #include "../Include/DirectX12FrameBuffer.hpp"
-#include "../Include//DirectX12Instance.hpp"
+#include "../Include/DirectX12Instance.hpp"
+#include "../Include/DirectX12Query.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
@@ -35,8 +36,16 @@
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
+
+#if PLATFORM_OS_WINDOWS
 #include <Windows.h>
+#endif
+
+#if USE_INTEL_EXTENSION
+#include <INTC/igdext.h>
+#pragma comment(lib, "Plugins/INTC/igdext64.lib")
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -44,10 +53,12 @@
 using namespace rhi;
 using namespace rhi::directX12;
 using namespace Microsoft::WRL;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+
 #pragma region Constructor and Destructor
 RHIDevice::RHIDevice()
 {
@@ -59,9 +70,10 @@ RHIDevice::~RHIDevice()
 	if (_device) { Destroy(); }
 }
 
-RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter) :
-	core::RHIDevice(adapter)
+RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, const core::RHIMultiGPUMask& mask) :
+	core::RHIDevice(adapter, mask)
 {
+
 	/*-------------------------------------------------------------------
 	-                   Create Logical Device
 	---------------------------------------------------------------------*/
@@ -71,7 +83,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter) 
 		IID_PPV_ARGS(&_device)));
 
 	const auto& gpuName    = adapter->GetName();
-	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName);
+	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName.CString());
 	_device->SetName(deviceName.c_str());
 
 	/*-------------------------------------------------------------------
@@ -105,9 +117,15 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter) 
 	CheckStencilReferenceFromPixelShaderSupport();
 	CheckSamplerFeedbackSupport();
 	CheckAllowTearingSupport();
+	CheckMaxRootSignatureVersion();
 	CheckWaveLaneSupport();
 	SetupDisplayHDRMetaData();
 	SetupDefaultCommandSignatures();
+
+#if USE_INTEL_EXTENSION
+	CreateIntelExtensionContext();
+#endif
+	CheckAtomicOperation();
 }
 
 #pragma endregion Constructor and Destructor
@@ -166,6 +184,10 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 *****************************************************************************/
 void RHIDevice::Destroy()
 {
+#if USE_INTEL_EXTENSION
+	DestroyIntelExtensionContext();
+#endif
+
 	/*-------------------------------------------------------------------
 	-              Clear default descriptor heap
 	---------------------------------------------------------------------*/
@@ -197,7 +219,7 @@ void RHIDevice::Destroy()
 
 #pragma region CreateResource
 
-gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
+gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
 {
 	return gu::StaticPointerCast<core::RHIFrameBuffer>(gu::MakeShared<directX12::RHIFrameBuffer>(SharedFromThis(), renderPass, renderTargets, depthStencil));
 }
@@ -207,28 +229,32 @@ gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::S
 	return gu::StaticPointerCast<core::RHIFrameBuffer>(gu::MakeShared<directX12::RHIFrameBuffer>(SharedFromThis(), renderPass, renderTarget, depthStencil));
 }
 
-gu::SharedPointer<core::RHIFence> RHIDevice::CreateFence(const std::uint64_t fenceValue, const std::wstring& name)
+gu::SharedPointer<core::RHIFence> RHIDevice::CreateFence(const gu::uint64 fenceValue, const gu::tstring& name)
 {
 	// https://suzulang.com/stdshared_ptr%E3%81%A7this%E3%82%92%E4%BD%BF%E3%81%84%E3%81%9F%E3%81%84%E6%99%82%E3%81%AB%E6%B3%A8%E6%84%8F%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8/
 	return gu::StaticPointerCast<core::RHIFence>(gu::MakeShared<directX12::RHIFence>(SharedFromThis(), fenceValue, name));
 }
 
-gu::SharedPointer<core::RHICommandList> RHIDevice::CreateCommandList(const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, const std::wstring& name)
+gu::SharedPointer<core::RHICommandList> RHIDevice::CreateCommandList(const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, const gu::tstring& name)
 {
-	return gu::StaticPointerCast<core::RHICommandList>(gu::MakeShared<directX12::RHICommandList>(SharedFromThis(),commandAllocator, name));
+	const auto dxPointer = gu::MakeShared<directX12::RHICommandList>(SharedFromThis(), commandAllocator, name);
+	const auto pointer   = gu::StaticPointerCast<core::RHICommandList>(dxPointer);
+	return pointer;
 }
 
-gu::SharedPointer<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type, const std::wstring& name)
+gu::SharedPointer<core::RHICommandQueue> RHIDevice::CreateCommandQueue(const core::CommandListType type, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::RHICommandQueue>(gu::MakeShared<directX12::RHICommandQueue>(SharedFromThis(), type, name));
 }
 
-gu::SharedPointer<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type, const std::wstring& name)
+gu::SharedPointer<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name)
 {
-	return gu::StaticPointerCast<core::RHICommandAllocator>(gu::MakeShared<directX12::RHICommandAllocator>(SharedFromThis(), type, name));
+	const auto pointer  = gu::MakeShared<directX12::RHICommandAllocator>(SharedFromThis(), type, name);
+	const auto dxPointer = gu::StaticPointerCast<core::RHICommandAllocator>(pointer);
+	return dxPointer;
 }
 
-gu::SharedPointer<core::RHISwapchain> RHIDevice::CreateSwapchain(const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR )
+gu::SharedPointer<core::RHISwapchain> RHIDevice::CreateSwapchain(const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const gu::uint32 vsync, const bool isValidHDR )
 {
 	return gu::StaticPointerCast<core::RHISwapchain>(gu::MakeShared<directX12::RHISwapchain>(SharedFromThis(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR));
 }
@@ -252,7 +278,7 @@ gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const
 	return heapPtr;
 }
 
-gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const std::vector<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
 {
 	return gu::StaticPointerCast<core::RHIRenderPass>(gu::MakeShared<directX12::RHIRenderPass>(SharedFromThis(), colors, depth));
 }
@@ -272,7 +298,7 @@ gu::SharedPointer<core::GPUComputePipelineState> RHIDevice::CreateComputePipelin
 	return gu::StaticPointerCast<core::GPUComputePipelineState>(gu::MakeShared<directX12::GPUComputePipelineState>(SharedFromThis(), resourceLayout));
 }
 
-gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const std::vector<core::ResourceLayoutElement>& elements, const std::vector<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const std::wstring& name)
+gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::RHIResourceLayout>(gu::MakeShared<directX12::RHIResourceLayout>(SharedFromThis(), elements, samplers, constant32Bits, name));
 }
@@ -282,14 +308,14 @@ gu::SharedPointer<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 	return gu::StaticPointerCast<core::GPUPipelineFactory>(gu::MakeShared<directX12::GPUPipelineFactory>(SharedFromThis()));
 }
 
-gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
+gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::uint32 mipSlice, const gu::uint32 planeSlice, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
 {
-	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<directX12::GPUResourceView>(SharedFromThis(), viewType, texture, customHeap));
+	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<directX12::GPUResourceView>(SharedFromThis(), viewType, texture, mipSlice, planeSlice, customHeap));
 }
 
-gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
+gu::SharedPointer<core::GPUResourceView> RHIDevice::CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::uint32 mipSlice, const gu::uint32 planeSlice , const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap)
 {
-	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<directX12::GPUResourceView>(SharedFromThis(), viewType, buffer, customHeap));
+	return gu::StaticPointerCast<core::GPUResourceView>(gu::MakeShared<directX12::GPUResourceView>(SharedFromThis(), viewType, buffer, mipSlice, planeSlice, customHeap));
 }
 
 gu::SharedPointer<core::GPUSampler> RHIDevice::CreateSampler(const core::SamplerInfo& samplerInfo)
@@ -297,12 +323,12 @@ gu::SharedPointer<core::GPUSampler> RHIDevice::CreateSampler(const core::Sampler
 	return gu::StaticPointerCast<core::GPUSampler>(gu::MakeShared<directX12::GPUSampler>(SharedFromThis(), samplerInfo));
 }
 
-gu::SharedPointer<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData, const std::wstring& name)
+gu::SharedPointer<core::GPUBuffer>  RHIDevice::CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::GPUBuffer>(gu::MakeShared<directX12::GPUBuffer>(SharedFromThis(), metaData, name));
 }
 
-gu::SharedPointer<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData, const std::wstring& name)
+gu::SharedPointer<core::GPUTexture> RHIDevice::CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::GPUTexture>(gu::MakeShared<directX12::GPUTexture>(SharedFromThis(), metaData, name));
 }
@@ -323,21 +349,135 @@ gu::SharedPointer<core::RayTracingGeometry> RHIDevice::CreateRayTracingGeometry(
 
 gu::SharedPointer<core::ASInstance> RHIDevice::CreateASInstance(
 	const gu::SharedPointer<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform,
-	const std::uint32_t instanceID, const std::uint32_t instanceContributionToHitGroupIndex,
-	const std::uint32_t instanceMask, const core::RayTracingInstanceFlags flags)
+	const gu::uint32 instanceID, const gu::uint32 instanceContributionToHitGroupIndex,
+	const gu::uint32 instanceMask, const core::RayTracingInstanceFlags flags)
 {
 	return gu::StaticPointerCast<core::ASInstance>(gu::MakeShared<directX12::ASInstance>(SharedFromThis(), blasBuffer, blasTransform, instanceID, instanceContributionToHitGroupIndex, instanceMask, flags));
 }
 
-gu::SharedPointer<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
+gu::SharedPointer<core::BLASBuffer>  RHIDevice::CreateRayTracingBLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags)
 {
 	return gu::StaticPointerCast<core::BLASBuffer>(gu::MakeShared<directX12::BLASBuffer>(SharedFromThis(), geometryDesc, flags));
 }
 
-gu::SharedPointer<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const std::vector<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
+gu::SharedPointer<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags)
 {
 	return gu::StaticPointerCast<core::TLASBuffer>(gu::MakeShared<directX12::TLASBuffer>(SharedFromThis(), asInstances, flags));
 }
+
+gu::SharedPointer<core::RHIQuery> RHIDevice::CreateQuery(const core::QueryHeapType heapType)
+{
+	return gu::StaticPointerCast<core::RHIQuery>(gu::MakeShared<directX12::RHIQuery>(SharedFromThis(), heapType));
+}
+
+/****************************************************************************
+*                     CreateCommittedResource
+*************************************************************************//**
+*  @fn        HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,const D3D12_RESOURCE_DESC& resourceDesc,const D3D12_HEAP_PROPERTIES& heapProps,const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue)
+*
+*  @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
+*             参考はD3D12Resources.cpp(UE5)
+*
+*  @param[in] const ResourceComPtr&  resource, 
+*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
+*  @param[in] D3D12_HEAP_PROPERTIES& ヒープの設定
+*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
+*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
+* 
+*  @return 　　HRESULT
+*****************************************************************************/
+HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
+	const D3D12_RESOURCE_DESC& resourceDesc,
+	const D3D12_HEAP_PROPERTIES& heapProps,
+	const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue)
+{
+	// Stateの初期化が必要かどうか
+	const bool requireInitialize = (resourceDesc.Flags & (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0;
+	
+	/*-------------------------------------------------------------------
+	-            Heap flagの設定
+	---------------------------------------------------------------------*/
+	D3D12_HEAP_FLAGS heapFlags = (_isSupportedHeapNotZero && !requireInitialize)
+		? D3D12_HEAP_FLAG_CREATE_NOT_ZEROED : D3D12_HEAP_FLAG_NONE;
+
+	auto localDesc = resourceDesc;
+
+	// 共有リソース
+	if (resourceDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS)
+	{
+		heapFlags |= D3D12_HEAP_FLAG_SHARED;
+
+		// バッファ作成時には同時アクセスフラグは使用不可
+		if (resourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
+		{
+			localDesc.Flags &= ~D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS;
+		}
+	}
+
+	// RayTracingのAcceleration Structureを使用する場合
+	if (initialState == D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE)
+	{
+		localDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	}
+
+	/*-------------------------------------------------------------------
+	-            ヒープ領域の確保とGPUにメモリを確保する
+	---------------------------------------------------------------------*/
+	// 今後の方針としては, uncompressed uavを使用するときは処理を分岐する
+	return _device->CreateCommittedResource(&heapProps, heapFlags, &localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));;
+}
+
+/****************************************************************************
+*                     CreateReservedResource
+*************************************************************************//**
+*  @fn        HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_HEAP_PROPERTIES& heapProp, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
+*
+*  @brief     Heap内にまだマップまでは行わない予約済みのリソースを作成
+*
+*  @param[in] const ResourceComPtr&  resource,
+*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
+*  @param[in] D3D12_HEAP_PROPERTIES& ヒープの設定
+*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
+*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
+*
+*  @return 　　HRESULT
+*****************************************************************************/
+HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_HEAP_PROPERTIES& heapProp, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
+{
+	/*-------------------------------------------------------------------
+	-            Flagの設定
+	---------------------------------------------------------------------*/
+	auto localDesc   = resourceDesc;
+	localDesc.Layout = D3D12_TEXTURE_LAYOUT_64KB_UNDEFINED_SWIZZLE;
+
+	/*-------------------------------------------------------------------
+	-            Heap内にまだマップまでは行わない予約済みのリソースを作成
+	---------------------------------------------------------------------*/
+	return _device->CreateReservedResource(&localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+}
+
+/****************************************************************************
+*                     CreatePlacedResource
+*************************************************************************//**
+*  @fn        HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const HeapComPtr& heap,const gu::uint64 heapOffset,const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue = nullptr)
+*
+*  @brief     既に作成済みのヒープに配置されるリソースを作成する.
+*             Committed, Reserved, Placedの中では最も高速に動作する
+*
+*  @param[in] const ResourceComPtr&  resource,
+*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
+*  @param[in] const HeapComPtr& ヒープ
+* 　@param[in] const gu::uint64 heapのoffsetバイト数
+*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
+*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
+*
+*  @return 　　HRESULT
+*****************************************************************************/
+HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const HeapComPtr& heap, const gu::uint64 heapOffset, const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue )
+{
+	return _device->CreatePlacedResource(heap.Get(), heapOffset, &resourceDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+}
+
 #pragma endregion           Create Resource Function
 
 #pragma region Debug Function
@@ -561,7 +701,7 @@ void RHIDevice::CheckVRSSupport()
 *****************************************************************************/
 void RHIDevice::CheckMultiSampleQualityLevels()
 {
-	for (std::uint32_t sampleCount = DESIRED_MAX_MSAA_SAMPLE_COUNT; sampleCount > 0; sampleCount--)
+	for (gu::uint32 sampleCount = DESIRED_MAX_MSAA_SAMPLE_COUNT; sampleCount > 0; sampleCount--)
 	{
 		D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels = {};
 		msQualityLevels.SampleCount = sampleCount;
@@ -597,9 +737,18 @@ void RHIDevice::SetupDisplayHDRMetaData()
 	ComPtr<IDXGIOutput> output = nullptr;
 
 	/*-------------------------------------------------------------------
+	-               AdapterはAMD or Nvidiaであれば処理を実行する
+	---------------------------------------------------------------------*/
+	if (!(adapter->IsAdapterAMD() || adapter->IsAdapterNVIDIA()))
+	{
+		_isSupportedHDR = false; 
+		return;
+	}
+
+	/*-------------------------------------------------------------------
 	-              Search EnableHDR output
 	---------------------------------------------------------------------*/
-	for(std::uint32_t i = 0; dxAdapter->EnumOutputs(i, output.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
+	for(uint32 i = 0; dxAdapter->EnumOutputs(i, output.GetAddressOf()) != DXGI_ERROR_NOT_FOUND; ++i)
 	{
 #if DXGI_MAX_OUTPUT_INTERFACE >= 6
 		
@@ -622,6 +771,8 @@ void RHIDevice::SetupDisplayHDRMetaData()
 				---------------------------------------------------------------------*/
 				_displayInfo = 
 				{
+					core::DisplayColorGamut::Rec2020_D65,
+					desc.MaxLuminance <= 1000.0f ? core::DisplayOutputFormat::HDR_ACES_1000nit_ST2084 : core::DisplayOutputFormat::HDR_ACES_2000nit_ST2084,
 					{desc.RedPrimary  [0], desc.RedPrimary  [1]},
 					{desc.GreenPrimary[0], desc.GreenPrimary[1]},
 					{desc.BluePrimary [0], desc.BluePrimary [1]},
@@ -950,29 +1101,255 @@ void RHIDevice::CheckAtomicOperation()
 	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS9, &options9, sizeof(options9)))) { return; }
 	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS11, &options11, sizeof(options11)))) { return; }
 
-	_isSupportedAtomicOperation = true;
+	_isSupportedAtomicOperation = !!options9.AtomicInt64OnTypedResourceSupported
+#if USE_INTEL_EXTENSION
+		|| IsSupportedIntelEmulatedAtomic64();
+#else
+		;
+#endif
+
 	_isSupportedAtomicInt64OnTypedResource             = !!options9.AtomicInt64OnTypedResourceSupported;
 	_isSupportedAtomicInt64OnGroupSharedSupported      = !!options9.AtomicInt64OnGroupSharedSupported;
 	_isSupportedInt64OnDescriptorHeapResourceSupported = !!options11.AtomicInt64OnDescriptorHeapResourceSupported;
 	_isSupportedAtomicUInt64 = _isSupportedAtomicInt64OnTypedResource && _isSupportedInt64OnDescriptorHeapResourceSupported;
 }
+
+/****************************************************************************
+*                     CheckMaxRootSignatureVersion
+*************************************************************************//**
+*  @fn        void RHIDevice::CheckMaxRootSignatureVersion()
+*
+*  @brief     RootSignatureの最新バージョンを調べます
+*             1_0 or 1: Default
+*             1_1     : Descriptorに対して最適化を行うためのフラグを設置可能
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::CheckMaxRootSignatureVersion()
+{
+	D3D12_FEATURE_DATA_ROOT_SIGNATURE options = {};
+	options.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &options, sizeof(options))))
+	{
+		options.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+	}
+
+	_maxRootSignatureVersion = options.HighestVersion;
+}
+
+#if USE_INTEL_EXTENSION
+
+/****************************************************************************
+*                     CreateIntelExtensionContext
+*************************************************************************//**
+*  @fn        INTCExtensionContext* RHIDevice::CreateIntelExtensionContext(INTCExtensionInfo& intelExtensionInfo)
+*
+*  @brief     INTCExtensionContextを生成します.
+*
+*  @param[out]void
+*
+*  @return    void
+*****************************************************************************/
+void RHIDevice::CreateIntelExtensionContext()
+{
+	_isSupportedIntelEmulatedAtomic64 = false;
+
+	/*-------------------------------------------------------------------
+	-         ドライバーのインストールディレクトリを検索し, igdext64.dllを見つけます
+	---------------------------------------------------------------------*/
+	if (FAILED(INTC_LoadExtensionsLibrary(false)))
+	{
+		_RPT0(_CRT_WARN, "Failed to load Intel Extension Library\n");
+	}
+
+	/*-------------------------------------------------------------------
+	-         サポートされているバージョン数の取得
+	---------------------------------------------------------------------*/
+	gu::DynamicArray<INTCExtensionVersion> supportedExtensionsVersions = {};
+	gu::uint32 supportedExtensionVersionCount = 0;
+
+	if (FAILED(INTC_D3D12_GetSupportedVersions(_device.Get(), nullptr, &supportedExtensionVersionCount)))
+	{
+		return;
+	}
+
+	// サポートされているバージョン数だけインスタンス作成
+	supportedExtensionsVersions.Resize(supportedExtensionVersionCount);
+
+	// 目標のバージョン
+	const INTCExtensionVersion atomicsRequiredVersion =
+	{
+		.HWFeatureLevel = 4,
+		.APIVersion     = 8,
+		.Revision       = 0
+	};
+
+	/*-------------------------------------------------------------------
+	-         サポートされているバージョン情報を取得する
+	---------------------------------------------------------------------*/
+	if (FAILED(INTC_D3D12_GetSupportedVersions(_device.Get(), supportedExtensionsVersions.Data(), &supportedExtensionVersionCount)))
+	{
+		return;
+	}
+
+	_RPT0(_CRT_WARN, "/////////////////////////////////////////////////\n");
+	_RPT0(_CRT_WARN, " Supported Extension Versions in this driver: \n");
+	_RPT0(_CRT_WARN, "/////////////////////////////////////////////////\n");
+
+	INTCExtensionInfo intelExtensionInfo = {};
+	for (uint32 i = 0; i < supportedExtensionVersionCount; ++i)
+	{
+		if((supportedExtensionsVersions[i].HWFeatureLevel >= atomicsRequiredVersion.HWFeatureLevel) && 
+		   (supportedExtensionsVersions[i].APIVersion     >= atomicsRequiredVersion.APIVersion    ) &&  
+		   (supportedExtensionsVersions[i].Revision       >= atomicsRequiredVersion.Revision     ))
+		{
+			_RPTN(_CRT_WARN, "Intel Extension loaded requested version: %u.%u.%u\n",
+				&supportedExtensionsVersions[i].HWFeatureLevel,
+				&supportedExtensionsVersions[i].APIVersion,
+				&supportedExtensionsVersions[i].Revision);
+
+			intelExtensionInfo.RequestedExtensionVersion = supportedExtensionsVersions[i];
+			break;
+		}
+	}
+
+	/*-------------------------------------------------------------------
+	-         サポートされたバージョンのDeviceを作成する
+	---------------------------------------------------------------------*/
+	INTCExtensionContext* intelExtensionContext = nullptr;
+
+	INTCExtensionAppInfo applicationInfo = {};
+	applicationInfo.pEngineName   = L"PPP_Engine";
+	applicationInfo.EngineVersion = 1;
+
+	const auto result = INTC_D3D12_CreateDeviceExtensionContext(_device.Get(), &intelExtensionContext, &intelExtensionInfo, &applicationInfo);
+	
+	if (SUCCEEDED(result))
+	{
+		_RPT0(_CRT_WARN, "Intel Extension Framework enabled.\n");
+	}
+	else
+	{
+		if (result == E_NOINTERFACE)
+		{
+			_RPT0(_CRT_WARN, "Intel Extensions Framework not supported by driver. Please check if a driver update is available\n");
+		}
+		else if (result == E_INVALIDARG)
+		{
+			_RPT0(_CRT_WARN, "Intel Extensions Framework passed invalid creation arguments\n");
+		}
+		else
+		{
+			_RPT0(_CRT_WARN, "Intel Extensions Framework failed to initialize\n");
+		}
+	}
+
+	/*-------------------------------------------------------------------
+	-         終了処理
+	---------------------------------------------------------------------*/
+	if (!supportedExtensionsVersions.IsEmpty())
+	{
+		supportedExtensionsVersions.Clear();
+		supportedExtensionsVersions.ShrinkToFit();
+	}
+
+	_intelExtensionContext = intelExtensionContext;
+	_isSupportedIntelEmulatedAtomic64 = true;
+}
+
+
+/****************************************************************************
+*                     DestroyIntelExtensionContext
+*************************************************************************//**
+*  @fn        void RHIDevice::DestroyIntelExtensionContext()
+*
+*  @brief     INTCExtensionContextを破棄します. 
+*
+*  @param[in] INTCExtensionContext* 
+*
+*  @return    void
+*****************************************************************************/
+void RHIDevice::DestroyIntelExtensionContext()
+{
+	if (_intelExtensionContext == nullptr) { return; }
+
+	/*-------------------------------------------------------------------
+	-              INTCExtensionContextがあった場合は破棄を行う
+	---------------------------------------------------------------------*/
+	const auto result = INTC_DestroyDeviceExtensionContext(&_intelExtensionContext);
+
+	/*-------------------------------------------------------------------
+	-              表示
+	---------------------------------------------------------------------*/
+#if PLATFORM_OS_WINDOWS
+	if (result == S_OK)
+	{
+		OutputDebugStringA("Intel Extensions Framework unloaded\n");
+	}
+	else
+	{
+		OutputDebugStringA("Intel Extensions Framework error when unloading\n");
+	}
+#else
+	if (result == S_OK)
+	{
+		_RPT0(_CRT_WARN, "Intel Extensions Framework unloaded\n");
+	}
+	else
+	{
+		_RPT0(_CRT_WARN, "Intel Extensions Framework error when unloading\n");
+	}
+#endif // PLATFORM_OS_WINDOWS
+}
+
+/****************************************************************************
+*                     IsSupportedIntelEmulatedAtomic64
+*************************************************************************//**
+*  @fn        bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
+*
+*  @brief     Atomic 64 bitがサポートされているかを返します.
+*
+*  @param[in] void
+*
+*  @return    bool
+*****************************************************************************/
+bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
+{
+	/*-------------------------------------------------------------------
+	-          Use intel adapter
+	---------------------------------------------------------------------*/
+	const auto rhiAdapter = static_cast<directX12::RHIDisplayAdapter*>(_adapter.Get());
+
+	if (!rhiAdapter->IsAdapterIntel()) { return false; }
+
+	/*-------------------------------------------------------------------
+	-          Created intel extension context
+	---------------------------------------------------------------------*/
+	return _intelExtensionContext && _isSupportedIntelEmulatedAtomic64;
+}
+#endif // USE_INTEL_EXTENSION
+
+
 #pragma endregion  Device Support Function
 
 #pragma region Property
 /****************************************************************************
 *                     SetName
 *************************************************************************//**
-*  @fn        void RHIDevice::SetName(const std::wstring& name)
+*  @fn        void RHIDevice::SetName(const gu::tstring& name)
 *
 *  @brief     Set Logical device name
 *
-*  @param[in] const std::wstring& name
+*  @param[in] const gu::tstring& name
 *
 *  @return    void
 *****************************************************************************/
-void RHIDevice::SetName(const std::wstring& name)
+void RHIDevice::SetName(const gu::tstring& name)
 {
-	_device->SetName(name.c_str());
+	_device->SetName(name.CString());
 }
 
 /****************************************************************************

@@ -47,10 +47,25 @@ bool CoreWindowMessageHandler::OnWindowClosed(const CoreWindowPtr& window)
 	return window->Destroy();
 }
 
-bool CoreWindowMessageHandler::OnSizeChanged(const std::uint32_t width, const std::uint32_t height)
+bool CoreWindowMessageHandler::OnSizeChanged(const CoreWindowPtr& window, const gu::uint32 width, const gu::uint32 height)
 {
+	if (_isResizing) { return false; }
+
+	// Resizeの::SetWindowPosによってさらにResizeが呼ばれるのを防ぎます.
+	_isResizing = true;
+
+	// 左上の位置を取得する.
+	gu::int32 x = 0, y = 0;
+	window->GetWindowPostion(x, y);
+
+	// サイズ変更
+	window->Resize(x, y, width, height);
+
+	// 後々消します.
 	Screen::SetScreenWidth(width);
 	Screen::SetScreenHeight(height);
+
+	_isResizing = false;
 	return true;
 }
 #pragma endregion Main Function

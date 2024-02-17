@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ namespace gc::basepass
 		**                Protected Member Variables
 		*****************************************************************************/
 		/* @brief : 0 -> PointLight, 1 -> SpotLight, ç°å„í«â¡Ç≥ÇÍÇÈâ¬î\ê´Ç†ÇË*/
-		std::vector<ResourceViewPtr> _lightIDLists = {};
+		gu::DynamicArray<ResourceViewPtr> _lightIDLists = {};
 
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

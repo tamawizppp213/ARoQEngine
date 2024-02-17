@@ -33,7 +33,7 @@ namespace
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Main Function
-bool GLTFConverter::Load(const std::wstring& filePath, GameModelPtr model)
+bool GLTFConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 {
 	if (model == nullptr) { OutputDebugStringA("model is nullptr.");  return false; }
 	if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }
@@ -42,7 +42,7 @@ bool GLTFConverter::Load(const std::wstring& filePath, GameModelPtr model)
 	-            PMXFile Load
 	---------------------------------------------------------------------*/
 	gltf::GLTFFile file;
-	file.Load(unicode::ToUtf8String(filePath));
+	file.Load(unicode::ToUtf8String(std::wstring(filePath.CString())));
 
 	/*-------------------------------------------------------------------
 	-            Set up resource
@@ -73,7 +73,7 @@ bool GLTFConverter::Load(const std::wstring& filePath, GameModelPtr model)
 *
 *  @return 　　void
 *****************************************************************************/
-void GLTFConverter::PrepareTotalMesh(const GameModelPtr model, gltf::GLTFFile& file)
+void GLTFConverter::PrepareTotalMesh([[maybe_unused]]const GameModelPtr model, [[maybe_unused]] gltf::GLTFFile& file)
 {
 	///*-------------------------------------------------------------------
 	//-            Copy PMXvertex -> skin vertex
@@ -110,7 +110,7 @@ void GLTFConverter::PrepareTotalMesh(const GameModelPtr model, gltf::GLTFFile& f
 *
 *  @return 　　void
 *****************************************************************************/
-void GLTFConverter::PrepareEachMaterialMesh(const GameModelPtr model, gltf::GLTFFile& file)
+void GLTFConverter::PrepareEachMaterialMesh([[maybe_unused]]const GameModelPtr model, [[maybe_unused]]gltf::GLTFFile& file)
 {
 	//model->_materialCount = file.Materials.size();
 	//model->_meshes.resize(file.Materials.size());

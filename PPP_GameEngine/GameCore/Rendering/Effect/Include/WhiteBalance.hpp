@@ -66,15 +66,15 @@ namespace gc
 
 		~WhiteBalance();
 
-		WhiteBalance(const LowLevelGraphicsEnginePtr& engine, const float temperature, const float tint, const std::wstring& addName = L"");
+		WhiteBalance(const LowLevelGraphicsEnginePtr& engine, const float temperature, const float tint, const gu::tstring& addName = SP(""));
 
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareBuffer(const WhiteBalanceSettings& setting, const std::wstring& addName);
+		void PrepareBuffer(const WhiteBalanceSettings& setting, const gu::tstring& addName);
 
-		void PreparePipelineState(const std::wstring& addName) override;
+		void PreparePipelineState(const gu::tstring& addName) override;
 
 		void PrepareResourceView() override;
 

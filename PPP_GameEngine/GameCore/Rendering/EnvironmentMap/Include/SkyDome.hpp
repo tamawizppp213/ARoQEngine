@@ -11,9 +11,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <vector>
-#include <string>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
+#include "GameUtility/Container/Include/GUPair.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -64,25 +65,25 @@ namespace gc
 
 		~SkyDome();
 
-		SkyDome(const LowLevelGraphicsEnginePtr& engine, const std::wstring& cubeMapPath, const std::wstring& addName = L"");
+		SkyDome(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& cubeMapPath, const gu::tstring& addName = SP(""));
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
 		void PrepareResourceView(const gu::SharedPointer<rhi::core::GPUTexture>& texture);
 		
-		void PreparePipelineState(const std::wstring& addName);
+		void PreparePipelineState(const gu::tstring& addName);
 		
-		void PrepareVertexAndIndexBuffer(const std::wstring& addName);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& addName);
 		
-		void PrepareSkyObject(const std::wstring& addName);
+		void PrepareSkyObject(const gu::tstring& addName);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
 		ObjectConstantPtr            _skyObject = nullptr;
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
-		std::vector<IndexBufferPtr>  _indexBuffers = {};
-		std::vector<std::pair<std::uint32_t, GPUResourceViewPtr>> _resourceViews = {};
+		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
+		gu::DynamicArray<gu::Pair<gu::uint32, GPUResourceViewPtr>> _resourceViews = {};
 		ResourceLayoutPtr   _resourceLayout = nullptr;
 		GraphicsPipelinePtr _pipeline = nullptr;
 		LowLevelGraphicsEnginePtr _engine = nullptr;

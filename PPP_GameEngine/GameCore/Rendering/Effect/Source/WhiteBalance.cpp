@@ -42,7 +42,7 @@ WhiteBalance::~WhiteBalance()
 
 }
 
-WhiteBalance::WhiteBalance(const LowLevelGraphicsEnginePtr& engine, const float temperature, const float tint, const std::wstring& addName)
+WhiteBalance::WhiteBalance(const LowLevelGraphicsEnginePtr& engine, const float temperature, const float tint, const gu::tstring& addName)
 	: IFullScreenEffector(engine)
 {
 	_settings.Temperature = temperature;
@@ -97,7 +97,7 @@ void WhiteBalance::Draw()
 
 #pragma region Set up function
 
-void WhiteBalance::PrepareBuffer(const WhiteBalanceSettings& settings, const std::wstring& name)
+void WhiteBalance::PrepareBuffer(const WhiteBalanceSettings& settings, const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(WhiteBalanceSettings), 1);
@@ -110,11 +110,11 @@ void WhiteBalance::PrepareBuffer(const WhiteBalanceSettings& settings, const std
 	---------------------------------------------------------------------*/
 	_settings = settings;
 	buffer->Pack(&_settings, nullptr);
-	_resourceViews.push_back(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
+	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 
 
-void WhiteBalance::PreparePipelineState(const std::wstring& addName)
+void WhiteBalance::PreparePipelineState(const gu::tstring& addName)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();

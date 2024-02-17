@@ -65,11 +65,11 @@ void Semaphore::Wait(const std::uint64_t value, const std::optional<int> timeout
 	
 	if (timeoutMilliSeconds.has_value())
 	{
-		_conditionVariable.wait_for(lock, std::chrono::milliseconds(timeoutMilliSeconds.value()), [&]() { return value >= _completedValue; });
+		_conditionVariable.wait_for(lock, std::chrono::milliseconds(timeoutMilliSeconds.value()), [&]() { return value <= _completedValue; });
 	}
 	else
 	{
-		_conditionVariable.wait(lock, [&]() { return value >= _completedValue; });
+		_conditionVariable.wait(lock, [&]() { return value <= _completedValue; });
 	}
 
 }

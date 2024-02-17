@@ -18,7 +18,7 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-const std::vector<InputLayoutElement> GPUInputAssemblyState::DEFAULT_VERTEX_ELEMENTS =
+const gu::DynamicArray<InputLayoutElement> GPUInputAssemblyState::DEFAULT_VERTEX_ELEMENTS =
 {
 	InputLayoutElement("POSITION", InputFormat::R32G32B32_FLOAT   , InputClassification::PerVertex, 0),
 	InputLayoutElement("NORMAL"  , InputFormat::R32G32B32_FLOAT   , InputClassification::PerVertex, 0),
@@ -26,7 +26,7 @@ const std::vector<InputLayoutElement> GPUInputAssemblyState::DEFAULT_VERTEX_ELEM
 	InputLayoutElement("TEXCOORD", InputFormat::R32G32_FLOAT      , InputClassification::PerVertex, 0)
 };
 
-const std::vector<InputLayoutElement> GPUInputAssemblyState::DEFAULT_SKINVERTEX_ELEMENTS =
+const gu::DynamicArray<InputLayoutElement> GPUInputAssemblyState::DEFAULT_SKINVERTEX_ELEMENTS =
 {
 	InputLayoutElement("POSITION", InputFormat::R32G32B32_FLOAT, InputClassification::PerVertex, 0),
 	InputLayoutElement("NORMAL"  , InputFormat::R32G32B32_FLOAT, InputClassification::PerVertex,0),

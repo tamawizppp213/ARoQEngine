@@ -30,7 +30,7 @@ BLASBuffer::~BLASBuffer()
 }
 BLASBuffer::BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	//const gu::SharedPointer<core::GPUBuffer>& source,
-	const std::vector<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
+	const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc,
 	const core::BuildAccelerationStructureFlags flags)
 	: core::BLASBuffer(device, geometryDesc, flags)
 {
@@ -39,10 +39,10 @@ BLASBuffer::BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	/*-------------------------------------------------------------------
 	-         Push backs directX12 GeometryDesc
 	---------------------------------------------------------------------*/
-	std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> dxGeometryDesc = {};
+	gu::DynamicArray<D3D12_RAYTRACING_GEOMETRY_DESC> dxGeometryDesc = {};
 	for (const auto& desc : _geometryDescs)
 	{
-		dxGeometryDesc.emplace_back(gu::StaticPointerCast<directX12::RayTracingGeometry>(desc)->GetDesc());
+		dxGeometryDesc.Push(gu::StaticPointerCast<directX12::RayTracingGeometry>(desc)->GetDesc());
 	}
 
 	/*-------------------------------------------------------------------
@@ -51,8 +51,8 @@ BLASBuffer::BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS inputs = {};
 	inputs.DescsLayout    = D3D12_ELEMENTS_LAYOUT_ARRAY;
 	inputs.Flags          = EnumConverter::Convert(_flags);                            // build flag
-	inputs.NumDescs       = static_cast<std::uint32_t>(dxGeometryDesc.size());         // geometry flag count
-	inputs.pGeometryDescs = dxGeometryDesc.data(); 
+	inputs.NumDescs       = static_cast<std::uint32_t>(dxGeometryDesc.Size());         // geometry flag count
+	inputs.pGeometryDescs = dxGeometryDesc.Data(); 
 	inputs.Type           = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL; // BLAS
 
 	/*-------------------------------------------------------------------

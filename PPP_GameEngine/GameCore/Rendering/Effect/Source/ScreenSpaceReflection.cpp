@@ -40,11 +40,11 @@ ScreenSpaceReflection::ScreenSpaceReflection()
 
 ScreenSpaceReflection::~ScreenSpaceReflection()
 {
-	_vertexBuffers.clear(); _vertexBuffers.shrink_to_fit();
-	_indexBuffers.clear(); _indexBuffers.shrink_to_fit();
+	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
+	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
 }
 
-ScreenSpaceReflection::ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const SSRSettings& settings, const std::wstring& addName)
+ScreenSpaceReflection::ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const SSRSettings& settings, const gu::tstring& addName)
 	: _engine(engine), _normalMap(normalMap), _depthMap(depthMap)
 {
 	assert(("engine is nullptr", _engine));
@@ -54,8 +54,8 @@ ScreenSpaceReflection::ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& en
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (addName != L"") { name += addName; name += L"::"; }
-	name += L"SSR::";
+	gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
+	name += SP("SSR::");
 
 	/*-------------------------------------------------------------------
 	-           Prepare Pipeline
@@ -108,13 +108,13 @@ void ScreenSpaceReflection::Draw(const ResourceViewPtr& scene)
 
 #pragma region Set up function
 
-void ScreenSpaceReflection::PrepareBuffer(const SSRSettings& settings, const std::wstring& name)
+void ScreenSpaceReflection::PrepareBuffer(const SSRSettings& settings, const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SSRSettings), 1);
 
-	const auto buffer = device->CreateBuffer(metaData);
-	buffer->SetName(name + L"ScreenSpaceReflectionInfo");
+	const auto buffer     = device->CreateBuffer(metaData);
+	buffer->SetName(name + SP("ScreenSpaceReflectionInfo"));
 
 	/*-------------------------------------------------------------------
 	-			Set Information
@@ -125,7 +125,7 @@ void ScreenSpaceReflection::PrepareBuffer(const SSRSettings& settings, const std
 }
 
 
-void ScreenSpaceReflection::PreparePipelineState(const std::wstring& addName)
+void ScreenSpaceReflection::PreparePipelineState(const gu::tstring& addName)
 {
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
@@ -155,8 +155,8 @@ void ScreenSpaceReflection::PreparePipelineState(const std::wstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\Effect\\ShaderSSR.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel, L"Shader\\Effect\\ShaderSSR.hlsl", L"ExecuteSSR", 6.4f, { L"Shader\\Core" });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\Effect\\ShaderSSR.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel, SP("Shader\\Effect\\ShaderSSR.hlsl"), SP("ExecuteSSR"), 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
@@ -169,7 +169,7 @@ void ScreenSpaceReflection::PreparePipelineState(const std::wstring& addName)
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);
 	_pipeline->CompleteSetting();
-	_pipeline->SetName(addName + L"PSO");
+	_pipeline->SetName(addName + SP("PSO"));
 }
 
 /****************************************************************************
@@ -177,10 +177,10 @@ void ScreenSpaceReflection::PreparePipelineState(const std::wstring& addName)
 *************************************************************************//**
 *  @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
 *  @brief     Prepare Rect Vertex and Index Buffer
-*  @param[in] const std::wstring& addName
+*  @param[in] const gu::tstring& addName
 *  @return @@void
 *****************************************************************************/
-void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const std::wstring& addName)
+void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 {
 	const auto device = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Copy);
@@ -193,8 +193,8 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const std::wstring& addN
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	// prepare frame count buffer
-	_vertexBuffers.resize(frameCount);
-	_indexBuffers.resize(frameCount);
+	_vertexBuffers.Resize(frameCount);
+	_indexBuffers.Resize(frameCount);
 	for (std::uint32_t i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------
@@ -208,18 +208,25 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const std::wstring& addN
 		/*-------------------------------------------------------------------
 		-            Set Vertex Buffer
 		---------------------------------------------------------------------*/
-		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
-		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
-		_vertexBuffers[i]->SetName(addName + L"VB");
-		_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
+		{
+			const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
+			const auto bufferName = addName + SP("VB");
+			_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
+			_vertexBuffers[i]->SetName(gu::tstring(bufferName));
+			_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
 
+		}
+		
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
-		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
-		_indexBuffers[i]->SetName(addName + L"IB");
-		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
+		{
+			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+			const auto bufferName = addName + SP("IB");
+			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
+			_indexBuffers[i]->SetName(bufferName);
+			_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
+		}
 
 	}
 }

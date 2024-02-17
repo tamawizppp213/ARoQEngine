@@ -22,31 +22,32 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-std::wstring GPUShaderState::GetShaderTypeName(core::ShaderType shaderType)
+gu::tstring GPUShaderState::GetShaderTypeName(core::ShaderType shaderType)
 {
 	switch (shaderType)
 	{
-		case ShaderType::Vertex       : return L"vs";
-		case ShaderType::Pixel        : return L"ps";
-		case ShaderType::Compute      : return L"cs";
-		case ShaderType::Mesh         : return L"ms";
-		case ShaderType::Amplification: return L"as";
-		case ShaderType::Domain       : return L"ds";
-		case ShaderType::Geometry     : return L"gs";
-		case ShaderType::Hull         : return L"hs";
+		case ShaderType::Vertex       : return SP("vs");
+		case ShaderType::Pixel        : return SP("ps");
+		case ShaderType::Compute      : return SP("cs");
+		case ShaderType::Mesh         : return SP("ms");
+		case ShaderType::Amplification: return SP("as");
+		case ShaderType::Domain       : return SP("ds");
+		case ShaderType::Geometry     : return SP("gs");
+		case ShaderType::Hull         : return SP("hs");
 		case ShaderType::RayGeneration:
 		case ShaderType::Intersection:
 		case ShaderType::AnyHit:
 		case ShaderType::ClosestHit:
-		case ShaderType::Miss:         return L"lib";
+		case ShaderType::Miss:         return SP("lib");
 		default:
 			throw std::runtime_error("not supported shader type");
 	}
 }
 
-std::wstring GPUShaderState::Format(float version)
+gu::tstring GPUShaderState::Format(float version)
 {
 	std::wstringstream stream;
 	stream << std::fixed << std::setprecision(1) << version;
-	return stream.str().substr(0, 1) + L"_" + stream.str().substr(2, 1); // main version 5, 6, sub version .1, .2
+	std::wstring temp = stream.str().substr(0, 1) + L"_" + stream.str().substr(2, 1); // main version 5, 6, sub version .1, .2
+	return gu::tstring(temp.c_str());
 }

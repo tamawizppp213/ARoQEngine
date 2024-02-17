@@ -13,8 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "UIImage.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
-#include <vector>
-#include <string>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -61,8 +61,8 @@ namespace gc::ui
 		void Clear();
 
 		/* @brief : Add frame ui objects (image, text etc...)*/
-		//void AddFrameObjects(const std::vector<ImagePtr>& images, const ResourceViewPtr& view);
-		void AddFrameObjects(const std::vector<ui::Image>& images, const ResourceViewPtr& view);
+		//void AddFrameObjects(const gu::DynamicArray<ImagePtr>& images, const ResourceViewPtr& view);
+		void AddFrameObjects(const gu::DynamicArray<ui::Image>& images, const ResourceViewPtr& view);
 
 		/* @brief : Render all registered frame ui objects*/
 		void Draw();
@@ -77,7 +77,7 @@ namespace gc::ui
 		virtual ~UIRenderer();
 		
 		explicit UIRenderer(const LowLevelGraphicsEnginePtr& engine,
-			const std::wstring& addName = L"",
+			const gu::tstring& addName = SP(""),
 			const std::uint32_t maxUICount = 1024);
 
 	protected:
@@ -85,10 +85,10 @@ namespace gc::ui
 		**                Protected Function
 		*****************************************************************************/
 		/* @brief: Prepare max writable ui count size buffer*/
-		void PrepareMaxImageBuffer(const std::wstring& name);
+		void PrepareMaxImageBuffer(const gu::tstring& name);
 
 		/* @brief: Prepare graphics pipeline state objects. */
-		void PreparePipelineState(const std::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 
 		/* @brief: Clear gpu vertex buffer */
 		void ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount);
@@ -99,16 +99,16 @@ namespace gc::ui
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
 		// @brief : total rect vertex buffers (default : 1024 UI)
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 		// @brief : total rect index buffers (default : 1024 UI)
-		std::vector<IndexBufferPtr>  _indexBuffers  = {};
+		gu::DynamicArray<IndexBufferPtr>  _indexBuffers  = {};
 		
 		// @brief : Pipeline state
 		PipelineStatePtr _pipeline = nullptr;
 
 		// @brief bind resource layout and view
 		ResourceLayoutPtr _resourceLayout = nullptr;
-		std::vector<ResourceViewPtr> _resourceViews = {};
+		gu::DynamicArray<ResourceViewPtr> _resourceViews = {};
 		
 		/* @brief regist total image count per frame  */
 		std::uint32_t  _totalImageCount = 0;
@@ -116,7 +116,7 @@ namespace gc::ui
 
 		// @brief : call drawIndex command count per frame
 		std::uint32_t  _needCallDrawIndexCount = 0;
-		std::vector<std::uint32_t> _imageCountList = {};
+		gu::DynamicArray<std::uint32_t> _imageCountList = {};
 
 	private:
 		/****************************************************************************

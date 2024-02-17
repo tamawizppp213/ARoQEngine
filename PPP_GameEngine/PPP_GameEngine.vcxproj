@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Direct3D.D3D12.1.611.2\build\native\Microsoft.Direct3D.D3D12.props" Condition="Exists('..\packages\Microsoft.Direct3D.D3D12.1.611.2\build\native\Microsoft.Direct3D.D3D12.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -126,7 +127,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Include;$(VK_SDK_PATH)\Lib;$(VK_SDK_PATH)\include;$(VK_SDK_PATH)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Plugins;$(VK_SDK_PATH)\Include;$(VK_SDK_PATH)\Lib;$(VK_SDK_PATH)\include;$(VK_SDK_PATH)\Include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -137,7 +138,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\PPP_GameEngine/Plugins;$(VK_SDK_PATH)\Lib</AdditionalLibraryDirectories>
       <EntryPointSymbol>
       </EntryPointSymbol>
       <AdditionalDependencies>vulkan-1.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
@@ -158,7 +159,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Include;$(VK_SDK_PATH)\Lib;;$(VK_SDK_PATH)\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\PPP_GameEngine;..\PPP_GameEngine/Plugins;$(VK_SDK_PATH)\Include;$(VK_SDK_PATH)\Lib;;$(VK_SDK_PATH)\Include</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -169,7 +170,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\PPP_GameEngine/Pluguins;$(VK_SDK_PATH)\Lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\PPP_GameEngine/Plugins;$(VK_SDK_PATH)\Lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
@@ -180,6 +181,10 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Editor\Widget\Include\EditorWidget.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Engine\Public\Include\EngineProfiles.hpp" />
     <ClInclude Include="Engine\Public\Include\EngineThreadManager.hpp" />
     <ClInclude Include="Engine\Public\Include\PPPEngine.hpp" />
@@ -228,7 +233,31 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
-    <ClInclude Include="GameUtility\Container\Include\GUArray.hpp">
+    <ClInclude Include="GameUtility\Base\Include\GUTypeCast.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUTypeTraits.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Base\Include\GUStringBase.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Base\Include\GUStringUtility.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Base\Include\GUTypeReferenceStruct.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Private\Base\Include\GUTypeTraitsStruct.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUDynamicArray.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -277,7 +306,19 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUDeque.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUInitializerList.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUList.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUPair.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -290,6 +331,26 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUStack.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUConstIterator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUIterator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUIteratorIncludes.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUReverseConstIterator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUReverseIterator.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -369,7 +430,7 @@
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUSmartPointer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\Screen.hpp" />
-    <ClInclude Include="GameUtility\Base\Include\ValueRange.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUValueRange.hpp" />
     <ClInclude Include="GameUtility\File\External\rapidjson\allocators.h" />
     <ClInclude Include="GameUtility\File\External\rapidjson\cursorstreamwrapper.h" />
     <ClInclude Include="GameUtility\File\External\rapidjson\document.h" />
@@ -430,6 +491,22 @@
     <ClInclude Include="GameUtility\Math\Include\GMVectorUtility.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMVertex.hpp" />
     <ClInclude Include="GraphicsCore\Engine\Include\LowLevelGraphicsEngine.hpp" />
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12Query.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Core\Include\DirectX12QueryAllocator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIMultiGPUMask.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIQuery.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Core\Include\CoreCommonState.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreCursor.hpp" />
     <ClInclude Include="Platform\Core\Include\CorePlatformApplication.hpp" />
@@ -584,11 +661,15 @@
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryList.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometryPlane.hpp" />
     <ClInclude Include="PhysicsCore\Geometry\Public\Include\GeometrySphere.hpp" />
-    <ClInclude Include="Pluguins\DDSLoader\dds_loader.h" />
-    <ClInclude Include="Pluguins\stb_image.h" />
+    <ClInclude Include="Plugins\DDSLoader\dds_loader.h" />
+    <ClInclude Include="Plugins\stb_image.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Editor\Widget\Source\EditorWidget.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Engine\Public\Source\EngineProfiles.cpp" />
     <ClCompile Include="Engine\Public\Source\EngineThreadManager.cpp" />
     <ClCompile Include="Engine\Public\Source\PPPEngine.cpp" />
@@ -705,6 +786,18 @@
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\LowLevelGraphicsEngine.cpp" />
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12Query.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\DirectX12\Core\Source\DirectX12QueryAllocator.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIMultiGPUMask.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Platform\Core\Source\CorePlatformApplication.cpp" />
     <ClCompile Include="Platform\Core\Source\CoreWindow.cpp" />
     <ClCompile Include="Platform\Core\Source\CoreWindowMessageHandler.cpp" />
@@ -817,11 +910,12 @@
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCircle.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometrySphere.cpp" />
     <ClCompile Include="Platform\Windows\Source\WindowsWindowMessageHandler.cpp" />
-    <ClCompile Include="Pluguins\DDSLoader\dds_loader.cpp" />
+    <ClCompile Include="Plugins\DDSLoader\dds_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />
     <None Include="GameUtility\Math\Include\GMSimdFunctions.inl" />
+    <None Include="packages.config" />
     <None Include="Shader\Core\ShaderColor.hlsli" />
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
     <None Include="Shader\Core\ShaderCore.hlsli" />
@@ -1014,5 +1108,13 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Direct3D.D3D12.1.611.2\build\native\Microsoft.Direct3D.D3D12.targets" Condition="Exists('..\packages\Microsoft.Direct3D.D3D12.1.611.2\build\native\Microsoft.Direct3D.D3D12.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Direct3D.D3D12.1.611.2\build\native\Microsoft.Direct3D.D3D12.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.D3D12.1.611.2\build\native\Microsoft.Direct3D.D3D12.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Direct3D.D3D12.1.611.2\build\native\Microsoft.Direct3D.D3D12.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.D3D12.1.611.2\build\native\Microsoft.Direct3D.D3D12.targets'))" />
+  </Target>
 </Project>

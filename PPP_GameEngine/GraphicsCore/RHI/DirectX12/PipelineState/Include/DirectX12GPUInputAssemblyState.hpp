@@ -50,7 +50,7 @@ namespace rhi::directX12
 		
 		explicit GPUInputAssemblyState(
 			const gu::SharedPointer<rhi::core::RHIDevice>& device, 
-			const std::vector<core::InputLayoutElement>& elements, 
+			const gu::DynamicArray<core::InputLayoutElement>& elements, 
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList);
 
 	protected:
@@ -63,7 +63,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		D3D12_INPUT_LAYOUT_DESC _inputLayout = {nullptr, 0};
 
-		std::vector<D3D12_INPUT_ELEMENT_DESC> _inputLayoutElements = {};
+		gu::DynamicArray<D3D12_INPUT_ELEMENT_DESC> _inputLayoutElements = {};
 	};
 }
 #endif

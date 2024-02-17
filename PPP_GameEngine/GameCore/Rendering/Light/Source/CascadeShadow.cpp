@@ -32,7 +32,7 @@ using namespace gm;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const std::wstring& addName)
+CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const CascadeShadowDesc& desc, const gu::tstring& addName)
 	: _engine(engine), _shadowDesc(desc)
 {
 	/*-------------------------------------------------------------------
@@ -47,15 +47,15 @@ CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const Casc
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	std::wstring name = L""; if (name != L"") { name += addName; name += L"::"; }
-	name += L"CascadeShadow::";
+	gu::tstring name = SP(""); if (name != SP("")) { name += addName; name += SP("::"); }
+	name += SP("CascadeShadow::");
 
 	/*-------------------------------------------------------------------
 	-        Shadow map
 	---------------------------------------------------------------------*/
 	_lightCamera = gu::MakeShared<gc::Camera>(_engine);
-	_shadowMaps.resize(SHADOW_MAP_COUNT);
-	for (size_t i = 0; i < _shadowMaps.size(); ++i)
+	_shadowMaps.Resize(SHADOW_MAP_COUNT);
+	for (size_t i = 0; i < _shadowMaps.Size(); ++i)
 	{
 		_shadowMaps[i] = gu::MakeShared<rendering::ShadowMap>(_engine, (std::uint32_t)(desc.MaxResolution / pow(2, i)), (std::uint32_t)(desc.MaxResolution / pow(2,i)));
 	}
@@ -125,12 +125,12 @@ void CascadeShadow::Add(const GameModelPtr& gameModel)
 		shadowMap->Add(gameModel);
 	}
 
-	_gameModels.push_back(gameModel);
+	_gameModels.Push(gameModel);
 }
 #pragma endregion Main Function
 
 #pragma region SetUp Function
-void CascadeShadow::PrepareResourceView(const std::wstring& name)
+void CascadeShadow::PrepareResourceView(const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
 
@@ -146,9 +146,9 @@ void CascadeShadow::PrepareResourceView(const std::wstring& name)
 
 		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(CascadeShadowInfo), 1, MemoryHeap::Upload, ResourceState::Common);
 		const auto buffer   = device->CreateBuffer(metaData);
-		buffer->SetName(name + L"ShadowInfo");
+		buffer->SetName(name + SP("ShadowInfo"));
 		buffer->Pack(&shadowInfo, nullptr);
-		_shadowInfoView = device->CreateResourceView(ResourceViewType::Buffer, buffer, nullptr);
+		_shadowInfoView = device->CreateResourceView(ResourceViewType::Buffer, buffer, 0, 0, nullptr);
 	}
 }
 

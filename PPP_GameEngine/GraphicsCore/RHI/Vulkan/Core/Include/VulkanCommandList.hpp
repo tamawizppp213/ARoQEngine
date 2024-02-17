@@ -48,6 +48,19 @@ namespace rhi::vulkan
 		
 		/* @brief : Proceed to the record state.*/
 		void Reset(const gu::SharedPointer<core::RHICommandAllocator>& changeAllocator) override {};
+
+#pragma region Query
+		/*----------------------------------------------------------------------
+		*  @brief : GPU情報を取得するためのクエリを開始します
+		/*----------------------------------------------------------------------*/
+		void BeginQuery(const core::QueryResultLocation& location) override {};
+
+		/*----------------------------------------------------------------------
+		*  @brief : GPU情報を取得するためのクエリを終了します
+		/*----------------------------------------------------------------------*/
+		void EndQuery(const core::QueryResultLocation& location) override {};
+
+#pragma endregion Query
 		/*-------------------------------------------------------------------
 		-               Graphic Pipeline command
 		---------------------------------------------------------------------*/
@@ -73,7 +86,7 @@ namespace rhi::vulkan
 		
 		void SetVertexBuffer (const gu::SharedPointer<core::GPUBuffer>& buffer) override;
 		
-		void SetVertexBuffers(const std::vector<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
+		void SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
 		
 		void SetIndexBuffer  (const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
 		
@@ -105,12 +118,17 @@ namespace rhi::vulkan
 		
 		void CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source) override {};;
 		
+		/*----------------------------------------------------------------------
+		*  @brief : バッファの領域をあるリソースから別のリソースにコピーする. GPU版memcpy
+		/*----------------------------------------------------------------------*/
+		void CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) override {};
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		VkCommandBuffer GetCommandList() { return _commandBuffer; }
 		
-		void SetName(const std::wstring& name);
+		void SetName(const gu::tstring& name);
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -121,7 +139,7 @@ namespace rhi::vulkan
 		explicit RHICommandList(
 			const gu::SharedPointer<core::RHIDevice>& device,
 			const gu::SharedPointer<core::RHICommandAllocator>& allocator,
-			const std::wstring& name);
+			const gu::tstring& name);
 	protected:
 		/****************************************************************************
 		**                Protected Function

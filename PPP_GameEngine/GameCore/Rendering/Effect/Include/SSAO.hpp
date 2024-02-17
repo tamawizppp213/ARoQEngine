@@ -15,8 +15,8 @@
 #include "GameUtility/Base/Include/HLSLUtility.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <string>
-#include <vector>
+#include "GameUtility/Base/Include/GUString.hpp"
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -103,22 +103,22 @@ namespace gc
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const std::wstring& addName = L"");
+		SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const gu::tstring& addName = SP(""));
 
 		~SSAO();
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareSSAOSettings(const std::wstring& name);
+		void PrepareSSAOSettings(const gu::tstring& name);
 
-		void PrepareBlurMode(const std::wstring& name);
+		void PrepareBlurMode(const gu::tstring& name);
 
-		void PrepareRandomTexture(const std::wstring& name);
+		void PrepareRandomTexture(const gu::tstring& name);
 
-		void PreparePipelineState(const std::wstring& name);
+		void PreparePipelineState(const gu::tstring& name);
 
-		void PrepareVertexAndIndexBuffer(const std::wstring& name);
+		void PrepareVertexAndIndexBuffer(const gu::tstring& name);
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
@@ -150,9 +150,9 @@ namespace gc
 		/* @brief : CPU calculate random value map. */
 		ResourceViewPtr _randomMap = nullptr;
 
-		std::vector<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 
-		std::vector<IndexBufferPtr>  _indexBuffers = {};
+		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
 
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 	};

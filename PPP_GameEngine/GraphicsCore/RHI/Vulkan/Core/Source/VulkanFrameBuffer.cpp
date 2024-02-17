@@ -26,7 +26,7 @@ using namespace rhi;
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
+RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<core::RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil)
 	: core::RHIFrameBuffer(device, renderPass, renderTargets, depthStencil)
 {
 	Prepare();
@@ -65,14 +65,14 @@ void RHIFrameBuffer::Prepare()
 	/*-------------------------------------------------------------------
 	-               Create Image view
 	---------------------------------------------------------------------*/
-	std::vector<VkImageView> imageViews(_renderTargets.size());
+	gu::DynamicArray<VkImageView> imageViews(_renderTargets.Size());
 	// Render Target
-	for (size_t index = 0; index < _renderTargets.size(); ++index)
+	for (size_t index = 0; index < _renderTargets.Size(); ++index)
 	{
 		// set up render target resource view
-		_renderTargetViews[index] = rhiDevice->CreateResourceView(core::ResourceViewType::RenderTarget, _renderTargets[index], nullptr);
-		_renderTargetSRVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _renderTargets[index], nullptr);
-		_renderTargetUAVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::RWTexture   , _renderTargets[index], nullptr);
+		_renderTargetViews[index] = rhiDevice->CreateResourceView(core::ResourceViewType::RenderTarget, _renderTargets[index],0,0, nullptr);
+		_renderTargetSRVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _renderTargets[index],0,0, nullptr);
+		_renderTargetUAVs [index] = rhiDevice->CreateResourceView(core::ResourceViewType::RWTexture   , _renderTargets[index],0,0, nullptr);
 
 		imageViews[index] = gu::StaticPointerCast<vulkan::GPUResourceView>(_renderTargetViews[index])->GetImageView();
 
@@ -85,11 +85,11 @@ void RHIFrameBuffer::Prepare()
 	if (_depthStencil)
 	{
 		// set up depth stencil resource view
-		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil, _depthStencil, nullptr);
-		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     , _depthStencil, nullptr);
+		_depthStencilView = rhiDevice->CreateResourceView(core::ResourceViewType::DepthStencil,_depthStencil,0,0, nullptr);
+		_depthStencilSRV  = rhiDevice->CreateResourceView(core::ResourceViewType::Texture     ,_depthStencil,0,0, nullptr);
 
 		const auto vkDepthStancilView = gu::StaticPointerCast<vulkan::GPUResourceView>(_depthStencilView);
-		imageViews.push_back(vkDepthStancilView->GetImageView());
+		imageViews.Push(vkDepthStancilView->GetImageView());
 	}
 
 	// width, height must be set more than 0.
@@ -105,8 +105,8 @@ void RHIFrameBuffer::Prepare()
 		.pNext           = nullptr,
 		.flags           = 0,
 		.renderPass      = gu::StaticPointerCast<vulkan::RHIRenderPass>(_renderPass)->GetRenderPass(),
-		.attachmentCount = static_cast<std::uint32_t>(imageViews.size()),
-		.pAttachments    = imageViews.data(),
+		.attachmentCount = static_cast<std::uint32_t>(imageViews.Size()),
+		.pAttachments    = imageViews.Data(),
 		.width           = static_cast<std::uint32_t>(_width),
 		.height          = static_cast<std::uint32_t>(_height),
 		.layers          = 1

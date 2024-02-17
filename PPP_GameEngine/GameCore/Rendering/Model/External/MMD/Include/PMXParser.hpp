@@ -12,9 +12,10 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Math/Include/GMVector.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 #include <Windows.h>
 #include <vector>
-#include <string>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -62,10 +63,10 @@ namespace pmx
 	*****************************************************************************/
 	struct PMXInfo
 	{
-		std::string ModelName;
-		std::string EngliseModelName;
-		std::string Comment;
-		std::string EnglishComment;
+		gu::string ModelName;
+		gu::string EngliseModelName;
+		gu::string Comment;
+		gu::string EnglishComment;
 
 		bool Read(FILE* file, const PMXSetting* setting);
 	};
@@ -133,8 +134,8 @@ namespace pmx
 			Common
 		};
 
-		std::string        MaterialName;
-		std::string        EnglishName;
+		gu::string        MaterialName;
+		gu::string        EnglishName;
 		Float4             Diffuse;
 		float              SpecularPower;
 		Float3             Specular;
@@ -147,7 +148,7 @@ namespace pmx
 		PMXSphereMapMode   SphereMapMode;
 		PMXToonTextureMode ToonTextureMode;
 		INT32              ToonTextureIndex;
-		std::string        Memo;
+		gu::string        Memo;
 		INT32              FaceIndicesCount;
 
 		void Read(FILE* file, const PMXSetting* setting);
@@ -192,8 +193,8 @@ namespace pmx
 			DeformAfterPhisics = 0x1000, // deform after phisics
 			DeformOuterParent  = 0x2000, // deform outer parent
 		};
-		std::string BoneName;
-		std::string EnglishName;
+		gu::string BoneName;
+		gu::string EnglishName;
 		Float3      Position;
 		INT32       ParentBoneIndex;
 		INT32       DeformDepth;
@@ -209,10 +210,10 @@ namespace pmx
 		INT32       IKTargetBoneIndex; // PMXBoneFlag: IKBone is enabled
 		INT32       IKIterationCount;  // PMXBoneFlag: IKBone is enabled
 		float       IKAngleLimit;      // PMXBoneFlag: IKBone is enabled (radian)
-		std::vector<PMXIKLink> IKLinks;
+		gu::DynamicArray<PMXIKLink> IKLinks;
 
 		void Read(FILE* filePtr, const PMXSetting* setting);
-		~PMXBone() { IKLinks.clear(); IKLinks.shrink_to_fit(); }
+		~PMXBone() { IKLinks.Clear(); IKLinks.ShrinkToFit(); }
 	};
 	/****************************************************************************
 	*				  			PMXMorph
@@ -298,28 +299,28 @@ namespace pmx
 			Float3   RotateTorque;
 		};
 
-		std::string  Name;
-		std::string  EnglishName;
+		gu::string  Name;
+		gu::string  EnglishName;
 		PMXFacePart  FacePart;
 		PMXMorphType MorphType;
-		std::vector<PositionMorph> PositionMorphs;
-		std::vector<UVMorph>       UVMorphs;
-		std::vector<BoneMorph>     BoneMorphs;
-		std::vector<MaterialMorph> MaterialMorphs;
-		std::vector<GroupMorph>    GroupMorphs;
-		std::vector<FlipMorph>     FlipMorphs;
-		std::vector<ImpulseMorph>  ImpulseMorphs;
+		gu::DynamicArray<PositionMorph> PositionMorphs;
+		gu::DynamicArray<UVMorph>       UVMorphs;
+		gu::DynamicArray<BoneMorph>     BoneMorphs;
+		gu::DynamicArray<MaterialMorph> MaterialMorphs;
+		gu::DynamicArray<GroupMorph>    GroupMorphs;
+		gu::DynamicArray<FlipMorph>     FlipMorphs;
+		gu::DynamicArray<ImpulseMorph>  ImpulseMorphs;
 
 		void Read(FILE* filePtr, const PMXSetting* setting);
 		~PMXMorph()
 		{
-			PositionMorphs.clear(); PositionMorphs.shrink_to_fit();
-			UVMorphs      .clear(); UVMorphs      .shrink_to_fit();
-			BoneMorphs    .clear(); BoneMorphs    .shrink_to_fit();
-			MaterialMorphs.clear(); MaterialMorphs.shrink_to_fit();
-			GroupMorphs   .clear(); GroupMorphs   .shrink_to_fit();
-			FlipMorphs    .clear(); FlipMorphs    .shrink_to_fit();
-			ImpulseMorphs .clear(); ImpulseMorphs .shrink_to_fit();
+			PositionMorphs.Clear(); PositionMorphs.ShrinkToFit();
+			UVMorphs      .Clear(); UVMorphs      .ShrinkToFit();
+			BoneMorphs    .Clear(); BoneMorphs    .ShrinkToFit();
+			MaterialMorphs.Clear(); MaterialMorphs.ShrinkToFit();
+			GroupMorphs   .Clear(); GroupMorphs   .ShrinkToFit();
+			FlipMorphs    .Clear(); FlipMorphs    .ShrinkToFit();
+			ImpulseMorphs .Clear(); ImpulseMorphs .ShrinkToFit();
 		};
 	};
 	/****************************************************************************
@@ -347,14 +348,14 @@ namespace pmx
 			SpecialFrame
 		};
 
-		std::string         Name;
-		std::string         EnglishName;
+		gu::string         Name;
+		gu::string         EnglishName;
 		FrameType           Flag;
-		std::vector<Target> Targets;
+		gu::DynamicArray<Target> Targets;
 		void Read(FILE* file, const PMXSetting* setting);
 		~PMXDisplayFrame()
 		{
-			Targets.clear(); Targets.shrink_to_fit();
+			Targets.Clear(); Targets.ShrinkToFit();
 		}
 	};
 	/****************************************************************************
@@ -377,8 +378,8 @@ namespace pmx
 			Dynamic,
 			DynamicAndBoneMerge
 		};
-		std::string           Name;
-		std::string           EnglishName;
+		gu::string           Name;
+		gu::string           EnglishName;
 		INT32                 BoneIndex;
 		UINT8                 Group;
 		UINT16                CollisionGroup;
@@ -412,8 +413,8 @@ namespace pmx
 	};
 	struct PMXJoint
 	{
-		std::string  Name;
-		std::string  EnglishName;
+		gu::string  Name;
+		gu::string  EnglishName;
 		PMXJointType JointType;
 		INT32        RigidBodyIndex_A;
 		INT32        RigidBodyIndex_B;
@@ -499,8 +500,8 @@ namespace pmx
 			float SHR; // Soft contacts hardness;
 			float AHR; // Anchors hardness;
 		};
-		std::string          Name;
-		std::string          EnglishName;
+		gu::string          Name;
+		gu::string          EnglishName;
 		PMXSoftBodyType      SoftBodyType;
 		INT32                MaterialIndex;
 		UINT8                Group;
@@ -515,14 +516,14 @@ namespace pmx
 		PMXSoftBodyCluster   Cluster;
 		PMXSoftBodyIteration Iteration;
 		PMXSoftBodyMaterial  Material;
-		std::vector<PMXSoftBodyAnchorRigidBody> Anchor;
-		std::vector<INT32>   VertexIndices;
+		gu::DynamicArray<PMXSoftBodyAnchorRigidBody> Anchor;
+		gu::DynamicArray<INT32>   VertexIndices;
 
 		void Read(FILE* filePtr, const PMXSetting* setting);
 		~PMXSoftBody()
 		{
-			Anchor.clear(); Anchor.shrink_to_fit();
-			VertexIndices.clear(); VertexIndices.shrink_to_fit();
+			Anchor.Clear(); Anchor.ShrinkToFit();
+			VertexIndices.Clear(); VertexIndices.ShrinkToFit();
 		}
 	};
 
@@ -538,23 +539,23 @@ namespace pmx
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		bool Load(const std::wstring& filePath);
+		bool Load(const gu::tstring& filePath);
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		PMXSetting                   Setting;
 		PMXInfo                      Infomation;
-		std::vector<PMXVertex>       Vertices;
-		std::vector<UINT32>          Indices;
-		std::vector<std::string>     TexturePathList;
-		std::vector<PMXMaterial>     Materials;
-		std::vector<PMXBone>         Bones;
-		std::vector<PMXMorph>        Morphs;
-		std::vector<PMXDisplayFrame> DisplayFrames;
-		std::vector<PMXRigidBody>    RigidBodies;
-		std::vector<PMXJoint>        Joints;
-		std::vector<PMXSoftBody>     SoftBodies;
-		std::string Directory;
+		gu::DynamicArray<PMXVertex>       Vertices;
+		gu::DynamicArray<UINT32>          Indices;
+		gu::DynamicArray<gu::string>     TexturePathList;
+		gu::DynamicArray<PMXMaterial>     Materials;
+		gu::DynamicArray<PMXBone>         Bones;
+		gu::DynamicArray<PMXMorph>        Morphs;
+		gu::DynamicArray<PMXDisplayFrame> DisplayFrames;
+		gu::DynamicArray<PMXRigidBody>    RigidBodies;
+		gu::DynamicArray<PMXJoint>        Joints;
+		gu::DynamicArray<PMXSoftBody>     SoftBodies;
+		gu::string Directory;
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

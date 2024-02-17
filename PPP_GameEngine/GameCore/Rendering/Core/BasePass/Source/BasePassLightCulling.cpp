@@ -17,6 +17,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
+#include <string>
 #include <cassert>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -45,8 +46,8 @@ LightCulling::LightCulling(const LowLevelGraphicsEnginePtr& engine, const LightC
 
 LightCulling::~LightCulling()
 {
-	_lightIDLists.clear();
-	_lightIDLists.shrink_to_fit();
+	_lightIDLists.Clear();
+	_lightIDLists.ShrinkToFit();
 }
 
 #pragma endregion Constructor and Destructor
@@ -116,13 +117,14 @@ void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 	/*-------------------------------------------------------------------
 	-			Set up 
 	---------------------------------------------------------------------*/
-	_lightIDLists.resize(CullingLightType::CountOf);
-	for (size_t i = 0; i < _lightIDLists.size(); ++i)
+	_lightIDLists.Resize(CullingLightType::CountOf);
+	for (size_t i = 0; i < _lightIDLists.Size(); ++i)
 	{
 		auto bufferInfo          = GPUBufferMetaData::UploadBuffer(sizeof(int), desc.LightCounts[i] * tileCount);
 		bufferInfo.ResourceUsage = ResourceUsage::UnorderedAccess;
 
-		const auto buffer = device->CreateBuffer(bufferInfo, L"LightCulling::LightIDLists::" + std::to_wstring(i));
+		const auto bufferName = L"LightCulling::LightIDLists::" + std::to_wstring(i);
+		const auto buffer = device->CreateBuffer(bufferInfo, gu::tstring(bufferName.c_str(), bufferName.size()));
 		_lightIDLists[i] = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 	}
 

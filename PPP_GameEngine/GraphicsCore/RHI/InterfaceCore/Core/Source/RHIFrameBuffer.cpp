@@ -23,7 +23,7 @@ using namespace rhi::core;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const std::vector<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil)
+RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil)
 	: _device(device), _renderPass(renderPass), _renderTargets(renderTargets), _depthStencil(depthStencil)
 {
 	assert(_device);
@@ -32,7 +32,7 @@ RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const
 }
 
 RHIFrameBuffer::RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil)
-	: _device(device), _renderPass(renderPass), _renderTargets(std::vector<gu::SharedPointer<GPUTexture>>{renderTarget}), _depthStencil(depthStencil)
+	: _device(device), _renderPass(renderPass), _renderTargets(gu::DynamicArray<gu::SharedPointer<GPUTexture>>{renderTarget}), _depthStencil(depthStencil)
 {
 	CheckResourceFormat();
 }
@@ -43,10 +43,10 @@ RHIFrameBuffer::~RHIFrameBuffer()
 	if (_depthStencilView){ _depthStencilView.Reset();}
 	if (_depthStencil) { _depthStencil.Reset(); }
 
-	_renderTargetViews.clear(); _renderTargetViews.shrink_to_fit();
-	_renderTargetUAVs.clear(); _renderTargetUAVs.shrink_to_fit();
-	_renderTargetSRVs.clear(); _renderTargetSRVs.shrink_to_fit();
-	_renderTargets.clear(); _renderTargets.shrink_to_fit();
+	_renderTargetViews.Clear(); _renderTargetViews.ShrinkToFit();
+	_renderTargetUAVs.Clear(); _renderTargetUAVs.ShrinkToFit();
+	_renderTargetSRVs.Clear(); _renderTargetSRVs.ShrinkToFit();
+	_renderTargets.Clear(); _renderTargets.ShrinkToFit();
 
 	if (_renderPass) { _renderPass.Reset(); }
 	if (_device) { _device.Reset(); }
@@ -56,7 +56,7 @@ RHIFrameBuffer::~RHIFrameBuffer()
 #pragma region Prepare
 void RHIFrameBuffer::CheckResourceFormat()
 {
-	for (int i = 0; i < _renderTargets.size(); ++i)
+	for (int i = 0; i < _renderTargets.Size(); ++i)
 	{
 		if (!_renderTargets[i]) { continue; }
 		if (_renderTargets[i]->GetDimension() != ResourceDimension::Dimension2D) { throw std::runtime_error("Wrong render target dimension"); }
@@ -69,14 +69,14 @@ void RHIFrameBuffer::CheckResourceFormat()
 	if (_depthStencil)
 	{
 		if (_depthStencil->GetDimension() != ResourceDimension::Dimension2D ) { throw std::runtime_error("Wrong depthStencil dimension"); }
-		if (_depthStencil->GetUsage()     != ResourceUsage    ::DepthStencil) { throw std::runtime_error("Wrong resource usage"); }
+		if (!core::EnumHas(_depthStencil->GetUsage(), ResourceUsage::DepthStencil)) { throw std::runtime_error("Wrong resource usage"); }
 	}
 }
 #pragma endregion Prepare
 #pragma region Property
 Viewport RHIFrameBuffer::GetFullViewport(const size_t index) const noexcept
 {
-	assert(index < _renderTargets.size());
+	assert(index < _renderTargets.Size());
 	return
 	{
 		0.0f, 0.0f,
@@ -87,7 +87,7 @@ Viewport RHIFrameBuffer::GetFullViewport(const size_t index) const noexcept
 }
 ScissorRect RHIFrameBuffer::GetFullScissorRect(const size_t index) const noexcept
 {
-	assert(index < _renderTargets.size());
+	assert(index < _renderTargets.Size());
 	return 
 	{
 		0,0, 
@@ -96,10 +96,10 @@ ScissorRect RHIFrameBuffer::GetFullScissorRect(const size_t index) const noexcep
 	};
 }
 
-void RHIFrameBuffer::SetRenderTargets(const std::vector<TexturePtr>& textures)
+void RHIFrameBuffer::SetRenderTargets(const gu::DynamicArray<TexturePtr>& textures)
 {
 	_renderTargets = textures;
-	for (size_t i = 0; i < _renderTargets.size(); ++i)
+	for (size_t i = 0; i < _renderTargets.Size(); ++i)
 	{
 		_renderTargetViews[i]->SetTexture(textures[i]);
 		_renderTargetSRVs[i]->SetTexture(textures[i]);
@@ -109,7 +109,7 @@ void RHIFrameBuffer::SetRenderTargets(const std::vector<TexturePtr>& textures)
 
 void RHIFrameBuffer::SetRenderTarget(const TexturePtr& texture, const size_t index)
 {
-	assert(index < _renderTargets.size());
+	assert(index < _renderTargets.Size());
 	_renderTargetViews[index]->SetTexture(texture);
 	_renderTargetSRVs[index]->SetTexture(texture);
 	_renderTargetUAVs[index]->SetTexture(texture);

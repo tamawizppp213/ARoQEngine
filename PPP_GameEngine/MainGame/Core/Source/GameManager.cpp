@@ -24,6 +24,7 @@ void GameManager::GameStart(const engine::setting::StartUpParameters& parameters
 	_engine = gu::MakeShared<PPPEngine>();
 	_engine->StartUp(parameters);
 	_sceneManager.StartUp(_engine, _engine->GetMainThreadTimer());
+	_engine->Run();
 }
 
 void GameManager::GameUpdateMain()

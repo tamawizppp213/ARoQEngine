@@ -82,8 +82,6 @@ void SampleColorChange::Update()
 *****************************************************************************/
 void SampleColorChange::Draw()
 {
-	_engine->BeginDrawFrame();
-	_engine->BeginSwapchainRenderPass();
 	/*-------------------------------------------------------------------
 	-             Regist graphics pipeline command
 	---------------------------------------------------------------------*/
@@ -108,7 +106,6 @@ void SampleColorChange::Draw()
 	if (_useBlur)   { _gaussianBlur->Draw(frameBuffer); }
 	if (_useMosaic) { _mosaic->Draw(); }
 
-	_engine->EndDrawFrame();
 }
 /****************************************************************************
 *                       Terminate

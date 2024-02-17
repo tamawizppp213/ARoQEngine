@@ -41,7 +41,7 @@ namespace rhi::directX12
 		**                Public Function
 		*****************************************************************************/
 		// @brief : Allocate view.Return descriptor index(only use resourceLayout in vulkan api :
-		DescriptorID Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout = nullptr) override;
+		DescriptorID Allocate(const core::DescriptorHeapType heapType, [[maybe_unused]]const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout = nullptr) override;
 		
 		void Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex) override;
 
