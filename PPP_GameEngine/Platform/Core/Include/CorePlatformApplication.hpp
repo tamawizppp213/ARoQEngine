@@ -14,7 +14,7 @@
 #include "CoreCommonState.hpp"
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <vector>
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +90,7 @@ namespace platform::core
 		/*---------------------------------------------------------------
 		　　　　　@brief : Acquire the monitor list 
 		-----------------------------------------------------------------*/
-		virtual void GetMonitorsInfo(std::vector<core::MonitorInfo>& monitorInfo) const = 0;
+		virtual void GetMonitorsInfo(gu::DynamicArray<core::MonitorInfo>& monitorInfo) const = 0;
 
 		/*---------------------------------------------------------------
 		　　　　　@brief : Set application message handle

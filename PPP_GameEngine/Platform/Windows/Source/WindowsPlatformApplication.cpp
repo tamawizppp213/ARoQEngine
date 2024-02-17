@@ -47,9 +47,9 @@ static constexpr LPCWSTR g_ApplicationName = L"Game Window";
 
 namespace
 {
-	gu::SharedPointer<windows::CoreWindow> FindWindowByHWND(const std::vector<gu::SharedPointer<windows::CoreWindow>>& searchWindows, HWND handle)
+	gu::SharedPointer<windows::CoreWindow> FindWindowByHWND(const gu::DynamicArray<gu::SharedPointer<windows::CoreWindow>>& searchWindows, HWND handle)
 	{
-		for (int i = 0; i < searchWindows.size(); ++i)
+		for (int i = 0; i < searchWindows.Size(); ++i)
 		{
 			if (searchWindows[i]->GetHWND() == handle)
 			{
@@ -93,10 +93,10 @@ PlatformApplication::PlatformApplication() : core::PlatformApplication()
 PlatformApplication::~PlatformApplication()
 {
 	if (SHCoreDLL) { ::FreeLibrary(SHCoreDLL); }
-	_windows.clear();
-	_windows.shrink_to_fit();
-	_messageList.clear();
-	_messageList.shrink_to_fit();
+	_windows.Clear();
+	_windows.ShrinkToFit();
+	_messageList.Clear();
+	_messageList.ShrinkToFit();
 
 	windows::PlatformCommand::CoUnInitialize();
 
@@ -221,7 +221,7 @@ void PlatformApplication::SetUpWindow(const SharedPointer<core::CoreWindow>& win
 {
 	assert(("window is nullptr", window));
 
-	_windows.push_back(StaticPointerCast<windows::CoreWindow>(window));
+	_windows.Push(StaticPointerCast<windows::CoreWindow>(window));
 	
 	const auto windowsCoreWindow = StaticPointerCast<windows::CoreWindow>(window);
 	windowsCoreWindow->Create(StaticPointerCast<core::PlatformApplication>(SharedFromThis()), desc, parentWindow);
@@ -281,7 +281,7 @@ LRESULT PlatformApplication::ApplicationWindowMessageProcedure(HWND hwnd, UINT m
 {
 	if (_allowedToDeferredMessageProcessing)
 	{
-		_messageList.push_back(DeferredMessage(hwnd, message, wParam, lParam));
+		_messageList.Push(DeferredMessage(hwnd, message, wParam, lParam));
 	}
 	else
 	{
@@ -389,8 +389,8 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 		--------------------------------------------------------------------*/
 		case WM_DESTROY:
 		{
-			std::erase(_windows, window);
-			if (_windows.empty())
+			_windows.Remove(window);
+			if (_windows.IsEmpty())
 			{
 				PostQuitMessage(0);
 			}
@@ -414,13 +414,13 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 *****************************************************************************/
 void PlatformApplication::ProcessDeferredEvents()
 {
-	for (int i = 0; i < _messageList.size(); ++i)
+	for (int i = 0; i < _messageList.Size(); ++i)
 	{
 		ProcessDeferredWindowsMessage(_messageList[i]);
 	}
 
-	_messageList.clear();
-	_messageList.shrink_to_fit();
+	_messageList.Clear();
+	_messageList.ShrinkToFit();
 }
 
 #pragma endregion Main Function
@@ -601,15 +601,15 @@ float PlatformApplication::GetDPIScaleFactorAtPixelPoint(const float x, const fl
 /****************************************************************************
 *                     GetMonitorsInfo
 *************************************************************************//**
-*  @fn        void PlatformApplication::GetMonitorsInfo(std::vector<core::MonitorInfo>& monitorInfo) const
+*  @fn        void PlatformApplication::GetMonitorsInfo(gu::DynamicArray<core::MonitorInfo>& monitorInfo) const
 *
 *  @brief     モニターの情報を取得する
 *
-*  @param[out] std::vector<core::MOnitorInfo> モニターの情報リスト
+*  @param[out] gu::DynamicArray<core::MOnitorInfo> モニターの情報リスト
 * 
 *  @return    void
 *****************************************************************************/
-void PlatformApplication::GetMonitorsInfo(std::vector<core::MonitorInfo>& monitorInfos) const
+void PlatformApplication::GetMonitorsInfo(gu::DynamicArray<core::MonitorInfo>& monitorInfos) const
 {
 	/*---------------------------------------------------------------
 				 事前準備
@@ -687,7 +687,7 @@ void PlatformApplication::GetMonitorsInfo(std::vector<core::MonitorInfo>& monito
 			monitorInfo.NativeWidth = pixelWidth;
 			monitorInfo.NativeHeight = pixelHeight;
 
-			monitorInfos.emplace_back(monitorInfo);
+			monitorInfos.Push(monitorInfo);
 
 			DeleteDC(hdc);
 		}

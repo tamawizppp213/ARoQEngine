@@ -97,7 +97,7 @@ namespace platform::windows
 		/*---------------------------------------------------------------
 		　　　　　@brief : モニターの情報を取得する
 		-----------------------------------------------------------------*/
-		virtual void GetMonitorsInfo(std::vector<core::MonitorInfo>& monitorInfo) const override;
+		virtual void GetMonitorsInfo(gu::DynamicArray<core::MonitorInfo>& monitorInfo) const override;
 
 #pragma endregion Monitor
 		/****************************************************************************
@@ -138,9 +138,9 @@ namespace platform::windows
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		std::vector<gu::SharedPointer<windows::CoreWindow>> _windows = {};
+		gu::DynamicArray<gu::SharedPointer<windows::CoreWindow>> _windows = {};
 
-		std::vector<DeferredMessage> _messageList = {};
+		gu::DynamicArray<DeferredMessage> _messageList = {};
 
 		MSG _windowMessage = { NULL };
 
