@@ -167,13 +167,13 @@ namespace unicode
 	/****************************************************************************
 	*                            ConvertCharU8ToU16
 	*************************************************************************//**
-	*  @fn         bool ConvertCharU8ToU16(const std::array<char, 4>& u8Char, std::array<char16_t, 2>& u16Char)
+	*  @fn         bool ConvertCharU8ToU16(const gu::StaticArray<char, 4>& u8Char, gu::StaticArray<char16_t, 2>& u16Char)
 	*  @brief      convert char U8 to U16
-	*  @param[in]  const std::array<char, 4>& u8Char
-	*  @param[out] std::array<char16_t, 2>& u16Char
+	*  @param[in]  const gu::StaticArray<char, 4>& u8Char
+	*  @param[out] gu::StaticArray<char16_t, 2>& u16Char
 	*  @return 　　 bool
 	*****************************************************************************/
-	bool ConvertCharU8ToU16(const std::array<char, 4>& u8Char, std::array<char16_t, 2>& u16Char)
+	bool ConvertCharU8ToU16(const gu::StaticArray<char, 4>& u8Char, gu::StaticArray<char16_t, 2>& u16Char)
 	{
 		char32_t u32Char;
 		if (!ConvertCharU8ToU32 (u8Char , u32Char)) { return false; }
@@ -184,13 +184,13 @@ namespace unicode
 	/****************************************************************************
 	*                            ConvertCharU8ToU32
 	*************************************************************************//**
-	*  @fn         bool ConvertCharU8ToU32(const std::array<char, 4>& u8Char, char32_t& u32Char)
+	*  @fn         bool ConvertCharU8ToU32(const gu::StaticArray<char, 4>& u8Char, char32_t& u32Char)
 	*  @brief      convert char U8 to U32
-	*  @param[in]  const std::array<char, 4>& u8Char
+	*  @param[in]  const gu::StaticArray<char, 4>& u8Char
 	*  @param[out] char32_t& u32Char
 	*  @return 　　 bool
 	*****************************************************************************/
-	bool ConvertCharU8ToU32(const std::array<char, 4>& u8Char, char32_t& u32Char)
+	bool ConvertCharU8ToU32(const gu::StaticArray<char, 4>& u8Char, char32_t& u32Char)
 	{
 		int byteCount = GetU8ByteCount(u8Char[0]);
 		if (byteCount == 0) { return false; }
@@ -269,13 +269,13 @@ namespace unicode
 	/****************************************************************************
 	*                            ConvertCharU16ToU8
 	*************************************************************************//**
-	*  @fn         bool ConvertCharU16ToU8(const std::array<char16_t, 2>& u16Char, std::array<char, 4>& u8Char)
+	*  @fn         bool ConvertCharU16ToU8(const gu::StaticArray<char16_t, 2>& u16Char, gu::StaticArray<char, 4>& u8Char)
 	*  @brief      convert char U16 to U8
-	*  @param[in]  const std::array<char16_t, 2>& u16Char
-	*  @param[out] std::array<char, 4>& u8Char
+	*  @param[in]  const gu::StaticArray<char16_t, 2>& u16Char
+	*  @param[out] gu::StaticArray<char, 4>& u8Char
 	*  @return 　　 bool
 	*****************************************************************************/
-	bool ConvertCharU16ToU8(const std::array<char16_t, 2>& u16Char, std::array<char, 4>& u8Char)
+	bool ConvertCharU16ToU8(const gu::StaticArray<char16_t, 2>& u16Char, gu::StaticArray<char, 4>& u8Char)
 	{
 		char32_t u32Char;
 		if (!ConvertCharU16ToU32(u16Char, u32Char)){ return false; }
@@ -286,13 +286,13 @@ namespace unicode
 	/****************************************************************************
 	*                            ConvertCharU16ToU32
 	*************************************************************************//**
-	*  @fn         bool ConvertCharU16ToU32(const std::array<char16_t, 2>& u16Char, char32_t& u32Char)
+	*  @fn         bool ConvertCharU16ToU32(const gu::StaticArray<char16_t, 2>& u16Char, char32_t& u32Char)
 	*  @brief      convert char U16 to U32
-	*  @param[in]  const std::array<char16_t, 2>& u16Char
+	*  @param[in]  const gu::StaticArray<char16_t, 2>& u16Char
 	*  @param[out] char32_t& u32Char
 	*  @return 　　 bool
 	*****************************************************************************/
-	bool ConvertCharU16ToU32(const std::array<char16_t, 2>& u16Char, char32_t& u32Char)
+	bool ConvertCharU16ToU32(const gu::StaticArray<char16_t, 2>& u16Char, char32_t& u32Char)
 	{
 		if (IsU16HighSurrogate(u16Char[0]))
 		{
@@ -316,13 +316,13 @@ namespace unicode
 	/****************************************************************************
 	*                            ConvertCharU32ToU8
 	*************************************************************************//**
-	*  @fn         bool ConvertCharU32ToU8(const char32_t u32Char, std::array<char, 4>& u8Char)
+	*  @fn         bool ConvertCharU32ToU8(const char32_t u32Char, gu::StaticArray<char, 4>& u8Char)
 	*  @brief      convert char U32 to U8
 	*  @param[in]  const char32_t u32Char
-	*  @param[out] std::array<char, 4>& u8Char
+	*  @param[out] gu::StaticArray<char, 4>& u8Char
 	*  @return 　　 bool
 	*****************************************************************************/
-	bool ConvertCharU32ToU8(const char32_t u32Char, std::array<char, 4>& u8Char)
+	bool ConvertCharU32ToU8(const char32_t u32Char, gu::StaticArray<char, 4>& u8Char)
 	{
 		if (u32Char > 0x10FFFF)
 		{
@@ -364,13 +364,13 @@ namespace unicode
 	/****************************************************************************
 	*                            ConvertCharU32ToU16
 	*************************************************************************//**
-	*  @fn         bool ConvertCharU32ToU16(const char32_t u32Char, std::array<char16_t, 2>& u16Char)
+	*  @fn         bool ConvertCharU32ToU16(const char32_t u32Char, gu::StaticArray<char16_t, 2>& u16Char)
 	*  @brief      convert char U32 to U16
 	*  @param[in]  const char32_t u32Char
-	*  @param[out] std::array<char16_t, 2>& u16Char
+	*  @param[out] gu::StaticArray<char16_t, 2>& u16Char
 	*  @return 　　 bool
 	*****************************************************************************/
-	bool ConvertCharU32ToU16(const char32_t u32Char, std::array<char16_t, 2>& u16Char)
+	bool ConvertCharU32ToU16(const char32_t u32Char, gu::StaticArray<char16_t, 2>& u16Char)
 	{
 		if (u32Char > 0x10FFFF)
 		{
@@ -407,7 +407,7 @@ namespace unicode
 			auto numBytes = GetU8ByteCount((*u8It));
 			if (numBytes == 0) { return false; }
 
-			std::array<char, 4> u8Char = {};
+			gu::StaticArray<char, 4> u8Char = {};
 			u8Char[0] = (*u8It);
 			for (int i = 1; i < numBytes; i++)
 			{
@@ -416,7 +416,7 @@ namespace unicode
 				u8Char[i] = (*u8It);
 			}
 
-			std::array<char16_t, 2> u16Char;
+			gu::StaticArray<char16_t, 2> u16Char;
 			if (!ConvertCharU8ToU16(u8Char, u16Char)) { return false; }
 
 			u16String.push_back(u16Char[0]);
@@ -444,7 +444,7 @@ namespace unicode
 			auto numBytes = GetU8ByteCount((*u8It));
 			if (numBytes == 0) { return false; }
 
-			std::array<char, 4> u8Char = {};
+			gu::StaticArray<char, 4> u8Char = {};
 			u8Char[0] = (*u8It);
 			for (int i = 1; i < numBytes; i++)
 			{
@@ -474,7 +474,7 @@ namespace unicode
 	{
 		for (auto u16It = u16String.begin(); u16It != u16String.end(); ++u16It)
 		{
-			std::array<char16_t, 2> u16Char = {};
+			gu::StaticArray<char16_t, 2> u16Char = {};
 			if (IsU16HighSurrogate((*u16It)))
 			{
 				u16Char[0] = (*u16It);
@@ -488,7 +488,7 @@ namespace unicode
 				u16Char[1] = 0;
 			}
 
-			std::array<char, 4> u8Char;
+			gu::StaticArray<char, 4> u8Char;
 			if (!ConvertCharU16ToU8(u16Char, u8Char)){ return false; }
 			if (u8Char[0] != 0) { u8String.push_back(u8Char[0]); }
 			if (u8Char[1] != 0) { u8String.push_back(u8Char[1]); }
@@ -511,7 +511,7 @@ namespace unicode
 	{
 		for (auto u16It = u16String.begin(); u16It != u16String.end(); ++u16It)
 		{
-			std::array<char16_t, 2> u16Char = {};
+			gu::StaticArray<char16_t, 2> u16Char = {};
 			if (IsU16HighSurrogate((*u16It)))
 			{
 				u16Char[0] = (*u16It);
@@ -545,7 +545,7 @@ namespace unicode
 	{
 		for (auto u32It = u32String.begin(); u32It != u32String.end(); ++u32It)
 		{
-			std::array<char, 4> u8Char;
+			gu::StaticArray<char, 4> u8Char;
 			if (!ConvertCharU32ToU8((*u32It), u8Char)) { return false; }
 
 			if (u8Char[0] != 0) { u8String.push_back(u8Char[0]); }
@@ -569,7 +569,7 @@ namespace unicode
 	{
 		for (auto u32It = u32String.begin(); u32It != u32String.end(); ++u32It)
 		{
-			std::array<char16_t, 2> u16Char;
+			gu::StaticArray<char16_t, 2> u16Char;
 			if (!ConvertCharU32ToU16((*u32It), u16Char)) { return false; }
 
 			if (u16Char[0] != 0)
