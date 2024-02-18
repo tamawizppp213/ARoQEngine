@@ -346,11 +346,11 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 
 	for (size_t index = 0; index < sourcePool.size(); index++)
 	{
-		if (core::EnumHas(usage, sourcePool[index]))
+		if (gu::HasAnyFlags(usage, sourcePool[index]))
 			res = res | targetPool[index];
 	}
 
-	if (!core::EnumHas(usage, ShaderResource))
+	if (!gu::HasAnyFlags(usage, ShaderResource))
 	{
 		res |= D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
 	}

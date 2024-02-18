@@ -233,6 +233,10 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUEnumClassFlags.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUTypeCast.hpp">
       <SubType>
       </SubType>
