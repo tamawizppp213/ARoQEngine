@@ -21,6 +21,7 @@ namespace gu
 
 	/*----------------------------------------------------------------------
 	*  @brief : enum classのすべてのビット演算子を定義し、通常のフラグenumとして（ほとんど）使用できるようにする。
+	*           underlyingtypeはenum classの実際の型 (int, char...)を取得する
 	/*----------------------------------------------------------------------*/
 #define ENUM_CLASS_FLAGS(EnumClass) \
 	inline           EnumClass& operator|=(EnumClass& left, EnumClass right) { return left = (EnumClass)((__underlying_type(EnumClass))left | (__underlying_type(EnumClass))right); } \
