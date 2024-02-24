@@ -21,11 +21,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace gu
 {
-	using string    = gu::details::StringBase<char8, 1>;
-	using wstring   = gu::details::StringBase<wchar, 2>;
-	using u8string  = gu::details::StringBase<char8, 1>;
-	using u16string = gu::details::StringBase<char16, 2>;
-	using u32string = gu::details::StringBase<char32, 4>;
+	using string    = gu::details::string::StringBase<char8, 1>;
+	using wstring   = gu::details::string::StringBase<wchar, 2>;
+	using u8string  = gu::details::string::StringBase<char8, 1>;
+	using u16string = gu::details::string::StringBase<char16, 2>;
+	using u32string = gu::details::string::StringBase<char32, 4>;
 
 #if NEED_WIDE_CHAR
 	using tstring = gu::wstring;

@@ -687,7 +687,7 @@ namespace gu
 			}
 		}
 
-		if (findCounter)
+		if (findCounter && allowShrinking)
 		{
 			ShrinkToFit();
 		}

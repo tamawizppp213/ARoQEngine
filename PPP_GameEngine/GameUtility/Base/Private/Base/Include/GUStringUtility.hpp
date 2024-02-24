@@ -23,7 +23,7 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gu::details
+namespace gu::details::string
 {
 	enum class NumberConversionResult
 	{
