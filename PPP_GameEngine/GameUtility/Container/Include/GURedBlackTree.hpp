@@ -15,7 +15,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Private/Tree/Include/RedBlackTreeNode.hpp"
 #include "GUInitializerList.hpp"
-#include <map>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -49,7 +48,7 @@ namespace gu
 		*  @brief : ノードを挿入する (木構造の順序は自動判別されます. )
 		*           ElementType : 木構造に入れたいデータ
 		/*----------------------------------------------------------------------*/
-		void Insert(const ElementType& element);
+		details::tree::RedBlackTreeNode<ElementType>* Insert(const ElementType& element);
 
 		/*----------------------------------------------------------------------
 		*  @brief : ノードを削除する (木構造の順序は自動判別されます. )
@@ -60,7 +59,21 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  @brief : 指定した要素が見つかるかを確認します.
 		/*----------------------------------------------------------------------*/
-		bool Contains(const ElementType& element);
+		bool Contains(const ElementType& element) const ;
+
+		/*----------------------------------------------------------------------
+		*  @brief : 指定した要素を渡す
+		/*----------------------------------------------------------------------*/
+		__forceinline       ElementType* Search(const ElementType& element) 
+		{
+			details::tree::RedBlackTreeNode<ElementType>* pointer = SearchImplement(element);
+			return pointer ? &pointer->Value : nullptr;
+		}
+		__forceinline const ElementType* Search(const ElementType& element) const
+		{
+			details::tree::RedBlackTreeNode<ElementType>* pointer = SearchImplement(element);
+			return pointer ? &pointer->Value : nullptr;
+		}
 
 		/*----------------------------------------------------------------------
 		*  @brief : サイズを0にします
@@ -132,7 +145,7 @@ namespace gu
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-		details::tree::RedBlackTreeNode<ElementType>* SearchImplement(const ElementType& element);
+		details::tree::RedBlackTreeNode<ElementType>* SearchImplement(const ElementType& element) const;
 
 		/****************************************************************************
 		**                Private Member Variables
@@ -157,7 +170,7 @@ namespace gu
 	*  @return 　　result : true -> 見つかった, false -> rootがnullptr or 見つからない.
 	*****************************************************************************/
 	template<class ElementType>
-	bool RedBlackTree<ElementType>::Contains(const ElementType& element)
+	bool RedBlackTree<ElementType>::Contains(const ElementType& element) const
 	{
 		return SearchImplement(element) != nullptr;
 	}
@@ -174,7 +187,7 @@ namespace gu
 	*  @return 　　指定された要素のポインタかnullptr
 	*****************************************************************************/
 	template<class ElementType>
-	details::tree::RedBlackTreeNode<ElementType>* RedBlackTree<ElementType>::SearchImplement(const ElementType& element) 
+	details::tree::RedBlackTreeNode<ElementType>* RedBlackTree<ElementType>::SearchImplement(const ElementType& element) const 
 	{
 		if (_rootNode == nullptr) { return nullptr; }
 
@@ -210,7 +223,7 @@ namespace gu
 	*  @return 　　void
 	*****************************************************************************/
 	template<class ElementType>
-	void RedBlackTree<ElementType>::Insert(const ElementType& element)
+	details::tree::RedBlackTreeNode<ElementType>* RedBlackTree<ElementType>::Insert(const ElementType& element)
 	{
 		_nodeCount++;
 
@@ -221,7 +234,7 @@ namespace gu
 		{
 			// 根となるノードは無条件で黒じゃないといけない.
 			_rootNode = new details::tree::RedBlackTreeNode<ElementType>(element, details::tree::RedBlackColorType::Black, nullptr, nullptr, nullptr);
-			return;
+			return _rootNode;
 		}
 
 		/*----------------------------------------------------------------------
@@ -231,6 +244,7 @@ namespace gu
 		details::tree::RedBlackTreeNode<ElementType>* parentNode      = nullptr;
 		details::tree::RedBlackTreeNode<ElementType>* grandParentNode = nullptr;
 		details::tree::RedBlackTreeNode<ElementType>* uncleNode       = nullptr;
+		details::tree::RedBlackTreeNode<ElementType>* resultNode      = nullptr;
 
 		while (!currentNode->IsNil()) // is not Nil
 		{
@@ -246,7 +260,7 @@ namespace gu
 			else
 			{
 				// for the has same value
-				return;
+				return currentNode;
 			}
 		}
 
@@ -258,7 +272,8 @@ namespace gu
 		currentNode->UseAsLeafNode();
 		currentNode->SetupNilNodes();
 		currentNode->Value = element;
-		currentNode->Color = details::tree::RedBlackColorType::Red; 
+		currentNode->Color = details::tree::RedBlackColorType::Red;
+		resultNode = currentNode;
 
 		/*----------------------------------------------------------------------
 		*                          葉の挿入
@@ -273,7 +288,7 @@ namespace gu
 			if (currentNode->IsRoot()) 
 			{
 				currentNode->Color = details::tree::RedBlackColorType::Black;
-				return; 
+				return resultNode; 
 			}
 
 			// 自分以外のノード設定
@@ -284,7 +299,7 @@ namespace gu
 			// Case1a : 親が黒であるなら, 子のcurrent nodeは赤であることが出来るため, そのまま終了する
 			if (parentNode->IsBlack())
 			{
-				return;
+				return resultNode;
 			}
 
 			// 以降は親が赤という仮定が入ります.
@@ -345,7 +360,7 @@ namespace gu
 				_rootNode = grandParentNode;
 			}
 
-			return;
+			return resultNode;
 		} 
 	}
 
