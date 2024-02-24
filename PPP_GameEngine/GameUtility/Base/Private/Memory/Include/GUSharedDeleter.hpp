@@ -22,7 +22,7 @@
 
 namespace gu
 {
-	namespace details
+	namespace details::smart_pointer
 	{
 		template<class ElementType>
 		inline void SafeDelete(ElementType*& pointer)
@@ -61,7 +61,7 @@ namespace gu
 		// pointer : 解放したいインスタンスへのポインタ
 		void operator () (ElementType*& pointer)
 		{
-			details::SafeDelete<ElementType>(pointer);
+			details::smart_pointer::SafeDelete<ElementType>(pointer);
 		}
 
 		/****************************************************************************
@@ -89,7 +89,7 @@ namespace gu
 		// pointer : 解放したいインスタンスへのポインタ
 		void operator () (ElementType*& pointer)
 		{
-			details::SafeArrayDelete<ElementType>(pointer);
+			details::smart_pointer::SafeArrayDelete<ElementType>(pointer);
 		}
 
 		/****************************************************************************

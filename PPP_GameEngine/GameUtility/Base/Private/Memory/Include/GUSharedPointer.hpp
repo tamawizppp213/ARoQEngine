@@ -31,7 +31,7 @@ namespace gu
 	*  @brief     if the reference count is 0, the resource ownered by this will destroy.
 	*****************************************************************************/
 	template<class ElementType,  SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
-	class SharedPointer : public ObserverPointerBase<ElementType, Mode>
+	class SharedPointer : public details::smart_pointer::ObserverPointerBase<ElementType, Mode>
 	{
 	public:
 		/****************************************************************************
@@ -57,9 +57,9 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  Constructs an empty shared pointer.
 		/*----------------------------------------------------------------------*/
-		SharedPointer() : ObserverPointerBase<ElementType, Mode>() { };
+		SharedPointer() : details::smart_pointer::ObserverPointerBase<ElementType, Mode>() { };
 
-		SharedPointer(decltype(__nullptr)) : ObserverPointerBase<ElementType, Mode>() {};
+		SharedPointer(decltype(__nullptr)) : details::smart_pointer::ObserverPointerBase<ElementType, Mode>() {};
 
 		/*----------------------------------------------------------------------
 		*  Destructor 
@@ -74,31 +74,31 @@ namespace gu
 		/*----------------------------------------------------------------------*/
 		template<class OtherType>
 		explicit SharedPointer(OtherType* pointer) 
-			: ObserverPointerBase<ElementType, Mode>(pointer) {};
+			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer) {};
 		
 		/*----------------------------------------------------------------------
 		*  Constructs a new shared pointer from the raw pointer
 		/*----------------------------------------------------------------------*/
 		explicit SharedPointer(ElementType* pointer) 
-			:ObserverPointerBase<ElementType, Mode>(pointer) { };
+			:details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer) { };
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new shared pointer from the raw pointer with the custom deleter
 		/*----------------------------------------------------------------------*/
 		template<class Deleter>
 		SharedPointer(ElementType* pointer, Deleter deleter)
-			: ObserverPointerBase<ElementType, Mode>(pointer, deleter) {};
+			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer, deleter) {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new shared pointer from the raw pointer with the custom deleter
 		/*----------------------------------------------------------------------*/
 		template<class OtherType, class Deleter>
-		SharedPointer(OtherType* pointer, Deleter deleter) : ObserverPointerBase<ElementType, Mode>(pointer, deleter) {};
+		SharedPointer(OtherType* pointer, Deleter deleter) : details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer, deleter) {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a shared pointer from the weak pointer
 		/*----------------------------------------------------------------------*/
-		explicit SharedPointer(const WeakPointer<ElementType,Mode>& pointer) : ObserverPointerBase<ElementType, Mode>(pointer)
+		explicit SharedPointer(const WeakPointer<ElementType,Mode>& pointer) : details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer)
 		{
 			AddSharedReference();
 			AddObserverReference();
@@ -108,7 +108,7 @@ namespace gu
 		*  Copy constructs a shared pointer from the same type shared pointer,
 		/*----------------------------------------------------------------------*/
 		SharedPointer(const SharedPointer<ElementType,Mode>& pointer) 
-			: ObserverPointerBase<ElementType, Mode>(pointer)
+			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer)
 		{
 			AddSharedReference();
 			AddObserverReference();
@@ -119,7 +119,7 @@ namespace gu
 		/*----------------------------------------------------------------------*/
 		template<class OtherType>
 		SharedPointer(const SharedPointer<OtherType, Mode>& pointer) 
-			: ObserverPointerBase<ElementType, Mode>(pointer)
+			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer)
 		{
 			AddSharedReference();
 			AddObserverReference();
@@ -150,7 +150,8 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  Move Constructs a shared pointer
 		/*----------------------------------------------------------------------*/
-		SharedPointer(SharedPointer&& right) noexcept : ObserverPointerBase(Forward<ObserverPointerBase>(right))
+		SharedPointer(SharedPointer&& right) noexcept : 
+			ObserverPointerBase(Forward<ObserverPointerBase>(right))
 		{
 			
 		};
@@ -165,8 +166,8 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  for static_pointer_cast. 
 		/*----------------------------------------------------------------------*/
-		SharedPointer(ElementType* pointer, details::ReferenceControllerBase<Mode>* referenceController)
-			: ObserverPointerBase<ElementType, Mode>(pointer, referenceController)
+		SharedPointer(ElementType* pointer, details::smart_pointer::ReferenceControllerBase<Mode>* referenceController)
+			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer, referenceController)
 		{
 			AddSharedReference();
 			AddObserverReference();
