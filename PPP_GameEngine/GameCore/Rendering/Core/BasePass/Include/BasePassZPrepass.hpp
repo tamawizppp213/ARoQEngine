@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include <cstdint>
@@ -47,7 +47,7 @@ namespace gc::basepass
 	*  @class     TemplateClass
 	*  @brief     temp
 	*****************************************************************************/
-	class ZPrepass : public NonCopyable
+	class ZPrepass : public gu::NonCopyable
 	{
 	protected:
 		using PipelineStatePtr   = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;

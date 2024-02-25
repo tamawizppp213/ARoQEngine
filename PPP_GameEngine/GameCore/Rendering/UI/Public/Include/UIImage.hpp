@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVertex.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ namespace gc::ui
 	*  @class     Image
 	*  @brief     UI Image
 	*****************************************************************************/
-	class Image : public Copyable
+	class Image : public gu::Copyable
 	{
 	public:
 		/****************************************************************************

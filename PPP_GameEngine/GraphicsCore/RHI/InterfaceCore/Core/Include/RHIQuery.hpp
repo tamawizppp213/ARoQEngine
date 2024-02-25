@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ namespace rhi::core
 	*  @class     RHIQuery
 	*  @brief     Query
 	*****************************************************************************/
-	class RHIQuery : public NonCopyable, public gu::EnableSharedFromThis<RHIQuery>
+	class RHIQuery : public gu::NonCopyable, public gu::EnableSharedFromThis<RHIQuery>
 	{
 	public:
 		enum class ResetFlag

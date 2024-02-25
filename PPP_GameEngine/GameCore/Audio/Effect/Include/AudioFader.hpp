@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -35,7 +35,7 @@ namespace gc::audio
 	*  @class     AudioFader
 	*  @brief     Fade
 	*****************************************************************************/
-	class AudioFader : public Copyable
+	class AudioFader : public gu::Copyable
 	{
 		
 	public:

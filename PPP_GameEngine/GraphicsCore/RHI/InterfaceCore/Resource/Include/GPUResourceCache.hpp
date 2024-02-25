@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <string>
@@ -38,7 +38,7 @@ namespace rhi::core
 	*  @class     GPUResourceCache
 	*  @brief     GPUResource loader cache for game application
 	*****************************************************************************/
-	class GPUResourceCache : public NonCopyable
+	class GPUResourceCache : public gu::NonCopyable
 	{
 		using GPUResourceViewPtr   = gu::SharedPointer<core::GPUResourceView>;
 		using DescriptorID         = std::uint32_t;

@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 

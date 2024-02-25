@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Core/Include/CoreCommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -32,7 +32,7 @@ namespace platform::core
 	*  @class     CoreWindow
 	*  @brief     This class is used to draw the objects
 	*****************************************************************************/
-	class CoreWindow : public NonCopyable
+	class CoreWindow : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

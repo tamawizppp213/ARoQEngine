@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ namespace gc
 	*  @class     RenderingEngine
 	*  @brief     Rendering Engine
 	*****************************************************************************/
-	class IRenderPipeline : public NonCopyable
+	class IRenderPipeline : public gu::NonCopyable
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;

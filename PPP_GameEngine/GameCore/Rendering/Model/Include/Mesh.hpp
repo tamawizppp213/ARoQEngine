@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Math/Include/GMVertex.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 
@@ -36,7 +36,7 @@ namespace gc::core
 	*  @class     Mesh
 	*  @brief     Mesh
 	*****************************************************************************/
-	class Mesh : public NonCopyable
+	class Mesh : public gu::NonCopyable
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 		using VertexBufferPtr  = BufferPtr;

@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <optional>
@@ -33,7 +33,7 @@ namespace rhi::core
 	*  @class     RHIRenderPass
 	*  @brief     Render pass:  Use before rendering
 	*****************************************************************************/
-	class RHIRenderPass : public NonCopyable
+	class RHIRenderPass : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

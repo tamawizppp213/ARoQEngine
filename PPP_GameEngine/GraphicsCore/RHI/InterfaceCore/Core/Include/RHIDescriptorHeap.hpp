@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Container/Include/GUSortedMap.hpp"
@@ -35,7 +35,7 @@ namespace rhi::core
 	*  @class     RHIDescriptorHeap
 	*  @brief     Register descriptor view heap 
 	*****************************************************************************/
-	class RHIDescriptorHeap : public NonCopyable
+	class RHIDescriptorHeap : public gu::NonCopyable
 	{
 	protected:
 		using MaxDescriptorSize = size_t;

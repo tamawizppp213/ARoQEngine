@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUType.hpp"
 #include "GameUtility/Container/Include/GUQueue.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ namespace rhi::directX12
 	*  @class     DirectX12QueryAllocator
 	*  @brief     temp
 	*****************************************************************************/
-	class QueryAllocator : public NonCopyable
+	class QueryAllocator : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "CoreCommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <cstdint>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -32,7 +32,7 @@ namespace platform::core
 	*  @class     CoreWindowMessageHandler
 	*  @brief     ウィンドウのメッセージを受け取った時に使用するHandlerクラス
 	*****************************************************************************/
-	class CoreWindowMessageHandler : public NonCopyable
+	class CoreWindowMessageHandler : public gu::NonCopyable
 	{
 	protected:
 		using CoreWindowPtr = gu::SharedPointer<core::CoreWindow>;

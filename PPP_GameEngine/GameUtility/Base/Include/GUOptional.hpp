@@ -1,36 +1,33 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIMemory.hpp
-///             @brief  memory
-///             @author Toide Yutaro
-///             @date   2022_09_21
+///             @file   GUOptional.hpp
+///             @brief  temp
+///             @author toide
+///             @date   2024/02/26 0:54:45
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef RHI_MEMORY_HPP
-#define RHI_MEMORY_HPP
+#ifndef GU_OPTIONAL_HPP
+#define GU_OPTIONAL_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/GUClassUtility.hpp"
-#include "GameUtility/Base/Include/GUSmartPointer.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                              Class
+//                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
+namespace gu
 {
-	class RHIDevice;
 	/****************************************************************************
-	*				  			RHIMemory
+	*				  			   GUOptional
 	*************************************************************************//**
-	*  @class     RHIMemory
-	*  @brief     Memory buffer
+	*  @class     GUOptional
+	*  @brief     temp
 	*****************************************************************************/
-	class RHIMemory : public gu::NonCopyable
+	class GUOptional
 	{
 	public:
 		/****************************************************************************
@@ -40,34 +37,20 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		MemoryHeap GetMemoryType() const noexcept { return _memoryType; }
-
-		std::uint64_t GetMemorySize() const { return _memorySize; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-	
+
 	protected:
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		RHIMemory() = default;
 
-		virtual ~RHIMemory() = default;
-
-		explicit RHIMemory(const gu::SharedPointer<RHIDevice>& device, const MemoryHeap memoryHeapType, const std::uint64_t memorySize) 
-			: _device(device), _memoryType(memoryHeapType), _memorySize(memorySize) {};
-		
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		MemoryHeap _memoryType = MemoryHeap::Default; 
-
-		std::uint64_t _memorySize = 0;
-
-		gu::SharedPointer<RHIDevice> _device = nullptr;
 	};
-}
 
+}
 #endif

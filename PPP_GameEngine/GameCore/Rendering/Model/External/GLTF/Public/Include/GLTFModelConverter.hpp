@@ -32,7 +32,7 @@ namespace gc::core
 	*  @class     PMXConverter
 	*  @brief     PMX model <-> Game engine model
 	*****************************************************************************/
-	class GLTFConverter : public IGameModelConverter, public Copyable
+	class GLTFConverter : public IGameModelConverter, public gu::Copyable
 	{
 	public:
 		/****************************************************************************

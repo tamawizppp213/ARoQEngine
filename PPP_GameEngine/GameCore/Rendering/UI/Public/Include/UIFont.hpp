@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Math/Include/GMVector.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ namespace gc::ui
 	*  @class     FontLoader
 	*  @brief     Font load and register static class
 	*****************************************************************************/
-	class Font: public NonCopyable
+	class Font: public gu::NonCopyable
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 		using TexturePtr      = gu::SharedPointer<rhi::core::GPUTexture>;

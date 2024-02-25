@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
@@ -31,7 +31,7 @@ namespace rhi::core
 	*  @class     RHIInstance
 	*  @brief     Select device api 
 	*****************************************************************************/
-	class RHIInstance : public NonCopyable
+	class RHIInstance : public gu::NonCopyable
 	{
 	public:
 		/* The CPU debugger and GPU debugger do not cause anything special when in Release mode.*/

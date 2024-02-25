@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <optional>
 //////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ namespace rhi::core
 	*  @class     RHIResourceLayout
 	*  @brief     Resource layout (set up how to bind gpu resource)
 	*****************************************************************************/
-	class RHIResourceLayout : public NonCopyable
+	class RHIResourceLayout : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

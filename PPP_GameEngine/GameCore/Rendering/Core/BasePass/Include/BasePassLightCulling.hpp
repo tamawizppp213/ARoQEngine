@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ namespace gc::basepass
 	*  @class     LightCulling
 	*  @brief     Spot light and point light culling
 	*****************************************************************************/
-	class LightCulling : public NonCopyable
+	class LightCulling : public gu::NonCopyable
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;

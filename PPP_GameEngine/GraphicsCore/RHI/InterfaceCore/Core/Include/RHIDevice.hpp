@@ -14,7 +14,7 @@
 #include "Platform/Core/Include/CorePlatformMacros.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIMultiGPUMask.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <optional>
 #include "GameUtility/Container/Include/GUSortedMap.hpp" // vulkan‚¾‚ß‚¾‚Á‚½‚çunordered_map‚à’Ç‰Á.
@@ -67,7 +67,7 @@ namespace rhi::core
 	*  @class     RHIDevice 
 	*  @brief     Logical Device interface. Device : GPU resources generator.
 	*****************************************************************************/
-	class RHIDevice : public NonCopyable
+	class RHIDevice : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

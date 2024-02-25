@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <string>
@@ -40,7 +40,7 @@ namespace gc::rendering
 	*  @brief     If you press the PrintScreen button, The texture is saved in the current time directory.
 	              This class is used when executing in the debug mode 
 	*****************************************************************************/
-	class ScreenCapture : public NonCopyable
+	class ScreenCapture : public gu::NonCopyable
 	{
 	protected:
 		using KeyboardPtr    = gu::SharedPointer<Keyboard>;

@@ -14,7 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "MaterialType.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
@@ -51,7 +51,7 @@ namespace gc::core
 	*  @class     Material
 	*  @brief     Material Buffer
 	*****************************************************************************/
-	class Material : public NonCopyable
+	class Material : public gu::NonCopyable
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 		using GPUBufferPtr              = gu::SharedPointer<rhi::core::GPUBuffer>;

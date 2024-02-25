@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
@@ -48,7 +48,7 @@ namespace gc::rendering
 	*  @class     DebugDrawer
 	*  @brief     Wire frame renderer
 	*****************************************************************************/
-	class DebugDrawer : public NonCopyable
+	class DebugDrawer : public gu::NonCopyable
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;

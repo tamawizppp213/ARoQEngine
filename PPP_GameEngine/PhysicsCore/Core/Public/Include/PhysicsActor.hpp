@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Math/Include/GMTransform.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ namespace physics::core
 	*  @class     PhysicsActor
 	*  @brief     Has shape and global pose object
 	*****************************************************************************/
-	class PhysicsActor : public NonCopyable
+	class PhysicsActor : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

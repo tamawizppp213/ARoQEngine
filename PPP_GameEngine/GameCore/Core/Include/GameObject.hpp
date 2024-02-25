@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Math/Include/GMTransform.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
@@ -40,7 +40,7 @@ namespace gc::core
 	*  @class    GameObject
 	*  @brief    GameObject (base class in the all object class)
 	*****************************************************************************/
-	class GameObject : public NonCopyable, public gu::EnableSharedFromThis<GameObject>
+	class GameObject : public gu::NonCopyable, public gu::EnableSharedFromThis<GameObject>
 	{
 	protected:
 		using GameObjectPtr = gu::SharedPointer<GameObject>;

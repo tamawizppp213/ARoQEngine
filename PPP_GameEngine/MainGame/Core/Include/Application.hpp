@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GameTimer.hpp"
 #include "GameCore/Input/Include/GameInput.hpp"
 #include "GameManager.hpp"
@@ -30,7 +30,7 @@
 *  @class     Application
 *  @brief     Create Main Window Class
 *****************************************************************************/
-class Application final : public NonCopyAndMove
+class Application final : public gu::NonCopyAndMove
 {
 public:
 	/****************************************************************************

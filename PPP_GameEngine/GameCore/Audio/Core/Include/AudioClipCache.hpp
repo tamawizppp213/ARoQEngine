@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <string>
 #include <memory>
 #include "GameUtility/Container/Include/GUSortedMap.hpp"
@@ -32,7 +32,7 @@ namespace gc::audio
 	*  @class     AudioClipCache
 	*  @brief     audio clip resource cache. (Basically, This class is used by ResourceManager class.)
 	*****************************************************************************/
-	class AudioClipCache : public NonCopyable
+	class AudioClipCache : public gu::NonCopyable
 	{
 		using AudioClipPtr = std::shared_ptr<AudioClip>;
 	public:

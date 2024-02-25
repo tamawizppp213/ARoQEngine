@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ namespace gc
 	*  @class     Camera
 	*  @brief     Camera
 	*****************************************************************************/
-	class Camera : public Copyable
+	class Camera : public gu::Copyable
 	{
 		struct SceneConstants
 		{

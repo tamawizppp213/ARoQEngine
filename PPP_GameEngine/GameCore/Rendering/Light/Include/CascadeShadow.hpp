@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
@@ -59,7 +59,7 @@ namespace gc::rendering
 	*  @class     CascadeShadow
 	*  @brief     Cascade shadow map + soft shadow
 	*****************************************************************************/
-	class CascadeShadow : public NonCopyable
+	class CascadeShadow : public gu::NonCopyable
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;

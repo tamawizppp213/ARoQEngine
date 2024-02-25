@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <vector>
@@ -34,7 +34,7 @@ namespace rhi::core
 	*  @class     Class
 	*  @brief     temp
 	*****************************************************************************/
-	class RayTracingShaderTable : public NonCopyable
+	class RayTracingShaderTable : public gu::NonCopyable
 	{
 	protected:
 		using DevicePtr = gu::SharedPointer<rhi::core::RHIDevice>;

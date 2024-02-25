@@ -16,7 +16,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "LightType.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <vector>
 #include <numeric>
@@ -39,7 +39,7 @@ namespace gc::rendering
 	*  @brief     Scene light buffer
 	*****************************************************************************/
 	template<typename TLight> requires std::is_base_of_v<LightData, TLight>
-	class SceneLightBuffer : public NonCopyable
+	class SceneLightBuffer : public gu::NonCopyable
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;

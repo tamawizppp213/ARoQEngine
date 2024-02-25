@@ -38,7 +38,7 @@ namespace gc
 	*  @class     ScreenSpaceReflection
 	*  @brief     ポストエフェクト的に反射を表現する
 	*****************************************************************************/
-	class ScreenSpaceReflection : public NonCopyable
+	class ScreenSpaceReflection : public gu::NonCopyable
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;

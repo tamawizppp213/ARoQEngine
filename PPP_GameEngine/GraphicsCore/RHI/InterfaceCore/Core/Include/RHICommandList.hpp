@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ namespace rhi::core
 	*  @class     RHIDevice
 	*  @brief     Device interface
 	*****************************************************************************/
-	class RHICommandList : public NonCopyable
+	class RHICommandList : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

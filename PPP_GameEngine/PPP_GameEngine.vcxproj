@@ -237,6 +237,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUOptional.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUTypeCast.hpp">
       <SubType>
       </SubType>
@@ -449,7 +453,7 @@
     <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveMesh.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIImage.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIRenderer.hpp" />
-    <ClInclude Include="GameUtility\Base\Include\ClassUtility.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUClassUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUSmartPointer.hpp" />

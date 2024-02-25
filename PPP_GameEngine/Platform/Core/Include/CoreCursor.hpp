@@ -14,7 +14,7 @@
 #include "CoreCommonState.hpp"
 #include "GameUtility/Base/Include/GUType.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ namespace platform::core
 	*  @class     ICursor
 	*  @brief     カーソルの表示クラス
 	*****************************************************************************/
-	class ICursor : public NonCopyable
+	class ICursor : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

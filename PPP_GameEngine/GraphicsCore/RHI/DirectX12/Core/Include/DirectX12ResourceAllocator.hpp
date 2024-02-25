@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "DirectX12BaseStruct.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <queue>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -30,7 +30,7 @@ namespace rhi::directX12
 	*  @class     ResourceAllocator
 	*  @brief     CPU and GPU index management
 	*****************************************************************************/
-	class ResourceAllocator : public Copyable
+	class ResourceAllocator : public gu::Copyable
 	{
 	public:
 		/****************************************************************************

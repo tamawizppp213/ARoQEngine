@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
@@ -39,7 +39,7 @@ namespace gc
 	*  @class     IFullScreenEffector
 	*  @brief     Provide the full screen polygon and drawing interface.
 	*****************************************************************************/
-	class IFullScreenEffector : public NonCopyable
+	class IFullScreenEffector : public gu::NonCopyable
 	{
 	protected:
 		using VertexBufferPtr           = gu::SharedPointer<rhi::core::GPUBuffer>;

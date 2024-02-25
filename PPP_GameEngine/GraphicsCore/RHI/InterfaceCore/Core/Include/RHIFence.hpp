@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +31,7 @@ namespace rhi::core
 	*  @class     RHIFence
 	*  @brief     CPU-GPU synchronization
 	*****************************************************************************/
-	class RHIFence : public NonCopyable
+	class RHIFence : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

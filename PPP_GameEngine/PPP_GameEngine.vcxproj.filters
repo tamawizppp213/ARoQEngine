@@ -459,7 +459,7 @@
     <ClInclude Include="GraphicsCore\RHI\Vulkan\Core\Include\VulkanCommandList.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Base\Include\ClassUtility.hpp">
+    <ClInclude Include="GameUtility\Base\Include\GUClassUtility.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIFence.hpp">
@@ -1138,6 +1138,9 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUSortedMap.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUOptional.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

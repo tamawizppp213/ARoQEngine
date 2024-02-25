@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Math/Include/GMVertex.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <vector>
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +26,7 @@ namespace gc::core
 	*  @struct    PrimitiveMesh
 	*  @brief     PrimitiveMesh
 	*****************************************************************************/
-	struct PrimitiveMesh : public Copyable
+	struct PrimitiveMesh : public gu::Copyable
 	{
 	public:
 		std::vector<gm::Vertex>    Vertices; /// Vertex (Position, Normal, UV)
@@ -53,7 +53,7 @@ namespace gc::core
 	*  @struct    GeometryGenerator
 	*  @brief     GeometryGenerator struct (box, grid, sphere, cylinder...)
 	*****************************************************************************/
-	class PrimitiveMeshGenerator : public NonCopyAndMove
+	class PrimitiveMeshGenerator : public gu::NonCopyAndMove
 	{
 	public:
 		/****************************************************************************

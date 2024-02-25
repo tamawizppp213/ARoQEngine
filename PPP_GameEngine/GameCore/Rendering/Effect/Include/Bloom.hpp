@@ -39,7 +39,7 @@ namespace gc
 	*  @class     Class
 	*  @brief     temp
 	*****************************************************************************/
-	class Bloom : public NonCopyable
+	class Bloom : public gu::NonCopyable
 	{
 		using ResourceLayoutPtr = gu::SharedPointer<rhi::core::RHIResourceLayout>;
 		using PipelineStatePtr = gu::SharedPointer<rhi::core::GPUComputePipelineState>;

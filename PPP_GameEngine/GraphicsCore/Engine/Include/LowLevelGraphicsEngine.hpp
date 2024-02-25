@@ -44,7 +44,7 @@ namespace rhi::core
 *  @class     LowLevelGraphicsEngine
 *  @brief     LowLevelGraphicsEngine
 *****************************************************************************/
-class LowLevelGraphicsEngine final : public NonCopyable
+class LowLevelGraphicsEngine final : public gu::NonCopyable
 {
 protected:
 	using InstancePtr     = gu::SharedPointer<rhi::core::RHIInstance>;
