@@ -25,7 +25,7 @@ namespace gu
 	*				  			   GUPair
 	*************************************************************************//**
 	*  @class     GUPair
-	*  @brief     temp
+	*  @brief     ƒyƒA
 	*****************************************************************************/
 	template<typename KeyType, typename ValueType>
 	struct Pair
