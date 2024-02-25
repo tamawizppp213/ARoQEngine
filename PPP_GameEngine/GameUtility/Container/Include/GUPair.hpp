@@ -52,7 +52,7 @@ namespace gu
 		*****************************************************************************/
 		Pair(const KeyType& key, const ValueType& value) : Key(key), Value(value) {};
 
-		Pair(const KeyType& key) : Key(key) {};
+		Pair(const KeyType& key) : Key(key), Value(ValueType()) {};
 
 		Pair() : Key(KeyType()), Value(ValueType()) {};
 
