@@ -53,9 +53,9 @@ AudioClipCache::AudioClipPtr AudioClipCache::Load(const std::wstring& filePath)
 	/*-------------------------------------------------------------------
 	-           Load audio clip
 	---------------------------------------------------------------------*/
-	if (_audioClipList.contains(hashCode))
+	if (_audioClipList.Contains(hashCode))
 	{
-		return _audioClipList.at(hashCode);
+		return _audioClipList.At(hashCode);
 	}
 	else
 	{
@@ -88,6 +88,6 @@ bool AudioClipCache::Exist(const std::wstring& filePath)
 	---------------------------------------------------------------------*/
 	size_t hashCode = std::hash<std::wstring>()(filePath);
 
-	return _audioClipList.contains(hashCode);
+	return _audioClipList.Contains(hashCode);
 }
 #pragma endregion Main Function

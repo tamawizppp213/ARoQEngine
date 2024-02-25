@@ -334,11 +334,23 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GURedBlackTree.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUSortedMap.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUStack.hpp">
       <SubType>
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUStaticArray.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUStaticHashTable.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -359,6 +371,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUReverseIterator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Tree\Include\RedBlackTreeNode.hpp">
       <SubType>
       </SubType>
     </ClInclude>

@@ -17,7 +17,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <optional>
-#include <map> // vulkan‚¾‚ß‚¾‚Á‚½‚çunordered_map‚à’Ç‰Á.
+#include "GameUtility/Container/Include/GUSortedMap.hpp" // vulkan‚¾‚ß‚¾‚Á‚½‚çunordered_map‚à’Ç‰Á.
 
 #if PLATFORM_OS_WINDOWS
 #include <Windows.h> // ¡ŒãPlatformˆË‘¶‚ğ’E‹p—\’è
@@ -101,7 +101,7 @@ namespace rhi::core
 
 		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
 		
-		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;
+		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const gu::SortedMap<DescriptorHeapType, size_t>& heapInfo) = 0;
 		
 		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<ResourceLayoutElement>& elements = {}, const gu::DynamicArray<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name = SP("ResourceLayout")) = 0;
 		

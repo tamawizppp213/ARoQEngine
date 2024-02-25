@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   GURedBlackTree.hpp
 ///             @brief Insert, Search, Delete: O(logN)   
-/// https://speakerdeck.com/nafuka11/understanding-red-black-tree?slide=3
+///                     https://speakerdeck.com/nafuka11/understanding-red-black-tree?slide=3
 /// 　　　　　　　　　　　　　http://fujimura2.fiw-web.net/java/mutter/tree/red-black-tree.html#property
 ///             @author toide
 ///             @date   2024/02/19 21:31:00
@@ -41,6 +41,9 @@ namespace gu
 	{
 
 	public:
+
+		using TreeIterator      = details::tree::RedBlackTreeIterator<details::tree::RedBlackTreeNode<ElementType>,  ElementType>;
+		using TreeConstIterator = details::tree::RedBlackTreeIterator<details::tree::RedBlackTreeNode<ElementType>,  ElementType>;
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
@@ -126,6 +129,10 @@ namespace gu
 			Clear();
 		}
 
+		RedBlackTree(const RedBlackTree&) = default;
+
+		RedBlackTree& operator= (RedBlackTree&) = default;
+
 		RedBlackTree(RedBlackTree&& other) noexcept
 		{
 			_rootNode  = other._rootNode ; other._rootNode = nullptr;
@@ -141,6 +148,49 @@ namespace gu
 			}
 			return *this;
 		}
+
+#pragma region Iterator Function
+		TreeIterator begin() 
+		{
+			details::tree::RedBlackTreeNode<ElementType>* currentNode = _rootNode;
+			while (!currentNode->Left->IsNil())
+			{
+				currentNode = currentNode->Left;
+			}
+			return TreeIterator(currentNode, TreeIterator::Direction::LeftLower);
+		}
+
+		TreeConstIterator begin() const
+		{
+			details::tree::RedBlackTreeNode<ElementType>* currentNode = _rootNode;
+			while (!currentNode->Left->IsNil())
+			{
+				currentNode = currentNode->Left;
+			}
+			return TreeConstIterator(currentNode, TreeIterator::Direction::LeftLower);
+		}
+
+		TreeIterator end()
+		{
+			details::tree::RedBlackTreeNode<ElementType>* currentNode = _rootNode;
+			while (!currentNode->Right->IsNil())
+			{
+				currentNode = currentNode->Right;
+			}
+			return TreeIterator(currentNode->Right, TreeIterator::Direction::LeftUpper);
+		}
+
+		TreeConstIterator end() const
+		{
+			details::tree::RedBlackTreeNode<ElementType>* currentNode = _rootNode;
+			while (!currentNode->Right->IsNil())
+			{
+				currentNode = currentNode->Right;
+			}
+			return TreeConstIterator(currentNode->Right, TreeIterator::Direction::LeftUpper);
+		}
+#pragma endregion Iterator Function
+
 	private:
 		/****************************************************************************
 		**                Private Function

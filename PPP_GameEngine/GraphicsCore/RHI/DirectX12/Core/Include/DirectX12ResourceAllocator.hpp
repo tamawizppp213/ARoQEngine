@@ -30,7 +30,7 @@ namespace rhi::directX12
 	*  @class     ResourceAllocator
 	*  @brief     CPU and GPU index management
 	*****************************************************************************/
-	class ResourceAllocator : public NonCopyable
+	class ResourceAllocator : public Copyable
 	{
 	public:
 		/****************************************************************************

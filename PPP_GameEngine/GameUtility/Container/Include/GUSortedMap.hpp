@@ -14,6 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GURedBlackTree.hpp"
 #include "GUPair.hpp"
+#include "../Private/Iterator/Include/GUIteratorIncludes.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -33,6 +34,9 @@ namespace gu
 	class SortedMap
 	{
 	public:
+		using TreeIterator      = details::tree::RedBlackTreeIterator<details::tree::RedBlackTreeNode<gu::Pair<Key, Value>>, gu::Pair<Key, Value>>;
+		using TreeConstIterator = details::tree::RedBlackTreeIterator<details::tree::RedBlackTreeNode<gu::Pair<Key, Value>>, gu::Pair<Key, Value>>;
+		// 現状TreeConstIteratorはconst出ないので注意
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
@@ -49,7 +53,7 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  @brief : コンテナが空であるかどうかを調べる
 		/*----------------------------------------------------------------------*/
-		__forceinline bool Contains() const { return _tree.Contains(); }
+		__forceinline bool Contains(const Key& element) const { return _tree.Contains(gu::Pair<Key, Value>(element, Value())); }
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -57,12 +61,44 @@ namespace gu
 		/*----------------------------------------------------------------------
 		*  @brief : コンテナが空であるかどうかを調べる
 		/*----------------------------------------------------------------------*/
-		__forceinline bool Empty() const { return _tree.Size() == 0; }
+		__forceinline bool IsEmpty() const { return _tree.Size() == 0; }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 要素数を取得する
 		/*----------------------------------------------------------------------*/
 		__forceinline uint64 Size() const { return _tree.Size(); }
+
+		/*----------------------------------------------------------------------
+		*  @brief : 要素を取得, 見つからなければエラー
+		/*----------------------------------------------------------------------*/
+		__forceinline Value& At(const Key& key) 
+		{
+			const auto pair = _tree.Search(gu::Pair<Key, Value>(key, Value()));
+			if (pair) { return pair->Value; }
+			else      { Checkf(false, "not include sorted map key"); return pair->Value;}
+		}
+		__forceinline const Value& At(const Key& key) const
+		{
+			const auto pair = _tree.Search(gu::Pair<Key, Value>(key, Value()));
+			if (pair) { return pair->Value; }
+			else { Checkf(false, "not include sorted map key"); return pair->Value; }
+		}
+
+		/*----------------------------------------------------------------------
+		*  @brief : 要素を取得, 見つからなければエラー
+		/*----------------------------------------------------------------------*/
+		__forceinline gu::Pair<Key, Value>& Pair(const Key& key)
+		{
+			const auto pair = _tree.Search(gu::Pair<Key, Value>(key, Value()));
+			if (pair) { return *pair; }
+			else { Checkf(false, "not include sorted map key"); }
+		}
+		__forceinline const gu::Pair<Key, Value>& Pair(const Key& key) const 
+		{
+			const auto pair = _tree.Search(gu::Pair<Key, Value>(key, Value()));
+			if (pair) { return *pair; }
+			else { Checkf(false, "not include sorted map key"); }
+		}
 
 #pragma region Operator Function
 		__forceinline Value& operator[](const Key& key)
@@ -80,19 +116,21 @@ namespace gu
 			}
 		}
 
-		__forceinline void operator=(const Value& value)
-		{
-
-		}
 #pragma endregion Operator Function
+
+		TreeIterator      begin()       { return _tree.begin(); }
+		TreeConstIterator begin() const { return _tree.begin(); }
+		TreeIterator      end  ()       { return _tree.end(); }
+		TreeConstIterator end  () const { return _tree.end(); }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		SortedMap() = default;
 
-		SortedMap(const SortedMap&) = delete;
+		SortedMap(const SortedMap& other) = default;
 
-		SortedMap& operator=(const SortedMap&) = delete;
+		SortedMap& operator=(const SortedMap&) = default;
 
 		~SortedMap()
 		{

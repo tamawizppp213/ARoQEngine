@@ -52,7 +52,7 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (!_heapInfo.contains(heapType)) { throw std::runtime_error("Not include heap type"); }
+	if (!_heapInfo.Contains(heapType)) { throw std::runtime_error("Not include heap type"); }
 	
 	/*-------------------------------------------------------------------
 	-			     Set up descriptor set layout
@@ -103,7 +103,7 @@ void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const Desc
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (!_heapInfo.contains(heapType)) { return; }
+	if (!_heapInfo.Contains(heapType)) { return; }
 
 	/*-------------------------------------------------------------------
 	-			     Free ID
@@ -134,7 +134,7 @@ void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const Desc
 *****************************************************************************/
 void RHIDescriptorHeap::Resize(const core::DescriptorHeapType heapType, const size_t viewCount)
 {
-	std::map<core::DescriptorHeapType, MaxDescriptorSize> heapInfo;
+	gu::SortedMap<core::DescriptorHeapType, MaxDescriptorSize> heapInfo;
 	heapInfo[heapType] = viewCount;
 	Resize(heapInfo);
 }
@@ -145,11 +145,11 @@ void RHIDescriptorHeap::Resize(const core::DescriptorHeapType heapType, const si
 * 
 *  @brief     Resize max view count size heap
 * 
-*  @param[in] const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo
+*  @param[in] const gu::SortedMap<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
+void RHIDescriptorHeap::Resize(const gu::SortedMap<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
 {
 	VkDevice vkDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 
@@ -162,8 +162,8 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 	{
 		const VkDescriptorPoolSize poolSize = 
 		{
-			.type            = EnumConverter::Convert(heapInfo.first),
-			.descriptorCount = static_cast<std::uint32_t>(heapInfo.second)
+			.type            = EnumConverter::Convert(heapInfo.Key),
+			.descriptorCount = static_cast<std::uint32_t>(heapInfo.Value)
 		};
 		poolSizes.Push(poolSize);
 		totalHeapCount += poolSize.descriptorCount;

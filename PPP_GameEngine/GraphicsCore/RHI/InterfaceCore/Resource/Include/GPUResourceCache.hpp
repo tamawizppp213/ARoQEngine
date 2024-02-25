@@ -15,7 +15,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include <string>
-#include <map>
+#include "GameUtility/Container/Include/GUSortedMap.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ namespace rhi::core
 			const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) :
 			_device(device), _commandList(graphicsCommandList), _customHeap(customHeap) { };
 
-		virtual ~GPUResourceCache() { _resourceViews.clear(); }
+		virtual ~GPUResourceCache() { _resourceViews.Clear(); }
 
 	protected:
 		/****************************************************************************
@@ -79,7 +79,7 @@ namespace rhi::core
 
 		gu::SharedPointer<RHIDescriptorHeap> _customHeap = nullptr;
 
-		std::map<std::uint64_t, GPUResourceViewPtr> _resourceViews;
+		gu::SortedMap<std::uint64_t, GPUResourceViewPtr> _resourceViews;
 	};
 }
 

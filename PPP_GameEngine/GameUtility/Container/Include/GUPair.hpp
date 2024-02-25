@@ -56,6 +56,15 @@ namespace gu
 
 		Pair() : Key(KeyType()), Value(ValueType()) {};
 
+		Pair(const Pair& other) = default;
+
+		Pair& operator=(const Pair& other) noexcept
+		{
+			Key = other.Key; Value = other.Value;
+			return *this;
+		}
+
+		Pair(Pair&& other) = default;
 	protected:
 		/****************************************************************************
 		**                Protected Function

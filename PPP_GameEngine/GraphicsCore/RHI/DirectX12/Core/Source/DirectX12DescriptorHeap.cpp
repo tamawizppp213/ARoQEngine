@@ -32,7 +32,7 @@ RHIDescriptorHeap::RHIDescriptorHeap(const gu::SharedPointer<core::RHIDevice>& d
 
 RHIDescriptorHeap::~RHIDescriptorHeap()
 {
-	if (!_resourceAllocators.empty()) { _resourceAllocators.clear(); }
+	if (!_resourceAllocators.IsEmpty()) { _resourceAllocators.Clear(); }
 	if (_descriptorHeap)              { _descriptorHeap.Reset(); }
 	_descriptorByteSize = 0;
 }
@@ -56,7 +56,7 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (!_heapInfo.contains(heapType)) { throw std::runtime_error("Not include heap type"); }
+	if (!_heapInfo.Contains(heapType)) { throw std::runtime_error("Not include heap type"); }
 
 	/*-------------------------------------------------------------------
 	-			     Issue ID
@@ -82,7 +82,7 @@ void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const Desc
 	/*-------------------------------------------------------------------
 	-			     Check heap type
 	---------------------------------------------------------------------*/
-	if (!_heapInfo.contains(heapType)) { return; }
+	if (!_heapInfo.Contains(heapType)) { return; }
 
 	/*-------------------------------------------------------------------
 	-			     Free ID
@@ -108,9 +108,9 @@ void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t
 	/*-------------------------------------------------------------------
 	-			     Check max heap size
 	---------------------------------------------------------------------*/
-	if (_heapInfo.contains(type) && _heapInfo.at(type) > viewCount) { return; }
+	if (_heapInfo.Contains(type) && _heapInfo.At(type) > viewCount) { return; }
 
-	std::map<core::DescriptorHeapType, MaxDescriptorSize> heapInfo;
+	gu::SortedMap<core::DescriptorHeapType, MaxDescriptorSize> heapInfo;
 	heapInfo[type] = viewCount;
 
 	/*-------------------------------------------------------------------
@@ -125,11 +125,11 @@ void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t
 * 
 *  @brief     Resize max view count size heap
 * 
-*  @param[in] const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo
+*  @param[in] const gu::SortedMap<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo
 * 
 *  @return Å@Å@void
 *****************************************************************************/
-void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
+void RHIDescriptorHeap::Resize(const gu::SortedMap<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
 {
 	const auto dxDevice = gu::StaticPointerCast<RHIDevice>(_device)->GetDevice();
 
@@ -140,20 +140,24 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 
 	size_t totalDescriptorCount = 0;
 
+	auto descType = core::DescriptorHeapType::CBV;
 	for (const auto& desc : heapInfos) 
 	{ 
 		// count total descriptor size
-		totalDescriptorCount += desc.second; 
-
+		totalDescriptorCount += desc.Value; 
+		descType = desc.Key;
 		// check max heap size
-		if (_heapInfo.find(desc.first) == _heapInfo.end())   { continue; }
-		if (_heapInfo.at(desc.first) > desc.second)          { return; }
+		if (!_heapInfo.Contains(desc.Key)) { continue; }
+		if (_heapInfo.At(desc.Key) > desc.Value)
+		{
+			descType = desc.Key; return;
+		}
 	}
 
 	/*-------------------------------------------------------------------
 	-			     Count total descriptor size
 	---------------------------------------------------------------------*/
-	const D3D12_DESCRIPTOR_HEAP_TYPE heapType = EnumConverter::Convert(heapInfos.begin()->first);
+	const D3D12_DESCRIPTOR_HEAP_TYPE heapType = EnumConverter::Convert(descType);
 	
 	const D3D12_DESCRIPTOR_HEAP_DESC heapDesc =
 	{
@@ -180,13 +184,13 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 		{
 			// copy already created descriptor view
 			dxDevice->CopyDescriptorsSimple(
-				_resourceAllocators[heapInfo.first].GetMaxDescriptorCount(),                           // copy   descriptor count 
+				_resourceAllocators[heapInfo.Key].GetMaxDescriptorCount(),                           // copy   descriptor count 
 				D3D12_CPU_DESCRIPTOR_HANDLE(heap->GetCPUDescriptorHandleForHeapStart().ptr + pointer), // dest   descriptor range 
-				_resourceAllocators[heapInfo.first].GetCPUDescHandler(),                               // source descriptor range
+				_resourceAllocators[heapInfo.Key].GetCPUDescHandler(),                               // source descriptor range
 				heapType);     
 
 			// Proceed cpu and gpu pointer 
-			pointer += _descriptorByteSize * heapInfo.second;
+			pointer += _descriptorByteSize * heapInfo.Value;
 		}
 	}
 
@@ -201,19 +205,19 @@ void RHIDescriptorHeap::Resize(const std::map<core::DescriptorHeapType, MaxDescr
 		size_t pointer = 0;
 		for (const auto& heapInfo : heapInfos)
 		{
-			_resourceAllocators[heapInfo.first].SetResourceAllocator
+			_resourceAllocators[heapInfo.Key].SetResourceAllocator
 			(
-				static_cast<std::uint32_t>(heapInfo.second),            // max descriptor count
+				static_cast<std::uint32_t>(heapInfo.Value),            // max descriptor count
 				static_cast<std::uint32_t>(_descriptorByteSize),        // one descriptor byte size
 				D3D12_CPU_DESCRIPTOR_HANDLE(_descriptorHeap->GetCPUDescriptorHandleForHeapStart().ptr + pointer), // cpu start pointer
-				heapInfo.first == core::DescriptorHeapType::RTV || heapInfo.first == core::DescriptorHeapType::DSV ?
+				heapInfo.Key == core::DescriptorHeapType::RTV || heapInfo.Key == core::DescriptorHeapType::DSV ?
 				D3D12_GPU_DESCRIPTOR_HANDLE() : 
 				D3D12_GPU_DESCRIPTOR_HANDLE(_descriptorHeap->GetGPUDescriptorHandleForHeapStart().ptr + pointer) // gpu start pointer
 			);
 
-			_heapInfo[heapInfo.first] = heapInfo.second;
+			_heapInfo[heapInfo.Key] = heapInfo.Value;
 
-			pointer += _descriptorByteSize * heapInfo.second;
+			pointer += _descriptorByteSize * heapInfo.Value;
 		}
 	}
 }
@@ -233,7 +237,7 @@ void RHIDescriptorHeap::Reset(const ResetFlag flag)
 {
 	for (auto& resourceAllocator : _resourceAllocators)
 	{
-		resourceAllocator.second.ResetID();
+		resourceAllocator.Value.ResetID();
 	}
 
 	if (flag == ResetFlag::All && _descriptorHeap != nullptr) 
@@ -246,18 +250,18 @@ void RHIDescriptorHeap::Reset(const ResetFlag flag)
 }
 #pragma endregion Public Function
 #pragma region Private Function
-bool RHIDescriptorHeap::CheckCorrectViewConbination(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
+bool RHIDescriptorHeap::CheckCorrectViewConbination(const gu::SortedMap<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos)
 {
 	bool foundSingleView = false;
 
 	for (const auto& heapInfo : heapInfos)
 	{
-		if (heapInfo.first == core::DescriptorHeapType::RTV)     { foundSingleView = true; break; }
-		if (heapInfo.first == core::DescriptorHeapType::DSV)     { foundSingleView = true; break; }
-		if (heapInfo.first == core::DescriptorHeapType::SAMPLER) { foundSingleView = true; break; }
+		if (heapInfo.Key == core::DescriptorHeapType::RTV)     { foundSingleView = true; break; }
+		if (heapInfo.Key == core::DescriptorHeapType::DSV)     { foundSingleView = true; break; }
+		if (heapInfo.Key == core::DescriptorHeapType::SAMPLER) { foundSingleView = true; break; }
 	}
 
-	if (foundSingleView) { return heapInfos.size() == 1 ? true : false; }
+	if (foundSingleView) { return heapInfos.Size() == 1 ? true : false; }
 	else                 { return true; }
 }
 #pragma endregion Private Function

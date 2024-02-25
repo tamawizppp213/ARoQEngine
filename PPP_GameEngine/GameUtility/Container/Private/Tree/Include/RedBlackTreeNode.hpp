@@ -20,7 +20,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-
 namespace gu::details::tree
 {
 	enum class RedBlackColorType : gu::int8
@@ -28,6 +27,178 @@ namespace gu::details::tree
 		Black = 0,
 		Red   = 1
 	};
+
+	/****************************************************************************
+	*				  		LinkedListIteratorBase
+	*************************************************************************//**
+	*  @class     LinkedListIteratorBase
+	*  @brief     イテレーターです
+	*****************************************************************************/
+	template<class NodeType, class ElementType>
+	class RedBlackTreeIterator
+	{
+	public:
+		enum class Direction
+		{
+			RightUpper, RightLower,LeftUpper, LeftLower, None
+		};
+		/****************************************************************************
+		**                Public Function
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		NodeType* GetNode() const { return _currentNode; }
+
+		Direction GetDirection() const { return _previousDirection; }
+
+		inline explicit operator bool() const { return _currentNode = nullptr; }
+		bool operator==(const RedBlackTreeIterator& rhs) const { return _currentNode == rhs._currentNode; }
+		bool operator!=(const RedBlackTreeIterator& rhs) const 
+		{ 
+			return _currentNode != rhs._currentNode;
+		}
+
+		// iterator
+		RedBlackTreeIterator& operator++()
+		{
+			const auto initNode = _currentNode;
+			uint64 leftLowerCount = 0;
+			bool   callRightLower  = false;
+			while (true)
+			{
+				// 右上に進んだ時には, 次に大きい箇所は, 右下に行った後で左下に進んだ先
+				if (_previousDirection == Direction::RightUpper)
+				{
+					// 右下にいける場合は次は左下のルートを通る
+					if (!_currentNode->Right->IsNil())
+					{
+						_currentNode       = _currentNode->Right;
+						_previousDirection = Direction::RightLower;
+						callRightLower = true;
+					}
+					// 右下にいけなくとも, 親がいるなら親のところに行く. 
+					else if(_currentNode->Parent != nullptr)
+					{
+						_currentNode = _currentNode->Parent;
+						_previousDirection = Direction::LeftUpper;
+						break;
+					}
+				}
+				// 右下にいった場合はとにかく左下に進む 
+				else if (_previousDirection == Direction::RightLower)
+				{
+					if (!_currentNode->Left->IsNil())
+					{
+						_currentNode = _currentNode->Left;
+						leftLowerCount++;
+					}
+					// 強制終了処理
+					else if (leftLowerCount == 0)
+					{
+						if (callRightLower) { break; } // 一回でも呼び出していたら一度終了
+						
+						_currentNode = _currentNode->Right;
+
+						if (_currentNode->IsNil())
+						{
+							_previousDirection = Direction::None;
+						}
+						break;
+					}
+					else // 左下に進み切ったら, 次のところへ目指す, 
+					{
+						_previousDirection = Direction::LeftLower;
+						break;
+					}
+				}
+				// 左下に行った後は, 親に行く
+				else if (_previousDirection == Direction::LeftLower)
+				{
+					if (_currentNode->Parent)
+					{
+						_currentNode = _currentNode->Parent;
+						_previousDirection = Direction::RightUpper;
+						break;
+					}
+					// 強制終了処理に移行
+					else
+					{
+						_previousDirection = Direction::RightLower;
+					}
+				}
+				// 左上だった場合は, 右上にいけないかを確認する
+				else if (_previousDirection == Direction::LeftUpper)
+				{
+					if (_currentNode->Value < _currentNode->Parent->Value)
+					{
+						_previousDirection = Direction::RightUpper;
+						_currentNode = _currentNode->Parent;
+						break;
+					}
+					else if (_currentNode->IsRoot())
+					{
+						_currentNode = initNode;
+						Direction::None;
+					}
+				}
+				else { break; }
+			}
+			return *this;
+		}
+
+		RedBlackTreeIterator operator++(int)
+		{
+			auto temp = *this;
+			++(*this);
+			return temp;
+		}
+
+		//RedBlackTreeIterator& operator--()
+		//{
+		//	while (true)
+		//	{
+		//		const auto nextNode = _currentNode->Left;
+		//		if (!nextNode->IsNil())
+		//		{
+		//			_currentNode = nextNode; break;
+		//		}
+		//		else
+		//		{
+		//			_currentNode = _currentNode->Parent;
+		//			if (_currentNode == nullptr) { break; }
+		//		}
+		//	}
+		//}
+		//RedBlackTreeIterator operator--(int)
+		//{
+		//	auto temp = *this;
+		//	--(*this);
+		//	return temp;
+		//}
+
+		// accessor
+		ElementType& operator->() const { return _currentNode->Value; }
+		ElementType& operator*() const { return  _currentNode->Value; }
+
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		explicit RedBlackTreeIterator(NodeType* startingNode, Direction direction) : _currentNode(startingNode), _previousDirection(direction) {};
+
+	private:
+		/****************************************************************************
+		**                Private Function
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Private Member Variables
+		*****************************************************************************/
+		NodeType* _currentNode = nullptr;
+		Direction _previousDirection   = Direction::LeftLower;
+	};
+
 	/****************************************************************************
 	*				  			   RedBlackTreeNode
 	*************************************************************************//**
@@ -142,9 +313,9 @@ namespace gu::details::tree
 		*****************************************************************************/
 		RedBlackTreeNode() = default;
 
-		RedBlackTreeNode(const RedBlackTreeNode&) = delete;
+		RedBlackTreeNode(const RedBlackTreeNode&) = default;
 
-		RedBlackTreeNode& operator=(const RedBlackTreeNode&) = delete;
+		RedBlackTreeNode& operator=(const RedBlackTreeNode&) = default;
 
 		~RedBlackTreeNode()
 		{

@@ -156,7 +156,7 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	/*-------------------------------------------------------------------
 	-                   Set up descriptor count
 	---------------------------------------------------------------------*/
-	std::map<core::DescriptorHeapType, size_t> heapInfoList;
+	gu::SortedMap<core::DescriptorHeapType, size_t> heapInfoList;
 	heapInfoList[core::DescriptorHeapType::CBV]     = heapCount.CBVDescCount;
 	heapInfoList[core::DescriptorHeapType::SRV]     = heapCount.SRVDescCount;
 	heapInfoList[core::DescriptorHeapType::UAV]     = heapCount.UAVDescCount;
@@ -193,12 +193,12 @@ void RHIDevice::Destroy()
 	---------------------------------------------------------------------*/
 	for (auto& heap : _defaultHeap)
 	{
-		if (heap.second) 
+		if (heap.Value) 
 		{ 
-			heap.second.Reset(); 
+			heap.Value.Reset(); 
 		}
 	}
-	_defaultHeap.clear();
+	_defaultHeap.Clear();
 
 	if (_drawIndexedIndirectCommandSignature) { _drawIndexedIndirectCommandSignature.Reset(); }
 
@@ -271,7 +271,7 @@ gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const
 	return heapPtr;
 }
 
-gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo)
+gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const gu::SortedMap<core::DescriptorHeapType, size_t>& heapInfo)
 {
 	auto heapPtr = gu::StaticPointerCast<core::RHIDescriptorHeap>(gu::MakeShared<directX12::RHIDescriptorHeap>(SharedFromThis()));
 	heapPtr->Resize(heapInfo);

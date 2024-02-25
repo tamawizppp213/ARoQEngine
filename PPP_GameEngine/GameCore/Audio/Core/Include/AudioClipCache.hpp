@@ -14,7 +14,7 @@
 #include "GameUtility/Base/Include/ClassUtility.hpp"
 #include <string>
 #include <memory>
-#include <map>
+#include "GameUtility/Container/Include/GUSortedMap.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ namespace gc::audio
 		bool Exist(const std::wstring& filePath);
 
 		/* @brief : Clear audio clip list.*/
-		void Clear() { _audioClipList.clear(); };
+		void Clear() { _audioClipList.Clear(); };
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -66,7 +66,7 @@ namespace gc::audio
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::map<std::uint64_t, AudioClipPtr> _audioClipList = {};
+		gu::SortedMap<std::uint64_t, AudioClipPtr> _audioClipList = {};
 
 	};
 }

@@ -65,7 +65,7 @@ namespace rhi::directX12
 
 		gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap  (const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		
-		gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
+		gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap(const gu::SortedMap<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
 		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
 		
@@ -433,7 +433,7 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------
 		*  @brief : Defaultのディスクリプタヒープ
 		*----------------------------------------------------------------------*/
-		std::map<DefaultHeapType, gu::SharedPointer<core::RHIDescriptorHeap>> _defaultHeap;
+		gu::SortedMap<DefaultHeapType, gu::SharedPointer<core::RHIDescriptorHeap>> _defaultHeap;
 	};
 }
 #endif

@@ -78,7 +78,7 @@ void RHIDevice::Destroy()
 {
 	_defaultHeap.Reset();
 
-	_commandQueueInfo.clear();
+	_commandQueueInfo.Clear();
 
 	for (auto& queuePriority : queuePriorities)
 	{
@@ -100,7 +100,7 @@ void RHIDevice::Destroy()
 #pragma region Create Resource Function
 void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 {
-	std::map<core::DescriptorHeapType, size_t> heapInfoList;
+	gu::SortedMap<core::DescriptorHeapType, size_t> heapInfoList;
 	heapInfoList[core::DescriptorHeapType::CBV] = heapCount.CBVDescCount;
 	heapInfoList[core::DescriptorHeapType::SRV] = heapCount.SRVDescCount;
 	heapInfoList[core::DescriptorHeapType::UAV] = heapCount.UAVDescCount;
@@ -154,7 +154,7 @@ gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const
 	return heapPtr;
 }
 
-gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo)
+gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const gu::SortedMap<core::DescriptorHeapType, size_t>& heapInfo)
 {
 	auto heapPtr = gu::StaticPointerCast<core::RHIDescriptorHeap>(gu::MakeShared<vulkan::RHIDescriptorHeap>(SharedFromThis()));
 	heapPtr->Resize(heapInfo);
@@ -331,7 +331,7 @@ void RHIDevice::SetUpCommandQueueInfo()
 		if (queue.queueCount > 0 && HasAllBits(queue.queueFlags, VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT | VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT | VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT))
 		{
 			// キューを多く持っているやつを使用する.
-			if (_commandQueueInfo.contains(core::CommandListType::Graphics)
+			if (_commandQueueInfo.Contains(core::CommandListType::Graphics)
 				&& _commandQueueInfo[core::CommandListType::Graphics].QueueCount > queue.queueCount)
 			{
 				continue;
@@ -343,7 +343,7 @@ void RHIDevice::SetUpCommandQueueInfo()
 		// Compute と Copy まで許容するのをComputeCommandListに
 		else if (queue.queueCount > 0 && HasAllBits(queue.queueFlags, VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT | VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT) && (!HasAnyBits(queue.queueFlags, VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT)))
 		{
-			if (_commandQueueInfo.contains(core::CommandListType::Compute)
+			if (_commandQueueInfo.Contains(core::CommandListType::Compute)
 				&& _commandQueueInfo[core::CommandListType::Compute].QueueCount > queue.queueCount)
 			{
 				continue;
@@ -355,7 +355,7 @@ void RHIDevice::SetUpCommandQueueInfo()
 		// Copy のみ
 		else if (queue.queueCount > 0 && HasAllBits(queue.queueFlags, VkQueueFlagBits::VK_QUEUE_TRANSFER_BIT) && (!HasAnyBits(queue.queueFlags, VkQueueFlagBits::VK_QUEUE_GRAPHICS_BIT | VkQueueFlagBits::VK_QUEUE_COMPUTE_BIT)))
 		{
-			if (_commandQueueInfo.contains(core::CommandListType::Copy)
+			if (_commandQueueInfo.Contains(core::CommandListType::Copy)
 				&& _commandQueueInfo[core::CommandListType::Copy].QueueCount > queue.queueCount)
 			{
 				continue;
@@ -526,14 +526,14 @@ void RHIDevice::CreateLogicalDevice()
 
 	for (const auto& queueInfo : _commandQueueInfo)
 	{
-		queuePriorities[queueInfo.first] = gu::DynamicArray<float>(queueInfo.second.QueueCount, 1.0f);
-		_newCreateCommandQueueIndex[queueInfo.first] = 0;
+		queuePriorities[queueInfo.Key] = gu::DynamicArray<float>(queueInfo.Value.QueueCount, 1.0f);
+		_newCreateCommandQueueIndex[queueInfo.Key] = 0;
 
 		VkDeviceQueueCreateInfo createInfo;
 		createInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;  // structure type
-		createInfo.queueFamilyIndex = queueInfo.second.QueueFamilyIndex;           // queue index
-		createInfo.queueCount       = queueInfo.second.QueueCount;                 // queue count : 1
-		createInfo.pQueuePriorities = queuePriorities[queueInfo.first].Data();      // queue property : 1.0
+		createInfo.queueFamilyIndex = queueInfo.Value.QueueFamilyIndex;           // queue index
+		createInfo.queueCount       = queueInfo.Value.QueueCount;                 // queue count : 1
+		createInfo.pQueuePriorities = queuePriorities[queueInfo.Key].Data();      // queue property : 1.0
 
 		deviceQueueCreateInfo.Push(createInfo);
 	}

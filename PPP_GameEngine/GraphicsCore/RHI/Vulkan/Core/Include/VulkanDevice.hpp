@@ -67,7 +67,7 @@ namespace rhi::vulkan
 
 		gu::SharedPointer<core::RHIDescriptorHeap>       CreateDescriptorHeap(const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		
-		gu::SharedPointer<core::RHIDescriptorHeap>       CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
+		gu::SharedPointer<core::RHIDescriptorHeap>       CreateDescriptorHeap(const gu::SortedMap<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
 		gu::SharedPointer<core::RHIResourceLayout>       CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name=SP("ResourceLayout")) override;
 
@@ -171,8 +171,8 @@ namespace rhi::vulkan
 
 		/* @brief : Command queue set up data*/
 		// base class : std::unordered_map<CommandListType, gu::SharedPointer<core::RHICommandQueue>> _commandQueues;
-		std::map<core::CommandListType, QueueInfo> _commandQueueInfo;
-		std::map<core::CommandListType, std::uint32_t> _newCreateCommandQueueIndex;
+		gu::SortedMap<core::CommandListType, QueueInfo> _commandQueueInfo;
+		gu::SortedMap<core::CommandListType, std::uint32_t> _newCreateCommandQueueIndex;
 
 		/* @brief : variable shading rate : 1, 2, 4, 8, 16, 32, 64*/
 		std::uint32_t _shadingRateImageTileSize = 0;

@@ -20,5 +20,5 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 RHIDescriptorHeap::~RHIDescriptorHeap()
 {
-	if (!_heapInfo.empty()) { _heapInfo.clear(); }
+	if (!_heapInfo.IsEmpty()) { _heapInfo.Clear(); }
 }

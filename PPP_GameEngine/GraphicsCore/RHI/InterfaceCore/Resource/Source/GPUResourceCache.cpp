@@ -30,9 +30,9 @@ GPUResourceCache::GPUResourceViewPtr GPUResourceCache::Load(const gu::tstring& f
 	const auto name = filePath + SP("_SRV");
 	const auto stdName = std::wstring(name.CString());
 	size_t hashCode = std::hash<std::wstring>()(stdName);
-	if (_resourceViews.contains(hashCode))
+	if (_resourceViews.Contains(hashCode))
 	{
-		return _resourceViews.at(hashCode);
+		return _resourceViews.At(hashCode);
 	}
 	else // create texture and texture resource view
 	{
@@ -59,5 +59,5 @@ bool GPUResourceCache::Find(const gu::tstring& filePath)
 	const auto stdName = std::wstring(name.CString());
 	size_t hashCode = std::hash<std::wstring>()(stdName);
 	
-	return _resourceViews.contains(hashCode);
+	return _resourceViews.Contains(hashCode);
 }
