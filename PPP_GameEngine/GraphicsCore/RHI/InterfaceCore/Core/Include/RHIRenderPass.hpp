@@ -15,7 +15,7 @@
 #include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
-#include <optional>
+#include "GameUtility/Base/Include/GUOptional.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -43,16 +43,16 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		void SetClearValue(const std::optional<ClearValue>& color, const std::optional<ClearValue>& depth = std::nullopt, const std::uint32_t index = 0)
+		void SetClearValue(const gu::Optional<ClearValue>& color, const gu::Optional<ClearValue>& depth = {}, const std::uint32_t index = 0)
 		{
-			if (color.has_value())
+			if (color.HasValue())
 			{
-				_colorClearValues[index] = color.value();
+				_colorClearValues[index] = color.Value();
 			}
 			_depthClearValue     = depth; // optional
 		}
 
-		void SetClearValue(const gu::DynamicArray<ClearValue>& colors, const std::optional<ClearValue>& depth = std::nullopt)
+		void SetClearValue(const gu::DynamicArray<ClearValue>& colors, const gu::Optional<ClearValue>& depth = {})
 		{
 			_colorClearValues = colors;
 			_depthClearValue  = depth;
@@ -67,13 +67,13 @@ namespace rhi::core
 		const gu::DynamicArray<ClearValue>& GetClearColor() const noexcept { return _colorClearValues; }
 		
 		/* @brief : Return clear depth color value*/
-		std::optional<ClearValue> GetDepthClear() const noexcept { return _depthClearValue; }
+		gu::Optional<ClearValue> GetDepthClear() const noexcept { return _depthClearValue; }
 		
 		/* @brief : Return Get color attachment*/
-		std::optional<Attachment> GetColorAttachment(const size_t index = 0) const { return _colorAttachments[index]; }
+		gu::Optional<Attachment> GetColorAttachment(const size_t index = 0) const { return _colorAttachments[index]; }
 		
 		/* @brief : Return Get Depth attachment*/
-		std::optional<Attachment> GetDepthAttachment() const noexcept { return _depthAttachment; }
+		gu::Optional<Attachment> GetDepthAttachment() const noexcept { return _depthAttachment; }
 		
 		/* @brief : Return color attachment size*/
 		size_t GetColorAttachmentSize() const noexcept { return _colorAttachments.Size(); }
@@ -91,17 +91,17 @@ namespace rhi::core
 
 		virtual ~RHIRenderPass()
 		{
-			_depthClearValue.reset();
-			_depthAttachment.reset();
+			_depthClearValue.Reset();
+			_depthAttachment.Reset();
 			_colorClearValues.Clear(); _colorClearValues.ShrinkToFit();
 			_colorAttachments.Clear(); _colorAttachments.ShrinkToFit();
 
 			if (_device) { _device.Reset(); }
 		}
 
-		explicit RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const gu::DynamicArray<Attachment>& colors, const std::optional<Attachment>& depth = std::nullopt);
+		explicit RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const gu::DynamicArray<Attachment>& colors, const gu::Optional<Attachment>& depth = {});
 		
-		explicit RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const Attachment& color, const std::optional<Attachment>& depth = std::nullopt);
+		explicit RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const Attachment& color, const gu::Optional<Attachment>& depth = {});
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
@@ -112,8 +112,8 @@ namespace rhi::core
 		gu::DynamicArray<ClearValue>    _colorClearValues = {};
 
 		/* Depth Stencil Render pass*/
-		std::optional<Attachment> _depthAttachment;
-		std::optional<ClearValue> _depthClearValue;
+		gu::Optional<Attachment> _depthAttachment;
+		gu::Optional<ClearValue> _depthClearValue;
 
 		MultiSample _maxSample = MultiSample::Count1;
 	};

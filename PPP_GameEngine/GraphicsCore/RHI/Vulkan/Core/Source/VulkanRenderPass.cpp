@@ -33,12 +33,12 @@ RHIRenderPass::~RHIRenderPass()
 	}
 }
 
-RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::Attachment>& colors, const gu::Optional<core::Attachment>& depth)
 	: core::RHIRenderPass(device, colors, depth)
 {
 	Prepare();
 }
-RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth)
+RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const core::Attachment& color, const gu::Optional<core::Attachment>& depth)
 	: core::RHIRenderPass(device, color, depth)
 {
 	Prepare();
@@ -74,7 +74,7 @@ gu::DynamicArray<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() co
 		}
 	}
 	// depth stencil
-	if (_depthClearValue.has_value())
+	if (_depthClearValue.HasValue())
 	{
 		VkClearValue clearValue = {};
 		clearValue.depthStencil.depth   = _depthClearValue->Depth;
@@ -101,7 +101,7 @@ void rhi::vulkan::RHIRenderPass::Prepare()
 	/*-------------------------------------------------------------------
 	-                  Get attachment size (color + depth)
 	---------------------------------------------------------------------*/
-	size_t attachmentCount = _colorAttachments.Size() + (_depthAttachment.has_value() ? 1 : 0);
+	size_t attachmentCount = _colorAttachments.Size() + (_depthAttachment.HasValue() ? 1 : 0);
 	/*-------------------------------------------------------------------
 	-                  Resize Attachments
 	---------------------------------------------------------------------*/
@@ -130,7 +130,7 @@ void rhi::vulkan::RHIRenderPass::Prepare()
 	/*-------------------------------------------------------------------
 	-                  Depth Attachment
 	---------------------------------------------------------------------*/
-	if (_depthAttachment.has_value())
+	if (_depthAttachment.HasValue())
 	{
 		size_t index = attachments.Size() - 1;
 		attachments[index].flags          = 0;
@@ -159,7 +159,7 @@ void rhi::vulkan::RHIRenderPass::Prepare()
 		.colorAttachmentCount    = static_cast<std::uint32_t>(colorsReference.Size()),
 		.pColorAttachments       = colorsReference.Data(),
 		.pResolveAttachments     = nullptr,
-		.pDepthStencilAttachment = _depthAttachment.has_value() ? &depthReference : nullptr,
+		.pDepthStencilAttachment = _depthAttachment.HasValue() ? &depthReference : nullptr,
 		.preserveAttachmentCount = 0,
 		.pPreserveAttachments    = nullptr
 	};

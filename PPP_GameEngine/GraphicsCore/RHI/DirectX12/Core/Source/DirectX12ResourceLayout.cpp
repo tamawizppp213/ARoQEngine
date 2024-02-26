@@ -33,13 +33,13 @@ RHIResourceLayout::~RHIResourceLayout()
 {
 	if (_rootSignature) { _rootSignature.Reset(); }
 }
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const gu::Optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
 	: core::RHIResourceLayout(device, elements, samplers, constant32Bits)
 {
 	SetUp();
 	SetName(name);
 }
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const gu::Optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
 	: core::RHIResourceLayout(device, element, sampler, constant32Bits)
 {
 	SetUp();
@@ -57,7 +57,7 @@ RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& d
 /****************************************************************************
 *                     SetUp
 *************************************************************************//**
-*  @fn        void RHIResourceLayout::SetUp(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+*  @fn        void RHIResourceLayout::SetUp(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const gu::Optional<core::Constant32Bits>& constant32Bits)
 * 
 *  @brief     Set up rootsignature
 * 
@@ -207,7 +207,7 @@ void RHIResourceLayout::SetUp()
 	/*-------------------------------------------------------------------
 	-                   Constant 32 bits
 	---------------------------------------------------------------------*/
-	if (_desc.Constant32Bits.has_value())
+	if (_desc.Constant32Bits.HasValue())
 	{
 		_constant32BitsCount = parameters.Size();
 

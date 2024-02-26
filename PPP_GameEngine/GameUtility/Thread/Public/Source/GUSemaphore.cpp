@@ -55,17 +55,17 @@ void Semaphore::Signal(const std::uint64_t value)
 *  @brief     現在のスレッドに対して, 指定の値になるまで待ちます. 
 *
 *  @param[in] const std::uint64_t スレッドが完了したかを検査するための値
-*  @param[in] const std::optional<int> タイムアウトに必要なmillsecondの時間
+*  @param[in] const gu::Optional<int> タイムアウトに必要なmillsecondの時間
 *
 *  @return    void
 *****************************************************************************/
-void Semaphore::Wait(const std::uint64_t value, const std::optional<int> timeoutMilliSeconds )
+void Semaphore::Wait(const std::uint64_t value, const gu::Optional<int> timeoutMilliSeconds )
 {
 	std::unique_lock<std::mutex> lock(_lockMutex);
 	
-	if (timeoutMilliSeconds.has_value())
+	if (timeoutMilliSeconds.HasValue())
 	{
-		_conditionVariable.wait_for(lock, std::chrono::milliseconds(timeoutMilliSeconds.value()), [&]() { return value <= _completedValue; });
+		_conditionVariable.wait_for(lock, std::chrono::milliseconds(timeoutMilliSeconds.Value()), [&]() { return value <= _completedValue; });
 	}
 	else
 	{

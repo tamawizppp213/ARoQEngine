@@ -51,9 +51,9 @@ namespace rhi::vulkan
 		
 		~RHIResourceLayout();
 		
-		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constants = std::nullopt, const gu::tstring& name = SP("ResourceLayout"));
+		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const gu::Optional<core::Constant32Bits>& constants = {}, const gu::tstring& name = SP("ResourceLayout"));
 		
-		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& layout, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant = std::nullopt, const gu::tstring& name = SP("ResourceLayout"));
+		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& layout, const core::SamplerLayoutElement& sampler, const gu::Optional<core::Constant32Bits>& constant = {}, const gu::tstring& name = SP("ResourceLayout"));
 	
 	protected:
 		/****************************************************************************

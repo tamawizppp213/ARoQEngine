@@ -15,7 +15,7 @@
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
-#include <optional>
+#include "GameUtility/Base/Include/GUOptional.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ namespace rhi::vulkan
 		
 		gu::SharedPointer<core::RHIDescriptorHeap>       CreateDescriptorHeap(const gu::SortedMap<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
-		gu::SharedPointer<core::RHIResourceLayout>       CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name=SP("ResourceLayout")) override;
+		gu::SharedPointer<core::RHIResourceLayout>       CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const gu::Optional<core::Constant32Bits>& constant32Bits = {}, const gu::tstring& name=SP("ResourceLayout")) override;
 
 		gu::SharedPointer<core::GPUPipelineFactory>      CreatePipelineFactory() override;
 
@@ -77,9 +77,9 @@ namespace rhi::vulkan
 
 		gu::SharedPointer<core::GPUComputePipelineState> CreateComputePipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 
-		gu::SharedPointer<core::RHIRenderPass>           CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
+		gu::SharedPointer<core::RHIRenderPass>           CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const gu::Optional<core::Attachment>& depth) override;
 		
-		gu::SharedPointer<core::RHIRenderPass>           CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
+		gu::SharedPointer<core::RHIRenderPass>           CreateRenderPass(const core::Attachment& color, const gu::Optional<core::Attachment>& depth) override;
 		
 		//gu::SharedPointer<core::GPURayTracingPipelineState>CreateRayTracingPipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override { return nullptr; };
 		

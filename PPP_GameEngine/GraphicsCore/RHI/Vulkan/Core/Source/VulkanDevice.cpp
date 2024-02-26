@@ -160,12 +160,12 @@ gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const
 	heapPtr->Resize(heapInfo);
 	return heapPtr;
 }
-gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const gu::Optional<core::Attachment>& depth)
 {
 	return gu::StaticPointerCast<core::RHIRenderPass>(gu::MakeShared<vulkan::RHIRenderPass>(SharedFromThis(), colors, depth));
 }
 
-gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth)
+gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::Attachment& color, const gu::Optional<core::Attachment>& depth)
 {
 	return gu::StaticPointerCast<core::RHIRenderPass>(gu::MakeShared<vulkan::RHIRenderPass>(SharedFromThis(), color, depth));
 }
@@ -185,7 +185,7 @@ gu::SharedPointer<core::GPUPipelineFactory> RHIDevice::CreatePipelineFactory()
 	return gu::StaticPointerCast<core::GPUPipelineFactory>(gu::MakeShared<vulkan::GPUPipelineFactory>(SharedFromThis()));
 }
 
-gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
+gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const gu::Optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::RHIResourceLayout>(gu::MakeShared<vulkan::RHIResourceLayout>(SharedFromThis(), elements, samplers, constant32Bits, name));
 }

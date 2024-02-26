@@ -14,7 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
 #include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
-#include <optional>
+#include "GameUtility/Base/Include/GUOptional.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ namespace rhi::core
 	{
 		gu::DynamicArray<core::ResourceLayoutElement> Elements = {};
 		gu::DynamicArray<core::SamplerLayoutElement>  Samplers = {};
-		std::optional<core::Constant32Bits>      Constant32Bits = std::nullopt;
+		gu::Optional<core::Constant32Bits>      Constant32Bits = {};
 		RootSignatureType ResourceLayoutType = RootSignatureType::Rasterize;
 		bool UseDirectlyIndexedResourceHeap  = false;
 		bool UseDirectlyIndexedSamplerHeap   = false;
@@ -45,7 +45,7 @@ namespace rhi::core
 		RHIResourceLayoutDesc(
 			const gu::DynamicArray<core::ResourceLayoutElement>& elements = {},
 			const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {},
-			const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt,
+			const gu::Optional<core::Constant32Bits>& constant32Bits = {},
 			const RootSignatureType resourceLayoutType = RootSignatureType::Rasterize,
 			const bool useDirectlyIndexedResourceHeap = false,
 			const bool useDirectlyIndexedSamplerHeap = false,
@@ -94,7 +94,7 @@ namespace rhi::core
 		/*----------------------------------------------------------------------
 		*  @brief :  Return Constant32Bits data
 		/*----------------------------------------------------------------------*/
-		std::optional<Constant32Bits> GetConstant32Bits() const noexcept { return _desc.Constant32Bits; }
+		gu::Optional<Constant32Bits> GetConstant32Bits() const noexcept { return _desc.Constant32Bits; }
 
 		/*----------------------------------------------------------------------
 		*  @brief :  Return All gpu resource shader binding elements
@@ -131,7 +131,7 @@ namespace rhi::core
 			const gu::SharedPointer<RHIDevice>& device,
 			const gu::DynamicArray<core::ResourceLayoutElement>& elements = {},
 			const gu::DynamicArray<core::SamplerLayoutElement>&  samplers = {},
-			const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt
+			const gu::Optional<core::Constant32Bits>& constant32Bits = {}
 		) : _device(device)
 		{
 			_desc.Elements       = elements;
@@ -143,7 +143,7 @@ namespace rhi::core
 			const gu::SharedPointer<RHIDevice>& device,
 			const core::ResourceLayoutElement& element,
 			const core::SamplerLayoutElement& sampler,
-			const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt
+			const gu::Optional<core::Constant32Bits>& constant32Bits = {}
 		) : _device(device)
 		{
 			_desc.Elements = { element };
