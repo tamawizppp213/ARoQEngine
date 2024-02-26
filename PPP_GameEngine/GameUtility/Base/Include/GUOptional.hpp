@@ -1,6 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   GUOptional.hpp
-///             @brief  temp
+///             @brief  Optionalは, 値の有効無効が確認できるクラスです. 
+///                     HasValueで値が有効値かを確認する
+///                     Valueで実際の値を取得する. 
 ///             @author toide
 ///             @date   2024/02/26 0:54:45
 //////////////////////////////////////////////////////////////////////////////////
@@ -11,7 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-
+#include "GameUtility/Base/Include/GUTypeCast.hpp"
+#include "GameUtility/Base/Include/GUAssert.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,9 +28,12 @@ namespace gu
 	*				  			   GUOptional
 	*************************************************************************//**
 	*  @class     GUOptional
-	*  @brief     temp
+	*  @brief     Optionalは, 値の有効無効が確認できるクラスです. 
+                  HasValueで値が有効値かを確認する
+                  Valueで実際の値を取得する. 
 	*****************************************************************************/
-	class GUOptional
+	template<class ElementType>
+	class Optional
 	{
 	public:
 		/****************************************************************************
@@ -37,10 +43,96 @@ namespace gu
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		// @brief : 有効値かどうかを返す
+		constexpr bool HasValue() const noexcept { return _hasValue; }
+
+		// @brief : 保持する値の左辺値参照を取得する
+		constexpr ElementType& Value()&
+		{
+			if (!_hasValue) { Check(false); }
+			return _value;
+		}
+
+		// @brief : 保持する値の右辺値参照を取得する
+		constexpr ElementType&& Value()&&
+		{
+			if (!_hasValue) { Check(false); }
+			return gu::Forward<ElementType>(_value)
+		}
+
+		// @brief : 保持する値の左辺値参照を取得する
+		constexpr const ElementType& Value() const&
+		{
+			if (!_hasValue) { Check(false); }
+			return _value;
+		}
+
+		// @brief : 保持する値の右辺値参照を取得する
+		constexpr const ElementType&& Value() const&&
+		{
+			if (!_hasValue) { Check(false); }
+			return gu::Forward<ElementType>(_value)
+		}
+
+#pragma region Operator Function
+		// @brief : 有効値かどうかを返す
+		constexpr explicit operator bool() const noexcept { return _hasValue; }
+
+		// @brief : メンバアクセス演算子
+		constexpr       ElementType* operator->()       noexcept { return &_value; }
+		constexpr const ElementType* operator->() const noexcept { return &_value; }
+
+		// @brief : 間接参照演算子 (左辺値参照)
+		constexpr ElementType& operator*() & noexcept { return _value; }
+
+		// @brief : 間接参照演算子 (右辺値参照)
+		constexpr ElementType&& operator*() && noexcept { return gu::Forward<Optional<ElementType>>(_value); }
+
+		// @brief : 間接参照演算子 (const 左辺値参照)
+		constexpr const ElementType& operator* () const& noexcept { return _value; }
+
+		// @brief : 間接参照演算子 8const 右辺値参照)
+		constexpr const ElementType&& operator*() const&& noexcept { return gu::Forward<Optional<ElementType>>(_value); }
+
+#pragma endregion Operator Function
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+		// @brief: 値を持っていないオブジェクトを構築する
+		constexpr Optional() noexcept : _value(), _hasValue(false) {};
+
+		// @brief : 値を持っているオブジェクトを構築する
+		constexpr Optional(const ElementType& value) : _value(value), _hasValue(true) {};
+
+		// @brief : コピーコンストラクタ
+		constexpr Optional(const Optional& other) : _value(other._value), _hasValue(other._hasValue) {};
+
+		// @brief : ムーブコンストラクタ
+		constexpr Optional(Optional<ElementType>&& other) : _value(gu::Forward<Optional<ElementType>>(other._value)), _hasValue(other._hasValue)
+		{
+			other._hasValue = false;
+		}
+
+		~Optional() = default;
+
+		// @brief : コピー代入演算子
+		Optional& operator=(const Optional& other)
+		{
+			if (this != &other) { _value = other._value; _hasValue = other._hasValue; }
+			return *this;
+		}
+
+		// ムーブ代入演算子
+		Optional& operator=(Optional<ElementType>&& other)
+		{
+			if (this != &other)
+			{
+				_value = Forward<Optional<ElementType>>(other._value);
+				_hasValue = other._hasValue;
+				other._hasValue = false;
+			}
+		}
 
 	protected:
 		/****************************************************************************
@@ -50,6 +142,11 @@ namespace gu
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		// @brief : 実際の値
+		ElementType _value = ElementType();
+
+		// @brief : 値が代入されているか 
+		bool _hasValue = false;
 	};
 
 }

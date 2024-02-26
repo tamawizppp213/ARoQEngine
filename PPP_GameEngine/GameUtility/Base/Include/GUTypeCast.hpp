@@ -26,9 +26,9 @@ namespace gu
 			 参照型を右辺値としてキャストを行います. (Moveなどに使用)
 	-----------------------------------------------------------------*/
 	template<typename T>
-	__forceinline T&& Forward(typename details::reference::RemoveReferenceType<T>::Type& object) { return (T&&)object; }
+	__forceinline T&& Forward(typename details::type_traits::RemoveReferenceType<T>::Type& object) { return (T&&)object; }
 
 	template<typename T>
-	__forceinline T&& Forward(typename details::reference::RemoveReferenceType<T>::Type&& object) { return (T&&)object; }
+	__forceinline T&& Forward(typename details::type_traits::RemoveReferenceType<T>::Type&& object) { return (T&&)object; }
 }
 #endif
