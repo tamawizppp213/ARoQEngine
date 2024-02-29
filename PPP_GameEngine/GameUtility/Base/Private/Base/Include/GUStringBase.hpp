@@ -86,11 +86,11 @@ namespace gu::details::string
 		/*----------------------------------------------------------------------*/
 		__forceinline bool Contains(const Char* string, const bool useCaseSensitivity) const
 		{
-			return FindFirstIndexOf(string, 0, useCaseSensitivity) >= 0;
+			return Find(string, 0, useCaseSensitivity) >= 0;
 		}
 		__forceinline bool Contains(const StringBase<Char, CharByte>& string, const bool useCaseSensitivity) const
 		{
-			return FindFirstIndexOf(string, 0, useCaseSensitivity);
+			return Find(string, 0, useCaseSensitivity);
 		}
 
 		/*----------------------------------------------------------------------
@@ -103,15 +103,15 @@ namespace gu::details::string
 		* 
 		*  @return 見つからなかったらNPOS, stringが空文字列である場合は0
 		/*----------------------------------------------------------------------*/
-		uint64 FindFirstIndexOf(const Char* string, const uint64 startIndex = 0, const bool useCaseSensitivity = true) const;
-		uint64 FindFirstIndexOf(const StringBase<Char, CharByte>& string, const uint64 startIndex = 0, const bool useCaseSensititivity = true) const;
+		uint64 Find(const Char* string, const uint64 startIndex = 0, const bool useCaseSensitivity = true) const;
+		uint64 Find(const StringBase<Char, CharByte>& string, const uint64 startIndex = 0, const bool useCaseSensititivity = true) const;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列を検索し, 最後に見つかったの文字のインデックスを返します.
 		*            見つからなかった場合は-1, stringが空文字列である場合は0
 		/*----------------------------------------------------------------------*/
-		uint64 FindLastIndexOf(const Char* string, const uint64 startIndex = NPOS, const uint64 count = NPOS, const bool useCaseSensitivity = true) const;
-		uint64 FindLastIndexOf(const StringBase<Char, CharByte>& string, const uint64 startIndex = NPOS, const uint64 count = NPOS, const bool useCaseSensitivity = true) const;
+		uint64 ReverseFind(const Char* string, const uint64 startIndex = NPOS, const uint64 count = NPOS, const bool useCaseSensitivity = true) const;
+		uint64 ReverseFind(const StringBase<Char, CharByte>& string, const uint64 startIndex = NPOS, const uint64 count = NPOS, const bool useCaseSensitivity = true) const;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  文字列の先頭が指定した文字列と一致するかを判断します
@@ -642,15 +642,15 @@ namespace gu::details::string
 	*            見つからなかった場合は-1(npos), stringが空文字列である場合は0
 	/*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
-	uint64 StringBase<Char, CharByte>::FindFirstIndexOf(const Char* string, const uint64 startIndex, const bool useCaseSensitivity) const
+	uint64 StringBase<Char, CharByte>::Find(const Char* string, const uint64 startIndex, const bool useCaseSensitivity) const
 	{
-		return StringUtility::FindFirstIndexOf(CString(), Size(), string, StringUtility::Length(string), startIndex, useCaseSensitivity);
+		return StringUtility::Find(CString(), Size(), string, StringUtility::Length(string), startIndex, useCaseSensitivity);
 	}
 
 	template<class Char, int CharByte>
-	uint64 StringBase<Char, CharByte>::FindFirstIndexOf(const StringBase<Char, CharByte>& string, const uint64 startIndex, const bool useCaseSensitivity) const
+	uint64 StringBase<Char, CharByte>::Find(const StringBase<Char, CharByte>& string, const uint64 startIndex, const bool useCaseSensitivity) const
 	{
-		return StringUtility::FindFirstIndexOf(CString(), Size(), string.CString(), string.Size(), startIndex, useCaseSensitivity);
+		return StringUtility::Find(CString(), Size(), string.CString(), string.Size(), startIndex, useCaseSensitivity);
 	}
 
 	/*----------------------------------------------------------------------
@@ -658,15 +658,15 @@ namespace gu::details::string
 	*            見つからなかった場合は-1, stringが空文字列である場合は0
 	/*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
-	uint64 StringBase<Char, CharByte>::FindLastIndexOf(const Char* string, const uint64 startIndex, const uint64 count, const bool useCaseSensitivity) const
+	uint64 StringBase<Char, CharByte>::ReverseFind(const Char* string, const uint64 startIndex, const uint64 count, const bool useCaseSensitivity) const
 	{
-		return StringUtility::FindLastIndexOf(CString(), Size(), string, StringUtility::Length(string), startIndex, count, useCaseSensitivity);
+		return StringUtility::ReverseFind(CString(), Size(), string, StringUtility::Length(string), startIndex, count, useCaseSensitivity);
 	}
 
 	template<class Char, int CharByte>
-	uint64 StringBase<Char, CharByte>::FindLastIndexOf(const StringBase<Char, CharByte>& string, const uint64 startIndex, const uint64 count, const bool useCaseSensitivity) const
+	uint64 StringBase<Char, CharByte>::ReverseFind(const StringBase<Char, CharByte>& string, const uint64 startIndex, const uint64 count, const bool useCaseSensitivity) const
 	{
-		return StringUtility::FindLastIndexOf(CString(), Size(), string, string.Size(), startIndex, count, useCaseSensitivity);
+		return StringUtility::ReverseFind(CString(), Size(), string, string.Size(), startIndex, count, useCaseSensitivity);
 	}
 
 	/*----------------------------------------------------------------------
@@ -812,7 +812,6 @@ namespace gu::details::string
 	{                                                                    \
 		Ensure(0);                                                       \
 	}                                                                    \
-	Ensure(end == begin + length);                                       \
 	return num;
 
 #define TRY_TO_INT_DEF(Type, Func)                                           \
@@ -822,7 +821,6 @@ namespace gu::details::string
 	NumberConversionResult result = NumberConversionResult::Success;     \
 	StringUtility::Trim(CString(), Size(), &begin, &length);             \
 	Type num = StringUtility::Func(begin, length, radix, &end, &result); \
-	if(end != begin + length)                  {return false;}           \
     if(res != NumberConversionResult::Success) {return false;}           \
 	if(outValue != nullptr){*outValue = num;}                            \
 	return num;

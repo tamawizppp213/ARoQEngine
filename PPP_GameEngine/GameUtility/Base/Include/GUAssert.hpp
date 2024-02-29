@@ -47,6 +47,9 @@ namespace gu
 		
 		// @brief : デバッグ用にブレークポイントを追加します
 		static void PutDebugBreak();
+
+		// @brief : 即時終了する場合に使います
+		static void ExecuteCrash();
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -77,7 +80,7 @@ namespace gu
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, nullptr)) \
 		{                 \
 			gu::ErrorLogger::PutDebugBreak();\
-            exit(1); \
+            gu::ErrorLogger::ExecuteCrash();\
 		}\
     }
 #endif

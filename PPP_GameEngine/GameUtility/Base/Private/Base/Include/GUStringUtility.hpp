@@ -68,7 +68,7 @@ namespace gu::details::string
 		*  @brief :  文字列に一致する最初のインデックスを返します. 
 		/*----------------------------------------------------------------------*/
 		template<typename Char>
-		static uint64 FindFirstIndexOf(
+		static uint64 Find(
 			const Char* left, uint64 leftLength,
 			const Char* right, uint64 rightLength,
 			uint64 startIndex, const bool useCaseSensitivity) noexcept;
@@ -77,7 +77,7 @@ namespace gu::details::string
 		*  @brief :  文字列に一致する最初のインデックスを返します.
 		/*----------------------------------------------------------------------*/
 		template<typename Char>
-		static uint64 FindLastIndexOf(
+		static uint64 ReverseFind(
 			const Char* left, uint64 leftLength,
 			const Char* right, uint64 rightLength,
 			uint64 startIndex, uint64 sortCount, const bool useCaseSensitivity) noexcept;
@@ -131,7 +131,16 @@ namespace gu::details::string
 		*  @brief :  空白行か
 		/*----------------------------------------------------------------------*/
 		template<typename Char>
-		static bool IsSpace(const Char ch) noexcept { return (0 < ch && ch <= 255) ? isspace(ch) != 0 : false; }
+		static bool IsSpace(const Char ch) noexcept 
+		{
+			return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r' || ch == '\f' || ch == '\v';
+		}
+		
+		template<typename Char>
+		static bool IsDigit(const Char ch) noexcept
+		{
+			return '0' <= ch && ch <= '9';
+		}
 
 		/*----------------------------------------------------------------------
 		*  @brief :  空白行か
@@ -508,7 +517,7 @@ namespace gu::details::string
 	*  @brief :  文字列に一致する最初のインデックスを返します.
 	/*----------------------------------------------------------------------*/
 	template<class Char>
-	uint64 StringUtility::FindFirstIndexOf(
+	uint64 StringUtility::Find(
 		const Char* left, uint64 leftLength,
 		const Char* right, uint64 rightLength,
 		uint64 startIndex, const bool useCaseSensitivity)  noexcept
@@ -567,7 +576,7 @@ namespace gu::details::string
 	*  @brief :  文字列に一致する最初のインデックスを返します.
 	/*----------------------------------------------------------------------*/
 	template<class Char>
-	uint64 StringUtility::FindLastIndexOf(
+	uint64 StringUtility::ReverseFind(
 		const Char* left, uint64 leftLength,
 		const Char* right, uint64 rightLength,
 		uint64 startIndex, uint64 sortCount, const bool useCaseSensitivity) noexcept 
@@ -897,7 +906,7 @@ namespace gu::details::string
 		-       基数によってプレフィックスをスキップする
 		---------------------------------------------------------------------*/
 		UnsignedType value = 0;
-		UnsignedType overflowMax = UnsignedMax / radix; // 乗算しようとするとき, この値以上であれば次の乗算でオーバーフローする
+		UnsignedType overflowMax = UnsignedMax / (UnsignedType)radix; // 乗算しようとするとき, この値以上であれば次の乗算でオーバーフローする
 		UnsignedType radixMax    = UnsignedMax % radix;
 		uint64       count = 0;
 		bool         isOverflow = false;
@@ -906,7 +915,7 @@ namespace gu::details::string
 		{
 			UnsignedType digit = 0;
 
-			if (isdigit(*pos))
+			if ('0' <= (*pos) && (*pos) <= '9')
 			{
 				digit = static_cast<UnsignedType>(*pos - '0');
 			}
@@ -935,7 +944,7 @@ namespace gu::details::string
 			if (value < overflowMax ||
 				(value == overflowMax && digit <= radixMax))
 			{
-				value = value * radix + digit;
+				value = value * (UnsignedType)radix + digit;
 			}
 			else
 			{
