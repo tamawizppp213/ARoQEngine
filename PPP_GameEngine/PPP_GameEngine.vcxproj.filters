@@ -1143,7 +1143,7 @@
     <ClInclude Include="GameUtility\Base\Include\GUOptional.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\File\Include\GUParse.hpp">
+    <ClInclude Include="GameUtility\Base\Include\GUParse.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1802,7 +1802,7 @@
     <ClCompile Include="Plugins\DDSLoader\dds_loader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GameUtility\File\Source\GUParse.cpp">
+    <ClCompile Include="GameUtility\Base\Source\GUParse.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

@@ -382,7 +382,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameUtility\File\Include\GUParse.hpp">
+    <ClInclude Include="GameUtility\Base\Include\GUParse.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -757,7 +757,7 @@
       <SubType>
       </SubType>
     </ClCompile>
-    <ClCompile Include="GameUtility\File\Source\GUParse.cpp">
+    <ClCompile Include="GameUtility\Base\Source\GUParse.cpp">
       <SubType>
       </SubType>
     </ClCompile>
