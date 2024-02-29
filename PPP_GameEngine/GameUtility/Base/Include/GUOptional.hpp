@@ -31,6 +31,7 @@ namespace gu
 	*  @brief     Optionalは, 値の有効無効が確認できるクラスです. 
                   HasValueで値が有効値かを確認する
                   Valueで実際の値を取得する. 
+				  https://qiita.com/ashtkn/items/d6de4a9f7524eadb4222
 	*****************************************************************************/
 	template<class ElementType>
 	class Optional
