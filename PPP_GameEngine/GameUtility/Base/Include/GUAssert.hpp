@@ -92,7 +92,7 @@ namespace gu
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, format)) \
 		{                 \
 			gu::ErrorLogger::PutDebugBreak(); \
-            exit(1); \
+            gu::ErrorLogger::ExecuteCrash();\
 		}\
     }
 #endif
