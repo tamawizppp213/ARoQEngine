@@ -94,7 +94,7 @@ tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const wc
 *
 *  @return 　　tstring
 *****************************************************************************/
-tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const char** argumentVector)
+tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const char8** argumentVector)
 {
 	/*----------------------------------------------------------------------
 	*  最初の実行ファイル名に対する引数を無視しつつ, 各引数をstringに渡す
