@@ -26,7 +26,8 @@
 #endif
 
 #include "MainGame/Core/Include/Application.hpp"
-
+#include "GameUtility/Base/Include/GUCommandLine.hpp"
+#include "GameUtility/Base/Include/GUParse.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,12 +37,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #if PLATFORM_OS_WINDOWS
     #ifdef _DEBUG
-        int main()
+        int main(const gu::int32 argumentCount, const gu::char8** argumentVector)
     #else
         int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCommandLine, _In_ int nShowCommand)
     #endif
 #else
-        int main()
+        int main(const gu::int32 argumentCount, const gu::char8** argumentVector)
 #endif
 /*---------------------------------------------------------------
             Main Function‚ÌŽÀ‘•
@@ -51,6 +52,14 @@
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+#if PLATFORM_OS_WINDOWS && !_DEBUG
+    const gu::char8* constLine = const_cast<gu::char8*>(lpCommandLine);
+    const auto argument = gu::CommandLine::BuildFromArgumentVector(1, &constLine);
+#else
+    const auto argument = gu::CommandLine::BuildFromArgumentVector(argumentCount, argumentVector);
+#endif
+
+    gu::CommandLine::SetUp(argument.CString());
     /********************************************
     **         Initialize
     *********************************************/
