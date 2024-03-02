@@ -98,7 +98,7 @@ namespace gu::details::string
 		}
 		__forceinline bool Contains(const StringBase<Char, CharByte>& string, const bool useCaseSensitivity) const
 		{
-			return Find(string, 0, useCaseSensitivity);
+			return Find(string, 0, useCaseSensitivity) >= 0;
 		}
 
 		/*----------------------------------------------------------------------
@@ -156,7 +156,7 @@ namespace gu::details::string
 		{
 			const Char* begin = nullptr;
 			const Char* end   = nullptr;
-			StringUtility::Left(CString(), count, &count, &end);
+			StringUtility::Left(CString(), count, &begin, &end);
 			return StringBase<Char, CharByte>(begin, end);
 		}
 

@@ -689,10 +689,10 @@ namespace gu::details::string
 	template<typename Char>
 	void StringUtility::Left(const Char* string, uint64 count, const Char** outBegin, const Char** outEnd)
 	{
-		if (stringLength == NPOS) { count = 0; }
+		if (count == NPOS) { count = 0; }
 
 		auto length = Length(string);
-		length      = min(length, count);
+		length      = length < count ? length : count;
 		*outBegin   = string;
 		*outEnd     = string + length;
 	}
@@ -703,10 +703,10 @@ namespace gu::details::string
 	template<typename Char>
 	void StringUtility::Right(const Char* string, uint64 count, const Char** outBegin, const Char** outEnd)
 	{
-		if (stringLength == NPOS) { count = 0; }
+		if (count == NPOS) { count = 0; }
 
 		auto length = Length(string);
-		length      = min(length, count);
+		length      = length < count ? length : count;
 		*outBegin   = string + length - count;
 		*outEnd     = string + length;
 	}
