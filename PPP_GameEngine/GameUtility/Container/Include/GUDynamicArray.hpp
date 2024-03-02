@@ -322,7 +322,7 @@ namespace gu
 
 		Resize(count, false);
 
-		if constexpr (IS_ARITHMETIC<ElementType>)
+		if constexpr (type::IS_ARITHMETIC<ElementType>)
 		{
 			Memory::Copy(_data, pointer, sizeof(ElementType) * count);
 		}
@@ -508,7 +508,7 @@ namespace gu
 		{
 			Reserve(_capacity == 0 ? 1 : _size * 2);
 		}
-		_data[_size] = Forward<ElementType>(element);
+		_data[_size] = type::Forward<ElementType>(element);
 		++_size;
 	}
 

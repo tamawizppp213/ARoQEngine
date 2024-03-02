@@ -151,7 +151,7 @@ namespace gu
 		*  Move Constructs a shared pointer
 		/*----------------------------------------------------------------------*/
 		SharedPointer(SharedPointer&& right) noexcept : 
-			ObserverPointerBase(Forward<ObserverPointerBase>(right))
+			ObserverPointerBase(type::Forward<ObserverPointerBase>(right))
 		{
 			
 		};
@@ -282,10 +282,10 @@ namespace gu
 	template<class ElementType, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE, class... Arguments>
 	SharedPointer<ElementType, Mode> MakeShared(Arguments&&... arguments)
 	{
-		SharedPointer<ElementType, Mode> pointer(new ElementType(Forward<Arguments>(arguments)...));
+		SharedPointer<ElementType, Mode> pointer(new ElementType(type::Forward<Arguments>(arguments)...));
 		
 		// EnableSharedFromThisをサポートする場合, weak_pointerを設定する
-		if constexpr(gu::IS_DERIVED_OF<ElementType, gu::EnableSharedFromThis<ElementType, Mode>>)
+		if constexpr(gu::type::IS_DERIVED_OF<ElementType, gu::EnableSharedFromThis<ElementType, Mode>>)
 		{
 			pointer->SetWeakPointer(pointer);
 		}
