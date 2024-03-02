@@ -75,13 +75,13 @@ namespace gu
 		{
 			const auto pair = _tree.Search(gu::Pair<Key, Value>(key, Value()));
 			if (pair) { return pair->Value; }
-			else      { Checkf(false, "not include sorted map key"); return pair->Value;}
+			else      { Checkf(false, "not include sorted map key"); return _empty;}
 		}
 		__forceinline const Value& At(const Key& key) const
 		{
 			const auto pair = _tree.Search(gu::Pair<Key, Value>(key, Value()));
 			if (pair) { return pair->Value; }
-			else { Checkf(false, "not include sorted map key"); return pair->Value; }
+			else { Checkf(false, "not include sorted map key"); return _empty;}
 		}
 
 		/*----------------------------------------------------------------------
@@ -146,6 +146,8 @@ namespace gu
 		*****************************************************************************/
 		// @brief : é´èë
 		gu::RedBlackTree<gu::Pair<Key, Value>> _tree;
+
+		Value _empty = Value();
 	};
 }
 
