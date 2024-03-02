@@ -146,6 +146,7 @@ bool Parse::Bool(const tstring& stream, const tstring& match, bool& value)
 	const auto checkValue = CheckValue(stream, match);
 	if (checkValue == tstring::NPOS)
 	{
+		value = false;
 		return false;
 	}
 
