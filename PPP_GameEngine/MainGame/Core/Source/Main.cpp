@@ -52,6 +52,9 @@
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+    /*---------------------------------------------------------------
+                CommandLine�̎擾
+    -----------------------------------------------------------------*/
 #if PLATFORM_OS_WINDOWS && !_DEBUG
     const gu::char8* constLine = const_cast<gu::char8*>(lpCommandLine);
     const auto argument = gu::CommandLine::BuildFromArgumentVector(1, &constLine);
@@ -60,6 +63,7 @@
 #endif
 
     gu::CommandLine::SetUp(argument.CString());
+
     /********************************************
     **         Initialize
     *********************************************/
