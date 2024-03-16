@@ -983,7 +983,7 @@ namespace gu::simd::sse
 	{
 		const auto pointer = reinterpret_cast<const gu::uint32*>(&vector);
 
-		Vector128 result;
+		Vector128 result = {};
 		const auto work = reinterpret_cast<gu::uint32*>(&result);
 
 		work[0] = pointer[xIndex];
@@ -1011,11 +1011,11 @@ namespace gu::simd::sse
 		const gu::uint32 xIndex, const gu::uint32 yIndex,
 		const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept
 	{
-		const gu::uint32* pointer[2];
+		const gu::uint32* pointer[2] = {};
 		pointer[0] = reinterpret_cast<const uint32*>(&a);
 		pointer[1] = reinterpret_cast<const uint32*>(&b);
 
-		Vector128 result;
+		Vector128 result = {};
 		auto pWork = reinterpret_cast<uint32*>(&result);
 
 		const uint32 i0 = xIndex & 3;
