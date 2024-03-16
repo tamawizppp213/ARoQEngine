@@ -44,7 +44,7 @@ tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const wc
 	/*----------------------------------------------------------------------
 	*  最初の実行ファイル名に対する引数を無視しつつ, 各引数をstringに渡す
 	/*----------------------------------------------------------------------*/
-	tstring result;
+	tstring result = SP("");
 	for (int32 i = 1; i < argumentCount; ++i)
 	{
 		wstring argument(argumentVector[i]);
