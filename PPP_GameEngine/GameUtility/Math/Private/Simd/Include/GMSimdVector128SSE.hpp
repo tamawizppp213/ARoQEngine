@@ -1,6 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   GMSimdVector128SSE.hpp
-///             @brief  temp
+///             @brief  SSEによるSimd演算です.
+///                     Vector128型の実装 
 ///             @author toide
 ///             @date   2024/03/11 2:25:36
 //////////////////////////////////////////////////////////////////////////////////
@@ -2124,14 +2125,14 @@ namespace gu::simd::sse
 	/****************************************************************************
 	*                      NormVector2
 	*************************************************************************//**
-	*  @fn        inline bool SIMD_CALL_CONVENTION Vector128Utility::NormVector2(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector2(ConstVector128 vector) noexcept
 	*
 	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
-	*  @return 　　Vector128
+	*  @return 　　float
 	*****************************************************************************/
 	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector2(ConstVector128 vector) noexcept
 	{
@@ -2151,14 +2152,14 @@ namespace gu::simd::sse
 	/****************************************************************************
 	*                      NormVector3
 	*************************************************************************//**
-	*  @fn        inline bool SIMD_CALL_CONVENTION Vector128Utility::NormVector3(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector3(ConstVector128 vector) noexcept
 	*
 	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
-	*  @return 　　Vector128
+	*  @return 　　float
 	*****************************************************************************/
 	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector3(ConstVector128 vector) noexcept
 	{
@@ -2189,14 +2190,14 @@ namespace gu::simd::sse
 	/****************************************************************************
 	*                      NormVector4
 	*************************************************************************//**
-	*  @fn        inline bool SIMD_CALL_CONVENTION Vector128Utility::NormVector4(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector4(ConstVector128 vector) noexcept
 	*
 	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
-	*  @return 　　Vector128
+	*  @return 　　float
 	*****************************************************************************/
 	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector4(ConstVector128 vector) noexcept
 	{
