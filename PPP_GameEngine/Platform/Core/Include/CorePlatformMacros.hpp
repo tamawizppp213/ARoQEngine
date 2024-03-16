@@ -121,6 +121,8 @@
 #pragma endregion Compiler
 
 #pragma region CPU architecture
+#ifndef PLATFORM_CPU_ARCHITECTURE
+#define PLATFORM_CPU_ARCHITECTURE
 /*-------------------------------------------------------------------
 -             X86
 ---------------------------------------------------------------------*/
@@ -139,10 +141,13 @@
 #define PLATFORM_CPU_ARM_FAMILY	0
 #endif
 
-
+#endif // PLATFORM_CPU_ARCHITECTURE
 #pragma endregion CPU architecture
 
+// GM_SIMD_Macros‚à•ÏX‚ð‚¨Šè‚¢‚¢‚½‚µ‚Ü‚·B
 #pragma region SIMD
+#ifndef PLATFORM_SIMD
+#define PLATFORM_SIMD
 #if PLATFORM_COMPILER_GCC_COMPATIBLE
 	#if defined(__MMX__)
 		#define PLATFORM_CPU_INSTRUCTION_MMX 1
@@ -204,12 +209,19 @@
 		#define PLATFORM_CPU_INSTRUCTION_AVX2 0
 	#endif
 
+	#if (_MSC_VER >= 1920)
+		#define PLATFORM_CPU_INSTRUCTION_SVML 1
+	#else
+		#define PLATFORM_CPU_INSTRUCTION_SVML 0
+	#endif
+
 	#if defined(__ARM_NEON__) || defined(__ARM_NEON)
 		#define PLATFORM_CPU_INSTRUCTION_NEON 1
 	#else
 		#define PLATFORM_CPU_INSTRUCTION_NEON 0
 	#endif
 #elif defined(_MSC_VER) && PLATFORM_CPU_X86_FAMILY
+    // MMX, SSE, SSE2‚ÍVS2003‚Å“±“ü‚³‚ê‚½.
 	#if (_MSC_VER >= 1310)
 		#define PLATFORM_CPU_INSTRUCTION_MMX  1
 		#define PLATFORM_CPU_INSTRUCTION_SSE  1
@@ -219,11 +231,13 @@
 		#define PLATFORM_CPU_INSTRUCTION_SSE  0
 		#define PLATFORM_CPU_INSTRUCTION_SSE2 0
 	#endif
+	// SSE3‚ÍVS2005‚Å“±“ü‚³‚ê‚½.
 	#if (_MSC_VER >= 1400)
 		#define PLATFORM_CPU_INSTRUCTION_SSE3 1
 	#else
 		#define PLATFORM_CPU_INSTRUCTION_SSE3 0
 	#endif
+	// SSSE3, SSE4.1, SSE4.2, PCLMUL‚ÍVS2008‚Å“±“ü‚³‚ê‚½
 	#if (_MSC_VER >= 1500)
 		#define PLATFORM_CPU_INSTRUCTION_SSSE3 1
 		#define PLATFORM_CPU_INSTRUCTION_SSE4_1 1
@@ -235,6 +249,7 @@
 		#define PLATFORM_CPU_INSTRUCTION_SSE4_2 0
 		#define PLATFORM_CPU_INSTRUCTION_PCLMUL 0
 	#endif
+	// AVX and AVX2 introduced in VS2012
 	#if (_MSC_VER >= 1700)
 		#define PLATFORM_CPU_INSTRUCTION_AVX 1
 		#define PLATFORM_CPU_INSTRUCTION_AVX2 1
@@ -242,18 +257,24 @@
 		#define PLATFORM_CPU_INSTRUCTION_AVX 0
 		#define PLATFORM_CPU_INSTRUCTION_AVX2 0
 	#endif
+	#if (_MSC_VER >= 1920)
+		#define PLATFORM_CPU_INSTRUCTION_SVML 1
+	#else
+		#define PLATFORM_CPU_INSTRUCTION_SVML 0
+	#endif
 #else
-#define PLATFORM_CPU_INSTRUCTION_MMX  0
-#define PLATFORM_CPU_INSTRUCTION_SSE  0
-#define PLATFORM_CPU_INSTRUCTION_SSE2 0
-#define PLATFORM_CPU_INSTRUCTION_SSE3 0
-#define PLATFORM_CPU_INSTRUCTION_SSSE3 0
-#define PLATFORM_CPU_INSTRUCTION_SSE4_1 0
-#define PLATFORM_CPU_INSTRUCTION_SSE4_2 0
-#define PLATFORM_CPU_INSTRUCTION_PCLMUL 0
-#define PLATFORM_CPU_INSTRUCTION_AVX 0
-#define PLATFORM_CPU_INSTRUCTION_AVX2 0
+	#define PLATFORM_CPU_INSTRUCTION_MMX  0
+	#define PLATFORM_CPU_INSTRUCTION_SSE  0
+	#define PLATFORM_CPU_INSTRUCTION_SSE2 0
+	#define PLATFORM_CPU_INSTRUCTION_SSE3 0
+	#define PLATFORM_CPU_INSTRUCTION_SSSE3 0
+	#define PLATFORM_CPU_INSTRUCTION_SSE4_1 0
+	#define PLATFORM_CPU_INSTRUCTION_SSE4_2 0
+	#define PLATFORM_CPU_INSTRUCTION_PCLMUL 0
+	#define PLATFORM_CPU_INSTRUCTION_AVX 0
+	#define PLATFORM_CPU_INSTRUCTION_AVX2 0
 #endif
+#endif // PLATFORM_SIMD
 #pragma endregion SIMD
 
 #pragma region Platform Class
