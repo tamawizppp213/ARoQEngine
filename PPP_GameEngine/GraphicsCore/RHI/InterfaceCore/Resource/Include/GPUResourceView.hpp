@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ namespace rhi::core
 	*  @brief     Specify the access mode to resource. 
 	*             Use the bind function to bind resource layout array index to the command list. 
 	*****************************************************************************/
-	class GPUResourceView : public NonCopyable
+	class GPUResourceView : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

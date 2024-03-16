@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +32,7 @@ namespace rhi::core
 	*  @class     Class
 	*  @brief     temp
 	*****************************************************************************/
-	class RayTracingGeometry : public NonCopyable
+	class RayTracingGeometry : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

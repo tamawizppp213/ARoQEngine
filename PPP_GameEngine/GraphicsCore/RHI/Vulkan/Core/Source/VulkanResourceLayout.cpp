@@ -35,14 +35,14 @@ RHIResourceLayout::~RHIResourceLayout()
 	}
 }
 
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constants, const gu::tstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const gu::Optional<core::Constant32Bits>& constants, const gu::tstring& name)
 	:core::RHIResourceLayout(device, elements, samplers, constants)
 {
 	SetUp();
 	SetName(name);
 }
 
-RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const std::optional<core::Constant32Bits>& constant, const gu::tstring& name)
+RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const gu::Optional<core::Constant32Bits>& constant, const gu::tstring& name)
 	: core::RHIResourceLayout(device, element, sampler, constant)
 {
 	SetUp();
@@ -52,11 +52,11 @@ RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& d
 /****************************************************************************
 *                     SetUp
 *************************************************************************//**
-*  @fn        void RHIResourceLayout::SetUp(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits)
+*  @fn        void RHIResourceLayout::SetUp(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const gu::Optional<core::Constant32Bits>& constant32Bits)
 *  @brief     Set up pipeline layout
 *  @param[in] const gu::DynamicArray<core::ResourceLayoutElement>& elements
 *  @param[in] const gu::DynamicArray<core::SamplerLayoutElement>& samplers
-*  @param[in] std::optional<core::Constant32Bits>& constant32Bits
+*  @param[in] gu::Optional<core::Constant32Bits>& constant32Bits
 *  @return Å@Å@void
 *****************************************************************************/
 void RHIResourceLayout::SetUp()
@@ -133,7 +133,7 @@ void RHIResourceLayout::SetUp()
 	-                Create constant range
 	---------------------------------------------------------------------*/
 	VkPushConstantRange range = {};
-	if (_desc.Constant32Bits.has_value())
+	if (_desc.Constant32Bits.HasValue())
 	{
 		range.offset     = 0;
 		range.size       = static_cast<std::uint32_t>(_desc.Constant32Bits->Count * sizeof(std::uint32_t));
@@ -147,7 +147,7 @@ void RHIResourceLayout::SetUp()
 	layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	layoutInfo.flags = 0;
 	layoutInfo.setLayoutCount         = static_cast<std::uint32_t>(_descriptorSetLayouts.Size());
-	layoutInfo.pushConstantRangeCount = _desc.Constant32Bits.has_value() ? 1 : 0;
+	layoutInfo.pushConstantRangeCount = _desc.Constant32Bits.HasValue() ? 1 : 0;
 	layoutInfo.pSetLayouts            = _descriptorSetLayouts.Data();
 	layoutInfo.pPushConstantRanges    = &range;
 

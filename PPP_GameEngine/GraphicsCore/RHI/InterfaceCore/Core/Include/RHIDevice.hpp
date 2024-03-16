@@ -14,10 +14,10 @@
 #include "Platform/Core/Include/CorePlatformMacros.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIMultiGPUMask.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayoutElement.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
-#include <optional>
-#include <map> // vulkanÇæÇﬂÇæÇ¡ÇΩÇÁunordered_mapÇ‡í«â¡.
+#include "GameUtility/Base/Include/GUOptional.hpp"
+#include "GameUtility/Container/Include/GUSortedMap.hpp" // vulkanÇæÇﬂÇæÇ¡ÇΩÇÁunordered_mapÇ‡í«â¡.
 
 #if PLATFORM_OS_WINDOWS
 #include <Windows.h> // ç°å„PlatformàÀë∂ÇíEãpó\íË
@@ -67,7 +67,7 @@ namespace rhi::core
 	*  @class     RHIDevice 
 	*  @brief     Logical Device interface. Device : GPU resources generator.
 	*****************************************************************************/
-	class RHIDevice : public NonCopyable
+	class RHIDevice : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************
@@ -101,9 +101,9 @@ namespace rhi::core
 
 		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
 		
-		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<DescriptorHeapType, size_t>& heapInfo) = 0;
+		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const gu::SortedMap<DescriptorHeapType, size_t>& heapInfo) = 0;
 		
-		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<ResourceLayoutElement>& elements = {}, const gu::DynamicArray<SamplerLayoutElement>& samplers = {}, const std::optional<Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name = SP("ResourceLayout")) = 0;
+		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<ResourceLayoutElement>& elements = {}, const gu::DynamicArray<SamplerLayoutElement>& samplers = {}, const gu::Optional<Constant32Bits>& constant32Bits = {}, const gu::tstring& name = SP("ResourceLayout")) = 0;
 		
 		virtual gu::SharedPointer<GPUPipelineFactory>         CreatePipelineFactory() = 0;
 		
@@ -111,9 +111,9 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
 		
-		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<Attachment>& colors, const std::optional<Attachment>& depth) = 0;
+		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<Attachment>& colors, const gu::Optional<Attachment>& depth) = 0;
 		
-		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const Attachment& color, const std::optional<Attachment>& depth) = 0;
+		virtual gu::SharedPointer<RHIRenderPass>              CreateRenderPass(const Attachment& color, const gu::Optional<Attachment>& depth) = 0;
 		
 		virtual gu::SharedPointer<GPUResourceView>            CreateResourceView(const ResourceViewType viewType, const gu::SharedPointer<GPUTexture>& texture, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) = 0;
 		

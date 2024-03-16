@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 #include "GameUtility/Base/Include/HLSLUtility.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <vector>
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ namespace gc::core
 	*  @brief     GameWorld constant buffer (This class can be used for both individual drawings and instancing drawings. )
 	*             When you would like to change the contents in the buffer, you should use GetBuffer function.
 	*****************************************************************************/
-	class GameWorldInfo : public NonCopyable
+	class GameWorldInfo : public gu::NonCopyable
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 		using ConstantBufferPtr         = gu::SharedPointer<rhi::core::GPUBuffer>;

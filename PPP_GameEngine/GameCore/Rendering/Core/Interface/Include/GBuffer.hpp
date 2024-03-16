@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GBufferDesc.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
@@ -47,7 +47,7 @@ namespace gc::rendering
 	*  @class     GBuffer
 	*  @brief     GBuffer (普段はDefaultTypeを使用するが, カスタマイズも可能にしている.)
 	*****************************************************************************/
-	class GBuffer : public NonCopyable
+	class GBuffer : public gu::NonCopyable
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;

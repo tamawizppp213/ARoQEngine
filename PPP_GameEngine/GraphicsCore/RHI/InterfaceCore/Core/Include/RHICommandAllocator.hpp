@@ -17,7 +17,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ namespace rhi::core
 	*  @class     RHICommandAllocator
 	*  @brief     Allocation of memory used by command list
 	*****************************************************************************/
-	class RHICommandAllocator : public NonCopyable
+	class RHICommandAllocator : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

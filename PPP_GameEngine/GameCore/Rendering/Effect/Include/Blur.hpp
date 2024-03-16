@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
@@ -34,7 +34,7 @@ class LowLevelGraphicsEngine;
 namespace gc
 {
 
-	class GaussianBlur : public NonCopyable
+	class GaussianBlur : public gu::NonCopyable
 	{
 		using BlurParameterPtr        = gu::SharedPointer<rhi::core::GPUBuffer>;
 		using TextureSizeBufferPtr    = gu::SharedPointer<rhi::core::GPUBuffer>;

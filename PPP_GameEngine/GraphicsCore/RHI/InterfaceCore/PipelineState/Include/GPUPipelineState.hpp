@@ -35,7 +35,7 @@ namespace rhi::core
 	*  @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
-	class GPUBasePipelineState : public NonCopyable
+	class GPUBasePipelineState : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Thread/Public/Include/GUThreadPool.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ namespace engine::core
 	*  @class     EngineThreadManager
 	*  @brief     ゲームに使用するスレッドを管理するクラス.
 	*****************************************************************************/
-	class EngineThreadManager final : public NonCopyable
+	class EngineThreadManager final : public gu::NonCopyable
 	{
 	private :
 		using ThreadPoolPtr = gu::SharedPointer<gu::ThreadPool>;

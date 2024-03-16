@@ -32,7 +32,7 @@ namespace platform::windows
 	*  @class     ICursor
 	*  @brief     Cursor interface
 	*****************************************************************************/
-	class ErrorLogger : public NonCopyable
+	class ErrorLogger : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

@@ -43,7 +43,7 @@ namespace gc
 	*  @brief     Depth Of Field (linear depth)
 	*  @note      –â‘è“_: zPrepass‚ªì‚ç‚ê‚Ä‚È‚¢.
 	*****************************************************************************/
-	class Dof : public NonCopyable
+	class Dof : public gu::NonCopyable
 	{
 	protected:
 		struct BlurParameter

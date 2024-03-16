@@ -65,17 +65,17 @@ namespace rhi::directX12
 
 		gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap  (const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		
-		gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo) override;
+		gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap(const gu::SortedMap<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
-		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth) override;
+		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const gu::Optional<core::Attachment>& depth) override;
 		
-		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth) override;
+		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const core::Attachment& color, const gu::Optional<core::Attachment>& depth) override;
 		
 		gu::SharedPointer<core::GPUGraphicsPipelineState>   CreateGraphicPipelineState(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override ;  // after action: setting pipeline
 		
 		gu::SharedPointer<core::GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 		
-		gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const std::optional<core::Constant32Bits>& constant32Bits = std::nullopt, const gu::tstring& name=SP("ResourceLayout")) override;
+		gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const gu::Optional<core::Constant32Bits>& constant32Bits = {}, const gu::tstring& name=SP("ResourceLayout")) override;
 		
 		gu::SharedPointer<core::GPUPipelineFactory>         CreatePipelineFactory() override;
 		
@@ -433,7 +433,7 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------
 		*  @brief : Defaultのディスクリプタヒープ
 		*----------------------------------------------------------------------*/
-		std::map<DefaultHeapType, gu::SharedPointer<core::RHIDescriptorHeap>> _defaultHeap;
+		gu::SortedMap<DefaultHeapType, gu::SharedPointer<core::RHIDescriptorHeap>> _defaultHeap;
 	};
 }
 #endif

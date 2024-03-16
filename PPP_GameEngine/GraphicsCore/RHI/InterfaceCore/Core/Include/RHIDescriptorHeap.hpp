@@ -11,10 +11,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
-#include <map>
+#include "GameUtility/Container/Include/GUSortedMap.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ namespace rhi::core
 	*  @class     RHIDescriptorHeap
 	*  @brief     Register descriptor view heap 
 	*****************************************************************************/
-	class RHIDescriptorHeap : public NonCopyable
+	class RHIDescriptorHeap : public gu::NonCopyable
 	{
 	protected:
 		using MaxDescriptorSize = size_t;
@@ -58,17 +58,17 @@ namespace rhi::core
 		/* @brief : Resize max view count size heap*/
 		virtual void Resize(const DescriptorHeapType type, const size_t viewCount) = 0;
 		/* @brief : Resize max view count size heap*/
-		virtual void Resize(const std::map<DescriptorHeapType, MaxDescriptorSize>& heapInfo) = 0;
+		virtual void Resize(const gu::SortedMap<DescriptorHeapType, MaxDescriptorSize>& heapInfo) = 0;
 		
 		/* @brief : Reset view offset*/
 		virtual void Reset(const ResetFlag flag = ResetFlag::OnlyOffset) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		size_t GetMaxCount (const DescriptorHeapType type) const noexcept { return _heapInfo.find(type) != _heapInfo.end() ? _heapInfo.at(type) : 0; }
+		size_t GetMaxCount (const DescriptorHeapType type) const noexcept { return _heapInfo.Contains(type) ? _heapInfo.At(type) : 0; }
 		
 		// @brief: Return descriptor heap type (cbv, rtv, dsv)
-		bool HasHeapType(const DescriptorHeapType desiredType) const noexcept { return _heapInfo.find(desiredType) != _heapInfo.end();; }
+		bool HasHeapType(const DescriptorHeapType desiredType) const noexcept { return _heapInfo.Contains(desiredType); }
 		
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -93,7 +93,7 @@ namespace rhi::core
 		/* @brief : max total heap count (ex. CBV + SRV + UAV)*/
 		MaxDescriptorSize _totalHeapCount = 0;
 		/* @brief : max descriptor count in each descriptor heap type*/
-		std::map<DescriptorHeapType, MaxDescriptorSize> _heapInfo;
+		gu::SortedMap<DescriptorHeapType, MaxDescriptorSize> _heapInfo;
 		static constexpr int INVALID_ID = -1;
 	};
 }

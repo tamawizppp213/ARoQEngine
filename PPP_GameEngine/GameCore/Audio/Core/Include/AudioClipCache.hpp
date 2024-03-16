@@ -11,10 +11,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <string>
 #include <memory>
-#include <map>
+#include "GameUtility/Container/Include/GUSortedMap.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +32,7 @@ namespace gc::audio
 	*  @class     AudioClipCache
 	*  @brief     audio clip resource cache. (Basically, This class is used by ResourceManager class.)
 	*****************************************************************************/
-	class AudioClipCache : public NonCopyable
+	class AudioClipCache : public gu::NonCopyable
 	{
 		using AudioClipPtr = std::shared_ptr<AudioClip>;
 	public:
@@ -46,7 +46,7 @@ namespace gc::audio
 		bool Exist(const std::wstring& filePath);
 
 		/* @brief : Clear audio clip list.*/
-		void Clear() { _audioClipList.clear(); };
+		void Clear() { _audioClipList.Clear(); };
 
 		/****************************************************************************
 		**                Public Member Variables
@@ -66,7 +66,7 @@ namespace gc::audio
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		std::map<std::uint64_t, AudioClipPtr> _audioClipList = {};
+		gu::SortedMap<std::uint64_t, AudioClipPtr> _audioClipList = {};
 
 	};
 }

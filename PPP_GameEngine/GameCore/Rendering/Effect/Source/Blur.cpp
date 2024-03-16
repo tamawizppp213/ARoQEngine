@@ -357,8 +357,8 @@ void GaussianBlur::PreparePipelineState(const gu::tstring& name)
 	{
 		// render pass
 		const auto colorAttachment = Attachment::RenderTarget(_engine->GetBackBufferFormat(), ResourceState::RenderTarget, ResourceState::Present, AttachmentLoad::Load);
-		_xBlur.RenderPass = device->CreateRenderPass(colorAttachment, std::nullopt);
-		_yBlur.RenderPass = device->CreateRenderPass(colorAttachment, std::nullopt);
+		_xBlur.RenderPass = device->CreateRenderPass(colorAttachment, {});
+		_yBlur.RenderPass = device->CreateRenderPass(colorAttachment, {});
 
 		// load blob data
 		const auto blurVS_X = factory->CreateShaderState();

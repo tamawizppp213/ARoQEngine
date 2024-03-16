@@ -351,16 +351,16 @@ void LowLevelGraphicsEngine::ShutDown()
 
 	if (_renderPass) { _renderPass.Reset(); }
 
-	_queryHeaps.clear();
+	_queryHeaps.Clear();
 
 	/*-------------------------------------------------------------------
 	-      Clear command list
 	---------------------------------------------------------------------*/
 	if (_fence) { _fence.Reset(); }
 
-	if(!_commandLists.empty()){_commandLists.clear(); }
+	if(!_commandLists.IsEmpty()){_commandLists.Clear(); }
 
-	if (!_commandQueues.empty()) { _commandQueues.clear(); }
+	if (!_commandQueues.IsEmpty()) { _commandQueues.Clear(); }
 
 	/*-------------------------------------------------------------------
 	-      Clear Device resources

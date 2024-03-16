@@ -13,7 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Core/Include/RHICommonState.hpp"
 #include "../../Core/Include/RHIResourceLayoutElement.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ namespace rhi::core
 	*  @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
-	class GPUPipelineFactory : public NonCopyable
+	class GPUPipelineFactory : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

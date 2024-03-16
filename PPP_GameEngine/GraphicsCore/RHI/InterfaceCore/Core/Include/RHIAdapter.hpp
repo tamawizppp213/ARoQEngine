@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
@@ -34,7 +34,7 @@ namespace rhi::core
 	*  @class     RHIDisplayAdapter
 	*  @brief     Physical Device (adapter), Describe gpu information
 	*****************************************************************************/
-	class RHIDisplayAdapter : public NonCopyable
+	class RHIDisplayAdapter : public gu::NonCopyable
 	{
 	public:
 		

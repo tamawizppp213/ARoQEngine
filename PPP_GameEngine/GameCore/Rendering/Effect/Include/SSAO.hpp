@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/HLSLUtility.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
@@ -45,7 +45,7 @@ namespace gc
 	*  @class     Class
 	*  @brief     temp
 	*****************************************************************************/
-	class SSAO : public NonCopyable
+	class SSAO : public gu::NonCopyable
 	{
 	protected:
 		/* @brief : SSAO setting : Define radius, attenuated shapness, fade view space value from start to end.*/

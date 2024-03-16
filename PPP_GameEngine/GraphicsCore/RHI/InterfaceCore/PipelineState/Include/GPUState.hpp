@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -29,7 +29,7 @@ namespace rhi::core
 	*  @class     GPUState
 	*  @brief     GPUState
 	*****************************************************************************/
-	class GPUState : public NonCopyable
+	class GPUState : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

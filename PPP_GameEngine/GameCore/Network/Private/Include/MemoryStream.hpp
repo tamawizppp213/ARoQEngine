@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/File/Include/BitConverter.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -36,7 +36,7 @@ namespace gc
 	*  @class     MemoryStream
 	*  @brief     Memory Stream Buffer
 	*****************************************************************************/
-	class MemoryStream : public NonCopyable
+	class MemoryStream : public gu::NonCopyable
 	{
 		using DataSize = std::int32_t;
 	public:

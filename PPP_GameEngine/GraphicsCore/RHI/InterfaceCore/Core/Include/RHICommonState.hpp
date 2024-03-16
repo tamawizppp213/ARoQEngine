@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/GUString.hpp"
-
+#include "GameUtility/Base/Include/GUEnumClassFlags.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -1084,7 +1084,8 @@ namespace rhi::core
 		AnyDynamic = (Dynamic | Volatile),
 	};
 
-	inline ResourceUsage operator | (const ResourceUsage& left, const ResourceUsage& right)
+	ENUM_CLASS_FLAGS(ResourceUsage);
+	/*inline ResourceUsage operator | (const ResourceUsage& left, const ResourceUsage& right)
 	{
 		return static_cast<ResourceUsage>(static_cast<gu::uint32>(left) | static_cast<gu::uint32>(right));
 	}
@@ -1098,7 +1099,7 @@ namespace rhi::core
 	{
 		if ((left & right) == right) return true;
 		return false;
-	}
+	}*/
 
 	enum class BindlessResourceType
 	{

@@ -11,10 +11,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <cstdint>
 #include <mutex>
-#include <optional>
+#include "GameUtility/Base/Include/GUOptional.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ namespace gu
 		void Signal(const std::uint64_t value);
 
 		/* @brief : wait the thread until the value exceeds the completed value*/
-		void Wait(const std::uint64_t value, const std::optional<int> timeoutMilliSeconds = std::nullopt);
+		void Wait(const std::uint64_t value, const gu::Optional<int> timeoutMilliSeconds = {});
 
 		/* @brief : return the desired completed value = wait value*/
 		std::uint64_t GetCompletedValue() const { return _completedValue; }

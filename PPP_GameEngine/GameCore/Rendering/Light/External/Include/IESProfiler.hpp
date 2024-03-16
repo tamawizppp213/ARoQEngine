@@ -14,7 +14,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "IESProperty.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <string>
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@
 namespace gc::rendering
 {
 
-	class IESProfiler : public NonCopyable
+	class IESProfiler : public gu::NonCopyable
 	{
 	protected:
 		

@@ -25,7 +25,7 @@ namespace gu
 	*				  			   GUPair
 	*************************************************************************//**
 	*  @class     GUPair
-	*  @brief     temp
+	*  @brief     ƒyƒA
 	*****************************************************************************/
 	template<typename KeyType, typename ValueType>
 	struct Pair
@@ -52,10 +52,19 @@ namespace gu
 		*****************************************************************************/
 		Pair(const KeyType& key, const ValueType& value) : Key(key), Value(value) {};
 
-		Pair(const KeyType& key) : Key(key) {};
+		Pair(const KeyType& key) : Key(key), Value(ValueType()) {};
 
 		Pair() : Key(KeyType()), Value(ValueType()) {};
 
+		Pair(const Pair& other) = default;
+
+		Pair& operator=(const Pair& other) noexcept
+		{
+			Key = other.Key; Value = other.Value;
+			return *this;
+		}
+
+		Pair(Pair&& other) = default;
 	protected:
 		/****************************************************************************
 		**                Protected Function

@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GeometryType.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ namespace physics::geometry
 	*  @class     IGeometry
 	*  @brief     Geometry interface
 	*****************************************************************************/
-	class IGeometry : public Copyable
+	class IGeometry : public gu::Copyable
 	{
 	public:
 		/****************************************************************************

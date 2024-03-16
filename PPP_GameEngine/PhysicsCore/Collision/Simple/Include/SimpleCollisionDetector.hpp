@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -30,7 +30,7 @@ namespace physics::core
 	*  @class     SimpleCollisionDetector
 	*  @brief     Collision detection using the each geometry
 	*****************************************************************************/
-	class SimpleCollisionDetector : public NonCopyable
+	class SimpleCollisionDetector : public gu::NonCopyable
 	{
 	protected:
 		using PhysicsActorPtr = gu::SharedPointer<PhysicsActor>;

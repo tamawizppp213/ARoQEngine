@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "IPAddress.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <WinSock2.h>
 #include <vector>
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
@@ -33,7 +33,7 @@ namespace gc
 	*  @class     TransportTCP
 	*  @brief     TCP Connection Class (Winsock (windows only))
 	*****************************************************************************/
-	class ITransport: public NonCopyable
+	class ITransport: public gu::NonCopyable
 	{
 	protected :
 		using PacketQueuePtr = gu::SharedPointer<PacketQueue>;

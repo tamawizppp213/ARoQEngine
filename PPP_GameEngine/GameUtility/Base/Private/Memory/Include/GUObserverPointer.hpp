@@ -19,7 +19,7 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gu
+namespace gu::details::smart_pointer
 {
 	/****************************************************************************
 	*				  			   GUObserverPointer
@@ -76,7 +76,7 @@ namespace gu
 
 		[[nodiscard]] __forceinline const ElementType& operator*() const noexcept { return *_elementPointer; }
 		
-		[[nodiscard]] __forceinline details::ReferenceControllerBase<Mode>* GetRawReferenceController() const noexcept { return _referenceController; }
+		[[nodiscard]] __forceinline ReferenceControllerBase<Mode>* GetRawReferenceController() const noexcept { return _referenceController; }
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -89,30 +89,30 @@ namespace gu
 		*  Constructs a new observer pointer using a resource pointer
 		/*----------------------------------------------------------------------*/
 		explicit ObserverPointerBase(ElementType* elementPointer) : _elementPointer(elementPointer),
-			_referenceController(new details::ReferenceController<ElementType, DefaultDeleter<ElementType>, Mode>(elementPointer)) {};
+			_referenceController(new ReferenceController<ElementType, DefaultDeleter<ElementType>, Mode>(elementPointer)) {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a observer pointer using a resource pointer and referencecontroller
 		/*----------------------------------------------------------------------*/
-		explicit ObserverPointerBase(ElementType* elementPointer, details::ReferenceControllerBase<Mode>* referenceController) : _elementPointer(elementPointer), _referenceController(referenceController) {};
+		explicit ObserverPointerBase(ElementType* elementPointer, ReferenceControllerBase<Mode>* referenceController) : _elementPointer(elementPointer), _referenceController(referenceController) {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new observer pointer using a changable resource pointer
 		/*----------------------------------------------------------------------*/
 		template<class OtherType>
-		explicit ObserverPointerBase(OtherType* elementPointer) : _elementPointer(elementPointer), _referenceController(new details::ReferenceController<ElementType, DefaultDeleter<ElementType>>(elementPointer)) {};
+		explicit ObserverPointerBase(OtherType* elementPointer) : _elementPointer(elementPointer), _referenceController(new ReferenceController<ElementType, DefaultDeleter<ElementType>>(elementPointer)) {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new observer pointer using a resource pointer and customize deleter
 		/*----------------------------------------------------------------------*/
 		template<class Deleter>
-		ObserverPointerBase(ElementType* elementPointer, Deleter deleter) : _elementPointer(elementPointer), _referenceController(new details::ReferenceController<ElementType, DefaultDeleter<ElementType>>(elementPointer)) {};
+		ObserverPointerBase(ElementType* elementPointer, Deleter deleter) : _elementPointer(elementPointer), _referenceController(new ReferenceController<ElementType, DefaultDeleter<ElementType>>(elementPointer)) {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new observer pointer using a changable resource pointer and customize deleter
 		/*----------------------------------------------------------------------*/
 		template<class OtherType, class Deleter>
-		ObserverPointerBase(OtherType* elementPointer, Deleter deleter) : _elementPointer(elementPointer), _referenceController(new details::ReferenceController<ElementType, Deleter>(elementPointer)) {};
+		ObserverPointerBase(OtherType* elementPointer, Deleter deleter) : _elementPointer(elementPointer), _referenceController(new ReferenceController<ElementType, Deleter>(elementPointer)) {};
 
 		/*----------------------------------------------------------------------
 		*  Copy constructs
@@ -201,7 +201,7 @@ namespace gu
 		*****************************************************************************/
 		ElementType* _elementPointer = nullptr;
 
-		details::ReferenceControllerBase<Mode>* _referenceController = nullptr;
+		ReferenceControllerBase<Mode>* _referenceController = nullptr;
 
 	private:
 		template<class OtherType, SharedPointerThreadMode>

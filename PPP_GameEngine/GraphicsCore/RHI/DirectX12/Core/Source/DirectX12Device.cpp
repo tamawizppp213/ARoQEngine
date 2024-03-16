@@ -156,7 +156,7 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	/*-------------------------------------------------------------------
 	-                   Set up descriptor count
 	---------------------------------------------------------------------*/
-	std::map<core::DescriptorHeapType, size_t> heapInfoList;
+	gu::SortedMap<core::DescriptorHeapType, size_t> heapInfoList;
 	heapInfoList[core::DescriptorHeapType::CBV]     = heapCount.CBVDescCount;
 	heapInfoList[core::DescriptorHeapType::SRV]     = heapCount.SRVDescCount;
 	heapInfoList[core::DescriptorHeapType::UAV]     = heapCount.UAVDescCount;
@@ -193,12 +193,12 @@ void RHIDevice::Destroy()
 	---------------------------------------------------------------------*/
 	for (auto& heap : _defaultHeap)
 	{
-		if (heap.second) 
+		if (heap.Value) 
 		{ 
-			heap.second.Reset(); 
+			heap.Value.Reset(); 
 		}
 	}
-	_defaultHeap.clear();
+	_defaultHeap.Clear();
 
 	if (_drawIndexedIndirectCommandSignature) { _drawIndexedIndirectCommandSignature.Reset(); }
 
@@ -271,19 +271,19 @@ gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const
 	return heapPtr;
 }
 
-gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const std::map<core::DescriptorHeapType, size_t>& heapInfo)
+gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::CreateDescriptorHeap(const gu::SortedMap<core::DescriptorHeapType, size_t>& heapInfo)
 {
 	auto heapPtr = gu::StaticPointerCast<core::RHIDescriptorHeap>(gu::MakeShared<directX12::RHIDescriptorHeap>(SharedFromThis()));
 	heapPtr->Resize(heapInfo);
 	return heapPtr;
 }
 
-gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth)
+gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const gu::Optional<core::Attachment>& depth)
 {
 	return gu::StaticPointerCast<core::RHIRenderPass>(gu::MakeShared<directX12::RHIRenderPass>(SharedFromThis(), colors, depth));
 }
 
-gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::Attachment& color, const std::optional<core::Attachment>& depth)
+gu::SharedPointer<core::RHIRenderPass>  RHIDevice::CreateRenderPass(const core::Attachment& color, const gu::Optional<core::Attachment>& depth)
 {
 	return gu::StaticPointerCast<core::RHIRenderPass>(gu::MakeShared<directX12::RHIRenderPass>(SharedFromThis(), color, depth));
 }
@@ -298,7 +298,7 @@ gu::SharedPointer<core::GPUComputePipelineState> RHIDevice::CreateComputePipelin
 	return gu::StaticPointerCast<core::GPUComputePipelineState>(gu::MakeShared<directX12::GPUComputePipelineState>(SharedFromThis(), resourceLayout));
 }
 
-gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const std::optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
+gu::SharedPointer<core::RHIResourceLayout> RHIDevice::CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const gu::Optional<core::Constant32Bits>& constant32Bits, const gu::tstring& name)
 {
 	return gu::StaticPointerCast<core::RHIResourceLayout>(gu::MakeShared<directX12::RHIResourceLayout>(SharedFromThis(), elements, samplers, constant32Bits, name));
 }

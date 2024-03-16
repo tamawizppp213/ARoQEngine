@@ -110,4 +110,9 @@ void ErrorLogger::PutDebugBreak()
 
 #endif
 }
+
+void ErrorLogger::ExecuteCrash()
+{
+	exit(1);
+}
 #pragma endregion Main Function

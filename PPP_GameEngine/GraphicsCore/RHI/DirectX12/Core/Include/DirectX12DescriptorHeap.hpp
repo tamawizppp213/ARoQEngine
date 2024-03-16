@@ -46,7 +46,7 @@ namespace rhi::directX12
 		void Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex) override;
 
 		/* @brief : Resize max view count size heap*/
-		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
+		void Resize(const gu::SortedMap<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
 		/* @brief : Resize max view count size heap*/
 		void Resize(const core::DescriptorHeapType type, const size_t viewCount) override;
 		
@@ -59,13 +59,13 @@ namespace rhi::directX12
 		/* @brief : Return directX12 cpu pointer handler*/
 		inline CPU_DESC_HANDLER GetCPUDescHandler(const core::DescriptorHeapType type, const std::uint32_t offsetIndex = 0) 
 		{ 
-			return _resourceAllocators.at(type).GetCPUDescHandler(offsetIndex); 
+			return _resourceAllocators.At(type).GetCPUDescHandler(offsetIndex); 
 		}
 
 		/* @brief : Return directX12 gpu virtual pointer handler*/
 		inline GPU_DESC_HANDLER GetGPUDescHandler(const core::DescriptorHeapType type, const std::uint32_t offsetIndex = 0)
 		{
-			return _resourceAllocators.at(type).GetGPUDescHandler(offsetIndex);
+			return _resourceAllocators.At(type).GetGPUDescHandler(offsetIndex);
 		}
 
 		/* brief : Return Descriptor Heap pointer (COM)*/
@@ -95,10 +95,10 @@ namespace rhi::directX12
 		*****************************************************************************/
 		DescriptorHeapComPtr _descriptorHeap = nullptr;
 		size_t               _descriptorByteSize = 0;
-		std::map<core::DescriptorHeapType, ResourceAllocator> _resourceAllocators;
+		gu::SortedMap<core::DescriptorHeapType, ResourceAllocator> _resourceAllocators;
 	
 	private:
-		bool CheckCorrectViewConbination(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos);
+		bool CheckCorrectViewConbination(const gu::SortedMap<core::DescriptorHeapType, MaxDescriptorSize>& heapInfos);
 	};
 }
 #endif

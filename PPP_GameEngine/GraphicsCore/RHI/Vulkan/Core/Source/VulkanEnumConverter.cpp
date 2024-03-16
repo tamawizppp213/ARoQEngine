@@ -366,7 +366,7 @@ EnumConverter::VulkanResourceUsage EnumConverter::Convert(const core::ResourceUs
 	auto result = VulkanResourceUsage(0, 0);
 	for (size_t i = 0; i < sourcePool.size(); ++i)
 	{
-		if (core::EnumHas(usage, sourcePool[i]))
+		if (gu::HasAnyFlags(usage, sourcePool[i]))
 		{
 			result.first |= targetPool[i].first;     // for buffer
 			result.second |= targetPool[i].second;   // for texture
@@ -431,7 +431,7 @@ VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorHeapType heap
 ---------------------------------------------------------------------*/
 VkImageAspectFlags  EnumConverter::Convert(const rhi::core::PixelFormat format, const rhi::core::ResourceUsage usage)
 {
-	if (core::EnumHas(usage, core::ResourceUsage::DepthStencil))
+	if (gu::HasAnyFlags(usage, core::ResourceUsage::DepthStencil))
 	{
 		if (core::PixelFormatSizeOf::IsDepthOnly(format)) { return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT; }
 		return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT | VkImageAspectFlagBits::VK_IMAGE_ASPECT_STENCIL_BIT;

@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <string>
 #include <memory>
 #include <Windows.h>
@@ -32,7 +32,7 @@ namespace gc::audio
 	*  @class     Audio Clip
 	*  @brief     Save audio data (current .wav only)
 	*****************************************************************************/
-	class AudioClip : public NonCopyable
+	class AudioClip : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

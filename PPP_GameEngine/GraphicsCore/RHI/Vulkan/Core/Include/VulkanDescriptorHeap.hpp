@@ -45,7 +45,7 @@ namespace rhi::vulkan
 		void Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex) override;
 
 		/* @brief : Allocate max view count size heap*/
-		void Resize(const std::map<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
+		void Resize(const gu::SortedMap<core::DescriptorHeapType, MaxDescriptorSize>& heapInfo) override;
 		
 		/* @brief : Allocate max view count size heap*/
 		void Resize(const core::DescriptorHeapType type, const size_t viewCount) override;

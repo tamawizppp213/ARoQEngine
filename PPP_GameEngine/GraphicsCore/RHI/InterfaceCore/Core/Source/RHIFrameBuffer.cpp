@@ -60,7 +60,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 	{
 		if (!_renderTargets[i]) { continue; }
 		if (_renderTargets[i]->GetDimension() != ResourceDimension::Dimension2D) { throw std::runtime_error("Wrong render target dimension"); }
-		if (!core::EnumHas(_renderTargets[i]->GetUsage(), core::ResourceUsage::RenderTarget))
+		if (!gu::HasAnyFlags(_renderTargets[i]->GetUsage(), core::ResourceUsage::RenderTarget))
 		{ 
 			throw std::runtime_error("Wrong resource usage"); 
 		}
@@ -69,7 +69,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 	if (_depthStencil)
 	{
 		if (_depthStencil->GetDimension() != ResourceDimension::Dimension2D ) { throw std::runtime_error("Wrong depthStencil dimension"); }
-		if (!core::EnumHas(_depthStencil->GetUsage(), ResourceUsage::DepthStencil)) { throw std::runtime_error("Wrong resource usage"); }
+		if (!gu::HasAnyFlags(_depthStencil->GetUsage(), ResourceUsage::DepthStencil)) { throw std::runtime_error("Wrong resource usage"); }
 	}
 }
 #pragma endregion Prepare

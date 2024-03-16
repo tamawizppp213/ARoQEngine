@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
@@ -33,7 +33,7 @@ namespace rhi::core
 	*  @struct    ASInstance
 	*  @brief     Bind Between TLAS and BLAS
 	*****************************************************************************/
-	class ASInstance : public NonCopyable
+	class ASInstance : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

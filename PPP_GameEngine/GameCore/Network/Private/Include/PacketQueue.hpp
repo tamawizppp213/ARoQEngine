@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "MemoryStream.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <queue>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -31,7 +31,7 @@ namespace gc
 	*  @class     PacketQueue
 	*  @brief     Packet buffer
 	*****************************************************************************/
-	class PacketQueue : public NonCopyable
+	class PacketQueue : public gu::NonCopyable
 	{
 		using DataSize = std::int32_t;
 		struct PacketInfo

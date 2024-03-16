@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -30,7 +30,7 @@ namespace rhi::core
 	*  @class     RHIMemory
 	*  @brief     Memory buffer
 	*****************************************************************************/
-	class RHIMemory : public NonCopyable
+	class RHIMemory : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Effect/Include/AudioFader.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <string>
 #include <memory>
 #include <wrl.h>
@@ -46,7 +46,7 @@ namespace gc::audio
 	*  @class     AudioSource
 	*  @brief     Play, Stop, Pause sound file.
 	*****************************************************************************/
-	class AudioSource : public NonCopyable
+	class AudioSource : public gu::NonCopyable
 	{
 	protected:
 		

@@ -48,15 +48,15 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const cor
 	-           Set resource desc
 	---------------------------------------------------------------------*/
 	const auto usage     = metaData.ResourceUsage;
-	const auto isDynamic = core::EnumHas(usage, core::ResourceUsage::AnyDynamic);
+	const auto isDynamic = gu::HasAnyFlags(usage, core::ResourceUsage::AnyDynamic);
 	Check(isDynamic ? _metaData.HeapType != core::MemoryHeap::Default : true);
 
 	const D3D12_RESOURCE_DESC resourceDesc = 
 	{
 		.Dimension          = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment          = metaData.Stride > 0 && 
-		                      (core::EnumHas(usage, StructuredBuffer) || 
-							  !core::EnumHas(usage, ByteAddress | DrawIndirect)) ? (UINT64)0: (UINT64)4,
+		                      (gu::HasAnyFlags(usage, StructuredBuffer) ||
+							  !gu::HasAnyFlags(usage, ByteAddress | DrawIndirect)) ? (UINT64)0: (UINT64)4,
 		.Width              = static_cast<UINT64>(GetTotalByteSize()),
 		.Height             = 1, // For 1D buffer
 		.DepthOrArraySize   = 1, // For 1D buffer

@@ -160,7 +160,7 @@ namespace gu
 	template<class ElementType>
 	void Memory::ForceExecuteDefaultConstructors(void* address, const uint64 count)
 	{
-		if constexpr (HAS_TRIVIAL_CONSTRUCTOR<ElementType>)
+		if constexpr (type::HAS_TRIVIAL_CONSTRUCTOR<ElementType>)
 		{
 			Memory::Set(address, 0, sizeof(ElementType) * count)
 		}
@@ -191,7 +191,7 @@ namespace gu
 	void Memory::ForceExecuteDestructors(ElementType* element, const uint64 count)
 	{
 		// 早期リターンを行うとコンパイラが制御が渡らないコードですと警告が出る場合があるため, 早期リターンを行わない
-		if constexpr (!HAS_TRIVIAL_DESTRUCTOR<ElementType>)
+		if constexpr (!type::HAS_TRIVIAL_DESTRUCTOR<ElementType>)
 		{
 			// ここでは, ElementTypeというメンバがあった場合にコンパイルをしてくれないという記述がUE5にあったため.
 			using DestructItemsElementType = ElementType;
@@ -220,7 +220,7 @@ namespace gu
 	template<class ElementType>
 	void Memory::ForceExecuteCopyAssignOperators(ElementType* destination, const ElementType* source, const uint64 count)
 	{
-		if constexpr (HAS_TRIVIAL_ASSIGN_OPERATOR<ElementType>)
+		if constexpr (type::HAS_TRIVIAL_ASSIGN_OPERATOR<ElementType>)
 		{
 			Memory::Copy(destination, source, sizeof(ElementType) * count)
 		}
@@ -252,7 +252,7 @@ namespace gu
 	template<class ElementType>
 	void Memory::ForceExecuteCopyConstructors(ElementType* destination, const ElementType* source, const uint64 count)
 	{
-		if constexpr (HAS_TRIVIAL_COPY_CONSTRUCTOR<ElementType>)
+		if constexpr (type::HAS_TRIVIAL_COPY_CONSTRUCTOR<ElementType>)
 		{
 			Memory::Copy(destination, source, sizeof(ElementType) * count);
 		}
@@ -275,7 +275,7 @@ namespace gu
 	template<class ElementType>
 	static void Memory::ForceExecuteMoveConstructors(ElementType* destination, const ElementType* source, const uint64 count)
 	{
-		if constexpr (HAS_TRIVIAL_COPY_CONSTRUCTOR<ElementType>) // ムーブの判定がないため
+		if constexpr (type::HAS_TRIVIAL_COPY_CONSTRUCTOR<ElementType>) // ムーブの判定がないため
 		{
 			Memory::Move(destination, move, sizeof(ElementType) * count)
 		}
@@ -297,7 +297,7 @@ namespace gu
 	template<class ElementType>
 	static void Memory::ForceExecuteMoveAssignOperators(ElementType* destination, const ElementType* source, const uint64 count)
 	{
-		if constexpr (HAS_TRIVIAL_ASSIGN_OPERATOR<ElementType>) // ムーブの判定がないため
+		if constexpr (type::HAS_TRIVIAL_ASSIGN_OPERATOR<ElementType>) // ムーブの判定がないため
 		{
 			Memory::Move(destination, move, sizeof(ElementType) * count)
 		}

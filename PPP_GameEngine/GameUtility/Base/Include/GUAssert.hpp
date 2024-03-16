@@ -2,6 +2,9 @@
 ///             @file   Assert.hpp
 ///             @brief  エラーを表示するために使用するクラス. 参考はUnreal engineを使用
 ///                     Check, Verify, Ensureがあります. 
+///                     Check  : Debugのみ起動します. 式がfalseになったら処理を完全に止めます, 続行すると強制終了.
+///                     Verify : DebugだろうがReleaseだろうが式がfalseになったら実行を停止します.
+///                     Ensure : Debugのときはブレークを発生させて実行を中断するが, そのまま継続してプログラムを実行し続けることが出来ます.
 ///                     Windowsのみ現状止まります.
 ///             @author Toide Yutaro
 ///             @date   2023_10_25
@@ -19,7 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                         　　　　　Class
 //////////////////////////////////////////////////////////////////////////////////
 
 namespace gu
@@ -42,8 +45,11 @@ namespace gu
 		/* @brief : 致命的でないバグに使用します. ブレークポイント発生後, 処理を止めません.*/
 		static bool EnsureFailed(const char* expression, const char* fileName, const int lineNumber, const char* format);
 		
-		// デバッグ用にブレークポイントを追加します
+		// @brief : デバッグ用にブレークポイントを追加します
 		static void PutDebugBreak();
+
+		// @brief : 即時終了する場合に使います
+		static void ExecuteCrash();
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -74,6 +80,7 @@ namespace gu
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, nullptr)) \
 		{                 \
 			gu::ErrorLogger::PutDebugBreak();\
+            gu::ErrorLogger::ExecuteCrash();\
 		}\
     }
 #endif
@@ -85,6 +92,7 @@ namespace gu
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, format)) \
 		{                 \
 			gu::ErrorLogger::PutDebugBreak(); \
+            gu::ErrorLogger::ExecuteCrash();\
 		}\
     }
 #endif

@@ -13,7 +13,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ namespace rhi::core
                   set signal value (t=1)     | wait (t=1)-> execute gpu commands
 				  --------------------------------------> t
 	*****************************************************************************/
-	class RHICommandQueue : public NonCopyable
+	class RHICommandQueue : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

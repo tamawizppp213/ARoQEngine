@@ -233,6 +233,18 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUCommandLine.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUEnumClassFlags.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUOptional.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUTypeCast.hpp">
       <SubType>
       </SubType>
@@ -330,7 +342,23 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GURedBlackTree.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUSortedMap.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUStack.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUStaticArray.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUStaticHashTable.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -351,6 +379,14 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Container\Private\Iterator\Include\GUReverseIterator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Private\Tree\Include\RedBlackTreeNode.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUParse.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -425,7 +461,7 @@
     <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveMesh.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIImage.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIRenderer.hpp" />
-    <ClInclude Include="GameUtility\Base\Include\ClassUtility.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUClassUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GameTimer.hpp" />
     <ClInclude Include="GameUtility\Base\Include\HLSLUtility.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUSmartPointer.hpp" />
@@ -712,6 +748,10 @@
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIFont.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UISlider.cpp" />
     <ClCompile Include="GameCore\Rendering\UI\Public\Source\UIText.cpp" />
+    <ClCompile Include="GameUtility\Base\Source\GUCommandLine.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUDateTime.cpp">
       <SubType>
       </SubType>
@@ -722,6 +762,10 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUUUID.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Base\Source\GUParse.cpp">
       <SubType>
       </SubType>
     </ClCompile>

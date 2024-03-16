@@ -531,14 +531,14 @@ void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDes
 	---------------------------------------------------------------------*/
 	D3D12_CLEAR_VALUE clearValue = {};
 	clearValue.Format = resourceDesc.Format;
-	if (core::EnumHas(_metaData.ResourceUsage, core::ResourceUsage::RenderTarget))
+	if (gu::HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::RenderTarget))
 	{
 		clearValue.Color[0] = _metaData.ClearColor.Color[0];
 		clearValue.Color[1] = _metaData.ClearColor.Color[1];
 		clearValue.Color[2] = _metaData.ClearColor.Color[2];
 		clearValue.Color[3] = _metaData.ClearColor.Color[3];
 	}
-	else if(core::EnumHas(_metaData.ResourceUsage, core::ResourceUsage::DepthStencil))
+	else if(gu::HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::DepthStencil))
 	{
 		clearValue.DepthStencil.Depth   = _metaData.ClearColor.Depth;
 		clearValue.DepthStencil.Stencil = _metaData.ClearColor.Stencil;
@@ -546,8 +546,8 @@ void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDes
 
 	ThrowIfFailed(dxDevice->CreateCommittedResource(
 		&heapProperty, D3D12_HEAP_FLAG_NONE, &resourceDesc, EnumConverter::Convert(_metaData.State),
-		core::EnumHas(_metaData.ResourceUsage, core::ResourceUsage::RenderTarget) || 
-		core::EnumHas(_metaData.ResourceUsage, core::ResourceUsage::DepthStencil) ? &clearValue : nullptr,
+		gu::HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::RenderTarget) ||
+		gu::HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::DepthStencil) ? &clearValue : nullptr,
 		IID_PPV_ARGS(_resource.GetAddressOf())));
 
 	/*-------------------------------------------------------------------

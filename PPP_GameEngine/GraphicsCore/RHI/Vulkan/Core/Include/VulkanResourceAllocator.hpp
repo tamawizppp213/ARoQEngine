@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include <vulkan/vulkan.h>
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include <vector>
 #include <stdexcept>
 #include <cassert>
@@ -35,7 +35,7 @@ namespace rhi::vulkan
 	*  @class     ResourceAllocator
 	*  @brief     Resource view index management
 	*****************************************************************************/
-	class ResourceAllocator : public NonCopyable
+	class ResourceAllocator : public gu::NonCopyable
 	{
 		using DescriptorID = std::uint32_t;
 	public:

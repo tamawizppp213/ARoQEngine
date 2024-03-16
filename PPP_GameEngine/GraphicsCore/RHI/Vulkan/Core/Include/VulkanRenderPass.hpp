@@ -51,9 +51,9 @@ namespace rhi::vulkan
 
 		~RHIRenderPass();
 		
-		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::Attachment>& colors, const std::optional<core::Attachment>& depth = std::nullopt);
+		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::Attachment>& colors, const gu::Optional<core::Attachment>& depth = {});
 		
-		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const core::Attachment& color, const std::optional<core::Attachment>& depth = std::nullopt);
+		explicit RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, const core::Attachment& color, const gu::Optional<core::Attachment>& depth = {});
 	
 	protected:
 		/****************************************************************************

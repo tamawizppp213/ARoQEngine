@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUUUID.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -28,7 +28,7 @@ namespace platform::core
 	*  @class     CorePlatformCommand
 	*  @brief     Windows.hで記述されているような関数をまとめたクラス
 	*****************************************************************************/
-	class PlatformCommand : public NonCopyable
+	class PlatformCommand : public gu::NonCopyable
 	{
 	public:
 		/****************************************************************************

@@ -14,7 +14,7 @@
 #include "EngineProfiles.hpp"
 #include "EngineThreadManager.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
-#include "GameUtility/Base/Include/ClassUtility.hpp"
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ namespace gc
 *  @class     PPPEngine
 *  @brief     Še•ª–ì‚ÌEngine‚ð‚Ü‚Æ‚ß‚½ƒNƒ‰ƒX
 *****************************************************************************/
-class PPPEngine : public NonCopyable
+class PPPEngine : public gu::NonCopyable
 {
 protected:
 	using PlatformApplicationPtr    = gu::SharedPointer<platform::core::PlatformApplication>;

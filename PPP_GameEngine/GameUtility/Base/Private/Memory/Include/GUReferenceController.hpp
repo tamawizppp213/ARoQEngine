@@ -20,61 +20,58 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gu
+namespace gu::details::smart_pointer
 {
-	namespace details
+	/****************************************************************************
+	*				  			 ReferenceController
+	*************************************************************************//**
+	*  @class     ReferenceController
+	*  @brief     参照カウントを調整し, Resourceも破棄できるクラスです
+	*****************************************************************************/
+	template<class ElementType, class Deleter = DefaultDeleter<ElementType>, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
+	class ReferenceController : public ReferenceControllerBase<Mode>
 	{
+	public:
 		/****************************************************************************
-		*				  			 ReferenceController
-		*************************************************************************//**
-		*  @class     ReferenceController
-		*  @brief     参照カウントを調整し, Resourceも破棄できるクラスです
+		**                Public Function
 		*****************************************************************************/
-		template<class ElementType, class Deleter = DefaultDeleter<ElementType>, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
-		class ReferenceController : public ReferenceControllerBase<Mode>
+
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		ReferenceController() = default;
+
+		explicit ReferenceController(ElementType* element)
+			: _element(element), _deleter(Deleter()){ };
+
+		ReferenceController(ElementType* element, Deleter&& deleter) 
+			: _element(element), _deleter(deleter){ };
+
+		~ReferenceController() = default;
+
+	protected:
+		/****************************************************************************
+		**                Protected Function
+		*****************************************************************************/
+		__forceinline void Dispose() override
 		{
-		public:
-			/****************************************************************************
-			**                Public Function
-			*****************************************************************************/
+			_deleter(_element);
+		}
 
-			/****************************************************************************
-			**                Public Member Variables
-			*****************************************************************************/
+		__forceinline void DeleteThis() override
+		{
+			delete this;
+		}
 
-			/****************************************************************************
-			**                Constructor and Destructor
-			*****************************************************************************/
-			ReferenceController() = default;
-
-			explicit ReferenceController(ElementType* element)
-				: _element(element), _deleter(Deleter()){ };
-
-			ReferenceController(ElementType* element, Deleter&& deleter) 
-				: _element(element), _deleter(deleter){ };
-
-			~ReferenceController() = default;
-
-		protected:
-			/****************************************************************************
-			**                Protected Function
-			*****************************************************************************/
-			__forceinline void Dispose() override
-			{
-				_deleter(_element);
-			}
-
-			__forceinline void DeleteThis() override
-			{
-				delete this;
-			}
-
-			/****************************************************************************
-			**                Protected Member Variables
-			*****************************************************************************/
-			ElementType* _element = nullptr;
-			Deleter _deleter;
-		};
-	}
+		/****************************************************************************
+		**                Protected Member Variables
+		*****************************************************************************/
+		ElementType* _element = nullptr;
+		Deleter _deleter;
+	};
 }
 #endif
