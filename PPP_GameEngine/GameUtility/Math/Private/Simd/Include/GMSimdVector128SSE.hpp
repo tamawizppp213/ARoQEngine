@@ -4406,7 +4406,7 @@ namespace gu::simd::sse
 	}
 
 	/****************************************************************************
-	*                       Round
+	*                       Truncate
 	*************************************************************************//**
 	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Truncate(ConstVector128 vector) noexcept
 	*
