@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUStaticHashTable.hpp
+///             @file   GUClosedHashTable.hpp
 ///             @brief  別のデータ構造へのインデックス付けに使用される、
 /// 　　　　　　　　　　　　　静的サイズのハッシュテーブルで, Mapよりも高速です. 
 ///                     参考資料 : http://www.hi-ho.ne.jp/a_ogawa/document/pg_dynahash.pdf 
@@ -7,8 +7,8 @@
 ///             @date   2024/02/19 0:20:14
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GU_STATIC_HASH_TABLE_HPP
-#define GU_STATIC_HASH_TABLE_HPP
+#ifndef GU_CLOSED_HASH_TABLE_HPP
+#define GU_CLOSED_HASH_TABLE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -25,7 +25,7 @@
 namespace gu
 {
 	/****************************************************************************
-	*				  			   GUStaticHashTable
+	*				  			   GUClosedHashTable
 	*************************************************************************//**
 	*  @class     GUStaticHashTable
 	*  @brief     別のデータ構造へのインデックス付けに使用される静的サイズのハッシュテーブルです
@@ -34,7 +34,7 @@ namespace gu
 	*             key : ハッシュ値, id : ハッシュ値の元となったID
 	*****************************************************************************/
 	template<uint16 HashTableSize, uint16 IndexSize>
-	class StaticHashTable
+	class ClosedHashTable
 	{
 	public:
 		/****************************************************************************
@@ -68,7 +68,7 @@ namespace gu
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		StaticHashTable();
+		ClosedHashTable();
 
 	protected:
 		/****************************************************************************
@@ -88,7 +88,7 @@ namespace gu
 
 #pragma region Implement
 	template<uint16 HashTableSize, uint16 IndexSize>
-	__forceinline StaticHashTable<HashTableSize, IndexSize>::StaticHashTable()
+	__forceinline ClosedHashTable<HashTableSize, IndexSize>::ClosedHashTable()
 	{
 		static_assert((HashTableSize & (HashTableSize - 1)) == 0, "Hash table size must be power of 2");
 		static_assert(IndexSize - 1 < 0xffff, "Index 0xffff is reserved for the initialization");
