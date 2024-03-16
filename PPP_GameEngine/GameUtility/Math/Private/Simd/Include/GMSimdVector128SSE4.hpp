@@ -28,7 +28,7 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gu::simd::sse4
+namespace gm::simd::sse4
 {
 	/****************************************************************************
 	*				  			   GVector128Utility
@@ -36,7 +36,7 @@ namespace gu::simd::sse4
 	*  @class     Vector128Utility
 	*  @brief     SSE4‚ğg‚Á‚½Simd‰‰Z
 	*****************************************************************************/
-	class Vector128Utility : public gu::simd::sse3::Vector128Utility
+	class Vector128Utility : public gm::simd::sse3::Vector128Utility
 	{ 
 	public:
 		/****************************************************************************
@@ -89,6 +89,7 @@ namespace gu::simd::sse4
 		*  @brief : Ø‚èã‚° ”’¼üã‚Å³‚Ì•ûŒü‚É‚ ‚éŸ‚Ì®”‚ÉŠÛ‚ß‚é
 		/*----------------------------------------------------------------------*/
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION Ceiling(ConstVector128 vector) noexcept;
+
 	#pragma endregion Math
 		/****************************************************************************
 		**                Public Member Variables

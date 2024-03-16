@@ -24,7 +24,7 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gu::simd::non
+namespace gm::simd::non
 {
 	struct __vector128
 	{
@@ -65,8 +65,8 @@ namespace gu::simd::non
 		inline operator Vector128()    const noexcept { return V; }
 	};
 
-	#define IS_NAN(x)  ((*(const uint32*)&(x) & 0x7F800000) == 0x7F800000 && (*(const uint32*)&(x) & 0x7FFFFF) != 0)
-	#define IS_INF(x)  ((*(const uint32*)&(x) & 0x7FFFFFFF) == 0x7F800000)
+	#define IS_NAN(x)  ((*(const gu::uint32*)&(x) & 0x7F800000) == 0x7F800000 && (*(const gu::uint32*)&(x) & 0x7FFFFF) != 0)
+	#define IS_INF(x)  ((*(const gu::uint32*)&(x) & 0x7FFFFFFF) == 0x7F800000)
 
 	constexpr float GM_PI_FLOAT        = 3.141592654f;
 	constexpr float GM_2PI_FLOAT       = 6.283185307f;
@@ -919,26 +919,26 @@ namespace gu::simd::non
 		Check((xIndex < 7) && (yIndex < 7) && (zIndex < 7) && (wIndex < 7));
 
 		const gu::uint32* pointer[2];
-		pointer[0] = reinterpret_cast<const uint32*>(&a);
-		pointer[1] = reinterpret_cast<const uint32*>(&b);
+		pointer[0] = reinterpret_cast<const gu::uint32*>(&a);
+		pointer[1] = reinterpret_cast<const gu::uint32* > (&b);
 
 		Vector128 result;
-		auto pWork = reinterpret_cast<uint32*>(&result);
+		auto pWork = reinterpret_cast<gu::uint32*>(&result);
 
-		const uint32 i0 = xIndex & 3;
-		const uint32 vi0 = xIndex >> 2;
+		const gu::uint32 i0 = xIndex & 3;
+		const gu::uint32 vi0 = xIndex >> 2;
 		pWork[0] = pointer[vi0][i0];
 
-		const uint32 i1  = yIndex & 3;
-		const uint32 vi1 = yIndex >> 2;
+		const gu::uint32 i1  = yIndex & 3;
+		const gu::uint32 vi1 = yIndex >> 2;
 		pWork[1] = pointer[vi1][i1];
 
-		const uint32 i2  = zIndex & 3;
-		const uint32 vi2 = zIndex >> 2;
+		const gu::uint32 i2  = zIndex & 3;
+		const gu::uint32 vi2 = zIndex >> 2;
 		pWork[2] = pointer[vi2][i2];
 
-		const uint32 i3  = wIndex & 3;
-		const uint32 vi3 = wIndex >> 2;
+		const gu::uint32 i3  = wIndex & 3;
+		const gu::uint32 vi3 = wIndex >> 2;
 		pWork[3] = pointer[vi3][i3];
 
 		return result;
@@ -3538,7 +3538,7 @@ namespace gu::simd::non
 	{
 		Vector128 result = {};
 
-		for (uint32 i = 0; i < 4; i++)
+		for (gu::uint32 i = 0; i < 4; i++)
 		{
 			if (IS_NAN(vector.F32[i]))
 			{
@@ -3546,7 +3546,7 @@ namespace gu::simd::non
 			}
 			else if (fabsf(vector.F32[i]) < 8388608.0f)
 			{
-				result.F32[i] = static_cast<float>(static_cast<int32>(vector.F32[i]));
+				result.F32[i] = static_cast<float>(static_cast<gu::int32>(vector.F32[i]));
 			}
 			else
 			{

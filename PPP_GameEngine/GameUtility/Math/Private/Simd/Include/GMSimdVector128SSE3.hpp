@@ -24,7 +24,7 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gu::simd::sse3
+namespace gm::simd::sse3
 {
 	/****************************************************************************
 	*				  			   GMSimdVector128SSE3
@@ -32,7 +32,7 @@ namespace gu::simd::sse3
 	*  @class     GMSimdVector128SSE3
 	*  @brief     SSE3‚Ìƒo[ƒWƒ‡ƒ“‚É‚æ‚éSimd‰‰Z
 	*****************************************************************************/
-	class Vector128Utility : public gu::simd::sse2::Vector128Utility
+	class Vector128Utility : public gm::simd::sse2::Vector128Utility
 	{
 	public:
 		/****************************************************************************

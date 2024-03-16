@@ -29,7 +29,7 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gu::simd::sse
+namespace gm::simd::sse
 {
 	/*----------------------------------------------------------------------
 	*         128 bit‚Ì®”Œ^‚àfloatŒ^‚àŠi”[‰Â”\‚ÈƒxƒNƒgƒ‹‚ğì¬‚·‚é
@@ -743,7 +743,7 @@ namespace gu::simd::sse
 	*****************************************************************************/
 	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::SetInt(const gu::uint32 x, const gu::uint32 y, const gu::uint32 z, const gu::uint32 w) noexcept
 	{
-		__m128i intVector = _mm_set_epi32(static_cast<int32>(w), static_cast<int32>(z), static_cast<int32>(y), static_cast<int32>(x));
+		__m128i intVector = _mm_set_epi32(static_cast<gu::int32>(w), static_cast<gu::int32>(z), static_cast<gu::int32>(y), static_cast<gu::int32>(x));
 		return _mm_castsi128_ps(intVector);
 	}
 
@@ -1016,26 +1016,26 @@ namespace gu::simd::sse
 		const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept
 	{
 		const gu::uint32* pointer[2] = {};
-		pointer[0] = reinterpret_cast<const uint32*>(&a);
-		pointer[1] = reinterpret_cast<const uint32*>(&b);
+		pointer[0] = reinterpret_cast<const gu::uint32*>(&a);
+		pointer[1] = reinterpret_cast<const gu::uint32*>(&b);
 
 		Vector128 result = {};
-		auto pWork = reinterpret_cast<uint32*>(&result);
+		auto pWork = reinterpret_cast<gu::uint32*>(&result);
 
-		const uint32 i0 = xIndex & 3;
-		const uint32 vi0 = xIndex >> 2;
+		const gu::uint32 i0 = xIndex & 3;
+		const gu::uint32 vi0 = xIndex >> 2;
 		pWork[0] = pointer[vi0][i0];
 
-		const uint32 i1 = yIndex & 3;
-		const uint32 vi1 = yIndex >> 2;
+		const gu::uint32 i1 = yIndex & 3;
+		const gu::uint32 vi1 = yIndex >> 2;
 		pWork[1] = pointer[vi1][i1];
 
-		const uint32 i2 = zIndex & 3;
-		const uint32 vi2 = zIndex >> 2;
+		const gu::uint32 i2 = zIndex & 3;
+		const gu::uint32 vi2 = zIndex >> 2;
 		pWork[2] = pointer[vi2][i2];
 
-		const uint32 i3 = wIndex & 3;
-		const uint32 vi3 = wIndex >> 2;
+		const gu::uint32 i3 = wIndex & 3;
+		const gu::uint32 vi3 = wIndex >> 2;
 		pWork[3] = pointer[vi3][i3];
 
 		return result;
