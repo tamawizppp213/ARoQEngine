@@ -341,38 +341,42 @@ namespace gu::simd::sse
 		/*----------------------------------------------------------------------
 		*  @brief : 一定範囲内で値が等しいかを調べる (left - epsilon <= right <= left + epsilon)
 		/*----------------------------------------------------------------------*/
-		__forceinline static bool      SIMD_CALL_CONVENTION NearEqualVector2(ConstVector128 left, ConstVector128 right, ConstVector128 epsilon) noexcept;
-		__forceinline static bool      SIMD_CALL_CONVENTION NearEqualVector3(ConstVector128 left, ConstVector128 right, ConstVector128 epsilon) noexcept;
-		__forceinline static bool      SIMD_CALL_CONVENTION NearEqualVector4(ConstVector128 left, ConstVector128 right, ConstVector128 epsilon) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION NearEqualVector2   (ConstVector128 left, ConstVector128 right, ConstVector128 epsilon) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION NearEqualVector3   (ConstVector128 left, ConstVector128 right, ConstVector128 epsilon) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION NearEqualVector4   (ConstVector128 left, ConstVector128 right, ConstVector128 epsilon) noexcept;
 		__forceinline static Vector128 SIMD_CALL_CONVENTION NearEqualVectorEach(ConstVector128 left, ConstVector128 right, ConstVector128 epsilon) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 左の方が全ての要素において大きいかを調べます (left > right)
 		/*----------------------------------------------------------------------*/
-		__forceinline static bool SIMD_CALL_CONVENTION GreaterVector2(ConstVector128 left, ConstVector128 right) noexcept;
-		__forceinline static bool SIMD_CALL_CONVENTION GreaterVector3(ConstVector128 left, ConstVector128 right) noexcept;
-		__forceinline static bool SIMD_CALL_CONVENTION GreaterVector4(ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION GreaterVector2   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION GreaterVector3   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION GreaterVector4   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static Vector128 SIMD_CALL_CONVENTION GreaterVectorEach(ConstVector128 left, ConstVector128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 左の方が全ての要素において大きいor等しいかを調べます (left >= right)
 		/*----------------------------------------------------------------------*/
-		__forceinline static bool SIMD_CALL_CONVENTION GreaterOrEqualVector2(ConstVector128 left, ConstVector128 right) noexcept;
-		__forceinline static bool SIMD_CALL_CONVENTION GreaterOrEqualVector3(ConstVector128 left, ConstVector128 right) noexcept;
-		__forceinline static bool SIMD_CALL_CONVENTION GreaterOrEqualVector4(ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION GreaterOrEqualVector2   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION GreaterOrEqualVector3   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION GreaterOrEqualVector4   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static Vector128 SIMD_CALL_CONVENTION GreaterOrEqualVectorEach(ConstVector128 left, ConstVector128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 左の方が全ての要素において小さいかを調べます (left < right)
 		/*----------------------------------------------------------------------*/
-		__forceinline static bool SIMD_CALL_CONVENTION LessVector2(ConstVector128 left, ConstVector128 right) noexcept;
-		__forceinline static bool SIMD_CALL_CONVENTION LessVector3(ConstVector128 left, ConstVector128 right) noexcept;
-		__forceinline static bool SIMD_CALL_CONVENTION LessVector4(ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION LessVector2   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION LessVector3   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION LessVector4   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static Vector128 SIMD_CALL_CONVENTION LessVectorEach(ConstVector128 left, ConstVector128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 左の方が全ての要素において小さいor等しいかを調べます (left <= right)
 		/*----------------------------------------------------------------------*/
-		__forceinline static bool SIMD_CALL_CONVENTION LessOrEqualVector2(ConstVector128 left, ConstVector128 right) noexcept;
-		__forceinline static bool SIMD_CALL_CONVENTION LessOrEqualVector3(ConstVector128 left, ConstVector128 right) noexcept;
-		__forceinline static bool SIMD_CALL_CONVENTION LessOrEqualVector4(ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION LessOrEqualVector2   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION LessOrEqualVector3   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static bool      SIMD_CALL_CONVENTION LessOrEqualVector4   (ConstVector128 left, ConstVector128 right) noexcept;
+		__forceinline static Vector128 SIMD_CALL_CONVENTION LessOrEqualVectorEach(ConstVector128 left, ConstVector128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内にあるかどうか -bounds <= vector <= +bounds
@@ -1761,6 +1765,24 @@ namespace gu::simd::sse
 	}
 
 	/****************************************************************************
+	*                       GreaterVectorEach
+	*************************************************************************//**
+	*  @fn        inline bool SIMD_CALL_CONVENTION Vector128Utility::GreaterVector4(ConstVector128 left, ConstVector128 right) noexcept
+	*
+	*  @brief     Vector4型において左の方が全ての要素において大きいかを調べます (left > right)
+	*
+	*  @param[in] ConstVector128 left
+	*  @param[in] ConstVector128 right
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::GreaterVectorEach(ConstVector128 left, ConstVector128 right) noexcept
+	{
+		return _mm_cmpgt_ps(left, right);
+	}
+
+
+	/****************************************************************************
 	*                       GreaterOrEqualVector2
 	*************************************************************************//**
 	*  @fn        inline bool SIMD_CALL_CONVENTION Vector128Utility::GreaterOrEqualVector2(ConstVector128 left, ConstVector128 right) noexcept
@@ -1818,6 +1840,23 @@ namespace gu::simd::sse
 		Vector128 equalMaskVector = _mm_cmpge_ps(left, right); // 全て大きいor等しいなら{1, 1, 1, 1}, wだけ小さいなら{0, 1, 1, 1}
 
 		return _mm_movemask_ps(equalMaskVector) == 0b1111;
+	}
+
+	/****************************************************************************
+	*                       GreaterOrEqualVectorEach
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::GreaterVectorEach(ConstVector128 left, ConstVector128 right) noexcept
+	*
+	*  @brief     Vector4型において左の方が全ての要素において大きいor等しいかを調べます (left >= right)
+	*
+	*  @param[in] ConstVector128 left
+	*  @param[in] ConstVector128 right
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::GreaterVectorEach(ConstVector128 left, ConstVector128 right) noexcept
+	{
+		return _mm_cmpge_ps(left, right);
 	}
 
 	/****************************************************************************
@@ -1882,6 +1921,23 @@ namespace gu::simd::sse
 	}
 
 	/****************************************************************************
+	*                       LessVectorEach
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LessVectorEach(ConstVector128 left, ConstVector128 right) noexcept
+	*
+	*  @brief     Vector4型において左の方が全ての要素において小さいかを調べます (left < right)
+	*
+	*  @param[in] ConstVector128 left
+	*  @param[in] ConstVector128 right
+	*
+	*  @return 　　bool
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LessVectorEach(ConstVector128 left, ConstVector128 right) noexcept
+	{
+		return _mm_cmpge_ps(left, right);
+	}
+
+	/****************************************************************************
 	*                       LessOrEqualVector2
 	*************************************************************************//**
 	*  @fn        inline bool SIMD_CALL_CONVENTION Vector128Utility::LessOrEqualVector2(ConstVector128 left, ConstVector128 right) noexcept
@@ -1939,6 +1995,23 @@ namespace gu::simd::sse
 		Vector128 equalMaskVector = _mm_cmple_ps(left, right); // 全て大きいor等しいなら{1, 1, 1, 1}, wだけ小さいなら{0, 1, 1, 1}
 
 		return _mm_movemask_ps(equalMaskVector) == 0b1111;
+	}
+
+	/****************************************************************************
+	*                       LessVectorEach
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LessOrEqualVectorEach(ConstVector128 left, ConstVector128 right) noexcept
+	*
+	*  @brief     Vector4型において左の方が全ての要素において小さいor等しいかを調べます (left <= right)
+	*
+	*  @param[in] ConstVector128 left
+	*  @param[in] ConstVector128 right
+	*
+	*  @return 　　bool
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LessOrEqualVectorEach(ConstVector128 left, ConstVector128 right) noexcept
+	{
+		return _mm_cmple_ps(left, right);
 	}
 
 	/****************************************************************************
