@@ -206,61 +206,59 @@ namespace gm::simd
 		#define PLATFORM_CPU_INSTRUCTION_NEON 0
 	#endif
 #endif // PLATFORM_SIMD
+
+/*----------------------------------------------------------------------
+*             Simd関数のうちどれを呼び出すか
+*----------------------------------------------------------------------*/
+#ifndef PLATFORM_CPU_INSTRUCTION_NOT_USE
+	#if PLATFORM_CPU_INSTRUCTION_NEON
+		#define SIMD_NAME_SPACE gm::simd::neon
+		#define SIMD_NAME Neon
+	#elif PLATFORM_CPU_INSTRUCTION_AVX || PLATFORM_CPU_INSTRUCTION_AVX2
+		#define SIMD_NAME_SPACE gm::simd::avx
+		#define SIMD_STATIC_FUNCTION_NAME(className, functionName) gm::simd::avx::##className::##functionName
+		#define SIMD_NAME AVX
+	#elif PLATFORM_CPU_INSTRUCTION_SSE4_2 || PLATFORM_CPU_INSTRUCTION_SSE4_1
+		#define SIMD_NAME_SPACE gm::simd::sse4
+		#define SIMD_NAME SSE4
+	#elif PLATFORM_CPU_INSTRUCTION_SSE3
+		#define SIMD_NAME_SPACE gm::simd::sse3
+		#define SIMD_NAME SSE3
+	#elif PLATFORM_CPU_INSTRUCTION_SSE2
+		#define SIMD_NAME_SPACE gm::simd::sse2
+		#define SIMD_NAME SSE2
+	#elif PLATFORM_CPU_INSTRUCTION_SSE
+		#define SIMD_NAME_SPACE gm::simd::sse
+		#define SIMD_NAME SSE
+	#endif
+#else
+	#define SIMD_NAME_SPACE gm::simd::non
+	#define SIMD_NAME Non
+#endif  PLATFORM_CPU_INSTRUCTION_NOT_USE
+
+/*----------------------------------------------------------------------
+*             文字列を連結
+*----------------------------------------------------------------------*/
+#ifndef PREPROCESSOR_TO_STRING_INNER
+	#define PREPROCESSOR_TO_STRING_INNER(str) #str
+#endif  PREPROCESSOR_TO_STRING_INNER
+
+#ifndef PREPROCESSOR_TO_STRING
+	#define PREPROCESSOR_TO_STRING(str) PREPROCESSOR_TO_STRING_INNER(str)
+#endif PREPROCESSOR_TO_STRING
+
+#ifndef PREPROCESSOR_JOIN_INNER
+	#define PREPROCESSOR_JOIN_INNER(left, right) left##right
+#endif PREPROCESSOR_JOIN_INNER
+
+#ifndef PREPROCESSOR_JOIN
+	#define PREPROCESSOR_JOIN(left, right) PREPROCESSOR_JOIN_INNER(left, right)
+#endif PREPROCESSOR_JOIN
+
+// PreDirectory/commonHeaderName + SIMD_NAME
+#define SIMD_COMPILED_HEADER(preDirectory, commonHeaderName) PREPROCESSOR_TO_STRING(preDirectory/PREPROCESSOR_JOIN(commonHeaderName, SIMD_NAME).hpp)
 #pragma endregion SIMD
 
-	/*----------------------------------------------------------------------
-	*             Intrinsincに関する内容をSIMD命令の種類にしたがって設定
-	*----------------------------------------------------------------------*/
-
-//#ifndef PLATFORM_CPU_INSTRUCTION_NOT_USE
-//	#ifdef _MSC_VER
-//		#include <intrin.h>
-//	#endif
-//
-//	#if (defined(__clang__) || defined(__GNUC__)) && (__x86_64__ || __i386__)
-//		#include <cpuid.h>
-//	#endif
-//	
-//	// SSEのインクルード
-//	#if PLATFORM_CPU_INSTRUCTION_SSE
-//		#include <xmmintrin.h> // SSE
-//
-//	// SSE2のインクルード
-//	#if PLATFORM_CPU_INSTRUCTION_SSE2
-//		#include <emmintrin.h> // SSE2
-//	#endif
-//
-//	// SSE3のインクルード
-//	#if PLATFORM_CPU_INSTRUCTION_SSE3
-//		#include <pmmintrin.h> // SSE3
-//	#endif
-//
-//	// SSE4_1のインクルード
-//	#if PLATFORM_CPU_INSTRUCTION_SSE4_1
-//		#include <smmintrin.h> // SSE4
-//	#endif
-//
-//	// SSE4_2のインクルード
-//	#if PLATFORM_CPU_INSTRUCTION_SSE4_2
-//		#include <nmmintrin.h> // SSE4
-//	#endif
-//
-//	// AVXのインクルード
-//	#if PLATFORM_CPU_INSTRUCTION_AVX
-//		#include <immintrin.h> // SSE4
-//	#endif
-//
-//	// NEONのインクルード
-//	#elif PLATFORM_CPU_INSTRUCTION_NEON
-//		#if defined(_MSC_VER) && !defined(__clang__) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC))
-//			#include <arm64_neon.h>
-//		#else
-//			#include <arm_neon.h>
-//		#endif
-//	#endif
-//#else
-//	#include <math.h>
-//#endif
 
 #if __cplusplus >= 201703L
 	#define ALIGNED_DATA(x) alignas(x)
@@ -279,7 +277,7 @@ namespace gm::simd
 	#else
 		#define GLOBAL_CONST extern const __declspec(selectany)
 	#endif
-#endif
+#endif GLOBAL_CONST
 }
 
 #endif
