@@ -291,7 +291,7 @@ namespace gm::simd::sse
 		__forceinline static Vector128 SIMD_CALL_CONVENTION MultiplyAdd(ConstVector128 multiplyLeft, ConstVector128 multiplyRight, ConstVector128 add) noexcept;
 
 		/*----------------------------------------------------------------------
-		*  @brief : 2つのベクトルの各要素同士の逆数を算出します. (1.0f / vector)
+		*  @brief : ベクトルの各要素同士の逆数を算出します. (1.0f / vector)
 		/*----------------------------------------------------------------------*/
 		__forceinline static Vector128 SIMD_CALL_CONVENTION Reciprocal(ConstVector128 vector) noexcept;
 
@@ -413,7 +413,7 @@ namespace gm::simd::sse
 
 		#pragma region Math
 		/*----------------------------------------------------------------------
-		*  @brief : 1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+		*  @brief : 各要素にマイナスを取ったものを返す.
 		/*----------------------------------------------------------------------*/
 		__forceinline static Vector128 SIMD_CALL_CONVENTION Negate(ConstVector128 vector) noexcept;
 
