@@ -212,6 +212,14 @@ namespace gm::simd::sse
 		__forceinline static Vector128 SIMD_CALL_CONVENTION SetW(ConstVector128 vector, const float w) noexcept;
 
 		/*----------------------------------------------------------------------
+		*  @brief : ベクトルを使ってfloat配列に代入する
+		/*----------------------------------------------------------------------*/
+		__forceinline static void SIMD_CALL_CONVENTION StoreFloat (float* destination, ConstVector128 source) noexcept;
+		__forceinline static void SIMD_CALL_CONVENTION StoreFloat2(float* destination, ConstVector128 source) noexcept;
+		__forceinline static void SIMD_CALL_CONVENTION StoreFloat3(float* destination, ConstVector128 source) noexcept;
+		__forceinline static void SIMD_CALL_CONVENTION StoreFloat4(float* destination, ConstVector128 source) noexcept;
+
+		/*----------------------------------------------------------------------
 		*  @brief : X(, Y, Z, W)等の要素に基づいて, 全ての要素に同じ値を持ったVector128クラスを作成する
 		*           X,Y,Z,W  : 各要素
 		*           One      : 1, 1, 1, 1
@@ -258,6 +266,15 @@ namespace gm::simd::sse
 		__forceinline static float SIMD_CALL_CONVENTION GetY(ConstVector128 vector) noexcept;
 		__forceinline static float SIMD_CALL_CONVENTION GetZ(ConstVector128 vector) noexcept;
 		__forceinline static float SIMD_CALL_CONVENTION GetW(ConstVector128 vector) noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : floatの配列を使ってベクトルに格納する
+		/*----------------------------------------------------------------------*/
+		__forceinline static Vector128 SIMD_CALL_CONVENTION LoadFloat (const float* source) noexcept;
+		__forceinline static Vector128 SIMD_CALL_CONVENTION LoadFloat2(const float* source) noexcept;
+		__forceinline static Vector128 SIMD_CALL_CONVENTION LoadFloat3(const float* source) noexcept;
+		__forceinline static Vector128 SIMD_CALL_CONVENTION LoadFloat4(const float* source) noexcept;
+
 		#pragma endregion Getter
 
 		#pragma region Operator
@@ -523,7 +540,7 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素に対するsin成分とcos成分を取り出します
 		/*----------------------------------------------------------------------*/
-		__forceinline static Vector128 SIMD_CALL_CONVENTION SinCos(ConstVector128 input, Vector128* sin, Vector128* cos) noexcept;
+		__forceinline static void SIMD_CALL_CONVENTION SinCos(ConstVector128 input, Vector128* sin, Vector128* cos) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素の2^{vector}を返します
@@ -845,6 +862,80 @@ namespace gm::simd::sse
 	}
 
 	/****************************************************************************
+	*                       StoreFloat
+	*************************************************************************//**
+	*  @fn        inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat(float* destination, ConstVector128 source) noexcept
+	*
+	*  @brief     Vector128をもとにFloat配列に代入します
+	*
+	*  @param[in] float* destination
+	*  @param[in] ConstVector128 source
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat(float* destination, ConstVector128 source) noexcept
+	{
+		Check(destination);
+		_mm_store_ss(destination, source);
+	}
+
+	/****************************************************************************
+	*                       StoreFloat2
+	*************************************************************************//**
+	*  @fn        inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat2(float* destination, ConstVector128 source) noexcept
+	*
+	*  @brief     Vector128をもとにFloat配列に代入します
+	*
+	*  @param[in] float* destination
+	*  @param[in] ConstVector128 source
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat2(float* destination, ConstVector128 source) noexcept
+	{
+		Check(destination);
+		_mm_store_sd(reinterpret_cast<double*>(destination), _mm_castps_pd(source));
+	}
+
+	/****************************************************************************
+	*                       StoreFloat3
+	*************************************************************************//**
+	*  @fn        inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat3(float* destination, ConstVector128 source) noexcept
+	*
+	*  @brief     Vector128をもとにFloat配列に代入します
+	*
+	*  @param[in] float* destination
+	*  @param[in] ConstVector128 source
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat3(float* destination, ConstVector128 source) noexcept
+	{
+		Check(destination);
+		_mm_store_sd(reinterpret_cast<double*>(destination), _mm_castps_pd(source));
+		__m128 z = PERMUTE_PS(source, _MM_SHUFFLE(2, 2, 2, 2));
+		_mm_store_ss(&destination[2], z);
+	}
+
+	/****************************************************************************
+	*                       StoreFloat4
+	*************************************************************************//**
+	*  @fn        inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat4(float* destination, ConstVector128 source) noexcept
+	*
+	*  @brief     Vector128をもとにFloat配列に代入します
+	*
+	*  @param[in] float* destination
+	*  @param[in] ConstVector128 source
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat4(float* destination, ConstVector128 source) noexcept
+	{
+		Check(destination);
+		return _mm_storeu_ps(destination, source);
+	}
+
+	/****************************************************************************
 	*                       SplatX
 	*************************************************************************//**
 	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::SplatX(ConstVector128 vector) noexcept
@@ -1126,6 +1217,77 @@ namespace gm::simd::sse
 	{
 		return _mm_cvtss_f32(_mm_shuffle_ps(vector, vector, _MM_SHUFFLE(3, 3, 3, 3)));
 	}
+
+	/****************************************************************************
+	*                       LoadFloat
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat(const float* source) noexcept
+	*
+	*  @brief     Floatの配列を使って格納する (*source, 0.0, 0.0, 0.0f)
+	*
+	*  @param[in] const float* source
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat(const float* source) noexcept
+	{
+		Check(source);
+		return _mm_load_ss(source);
+	}
+
+	/****************************************************************************
+	*                       LoadFloat2
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat2(const float* source) noexcept
+	*
+	*  @brief     Floatの配列を使って格納する (source->x, source->y, 0.0, 0.0f)
+	*
+	*  @param[in] const float* source
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat2(const float* source) noexcept
+	{
+		Check(source);
+		return _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(source)));
+	}
+
+	/****************************************************************************
+	*                       LoadFloat3
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat3(const float* source) noexcept
+	*
+	*  @brief     Floatの配列を使って格納する (source->x, source->y, source->z, 0.0f)
+	*
+	*  @param[in] const float* source
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat3(const float* source) noexcept
+	{
+		Check(source);
+		__m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(source)));
+		__m128 z  = _mm_load_ss(&source[2]);
+		return _mm_movelh_ps(xy, z);
+	}
+
+	/****************************************************************************
+	*                       LoadFloat3
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat3(const float* source) noexcept
+	*
+	*  @brief     Floatの配列を使って格納する (source->x, source->y, source->z, source->w)
+	*
+	*  @param[in] const float* source
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat4(const float* source) noexcept
+	{
+		Check(source);
+		return _mm_loadu_ps(source);
+	}
+
 	#pragma endregion Getter
 
 	#pragma region Operator
@@ -3840,9 +4002,9 @@ namespace gm::simd::sse
 	*  @param[out] Vector128* sin
 	*  @param[out] Vector128* cos
 	*
-	*  @return 　　Vector128
+	*  @return 　　void
 	*****************************************************************************/
-	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::SinCos(ConstVector128 input, Vector128* sin, Vector128* cos) noexcept
+	inline void SIMD_CALL_CONVENTION Vector128Utility::SinCos(ConstVector128 input, Vector128* sin, Vector128* cos) noexcept
 	{
 		// -PI <= theta <= PIの範囲に収める
 		Vector128 normalizedAngle = ModAngles(input);

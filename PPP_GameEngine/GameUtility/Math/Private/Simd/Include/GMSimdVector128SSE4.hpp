@@ -46,7 +46,13 @@ namespace gm::simd::sse4
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION SetY(ConstVector128 vector, const float y) noexcept;
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION SetZ(ConstVector128 vector, const float z) noexcept;
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION SetW(ConstVector128 vector, const float w) noexcept;
+
+		__forceinline static void SIMD_CALL_CONVENTION StoreFloat3(float* destination, ConstVector128 source) noexcept;
 	#pragma endregion Setter
+
+	#pragma region Getter
+		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION LoadFloat3(const float* source) noexcept;
+	#pragma endregion Getter
 
 	#pragma region Math
 		/*----------------------------------------------------------------------
@@ -162,8 +168,48 @@ namespace gm::simd::sse4
 		return _mm_insert_ps(vector, _mm_set_ss(w), 0x30);
 	}
 
+	/****************************************************************************
+	*                       StoreFloat3
+	*************************************************************************//**
+	*  @fn        inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat3(float* destination, ConstVector128 source) noexcept
+	*
+	*  @brief     Vector128をもとにFloat配列に代入します
+	*
+	*  @param[in] float* destination
+	*  @param[in] ConstVector128 source
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat3(float* destination, ConstVector128 source) noexcept
+	{
+		*reinterpret_cast<int*>(&destination[0]) = _mm_extract_ps(source, 0);
+		*reinterpret_cast<int*>(&destination[1]) = _mm_extract_ps(source, 1);
+		*reinterpret_cast<int*>(&destination[2]) = _mm_extract_ps(source, 2);
+	}
+
+
 	#pragma endregion Setter
 
+	#pragma region Getter
+	/****************************************************************************
+	*                       LoadFloat3
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat3(const float* source) noexcept
+	*
+	*  @brief     Floatの配列を使って格納する (source->x, source->y, source->z, source->w)
+	*
+	*  @param[in] const float* source
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline sse::Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat3(const float* source) noexcept
+	{
+		__m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(source)));
+		__m128 z = _mm_load_ss(&source[2]);
+		return _mm_insert_ps(xy, z, 0x20);
+	}
+
+	#pragma endregion Getter
 	#pragma region Math
 	/****************************************************************************
 	*                      NormVector2
