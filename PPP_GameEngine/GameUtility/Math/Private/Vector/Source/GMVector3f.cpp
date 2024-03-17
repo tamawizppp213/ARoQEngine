@@ -8,18 +8,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/GMVector4f.hpp"
+#include "../Include/GMVector3f.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
 
-const Vector4f Vector4f::ZERO = Vector4f(0, 0, 0, 0);
-const Vector4f Vector4f::ONE = Vector4f(1, 1, 1, 1);
-const Vector4f Vector4f::XAXIS = Vector4f(1, 0, 0, 0);
-const Vector4f Vector4f::YAXIS = Vector4f(0, 1, 0, 0);
-const Vector4f Vector4f::ZAXIS = Vector4f(0, 0, 1, 0);
+const Vector3f Vector3f::ZERO = Vector3f(0, 0, 0);
+const Vector3f Vector3f::ONE = Vector3f(1, 1, 1);
+const Vector3f Vector3f::XAXIS = Vector3f(1, 0, 0);
+const Vector3f Vector3f::YAXIS = Vector3f(0, 1, 0);
+const Vector3f Vector3f::ZAXIS = Vector3f(0, 0, 1);
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////

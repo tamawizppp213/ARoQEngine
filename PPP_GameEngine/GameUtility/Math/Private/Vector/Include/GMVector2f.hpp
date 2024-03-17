@@ -382,9 +382,9 @@ namespace gm
 		Vector2f() { _vector = SIMD_NAME_SPACE::Vector128Utility::Zero(); }
 
 		// @brief : Float型で生成するコンストラクタ
-		Vector2f(const gu::float32 x, const gu::float32 y, const gu::float32 z)
+		Vector2f(const gu::float32 x, const gu::float32 y)
 		{
-			_vector = SIMD_NAME_SPACE::Vector128Utility::Set(x, y, z, 0.0f);
+			_vector = SIMD_NAME_SPACE::Vector128Utility::Set(x, y, 0.0f, 0.0f);
 		}
 
 		// @brief : Vector128を直接代入するコンストラクタ
