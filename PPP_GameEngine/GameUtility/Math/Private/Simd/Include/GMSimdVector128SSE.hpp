@@ -1446,7 +1446,7 @@ namespace gm::simd::sse
 	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Scale(ConstVector128 vector, const float scale) noexcept
 	{
 		Vector128 result = _mm_set_ps1(scale); // (scale, scale, scale, scale)
-		return _mm_mul_ps(result, result);
+		return _mm_mul_ps(result, vector);
 	}
 
 	/****************************************************************************
