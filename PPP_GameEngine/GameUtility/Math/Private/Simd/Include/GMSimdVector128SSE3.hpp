@@ -158,7 +158,7 @@ namespace gm::simd::sse3
 		sse::Vector128 squareLength = _mm_mul_ps(vector, vector);
 		sse::Vector128 temp = _mm_hadd_ps(squareLength, squareLength);
 		squareLength = _mm_sqrt_ps(temp);
-		squareLength = PermutePS(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
+		squareLength = PERMUTE_PS(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
 		return _mm_cvtss_f32(squareLength);
 	}
 	

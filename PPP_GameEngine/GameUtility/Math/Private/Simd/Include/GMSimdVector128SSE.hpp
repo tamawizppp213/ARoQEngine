@@ -159,6 +159,12 @@ namespace gm::simd::sse
 	GLOBAL_CONST Vector128f VECTOR_128F_LOG_E_INVERSE = { { { +6.93147182e-1f, +6.93147182e-1f, +6.93147182e-1f, +6.93147182e-1f } } };
 	GLOBAL_CONST Vector128f VECTOR_128F_LOG_10_INVERSE = { { { +3.010299956e-1f, +3.010299956e-1f, +3.010299956e-1f, +3.010299956e-1f } } };
 
+	// 定数式でないとエラーとなるため
+	#if PLATFORM_CPU_INSTRUCTION_AVX
+		#define PERMUTE_PS(v, c) _mm_permute_ps((v), c)
+	#else
+		#define PERMUTE_PS(v, c) _mm_shuffle_ps((v), (v), c)
+	#endif
 	/****************************************************************************
 	*				  			  Vector128Utility
 	*************************************************************************//**
@@ -662,10 +668,7 @@ namespace gm::simd::sse
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		__forceinline static Vector128 SIMD_CALL_CONVENTION PermutePS(ConstVector128 vector, const gu::uint32 index)
-		{
-			return _mm_shuffle_ps(vector, vector, index);
-		}
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
@@ -1845,7 +1848,7 @@ namespace gm::simd::sse
 	/****************************************************************************
 	*                       GreaterOrEqualVectorEach
 	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::GreaterVectorEach(ConstVector128 left, ConstVector128 right) noexcept
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::GreaterOrEqualVectorEach(ConstVector128 left, ConstVector128 right) noexcept
 	*
 	*  @brief     Vector4型において左の方が全ての要素において大きいor等しいかを調べます (left >= right)
 	*
@@ -1854,7 +1857,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Vector128
 	*****************************************************************************/
-	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::GreaterVectorEach(ConstVector128 left, ConstVector128 right) noexcept
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::GreaterOrEqualVectorEach(ConstVector128 left, ConstVector128 right) noexcept
 	{
 		return _mm_cmpge_ps(left, right);
 	}
@@ -2213,11 +2216,11 @@ namespace gm::simd::sse
 		Vector128 squareLength = _mm_mul_ps(vector, vector);
 
 		// yのみのベクトルを取得
-		Vector128 temp = PermutePS(squareLength, _MM_SHUFFLE(1, 1, 1, 1));
+		Vector128 temp = PERMUTE_PS(squareLength, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// x + y
 		squareLength = _mm_add_ss(squareLength, temp);
-		squareLength = PermutePS(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
+		squareLength = PERMUTE_PS(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
 		squareLength = _mm_sqrt_ps(squareLength);
 		return _mm_cvtss_f32(squareLength);
 	}
@@ -2240,19 +2243,19 @@ namespace gm::simd::sse
 		Vector128 squareLength = _mm_mul_ps(vector, vector);
 
 		// zとyを要素にもつベクトル作成
-		Vector128 temp = PermutePS(squareLength, _MM_SHUFFLE(1, 2, 1, 2));
+		Vector128 temp = PERMUTE_PS(squareLength, _MM_SHUFFLE(1, 2, 1, 2));
 
 		// x + z, y
 		squareLength = _mm_add_ss(squareLength, temp);
 
 		// y, y, y, y
-		temp = PermutePS(temp, _MM_SHUFFLE(1, 1, 1, 1));
+		temp = PERMUTE_PS(temp, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// x + z + y, ?? , ??, ??
 		squareLength = _mm_add_ss(squareLength, temp);
 
 		// splat the length squared
-		squareLength = PermutePS(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
+		squareLength = PERMUTE_PS(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
 
 		// ノルムの取得
 		squareLength = _mm_sqrt_ps(squareLength);
@@ -2278,20 +2281,20 @@ namespace gm::simd::sse
 		Vector128 squareLength = _mm_mul_ps(vector, vector);
 
 		// z, wのベクトルを取得
-		Vector128 temp = PermutePS(squareLength, _MM_SHUFFLE(3, 2, 3, 2));
+		Vector128 temp = PERMUTE_PS(squareLength, _MM_SHUFFLE(3, 2, 3, 2));
 
 		// x + z, y + w
 		squareLength = _mm_add_ps(squareLength, temp);
 
 		// x + z, x + z, x + w, y + w
-		squareLength = PermutePS(squareLength, _MM_SHUFFLE(1, 0, 0, 0));
+		squareLength = PERMUTE_PS(squareLength, _MM_SHUFFLE(1, 0, 0, 0));
 
 		// ??, ??, y + w, y + w
 		temp = _mm_shuffle_ps(temp, squareLength, _MM_SHUFFLE(3, 3, 0, 0));
 
 		// ??, ??, x + z + y + w, ??
 		squareLength = _mm_add_ps(squareLength, temp);
-		squareLength = PermutePS(squareLength, _MM_SHUFFLE(2, 2, 2, 2));
+		squareLength = PERMUTE_PS(squareLength, _MM_SHUFFLE(2, 2, 2, 2));
 		squareLength = _mm_sqrt_ps(squareLength);
 		return _mm_cvtss_f32(squareLength);
 	}
@@ -2356,13 +2359,13 @@ namespace gm::simd::sse
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector2(ConstVector128 left, ConstVector128 right)
+	inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector2(ConstVector128 left, ConstVector128 right) noexcept
 	{
 		// 要素ごとの積を計算 
 		Vector128 multiply = _mm_mul_ps(left, right);
 
 		// z以降の計算は考慮しないため, yの結果を格納
-		Vector128 y = PermutePS(multiply, _MM_SHUFFLE(1, 1, 1, 1));
+		Vector128 y = PERMUTE_PS(multiply, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// x成分のみの結果に着目する.  
 		return _mm_cvtss_f32(_mm_add_ss(multiply, y));
@@ -2380,25 +2383,25 @@ namespace gm::simd::sse
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector3(ConstVector128 left, ConstVector128 right)
+	inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector3(ConstVector128 left, ConstVector128 right) noexcept
 	{
 		// 要素ごとの積を計算 
 		Vector128 multiply = _mm_mul_ps(left, right);
 
 		// x=Dot.F32[1], y=Dot.F32[2]
-		Vector128 temp = PermutePS(multiply, _MM_SHUFFLE(2, 1, 2, 1));
+		Vector128 temp = PERMUTE_PS(multiply, _MM_SHUFFLE(2, 1, 2, 1));
 
 		// result.F32[0] = x + y
 		multiply = _mm_add_ss(multiply, temp);
 
 		// x=multiply.F32[2]
-		temp = PermutePS(multiply, _MM_SHUFFLE(1, 1, 1, 1));
+		temp = PERMUTE_PS(multiply, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// Result.F32[0] = (x+y)+z
 		temp = _mm_add_ss(multiply, temp);
 
 		// x成分のみの結果に着目する.  
-		return _mm_cvtss_f32(PermutePS(multiply, _MM_SHUFFLE(0, 0, 0, 0)));
+		return _mm_cvtss_f32(PERMUTE_PS(multiply, _MM_SHUFFLE(0, 0, 0, 0)));
 	}
 
 	/****************************************************************************
@@ -2413,7 +2416,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector4(ConstVector128 left, ConstVector128 right)
+	inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector4(ConstVector128 left, ConstVector128 right) noexcept
 	{
 		// 要素ごとの積を計算 
 		Vector128 temp2 = right;
@@ -2432,7 +2435,7 @@ namespace gm::simd::sse
 		temp = _mm_add_ps(temp, temp2);
 
 		// x成分のみの結果に着目する.  
-		return _mm_cvtss_f32(PermutePS(temp, _MM_SHUFFLE(2, 2, 2, 2)));
+		return _mm_cvtss_f32(PERMUTE_PS(temp, _MM_SHUFFLE(2, 2, 2, 2)));
 	}
 
 	/****************************************************************************
@@ -2447,24 +2450,24 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Vector128ではあるが, 実質float
 	*****************************************************************************/
-	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::CrossVector2(ConstVector128 left, ConstVector128 right)
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::CrossVector2(ConstVector128 left, ConstVector128 right) noexcept
 	{
 		// [ left.x*right.y - left.y*right.x, left.x*right.y - left.y*right.x ]
 		
 		// rightのx, yを入れ替える (w,zは計算上使用しない)
-		Vector128 result = PermutePS(right, _MM_SHUFFLE(0, 1, 0, 1));
+		Vector128 result = PERMUTE_PS(right, _MM_SHUFFLE(0, 1, 0, 1));
 
 		// leftと入れ替え後のrightの各要素を乗算する
 		result = _mm_mul_ps(result, left);
 
 		// yを抽出する
-		Vector128 y = PermutePS(result, _MM_SHUFFLE(1, 1, 1, 1));
+		Vector128 y = PERMUTE_PS(result, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// 値を減算する
 		result = _mm_sub_ss(result, y);
 
 		// x成分のみを取り出して結果とする
-		return PermutePS(result, _MM_SHUFFLE(0, 0, 0, 0));
+		return PERMUTE_PS(result, _MM_SHUFFLE(0, 0, 0, 0));
 	}
 
 	/****************************************************************************
@@ -2484,19 +2487,19 @@ namespace gm::simd::sse
 		// [ V1.y*V2.z - V1.z*V2.y, V1.z*V2.x - V1.x*V2.z, V1.x*V2.y - V1.y*V2.x ]
 		
 		// leftの要素を(y1, z1, x1, w1)に順に並べ替える
-		Vector128 temp1 = PermutePS(left, _MM_SHUFFLE(3, 0, 2, 1)); 
+		Vector128 temp1 = PERMUTE_PS(left, _MM_SHUFFLE(3, 0, 2, 1)); 
 
 		// rightの要素を(z2, x2. y2, w2)の順に並べ替える
-		Vector128 temp2 = PermutePS(right, _MM_SHUFFLE(3, 1, 0, 2));
+		Vector128 temp2 = PERMUTE_PS(right, _MM_SHUFFLE(3, 1, 0, 2));
 
 		// 一時ベクトルの要素ごとの乗算
 		Vector128 result = _mm_mul_ps(temp1, temp2);
 
 		// z1, x1, y1, w1の順にtemp1を並べ替える
-		temp1 = PermutePS(temp1, _MM_SHUFFLE(3, 0, 2, 1));
+		temp1 = PERMUTE_PS(temp1, _MM_SHUFFLE(3, 0, 2, 1));
 		
 		// y2, z2, x2, w2の順にtemp2を並べ替える
-		temp2 = PermutePS(temp2, _MM_SHUFFLE(3, 1, 0, 2));
+		temp2 = PERMUTE_PS(temp2, _MM_SHUFFLE(3, 1, 0, 2));
 
 		result = NegativeMultiplySubtract(temp1, temp2, result);
 
@@ -2525,45 +2528,45 @@ namespace gm::simd::sse
 		//   ((v2.z*v3.y-v2.y*v3.z)*v1.x)-((v2.z*v3.x-v2.x*v3.z)*v1.y)+((v2.y*v3.x-v2.x*v3.y)*v1.z) ]
 
 		// second.zwyz * third.wzxy
-		Vector128 result = PermutePS(second, _MM_SHUFFLE(2, 1, 3, 2));
-		Vector128 temp3  = PermutePS(third, _MM_SHUFFLE(1, 3, 2, 3));
+		Vector128 result = PERMUTE_PS(second, _MM_SHUFFLE(2, 1, 3, 2));
+		Vector128 temp3  = PERMUTE_PS(third, _MM_SHUFFLE(1, 3, 2, 3));
 		result = _mm_mul_ps(result, temp3);
 
 		// - second.wzwy * third.zwyz
-		Vector128 temp2 = PermutePS(second, _MM_SHUFFLE(1, 3, 2, 3));
-		temp3  = PermutePS(temp3, _MM_SHUFFLE(1, 3, 0, 1));
+		Vector128 temp2 = PERMUTE_PS(second, _MM_SHUFFLE(1, 3, 2, 3));
+		temp3  = PERMUTE_PS(temp3, _MM_SHUFFLE(1, 3, 0, 1));
 		result = NegativeMultiplySubtract(temp2, temp3, result);
 
 		// term1 * first.yxxx
-		Vector128 temp1 = PermutePS(first, _MM_SHUFFLE(0, 0, 0, 1));
+		Vector128 temp1 = PERMUTE_PS(first, _MM_SHUFFLE(0, 0, 0, 1));
 		result = _mm_mul_ps(result, temp1);
 
 		// second.ywxz * third.wxwx
-		temp2 = PermutePS(second, _MM_SHUFFLE(2, 0, 3, 1));
-		temp3 = PermutePS(third, _MM_SHUFFLE(0, 3, 0, 3));
+		temp2 = PERMUTE_PS(second, _MM_SHUFFLE(2, 0, 3, 1));
+		temp3 = PERMUTE_PS(third, _MM_SHUFFLE(0, 3, 0, 3));
 		temp3 = _mm_mul_ps(temp3, temp2);
 
 		// - second.wxwx * third.ywxz
-		temp2 = PermutePS(temp2, _MM_SHUFFLE(2, 1, 2, 1));
-		temp1 = PermutePS(third, _MM_SHUFFLE(2, 0, 3, 1));
+		temp2 = PERMUTE_PS(temp2, _MM_SHUFFLE(2, 1, 2, 1));
+		temp1 = PERMUTE_PS(third, _MM_SHUFFLE(2, 0, 3, 1));
 		temp3 = NegativeMultiplySubtract(temp2, temp1, temp3);
 
 		// result - temp * first.zzyy
-		temp1 = PermutePS(first, _MM_SHUFFLE(1, 1, 2, 2));
+		temp1 = PERMUTE_PS(first, _MM_SHUFFLE(1, 1, 2, 2));
 		result = NegativeMultiplySubtract(temp1, temp3, result);
 
 		// second.yzxy * third.zxyx
-		temp2 = PermutePS(second, _MM_SHUFFLE(1, 0, 2, 1));
-		temp3 = PermutePS(third, _MM_SHUFFLE(0, 1, 0, 2));
+		temp2 = PERMUTE_PS(second, _MM_SHUFFLE(1, 0, 2, 1));
+		temp3 = PERMUTE_PS(third, _MM_SHUFFLE(0, 1, 0, 2));
 		temp3 = _mm_mul_ps(temp3, temp2);
 
 		// -second.zxyx * third.yzxy
-		temp2 = PermutePS(temp2, _MM_SHUFFLE(2, 0, 2, 1));
-		temp1 = PermutePS(third, _MM_SHUFFLE(1, 0, 2, 1));
+		temp2 = PERMUTE_PS(temp2, _MM_SHUFFLE(2, 0, 2, 1));
+		temp1 = PERMUTE_PS(third, _MM_SHUFFLE(1, 0, 2, 1));
 		temp3 = NegativeMultiplySubtract(temp1, temp2, temp3);
 
 		// result + term + first.wwwz
-		temp1 = PermutePS(first, _MM_SHUFFLE(2, 3, 3, 3));
+		temp1 = PERMUTE_PS(first, _MM_SHUFFLE(2, 3, 3, 3));
 		result = MultiplyAdd(temp3, temp1, result);
 	}
 
@@ -2582,9 +2585,9 @@ namespace gm::simd::sse
 	{
 		// 1次norm計算
 		Vector128 squareLength = _mm_mul_ps(vector, vector);
-		Vector128 temp = PermutePS(squareLength, _MM_SHUFFLE(1, 1, 1, 1));
+		Vector128 temp = PERMUTE_PS(squareLength, _MM_SHUFFLE(1, 1, 1, 1));
 		squareLength   = _mm_add_ps(squareLength, temp);
-		squareLength   = PermutePS(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
+		squareLength   = PERMUTE_PS(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
 		Vector128 norm = _mm_sqrt_ps(squareLength);
 
 		// 0で割られる可能性があるかどうかを調べる. 値を持っていたら1
@@ -2625,18 +2628,18 @@ namespace gm::simd::sse
 		Vector128 squareLength = _mm_mul_ps(vector, vector);
 
 		// z*z, y*y, z*z, y*y
-		Vector128 temp         = PermutePS(squareLength, _MM_SHUFFLE(2, 1, 2, 1)); 
+		Vector128 temp         = PERMUTE_PS(squareLength, _MM_SHUFFLE(2, 1, 2, 1)); 
 
 		// x*x + z*z, y*y, z*z, w*w
 		squareLength           = _mm_add_ss(squareLength, temp);
 
 		// 全てy*y
-		temp = PermutePS(temp, _MM_SHUFFLE(1, 1, 1, 1));
+		temp = PERMUTE_PS(temp, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// 1要素目がx*x + y*y + z*z
 		squareLength = _mm_add_ss(squareLength, temp);
 		// 全ての要素がドット積
-		squareLength = PermutePS(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
+		squareLength = PERMUTE_PS(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
 
 		// 1次ノルムの計算
 		Vector128 norm = _mm_sqrt_ps(squareLength);
@@ -2679,13 +2682,13 @@ namespace gm::simd::sse
 		Vector128 squareLength = _mm_mul_ps(vector, vector);
 
 		// w*w, z*z, w*w, z*z
-		Vector128 temp = PermutePS(squareLength, _MM_SHUFFLE(3, 2, 3, 2));
+		Vector128 temp = PERMUTE_PS(squareLength, _MM_SHUFFLE(3, 2, 3, 2));
 
 		// squareLength(x*x + w*w, y*y + z*z, z*z + w*w, w*w +z*z)
 		squareLength = _mm_add_ps(squareLength, temp);
 
 		// squareLength(y*y + z*z. x*x+w*w, x*x+w*w, x*x+w*w)
-		squareLength = PermutePS(squareLength, _MM_SHUFFLE(1, 0, 0, 0));
+		squareLength = PERMUTE_PS(squareLength, _MM_SHUFFLE(1, 0, 0, 0));
 
 		// temp(z*z, z*z, y*y + z*z, y*y + z*z 
 		temp = _mm_shuffle_ps(temp, squareLength, _MM_SHUFFLE(3, 3, 0, 0));
@@ -2694,7 +2697,7 @@ namespace gm::simd::sse
 		squareLength = _mm_add_ss(squareLength, temp);
 
 		// 全ての要素が4要素の二乗和
-		squareLength = PermutePS(squareLength, _MM_SHUFFLE(2, 2, 2, 2));
+		squareLength = PERMUTE_PS(squareLength, _MM_SHUFFLE(2, 2, 2, 2));
 
 		// 1次ノルムの計算
 		Vector128 norm = _mm_sqrt_ps(squareLength);
@@ -3658,19 +3661,19 @@ namespace gm::simd::sse
 		// テイラー展開の係数
 		const Vector128 sinCoefficient0 = VECTOR_128F_SIN_COEFFICIENTS0;
 		const Vector128 sinCoefficient1 = VECTOR_128F_SIN_COEFFICIENTS1;
-		__m128 constantsA = PermutePS(sinCoefficient0, _MM_SHUFFLE(3, 3, 3, 3));
-		__m128 constantsB = PermutePS(sinCoefficient1, _MM_SHUFFLE(0, 0, 0, 0));
+		__m128 constantsA = PERMUTE_PS(sinCoefficient0, _MM_SHUFFLE(3, 3, 3, 3));
+		__m128 constantsB = PERMUTE_PS(sinCoefficient1, _MM_SHUFFLE(0, 0, 0, 0));
 
 		// テイラー展開の結果を取得する
 		__m128 result = MultiplyAdd(constantsB, angleSquared, constantsA);
 
-		constantsA = PermutePS(sinCoefficient0, _MM_SHUFFLE(2, 2, 2, 2));
+		constantsA = PERMUTE_PS(sinCoefficient0, _MM_SHUFFLE(2, 2, 2, 2));
 		result = MultiplyAdd(result, angleSquared, constantsA);
 
-		constantsA = PermutePS(sinCoefficient0, _MM_SHUFFLE(1, 1, 1, 1));
+		constantsA = PERMUTE_PS(sinCoefficient0, _MM_SHUFFLE(1, 1, 1, 1));
 		result = MultiplyAdd(result, angleSquared, constantsA);
 
-		constantsA = PermutePS(sinCoefficient0, _MM_SHUFFLE(0, 0, 0, 0));
+		constantsA = PERMUTE_PS(sinCoefficient0, _MM_SHUFFLE(0, 0, 0, 0));
 		result = MultiplyAdd(result, angleSquared, constantsA);
 
 		result = MultiplyAdd(result, angleSquared, VECTOR_128F_ONE);
@@ -3728,19 +3731,19 @@ namespace gm::simd::sse
 		// テイラー展開の係数
 		const Vector128 cosCoefficient0 = VECTOR_128F_COS_COEFFICIENTS0;
 		const Vector128 cosCoefficient1 = VECTOR_128F_COS_COEFFICIENTS1;
-		__m128 constantsA = PermutePS(cosCoefficient0, _MM_SHUFFLE(3, 3, 3, 3));
-		__m128 constantsB = PermutePS(cosCoefficient1, _MM_SHUFFLE(0, 0, 0, 0));
+		__m128 constantsA = PERMUTE_PS(cosCoefficient0, _MM_SHUFFLE(3, 3, 3, 3));
+		__m128 constantsB = PERMUTE_PS(cosCoefficient1, _MM_SHUFFLE(0, 0, 0, 0));
 
 		// テイラー展開の結果を取得する
 		__m128 result = MultiplyAdd(constantsB, angleSquared, constantsA);
 
-		constantsA = PermutePS(cosCoefficient0, _MM_SHUFFLE(2, 2, 2, 2));
+		constantsA = PERMUTE_PS(cosCoefficient0, _MM_SHUFFLE(2, 2, 2, 2));
 		result = MultiplyAdd(result, angleSquared, constantsA);
 
-		constantsA = PermutePS(cosCoefficient0, _MM_SHUFFLE(1, 1, 1, 1));
+		constantsA = PERMUTE_PS(cosCoefficient0, _MM_SHUFFLE(1, 1, 1, 1));
 		result = MultiplyAdd(result, angleSquared, constantsA);
 
-		constantsA = PermutePS(cosCoefficient0, _MM_SHUFFLE(0, 0, 0, 0));
+		constantsA = PERMUTE_PS(cosCoefficient0, _MM_SHUFFLE(0, 0, 0, 0));
 		result = MultiplyAdd(result, angleSquared, constantsA);
 
 		result = MultiplyAdd(result, angleSquared, VECTOR_128F_ONE);
@@ -3875,18 +3878,18 @@ namespace gm::simd::sse
 
 		// Compute polynomial approximation of sine
 		const Vector128 sinCoefficients1 = VECTOR_128F_SIN_COEFFICIENTS1;
-		__m128 vConstantsB = PermutePS(sinCoefficients1, _MM_SHUFFLE(0, 0, 0, 0));
+		__m128 vConstantsB = PERMUTE_PS(sinCoefficients1, _MM_SHUFFLE(0, 0, 0, 0));
 		const Vector128 sinCoefficients0 = VECTOR_128F_SIN_COEFFICIENTS0;
-		__m128 vConstantsA = PermutePS(sinCoefficients0, _MM_SHUFFLE(3, 3, 3, 3));
+		__m128 vConstantsA = PERMUTE_PS(sinCoefficients0, _MM_SHUFFLE(3, 3, 3, 3));
 		__m128 result = MultiplyAdd(vConstantsB, angle2, vConstantsA);
 
-		vConstantsA = PermutePS(sinCoefficients0, _MM_SHUFFLE(2, 2, 2, 2));
+		vConstantsA = PERMUTE_PS(sinCoefficients0, _MM_SHUFFLE(2, 2, 2, 2));
 		result     = MultiplyAdd(result, angle2, vConstantsA);
 
-		vConstantsA = PermutePS(sinCoefficients0, _MM_SHUFFLE(1, 1, 1, 1));
+		vConstantsA = PERMUTE_PS(sinCoefficients0, _MM_SHUFFLE(1, 1, 1, 1));
 		result = MultiplyAdd(result, angle2, vConstantsA);
 
-		vConstantsA = PermutePS(sinCoefficients0, _MM_SHUFFLE(0, 0, 0, 0));
+		vConstantsA = PERMUTE_PS(sinCoefficients0, _MM_SHUFFLE(0, 0, 0, 0));
 		result = MultiplyAdd(result, angle2, vConstantsA);
 
 		result = MultiplyAdd(result, angle2, VECTOR_128F_ONE);
@@ -3895,18 +3898,18 @@ namespace gm::simd::sse
 
 		// Compute polynomial approximation of cosine
 		const Vector128 cosCoefficients1 = VECTOR_128F_COS_COEFFICIENTS1;
-		vConstantsB = PermutePS(cosCoefficients1, _MM_SHUFFLE(0, 0, 0, 0));
+		vConstantsB = PERMUTE_PS(cosCoefficients1, _MM_SHUFFLE(0, 0, 0, 0));
 		const Vector128 cosCoefficients0 = VECTOR_128F_COS_COEFFICIENTS0;
-		vConstantsA = PermutePS(cosCoefficients0, _MM_SHUFFLE(3, 3, 3, 3));
+		vConstantsA = PERMUTE_PS(cosCoefficients0, _MM_SHUFFLE(3, 3, 3, 3));
 		result = MultiplyAdd(vConstantsB, angle2, vConstantsA);
 
-		vConstantsA = PermutePS(cosCoefficients0, _MM_SHUFFLE(2, 2, 2, 2));
+		vConstantsA = PERMUTE_PS(cosCoefficients0, _MM_SHUFFLE(2, 2, 2, 2));
 		result      = MultiplyAdd(result, angle2, vConstantsA);
 
-		vConstantsA = PermutePS(cosCoefficients0, _MM_SHUFFLE(1, 1, 1, 1));
+		vConstantsA = PERMUTE_PS(cosCoefficients0, _MM_SHUFFLE(1, 1, 1, 1));
 		result      = MultiplyAdd(result, angle2, vConstantsA);
 
-		vConstantsA = PermutePS(cosCoefficients0, _MM_SHUFFLE(0, 0, 0, 0));
+		vConstantsA = PERMUTE_PS(cosCoefficients0, _MM_SHUFFLE(0, 0, 0, 0));
 		result     = MultiplyAdd(result, angle2, vConstantsA);
 
 		result = MultiplyAdd(result, angle2, VECTOR_128F_ONE);
@@ -4009,27 +4012,27 @@ namespace gm::simd::sse
 
 		// テイラー展開を用いてarcsinの近似値を計算する
 		const Vector128 arcCoefficients1 = VECTOR_128F_ARC_COEFFICIENTS1;
-		__m128 constantsB = PermutePS(arcCoefficients1, _MM_SHUFFLE(3, 3, 3, 3));
-		__m128 constantsA = PermutePS(arcCoefficients1, _MM_SHUFFLE(2, 2, 2, 2));
+		__m128 constantsB = PERMUTE_PS(arcCoefficients1, _MM_SHUFFLE(3, 3, 3, 3));
+		__m128 constantsA = PERMUTE_PS(arcCoefficients1, _MM_SHUFFLE(2, 2, 2, 2));
 		__m128 t0 = MultiplyAdd(constantsB, absoluteVector, constantsA);
 
-		constantsA = PermutePS(arcCoefficients1, _MM_SHUFFLE(1, 1, 1, 1));
+		constantsA = PERMUTE_PS(arcCoefficients1, _MM_SHUFFLE(1, 1, 1, 1));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 
-		constantsA = PermutePS(arcCoefficients1, _MM_SHUFFLE(0, 0, 0, 0));
+		constantsA = PERMUTE_PS(arcCoefficients1, _MM_SHUFFLE(0, 0, 0, 0));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 
 		const Vector128 arcCoefficients0 = VECTOR_128F_ARC_COEFFICIENTS0;
-		constantsA = PermutePS(arcCoefficients0, _MM_SHUFFLE(3, 3, 3, 3));
+		constantsA = PERMUTE_PS(arcCoefficients0, _MM_SHUFFLE(3, 3, 3, 3));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 
-		constantsA = PermutePS(arcCoefficients0, _MM_SHUFFLE(2, 2, 2, 2));
+		constantsA = PERMUTE_PS(arcCoefficients0, _MM_SHUFFLE(2, 2, 2, 2));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 
-		constantsA = PermutePS(arcCoefficients0, _MM_SHUFFLE(1, 1, 1, 1));
+		constantsA = PERMUTE_PS(arcCoefficients0, _MM_SHUFFLE(1, 1, 1, 1));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 
-		constantsA = PermutePS(arcCoefficients0, _MM_SHUFFLE(0, 0, 0, 0));
+		constantsA = PERMUTE_PS(arcCoefficients0, _MM_SHUFFLE(0, 0, 0, 0));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 		t0 = _mm_mul_ps(t0, rootOneMinusValue);
 
@@ -4065,27 +4068,27 @@ namespace gm::simd::sse
 
 		// テイラー展開を用いてarcsinの近似値を計算する
 		const Vector128 arcCoefficients1 = VECTOR_128F_ARC_COEFFICIENTS1;
-		__m128 constantsB = PermutePS(arcCoefficients1, _MM_SHUFFLE(3, 3, 3, 3));
-		__m128 constantsA = PermutePS(arcCoefficients1, _MM_SHUFFLE(2, 2, 2, 2));
+		__m128 constantsB = PERMUTE_PS(arcCoefficients1, _MM_SHUFFLE(3, 3, 3, 3));
+		__m128 constantsA = PERMUTE_PS(arcCoefficients1, _MM_SHUFFLE(2, 2, 2, 2));
 		__m128 t0 = MultiplyAdd(constantsB, absoluteVector, constantsA);
 
-		constantsA = PermutePS(arcCoefficients1, _MM_SHUFFLE(1, 1, 1, 1));
+		constantsA = PERMUTE_PS(arcCoefficients1, _MM_SHUFFLE(1, 1, 1, 1));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 
-		constantsA = PermutePS(arcCoefficients1, _MM_SHUFFLE(0, 0, 0, 0));
+		constantsA = PERMUTE_PS(arcCoefficients1, _MM_SHUFFLE(0, 0, 0, 0));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 
 		const Vector128 arcCoefficients0 = VECTOR_128F_ARC_COEFFICIENTS0;
-		constantsA = PermutePS(arcCoefficients0, _MM_SHUFFLE(3, 3, 3, 3));
+		constantsA = PERMUTE_PS(arcCoefficients0, _MM_SHUFFLE(3, 3, 3, 3));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 
-		constantsA = PermutePS(arcCoefficients0, _MM_SHUFFLE(2, 2, 2, 2));
+		constantsA = PERMUTE_PS(arcCoefficients0, _MM_SHUFFLE(2, 2, 2, 2));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 
-		constantsA = PermutePS(arcCoefficients0, _MM_SHUFFLE(1, 1, 1, 1));
+		constantsA = PERMUTE_PS(arcCoefficients0, _MM_SHUFFLE(1, 1, 1, 1));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 
-		constantsA = PermutePS(arcCoefficients0, _MM_SHUFFLE(0, 0, 0, 0));
+		constantsA = PERMUTE_PS(arcCoefficients0, _MM_SHUFFLE(0, 0, 0, 0));
 		t0 = MultiplyAdd(t0, absoluteVector, constantsA);
 		t0 = _mm_mul_ps(t0, rootOneMinusValue);
 
@@ -4123,27 +4126,27 @@ namespace gm::simd::sse
 
 		// テイラー展開を用いてarcsinの近似値を計算する
 		const Vector128 arcTanCoefficients1 = VECTOR_128F_ATAN_COEFFICIENTS1;
-		__m128 constantsB = PermutePS(arcTanCoefficients1, _MM_SHUFFLE(3, 3, 3, 3));
-		__m128 constantsA = PermutePS(arcTanCoefficients1, _MM_SHUFFLE(2, 2, 2, 2));
+		__m128 constantsB = PERMUTE_PS(arcTanCoefficients1, _MM_SHUFFLE(3, 3, 3, 3));
+		__m128 constantsA = PERMUTE_PS(arcTanCoefficients1, _MM_SHUFFLE(2, 2, 2, 2));
 		__m128 result = MultiplyAdd(constantsB, x2, constantsA);
 
-		constantsA = PermutePS(arcTanCoefficients1, _MM_SHUFFLE(1, 1, 1, 1));
+		constantsA = PERMUTE_PS(arcTanCoefficients1, _MM_SHUFFLE(1, 1, 1, 1));
 		result = MultiplyAdd(result, x2, constantsA);
 
-		constantsA = PermutePS(arcTanCoefficients1, _MM_SHUFFLE(0, 0, 0, 0));
+		constantsA = PERMUTE_PS(arcTanCoefficients1, _MM_SHUFFLE(0, 0, 0, 0));
 		result = MultiplyAdd(result, x2, constantsA);
 
 		const Vector128 arcTanCoefficients0 = VECTOR_128F_ATAN_COEFFICIENTS0;
-		constantsA = PermutePS(arcTanCoefficients0, _MM_SHUFFLE(3, 3, 3, 3));
+		constantsA = PERMUTE_PS(arcTanCoefficients0, _MM_SHUFFLE(3, 3, 3, 3));
 		result = MultiplyAdd(result, x2, constantsA);
 
-		constantsA = PermutePS(arcTanCoefficients0, _MM_SHUFFLE(2, 2, 2, 2));
+		constantsA = PERMUTE_PS(arcTanCoefficients0, _MM_SHUFFLE(2, 2, 2, 2));
 		result = MultiplyAdd(result, x2, constantsA);
 
-		constantsA = PermutePS(arcTanCoefficients0, _MM_SHUFFLE(1, 1, 1, 1));
+		constantsA = PERMUTE_PS(arcTanCoefficients0, _MM_SHUFFLE(1, 1, 1, 1));
 		result = MultiplyAdd(result, x2, constantsA);
 
-		constantsA = PermutePS(arcTanCoefficients0, _MM_SHUFFLE(0, 0, 0, 0));
+		constantsA = PERMUTE_PS(arcTanCoefficients0, _MM_SHUFFLE(0, 0, 0, 0));
 		result = MultiplyAdd(result, x2, constantsA);
 
 		result = MultiplyAdd(result, x2, VECTOR_128F_ONE);
@@ -4268,16 +4271,16 @@ namespace gm::simd::sse
 		t3 = _mm_add_ps(t3, VECTOR_128F_IDENTITY_R0);
 		// Now, I have the constants created
 		// Mul the x constant to Position0
-		Vector128 result = PermutePS(t3, _MM_SHUFFLE(0, 0, 0, 0));
+		Vector128 result = PERMUTE_PS(t3, _MM_SHUFFLE(0, 0, 0, 0));
 		result = _mm_mul_ps(result, startPosition);
 		// Mul the y constant to Tangent0
-		t2 = PermutePS(t3, _MM_SHUFFLE(1, 1, 1, 1));
+		t2 = PERMUTE_PS(t3, _MM_SHUFFLE(1, 1, 1, 1));
 		result = MultiplyAdd(t2, startTangent, result);
 		// Mul the z constant to Position1
-		t2 = PermutePS(t3, _MM_SHUFFLE(2, 2, 2, 2));
+		t2 = PERMUTE_PS(t3, _MM_SHUFFLE(2, 2, 2, 2));
 		result = MultiplyAdd(t2, endPosition, result);
 		// Mul the w constant to Tangent1
-		t3 = PermutePS(t3, _MM_SHUFFLE(3, 3, 3, 3));
+		t3 = PERMUTE_PS(t3, _MM_SHUFFLE(3, 3, 3, 3));
 		result = MultiplyAdd(t3, endTangent, result);
 		return result;
 	}
