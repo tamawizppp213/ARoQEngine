@@ -443,6 +443,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector2d.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector4d.hpp">
       <SubType>
       </SubType>
@@ -456,6 +460,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector2f.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector3d.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -838,7 +846,15 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="GameUtility\Math\Private\Vector\Source\GMVector2d.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\Math\Private\Vector\Source\GMVector2f.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Math\Private\Vector\Source\GMVector3d.cpp">
       <SubType>
       </SubType>
     </ClCompile>
@@ -847,6 +863,10 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="GameUtility\Math\Private\Vector\Source\GMVector4f.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Math\Private\Vector\Source\GMVector4d.cpp">
       <SubType>
       </SubType>
     </ClCompile>

@@ -103,16 +103,16 @@ namespace gm
 		static const Vector4f ONE;
 
 		// @brief : (1,0,0,0)
-		static const Vector4f XAXIS;
+		static const Vector4f X_AXIS;
 
 		// @brief : (0,1,0,0)
-		static const Vector4f YAXIS;
+		static const Vector4f Y_AXIS;
 
 		// @brief : (0,0,1,0)
-		static const Vector4f ZAXIS;
+		static const Vector4f Z_AXIS;
 
 		// @brief : (0,0,0,1)
-		static const Vector4f WAXIS;
+		static const Vector4f W_AXIS;
 
 		#pragma endregion Default Vector
 
