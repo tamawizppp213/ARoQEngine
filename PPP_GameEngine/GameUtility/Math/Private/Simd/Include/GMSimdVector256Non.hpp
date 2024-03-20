@@ -1027,11 +1027,11 @@ namespace gm::simd::non
 	{
 		Check((xIndex < 7) && (yIndex < 7) && (zIndex < 7) && (wIndex < 7));
 
-		const gu::uint32* pointer[2];
+		const gu::uint32* pointer[2] = {};
 		pointer[0] = reinterpret_cast<const gu::uint32*>(&a);
 		pointer[1] = reinterpret_cast<const gu::uint32* > (&b);
 
-		Vector256 result;
+		Vector256 result = {};
 		auto pWork = reinterpret_cast<gu::uint32*>(&result);
 
 		const gu::uint32 i0 = xIndex & 3;
