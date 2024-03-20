@@ -91,18 +91,33 @@ namespace gm::simd::sse
 	constexpr float GM_1_DIV_2PI_FLOAT = 0.159154943f;
 	constexpr float GM_PI_DIV2_FLOAT   = 1.570796327f;
 	constexpr float GM_PI_DIV4_FLOAT   = 0.785398163f;
+	constexpr gu::uint32 GM_SELECT_0 = 0x00000000;
+	constexpr gu::uint32 GM_SELECT_1 = 0xFFFFFFFF;
+	constexpr gu::uint32 GM_SWIZZLE_X = 0;
+	constexpr gu::uint32 GM_SWIZZLE_Y = 1;
+	constexpr gu::uint32 GM_SWIZZLE_Z = 2;
+	constexpr gu::uint32 GM_SWIZZLE_W = 3;
+
 	GLOBAL_CONST Vector128f VECTOR_128F_ONE            = { { {  1.0f, 1.0f, 1.0f, 1.0f  } } };
 	GLOBAL_CONST Vector128f VECTOR_128F_ZERO           = { { {  0.0f, 0.0f, 0.0f, 0.0f  } } };
 	GLOBAL_CONST Vector128f VECTOR_128F_NEGATIVE_ONE   = { { {  -1.0f, -1.0f, -1.0f, -1.0f  } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_NEGATE_X       = { { { -1.0f, 1.0f, 1.0f, 1.0f } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_NEGATE_Y       = { { { 1.0f, -1.0f, 1.0f, 1.0f } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_NEGATE_Z       = { { { 1.0f, 1.0f, -1.0f, 1.0f } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_NEGATE_W       = { { { 1.0f, 1.0f, 1.0f, -1.0f } } };
 	GLOBAL_CONST Vector128f VECTOR_128F_INFINITY       = { { {  0x7F800000, 0x7F800000, 0x7F800000, 0x7F800000  } }};
 	GLOBAL_CONST Vector128f VECTOR_128F_EPSILON        = { { {  1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f } } };
 	GLOBAL_CONST Vector128i VECTOR_128F_QNAN           = { { {  0x7FC00000, 0x7FC00000, 0x7FC00000, 0x7FC00000  } } };
 	GLOBAL_CONST Vector128i VECTOR_128I_QNAN_TEST      = { { {  0x7FC00000, 0x7FC00000, 0x7FC00000, 0x7FC00000 } } };
 	GLOBAL_CONST Vector128u VECTOR_128F_MASK_XYZ       = { { {  0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000   } } };
-	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R0 = { { { 1.0f, 0.0f, 0.0f, 0.0f } } };
-	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R1 = { { { 0.0f, 1.0f, 0.0f, 0.0f } } };
-	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R2 = { { { 0.0f, 0.0f, 1.0f, 0.0f } } };
-	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R3 = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R0    = { { { 1.0f, 0.0f, 0.0f, 0.0f } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R1    = { { { 0.0f, 1.0f, 0.0f, 0.0f } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R2    = { { { 0.0f, 0.0f, 1.0f, 0.0f } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R3    = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
+	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1000    = { { { XM_SELECT_1, XM_SELECT_0, XM_SELECT_0, XM_SELECT_0 } } };
+	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1100    = { { { XM_SELECT_1, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0 } } };
+	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1110    = { { { XM_SELECT_1, XM_SELECT_1, XM_SELECT_1, XM_SELECT_0 } } };
+	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1011    = { { { XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_1 } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_MASK_X         = { { {  0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000   } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_MASK_Y         = { { {  0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000   } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_MASK_Z         = { { {  0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000   } } };
@@ -693,6 +708,113 @@ namespace gm::simd::sse
 	};
 
 #pragma region Implement
+	#pragma region Swizzle
+	template<gu::uint32 swizzleX, gu::uint32 swizzleY, gu::uint32 swizzleZ, gu::uint32 swizzleW>
+	inline Vector128 SIMD_CALL_CONVENTION VectorSwizzle(Vector128Utility::ConstVector128 vector) noexcept
+	{
+		static_assert(swizzleX <= 3, "SwizzleX template parameter out of range");
+		static_assert(swizzleY <= 3, "SwizzleY template parameter out of range");
+		static_assert(swizzleZ <= 3, "SwizzleZ template parameter out of range");
+		static_assert(swizzleW <= 3, "SwizzleW template parameter out of range");
+
+		#if PLATFORM_CPU_INSTRUCTION_SSE && !defined(PLATFORM_CPU_INSTRUCTION_NOT_USE)
+			return PERMUTE_PS(vector, _MM_SHUFFLE(swizzleW, swizzleZ, swizzleY, swizzleX));
+		#else
+			return Vector128Utility::Swizzle(vector, swizzleX, swizzleY, swizzleZ, sw)
+		#endif
+	}
+
+
+	template<> constexpr Vector128 SIMD_CALL_CONVENTION VectorSwizzle<0, 1, 2, 3>(Vector128Utility::ConstVector128 vector) noexcept { return vector; }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorSwizzle<0, 1, 0, 1>(Vector128Utility::ConstVector128 vector) noexcept { return _mm_movelh_ps(vector, vector); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorSwizzle<2, 3, 2, 3>(Vector128Utility::ConstVector128 vector) noexcept { return _mm_movehl_ps(vector, vector); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorSwizzle<0, 0, 1, 1>(Vector128Utility::ConstVector128 vector) noexcept { return _mm_unpacklo_ps(vector, vector); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorSwizzle<2, 2, 3, 3>(Vector128Utility::ConstVector128 vector) noexcept { return _mm_unpackhi_ps(vector, vector); }
+	#pragma endregion Swizzle
+	#pragma region Permute
+	namespace internal
+	{
+		// Slow path fallback for permutes that do not map to a single SSE shuffle opcode.
+		template<gu::uint32 Shuffle, bool WhichX, bool WhichY, bool WhichZ, bool WhichW> struct PermuteHelper
+		{
+			static Vector128 SIMD_CALL_CONVENTION Permute(Vector128Utility::ConstVector128 v1, Vector128Utility::ConstVector128 v2) noexcept
+			{
+				static const Vector128u selectMask =
+				{ { {
+						WhichX ? 0xFFFFFFFF : 0,
+						WhichY ? 0xFFFFFFFF : 0,
+						WhichZ ? 0xFFFFFFFF : 0,
+						WhichW ? 0xFFFFFFFF : 0,
+				} } };
+
+				Vector128 shuffled1 = PERMUTE_PS(v1, Shuffle);
+				Vector128 shuffled2 = PERMUTE_PS(v2, Shuffle);
+
+				Vector128 masked1 = _mm_andnot_ps(selectMask, shuffled1);
+				Vector128 masked2 = _mm_and_ps(selectMask, shuffled2);
+
+				return _mm_or_ps(masked1, masked2);
+			}
+		};
+
+		// Fast path for permutes that only read from the first vector.
+		template<gu::uint32 Shuffle> struct PermuteHelper<Shuffle, false, false, false, false>
+		{
+			static Vector128 SIMD_CALL_CONVENTION Permute(Vector128Utility::ConstVector128 v1, Vector128Utility::ConstVector128) noexcept { return PERMUTE_PS(v1, Shuffle); }
+		};
+
+		// Fast path for permutes that only read from the second vector.
+		template<gu::uint32 Shuffle> struct PermuteHelper<Shuffle, true, true, true, true>
+		{
+			static Vector128 SIMD_CALL_CONVENTION Permute(Vector128Utility::ConstVector128, Vector128Utility::ConstVector128 v2) noexcept { return PERMUTE_PS(v2, Shuffle); }
+		};
+
+		// Fast path for permutes that read XY from the first vector, ZW from the second.
+		template<gu::uint32 Shuffle> struct PermuteHelper<Shuffle, false, false, true, true>
+		{
+			static Vector128 SIMD_CALL_CONVENTION Permute(Vector128Utility::ConstVector128 v1, Vector128Utility::ConstVector128 v2) noexcept { return _mm_shuffle_ps(v1, v2, Shuffle); }
+		};
+
+		// Fast path for permutes that read XY from the second vector, ZW from the first.
+		template<gu::uint32 Shuffle> struct PermuteHelper<Shuffle, true, true, false, false>
+		{
+			static Vector128 SIMD_CALL_CONVENTION Permute(Vector128Utility::ConstVector128 v1, Vector128Utility::ConstVector128 v2) noexcept { return _mm_shuffle_ps(v2, v1, Shuffle); }
+		};
+	}
+
+
+	template<gu::uint32 permuteX, gu::uint32 permuteY, gu::uint32 permuteZ, gu::uint32 permuteW>
+	inline Vector128 SIMD_CALL_CONVENTION VectorPermute(Vector128Utility::ConstVector128 v1, Vector128Utility::ConstVector128 v2) noexcept
+	{
+		static_assert(permuteX <= 7, "PermuteX template parameter out of range");
+		static_assert(permuteY <= 7, "PermuteY template parameter out of range");
+		static_assert(permuteZ <= 7, "PermuteZ template parameter out of range");
+		static_assert(permuteW <= 7, "PermuteW template parameter out of range");
+
+	#if PLATFORM_CPU_INSTRUCTION_SSE && !defined(_XM_NO_INTRINSICS_)
+		constexpr gu::uint32 shuffle = _MM_SHUFFLE(permuteW & 3, permuteZ & 3, permuteY & 3, permuteX & 3);
+
+		constexpr bool WhichX = PermuteX > 3;
+		constexpr bool WhichY = PermuteY > 3;
+		constexpr bool WhichZ = PermuteZ > 3;
+		constexpr bool WhichW = PermuteW > 3;
+
+		return internal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(v1, v2);
+	#else
+		return Vector128Utility::Permute(v1, v2, permuteX, permuteY, permuteZ, permuteW);
+	#endif
+	}
+
+	// Special-case permute templates
+	template<> constexpr Vector128 SIMD_CALL_CONVENTION VectorPermute<0, 1, 2, 3>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128) noexcept { return V1; }
+	template<> constexpr Vector128 SIMD_CALL_CONVENTION VectorPermute<4, 5, 6, 7>(Vector128Utility::ConstVector128, Vector128Utility::ConstVector128 V2) noexcept { return V2; }
+
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<0, 1, 4, 5>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_movelh_ps(V1, V2); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<6, 7, 2, 3>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_movehl_ps(V1, V2); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<0, 4, 1, 5>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_unpacklo_ps(V1, V2); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<2, 6, 3, 7>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_unpackhi_ps(V1, V2); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<2, 3, 6, 7>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_castpd_ps(_mm_unpackhi_pd(_mm_castps_pd(V1), _mm_castps_pd(V2))); }
+	#pragma endregion Permute
 	#pragma region Setter
 	/****************************************************************************
 	*                       Zero

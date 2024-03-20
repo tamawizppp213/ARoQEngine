@@ -27,7 +27,23 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-
+namespace gm::simd::sse
+{
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<4, 1, 2, 3>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0x1); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<0, 5, 2, 3>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0x2); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<4, 5, 2, 3>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0x3); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<0, 1, 6, 3>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0x4); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<4, 1, 6, 3>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0x5); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<0, 5, 6, 3>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0x6); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<4, 5, 6, 3>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0x7); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<0, 1, 2, 7>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0x8); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<4, 1, 2, 7>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0x9); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<0, 5, 2, 7>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0xA); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<4, 5, 2, 7>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0xB); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<0, 1, 6, 7>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0xC); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<4, 1, 6, 7>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0xD); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorPermute<0, 5, 6, 7>(Vector128Utility::ConstVector128 V1, Vector128Utility::ConstVector128 V2) noexcept { return _mm_blend_ps(V1, V2, 0xE); }
+}
 namespace gm::simd::sse4
 {
 	/****************************************************************************

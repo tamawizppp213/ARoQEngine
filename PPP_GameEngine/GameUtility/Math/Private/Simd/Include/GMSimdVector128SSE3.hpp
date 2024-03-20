@@ -23,7 +23,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-
+namespace gm::simd::sse
+{
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorSwizzle<0, 0, 2, 2>(Vector128Utility::ConstVector128 V) noexcept { return _mm_moveldup_ps(V); }
+	template<> inline Vector128 SIMD_CALL_CONVENTION VectorSwizzle<1, 1, 3, 3>(Vector128Utility::ConstVector128 V) noexcept { return _mm_movehdup_ps(V); }
+}
 namespace gm::simd::sse3
 {
 	/****************************************************************************
@@ -78,6 +82,7 @@ namespace gm::simd::sse3
 		*****************************************************************************/
 	};
 
+	
 #pragma region Implement
 	/****************************************************************************
 	*                      DotVector2
