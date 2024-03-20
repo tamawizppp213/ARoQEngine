@@ -5,8 +5,8 @@
 ///             @date   2024/03/03 3:58:44
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GM_VECTOR3F_HPP
-#define GM_VECTOR3F_HPP
+#ifndef GM_VECTOR2F_HPP
+#define GM_VECTOR2F_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -101,10 +101,10 @@ namespace gm
 		static const Vector2f ONE;
 
 		// @brief : (1,0,0,0)
-		static const Vector2f XAXIS;
+		static const Vector2f X_AXIS;
 
 		// @brief : (0,1,0,0)
-		static const Vector2f YAXIS;
+		static const Vector2f Y_AXIS;
 
 #pragma endregion Default Vector
 

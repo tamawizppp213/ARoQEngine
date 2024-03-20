@@ -17,9 +17,9 @@ using namespace gm;
 
 const Vector3f Vector3f::ZERO = Vector3f(0, 0, 0);
 const Vector3f Vector3f::ONE = Vector3f(1, 1, 1);
-const Vector3f Vector3f::XAXIS = Vector3f(1, 0, 0);
-const Vector3f Vector3f::YAXIS = Vector3f(0, 1, 0);
-const Vector3f Vector3f::ZAXIS = Vector3f(0, 0, 1);
+const Vector3f Vector3f::X_AXIS = Vector3f(1, 0, 0);
+const Vector3f Vector3f::Y_AXIS = Vector3f(0, 1, 0);
+const Vector3f Vector3f::Z_AXIS = Vector3f(0, 0, 1);
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////

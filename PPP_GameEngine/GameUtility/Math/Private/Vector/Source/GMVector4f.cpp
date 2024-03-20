@@ -17,10 +17,10 @@ using namespace gm;
 
 const Vector4f Vector4f::ZERO = Vector4f(0, 0, 0, 0);
 const Vector4f Vector4f::ONE  = Vector4f(1, 1, 1, 1);
-const Vector4f Vector4f::XAXIS = Vector4f(1, 0, 0, 0);
-const Vector4f Vector4f::YAXIS = Vector4f(0, 1, 0, 0);
-const Vector4f Vector4f::ZAXIS = Vector4f(0, 0, 1, 0);
-const Vector4f Vector4f::WAXIS = Vector4f(0, 0, 0, 1);
+const Vector4f Vector4f::X_AXIS = Vector4f(1, 0, 0, 0);
+const Vector4f Vector4f::Y_AXIS = Vector4f(0, 1, 0, 0);
+const Vector4f Vector4f::Z_AXIS = Vector4f(0, 0, 1, 0);
+const Vector4f Vector4f::W_AXIS = Vector4f(0, 0, 0, 1);
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////

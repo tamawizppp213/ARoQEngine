@@ -17,8 +17,8 @@ using namespace gm;
 
 const Vector2f Vector2f::ZERO = Vector2f(0, 0);
 const Vector2f Vector2f::ONE   = Vector2f(1, 1);
-const Vector2f Vector2f::XAXIS = Vector2f(1, 0);
-const Vector2f Vector2f::YAXIS = Vector2f(0, 1);
+const Vector2f Vector2f::X_AXIS = Vector2f(1, 0);
+const Vector2f Vector2f::Y_AXIS = Vector2f(0, 1);
 //////////////////////////////////////////////////////////////////////////////////
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
