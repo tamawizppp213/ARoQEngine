@@ -3197,9 +3197,9 @@ namespace gm::simd::non
 	*  @param[out] Vector128* sin
 	*  @param[out] Vector128* cos
 	*
-	*  @return 　　Vector128
+	*  @return 　　void
 	*****************************************************************************/
-	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::SinCos(ConstVector128 input, Vector128* sin, Vector128* cos) noexcept
+	inline void SIMD_CALL_CONVENTION Vector128Utility::SinCos(ConstVector128 input, Vector128* sin, Vector128* cos) noexcept
 	{
 		Check(sin != nullptr);
 		Check(cos != nullptr);
