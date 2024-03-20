@@ -47,7 +47,6 @@ namespace gm::simd::avx
 			__m256d V;
 		};
 
-		inline operator Vector256()    const noexcept { return V; }
 		inline operator const double* () const noexcept { return D; }
 		inline operator __m256d() const noexcept { return V; }
 		inline Vector256d& operator=(const __m256d& v) { V = v;}
