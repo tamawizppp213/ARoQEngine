@@ -97,6 +97,14 @@ namespace gm::simd::sse
 	constexpr gu::uint32 GM_SWIZZLE_Y = 1;
 	constexpr gu::uint32 GM_SWIZZLE_Z = 2;
 	constexpr gu::uint32 GM_SWIZZLE_W = 3;
+	constexpr gu::uint32 GM_PERMUTE_0X = 0;
+	constexpr gu::uint32 GM_PERMUTE_0Y = 1;
+	constexpr gu::uint32 GM_PERMUTE_0Z = 2;
+	constexpr gu::uint32 GM_PERMUTE_0W = 3;
+	constexpr gu::uint32 GM_PERMUTE_1X = 4;
+	constexpr gu::uint32 GM_PERMUTE_1Y = 5;
+	constexpr gu::uint32 GM_PERMUTE_1Z = 6;
+	constexpr gu::uint32 GM_PERMUTE_1W = 7;
 
 	GLOBAL_CONST Vector128f VECTOR_128F_ONE            = { { {  1.0f, 1.0f, 1.0f, 1.0f  } } };
 	GLOBAL_CONST Vector128f VECTOR_128F_ZERO           = { { {  0.0f, 0.0f, 0.0f, 0.0f  } } };
@@ -114,10 +122,14 @@ namespace gm::simd::sse
 	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R1    = { { { 0.0f, 1.0f, 0.0f, 0.0f } } };
 	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R2    = { { { 0.0f, 0.0f, 1.0f, 0.0f } } };
 	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R3    = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
-	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1000    = { { { XM_SELECT_1, XM_SELECT_0, XM_SELECT_0, XM_SELECT_0 } } };
-	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1100    = { { { XM_SELECT_1, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0 } } };
-	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1110    = { { { XM_SELECT_1, XM_SELECT_1, XM_SELECT_1, XM_SELECT_0 } } };
-	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1011    = { { { XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_1 } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_NEGATIVE_IDENTITY_R0 = { { { -1.0f, 0.0f, 0.0f, 0.0f } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_NEGATIVE_IDENTITY_R1 = { { { 0.0f, -1.0f, 0.0f, 0.0f } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_NEGATIVE_IDENTITY_R2 = { { { 0.0f, 0.0f, -1.0f, 0.0f } } };
+	GLOBAL_CONST Vector128f VECTOR_128F_NEGATIVE_IDENTITY_R3 = { { { 0.0f, 0.0f, 0.0f, -1.0f } } };
+	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1000    = { { { GM_SELECT_1, GM_SELECT_0, GM_SELECT_0, GM_SELECT_0 } } };
+	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1100    = { { { GM_SELECT_1, GM_SELECT_1, GM_SELECT_0, GM_SELECT_0 } } };
+	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1110    = { { { GM_SELECT_1, GM_SELECT_1, GM_SELECT_1, GM_SELECT_0 } } };
+	GLOBAL_CONST Vector128u VECTOR_128F_SELECT_1011    = { { { GM_SELECT_1, GM_SELECT_0, GM_SELECT_1, GM_SELECT_1 } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_MASK_X         = { { {  0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000   } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_MASK_Y         = { { {  0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000   } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_MASK_Z         = { { {  0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000   } } };
@@ -423,6 +435,16 @@ namespace gm::simd::sse
 		__forceinline static bool      SIMD_CALL_CONVENTION InBoundsVector3(ConstVector128 vector, ConstVector128 bounds) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION InBoundsVector4(ConstVector128 vector, ConstVector128 bounds) noexcept;
 		__forceinline static Vector128 SIMD_CALL_CONVENTION InBoundsVectorEach(ConstVector128 vector, ConstVector128 bounds) noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : ç∂ï˚å¸Ç…shiftCountï™ (3Ç‹Ç≈)óvëfÇâÒì]Ç∑ÇÈ
+		/*----------------------------------------------------------------------*/
+		__forceinline static Vector128 SIMD_CALL_CONVENTION RotateLeft(ConstVector128 vector, const gu::uint32 shiftCount) noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : âEï˚å¸Ç…shiftCountï™ (3Ç‹Ç≈)óvëfÇâÒì]Ç∑ÇÈ
+		/*----------------------------------------------------------------------*/
+		__forceinline static Vector128 SIMD_CALL_CONVENTION RotateRight(ConstVector128 vector, const gu::uint32 shiftCount) noexcept;
 
 		#pragma endregion Operator
 
@@ -732,6 +754,7 @@ namespace gm::simd::sse
 	template<> inline Vector128 SIMD_CALL_CONVENTION VectorSwizzle<2, 2, 3, 3>(Vector128Utility::ConstVector128 vector) noexcept { return _mm_unpackhi_ps(vector, vector); }
 	#pragma endregion Swizzle
 	#pragma region Permute
+	// SIMDââéZÇÃÉoÅ[ÉWÉáÉìÇ≤Ç∆Ç…ì¡ï Ç»ëŒâûÇ™ïKóvÇ∆Ç»ÇÈPermuteââéZ
 	namespace internal
 	{
 		// Slow path fallback for permutes that do not map to a single SSE shuffle opcode.
@@ -2384,6 +2407,42 @@ namespace gm::simd::sse
 		negateBound = _mm_cmple_ps(negateBound, vector); // greater or equal
 		lessOrEqual = _mm_and_ps(lessOrEqual, negateBound);
 		return lessOrEqual;
+	}
+
+	/****************************************************************************
+	*                       RotateLeft
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::RotateLeft(ConstVector128 vector, const gu::uint32 shiftCount) noexcept
+	*
+	*  @brief     ç∂ï˚å¸Ç…shiftCountï™ (3Ç‹Ç≈)óvëfÇâÒì]Ç∑ÇÈ
+	*
+	*  @param[in] ConstVector128 vector
+	*  @param[in] const gu::uint32 shiftCount
+	*
+	*  @return Å@Å@Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::RotateLeft(ConstVector128 vector, const gu::uint32 shiftCount) noexcept
+	{
+		Check(shiftCount < 4);
+		return Swizzle(vector, shiftCount & 3, (shiftCount + 1) & 3, (shiftCount + 2) & 3, (shiftCount + 3) & 3);
+	}
+
+	/****************************************************************************
+	*                       RotateRight
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::RotateRight(ConstVector128 vector, const gu::uint32 shiftCount) noexcept
+	*
+	*  @brief     âEï˚å¸Ç…shiftCountï™ (3Ç‹Ç≈)óvëfÇâÒì]Ç∑ÇÈ
+	*
+	*  @param[in] ConstVector128 vector
+	*  @param[in] const gu::uint32 shiftCount
+	*
+	*  @return Å@Å@Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::RotateRight(ConstVector128 vector, const gu::uint32 shiftCount) noexcept
+	{
+		Check(shiftCount < 4);
+		return Swizzle(vector, (4 - shiftCount) & 3, (5 - shiftCount) & 3, (6 - shiftCount) & 3, (7 - shiftCount) & 3);
 	}
 
 	#pragma endregion Operator
