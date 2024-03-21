@@ -18,11 +18,11 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 #if defined(PLATFORM_CPU_INSTRUCTION_NOT_USE)
-#define VECTOR128 gm::simd::non::Vector128
+	#define VECTOR128 gm::simd::non::Vector128
 #elif PLATFORM_CPU_INSTRUCTION_NEON
-#define VECTOR128 gm::simd::neon::Vector128 
+	#define VECTOR128 gm::simd::neon::Vector128 
 #else
-#define VECTOR128 gm::simd::sse::Vector128
+	#define VECTOR128 gm::simd::sse::Vector128
 #endif
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class

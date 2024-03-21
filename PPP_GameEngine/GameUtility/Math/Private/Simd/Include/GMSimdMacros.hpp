@@ -214,7 +214,11 @@ namespace gm::simd
 	#if PLATFORM_CPU_INSTRUCTION_NEON
 		#define SIMD_NAME_SPACE gm::simd::neon
 		#define SIMD_NAME Neon
-	#elif PLATFORM_CPU_INSTRUCTION_AVX || PLATFORM_CPU_INSTRUCTION_AVX2
+	#elif PLATFORM_CPU_INSTRUCTION_AVX2
+		#define SIMD_NAME_SPACE gm::simd::avx2
+		#define SIMD_STATIC_FUNCTION_NAME(className, functionName) gm::simd::avx2::##className::##functionName
+		#define SIMD_NAME AVX2
+	#elif PLATFORM_CPU_INSTRUCTION_AVX
 		#define SIMD_NAME_SPACE gm::simd::avx
 		#define SIMD_STATIC_FUNCTION_NAME(className, functionName) gm::simd::avx::##className::##functionName
 		#define SIMD_NAME AVX

@@ -29,7 +29,7 @@ namespace gm::simd::avx2
 	*  @class     GMSimdVector256AVX2
 	*  @brief     temp
 	*****************************************************************************/
-	class Vector256Utility : gm::simd::avx::Vector256Utility
+	class Vector256Utility : public gm::simd::avx::Vector256Utility
 	{
 	public:
 		/****************************************************************************

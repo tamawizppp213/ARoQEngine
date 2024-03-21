@@ -391,7 +391,43 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Matrix\Include\GMMatrix3f.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Matrix\Include\GMMatrix4f.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMacros.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128AVX.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128AVX2.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128SSE.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128SSE2.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128SSE3.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128SSE4.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdVector128AVX2.hpp">
       <SubType>
       </SubType>
     </ClInclude>

@@ -1206,6 +1206,33 @@
     <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector2d.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Matrix\Include\GMMatrix3f.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Matrix\Include\GMMatrix4f.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128SSE.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128SSE2.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128SSE3.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128SSE4.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128AVX.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdMatrix128AVX2.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdVector128AVX2.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
