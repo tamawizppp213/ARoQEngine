@@ -89,6 +89,9 @@ namespace gm::simd::sse
 	*****************************************************************************/
 	class Matrix128Utility
 	{
+	private:
+		using VectorFunction = Vector128Utility;
+
 	public:
 	#if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || _GM_VECTORCALL_ || __aarch64__ )
 		using ConstMatrix128 = const Matrix128;
@@ -358,10 +361,10 @@ namespace gm::simd::sse
 	{
 		return Matrix128
 		(
-			Vector128Utility::Set(m00, m01, m02, m03),
-			Vector128Utility::Set(m10, m11, m12, m13),
-			Vector128Utility::Set(m20, m21, m22, m23),
-			Vector128Utility::Set(m30, m31, m32, m33)
+			VectorFunction::Set(m00, m01, m02, m03),
+			VectorFunction::Set(m10, m11, m12, m13),
+			VectorFunction::Set(m20, m21, m22, m23),
+			VectorFunction::Set(m30, m31, m32, m33)
 		);
 	}
 	#pragma endregion Setter
@@ -573,9 +576,9 @@ namespace gm::simd::sse
 		V02 = _mm_shuffle_ps(MT.Row[2], MT.Row[0], _MM_SHUFFLE(3, 1, 3, 1));
 		V12 = _mm_shuffle_ps(MT.Row[3], MT.Row[1], _MM_SHUFFLE(2, 0, 2, 0));
 
-		D0 = Vector128Utility::NegativeMultiplySubtract(V00, V10, D0);
-		D1 = Vector128Utility::NegativeMultiplySubtract(V01, V11, D1);
-		D2 = Vector128Utility::NegativeMultiplySubtract(V02, V12, D2);
+		D0 = VectorFunction::NegativeMultiplySubtract(V00, V10, D0);
+		D1 = VectorFunction::NegativeMultiplySubtract(V01, V11, D1);
+		D2 = VectorFunction::NegativeMultiplySubtract(V02, V12, D2);
 		// V11 = D0Y,D0W,D2Y,D2Y
 		V11 = _mm_shuffle_ps(D0, D2, _MM_SHUFFLE(1, 1, 3, 1));
 		V00 = PERMUTE_PS(MT.Row[1], _MM_SHUFFLE(1, 0, 2, 1));
@@ -607,10 +610,10 @@ namespace gm::simd::sse
 		V03 = PERMUTE_PS(MT.Row[2], _MM_SHUFFLE(1, 3, 2, 3));
 		V13 = _mm_shuffle_ps(D1, V13, _MM_SHUFFLE(0, 2, 1, 2));
 
-		C0 = Vector128Utility::NegativeMultiplySubtract(V00, V10, C0);
-		C2 = Vector128Utility::NegativeMultiplySubtract(V01, V11, C2);
-		C4 = Vector128Utility::NegativeMultiplySubtract(V02, V12, C4);
-		C6 = Vector128Utility::NegativeMultiplySubtract(V03, V13, C6);
+		C0 = VectorFunction::NegativeMultiplySubtract(V00, V10, C0);
+		C2 = VectorFunction::NegativeMultiplySubtract(V01, V11, C2);
+		C4 = VectorFunction::NegativeMultiplySubtract(V02, V12, C4);
+		C6 = VectorFunction::NegativeMultiplySubtract(V03, V13, C6);
 
 		V00 = PERMUTE_PS(MT.Row[1], _MM_SHUFFLE(0, 3, 0, 3));
 		// V10 = D0Z,D0Z,D2X,D2Y
@@ -651,10 +654,10 @@ namespace gm::simd::sse
 		C4 = PERMUTE_PS(C4, _MM_SHUFFLE(3, 1, 2, 0));
 		C6 = PERMUTE_PS(C6, _MM_SHUFFLE(3, 1, 2, 0));
 		// Get the determinant
-		Vector128 vTemp = Vector128Utility::Set(Vector128Utility::DotVector4(C0, MT.Row[0]));
+		Vector128 vTemp = VectorFunction::Set(VectorFunction::DotVector4(C0, MT.Row[0]));
 		if (determinant != nullptr)
 		{
-			*determinant = Vector128Utility::GetX(vTemp);
+			*determinant = VectorFunction::GetX(vTemp);
 		}
 
 		vTemp = _mm_div_ps(VECTOR_128F_ONE, vTemp);
@@ -688,9 +691,9 @@ namespace gm::simd::sse
 		Vector128 V4 = VectorSwizzle<GM_SWIZZLE_Z, GM_SWIZZLE_Z, GM_SWIZZLE_Y, GM_SWIZZLE_Y>(matrix.Row[2]);
 		Vector128 V5 = VectorSwizzle<GM_SWIZZLE_W, GM_SWIZZLE_W, GM_SWIZZLE_W, GM_SWIZZLE_Z>(matrix.Row[3]);
 
-		Vector128 P0 = Vector128Utility::Multiply(V0, V1);
-		Vector128 P1 = Vector128Utility::Multiply(V2, V3);
-		Vector128 P2 = Vector128Utility::Multiply(V4, V5);
+		Vector128 P0 = VectorFunction::Multiply(V0, V1);
+		Vector128 P1 = VectorFunction::Multiply(V2, V3);
+		Vector128 P2 = VectorFunction::Multiply(V4, V5);
 
 		V0 = VectorSwizzle<GM_SWIZZLE_Z, GM_SWIZZLE_Z, GM_SWIZZLE_Y, GM_SWIZZLE_Y>(matrix.Row[2]);
 		V1 = VectorSwizzle<GM_SWIZZLE_Y, GM_SWIZZLE_X, GM_SWIZZLE_X, GM_SWIZZLE_X>(matrix.Row[3]);
@@ -699,20 +702,20 @@ namespace gm::simd::sse
 		V4 = VectorSwizzle<GM_SWIZZLE_W, GM_SWIZZLE_W, GM_SWIZZLE_W, GM_SWIZZLE_Z>(matrix.Row[2]);
 		V5 = VectorSwizzle<GM_SWIZZLE_Z, GM_SWIZZLE_Z, GM_SWIZZLE_Y, GM_SWIZZLE_Y>(matrix.Row[3]);
 
-		P0 = Vector128Utility::NegativeMultiplySubtract(V0, V1, P0);
-		P1 = Vector128Utility::NegativeMultiplySubtract(V2, V3, P1);
-		P2 = Vector128Utility::NegativeMultiplySubtract(V4, V5, P2);
+		P0 = VectorFunction::NegativeMultiplySubtract(V0, V1, P0);
+		P1 = VectorFunction::NegativeMultiplySubtract(V2, V3, P1);
+		P2 = VectorFunction::NegativeMultiplySubtract(V4, V5, P2);
 
 		V0 = VectorSwizzle<GM_SWIZZLE_W, GM_SWIZZLE_W, GM_SWIZZLE_W, GM_SWIZZLE_Z>(matrix.Row[1]);
 		V1 = VectorSwizzle<GM_SWIZZLE_Z, GM_SWIZZLE_Z, GM_SWIZZLE_Y, GM_SWIZZLE_Y>(matrix.Row[1]);
 		V2 = VectorSwizzle<GM_SWIZZLE_Y, GM_SWIZZLE_X, GM_SWIZZLE_X, GM_SWIZZLE_X>(matrix.Row[1]);
 
-		Vector128 S = Vector128Utility::Multiply(matrix.Row[0], Sign.V);
-		Vector128 R = Vector128Utility::Multiply(V0, P0);
-		R = Vector128Utility::NegativeMultiplySubtract(V1, P1, R);
-		R = Vector128Utility::MultiplyAdd(V2, P2, R);
+		Vector128 S = VectorFunction::Multiply(matrix.Row[0], Sign.V);
+		Vector128 R = VectorFunction::Multiply(V0, P0);
+		R = VectorFunction::NegativeMultiplySubtract(V1, P1, R);
+		R = VectorFunction::MultiplyAdd(V2, P2, R);
 
-		return Vector128Utility::DotVector4(S, R);
+		return VectorFunction::DotVector4(S, R);
 	}
 
 	/*----------------------------------------------------------------------
@@ -759,30 +762,30 @@ namespace gm::simd::sse
 	//	{
 	//		ppvBasis[a][0] = pvCanonicalBasis[a][0];
 	//	}
-	//	ppvBasis[a][0] = Vector128Utility::NormalizeVector3(ppvBasis[a][0]);
+	//	ppvBasis[a][0] = VectorFunction::NormalizeVector3(ppvBasis[a][0]);
 
 	//	if (pfScales[b] < internal::DECOMPOSE_EPSILON)
 	//	{
 	//		size_t aa, bb, cc;
 	//		float fAbsX, fAbsY, fAbsZ;
 
-	//		fAbsX = fabsf(Vector128Utility::GetX(ppvBasis[a][0]));
-	//		fAbsY = fabsf(Vector128Utility::GetY(ppvBasis[a][0]));
-	//		fAbsZ = fabsf(Vector128Utility::GetZ(ppvBasis[a][0]));
+	//		fAbsX = fabsf(VectorFunction::GetX(ppvBasis[a][0]));
+	//		fAbsY = fabsf(VectorFunction::GetY(ppvBasis[a][0]));
+	//		fAbsZ = fabsf(VectorFunction::GetZ(ppvBasis[a][0]));
 
 	//		RANK_DECOMPOSE(aa, bb, cc, fAbsX, fAbsY, fAbsZ);
 
-	//		ppvBasis[b][0] = Vector128Utility::CrossVector3(ppvBasis[a][0], pvCanonicalBasis[cc][0]);
+	//		ppvBasis[b][0] = VectorFunction::CrossVector3(ppvBasis[a][0], pvCanonicalBasis[cc][0]);
 	//	}
 
-	//	ppvBasis[b][0] = Vector128Utility::NormalizeVector3(ppvBasis[b][0]);
+	//	ppvBasis[b][0] = VectorFunction::NormalizeVector3(ppvBasis[b][0]);
 
 	//	if (pfScales[c] < internal::DECOMPOSE_EPSILON)
 	//	{
-	//		ppvBasis[c][0] = Vector128Utility::CrossVector3(ppvBasis[a][0], ppvBasis[b][0]);
+	//		ppvBasis[c][0] = VectorFunction::CrossVector3(ppvBasis[a][0], ppvBasis[b][0]);
 	//	}
 
-	//	ppvBasis[c][0] = Vector128Utility::NormalizeVector3(ppvBasis[c][0]);
+	//	ppvBasis[c][0] = VectorFunction::NormalizeVector3(ppvBasis[c][0]);
 
 	//	float fDet = Determinant(matTemp);
 
@@ -791,7 +794,7 @@ namespace gm::simd::sse
 	//	{
 	//		// switch coordinate system by negating the scale and inverting the basis vector on the x-axis
 	//		pfScales[a] = -pfScales[a];
-	//		ppvBasis[a][0] = Vector128Utility::Negate(ppvBasis[a][0]);
+	//		ppvBasis[a][0] = VectorFunction::Negate(ppvBasis[a][0]);
 
 	//		fDet = -fDet;
 	//	}
@@ -854,7 +857,7 @@ namespace gm::simd::sse
 			VECTOR_128F_IDENTITY_R0.V,
 			VECTOR_128F_IDENTITY_R1.V,
 			VECTOR_128F_IDENTITY_R2.V,
-			Vector128Utility::Set(offsetX, offsetY, offsetZ, 1.0f)
+			VectorFunction::Set(offsetX, offsetY, offsetZ, 1.0f)
 		);
 	}
 
@@ -876,7 +879,7 @@ namespace gm::simd::sse
 			VECTOR_128F_IDENTITY_R0.V,
 			VECTOR_128F_IDENTITY_R1.V,
 			VECTOR_128F_IDENTITY_R2.V,
-			Vector128Utility::Select(VECTOR_128F_IDENTITY_R3.V, offset, VECTOR_128F_SELECT_1110.V)
+			VectorFunction::Select(VECTOR_128F_IDENTITY_R3.V, offset, VECTOR_128F_SELECT_1110.V)
 		);
 	}
 
@@ -1094,7 +1097,7 @@ namespace gm::simd::sse
 	*****************************************************************************/
 	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationRollPitchYaw(const float roll, const float pitch, const float yaw) noexcept
 	{
-		return RotationRollPitchYaw(Vector128Utility::Set(roll, pitch, yaw, 0.0f));
+		return RotationRollPitchYaw(VectorFunction::Set(roll, pitch, yaw, 0.0f));
 	}
 
 	/****************************************************************************
@@ -1114,7 +1117,7 @@ namespace gm::simd::sse
 
 		Vector128 sinAngles = {};
 		Vector128 cosAngles = {};
-		Vector128Utility::SinCos(rollPitchYaw, &sinAngles, &cosAngles);
+		VectorFunction::SinCos(rollPitchYaw, &sinAngles, &cosAngles);
 
 		Vector128 P0 = VectorPermute<GM_PERMUTE_1X, GM_PERMUTE_0Z, GM_PERMUTE_1Z, GM_PERMUTE_1X>(sinAngles, cosAngles);
 		Vector128 Y0 = VectorPermute<GM_PERMUTE_0Y, GM_PERMUTE_1X, GM_PERMUTE_1X, GM_PERMUTE_1Y>(sinAngles, cosAngles);
@@ -1122,14 +1125,14 @@ namespace gm::simd::sse
 		Vector128 Y1 = VectorPermute<GM_PERMUTE_1Y, GM_PERMUTE_1Y, GM_PERMUTE_0Y, GM_PERMUTE_0Y>(sinAngles, cosAngles);
 		Vector128 P2 = VectorPermute<GM_PERMUTE_0Z, GM_PERMUTE_1Z, GM_PERMUTE_0Z, GM_PERMUTE_1Z>(sinAngles, cosAngles);
 		Vector128 P3 = VectorPermute<GM_PERMUTE_0Y, GM_PERMUTE_0Y, GM_PERMUTE_1Y, GM_PERMUTE_1Y>(sinAngles, cosAngles);
-		Vector128 Y2 = Vector128Utility::SplatX(sinAngles);
-		Vector128 NS = Vector128Utility::Negate(sinAngles);
+		Vector128 Y2 = VectorFunction::SplatX(sinAngles);
+		Vector128 NS = VectorFunction::Negate(sinAngles);
 
-		Vector128 Q0 = Vector128Utility::Multiply(P0, Y0);
-		Vector128 Q1 = Vector128Utility::Multiply(P1, Sign.V);
-		Q1 = Vector128Utility::Multiply(Q1, Y1);
-		Vector128 Q2 = Vector128Utility::Multiply(P2, Y2);
-		Q2 = Vector128Utility::MultiplyAdd(Q2, P3, Q1);
+		Vector128 Q0 = VectorFunction::Multiply(P0, Y0);
+		Vector128 Q1 = VectorFunction::Multiply(P1, Sign.V);
+		Q1 = VectorFunction::Multiply(Q1, Y1);
+		Vector128 Q2 = VectorFunction::Multiply(P2, Y2);
+		Q2 = VectorFunction::MultiplyAdd(Q2, P3, Q1);
 
 		Vector128 V0 = VectorPermute<GM_PERMUTE_1X, GM_PERMUTE_0Y, GM_PERMUTE_1Z, GM_PERMUTE_0W>(Q0, Q2);
 		Vector128 V1 = VectorPermute<GM_PERMUTE_1Y, GM_PERMUTE_0Z, GM_PERMUTE_1W, GM_PERMUTE_0W>(Q0, Q2);
@@ -1137,9 +1140,9 @@ namespace gm::simd::sse
 
 		return Matrix128
 		(
-			Vector128Utility::Select(VECTOR_128F_ZERO, V0, VECTOR_128F_SELECT_1110.V),
-			Vector128Utility::Select(VECTOR_128F_ZERO, V1, VECTOR_128F_SELECT_1110.V),
-			Vector128Utility::Select(VECTOR_128F_ZERO, V2, VECTOR_128F_SELECT_1110.V),
+			VectorFunction::Select(VECTOR_128F_ZERO, V0, VECTOR_128F_SELECT_1110.V),
+			VectorFunction::Select(VECTOR_128F_ZERO, V1, VECTOR_128F_SELECT_1110.V),
+			VectorFunction::Select(VECTOR_128F_ZERO, V2, VECTOR_128F_SELECT_1110.V),
 			VECTOR_128F_IDENTITY_R3
 		);
 	}
@@ -1219,10 +1222,10 @@ namespace gm::simd::sse
 
 	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationAxis(Vector128Utility::ConstVector128 axis, const float radian) noexcept
 	{
-		Check(!Vector128Utility::EqualVector3(axis, VECTOR_128F_ZERO));
-		Check(!Vector128Utility::IsInfiniteVector3(axis));
+		Check(!VectorFunction::EqualVector3(axis, VECTOR_128F_ZERO));
+		Check(!VectorFunction::IsInfiniteVector3(axis));
 
-		return RotationNormal(Vector128Utility::NormalizeVector3(axis), radian);
+		return RotationNormal(VectorFunction::NormalizeVector3(axis), radian);
 	}
 
 	/****************************************************************************
@@ -1290,11 +1293,11 @@ namespace gm::simd::sse
 	//	static const Vector128u select0001 = { {{ GM_SELECT_0, GM_SELECT_0, GM_SELECT_0, GM_SELECT_1}} };
 
 	//	// shadowPlaneがゼロでなく、無限平面でないことを確認する
-	//	Check(!Vector128Utility::EqualVector3(shadowPlane, VECTOR_128F_ZERO));
-	//	Check(!Vector128Utility::IsInfiniteVector4(shadowPlane));
+	//	Check(!VectorFunction::EqualVector3(shadowPlane, VECTOR_128F_ZERO));
+	//	Check(!VectorFunction::IsInfiniteVector4(shadowPlane));
 
 	//	// shadowPlaneを正規化
-	//	//Vector128 normalizedPlane = Vector128Utility::NormalizeVector3()
+	//	//Vector128 normalizedPlane = VectorFunction::NormalizeVector3()
 
 	//	return Matrix128();
 	//}
@@ -1314,7 +1317,7 @@ namespace gm::simd::sse
 	*****************************************************************************/
 	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookAtLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept
 	{
-		return LookToLH(eyePosition, Vector128Utility::Subtract(focusPosition, eyePosition), worldUp);
+		return LookToLH(eyePosition, VectorFunction::Subtract(focusPosition, eyePosition), worldUp);
 	}
 
 	/****************************************************************************
@@ -1332,7 +1335,7 @@ namespace gm::simd::sse
 	*****************************************************************************/
 	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookAtRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept
 	{
-		return LookToRH(eyePosition, Vector128Utility::Subtract(eyePosition, focusPosition), worldUp);
+		return LookToRH(eyePosition, VectorFunction::Subtract(eyePosition, focusPosition), worldUp);
 	}
 
 	/****************************************************************************
@@ -1350,28 +1353,28 @@ namespace gm::simd::sse
 	*****************************************************************************/
 	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookToLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept
 	{
-		Check(!Vector128Utility::EqualVector3(eyeDirection, VECTOR_128F_ZERO));
-		Check(!Vector128Utility::IsInfiniteVector3(eyeDirection));
-		Check(!Vector128Utility::EqualVector3(worldUp, VECTOR_128F_ZERO));
-		Check(!Vector128Utility::IsInfiniteVector3(worldUp));
+		Check(!VectorFunction::EqualVector3(eyeDirection, VECTOR_128F_ZERO));
+		Check(!VectorFunction::IsInfiniteVector3(eyeDirection));
+		Check(!VectorFunction::EqualVector3(worldUp, VECTOR_128F_ZERO));
+		Check(!VectorFunction::IsInfiniteVector3(worldUp));
 
-		Vector128 normalizedForwardDirection = Vector128Utility::NormalizeVector3(eyeDirection);
-		Vector128 normalizedRightDirection   = Vector128Utility::NormalizeVector3(Vector128Utility::CrossVector3(worldUp, normalizedForwardDirection));
-		Vector128 normalizedUpDirection      = Vector128Utility::CrossVector3(normalizedForwardDirection, normalizedRightDirection);
+		Vector128 normalizedForwardDirection = VectorFunction::NormalizeVector3(eyeDirection);
+		Vector128 normalizedRightDirection   = VectorFunction::NormalizeVector3(VectorFunction::CrossVector3(worldUp, normalizedForwardDirection));
+		Vector128 normalizedUpDirection      = VectorFunction::CrossVector3(normalizedForwardDirection, normalizedRightDirection);
 
-		Vector128 negativeEyePosition = Vector128Utility::Negate(eyePosition);
+		Vector128 negativeEyePosition = VectorFunction::Negate(eyePosition);
 
 		// 視点の位置に対する各方向のオフセットを計算する
-		Vector128 dotRight   = Vector128Utility::Set(Vector128Utility::DotVector3(normalizedRightDirection, negativeEyePosition));
-		Vector128 dotUp      = Vector128Utility::Set(Vector128Utility::DotVector3(normalizedUpDirection, negativeEyePosition));
-		Vector128 dotForward = Vector128Utility::Set(Vector128Utility::DotVector3(normalizedForwardDirection, negativeEyePosition));
+		Vector128 dotRight   = VectorFunction::Set(VectorFunction::DotVector3(normalizedRightDirection, negativeEyePosition));
+		Vector128 dotUp      = VectorFunction::Set(VectorFunction::DotVector3(normalizedUpDirection, negativeEyePosition));
+		Vector128 dotForward = VectorFunction::Set(VectorFunction::DotVector3(normalizedForwardDirection, negativeEyePosition));
 
 		Matrix128 matrix
 		(
-			Vector128Utility::Select(dotRight, normalizedRightDirection, VECTOR_128F_SELECT_1110.V),
-			Vector128Utility::Select(dotRight, normalizedRightDirection, VECTOR_128F_SELECT_1110.V),
-			Vector128Utility::Select(dotRight, normalizedRightDirection, VECTOR_128F_SELECT_1110.V),
-			Vector128Utility::Select(dotRight, normalizedRightDirection, VECTOR_128F_SELECT_1110.V)
+			VectorFunction::Select(dotRight, normalizedRightDirection, VECTOR_128F_SELECT_1110.V),
+			VectorFunction::Select(dotRight, normalizedRightDirection, VECTOR_128F_SELECT_1110.V),
+			VectorFunction::Select(dotRight, normalizedRightDirection, VECTOR_128F_SELECT_1110.V),
+			VectorFunction::Select(dotRight, normalizedRightDirection, VECTOR_128F_SELECT_1110.V)
 		);
 
 		return Transpose(matrix);
