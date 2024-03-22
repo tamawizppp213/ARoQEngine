@@ -1233,6 +1233,24 @@
     <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdVector128AVX2.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128SSE.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128SSE2.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128SSE3.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128SSE4.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128AVX.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128AVX2.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">

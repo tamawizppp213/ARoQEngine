@@ -108,6 +108,16 @@ namespace gm::simd::non
 		__forceinline static Vector128 SIMD_CALL_CONVENTION Zero() noexcept;
 
 		/*----------------------------------------------------------------------
+		*  @brief : 全てのビットがtrue (1)に設定されているVector128を返す
+		/*----------------------------------------------------------------------*/
+		__forceinline static Vector128 SIMD_CALL_CONVENTION TrueIntMask() noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : 全てのビットがfalse (0)に設定されているVector128を返す Zero()と同じ
+		/*----------------------------------------------------------------------*/
+		__forceinline static Vector128 SIMD_CALL_CONVENTION FalseIntMask() noexcept;
+
+		/*----------------------------------------------------------------------
 		*  @brief : float4つからVector128クラスを生成する
 		/*----------------------------------------------------------------------*/
 		__forceinline static Vector128 SIMD_CALL_CONVENTION Set(const float x, const float y, const float z, const float w) noexcept;
@@ -626,6 +636,40 @@ namespace gm::simd::non
 	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Zero() noexcept
 	{
 		Vector128f result = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
+		return result.V;
+	}
+
+	/****************************************************************************
+	*                      TrueIntMask
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::TrueIntMask() noexcept
+	*
+	*  @brief     全てのビットがtrue (1)に設定されているVector128を返す
+	*
+	*  @param[in] void
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::TrueIntMask() noexcept
+	{
+		Vector128f result = { { { 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU  } } };
+		return result.V;
+	}
+
+	/****************************************************************************
+	*                      FalseIntMask
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::FalseIntMask() noexcept
+	*
+	*  @brief     全てのビットがfalse (0)に設定されているVector128を返す
+	*
+	*  @param[in] void
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::FalseIntMask() noexcept
+	{
+		Vector128f result = { { { 0.0f, 0.0f, 0.0f, 0.0f  } } };
 		return result.V;
 	}
 

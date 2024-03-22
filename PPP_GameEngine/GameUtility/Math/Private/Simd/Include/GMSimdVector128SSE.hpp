@@ -117,7 +117,6 @@ namespace gm::simd::sse
 	GLOBAL_CONST Vector128f VECTOR_128F_EPSILON        = { { {  1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f, 1.192092896e-7f } } };
 	GLOBAL_CONST Vector128i VECTOR_128F_QNAN           = { { {  0x7FC00000, 0x7FC00000, 0x7FC00000, 0x7FC00000  } } };
 	GLOBAL_CONST Vector128i VECTOR_128I_QNAN_TEST      = { { {  0x7FC00000, 0x7FC00000, 0x7FC00000, 0x7FC00000 } } };
-	GLOBAL_CONST Vector128u VECTOR_128F_MASK_XYZ       = { { {  0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000   } } };
 	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R0    = { { { 1.0f, 0.0f, 0.0f, 0.0f } } };
 	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R1    = { { { 0.0f, 1.0f, 0.0f, 0.0f } } };
 	GLOBAL_CONST Vector128f VECTOR_128F_IDENTITY_R2    = { { { 0.0f, 0.0f, 1.0f, 0.0f } } };
@@ -134,6 +133,8 @@ namespace gm::simd::sse
 	GLOBAL_CONST Vector128u VECTOR_128U_MASK_Y         = { { {  0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000   } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_MASK_Z         = { { {  0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000   } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_MASK_W         = { { {  0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF   } } };
+	GLOBAL_CONST Vector128u VECTOR_128U_MASK_XY        = { { {  0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000 } } };
+	GLOBAL_CONST Vector128u VECTOR_128F_MASK_XYZ       = { { {  0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000   } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_MASK_ABS       = { { {  0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF   } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_NEGATIVE_ZERO  = { { {  0x80000000, 0x80000000, 0x80000000, 0x80000000  } } };
 	GLOBAL_CONST Vector128u VECTOR_128U_NEGATIVE_ONE_MASK = { { {  0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF  } } };
@@ -214,6 +215,16 @@ namespace gm::simd::sse
 		*  @brief : ゼロ初期化したVector128を返す関数
 		/*----------------------------------------------------------------------*/
 		__forceinline static Vector128 SIMD_CALL_CONVENTION Zero() noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : 全てのビットがtrue (1)に設定されているVector128を返す
+		/*----------------------------------------------------------------------*/
+		__forceinline static Vector128 SIMD_CALL_CONVENTION TrueIntMask() noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : 全てのビットがfalse (0)に設定されているVector128を返す Zero()と同じ
+		/*----------------------------------------------------------------------*/
+		__forceinline static Vector128 SIMD_CALL_CONVENTION FalseIntMask() noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : float4つからVector128クラスを生成する
@@ -542,6 +553,7 @@ namespace gm::simd::sse
 		__forceinline static bool IsInfiniteVector2(ConstVector128 vector) noexcept;
 		__forceinline static bool IsInfiniteVector3(ConstVector128 vector) noexcept;
 		__forceinline static bool IsInfiniteVector4(ConstVector128 vector) noexcept;
+		__forceinline static Vector128 IsInfiniteVectorEach(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素に根号を取ったものを返します
@@ -566,6 +578,7 @@ namespace gm::simd::sse
 		__forceinline static Vector128 SIMD_CALL_CONVENTION ArcSin(ConstVector128 vector) noexcept;
 		__forceinline static Vector128 SIMD_CALL_CONVENTION ArcCos(ConstVector128 vector) noexcept;
 		__forceinline static Vector128 SIMD_CALL_CONVENTION ArcTan(ConstVector128 vector) noexcept;
+		__forceinline static Vector128 SIMD_CALL_CONVENTION ArcTan2(ConstVector128 y, ConstVector128 x) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のsinH, cosH, tanHを返します
@@ -575,7 +588,10 @@ namespace gm::simd::sse
 		__forceinline static Vector128 SIMD_CALL_CONVENTION TanH(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
-		*  @brief : 全ての要素に対するsin成分とcos成分を取り出します
+		*  @brief : 全ての要素に対するsinとcosを取り出します
+		*           input      : radianを単位に持つ角度
+		*           Vector128* : sin(radian)と示される4次元ベクトル
+		*           Vector128* : cos(radian)と示される4次元ベクトル
 		/*----------------------------------------------------------------------*/
 		__forceinline static void SIMD_CALL_CONVENTION SinCos(ConstVector128 input, Vector128* sin, Vector128* cos) noexcept;
 
@@ -651,6 +667,7 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------*/
 		__forceinline static Vector128 SIMD_CALL_CONVENTION BaryCentric (ConstVector128 position0, ConstVector128 position1, ConstVector128 position2, const float f, const float g) noexcept;
 		__forceinline static Vector128 SIMD_CALL_CONVENTION BaryCentricV(ConstVector128 position0, ConstVector128 position1, ConstVector128 position2, ConstVector128 f, ConstVector128 g) noexcept;
+		
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素について最小値となる方を選択します
 		/*----------------------------------------------------------------------*/
@@ -853,6 +870,38 @@ namespace gm::simd::sse
 	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Zero() noexcept
 	{
 		return _mm_setzero_ps(); // 4つの単精度浮動小数点値をクリアする
+	}
+
+	/****************************************************************************
+	*                      TrueIntMask
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::TrueIntMask() noexcept
+	*
+	*  @brief     全てのビットがtrue (1)に設定されているVector128を返す
+	*
+	*  @param[in] void
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::TrueIntMask() noexcept
+	{
+		return _mm_castsi128_ps(_mm_set1_epi32(-1));
+	}
+
+	/****************************************************************************
+	*                      FalseIntMask
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::FalseIntMask() noexcept
+	*
+	*  @brief     全てのビットがfalse (0)に設定されているVector128を返す
+	*
+	*  @param[in] void
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::FalseIntMask() noexcept
+	{
+		return _mm_setzero_ps();
 	}
 
 	/****************************************************************************
@@ -3367,6 +3416,28 @@ namespace gm::simd::sse
 	}
 
 	/****************************************************************************
+	*                      IsInfiniteVectorEach
+	*************************************************************************//**
+	*  @fn        inline Vector128 Vector128Utility::IsInfiniteVectorEach(ConstVector128 vector) noexcept
+	*
+	*  @brief     非常に大きい値か
+	*
+	*  @param[in] ConstVector128 : vector
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 Vector128Utility::IsInfiniteVectorEach(ConstVector128 vector) noexcept
+	{
+		// 符号ビットをマスクオフする
+		Vector128 temp = _mm_and_ps(vector, VECTOR_128U_MASK_ABS);
+		// 無限大と比較
+		temp = _mm_cmpeq_ps(temp, VECTOR_128F_INFINITY);
+		// どれかが無限大であれば、符号は真である。
+		return temp;
+	}
+
+
+	/****************************************************************************
 	*                      Sqrt
 	*************************************************************************//**
 	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Sqrt(ConstVector128 vector) noexcept
@@ -4445,9 +4516,9 @@ namespace gm::simd::sse
 	/****************************************************************************
 	*                      ArcTan
 	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::ArcCos(ConstVector128 vector) noexcept
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::ArcTan(ConstVector128 vector) noexcept
 	*
-	*  @brief     全ての要素にArcSinを取ったものを返します[rad]
+	*  @brief     全ての要素にArcTanを取ったものを返します[rad]
 	*
 	*  @param[in] ConstVector128 : vector
 	*
@@ -4503,6 +4574,61 @@ namespace gm::simd::sse
 		select1 = _mm_andnot_ps(comparison, result1);
 		result = _mm_or_ps(select0, select1);
 		return result;
+	}
+
+	/****************************************************************************
+	*                      ArcTan2
+	*************************************************************************//**
+	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::ArcTan2(ConstVector128 vector) noexcept
+	*
+	*  @brief     全ての要素にArcTan2を取ったものを返します[rad]
+	*
+	*  @param[in] ConstVector128 : vector
+	*
+	*  @return 　　Vector128
+	*****************************************************************************/
+	inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::ArcTan2(ConstVector128 y, ConstVector128 x) noexcept
+	{
+		static const Vector128f ATan2Constants = { { { GM_PI_FLOAT, GM_PI_DIV2_FLOAT, GM_PI_DIV4_FLOAT, GM_PI_FLOAT * 3.0f / 4.0f } } };
+
+		Vector128 Zero = Vector128Utility::Zero();
+		Vector128 ATanResultValid = Vector128Utility::TrueIntMask();
+
+		Vector128 Pi = Vector128Utility::SplatX(ATan2Constants);
+		Vector128 PiOverTwo = Vector128Utility::SplatY(ATan2Constants);
+		Vector128 PiOverFour = Vector128Utility::SplatZ(ATan2Constants);
+		Vector128 ThreePiOverFour = Vector128Utility::SplatW(ATan2Constants);
+
+		Vector128 YEqualsZero = Vector128Utility::EqualVectorEach(y, Zero);
+		Vector128 XEqualsZero = Vector128Utility::EqualVectorEach(x, Zero);
+		Vector128 XIsPositive = Vector128Utility::AndInt(x, VECTOR_128U_NEGATIVE_ZERO.V);
+		XIsPositive = Vector128Utility::EqualAsIntVectorEach(XIsPositive, Zero);
+		Vector128 YEqualsInfinity = Vector128Utility::IsInfiniteVectorEach(y);
+		Vector128 XEqualsInfinity = Vector128Utility::IsInfiniteVectorEach(x);
+
+		Vector128 YSign = Vector128Utility::AndInt(y, VECTOR_128U_NEGATIVE_ZERO.V);
+		Pi = Vector128Utility::OrInt(Pi, YSign);
+		PiOverTwo = Vector128Utility::OrInt(PiOverTwo, YSign);
+		PiOverFour = Vector128Utility::OrInt(PiOverFour, YSign);
+		ThreePiOverFour = Vector128Utility::OrInt(ThreePiOverFour, YSign);
+
+		Vector128 R1 = Vector128Utility::Select(Pi, YSign, XIsPositive);
+		Vector128 R2 = Vector128Utility::Select(ATanResultValid, PiOverTwo, XEqualsZero);
+		Vector128 R3 = Vector128Utility::Select(R2, R1, YEqualsZero);
+		Vector128 R4 = Vector128Utility::Select(ThreePiOverFour, PiOverFour, XIsPositive);
+		Vector128 R5 = Vector128Utility::Select(PiOverTwo, R4, XEqualsInfinity);
+		Vector128 Result = Vector128Utility::Select(R3, R5, YEqualsInfinity);
+		ATanResultValid = Vector128Utility::EqualAsIntVectorEach(Result, ATanResultValid);
+
+		Vector128 V = Vector128Utility::Divide(y, x);
+
+		Vector128 R0 = Vector128Utility::ArcTan(V);
+
+		R1 = Vector128Utility::Select(Pi, VECTOR_128U_NEGATIVE_ZERO.V, XIsPositive);
+		R2 = Vector128Utility::Add(R0, R1);
+
+		return Vector128Utility::Select(Result, R2, ATanResultValid);
+
 	}
 
 	/****************************************************************************

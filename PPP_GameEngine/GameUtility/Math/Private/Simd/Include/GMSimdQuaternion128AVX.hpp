@@ -5,8 +5,8 @@
 ///             @date   2024/03/20 15:36:48
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GM_SIMD_MATRIX_128_SSE2_HPP
-#define GM_SIMD_MATRIX_128_SSE2_HPP
+#ifndef GM_SIMD_QUATERNION_128_AVX_HPP
+#define GM_SIMD_QUATERNION_128_AVX_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -16,16 +16,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-#if PLATFORM_CPU_INSTRUCTION_SSE2 && !defined(PLATFORM_CPU_INSTRUCTION_NOT_USE)
-#include "GMSimdVector128SSE2.hpp"
-#include "GMSimdMatrix128SSE.hpp"
+#if PLATFORM_CPU_INSTRUCTION_AVX && !defined(PLATFORM_CPU_INSTRUCTION_NOT_USE)
+#include "GMSimdVector128AVX.hpp"
+#include "GMSimdQuaternion128SSE4.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gm::simd::sse2
+namespace gm::simd::avx
 {
-	using Matrix128Utility = gm::simd::sse::Matrix128Utility;
+	using Quaternion128Utility = gm::simd::sse4::Quaternion128Utility;
 }
 #endif
 #endif

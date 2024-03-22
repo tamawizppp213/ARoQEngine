@@ -427,6 +427,30 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128AVX.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128SSE.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128SSE2.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128SSE3.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128SSE4.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128AVX2.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdVector128AVX2.hpp">
       <SubType>
       </SubType>
