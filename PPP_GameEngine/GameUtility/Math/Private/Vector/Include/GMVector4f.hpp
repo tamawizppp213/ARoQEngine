@@ -130,6 +130,11 @@ namespace gm
 		__forceinline gu::float32 GetW() const { return SIMD_NAME_SPACE::Vector128Utility::GetW(_vector); }
 
 		/*----------------------------------------------------------------------
+		*  @brief : Simd vector
+		/*----------------------------------------------------------------------*/
+		__forceinline VECTOR128 GetSimdVector() const { return _vector; }
+
+		/*----------------------------------------------------------------------
 		*  @brief : Float4に変換する
 		/*----------------------------------------------------------------------*/
 		__forceinline Float4 ToFloat4()
@@ -205,6 +210,10 @@ namespace gm
 		// @brief : 全ての要素で大きいか
 		__forceinline bool operator <= (const Vector4f& right) const noexcept { return SIMD_NAME_SPACE::Vector128Utility::LessOrEqualVector4(_vector, right._vector); }
 
+		// @brief : 直接要素にアクセスします
+		__forceinline       float& operator[](const gu::uint32 index) noexcept       { return _vector.m128_f32[index]; }
+		__forceinline const float& operator[](const gu::uint32 index) const noexcept { return _vector.m128_f32[index]; }
+		
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内にあるかどうか -bounds <= vector <= +bounds
 		/*----------------------------------------------------------------------*/
@@ -384,7 +393,7 @@ namespace gm
 		/*----------------------------------------------------------------------
 		*  @brief : 絶対値
 		/*----------------------------------------------------------------------*/
-		__forceinline Vector4f Abs() noexcept { return SIMD_NAME_SPACE::Vector128Utility::Abs(_vector); }
+		__forceinline Vector4f Abs() const { return SIMD_NAME_SPACE::Vector128Utility::Abs(_vector); }
 
 		#pragma endregion Math
 		/****************************************************************************
@@ -415,14 +424,6 @@ namespace gm
 		*****************************************************************************/
 		VECTOR128 _vector;
 	};
-
-	/*----------------------------------------------------------------------
-	*  @brief : 内積を算出 (ただし, 返り値はfloatではなくVector128型で返されますので, 後々GetXなどで対応してください.)
-	/*----------------------------------------------------------------------*/
-	__forceinline float Dot(const Vector4f& left, const Vector4f& right) noexcept 
-	{ 
-		return SIMD_NAME_SPACE::Vector128Utility::DotVector4(left, right);
-	}
 
 	/*----------------------------------------------------------------------
 	*  @brief : 外積を算出 first, second, thirdに垂直なベクトルを返す

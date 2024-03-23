@@ -206,6 +206,10 @@ namespace gm
 		// @brief : 全ての要素で大きいか
 		__forceinline bool operator <= (const Vector4d& right) const noexcept { return SIMD_NAME_SPACE::Vector256Utility::LessOrEqualVector4(_vector, right._vector); }
 
+		// @brief : 直接要素にアクセスします
+		__forceinline       double& operator[](const gu::uint32 index)       noexcept { return _vector.m256d_f64[index]; }
+		__forceinline const double& operator[](const gu::uint32 index) const noexcept { return _vector.m256d_f64[index]; }
+
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内にあるかどうか -bounds <= vector <= +bounds
 		/*----------------------------------------------------------------------*/
@@ -385,7 +389,8 @@ namespace gm
 		/*----------------------------------------------------------------------
 		*  @brief : 絶対値
 		/*----------------------------------------------------------------------*/
-		__forceinline Vector4d Abs() noexcept { return SIMD_NAME_SPACE::Vector256Utility::Abs(_vector); }
+		__forceinline Vector4d Abs() const { return SIMD_NAME_SPACE::Vector256Utility::Abs(_vector); }
+
 
 #pragma endregion Math
 		/****************************************************************************
@@ -600,71 +605,6 @@ namespace gm
 	__forceinline Vector4d Pow(const Vector4d& base, const Vector4d& power) noexcept
 	{
 		return SIMD_NAME_SPACE::Vector256Utility::Pow(base, power);
-	}
-
-	/*----------------------------------------------------------------------
-	*  @brief      線形補間を返します
-	*  @param[in]  t = 0の時の値
-	   @param[in]  t = 1の時の値
-	   @param[in]  t : 線形補間の割合
-	/*----------------------------------------------------------------------*/
-	__forceinline Vector4d Lerp(const Vector4d& start, const Vector4d& end, const double t) noexcept
-	{
-		return SIMD_NAME_SPACE::Vector256Utility::Lerp(start, end, t);
-	}
-
-	__forceinline Vector4d LerpV(const Vector4d& start, const Vector4d& end, const Vector4d& t) noexcept
-	{
-		return SIMD_NAME_SPACE::Vector256Utility::LerpV(start, end, t);
-	}
-
-
-	/*----------------------------------------------------------------------
-	*  @brief      エルミート補間を返します
-	*  @param[in]  始点の位置
-	   @param[in]  始点におけるスプラインの接線を表すベクトル
-	   @param[in]  終点の位置
-	   @param[in]  終点におけるスプラインの接線を表すベクトル
-	   @param[in]  t : エルミート補間の割合
-	/*----------------------------------------------------------------------*/
-	__forceinline Vector4d Hermite(const Vector4d& startPosition, const Vector4d& startTangent, const Vector4d& endPosition, const Vector4d& endTangent, const double t) noexcept
-	{
-		return SIMD_NAME_SPACE::Vector256Utility::Hermite(startPosition, startTangent, endPosition, endTangent, t);
-	}
-
-	__forceinline Vector4d HermiteV(const Vector4d& startPosition, const Vector4d& startTangent, const Vector4d& endPosition, const Vector4d& endTangent, const Vector4d& t) noexcept
-	{
-		return SIMD_NAME_SPACE::Vector256Utility::HermiteV(startPosition, startTangent, endPosition, endTangent, t);
-	}
-
-	/*----------------------------------------------------------------------
-	*  @brief      CatMull-Romスプライン補間の結果を返します。4つの制御点を全て通るスプライン補間
-	/*----------------------------------------------------------------------*/
-	__forceinline Vector4d CatMullRom(const Vector4d& position0, const Vector4d& position1, const Vector4d& position2, const Vector4d& position3, const double t) noexcept
-	{
-		return SIMD_NAME_SPACE::Vector256Utility::CatMullRom(position0, position1, position2, position3, t);
-	}
-
-	__forceinline Vector4d CatMullRomV(const Vector4d& position0, const Vector4d& position1, const Vector4d& position2, const Vector4d& position3, const Vector4d& t) noexcept
-	{
-		return SIMD_NAME_SPACE::Vector256Utility::CatMullRomV(position0, position1, position2, position3, t);
-	}
-
-	/*----------------------------------------------------------------------
-	*  @brief      三角形の重心重み位置を算出
-	*              (f>=0 && g>=0 && 1-f-g>=0) の場合、ポイントは三角形の Position0>Position1>Position2 の内側にあります>。
-				   (f==0 && g>=0 && 1-f-g>=0) の場合、ポイントは Position0>Position2 行目にあります>。
-				   (f>=0 && g==0 && 1-f-g>=0) の場合、ポイントは Position0>Position1> 行目にあります。
-				   (f>=0 && g>=0 && 1-f-g==0) の場合、ポイントは Position1>Position2 行目にあります>。
-	/*----------------------------------------------------------------------*/
-	__forceinline Vector4d BaryCentric(const Vector4d& position0, const Vector4d& position1, const Vector4d& position2, const double f, const double g) noexcept
-	{
-		return SIMD_NAME_SPACE::Vector256Utility::BaryCentric(position0, position1, position2, f, g);
-	}
-
-	__forceinline Vector4d BaryCentricV(const Vector4d& position0, const Vector4d& position1, const Vector4d& position2, const Vector4d& f, const Vector4d& g) noexcept
-	{
-		return SIMD_NAME_SPACE::Vector256Utility::BaryCentricV(position0, position1, position2, f, g);
 	}
 
 	/*----------------------------------------------------------------------

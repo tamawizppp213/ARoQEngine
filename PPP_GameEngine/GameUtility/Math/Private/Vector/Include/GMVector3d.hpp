@@ -203,6 +203,10 @@ namespace gm
 		// @brief : 全ての要素で大きいか
 		__forceinline bool operator <= (const Vector3d& right) const noexcept { return SIMD_NAME_SPACE::Vector256Utility::LessOrEqualVector4(_vector, right._vector); }
 
+		// @brief : 直接要素にアクセスします
+		__forceinline       double& operator[](const gu::uint32 index)       noexcept { return _vector.m256d_f64[index]; }
+		__forceinline const double& operator[](const gu::uint32 index) const noexcept { return _vector.m256d_f64[index]; }
+
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内にあるかどうか -bounds <= vector <= +bounds
 		/*----------------------------------------------------------------------*/
@@ -382,7 +386,7 @@ namespace gm
 		/*----------------------------------------------------------------------
 		*  @brief : 絶対値
 		/*----------------------------------------------------------------------*/
-		__forceinline Vector3d Abs() noexcept { return SIMD_NAME_SPACE::Vector256Utility::Abs(_vector); }
+		__forceinline Vector3d Abs() const { return SIMD_NAME_SPACE::Vector256Utility::Abs(_vector); }
 
 #pragma endregion Math
 		/****************************************************************************

@@ -123,7 +123,12 @@ namespace gm
 		__forceinline gu::float32 GetX() const { return SIMD_NAME_SPACE::Vector128Utility::GetX(_vector); }
 		__forceinline gu::float32 GetY() const { return SIMD_NAME_SPACE::Vector128Utility::GetY(_vector); }
 		__forceinline gu::float32 GetZ() const { return SIMD_NAME_SPACE::Vector128Utility::GetZ(_vector); }
-
+		
+		/*----------------------------------------------------------------------
+		*  @brief : Simd vector
+		/*----------------------------------------------------------------------*/
+		__forceinline VECTOR128 GetSimdVector() const { return _vector; }
+		
 		/*----------------------------------------------------------------------
 		*  @brief : Float3に変換する
 		/*----------------------------------------------------------------------*/
@@ -198,6 +203,10 @@ namespace gm
 
 		// @brief : 全ての要素で大きいか
 		__forceinline bool operator <= (const Vector3f& right) const noexcept { return SIMD_NAME_SPACE::Vector128Utility::LessOrEqualVector3(_vector, right._vector); }
+
+		// @brief : 直接要素にアクセスします
+		__forceinline       float& operator[](const gu::uint32 index)       noexcept { return _vector.m128_f32[index]; }
+		__forceinline const float& operator[](const gu::uint32 index) const noexcept { return _vector.m128_f32[index]; }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内にあるかどうか -bounds <= vector <= +bounds
@@ -378,7 +387,7 @@ namespace gm
 		/*----------------------------------------------------------------------
 		*  @brief : 絶対値
 		/*----------------------------------------------------------------------*/
-		__forceinline Vector3f Abs() noexcept { return SIMD_NAME_SPACE::Vector128Utility::Abs(_vector); }
+		__forceinline Vector3f Abs() const { return SIMD_NAME_SPACE::Vector128Utility::Abs(_vector); }
 
 #pragma endregion Math
 		/****************************************************************************

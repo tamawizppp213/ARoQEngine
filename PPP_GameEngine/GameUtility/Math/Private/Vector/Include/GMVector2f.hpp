@@ -120,6 +120,11 @@ namespace gm
 		__forceinline gu::float32 GetY() const { return SIMD_NAME_SPACE::Vector128Utility::GetY(_vector); }
 
 		/*----------------------------------------------------------------------
+		*  @brief : Simd vector
+		/*----------------------------------------------------------------------*/
+		__forceinline VECTOR128 GetSimdVector() const { return _vector; }
+
+		/*----------------------------------------------------------------------
 		*  @brief : Float2に変換する
 		/*----------------------------------------------------------------------*/
 		__forceinline Float2 ToFloat2()
@@ -192,6 +197,10 @@ namespace gm
 
 		// @brief : 全ての要素で大きいか
 		__forceinline bool operator <= (const Vector2f& right) const noexcept { return SIMD_NAME_SPACE::Vector128Utility::LessOrEqualVector2(_vector, right._vector); }
+
+		// @brief : 直接要素にアクセスします
+		__forceinline       float& operator[](const gu::uint32 index) noexcept       { return _vector.m128_f32[index]; }
+		__forceinline const float& operator[](const gu::uint32 index) const noexcept { return _vector.m128_f32[index]; }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内にあるかどうか -bounds <= vector <= +bounds
@@ -372,7 +381,7 @@ namespace gm
 		/*----------------------------------------------------------------------
 		*  @brief : 絶対値
 		/*----------------------------------------------------------------------*/
-		__forceinline Vector2f Abs() noexcept { return SIMD_NAME_SPACE::Vector128Utility::Abs(_vector); }
+		__forceinline Vector2f Abs() const { return SIMD_NAME_SPACE::Vector128Utility::Abs(_vector); }
 
 #pragma endregion Math
 		/****************************************************************************
