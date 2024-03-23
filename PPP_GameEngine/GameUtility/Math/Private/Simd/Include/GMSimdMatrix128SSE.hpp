@@ -127,7 +127,7 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------
 		*  @brief : ベクトルを使ってfloat配列に代入する
 		/*----------------------------------------------------------------------*/
-		__forceinline static void SIMD_CALL_CONVENTION StoreFloat4(float* destination, ConstMatrix128 source) noexcept;
+		__forceinline static void SIMD_CALL_CONVENTION StoreFloat4x4(float* destination, ConstMatrix128 source) noexcept;
 		#pragma endregion Setter
 
 		#pragma region Operator
@@ -398,7 +398,7 @@ namespace gm::simd::sse
 	/*----------------------------------------------------------------------
 	*  @brief : ベクトルを使ってfloat配列に代入する
 	/*----------------------------------------------------------------------*/
-	inline void SIMD_CALL_CONVENTION Matrix128Utility::StoreFloat4(float* destination, ConstMatrix128 source) noexcept
+	inline void SIMD_CALL_CONVENTION Matrix128Utility::StoreFloat4x4(float* destination, ConstMatrix128 source) noexcept
 	{
 		Check(destination);
 		_mm_storeu_ps(&destination[0], source.Row[0]);

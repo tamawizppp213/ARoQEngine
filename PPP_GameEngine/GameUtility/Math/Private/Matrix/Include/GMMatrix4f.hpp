@@ -145,6 +145,15 @@ namespace gm
 		__forceinline Vector4f GetW() const { return _matrix.Row[3]; }
 		__forceinline Vector4f GetRow(const gu::uint32 index) const { Check(index < 4); return _matrix.Row[index]; }
 
+		/*----------------------------------------------------------------------
+		*  @brief : 4x4s—ñ‚ðŽæ“¾
+		/*----------------------------------------------------------------------*/
+		__forceinline Float4x4 ToFloat4x4() const
+		{
+			Float4x4 result = {};
+			SIMD_NAME_SPACE::Matrix128Utility::StoreFloat4x4(result.a, _matrix);
+			return result;
+		}
 		#pragma endregion Getter
 
 		#pragma region Setter
