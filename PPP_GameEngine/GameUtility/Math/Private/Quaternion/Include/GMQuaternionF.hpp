@@ -223,22 +223,22 @@ namespace gm
 	/*----------------------------------------------------------------------
 	*  @brief : Roll pitch yawを使って回転を行います
 	/*----------------------------------------------------------------------*/
-	__forceinline QuaternionF RotationRollPitchYaw(const float roll, const float pitch, const float yaw) noexcept
+	__forceinline QuaternionF RotationRollPitchYawQuaternion(const float roll, const float pitch, const float yaw) noexcept
 	{
 		return SIMD_NAME_SPACE::Quaternion128Utility::RotationRollPitchYaw(roll, pitch, yaw);
 	}
 
-	__forceinline QuaternionF RotationRollPitchYaw(const Vector3f& rollPitchYaw) noexcept;
+	__forceinline QuaternionF RotationRollPitchYawQuaternion(const Vector3f& rollPitchYaw) noexcept;
 
 	/*----------------------------------------------------------------------
 	*  @brief : ある法線ベクトル軸を中心に回転を行います
 	/*----------------------------------------------------------------------*/
-	__forceinline QuaternionF RotationNormal(const Vector3f& normalAxis, const float angle) noexcept;
+	__forceinline QuaternionF RotationNormalQuaternion(const Vector3f& normalAxis, const float angle) noexcept;
 
 	/*----------------------------------------------------------------------
 	*  @brief : ある軸を中心に回転を行います
 	/*----------------------------------------------------------------------*/
-	__forceinline QuaternionF RotationAxis(const Vector3f& axis, const float angle) noexcept;
+	__forceinline QuaternionF RotationAxisQuaternion(const Vector3f& axis, const float angle) noexcept;
 
 	/*----------------------------------------------------------------------
 	*  @brief : 通常の4次元ベクトルのように線形補間を掛けます. Slerpよりは精度が粗いですが, 省コストです

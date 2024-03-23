@@ -42,7 +42,7 @@ float QuaternionF::Angle() const
 	return 2.0f * acosf(Vector4f(_quaternion).GetW());
 }
 
-__forceinline QuaternionF gm::RotationRollPitchYaw(const Vector3f& rollPitchYaw) noexcept
+__forceinline QuaternionF gm::RotationRollPitchYawQuaternion(const Vector3f& rollPitchYaw) noexcept
 {
 	return SIMD_NAME_SPACE::Quaternion128Utility::RotationRollPitchYaw(rollPitchYaw);
 }
@@ -50,7 +50,7 @@ __forceinline QuaternionF gm::RotationRollPitchYaw(const Vector3f& rollPitchYaw)
 /*----------------------------------------------------------------------
 *  @brief : ある法線ベクトル軸を中心に回転を行います
 /*----------------------------------------------------------------------*/
-__forceinline QuaternionF gm::RotationNormal(const Vector3f& normalAxis, const float angle) noexcept
+__forceinline QuaternionF gm::RotationNormalQuaternion(const Vector3f& normalAxis, const float angle) noexcept
 {
 	return SIMD_NAME_SPACE::Quaternion128Utility::RotationNormal(normalAxis, angle);
 }
@@ -58,7 +58,7 @@ __forceinline QuaternionF gm::RotationNormal(const Vector3f& normalAxis, const f
 /*----------------------------------------------------------------------
 *  @brief : ある軸を中心に回転を行います
 /*----------------------------------------------------------------------*/
-__forceinline QuaternionF gm::RotationAxis(const Vector3f& axis, const float angle) noexcept
+__forceinline QuaternionF gm::RotationAxisQuaternion(const Vector3f& axis, const float angle) noexcept
 {
 	return SIMD_NAME_SPACE::Quaternion128Utility::RotationAxis(axis, angle);
 }
