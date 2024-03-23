@@ -12,8 +12,10 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../../Simd/Include/GMSimdMacros.hpp"
+#include "../../Vector/Include/GMVector2f.hpp"
 #include "../../Vector/Include/GMVector3f.hpp"
 #include "../../Vector/Include/GMVector4f.hpp"
+#include "../../Quaternion/Include/GMQuaternionF.hpp"
 #include SIMD_COMPILED_HEADER(GameUtility/Math/Private/Simd/Include, GMSimdMatrix128)
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -60,8 +62,8 @@ namespace gm
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		// @brief : Default constructor
-		Float4x4() = default;
+		// @brief : Default constructor (単位行列)
+		Float4x4() : _00(1.0f), _01(0.0f), _02(0.0f), _03(0.0f), _10(0.0f), _11(1.0f), _12(0.0f), _13(0.0f), _20(0.0f), _21(0.0f), _22(1.0f), _23(0.0f), _30(0.0f), _31(0.0f), _32(0.0f), _33(0.0f) {};
 
 		// @brief : 全ての要素で初期化
 		constexpr Float4x4(const float m00, const float m01, const float m02, const float m03,
