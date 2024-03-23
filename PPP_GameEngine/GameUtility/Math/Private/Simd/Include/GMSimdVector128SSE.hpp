@@ -834,12 +834,12 @@ namespace gm::simd::sse
 	#if PLATFORM_CPU_INSTRUCTION_SSE && !defined(_XM_NO_INTRINSICS_)
 		constexpr gu::uint32 shuffle = _MM_SHUFFLE(permuteW & 3, permuteZ & 3, permuteY & 3, permuteX & 3);
 
-		constexpr bool WhichX = PermuteX > 3;
-		constexpr bool WhichY = PermuteY > 3;
-		constexpr bool WhichZ = PermuteZ > 3;
-		constexpr bool WhichW = PermuteW > 3;
+		constexpr bool WhichX = permuteX > 3;
+		constexpr bool WhichY = permuteY > 3;
+		constexpr bool WhichZ = permuteZ > 3;
+		constexpr bool WhichW = permuteW > 3;
 
-		return internal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(v1, v2);
+		return internal::PermuteHelper<shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(v1, v2);
 	#else
 		return Vector128Utility::Permute(v1, v2, permuteX, permuteY, permuteZ, permuteW);
 	#endif
