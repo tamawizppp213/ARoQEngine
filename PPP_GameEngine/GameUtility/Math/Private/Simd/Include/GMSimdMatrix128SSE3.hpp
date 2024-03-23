@@ -17,7 +17,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 #if PLATFORM_CPU_INSTRUCTION_SSE3 && !defined(PLATFORM_CPU_INSTRUCTION_NOT_USE)
-#include "GMSimdVector128SSE3.hpp"
+#include "GMSimdQuaternion128SSE3.hpp"
 #include "GMSimdMatrix128SSE2.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class

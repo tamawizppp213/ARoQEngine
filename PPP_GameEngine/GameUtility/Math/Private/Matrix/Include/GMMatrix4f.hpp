@@ -33,6 +33,94 @@
 namespace gm
 {
 	/****************************************************************************
+	*				  			   GMVector4
+	*************************************************************************//**
+	*  @class     GMVector4
+	*  @brief     SIMD演算用のVector4クラスです. アラインメントを行っているため, データを保持する場合はFloat4x4を使用してください
+	*****************************************************************************/
+	struct Float4x4
+	{
+	public:
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		union
+		{
+			struct
+			{
+				float _00, _01, _02, _03;
+				float _10, _11, _12, _13;
+				float _20, _21, _22, _23;
+				float _30, _31, _32, _33;
+			};
+			float m[4][4];
+			float a[16];
+		};
+
+		__forceinline bool operator ==(const Float4x4& vector) const noexcept { return SIMD_NAME_SPACE::Vector128Utility::EqualVector4(*this, vector); }
+		__forceinline bool operator !=(const Float4x4& vector) const noexcept { return SIMD_NAME_SPACE::Vector128Utility::NotEqualVector4(*this, vector); }
+
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		// @brief : Default constructor
+		Float4x4() = default;
+
+		// @brief : 全ての要素で初期化
+		constexpr Float4x4(const float m00, const float m01, const float m02, const float m03,
+			const float m10, const float m11, const float m12, const float m13,
+			const float m20, const float m21, const float m22, const float m23,
+			const float m30, const float m31, const float m32, const float m33)
+			: _00(m00), _01(m01), _02(m02), _03(m03),
+			_10(m00), _11(m01), _12(m02), _13(m03),
+			_20(m00), _21(m01), _22(m02), _23(m03),
+			_30(m00), _31(m01), _32(m02), _33(m03)
+		{
+
+		}
+
+		// @brief : 配列を使って初期化
+		explicit Float4x4(_In_reads_(16) const float* pArray)
+		{
+			Check(pArray);
+			m[0][0] = pArray[0];
+			m[0][1] = pArray[1];
+			m[0][2] = pArray[2];
+			m[0][3] = pArray[3];
+
+			m[1][0] = pArray[4];
+			m[1][1] = pArray[5];
+			m[1][2] = pArray[6];
+			m[1][3] = pArray[7];
+
+			m[2][0] = pArray[8];
+			m[2][1] = pArray[9];
+			m[2][2] = pArray[10];
+			m[2][3] = pArray[11];
+
+			m[3][0] = pArray[12];
+			m[3][1] = pArray[13];
+			m[3][2] = pArray[14];
+			m[3][3] = pArray[15];
+		}
+
+		// @brief : copy constructor
+		Float4x4(const Float4x4&) = default;
+
+		Float4x4& operator=(const Float4x4&) = default;
+
+		// @brief : move constructor
+		Float4x4(Float4x4&&) = default;
+
+		Float4x4& operator=(Float4x4&&) = default;
+
+		operator MATRIX128() const noexcept
+		{
+			return SIMD_NAME_SPACE::Matrix128Utility::LoadFloat4x4((float*)this);
+		}
+	};
+
+	/****************************************************************************
 	*				  			   Matrix4f
 	*************************************************************************//**
 	*  @class     Matrixf4f
@@ -328,17 +416,17 @@ namespace gm
 	/*----------------------------------------------------------------------
 	*  @brief : ロー(y axis)、ピッチ(x-axis)、ヨー(z-axis)を使ってrad単位で角度を回転します
 	/*----------------------------------------------------------------------*/
-	__forceinline Matrix4f RotationRollPitchYaw(const float roll, const float pitch, const float yaw) noexcept
+	__forceinline Matrix4f RotationRollPitchYawMatrix(const float roll, const float pitch, const float yaw) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationRollPitchYaw(roll, pitch, yaw);
 	}
 
-	__forceinline Matrix4f RotationRollPitchYaw(const Vector3f& rollPitchYaw) noexcept
+	__forceinline Matrix4f RotationRollPitchYawMatrix(const Vector3f& rollPitchYaw) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationRollPitchYaw(rollPitchYaw);
 	}
 
-	__forceinline Matrix4f RotationRollPitchYaw(const Float3& rollPitchYaw) noexcept
+	__forceinline Matrix4f RotationRollPitchYawMatrix(const Float3& rollPitchYaw) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationRollPitchYaw(rollPitchYaw);
 	}
@@ -346,12 +434,12 @@ namespace gm
 	/*----------------------------------------------------------------------
 	*  @brief : 法線ベクトルを中心にrad単位で角度を回転します
 	/*----------------------------------------------------------------------*/
-	__forceinline Matrix4f RotationNormal(const Vector3f& normal, const float radian) noexcept
+	__forceinline Matrix4f RotationNormalMatrix(const Vector3f& normal, const float radian) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationNormal(normal, radian);
 	}
 
-	__forceinline Matrix4f RotationNormal(const Float3& normal, const float radian) noexcept
+	__forceinline Matrix4f RotationNormalMatrix(const Float3& normal, const float radian) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationNormal(normal, radian);
 	}
@@ -359,12 +447,12 @@ namespace gm
 	/*----------------------------------------------------------------------
 	*  @brief : ある軸を中心にrad単位で角度を回転します
 	/*----------------------------------------------------------------------*/
-	__forceinline Matrix4f RotationAxis(const Vector3f& axis, const float radian) noexcept
+	__forceinline Matrix4f RotationAxisMatrix(const Vector3f& axis, const float radian) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationAxis(axis, radian);
 	}
 
-	__forceinline Matrix4f RotationAxis(const Float3& axis, const float radian) noexcept
+	__forceinline Matrix4f RotationAxisMatrix(const Float3& axis, const float radian) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationAxis(axis, radian);
 	}

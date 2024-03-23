@@ -17,7 +17,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 #if PLATFORM_CPU_INSTRUCTION_SSE && !defined(PLATFORM_CPU_INSTRUCTION_NOT_USE)
-#include "GMSimdVector128SSE.hpp"
+#include "GMSimdQuaternion128SSE.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -25,8 +25,6 @@
 namespace gm::simd::sse
 {
 	struct Matrix128;
-
-	
 
 	/*----------------------------------------------------------------------
 	*        float配列による行列 : double配列はMatrix256となります.
@@ -96,7 +94,7 @@ namespace gm::simd::sse
 	#if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || _GM_VECTORCALL_ || __aarch64__ )
 		using ConstMatrix128 = const Matrix128;
 	#else
-		using ConstMatrix128f = const Matrix128&;
+		using ConstMatrix128 = const Matrix128&;
 	#endif
 		/****************************************************************************
 		**                Public Function
@@ -105,6 +103,14 @@ namespace gm::simd::sse
 		*  @brief : 単位行列
 		/*----------------------------------------------------------------------*/
 		__forceinline static Matrix128 SIMD_CALL_CONVENTION Identity() noexcept;
+
+		#pragma region Getter
+		/*----------------------------------------------------------------------
+		*  @brief :  floatの配列を使ってベクトルに格納する
+		/*----------------------------------------------------------------------*/
+		__forceinline static Matrix128 SIMD_CALL_CONVENTION LoadFloat4x4(const float* source) noexcept;
+
+		#pragma endregion Getter
 
 		#pragma region Setter
 		/*----------------------------------------------------------------------
@@ -117,46 +123,50 @@ namespace gm::simd::sse
 			const float m20, const float m21, const float m22, const float m23,
 			const float m30, const float m31, const float m32, const float m33
 		) noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : ベクトルを使ってfloat配列に代入する
+		/*----------------------------------------------------------------------*/
+		__forceinline static void SIMD_CALL_CONVENTION StoreFloat4(float* destination, ConstMatrix128 source) noexcept;
 		#pragma endregion Setter
 
 		#pragma region Operator
 		/*----------------------------------------------------------------------
 		*  @brief : 掛け算
 		/*----------------------------------------------------------------------*/
-		__forceinline static Matrix128 SIMD_CALL_CONVENTION Add(ConstMatrix128f left, ConstMatrix128f right) noexcept;
+		__forceinline static Matrix128 SIMD_CALL_CONVENTION Add(ConstMatrix128 left, ConstMatrix128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 掛け算
 		/*----------------------------------------------------------------------*/
-		__forceinline static Matrix128 SIMD_CALL_CONVENTION Subtract(ConstMatrix128f left, ConstMatrix128f right) noexcept;
+		__forceinline static Matrix128 SIMD_CALL_CONVENTION Subtract(ConstMatrix128 left, ConstMatrix128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 掛け算
 		/*----------------------------------------------------------------------*/
-		__forceinline static Matrix128 SIMD_CALL_CONVENTION Multiply(ConstMatrix128f left, ConstMatrix128f right) noexcept;
+		__forceinline static Matrix128 SIMD_CALL_CONVENTION Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 転置
 		/*----------------------------------------------------------------------*/
-		__forceinline static Matrix128 SIMD_CALL_CONVENTION Transpose(ConstMatrix128f matrix) noexcept;
+		__forceinline static Matrix128 SIMD_CALL_CONVENTION Transpose(ConstMatrix128 matrix) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 逆行列
-		*           ConstMatrix128f matrix
+		*           ConstMatrix128 matrix
 		*           float* 行列式
 		/*----------------------------------------------------------------------*/
-		__forceinline static Matrix128 SIMD_CALL_CONVENTION Inverse(ConstMatrix128f matrix, float* determinant = nullptr) noexcept;
+		__forceinline static Matrix128 SIMD_CALL_CONVENTION Inverse(ConstMatrix128 matrix, float* determinant = nullptr) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 逆行列
 		/*----------------------------------------------------------------------*/
-		__forceinline static float SIMD_CALL_CONVENTION Determinant(ConstMatrix128f matrix) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION Determinant(ConstMatrix128 matrix) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 対象の行列をscale, rotationのquoternion, translation(並進)に分割します. 
 		/*----------------------------------------------------------------------*/
-		__forceinline static bool SIMD_CALL_CONVENTION DecomposeSRT(ConstMatrix128f matrix, Vector128* scale, Vector128* quaternion, Vector128* translation) noexcept;
-
+		__forceinline static bool SIMD_CALL_CONVENTION DecomposeSRT(ConstMatrix128 matrix, Vector128* scale, Quaternion128* quaternion, Vector128* translation) noexcept;
 
 		#pragma endregion Operator
 
@@ -164,7 +174,7 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------
 		*  @brief : 単位行列であるかどうかを調べます
 		/*----------------------------------------------------------------------*/
-		__forceinline static bool SIMD_CALL_CONVENTION IsIdentity(ConstMatrix128f matrix) noexcept;
+		__forceinline static bool SIMD_CALL_CONVENTION IsIdentity(ConstMatrix128 matrix) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 並進移動用の行列を作成します.
@@ -205,6 +215,11 @@ namespace gm::simd::sse
 		*  @brief : クォータニオンを使ってrad単位で角度を回転します
 		/*----------------------------------------------------------------------*/
 		__forceinline static Matrix128 SIMD_CALL_CONVENTION RotationQuaternion(Vector128Utility::ConstVector128 quaternion) noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : 指定した行列によって 3D ベクトル法線を変換します。
+		/*----------------------------------------------------------------------*/
+		__forceinline static Vector128 SIMD_CALL_CONVENTION TransformNormalVector3(ConstMatrix128 matrix, Vector128Utility::ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 影の変換行列を作成します.
@@ -317,6 +332,21 @@ namespace gm::simd::sse
 		static constexpr float DECOMPOSE_EPSILON = 0.0001f;
 	}
 	#pragma endregion Internal
+	#pragma region Getter
+	/*----------------------------------------------------------------------
+	*  @brief :  floatの配列を使ってベクトルに格納する
+	/*----------------------------------------------------------------------*/
+	inline static Matrix128 SIMD_CALL_CONVENTION LoadFloat4x4(const float* source) noexcept
+	{
+		Check(source);
+		Matrix128 matrix;
+		matrix.Row[0] = _mm_loadu_ps(&source[0]);
+		matrix.Row[1] = _mm_loadu_ps(&source[4]);
+		matrix.Row[2] = _mm_loadu_ps(&source[8]);
+		matrix.Row[3] = _mm_loadu_ps(&source[12]);
+		return matrix;
+	}
+	#pragma endregion Getter
 	#pragma region Setter
 	/****************************************************************************
 	*                       Identity
@@ -348,9 +378,6 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Matrix128
 	*****************************************************************************/
-	/*----------------------------------------------------------------------
-	*  @brief : float値を直接使って行列を設定する
-	/*----------------------------------------------------------------------*/
 	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Set
 	(
 		const float m00, const float m01, const float m02, const float m03,
@@ -367,21 +394,33 @@ namespace gm::simd::sse
 			VectorFunction::Set(m30, m31, m32, m33)
 		);
 	}
+
+	/*----------------------------------------------------------------------
+	*  @brief : ベクトルを使ってfloat配列に代入する
+	/*----------------------------------------------------------------------*/
+	inline void SIMD_CALL_CONVENTION Matrix128Utility::StoreFloat4(float* destination, ConstMatrix128 source) noexcept
+	{
+		Check(destination);
+		_mm_storeu_ps(&destination[0], source.Row[0]);
+		_mm_storeu_ps(&destination[4], source.Row[1]);
+		_mm_storeu_ps(&destination[8], source.Row[2]);
+		_mm_storeu_ps(&destination[12], source.Row[3]);
+	}
 	#pragma endregion Setter
 	#pragma region Operator
 	/****************************************************************************
 	*                       Add
 	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128f left, ConstMatrix128f right) noexcept
+	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	*
 	*  @brief     加算
 	*
-	*  @param[in] ConstMatrix128f left
-	*  @param[in] ConstMatrix128f right
+	*  @param[in] ConstMatrix128 left
+	*  @param[in] ConstMatrix128 right
 	*
 	*  @return 　　Matrix128
 	*****************************************************************************/
-	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Add(ConstMatrix128f left, ConstMatrix128f right) noexcept
+	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Add(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	{
 		return Matrix128
 		(
@@ -395,16 +434,16 @@ namespace gm::simd::sse
 	/****************************************************************************
 	*                       Subtract
 	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Subtract(ConstMatrix128f left, ConstMatrix128f right) noexcept
+	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Subtract(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	*
 	*  @brief     減算
 	*
-	*  @param[in] ConstMatrix128f left
-	*  @param[in] ConstMatrix128f right
+	*  @param[in] ConstMatrix128 left
+	*  @param[in] ConstMatrix128 right
 	*
 	*  @return 　　Matrix128
 	*****************************************************************************/
-	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Subtract(ConstMatrix128f left, ConstMatrix128f right) noexcept
+	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Subtract(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	{
 		return Matrix128
 		(
@@ -418,16 +457,16 @@ namespace gm::simd::sse
 	/****************************************************************************
 	*                       Multiply
 	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128f left, ConstMatrix128f right) noexcept
+	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	*
 	*  @brief     掛け算
 	*
-	*  @param[in] ConstMatrix128f left
-	*  @param[in] ConstMatrix128f right
+	*  @param[in] ConstMatrix128 left
+	*  @param[in] ConstMatrix128 right
 	*
 	*  @return 　　Matrix128
 	*****************************************************************************/
-	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128f left, ConstMatrix128f right) noexcept
+	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	{
 		Matrix128 result = {};
 		// Splat the component X,Y,Z then W
@@ -501,15 +540,15 @@ namespace gm::simd::sse
 	/****************************************************************************
 	*                       Transpose
 	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Transpose(ConstMatrix128f left, ConstMatrix128f right) noexcept
+	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Transpose(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	*
 	*  @brief     転置
 	*
-	*  @param[in] ConstMatrix128f matrix
+	*  @param[in] ConstMatrix128 matrix
 	*
 	*  @return 　　Matrix128
 	*****************************************************************************/
-	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Transpose(ConstMatrix128f matrix) noexcept
+	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Transpose(ConstMatrix128 matrix) noexcept
 	{
 		// x.x,x.y,y.x,y.y
 		Vector128 temp1 = _mm_shuffle_ps(matrix.Row[0], matrix.Row[1], _MM_SHUFFLE(1, 0, 1, 0));
@@ -536,15 +575,15 @@ namespace gm::simd::sse
 	/****************************************************************************
 	*                       Inverse
 	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Inverse(ConstMatrix128f matrix, float* determinant) noexcept
+	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Inverse(ConstMatrix128 matrix, float* determinant) noexcept
 	*
 	*  @brief     行列
 	*
-	*  @param[in] ConstMatrix128f matrix
+	*  @param[in] ConstMatrix128 matrix
 	*
 	*  @return 　　Matrix128
 	*****************************************************************************/
-	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Inverse(ConstMatrix128f matrix, float* determinant) noexcept
+	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Inverse(ConstMatrix128 matrix, float* determinant) noexcept
 	{
 		// Transpose matrix
 		Vector128 vTemp1 = _mm_shuffle_ps(matrix.Row[0], matrix.Row[1], _MM_SHUFFLE(1, 0, 1, 0));
@@ -672,15 +711,15 @@ namespace gm::simd::sse
 	/****************************************************************************
 	*                       Determinant
 	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Determinant(ConstMatrix128f left, ConstMatrix128f right) noexcept
+	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Determinant(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	*
 	*  @brief     行列式
 	*
-	*  @param[in] ConstMatrix128f matrix
+	*  @param[in] ConstMatrix128 matrix
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Matrix128Utility::Determinant(ConstMatrix128f matrix) noexcept
+	inline float SIMD_CALL_CONVENTION Matrix128Utility::Determinant(ConstMatrix128 matrix) noexcept
 	{
 		static const Vector128f Sign = { { { 1.0f, -1.0f, 1.0f, -1.0f } } };
 
@@ -721,7 +760,7 @@ namespace gm::simd::sse
 	/*----------------------------------------------------------------------
 		*  @brief : 対象の行列をscale, rotationのquoternion, translation(並進)に分割します.
 		/*----------------------------------------------------------------------*/
-	//inline bool SIMD_CALL_CONVENTION Matrix128Utility::DecomposeSRT(ConstMatrix128f matrix, Vector128* scale, Vector128* quaternion, Vector128* translation) noexcept
+	//inline bool SIMD_CALL_CONVENTION Matrix128Utility::DecomposeSRT(ConstMatrix128 matrix, Vector128* scale, Vector128* quaternion, Vector128* translation) noexcept
 	//{
 	//	static const Vector128* pvCanonicalBasis[3] = 
 	//	{
@@ -817,15 +856,15 @@ namespace gm::simd::sse
 	/****************************************************************************
 	*                       IsIdentity
 	*************************************************************************//**
-	*  @fn        inline bool SIMD_CALL_CONVENTION Matrix128Utility::IsIdentity(ConstMatrix128f matrix) noexcept
+	*  @fn        inline bool SIMD_CALL_CONVENTION Matrix128Utility::IsIdentity(ConstMatrix128 matrix) noexcept
 	*
 	*  @brief     単位行列であるかどうかを調べます
 	*
-	*  @param[in] ConstMatrix128f matrix
+	*  @param[in] ConstMatrix128 matrix
 	*
 	*  @return 　 bool
 	*****************************************************************************/
-	inline bool SIMD_CALL_CONVENTION Matrix128Utility::IsIdentity(ConstMatrix128f matrix) noexcept
+	inline bool SIMD_CALL_CONVENTION Matrix128Utility::IsIdentity(ConstMatrix128 matrix) noexcept
 	{
 		Vector128 temp1 = _mm_cmpeq_ps(matrix.Row[0], VECTOR_128F_IDENTITY_R0);
 		Vector128 temp2 = _mm_cmpeq_ps(matrix.Row[1], VECTOR_128F_IDENTITY_R1);
@@ -1283,6 +1322,17 @@ namespace gm::simd::sse
 		M.Row[2] = Q1;
 		M.Row[3] = VECTOR_128F_IDENTITY_R3;
 		return M;
+	}
+
+	inline Vector128 SIMD_CALL_CONVENTION Matrix128Utility::TransformNormalVector3(ConstMatrix128 matrix, Vector128Utility::ConstVector128 vector) noexcept
+	{
+		Vector128 vResult = PERMUTE_PS(vector, _MM_SHUFFLE(2, 2, 2, 2)); // Z
+		vResult = _mm_mul_ps(vResult, matrix.Row[2]);
+		Vector128 vTemp = PERMUTE_PS(vector, _MM_SHUFFLE(1, 1, 1, 1)); // Y
+		vResult = Vector128Utility::MultiplyAdd(vTemp, matrix.Row[1], vResult);
+		vTemp = PERMUTE_PS(vector, _MM_SHUFFLE(0, 0, 0, 0)); // X
+		vResult = Vector128Utility::MultiplyAdd(vTemp, matrix.Row[0], vResult);
+		return vResult;
 	}
 
 	///*----------------------------------------------------------------------
