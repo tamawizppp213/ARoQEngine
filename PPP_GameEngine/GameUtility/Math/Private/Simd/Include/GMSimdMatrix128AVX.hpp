@@ -41,7 +41,7 @@ namespace gm::simd::avx
 		/*----------------------------------------------------------------------
 		*  @brief : ä|ÇØéZ
 		/*----------------------------------------------------------------------*/
-		__forceinline static sse::Matrix128 SIMD_CALL_CONVENTION Multiply(ConstMatrix128f left, ConstMatrix128f right) noexcept;
+		__forceinline static sse::Matrix128 SIMD_CALL_CONVENTION Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept;
 		#pragma endregion Operator
 
 	protected:
@@ -68,7 +68,7 @@ namespace gm::simd::avx
 	*
 	*  @return Å@Å@Matrix128
 	*****************************************************************************/
-	inline sse::Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128f left, ConstMatrix128f right) noexcept
+	inline sse::Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	{
 		sse::Vector128 vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&left.Row[0]) + 0);
 		sse::Vector128 vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&left.Row[0]) + 1);
