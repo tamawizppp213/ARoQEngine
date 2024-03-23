@@ -71,9 +71,9 @@ namespace gm
 			const float m20, const float m21, const float m22, const float m23,
 			const float m30, const float m31, const float m32, const float m33)
 			: _00(m00), _01(m01), _02(m02), _03(m03),
-			_10(m00), _11(m01), _12(m02), _13(m03),
-			_20(m00), _21(m01), _22(m02), _23(m03),
-			_30(m00), _31(m01), _32(m02), _33(m03)
+			_10(m00), _11(m11), _12(m12), _13(m13),
+			_20(m00), _21(m21), _22(m22), _23(m23),
+			_30(m00), _31(m31), _32(m32), _33(m33)
 		{
 
 		}
@@ -454,6 +454,14 @@ namespace gm
 	__forceinline Matrix4f RotationAxisMatrix(const Float3& axis, const float radian) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationAxis(axis, radian);
+	}
+
+	/*----------------------------------------------------------------------
+	*  @brief : クォータニオンを使って回転
+	/*----------------------------------------------------------------------*/
+	__forceinline Matrix4f RotationQuaternion(const QuaternionF& q) noexcept
+	{
+		return SIMD_NAME_SPACE::Matrix128Utility::RotationQuaternion(q);
 	}
 
 	/*----------------------------------------------------------------------
