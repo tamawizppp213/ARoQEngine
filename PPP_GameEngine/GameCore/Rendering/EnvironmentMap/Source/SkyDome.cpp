@@ -157,13 +157,13 @@ void SkyDome::PrepareSkyObject(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-			Set Skydata
 	---------------------------------------------------------------------*/
-	Matrix4 skyData; // sphere
-	skyData = gm::Scaling(SKY_SCALE, SKY_SCALE, SKY_SCALE).ToFloat4x4();
+	Matrix4f skyData; // sphere
+	skyData = gm::Scaling(SKY_SCALE, SKY_SCALE, SKY_SCALE);
 
 	/*-------------------------------------------------------------------
 	-			Copy Sky object data
 	---------------------------------------------------------------------*/
-	const auto cbMetaData = GPUBufferMetaData::ConstantBuffer(sizeof(Matrix4), 1, MemoryHeap::Upload, ResourceState::Common);
+	const auto cbMetaData = GPUBufferMetaData::ConstantBuffer(sizeof(Matrix4f), 1, MemoryHeap::Upload, ResourceState::Common);
 	_skyObject = device->CreateBuffer(cbMetaData);
 	_skyObject->SetName(addName + SP("CB"));
 	_skyObject->Pack(&skyData, commandList);

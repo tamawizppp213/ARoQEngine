@@ -40,7 +40,8 @@ namespace
             return value * 12.92f;
         }
 
-        return 1.055f * static_cast<float>(pow(value, 1.0f / 2.4f)) - 0.055f;
+        return 0.0f;
+        //return 1.055f * static_cast<float>(pow(value, 1.0f / 2.4f)) - 0.055f;
     }
     // https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation
     inline float ToLinear(float value)
@@ -50,7 +51,8 @@ namespace
             return value / 12.92f;
         }
 
-        return static_cast<float>(pow((value + 0.055f) / 1.055f, 2.4f));
+        return 0.0f;
+        //return static_cast<float>(pow((value + 0.055f) / 1.055f, 2.4f));
     }
 }
 
@@ -201,15 +203,15 @@ Color3 Color3::FromUint32BGRA(uint32_t color)
     return Color3(r, g, b);
 }
 
-Color3 Color3::Clamp(const Color3& color, float lo, float hi)
-{
-    return 
-    {
-        gm::Clamp(color.r, lo, hi),
-        gm::Clamp(color.g, lo, hi),
-        gm::Clamp(color.b, lo, hi)
-    };
-}
+//Color3 Color3::Clamp(const Color3& color, float lo, float hi)
+//{
+//    return ;
+//    /*{
+//        gm::Clamp(color.r, lo, hi),
+//        gm::Clamp(color.g, lo, hi),
+//        gm::Clamp(color.b, lo, hi)
+//    };*/
+//}
 
 bool gltf::operator==(const Color3& lhs, const Color3& rhs)
 {
@@ -370,16 +372,16 @@ Color4 Color4::FromUint32BGRA(uint32_t color)
 
     return Color4(r, g, b, a);
 }
-
-Color4 Color4::Clamp(const Color4& color, float lo, float hi)
-{
-    return {
-        gm::Clamp(color.r, lo, hi),
-        gm::Clamp(color.g, lo, hi),
-        gm::Clamp(color.b, lo, hi),
-        gm::Clamp(color.a, lo, hi)
-    };
-}
+//
+//Color4 Color4::Clamp(const Color4& color, float lo, float hi)
+//{
+//    return {
+//        gm::Clamp(color.r, lo, hi),
+//        gm::Clamp(color.g, lo, hi),
+//        gm::Clamp(color.b, lo, hi),
+//        gm::Clamp(color.a, lo, hi)
+//    };
+//}
 
 bool gltf::operator==(const Color4& lhs, const Color4& rhs)
 {

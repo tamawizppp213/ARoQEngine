@@ -45,17 +45,11 @@ namespace gm
 		Vertex& operator=(const Vertex&) = default;
 		Vertex(Vertex&&)                 = default;
 		Vertex& operator=(Vertex&&)      = default;
-		Vertex(DirectX::XMFLOAT3 const& position, DirectX::XMFLOAT3 const& normal, DirectX::XMFLOAT4 const& color, DirectX::XMFLOAT2 const& uv)
+		Vertex(gm::Float3 const& position, gm::Float3 const& normal, gm::Float4 const& color, gm::Float2 const& uv)
 			: Position(position), Normal(normal), Color(color), UV(uv)
 		{
 		};
-		Vertex(DirectX::FXMVECTOR position, DirectX::FXMVECTOR normal, DirectX::FXMVECTOR color, DirectX::FXMVECTOR uv)
-		{
-			DirectX::XMStoreFloat3(&this->Position, position);
-			DirectX::XMStoreFloat3(&this->Normal, normal);
-			DirectX::XMStoreFloat4(&this->Color, color);
-			DirectX::XMStoreFloat2(&this->UV, uv);
-		}
+	
 	private:
 		/****************************************************************************
 		**                Private Function
@@ -84,16 +78,10 @@ namespace gm
 		SkinMeshVertex(const SkinMeshVertex&)            = default;
 		SkinMeshVertex& operator=(const SkinMeshVertex&) = default;
 		SkinMeshVertex& operator=(SkinMeshVertex&&)      = default;
-		SkinMeshVertex(DirectX::XMFLOAT3 const& position, DirectX::XMFLOAT3 const& normal, DirectX::XMFLOAT2 const& uv)
+		SkinMeshVertex(gm::Float3 const& position, gm::Float3 const& normal, gm::Float2 const& uv)
 			: Position(position), Normal(normal), UV(uv)
 		{
 		};
-		SkinMeshVertex(DirectX::FXMVECTOR position, DirectX::FXMVECTOR normal, DirectX::FXMVECTOR uv)
-		{
-			DirectX::XMStoreFloat3(&this->Position, position);
-			DirectX::XMStoreFloat3(&this->Normal, normal);
-			DirectX::XMStoreFloat2(&this->UV, uv);
-		}
 	};
 
 }

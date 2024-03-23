@@ -510,8 +510,8 @@ namespace gltf
 				/****************************************************************************
 				**                Public Member Variables
 				*****************************************************************************/
-				std::string TextureID; // idは本来intだが, 名前で管理
-				size_t      TexCoord;
+				std::string TextureID = ""; // idは本来intだが, 名前で管理
+				size_t      TexCoord = 0;
 
 				/****************************************************************************
 				**                Constructor and Destructor
@@ -843,10 +843,10 @@ namespace gltf
 				**                Public Function
 				*****************************************************************************/
 				bool IsEmpty() const { return Children.empty() && MeshID.empty() && SkinID.empty(); }
-				bool HasValidTransformType() const { return gm::Matrix4(Matrix) == gm::MatrixIdentity() || HasIdentityTRS(); }
+				bool HasValidTransformType() const { return gm::Matrix4f(Matrix) == gm::Matrix4f() || HasIdentityTRS(); }
 				TransformationType GetTransformationType() const
 				{
-					if (gm::Matrix4(Matrix) != gm::MatrixIdentity()) { return TransformationType::Matrix; }
+					if (gm::Matrix4f(Matrix) != gm::Matrix4f()) { return TransformationType::Matrix; }
 					if (!HasIdentityTRS()) { return TransformationType::TRS; }
 					return TransformationType::Indentity;
 				}
@@ -862,7 +862,7 @@ namespace gltf
 				std::string              CameraID; // The index of the camera referenced by this node
 				std::vector<std::string> Children; // The indices of this node's children
 				std::string              SkinID;   // The index of the skin referenced by this node
-				gm::Float4x4             Matrix    = gm::MatrixIdentity().ToFloat4x4();   // Transformation matrix
+				gm::Float4x4             Matrix    = gm::Float4x4();   // Transformation matrix
 				std::string              MeshID;
 				gm::Float4               Rotation    = gm::Float4(0,0,0,1);
 				gm::Float3               Scale       = gm::Float3(1,1,1);
@@ -877,7 +877,7 @@ namespace gltf
 						&& this->CameraID    == rhs.CameraID
 						&& this->Children    == rhs.Children
 						&& this->SkinID      == rhs.SkinID
-						&& gm::Matrix4(this->Matrix) == gm::Matrix4(rhs.Matrix)
+						&& gm::Matrix4f(this->Matrix) == gm::Matrix4f(rhs.Matrix)
 						&& this->MeshID      == rhs.MeshID
 						&& this->Rotation    == rhs.Rotation
 						&& this->Scale       == rhs.Scale

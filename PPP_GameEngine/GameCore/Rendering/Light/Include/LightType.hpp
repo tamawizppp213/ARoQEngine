@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/HLSLUtility.hpp"
+#include "GameUtility/Math/Include/GMMath.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -56,8 +57,8 @@ namespace gc::rendering
 		hlsl::float3 Color          = hlsl::float3(0, 0, 0);
 		hlsl::float1 Brightness     = 1.0f;
 		hlsl::float3 Direction      = hlsl::float3(0, 0, 0);
-		hlsl::float1 InnerConeAngle = gm::GM_PI / 6.0f;
-		hlsl::float1 OuterConeAngle = gm::GM_PI / 4.0f;
+		hlsl::float1 InnerConeAngle = gm::GM_PI_FLOAT / 6.0f;
+		hlsl::float1 OuterConeAngle = gm::GM_PI_FLOAT / 4.0f;
 		int          IsUse          = false;
 		hlsl::float2 Dummy          = hlsl::float2(0, 0);
 	};

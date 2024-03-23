@@ -112,9 +112,9 @@ void IESProfiler::LoadLamp(const std::wstring& name)
 		stream >> _lamp.BallastFactor;
 		stream >> futureUse;
 		stream >> _lamp.InputWatts;
-		_lamp.ShapeWidth      = gm::Abs(_lamp.ShapeWidth);   // •‰‚É‚È‚Á‚Ä‚¢‚é‚±‚Æ‚ª‚ ‚é‚Ì‚Åâ‘Î’l‚Å. 
-		_lamp.ShapeLength     = gm::Abs(_lamp.ShapeLength);  
-		_lamp.ShapeHeight     = gm::Abs(_lamp.ShapeHeight);
+		_lamp.ShapeWidth      = fabs(_lamp.ShapeWidth);   // •‰‚É‚È‚Á‚Ä‚¢‚é‚±‚Æ‚ª‚ ‚é‚Ì‚Åâ‘Î’l‚Å. 
+		_lamp.ShapeLength     = fabs(_lamp.ShapeLength);
+		_lamp.ShapeHeight     = fabs(_lamp.ShapeHeight);
 		_lamp.PhotometricType = static_cast<PlaneType>(photometricType);
 		_lamp.LampUnitType    = static_cast<UnitType> (unitType);
 
@@ -149,7 +149,7 @@ void IESProfiler::LoadLamp(const std::wstring& name)
 				stream >> value;
 				const auto candera = value * _lamp.Multiplier;
 				_lamp.Candera[i * angleCountHorizontal + j] = candera;
-				_lamp.MaxCandera = gm::Max(_lamp.MaxCandera, candera);
+				_lamp.MaxCandera = _lamp.MaxCandera > candera ? _lamp.MaxCandera : candera;
 			}
 		}
 

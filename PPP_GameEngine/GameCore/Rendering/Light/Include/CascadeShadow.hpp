@@ -50,7 +50,7 @@ namespace gc::rendering
 	struct CascadeShadowInfo
 	{
 		gm::Float4x4 LVPC[3];
-		int IsSoftShadow;
+		int IsSoftShadow = true;
 	};
 
 	/****************************************************************************

@@ -103,27 +103,27 @@ namespace gc::core
 
 		inline const gm::Transform&  GetTransform() const { return _transform; }
 
-		inline       gm::Vector3&    GetPosition()       { return _transform.LocalPosition; }
+		inline       gm::Vector3f&    GetPosition()       { return _transform.LocalPosition; }
 
-		inline const gm::Vector3&    GetPosition() const { return _transform.LocalPosition; }
+		inline const gm::Vector3f&    GetPosition() const { return _transform.LocalPosition; }
 
-		inline       gm::Quaternion& GetRotation()       { return _transform.LocalRotation; }
+		inline       gm::QuaternionF& GetRotation()       { return _transform.LocalRotation; }
 
-		inline const gm::Quaternion& GetRotation() const { return _transform.LocalRotation; }
+		inline const gm::QuaternionF& GetRotation() const { return _transform.LocalRotation; }
 
-		inline       gm::Vector3&    GetScale()          { return _transform.LocalScale; }
+		inline       gm::Vector3f&    GetScale()          { return _transform.LocalScale; }
 
-		inline const gm::Vector3&    GetScale() const    { return _transform.LocalScale; }
+		inline const gm::Vector3f&    GetScale() const    { return _transform.LocalScale; }
 
-		inline void SetPosition(float x, float y, float z)   { _transform.LocalPosition = gm::Vector3(x, y, z); }
+		inline void SetPosition(float x, float y, float z)   { _transform.LocalPosition = gm::Vector3f(x, y, z); }
 
-		inline void SetPosition(const gm::Vector3& position) { _transform.LocalPosition = position; }
+		inline void SetPosition(const gm::Vector3f& position) { _transform.LocalPosition = position; }
 
-		inline void SetScale(float x, float y, float z) { _transform.LocalScale = gm::Vector3(x, y, z); }
+		inline void SetScale(float x, float y, float z) { _transform.LocalScale = gm::Vector3f(x, y, z); }
 
-		inline void SetScale(const gm::Vector3& scale) { _transform.LocalScale = scale; }
+		inline void SetScale(const gm::Vector3f& scale) { _transform.LocalScale = scale; }
 
-		inline void SetRotation(const gm::Quaternion& rotation) { _transform.LocalRotation = rotation; }
+		inline void SetRotation(const gm::QuaternionF& rotation) { _transform.LocalRotation = rotation; }
 		
 		/*-------------------------------------------------------------------
 		-               GameObject Default Infomation

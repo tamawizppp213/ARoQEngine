@@ -139,7 +139,7 @@ namespace gc
 			case LightType::Directional: 
 			{
 #ifdef _DEBUG
-				assert(typeid(light) == typeid(DirectionalLightData));
+				Check(typeid(light) == typeid(DirectionalLightData));
 #endif
 				_directionalLights->SetLight(index, light);
 				break;

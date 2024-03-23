@@ -104,7 +104,7 @@ bool URP::Draw()
 void URP::Add(const URPDrawType type, const GameModelPtr& gameModel)
 {
 #ifdef _DEBUG
-	assert(gameModel);
+	Check(gameModel);
 #endif
 
 	_cascadeShadowMap->Add(gameModel);

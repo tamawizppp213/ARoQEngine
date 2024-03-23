@@ -9,6 +9,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Model/Include/PrimitiveMesh.hpp"
+#include "GameUtility/Math/Include/GMMath.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -217,8 +219,8 @@ PrimitiveMesh PrimitiveMeshGenerator::Sphere(float radius, std::uint32_t sliceCo
 	---------------------------------------------------------------------*/
 	meshData.Vertices.push_back(topVertex);
 
-	float phiStep = DirectX::XM_PI / stackCount;
-	float thetaStep = 2.0f * DirectX::XM_PI / sliceCount;
+	float phiStep = gm::GM_PI_FLOAT / stackCount;
+	float thetaStep = 2.0f * gm::GM_PI_FLOAT / sliceCount;
 
 	for (std::uint32_t i = 1; i <= stackCount - 1; ++i)
 	{
@@ -238,11 +240,11 @@ PrimitiveMesh PrimitiveMeshGenerator::Sphere(float radius, std::uint32_t sliceCo
 			vertex.Position.y = radius * cosf(phi);
 			vertex.Position.z = radius * sinf(phi) * sinf(theta);
 
-			Vector3 pos = Vector3(vertex.Position);
+			Vector3f pos = Vector3f(vertex.Position);
 			vertex.Normal = Normalize(pos).ToFloat3();
 
-			vertex.UV.x = theta / DirectX::XM_2PI;
-			vertex.UV.y = phi / DirectX::XM_PI;
+			vertex.UV.x = theta / gm::GM_2PI_FLOAT;
+			vertex.UV.y = phi / gm::GM_PI_FLOAT;
 
 			meshData.Vertices.push_back(vertex);
 		}
@@ -350,8 +352,8 @@ PrimitiveMesh PrimitiveMeshGenerator::GeoSphere(float radius, std::uint32_t numS
 	for (std::uint16_t i = 0; i < meshData.Vertices.size(); ++i)
 	{
 		// Project onto unit sphere.
-		Vector3 n = Normalize(Vector3(meshData.Vertices[i].Position));
-		Vector3 p = radius * n;
+		Vector3f n = Normalize(Vector3f(meshData.Vertices[i].Position));
+		Vector3f p = radius * n;
 
 		meshData.Vertices[i].Position = p.ToFloat3();
 		meshData.Vertices[i].Normal = n.ToFloat3();
@@ -361,13 +363,13 @@ PrimitiveMesh PrimitiveMeshGenerator::GeoSphere(float radius, std::uint32_t numS
 
 		if (theta < 0.0f)
 		{
-			theta += DirectX::XM_2PI;
+			theta += gm::GM_2PI_FLOAT;
 		}
 
 		float phi = acosf(meshData.Vertices[i].Position.y / radius);
 
-		meshData.Vertices[i].UV.x = theta / DirectX::XM_2PI;
-		meshData.Vertices[i].UV.y = phi / DirectX::XM_PI;
+		meshData.Vertices[i].UV.x = theta / gm::GM_2PI_FLOAT;
+		meshData.Vertices[i].UV.y = phi / gm::GM_PI_FLOAT;
 		meshData.Vertices[i].Color = color;
 	}
 
@@ -406,7 +408,7 @@ PrimitiveMesh PrimitiveMeshGenerator::Cylinder(float bottomRadius, float topRadi
 		float r = bottomRadius + i * radiusStep;
 
 		// vertices of ring
-		float dTheta = 2.0f * DirectX::XM_PI / sliceCount;
+		float dTheta = 2.0f * gm::GM_PI_FLOAT / sliceCount;
 		for (std::uint32_t j = 0; j <= sliceCount; ++j)
 		{
 			Vertex vertex;
@@ -422,9 +424,9 @@ PrimitiveMesh PrimitiveMeshGenerator::Cylinder(float bottomRadius, float topRadi
 			Float3 bitangent(dr * c, -height, dr * s);
 
 			Float3  t = Float3(-s, 0.0f, c);
-			Vector3 T = Vector3(t);
-			Vector3 B = Vector3(bitangent);
-			Vector3 N = Normalize(Cross(T, B));
+			Vector3f T = Vector3f(t);
+			Vector3f B = Vector3f(bitangent);
+			Vector3f N = Normalize(Cross(T, B));
 			vertex.Normal = N.ToFloat3();
 
 			meshData.Vertices.push_back(vertex);
@@ -547,19 +549,19 @@ PrimitiveMesh PrimitiveMeshGenerator::Torus(float majorRadius, float minorRadius
 
 	PrimitiveMesh meshData;
 
-	const float majorStep = 2.0f * GM_PI / numMajor;
-	const float minorStep = 2.0f * GM_PI / numMinor;
+	const float majorStep = 2.0f * gm::GM_PI_FLOAT / numMajor;
+	const float minorStep = 2.0f * gm::GM_PI_FLOAT / numMinor;
 	float majorPosition = 0.0f;
 
 	for (std::uint32_t i = 0; i < numMajor; ++i)
 	{
-		const float cosMajor = Cos(majorPosition);
-        const float sinMajor = Sin(majorPosition);
+		const float cosMajor = cosf(majorPosition);
+        const float sinMajor = sinf(majorPosition);
         float minorPosition = 0.0f;
 
         for (std::uint32_t j = 0; j < numMinor; ++j) {
-            float cosMinor = Cos(minorPosition);
-            float sinMinor = Sin(minorPosition);
+            float cosMinor = cosf(minorPosition);
+            float sinMinor = sinf(minorPosition);
 
 			const Float3 position = 
 			{
@@ -709,23 +711,23 @@ gm::Vertex PrimitiveMeshGenerator::MidPoint(const Vertex& v0, const Vertex& v1)
 	/*-------------------------------------------------------------------
 	-						Load vertex data
 	---------------------------------------------------------------------*/
-	Vector3 p0 = Vector3(v0.Position);
-	Vector3 p1 = Vector3(v1.Position);
-	Vector3 n0 = Vector3(v0.Normal);
-	Vector3 n1 = Vector3(v1.Normal);
-	Vector2 t0 = Vector2(v0.UV);
-	Vector2 t1 = Vector2(v1.UV);
-	Vector4 c0 = Vector4(v0.Color);
-	Vector4 c1 = Vector4(v1.Color);
+	Vector3f p0 = Vector3f(v0.Position);
+	Vector3f p1 = Vector3f(v1.Position);
+	Vector3f n0 = Vector3f(v0.Normal);
+	Vector3f n1 = Vector3f(v1.Normal);
+	Vector2f t0 = Vector2f(v0.UV);
+	Vector2f t1 = Vector2f(v1.UV);
+	Vector4f c0 = Vector4f(v0.Color);
+	Vector4f c1 = Vector4f(v1.Color);
 
 
 	/*-------------------------------------------------------------------
 	-						Calcurate mid point
 	---------------------------------------------------------------------*/
-	Vector3 pos = 0.5f * (p0 + p1);
-	Vector3 normal = Normalize(0.5f * (n0 + n1));
-	Vector2 uv = 0.5f * (t0 + t1);
-	Vector4 color = 0.5f * (c0 + c1);
+	Vector3f pos = 0.5f * (p0 + p1);
+	Vector3f normal = Normalize(0.5f * (n0 + n1));
+	Vector2f uv = 0.5f * (t0 + t1);
+	Vector4f color = 0.5f * (c0 + c1);
 
 	/*-------------------------------------------------------------------
 	-						Set vertex data
@@ -756,7 +758,7 @@ void PrimitiveMeshGenerator::BuildCylinderTopCap(float topRadius, float height, 
 	std::uint16_t baseIndex = (std::uint16_t)meshData.Vertices.size();
 
 	float y = 0.5f * height;
-	float dTheta = 2.0f * DirectX::XM_PI / sliceCount;
+	float dTheta = 2.0f * gm::GM_PI_FLOAT / sliceCount;
 
 	// Duplicate cap ring vertices because the texture coordinates and normals differ.
 	for (std::uint16_t i = 0; i <= sliceCount; ++i)
@@ -800,7 +802,7 @@ void PrimitiveMeshGenerator::BuildCylinderBottomCap(float bottomRadius, float he
 	std::uint16_t baseIndex = (std::uint16_t)meshData.Vertices.size();
 
 	float y = -0.5f * height;
-	float dTheta = 2.0f * DirectX::XM_PI / sliceCount;
+	float dTheta = 2.0f * gm::GM_PI_FLOAT / sliceCount;
 
 	// Duplicate cap ring vertices because the texture coordinates and normals differ.
 	for (std::uint16_t i = 0; i <= sliceCount; ++i)

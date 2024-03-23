@@ -768,9 +768,6 @@
     <ClInclude Include="GameUtility\File\Include\BitConverter.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Math\Include\GMSimdMath.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>

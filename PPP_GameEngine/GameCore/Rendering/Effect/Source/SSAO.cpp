@@ -44,11 +44,10 @@ namespace
 SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const gu::tstring& addName)
 	: _engine(engine), _normalMap(normalMap), _depthMap(depthMap)
 {
-#ifdef _DEBUG
-	assert(_engine);
-	assert(_normalMap);
-	assert(_depthMap);
-#endif
+	Check(_engine);
+	Check(_normalMap);
+	Check(_depthMap);
+
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
@@ -202,7 +201,7 @@ void SSAO::PrepareSSAOSettings(const gu::tstring& name)
 	for (int i = 0; i < _countof(_setting.Offsets); ++i)
 	{
 		const auto randomValue = random.GetRandomValue();
-		Vector4    offset      = randomValue * Normalize(_setting.Offsets[i]);
+		Vector4f    offset     = randomValue * Normalize(_setting.Offsets[i]);
 		_setting.Offsets[i]    = offset.ToFloat4();
 	}
 

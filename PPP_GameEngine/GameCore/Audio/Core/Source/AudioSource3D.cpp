@@ -79,10 +79,10 @@ bool AudioSource3D::ApplyChange()
 	X3DAUDIO_LISTENER listener;
 	memset(&listener, 0, sizeof(listener));
 
-	listener.OrientFront = _listener.Front;
-	listener.OrientTop   = _listener.Up;
-	listener.Position    = _listener.Position;
-	listener.Velocity    = _listener.Velocity;
+	listener.OrientFront = DirectX::XMFLOAT3(&_listener.Front.x);
+	listener.OrientTop   = DirectX::XMFLOAT3(&_listener.Up.x);
+	listener.Position    = DirectX::XMFLOAT3(&_listener.Position.x);
+	listener.Velocity    = DirectX::XMFLOAT3(&_listener.Velocity.x);
 
 	/*-------------------------------------------------------------------
 	-              Create Audio Emitter
@@ -90,10 +90,10 @@ bool AudioSource3D::ApplyChange()
 	X3DAUDIO_EMITTER emitter;
 	memset(&emitter, 0, sizeof(emitter));
 
-	emitter.OrientFront         = _emitter.Front;
-	emitter.OrientTop           = _emitter.Up;
-	emitter.Position            = _emitter.Position;
-	emitter.Velocity            = _emitter.Velocity;
+	emitter.OrientFront         = DirectX::XMFLOAT3(&_emitter.Front.x);
+	emitter.OrientTop           = DirectX::XMFLOAT3(&_emitter.Up.x);
+	emitter.Position            = DirectX::XMFLOAT3(&_emitter.Position.x);
+	emitter.Velocity            = DirectX::XMFLOAT3(&_emitter.Velocity.x);
 	emitter.ChannelCount        = _emitter.ChannelCount;
 	emitter.ChannelRadius       = _emitter.ChannelRadius;
 	emitter.CurveDistanceScaler = _emitter.CurveDistanceScaler;

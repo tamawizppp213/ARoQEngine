@@ -46,7 +46,7 @@ Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, c
 	: IFullScreenEffector(engine)
 {
 #ifdef _DEBUG
-	assert(blockSize >= 0.0f);
+	Check(blockSize >= 0.0f);
 #endif
 
 	/*-------------------------------------------------------------------

@@ -43,7 +43,7 @@ IFullScreenEffector::~IFullScreenEffector()
 
 IFullScreenEffector::IFullScreenEffector(const LowLevelGraphicsEnginePtr& engine) : _engine(engine)
 {
-	assert(engine);
+	Check(engine);
 
 	_width  = Screen::GetScreenWidth();
 	_height = Screen::GetScreenHeight();

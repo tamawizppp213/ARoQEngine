@@ -276,7 +276,7 @@ namespace gltf
 		detail::validation::ValidateBufferView(bufferView, buffer);
 		
 		auto count = bufferView.ByteLength / sizeof(T);
-		assert(bufferView.ByteLength % sizeof(T) == 0);
+		Check(bufferView.ByteLength % sizeof(T) == 0);
 		return ReadBinaryData<T>(buffer, bufferView.ByteOffset, count);
 	}
 	
@@ -527,7 +527,7 @@ namespace gltf
 
 		for (size_t i = 0; i < indices.size(); i++)
 		{
-			assert(baseData.size() == accessor.Count * typeCount);
+			Check(baseData.size() == accessor.Count * typeCount);
 			static_assert(sizeof(I) <= sizeof(size_t), "sizeof(I) < sizeof(size_t)");
 			if (0 <= indices[i] && static_cast<size_t>(indices[i]) < accessor.Count)
 			{

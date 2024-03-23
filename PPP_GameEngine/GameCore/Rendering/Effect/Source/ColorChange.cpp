@@ -60,7 +60,7 @@ ColorChange::~ColorChange()
 ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const gu::tstring& addName) 
 	: IFullScreenEffector(engine), _colorType(type)
 {
-	assert(_colorType != ColorChangeType::None);
+	Check(_colorType != ColorChangeType::None);
 
 	/*-------------------------------------------------------------------
 	-            Set debug name

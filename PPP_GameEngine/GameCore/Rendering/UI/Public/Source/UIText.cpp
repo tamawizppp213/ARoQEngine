@@ -86,7 +86,7 @@ Text::Text(const CoordinateType type, const gu::SharedPointer<Font>& font, const
 Text::Text(const CoordinateType type, const gu::SharedPointer<Font>& font, const NumberInfo& info)
 {
 #ifdef _DEBUG
-	assert(info.Digit >= 1);
+	Check(info.Digit >= 1);
 #endif
 	/*-------------------------------------------------------------------
 	-              Prepare image buffer

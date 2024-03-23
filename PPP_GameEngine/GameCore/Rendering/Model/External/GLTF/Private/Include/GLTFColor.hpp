@@ -156,7 +156,7 @@ namespace gltf
         static Color3 FromUint32RGBA(uint32_t color);
         static Color3 FromUint32BGRA(uint32_t color);
 
-        static Color3 Clamp(const Color3& color, float lo, float hi);
+        //static Color3 Clamp(const Color3& color, float lo, float hi);
     };
 
     bool operator==(const Color3& lhs, const Color3& rhs);
@@ -196,7 +196,7 @@ namespace gltf
         static Color4 FromUint32RGBA(uint32_t color);
         static Color4 FromUint32BGRA(uint32_t color);
 
-        static Color4 Clamp(const Color4& color, float lo, float hi);
+       // static Color4 Clamp(const Color4& color, float lo, float hi);
     };
 
     bool operator==(const Color4& lhs, const Color4& rhs);

@@ -219,7 +219,7 @@ SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 *****************************************************************************/
 void PlatformApplication::SetUpWindow(const SharedPointer<core::CoreWindow>& window, const core::CoreWindowDesc& desc, const gu::SharedPointer<core::CoreWindow>& parentWindow)
 {
-	assert(("window is nullptr", window));
+	Check(window, "window is nullptr");
 
 	_windows.Push(StaticPointerCast<windows::CoreWindow>(window));
 	

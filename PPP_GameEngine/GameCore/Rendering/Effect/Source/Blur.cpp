@@ -104,9 +104,7 @@ void GaussianBlur::DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPt
 	const auto commandList = _engine->GetCommandList(CommandListType::Compute);
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 
-#ifdef _DEBUG
-	assert(_useCS);
-#endif
+	Check(_useCS);
 
 	/*-------------------------------------------------------------------
 	-               Pause current render pass
@@ -142,7 +140,7 @@ void GaussianBlur::DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPt
 
 void GaussianBlur::DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex)
 {
-	assert(!_useCS);
+	Check(!_useCS);
 
 	const auto device       = _engine->GetDevice();
 	const auto commandList  = _engine->GetCommandList(CommandListType::Graphics);

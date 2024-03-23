@@ -70,9 +70,7 @@ GameModel::~GameModel()
 *****************************************************************************/
 void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
 {
-#if _DEBUG
-    assert(_engine);
-#endif
+    Check(_engine);
 
     /*-------------------------------------------------------------------
     -              Select primitive mesh type

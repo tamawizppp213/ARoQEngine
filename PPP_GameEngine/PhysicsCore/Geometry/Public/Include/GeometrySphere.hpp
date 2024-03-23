@@ -47,7 +47,7 @@ namespace physics::geometry
 		GeometrySphere(const float radius = 1.0f) :
 			IGeometry(GeometryType::Sphere), Radius(radius)
 		{
-			assert(IsValid());
+			Check(IsValid());
 		}
 
 	protected:

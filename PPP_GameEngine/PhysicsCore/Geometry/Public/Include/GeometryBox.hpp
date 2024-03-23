@@ -50,7 +50,7 @@ namespace physics::geometry
 		GeometryAABB(const float hx = 0.0f, const float hy = 0.0f, const float hz = 0.0f)
 			: IGeometry(GeometryType::AABB), HalfExtents({ hx, hy, hz }) 
 		{
-			assert(IsValid());
+			Check(IsValid());
 		};
 
 	protected:
@@ -95,7 +95,7 @@ namespace physics::geometry
 		GeometryOBB(const float hx = 0.0f, const float hy = 0.0f, const float hz = 0.0f)
 			: IGeometry(GeometryType::OBB), HalfExtents({ hx, hy, hz })
 		{
-			assert(IsValid());
+			Check(IsValid());
 		};
 
 	protected:

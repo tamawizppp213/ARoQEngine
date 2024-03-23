@@ -26,8 +26,8 @@ GameWorldInfo::GameWorldInfo(const LowLevelGraphicsEnginePtr& engine, const std:
 	: _engine(engine), _maxInstanceCount(maxInstanceCount)
 {
 #ifdef _DEBUG
-	assert(engine);
-	assert(maxInstanceCount > 0);
+	Check(engine);
+	Check(maxInstanceCount > 0);
 #endif
 
 	const auto device = _engine->GetDevice();
@@ -35,7 +35,7 @@ GameWorldInfo::GameWorldInfo(const LowLevelGraphicsEnginePtr& engine, const std:
 	/*-------------------------------------------------------------------
 	-            Prepare constant and upload buffer
 	---------------------------------------------------------------------*/
-	const GameWorldConstant world = { .World = gm::MatrixIdentityF() };
+	const GameWorldConstant world = { .World = gm::Float4x4()};
 	const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(GameWorldConstant), maxInstanceCount, MemoryHeap::Upload, ResourceState::Common, (void*)&world);
 	
 	_gameWorldConstants = device->CreateBuffer(bufferInfo);

@@ -30,7 +30,7 @@ Sobel::Sobel(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width,
 	: _engine(engine), _width(width), _height(height), _outlineInfo({ color })
 {
 #ifdef _DEBUG
-	assert(_engine);
+	Check(_engine);
 #endif
 	/*-------------------------------------------------------------------
 	-            Set debug name

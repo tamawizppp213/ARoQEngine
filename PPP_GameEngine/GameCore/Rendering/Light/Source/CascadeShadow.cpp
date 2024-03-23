@@ -38,11 +38,11 @@ CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const Casc
 	/*-------------------------------------------------------------------
 	-            Error log
 	---------------------------------------------------------------------*/
-	assert(("engine is nullptr", _engine));
-	assert(("Near must not be less than 0"  , desc.Near   >= 0.0f));
-	assert(("Medium must not be less than 0", desc.Medium >= 0.0f));
-	assert(("Far must not be less than 0"   , desc.Far    >= 0.0f));
-	assert(("The further away you go, the greater the value.", desc.Near < desc.Medium && desc.Medium < desc.Far));
+	Checkf(_engine, "engine is nullptr");
+	Checkf(desc.Near   >= 0.0f, "Near must not be less than 0");
+	Checkf(desc.Medium >= 0.0f, "Medium must not be less than 0");
+	Checkf(desc.Far >= 0.0f, "Far must not be less than 0");
+	Checkf(desc.Near < desc.Medium && desc.Medium < desc.Far, "The further away you go, the greater the value.");
 
 	/*-------------------------------------------------------------------
 	-            Set debug name
@@ -85,9 +85,7 @@ CascadeShadow::~CascadeShadow()
 *****************************************************************************/
 void CascadeShadow::Draw(const gu::SharedPointer<GameTimer>& gameTimer,const gm::Float3& direction)
 {
-#ifdef _DEBUG
-	assert(_engine);
-#endif
+	Check(_engine);
 
 	/*-------------------------------------------------------------------
 	-               Update light camera
@@ -140,7 +138,7 @@ void CascadeShadow::PrepareResourceView(const gu::tstring& name)
 	{
 		const CascadeShadowInfo shadowInfo =
 		{
-			{MatrixIdentityF(), MatrixIdentityF(), MatrixIdentityF()},
+			{Float4x4(), Float4x4(), Float4x4()},
 			_shadowDesc.UseSoftShadow
 		};
 
@@ -182,7 +180,7 @@ void CascadeShadow::Update(const gu::SharedPointer<GameTimer>& gameTimer, const 
 	const auto up      = _lightCamera->GetUp();
 
 	const float depthList[] = { _shadowDesc.Near, _shadowDesc.Medium, _shadowDesc.Far };
-	Matrix4 lvpcMatrices[SHADOW_MAP_COUNT];
+	Matrix4f lvpcMatrices[SHADOW_MAP_COUNT];
 
 	/*-------------------------------------------------------------------
 	-              Calculate the each frustum vertex 
@@ -212,12 +210,12 @@ void CascadeShadow::Update(const gu::SharedPointer<GameTimer>& gameTimer, const 
 		vertices[7] = (farPosition  + up * (-farY ) + right * (-farX )).ToFloat3(); // far   left lower
 		
 		// covert the world space to the light view projection matrix
-		gm::Vector3 vMax, vMin;
-		vMax = gm::Vector3(FLT_MAX, FLT_MAX, FLT_MAX);
-		vMin = gm::Vector3(FLT_MAX, FLT_MAX, FLT_MAX);
+		gm::Vector3f vMax, vMin;
+		vMax = gm::Vector3f(FLT_MAX, FLT_MAX, FLT_MAX);
+		vMin = gm::Vector3f(FLT_MAX, FLT_MAX, FLT_MAX);
 		for (auto& vertex : vertices)
 		{
-			vertex = (lvpMatrix * vertex).GetXYZ().ToFloat3();
+			//vertex = (lvpMatrix * vertex).GetXYZ().ToFloat3();
 
 			// calculate the AABB min max range.
 			gm::Max(vMax, vertex);
@@ -231,7 +229,7 @@ void CascadeShadow::Update(const gu::SharedPointer<GameTimer>& gameTimer, const 
 		const float xOffset = (vMax.GetX() + vMin.GetX()) * (-0.5f) * xScale;
 		const float yOffset = (vMax.GetY() + vMin.GetY()) * (-0.5f) * yScale;
 		
-		auto clopMatrix = MatrixIdentity();
+		auto clopMatrix = Matrix4f();
 		clopMatrix.GetX().SetX(xScale);
 		clopMatrix.GetY().SetY(yScale);
 		clopMatrix.GetW().SetX(xOffset);

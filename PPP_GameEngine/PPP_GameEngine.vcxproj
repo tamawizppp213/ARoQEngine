@@ -660,7 +660,6 @@
     <ClInclude Include="GameUtility\Math\Include\GMQuaternion.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMScalar.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMSearch.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMSimdMath.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMSort.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMTransform.hpp" />
     <ClInclude Include="GameUtility\Base\Include\GUType.hpp" />

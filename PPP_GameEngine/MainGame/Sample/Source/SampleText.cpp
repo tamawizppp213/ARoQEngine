@@ -63,9 +63,9 @@ void SampleText::Update()
 	---------------------------------------------------------------------*/
 	StringInfo info = 
 	{   .String = "Text\nSample", .SizePerChar = {0.1f, 0.167f}, 
-		.StartPosition = {0.5f * gm::Cos(_gameTimer->TotalTime()) - 0.5f, 0.5f * gm::Sin(_gameTimer->TotalTime()), 1.0f},
+		.StartPosition = {0.5f * cosf(_gameTimer->TotalTime()) - 0.5f, 0.5f * sinf(_gameTimer->TotalTime()), 1.0f},
 		.Space = {0.0f, 0.0f},
-		.Color = {gm::Sin(_gameTimer->TotalTime()),gm::Cos(_gameTimer->TotalTime()),1,1}
+		.Color = {sinf(_gameTimer->TotalTime()), cosf(_gameTimer->TotalTime()),1,1}
 	};
 	_text = gu::MakeShared<Text>(CoordinateType::NDC, _font, info);
 

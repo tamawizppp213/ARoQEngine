@@ -43,8 +43,8 @@ Bloom::Bloom(const LowLevelGraphicsEnginePtr& engine, const std::uint32_t width,
 	if (customLuminanceSRV && customLuminanceUAV) 
 	{ 
 #ifdef _DEBUG
-		assert(customLuminanceSRV->GetResourceViewType() == ResourceViewType::Texture);
-		assert(customLuminanceUAV->GetResourceViewType() == ResourceViewType::RWTexture);
+		Check(customLuminanceSRV->GetResourceViewType() == ResourceViewType::Texture);
+		Check(customLuminanceUAV->GetResourceViewType() == ResourceViewType::RWTexture);
 #endif
 		_luminanceSRV = customLuminanceSRV;
 		_luminanceUAV = customLuminanceUAV;

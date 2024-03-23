@@ -273,7 +273,7 @@ namespace gm::simd::sse
 	#pragma region Internal
 	namespace internal
 	{
-		bool ScalarNearEqual(const float scalar1, const float scalar2, const float epsilon)
+		static bool ScalarNearEqual(const float scalar1, const float scalar2, const float epsilon)
 		{
 			const float delta = scalar1 - scalar2;
 			return fabsf(delta) <= epsilon;
@@ -336,10 +336,10 @@ namespace gm::simd::sse
 	/*----------------------------------------------------------------------
 	*  @brief :  floatの配列を使ってベクトルに格納する
 	/*----------------------------------------------------------------------*/
-	inline static Matrix128 SIMD_CALL_CONVENTION LoadFloat4x4(const float* source) noexcept
+	inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LoadFloat4x4(const float* source) noexcept
 	{
 		Check(source);
-		Matrix128 matrix;
+		Matrix128 matrix = {};
 		matrix.Row[0] = _mm_loadu_ps(&source[0]);
 		matrix.Row[1] = _mm_loadu_ps(&source[4]);
 		matrix.Row[2] = _mm_loadu_ps(&source[8]);
@@ -700,7 +700,7 @@ namespace gm::simd::sse
 		}
 
 		vTemp = _mm_div_ps(VECTOR_128F_ONE, vTemp);
-		Matrix128 mResult;
+		Matrix128 mResult = {};
 		mResult.Row[0] = _mm_mul_ps(C0, vTemp);
 		mResult.Row[1] = _mm_mul_ps(C2, vTemp);
 		mResult.Row[2] = _mm_mul_ps(C4, vTemp);

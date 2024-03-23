@@ -76,12 +76,12 @@ namespace gc
 	{
 		struct SceneConstants
 		{
-			gm::Float4x4 View                    = gm::MatrixIdentityF();
-			gm::Float4x4 InverseView             = gm::MatrixIdentityF();
-			gm::Float4x4 Projection              = gm::MatrixIdentityF();
-			gm::Float4x4 InverseProjection       = gm::MatrixIdentityF();
-			gm::Float4x4 ViewProjection          = gm::MatrixIdentityF();
-			gm::Float4x4 InverseViewProjection   = gm::MatrixIdentityF();
+			gm::Float4x4 View                    = gm::Float4x4();
+			gm::Float4x4 InverseView             = gm::Float4x4();
+			gm::Float4x4 Projection              = gm::Float4x4();
+			gm::Float4x4 InverseProjection       = gm::Float4x4();
+			gm::Float4x4 ViewProjection          = gm::Float4x4();
+			gm::Float4x4 InverseViewProjection   = gm::Float4x4();
 			gm::Float3   EyePosition             = { 0.0f, 0.0f, 0.0f };
 			float        cbPerObjectPad1         = 0.0f;
 			gm::Float2   RenderTargetSize        = { 0.0f, 0.0f };
@@ -107,7 +107,7 @@ namespace gc
 		void Update(const GameTimerPtr& gameTimer);
 
 		// Define camera space via LookAt parameters.
-		void LookAt(gm::Vector3 position, gm::Vector3 target, gm::Vector3 worldUp);
+		void LookAt(gm::Vector3f position, gm::Vector3f target, gm::Vector3f worldUp);
 		
 		void LookAt(const gm::Float3& position, const gm::Float3& target, const gm::Float3& up);
 
@@ -125,7 +125,7 @@ namespace gc
 		/*-------------------------------------------------------------------
 		-    World Camera Position
 		---------------------------------------------------------------------*/
-		gm::Vector3 GetPosition()   const;
+		gm::Vector3f GetPosition()   const;
 		gm::Float3  GetPosition3f() const;
 		
 		void SetPosition(const gm::Float3& position);
@@ -144,11 +144,11 @@ namespace gc
 		/*-------------------------------------------------------------------
 		-   Get camera basis vectors
 		---------------------------------------------------------------------*/
-		gm::Vector3 GetRight()   const;
+		gm::Vector3f GetRight()   const;
 		gm::Float3  GetRight3f() const;
-		gm::Vector3 GetUp()      const;
+		gm::Vector3f GetUp()      const;
 		gm::Float3  GetUp3f()    const;
-		gm::Vector3 GetLook()    const;
+		gm::Vector3f GetLook()    const;
 		gm::Float3  GetLook3f()  const;
 
 		/*-------------------------------------------------------------------
@@ -173,8 +173,8 @@ namespace gc
 		/*-------------------------------------------------------------------
 		-               Get View / Projection Matrix
 		---------------------------------------------------------------------*/
-		gm::Matrix4   GetViewMatrix()           const;
-		gm::Matrix4   GetProjectionMatrix()     const;
+		gm::Matrix4f   GetViewMatrix()           const;
+		gm::Matrix4f   GetProjectionMatrix()     const;
 		gm::Float4x4  GetViewMatrix4x4f()       const;
 		gm::Float4x4  GetProjectionMatrix4x4f() const;
 
@@ -222,8 +222,8 @@ namespace gc
 		gm::Float3 _look     = { 0.0f, 0.0f, 1.0f };
 
 		/* @brief : Camera view and projection matrix*/
-		gm::Float4x4 _view = gm::MatrixIdentityF(); // world space -> camera's origin view space
-		gm::Float4x4 _proj = gm::MatrixIdentityF(); // camera view space -> clip space (x, y : -1Å`1, z : 0Å`1)
+		gm::Float4x4 _view = gm::Float4x4(); // world space -> camera's origin view space
+		gm::Float4x4 _proj = gm::Float4x4(); // camera view space -> clip space (x, y : -1Å`1, z : 0Å`1)
 
 		/* @brief : Camera lens information*/
 		PerspectiveInfo  _perspectiveInfo = {};

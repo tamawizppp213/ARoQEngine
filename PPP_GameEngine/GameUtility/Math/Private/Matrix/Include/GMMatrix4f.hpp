@@ -40,6 +40,77 @@ namespace gm
 	*  @class     GMVector4
 	*  @brief     SIMD演算用のVector4クラスです. アラインメントを行っているため, データを保持する場合はFloat4x4を使用してください
 	*****************************************************************************/
+	struct Float3x4
+	{
+	public:
+		/****************************************************************************
+		**                Public Member Variables
+		*****************************************************************************/
+		union
+		{
+			struct
+			{
+				float _00, _01, _02, _03;
+				float _10, _11, _12, _13;
+				float _20, _21, _22, _23;
+			};
+			float m[3][4];
+			float a[12];
+		};
+
+		/****************************************************************************
+		**                Constructor and Destructor
+		*****************************************************************************/
+		// @brief : Default constructor (単位行列)
+		Float3x4() : _00(1.0f), _01(0.0f), _02(0.0f), _03(0.0f), _10(0.0f), _11(1.0f), _12(0.0f), _13(0.0f), _20(0.0f), _21(0.0f), _22(1.0f), _23(0.0f) {};
+
+		// @brief : 全ての要素で初期化
+		constexpr Float3x4(const float m00, const float m01, const float m02, const float m03,
+			const float m10, const float m11, const float m12, const float m13,
+			const float m20, const float m21, const float m22, const float m23)
+			: _00(m00), _01(m01), _02(m02), _03(m03),
+			_10(m10), _11(m11), _12(m12), _13(m13),
+			_20(m20), _21(m21), _22(m22), _23(m23)
+		{
+
+		}
+
+		// @brief : 配列を使って初期化
+		explicit Float3x4(_In_reads_(16) const float* pArray)
+		{
+			Check(pArray);
+			m[0][0] = pArray[0];
+			m[0][1] = pArray[1];
+			m[0][2] = pArray[2];
+			m[0][3] = pArray[3];
+
+			m[1][0] = pArray[4];
+			m[1][1] = pArray[5];
+			m[1][2] = pArray[6];
+			m[1][3] = pArray[7];
+
+			m[2][0] = pArray[8];
+			m[2][1] = pArray[9];
+			m[2][2] = pArray[10];
+			m[2][3] = pArray[11];
+		}
+
+		// @brief : copy constructor
+		Float3x4(const Float3x4&) = default;
+
+		Float3x4& operator=(const Float3x4&) = default;
+
+		// @brief : move constructor
+		Float3x4(Float3x4&&) = default;
+
+		Float3x4& operator=(Float3x4&&) = default;
+
+		operator MATRIX128() const noexcept
+		{
+			return SIMD_NAME_SPACE::Matrix128Utility::LoadFloat4x4((float*)this);
+		}
+	};
+
 	struct Float4x4
 	{
 	public:
@@ -71,9 +142,9 @@ namespace gm
 			const float m20, const float m21, const float m22, const float m23,
 			const float m30, const float m31, const float m32, const float m33)
 			: _00(m00), _01(m01), _02(m02), _03(m03),
-			_10(m00), _11(m11), _12(m12), _13(m13),
-			_20(m00), _21(m21), _22(m22), _23(m23),
-			_30(m00), _31(m31), _32(m32), _33(m33)
+			_10(m10), _11(m11), _12(m12), _13(m13),
+			_20(m20), _21(m21), _22(m22), _23(m23),
+			_30(m30), _31(m31), _32(m32), _33(m33)
 		{
 
 		}
@@ -116,6 +187,18 @@ namespace gm
 		operator MATRIX128() const noexcept
 		{
 			return SIMD_NAME_SPACE::Matrix128Utility::LoadFloat4x4((float*)this);
+		}
+
+		// @brief : 要素を( , )を使って二次元配列の要素に直接アクセス (参照渡しのため直接要素を書き換えられます)
+		__forceinline float& operator ()(const gu::uint32 row, const gu::uint32 column)
+		{
+			return m[row][column];
+		}
+
+		// @brief : 要素を( , )を使って二次元配列の要素に直接アクセス(参照渡しのため直接要素を書き換えられます)
+		__forceinline const float& operator()(const gu::uint32 row, const gu::uint32 column) const
+		{
+			return m[row][column];
 		}
 	};
 
@@ -537,6 +620,13 @@ namespace gm
 		return SIMD_NAME_SPACE::Matrix128Utility::OrthographicRH(viewWidth, viewHeight, nearZ, farZ);
 	}
 
+	/*----------------------------------------------------------------------
+	*  @brief : 平行投影を行うための変換行列を作成します (左手系, 右手系)
+	/*----------------------------------------------------------------------*/
+	__forceinline Vector3f TransformNormalVector3(const Matrix4f& matrix, const Vector3f vector) noexcept
+	{
+		return SIMD_NAME_SPACE::Matrix128Utility::TransformNormalVector3(matrix, vector);
+	}
 }
 
 #endif

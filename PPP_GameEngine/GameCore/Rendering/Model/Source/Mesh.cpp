@@ -95,8 +95,8 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const gu::DynamicArray<Verte
 void Mesh::Draw(const gu::SharedPointer<RHICommandList>& commandList, const std::uint32_t frameIndex)
 {
 #ifdef _DEBUG
-	assert(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);
-	assert(commandList->GetType() == CommandListType::Graphics);
+	Check(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);
+	Check(commandList->GetType() == CommandListType::Graphics);
 #endif
 
 	if (_hasCreatedNewBuffer)

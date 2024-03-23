@@ -201,11 +201,11 @@ void SampleModel::OnMouseInput()
 	---------------------------------------------------------------------*/
 	if (_gameInput.GetMouse()->IsPress(MouseButton::LEFT))
 	{
-		float dx = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse()->GetMouseVelocity().x)); // 0.25f: ä¥ìxê›íËÇµÇΩÇ¢
-		float dy = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse()->GetMouseVelocity().y));
+		//float dx = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse()->GetMouseVelocity().x)); // 0.25f: ä¥ìxê›íËÇµÇΩÇ¢
+		//float dy = DirectX::XMConvertToRadians(0.25f * static_cast<float>(_gameInput.GetMouse()->GetMouseVelocity().y));
 
-		_camera->RotatePitch(dy);
-		_camera->RotateWorldY(dx);
+		// _camera->RotatePitch(dy);
+		// _camera->RotateWorldY(dx);
 	}
 }
 /****************************************************************************

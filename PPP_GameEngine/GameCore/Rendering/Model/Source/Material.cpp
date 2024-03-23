@@ -34,9 +34,9 @@ Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaD
 	const RHIDescriptorHeapPtr& customHeap): _engine(engine), _customHeap(customHeap)
 {
 #ifdef _DEBUG
-	assert(bufferInfo.Count == 1);
-	assert(bufferInfo.ResourceUsage == ResourceUsage::ConstantBuffer);
-	assert(bufferInfo.BufferType == BufferType::Constant);
+	Check(bufferInfo.Count == 1);
+	Check(bufferInfo.ResourceUsage == ResourceUsage::ConstantBuffer);
+	Check(bufferInfo.BufferType == BufferType::Constant);
 #endif
 
 	/*-------------------------------------------------------------------
@@ -106,9 +106,9 @@ void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandL
 	const gu::DynamicArray<std::uint32_t>& bindTextureIDs)
 {
 #ifdef _DEBUG
-	assert(commandList->GetType() == CommandListType::Graphics);
-	assert(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);
-	assert(bindTextureIDs.Size() == (size_t)UsageTexture::CountOf);
+	Check(commandList->GetType() == CommandListType::Graphics);
+	Check(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);
+	Check(bindTextureIDs.Size() == (size_t)UsageTexture::CountOf);
 #endif
 
 	_materialBufferView->Bind(commandList, bindID);

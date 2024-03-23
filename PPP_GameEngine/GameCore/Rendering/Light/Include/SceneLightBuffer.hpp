@@ -177,7 +177,7 @@ namespace gc::rendering
 	void SceneLightBuffer<TLight>::SetLight(const std::uint32_t index, const TLight& light)
 	{
 #ifdef _DEBUG
-		assert(index < GetMaxCount());
+		Check(index < GetMaxCount());
 #endif
 
 		_lights   [index] = light;
@@ -230,7 +230,7 @@ namespace gc::rendering
 		const bool useLightIDList) : _engine(engine)
 	{
 #ifdef _DEBUG
-		assert(_engine);
+		Check(_engine);
 #endif
 		const auto device = _engine->GetDevice();
 

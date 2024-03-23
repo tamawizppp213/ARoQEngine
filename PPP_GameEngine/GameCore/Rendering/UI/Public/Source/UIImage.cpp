@@ -40,8 +40,8 @@ Image::Image(
 {
 	switch (coordinateType)
 	{
-		case CoordinateType::Screen: CreateInScreenSpace(position, rectSize, u, v, color, radian);
-		case CoordinateType::NDC   : CreateInNDCSpace   (position, rectSize, u, v, color, radian);
+	case CoordinateType::Screen: CreateInScreenSpace(position, rectSize, u, v, color, radian); break;
+		case CoordinateType::NDC: CreateInNDCSpace(position, rectSize, u, v, color, radian); break;
 		default: 
 			throw std::runtime_error("unknown type");
 	}
@@ -113,13 +113,14 @@ void Image::CreateRect(const Float3& position, const Float2& rectSize, const Flo
 	/*-------------------------------------------------------------------
 	-              Get rotation info
 	-------------------------t-------------------------------------------*/
-	Scalar fSin, fCos;
-	gm::ScalarSinCos(fSin, fCos, radian);
+	float fSin = sinf(radian);
+	float fCos = cosf(radian);
+	//m::ScalarSinCos(fSin, fCos, radian);
 
 	/*-------------------------------------------------------------------
 	-              Create RectPosition
 	-------------------------t-------------------------------------------*/
-	Float3 positions[4];
+	Vector3f positions[4];
 	positions[0] = Float3(position.x - w2 * fCos - h2 * fSin, position.y + w2 * fSin - h2 * fCos, position.z);
 	positions[1] = Float3(position.x - w2 * fCos + h2 * fSin, position.y + w2 * fSin + h2 * fCos, position.z);
 	positions[2] = Float3(position.x + w2 * fCos + h2 * fSin, position.y - w2 * fSin + h2 * fCos, position.z);
@@ -129,9 +130,9 @@ void Image::CreateRect(const Float3& position, const Float2& rectSize, const Flo
 	-              Create Normal Vector
 	---------------------------------------------------------------------*/
 	Float3 faceEdge_0, faceEdge_1, faceNormal;
-	faceEdge_0 = Vector3(positions[3] - positions[0]).ToFloat3();
-	faceEdge_1 = Vector3(positions[1] - positions[0]).ToFloat3();
-	faceNormal = Normalize(Cross(Vector3(faceEdge_0), Vector3(faceEdge_1))).ToFloat3();
+	faceEdge_0 = Vector3f(positions[3] - positions[0]).ToFloat3();
+	faceEdge_1 = Vector3f(positions[1] - positions[0]).ToFloat3();
+	faceNormal = Normalize(Cross(Vector3f(faceEdge_0), Vector3f(faceEdge_1))).ToFloat3();
 
 	/*-------------------------------------------------------------------
 	-              Create UV Vector
@@ -143,6 +144,6 @@ void Image::CreateRect(const Float3& position, const Float2& rectSize, const Flo
 	---------------------------------------------------------------------*/
 	for (int i = 0; i < 4; ++i)
 	{
-		_vertices[i] = Vertex(positions[i], faceNormal, color, uvs[i]);
+		_vertices[i] = Vertex(positions[i].ToFloat3(), faceNormal, color, uvs[i]);
 	}
 }

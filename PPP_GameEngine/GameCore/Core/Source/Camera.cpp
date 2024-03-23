@@ -14,6 +14,8 @@
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
+#include "GameUtility/Math/Include/GMMath.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -38,15 +40,15 @@ Camera::~Camera()
 
 Camera::Camera(const LowLevelGraphicsEnginePtr& engine) : _engine(engine), _type(CameraType::Perspective)
 {
-	assert(("engine is nullptr", _engine));
-	assert(("device is nullptr", engine->GetDevice()));
+	Checkf(_engine, "engine is nullptr");
+	Checkf(engine->GetDevice(), "device is nullptr");
 
 	/*-------------------------------------------------------------------
 	-               Set Default lens
 	---------------------------------------------------------------------*/
 	const auto device = engine->GetDevice();
 
-	SetLens(0.25f * GM_PI, Screen::GetAspectRatio(), 1.0f, 1000.0f);
+	SetLens(0.25f * gm::GM_PI_FLOAT, Screen::GetAspectRatio(), 1.0f, 1000.0f);
 	/*-------------------------------------------------------------------
 	-               Create scece constant buffer and view
 	---------------------------------------------------------------------*/
@@ -59,8 +61,8 @@ Camera::Camera(const LowLevelGraphicsEnginePtr& engine) : _engine(engine), _type
 Camera::Camera(const LowLevelGraphicsEnginePtr& engine, const PerspectiveInfo& info)
 	: _engine(engine), _perspectiveInfo(info), _type(CameraType::Perspective)
 {
-	assert(("engine is nullptr", _engine));
-	assert(("device is nullptr", _engine->GetDevice()));
+	Checkf(_engine             , "engine is nullptr");
+	Checkf(_engine->GetDevice(), "device is nullptr");
 
 	/*-------------------------------------------------------------------
 	-               Set Perspective Lens
@@ -81,8 +83,8 @@ Camera::Camera(const LowLevelGraphicsEnginePtr& engine, const PerspectiveInfo& i
 Camera::Camera(const LowLevelGraphicsEnginePtr& engine, const OrthographicInfo& info)
 	: _engine(engine), _orthographicInfo(info), _type(CameraType::Orthographic)
 {
-	assert(("engine is nullptr", _engine));
-	assert(("device is nullptr", _engine->GetDevice()));
+	Checkf(_engine             , "engine is nullptr");
+	Checkf(_engine->GetDevice(), "device is nullptr");
 
 	/*-------------------------------------------------------------------
 	-               Set Perspective Lens
@@ -121,10 +123,10 @@ void Camera::Update(const GameTimerPtr& gameTimer)
 void Camera::RotateRoll(float angle)
 {
 	// Rotate up and right vector about the look vector.
-	Matrix4 rotate = RotationAxis(_look, angle);
+	Matrix4f rotate = RotationAxisMatrix(_look, angle);
 
-	_up    = TransformNormal(Vector3(_up), rotate).ToFloat3();
-	_right = TransformNormal(Vector3(_right), rotate).ToFloat3();
+	_up    = TransformNormalVector3(rotate, Vector3f(_up)).ToFloat3();
+	_right = TransformNormalVector3(rotate, Vector3f(_right)).ToFloat3();
 
 	_viewDirty = true;
 }
@@ -142,10 +144,10 @@ void Camera::RotateRoll(float angle)
 void Camera::RotatePitch(float angle)
 {
 	// Rotate up and look vector about the right vector.
-	Matrix4 rotate = RotationAxis(Vector3(_right), angle);
+	Matrix4f rotate = RotationAxisMatrix(Vector3f(_right), angle);
 
-	_up   = TransformNormal(Vector3(_up), rotate).ToFloat3();
-	_look = TransformNormal(Vector3(_look), rotate).ToFloat3();
+	_up   = TransformNormalVector3(rotate, Vector3f(_up)).ToFloat3();
+	_look = TransformNormalVector3(rotate, Vector3f(_look)).ToFloat3();
 
 	_viewDirty = true;
 }
@@ -164,10 +166,10 @@ void Camera::RotatePitch(float angle)
 void Camera::RotateYaw(float angle)
 {
 	// Rotate right and look vector about the up vector.
-	Matrix4 rotate = RotationAxis(Vector3(_up), angle);
+	Matrix4f rotate = RotationAxisMatrix(Vector3f(_up), angle);
 
-	_right = TransformNormal(Vector3(_right), rotate).ToFloat3();
-	_look  = TransformNormal(Vector3(_look), rotate).ToFloat3();
+	_right = TransformNormalVector3(rotate, Vector3f(_right)).ToFloat3();
+	_look  = TransformNormalVector3(rotate, Vector3f(_look)).ToFloat3();
 
 	_viewDirty = true;
 }
@@ -184,11 +186,11 @@ void Camera::RotateWorldX(float angle)
 {
 	// Rotate the basis vectors about the world y-axis.
 
-	Matrix4 R = RotationX(angle);
+	Matrix4f R = RotationX(angle);
 
-	_right = TransformNormal(Vector3(_right), R).ToFloat3();
-	_up    = TransformNormal(Vector3(_up), R).ToFloat3();
-	_look  = TransformNormal(Vector3(_look), R).ToFloat3();
+	_right = TransformNormalVector3(R, Vector3f(_right)).ToFloat3();
+	_up    = TransformNormalVector3(R, Vector3f(_up)).ToFloat3();
+	_look  = TransformNormalVector3(R, Vector3f(_look)).ToFloat3();
 
 	_viewDirty = true;
 }
@@ -204,11 +206,11 @@ void Camera::RotateWorldY(float angle)
 {
 	// Rotate the basis vectors about the world y-axis.
 
-	Matrix4 R = RotationY(angle);
+	Matrix4f R = RotationY(angle);
 
-	_right     = TransformNormal(_right, R).ToFloat3();
-	_up        = TransformNormal(_up, R).ToFloat3();
-	_look      = TransformNormal(Vector3(_look), R).ToFloat3();
+	_right     = TransformNormalVector3(R, _right).ToFloat3();
+	_up        = TransformNormalVector3(R, _up).ToFloat3();
+	_look      = TransformNormalVector3(R, Vector3f(_look)).ToFloat3();
 	_viewDirty = true;
 }
 
@@ -224,11 +226,11 @@ void Camera::RotateWorldZ(float angle)
 {
 	// Rotate the basis vectors about the world y-axis.
 
-	Matrix4 R = RotationZ(angle);
+	Matrix4f R = RotationZ(angle);
 
-	_right = TransformNormal(Vector3(_right), R).ToFloat3();
-	_up    = TransformNormal(Vector3(_up), R).ToFloat3();
-	_look  = TransformNormal(Vector3(_look), R).ToFloat3();
+	_right = TransformNormalVector3(R, Vector3f(_right)).ToFloat3();
+	_up    = TransformNormalVector3(R, Vector3f(_up)).ToFloat3();
+	_look  = TransformNormalVector3(R, Vector3f(_look)).ToFloat3();
 
 	_viewDirty = true;
 }
@@ -249,10 +251,10 @@ void Camera::RotateWorldZ(float angle)
 *****************************************************************************/
 void Camera::SetLens(const float fovVertical, const float aspect, const float nearZ, const float farZ)
 {
-	assert(("nearZ must be greater than or equal to 0.0f. " ,nearZ >= 0.0f));
-	assert(("farZ  must be greater than or equal to 0.0f "  ,farZ >= 0.0f));
-	assert(("farZ must be greater than nearZ", farZ > nearZ));
-	assert(("aspect must be greater than 0.0f", aspect > 0.0f));
+	Checkf(nearZ >= 0.0f, "nearZ must be greater than or equal to 0.0f. ");
+	Checkf(farZ  >= 0.0f, "farZ  must be greater than or equal to 0.0f ");
+	Checkf(farZ  > nearZ, "farZ must be greater than nearZ");
+	Checkf(aspect > 0.0f, "aspect must be greater than 0.0f");
 
 	_type = CameraType::Perspective;
 
@@ -265,7 +267,7 @@ void Camera::SetLens(const float fovVertical, const float aspect, const float ne
 	_perspectiveInfo.FarWindowHeight  = 2.0f * _perspectiveInfo.FarZ  * tanf(0.5f * _perspectiveInfo.FovVertical);
 
 	// Perspective Field of View Left-Handed
-	Matrix4 P = PerspectiveFovLH(_perspectiveInfo.FovVertical, _perspectiveInfo.Aspect, _perspectiveInfo.NearZ, _perspectiveInfo.FarZ);
+	Matrix4f P = PerspectiveFovLH(_perspectiveInfo.FovVertical, _perspectiveInfo.Aspect, _perspectiveInfo.NearZ, _perspectiveInfo.FarZ);
 	_proj = P.ToFloat4x4();
 }
 
@@ -285,11 +287,11 @@ void Camera::SetLens(const float fovVertical, const float aspect, const float ne
 *****************************************************************************/
 void Camera::SetOrthoLens(const float width, const float height, const float nearZ, const float farZ)
 {
-	assert(("nearZ must be greater than or equal to 0.0f. " ,nearZ >= 0.0f));
-	assert(("farZ  must be greater than or equal to 0.0f "  ,farZ >= 0.0f));
-	assert(("farZ must be greater than nearZ" , farZ > nearZ));
-	assert(("width must be greater than 0.0f" , width > 0.0f));
-	assert(("height must be greater than 0.0f", height > 0.0f));
+	Checkf(nearZ  >= 0.0f, "nearZ must be greater than or equal to 0.0f. ");
+	Checkf(farZ   >= 0.0f, "farZ  must be greater than or equal to 0.0f ");
+	Checkf(farZ   > nearZ, "farZ must be greater than nearZ");
+	Checkf(width  > 0.0f, "width must be greater than 0.0f");
+	Checkf(height > 0.0f, "height must be greater than 0.0f");
 
 	_type = CameraType::Orthographic;
 
@@ -298,7 +300,7 @@ void Camera::SetOrthoLens(const float width, const float height, const float nea
 	_orthographicInfo.Aspect = height / width;
 	
 	// Set orthographics matrix
-	Matrix4 P = OrthographicLH(width, height, nearZ, farZ);
+	Matrix4f P = OrthographicLH(width, height, nearZ, farZ);
 	_proj     = P.ToFloat4x4();
 }
 
@@ -339,11 +341,11 @@ void Camera::SetZRange(const float nearZ, const float farZ)
 *  @param[in] Vector3 upVector (0,1,0) default
 *  @return Å@Å@void
 *****************************************************************************/
-void Camera::LookAt(Vector3 position, Vector3 target, Vector3 worldUp)
+void Camera::LookAt(Vector3f position, Vector3f target, Vector3f worldUp)
 {
-	Vector3 look  = Normalize(target - position); // diff
-	Vector3 right = Normalize(Cross(worldUp, look));
-	Vector3 up    = Cross(look, right);
+	Vector3f look  = Normalize(target - position); // diff
+	Vector3f right = Normalize(Cross(worldUp, look));
+	Vector3f up    = Cross(look, right);
 
 	_position = position.ToFloat3();
 	_look     = look.ToFloat3();
@@ -365,9 +367,9 @@ void Camera::LookAt(Vector3 position, Vector3 target, Vector3 worldUp)
 *****************************************************************************/
 void Camera::LookAt(const Float3& position, const Float3& target, const Float3& up)
 {
-	Vector3 P = Vector3(position);
-	Vector3 T = Vector3(target);
-	Vector3 U = Vector3(up);
+	Vector3f P = Vector3f(position);
+	Vector3f T = Vector3f(target);
+	Vector3f U = Vector3f(up);
 
 	LookAt(P, T, U);
 
@@ -387,9 +389,9 @@ void Camera::Strafe(float distance)
 	/*-------------------------------------------------------------------
 	-                  position += d * _right
 	---------------------------------------------------------------------*/
-	Vector3 s = ReplicateVector3(distance);
-	Vector3 r = Vector3(_right);
-	Vector3 p = Vector3(_position);
+	Vector3f s = Vector3f(distance);
+	Vector3f r = Vector3f(_right);
+	Vector3f p = Vector3f(_position);
 	_position = (s * r + p).ToFloat3();
 
 	_viewDirty = true;
@@ -407,9 +409,9 @@ void Camera::Walk(float distance)
 	/*-------------------------------------------------------------------
 	-                   _position += d*_look
 	---------------------------------------------------------------------*/
-	Vector3 s = ReplicateVector3(distance);
-	Vector3 l = Vector3(_look);
-	Vector3 p = Vector3(_position);
+	Vector3f s = Vector3f(distance);
+	Vector3f l = Vector3f(_look);
+	Vector3f p = Vector3f(_position);
 	_position = (s * l + p).ToFloat3();
 
 	_viewDirty = true;
@@ -430,10 +432,10 @@ void Camera::UpdateViewMatrix()
 {
 	if (!_viewDirty) { return; }
 	
-	auto right    = Vector3(_right);
-	auto up       = Vector3(_up);
-	auto look     = Vector3(_look);
-	auto position = Vector3(_position);
+	auto right    = Vector3f(_right);
+	auto up       = Vector3f(_up);
+	auto look     = Vector3f(_look);
+	auto position = Vector3f(_position);
 
 	/*-------------------------------------------------------------------
 	-     Keep camera's axes orthogonal to each other and of unit length.
@@ -483,9 +485,9 @@ void Camera::UpdateViewMatrix()
 
 #pragma region Property
 
-Vector3 Camera::GetPosition() const
+Vector3f Camera::GetPosition() const
 {
-	return Vector3(_position);
+	return Vector3f(_position);
 }
 
 Float3 Camera::GetPosition3f() const
@@ -506,9 +508,9 @@ void Camera::SetPosition(float x, float y, float z)
 }
 
 
-Vector3 Camera::GetRight() const
+Vector3f Camera::GetRight() const
 {
-	return Vector3(_right);
+	return Vector3f(_right);
 }
 
 Float3 Camera::GetRight3f() const
@@ -516,9 +518,9 @@ Float3 Camera::GetRight3f() const
 	return _right;
 }
 
-Vector3 Camera::GetUp() const
+Vector3f Camera::GetUp() const
 {
-	return Vector3(_up);
+	return Vector3f(_up);
 }
 
 Float3 Camera::GetUp3f() const
@@ -526,9 +528,9 @@ Float3 Camera::GetUp3f() const
 	return _up;
 }
 
-Vector3 Camera::GetLook() const
+Vector3f Camera::GetLook() const
 {
-	return Vector3(_look);
+	return Vector3f(_look);
 }
 
 Float3 Camera::GetLook3f() const
@@ -582,14 +584,14 @@ float Camera::GetFarWindowHeight() const
 	return _perspectiveInfo.FarWindowHeight;
 }
 
-Matrix4 Camera::GetViewMatrix() const
+Matrix4f Camera::GetViewMatrix() const
 {
-	return Matrix4(_view);
+	return Matrix4f(_view);
 }
 
-Matrix4 Camera::GetProjectionMatrix() const
+Matrix4f Camera::GetProjectionMatrix() const
 {
-	return Matrix4(_proj);
+	return Matrix4f(_proj);
 }
 
 Float4x4 Camera::GetViewMatrix4x4f() const
@@ -608,17 +610,18 @@ void Camera::UpdateSceneConstants(const GameTimerPtr& gameTimer)
 {
 	SceneConstants scene;
 
-	Matrix4 view                      = GetViewMatrix();
-	Matrix4 projection                = GetProjectionMatrix();
-	Matrix4 viewProjection            = view * projection; 
+	Matrix4f view                      = GetViewMatrix();
+	Matrix4f projection                = GetProjectionMatrix();
+	Matrix4f viewProjection            = view * projection; 
 
-	Vector4 viewDeterminant           = Determinant(view);
-	Vector4 projectionDeterminant     = Determinant(projection);
-	Vector4 viewProjectionDeterminant = Determinant(viewProjection);
+	/*Vector4f viewDeterminant           = Determinant(view);
+	Vector4f projectionDeterminant     = Determinant(projection);
+	Vector4f viewProjectionDeterminant = Determinant(viewProjection);*/
+	float viewDeterminant = 0.0f, projectionDeterminant = 0.0f, viewProjectionDeterminant = 0.0f;
 
-	Matrix4 inverseView               = Inverse(viewDeterminant          , view);
-	Matrix4 inverseProjection         = Inverse(projectionDeterminant    , projection);
-	Matrix4 inverseViewProjection     = Inverse(viewProjectionDeterminant, viewProjection);
+	Matrix4f inverseView               = Inverse(view, &viewDeterminant);
+	Matrix4f inverseProjection         = Inverse(projection, &projectionDeterminant);
+	Matrix4f inverseViewProjection     = Inverse(viewProjection, &viewProjectionDeterminant);
 	// note: Texture and shadow related features will be added later.
 
 	scene.View                  = view.ToFloat4x4();
