@@ -1251,6 +1251,9 @@
     <ClInclude Include="GameUtility\Math\Private\Simd\Include\GMSimdQuaternion128AVX2.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Quaternion\Include\GMQuaternionF.hpp">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp">
@@ -1929,6 +1932,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="GameUtility\Math\Private\Vector\Source\GMVector2d.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameUtility\Math\Private\Quaternion\Source\GMQuaternionF.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
