@@ -57,9 +57,6 @@ namespace gm
 			float a[16];
 		};
 
-		__forceinline bool operator ==(const Float4x4& vector) const noexcept { return SIMD_NAME_SPACE::Vector128Utility::EqualVector4(*this, vector); }
-		__forceinline bool operator !=(const Float4x4& vector) const noexcept { return SIMD_NAME_SPACE::Vector128Utility::NotEqualVector4(*this, vector); }
-
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
