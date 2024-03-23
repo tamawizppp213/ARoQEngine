@@ -47,6 +47,12 @@ namespace gm::simd::sse
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		#pragma region Setter
+		/*----------------------------------------------------------------------
+		*  @brief : 単位クォータニオンを取得
+		/*----------------------------------------------------------------------*/
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION Identity() noexcept;
+		#pragma endregion Setter
 		#pragma region Operator
 		
 		/*----------------------------------------------------------------------
@@ -54,17 +60,17 @@ namespace gm::simd::sse
 		*           固定の回転軸で回転させたい場合は leftに回転軸と回転度合いのクォータニオン, オブジェクトの姿勢をrightに設定する
 		*           ex ) worldY軸中心に30度回転みたいな状況であれば left : worldYQuaternion30 right : objectRotation 
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION Multiply(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION Multiply(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 両者のクォータニオンが等しいか
 		/*----------------------------------------------------------------------*/
-		bool SIMD_CALL_CONVENTION Equal(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
+		__forceinline static bool SIMD_CALL_CONVENTION Equal(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 両者のクォータニオンが等しくないか
 		/*----------------------------------------------------------------------*/
-		bool SIMD_CALL_CONVENTION NotEqual(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
+		__forceinline static bool SIMD_CALL_CONVENTION NotEqual(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
 
 		#pragma endregion Operator
 
@@ -72,83 +78,83 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------
 		*  @brief : 単位クォータニオンか
 		/*----------------------------------------------------------------------*/
-		bool SIMD_CALL_CONVENTION IsIdentity(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static bool SIMD_CALL_CONVENTION IsIdentity(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出します. 通常のベクトル同様, 互いのベクトルのなす角度を導出したいときに使用します
 		/*----------------------------------------------------------------------*/
-		float SIMD_CALL_CONVENTION Dot(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION Dot(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 1次ノルム (絶対値の総和を取った後に根号を取る)を取得します
 		/*----------------------------------------------------------------------*/
-		float SIMD_CALL_CONVENTION Norm(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION Norm(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム (全ての要素の2乗和)を取得します
 		/*----------------------------------------------------------------------*/
-		float SIMD_CALL_CONVENTION NormSquare(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION NormSquare(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : クォータニオンの正規化を行います
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION Normalize(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION Normalize(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 共役なクォータニオンを返します. 共役なクォータニオンは、逆向きの回転を表現します.
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION Conjugate(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION Conjugate(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : クォータニオンの逆関数を渡します
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION Inverse(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION Inverse(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素にLogを適用します
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION Log(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION Log(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素にExpを適用します
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION Exp(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION Exp(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 通常の4次元ベクトルのように線形補間を掛けます. Slerpよりは精度が粗いですが, 省コストです
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION Lerp(ConstQuaternion128 start, ConstQuaternion128 end, const float t) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION Lerp(ConstQuaternion128 start, ConstQuaternion128 end, const float t) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 通常の4次元ベクトルのように線形補間を掛けます. tは単純な4次元ベクトルです
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION LerpV(ConstQuaternion128 start, ConstQuaternion128 end, ConstVector128 t) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION LerpV(ConstQuaternion128 start, ConstQuaternion128 end, ConstVector128 t) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 球面補間です
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION Slerp(ConstQuaternion128 start, ConstQuaternion128 end, const float t) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION Slerp(ConstQuaternion128 start, ConstQuaternion128 end, const float t) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 球面補間です
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION SlerpV(ConstQuaternion128 start, ConstQuaternion128 end, ConstVector128 t) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION SlerpV(ConstQuaternion128 start, ConstQuaternion128 end, ConstVector128 t) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : Roll pitch yawを使って回転を行います
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION RotationRollPitchYaw(const float roll, const float pitch, const float yaw) noexcept;
-		Quaternion128 SIMD_CALL_CONVENTION RotationRollPitchYaw(ConstVector128 rollPitchYaw) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION RotationRollPitchYaw(const float roll, const float pitch, const float yaw) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION RotationRollPitchYaw(ConstVector128 rollPitchYaw) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : ある法線ベクトル軸を中心に回転を行います
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION  RotationNormal(ConstVector128 normalAxis, const float angle) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION  RotationNormal(ConstVector128 normalAxis, const float angle) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : ある軸を中心に回転を行います
 		/*----------------------------------------------------------------------*/
-		Quaternion128 SIMD_CALL_CONVENTION RotationAxis(ConstVector128 axis, const float angle) noexcept;
+		__forceinline static Quaternion128 SIMD_CALL_CONVENTION RotationAxis(ConstVector128 axis, const float angle) noexcept;
 
 		#pragma endregion Math
 	protected:
@@ -162,11 +168,21 @@ namespace gm::simd::sse
 	};
 
 #pragma region Implement
+	#pragma region Setter
+	/*----------------------------------------------------------------------
+	*  @brief : 単位クォータニオンを渡す
+	/*----------------------------------------------------------------------*/
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Identity() noexcept
+	{
+		return VECTOR_128F_IDENTITY_R3.V;
+	}
+
+	#pragma endregion Setter
 	#pragma region Operator
 	/*----------------------------------------------------------------------
 	*  @brief : 掛け算 (～が先になるため、A -> B -> Cの順番で実行したければ)
 	/*----------------------------------------------------------------------*/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Multiply(ConstQuaternion128 left, ConstQuaternion128 right) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Multiply(ConstQuaternion128 left, ConstQuaternion128 right) noexcept
 	{
 		// Returns the product left*right (which is the concatenation of a rotation right followed by the rotation left)
 
@@ -214,7 +230,7 @@ namespace gm::simd::sse
 	/*----------------------------------------------------------------------
 	*  @brief : 両者のクォータニオンが等しいか
 	/*----------------------------------------------------------------------*/
-	bool SIMD_CALL_CONVENTION Quaternion128Utility::Equal(ConstQuaternion128 left, ConstQuaternion128 right) noexcept
+	inline bool SIMD_CALL_CONVENTION Quaternion128Utility::Equal(ConstQuaternion128 left, ConstQuaternion128 right) noexcept
 	{
 		return Vector128Utility::EqualVector4(left, right);
 	}
@@ -222,7 +238,7 @@ namespace gm::simd::sse
 	/*----------------------------------------------------------------------
 	*  @brief : 両者のクォータニオンが等しくないか
 	/*----------------------------------------------------------------------*/
-	bool SIMD_CALL_CONVENTION Quaternion128Utility::NotEqual(ConstQuaternion128 left, ConstQuaternion128 right) noexcept
+	inline bool SIMD_CALL_CONVENTION Quaternion128Utility::NotEqual(ConstQuaternion128 left, ConstQuaternion128 right) noexcept
 	{
 		return Vector128Utility::NotEqualVector4(left, right);
 	}
@@ -241,7 +257,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	bool SIMD_CALL_CONVENTION Quaternion128Utility::IsIdentity(ConstQuaternion128 quaternion) noexcept
+	inline bool SIMD_CALL_CONVENTION Quaternion128Utility::IsIdentity(ConstQuaternion128 quaternion) noexcept
 	{
 		return Vector128Utility::EqualVector4(quaternion, VECTOR_128F_IDENTITY_R3.V);
 	}
@@ -257,7 +273,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	float SIMD_CALL_CONVENTION Quaternion128Utility::Dot(ConstQuaternion128 left, ConstQuaternion128 right) noexcept
+	inline float SIMD_CALL_CONVENTION Quaternion128Utility::Dot(ConstQuaternion128 left, ConstQuaternion128 right) noexcept
 	{
 		return Vector128Utility::DotVector4(left, right);
 	}
@@ -273,7 +289,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	float SIMD_CALL_CONVENTION Quaternion128Utility::Norm(ConstQuaternion128 quaternion) noexcept
+	inline float SIMD_CALL_CONVENTION Quaternion128Utility::Norm(ConstQuaternion128 quaternion) noexcept
 	{
 		return Vector128Utility::NormVector4(quaternion);
 	}
@@ -289,7 +305,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	float SIMD_CALL_CONVENTION Quaternion128Utility::NormSquare(ConstQuaternion128 quaternion) noexcept
+	inline float SIMD_CALL_CONVENTION Quaternion128Utility::NormSquare(ConstQuaternion128 quaternion) noexcept
 	{
 		return Vector128Utility::NormSquaredVector4(quaternion);
 	}
@@ -305,7 +321,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Normalize(ConstQuaternion128 quaternion) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Normalize(ConstQuaternion128 quaternion) noexcept
 	{
 		return Vector128Utility::NormalizeVector4(quaternion);
 	}
@@ -321,7 +337,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Conjugate(ConstQuaternion128 quaternion) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Conjugate(ConstQuaternion128 quaternion) noexcept
 	{
 		static const Vector128f NegativeOne3 = { { { -1.0f, -1.0f, -1.0f, 1.0f } } };
 		return _mm_mul_ps(quaternion, NegativeOne3.V);
@@ -338,7 +354,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Inverse(ConstQuaternion128 quaternion) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Inverse(ConstQuaternion128 quaternion) noexcept
 	{
 		// 正規化を実行するために使用
 		Vector128 normSquared = Vector128Utility::Set(Vector128Utility::NormSquaredVector4(quaternion));
@@ -368,7 +384,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Log(ConstQuaternion128 quaternion) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Log(ConstQuaternion128 quaternion) noexcept
 	{
 		static const Vector128f OneMinusEpsilon = { { { 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f } } };
 
@@ -399,7 +415,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Exp(ConstQuaternion128 quaternion) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Exp(ConstQuaternion128 quaternion) noexcept
 	{
 		Vector128 Theta = Vector128Utility::Set(Vector128Utility::NormVector3(quaternion));
 
@@ -432,7 +448,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Lerp(ConstQuaternion128 start, ConstQuaternion128 end, const float t) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Lerp(ConstQuaternion128 start, ConstQuaternion128 end, const float t) noexcept
 	{
 		return Vector128Utility::Lerp(start, end, t);
 	}
@@ -450,7 +466,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::LerpV(ConstQuaternion128 start, ConstQuaternion128 end, ConstVector128 t) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::LerpV(ConstQuaternion128 start, ConstQuaternion128 end, ConstVector128 t) noexcept
 	{
 		return Vector128Utility::LerpV(start, end, t);
 	}
@@ -469,7 +485,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Slerp(ConstQuaternion128 start, ConstQuaternion128 end, const float t) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Slerp(ConstQuaternion128 start, ConstQuaternion128 end, const float t) noexcept
 	{
 		return SlerpV(start, end, Vector128Utility::Set(t));
 	}
@@ -487,7 +503,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::SlerpV(ConstQuaternion128 start, ConstQuaternion128 end, ConstVector128 t) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::SlerpV(ConstQuaternion128 start, ConstQuaternion128 end, ConstVector128 t) noexcept
 	{
 		Check((Vector128Utility::GetY(t) == Vector128Utility::GetX(t)) && (Vector128Utility::GetZ(t) == Vector128Utility::GetX(t)) && (Vector128Utility::GetW(t) == Vector128Utility::GetX(t)));
 
@@ -544,7 +560,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::RotationRollPitchYaw(const float roll, const float pitch, const float yaw) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::RotationRollPitchYaw(const float roll, const float pitch, const float yaw) noexcept
 	{
 		return RotationRollPitchYaw(Vector128Utility::Set(roll, pitch, yaw, 0));
 	}
@@ -560,7 +576,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::RotationRollPitchYaw(ConstVector128 rollPitchYaw) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::RotationRollPitchYaw(ConstVector128 rollPitchYaw) noexcept
 	{
 		static const Vector128f sign = { { { 1.0f, -1.0f, -1.0f, 1.0f } } };
 
@@ -597,7 +613,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION  Quaternion128Utility::RotationNormal(ConstVector128 normalAxis, const float angle) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION  Quaternion128Utility::RotationNormal(ConstVector128 normalAxis, const float angle) noexcept
 	{
 		// 3次元ベクトルとして取得する (w = 0)
 		Vector128 normal = _mm_and_ps(normalAxis, VECTOR_128F_MASK_XYZ.V);
@@ -638,7 +654,7 @@ namespace gm::simd::sse
 	*
 	*  @return 　　Quaternion128
 	*****************************************************************************/
-	Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::RotationAxis(ConstVector128 axis, const float angle) noexcept
+	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::RotationAxis(ConstVector128 axis, const float angle) noexcept
 	{
 		Check(!Vector128Utility::EqualVector3(axis, VECTOR_128F_ZERO.V));
 		Check(!Vector128Utility::IsInfiniteVector3(axis));
