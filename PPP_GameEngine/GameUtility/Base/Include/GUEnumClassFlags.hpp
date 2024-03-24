@@ -2,7 +2,8 @@
 ///             @file   GUEnumFlags.hpp
 ///             @brief  Enum classを使ってFlagを設定する場合に通常のint型などのフラグ処理が行えるようにするマクロ
 /// 　　　　　　　　　　　　　Enum class設定後にEnumClassFlagsを呼び出して基本フラグ演算を有効化して,
-///                     フラグ確認は
+///                     
+/// 　　　　　　　　　　　　　フラグ確認は
 /// 　　　　　　　　　　　　  HasAllFlags : 全てのフラグが設定されているか, 
 /// 　　　　　　　　　　　　　HasAnyFlags  : 対象のフラグが一個でも含まれているかで確認
 ///                     フラグ追加/除去はAddFlags, RemoveFlagsを追加してください 　　　　　　             　　　　　　　　　　　　
