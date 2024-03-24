@@ -307,10 +307,10 @@ namespace platform::windows
 		gu::int32 _regionHeight = -1;
 
 		// @brief : フルスクリーン状態になる前のウィンドウの配置を決定する
-		WINDOWPLACEMENT _previousFullScreenWindowPlacement;
+		WINDOWPLACEMENT _previousFullScreenWindowPlacement = WINDOWPLACEMENT();
 
 		// @brief : 親ウィンドウが最小化される前の配置情報
-		WINDOWPLACEMENT _previousParentMinimizedWindowPlacement;
+		WINDOWPLACEMENT _previousParentMinimizedWindowPlacement = WINDOWPLACEMENT();
 
 		// @brief : DPIを手動で変更するか
 		bool _useManualDPIChange = false;

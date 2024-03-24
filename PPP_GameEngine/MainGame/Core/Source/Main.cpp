@@ -28,6 +28,7 @@
 #include "MainGame/Core/Include/Application.hpp"
 #include "GameUtility/Base/Include/GUCommandLine.hpp"
 #include "GameUtility/Base/Include/GUParse.hpp"
+#include "GameUtility/Math/Include/GMVector.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

@@ -62,7 +62,7 @@ namespace gm
 		Double2(const double ix) : x(ix), y(ix){};
 
 		// @brief : 全ての要素で初期化
-		Double2(const double ix, const double iy, const double iz, const double iw) : x(ix), y(iy){};
+		Double2(const double ix, const double iy) : x(ix), y(iy){};
 
 		// @brief : 配列を使って初期化
 		explicit Double2(_In_reads_(4) const double* pArray) noexcept : x(pArray[0]), y(pArray[1]) {};

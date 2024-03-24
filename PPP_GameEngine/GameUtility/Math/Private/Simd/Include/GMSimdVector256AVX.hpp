@@ -36,20 +36,20 @@ namespace gm::simd::avx
 	*----------------------------------------------------------------------*/
 	ALIGNED_STRUCT(32) Vector256d
 	{
-		union
+		union Union256
 		{
 			double D[4];
-			struct 
+			struct Two128
 			{
 				__m128d XY;
 				__m128d ZW;
-			};
+			} t;
 			__m256d V;
-		};
+		} u;
 
-		inline operator const double* () const noexcept { return D; }
-		inline operator __m256d() const noexcept { return V; }
-		inline Vector256d& operator=(const __m256d& v) { V = v;}
+		inline operator const double* () const noexcept { return u.D; }
+		inline operator __m256d() const noexcept { return u.V; }
+		inline Vector256d& operator=(const __m256d& v) { u.V = v;}
 	};
 
 	constexpr double GM_PI_DOUBLE        = 3.141592653589793238463;
@@ -1004,7 +1004,7 @@ namespace gm::simd::avx
 		Vector256d result = {};
 		const __m128d temp = _mm_loadu_pd(source);
 		result = _mm256_set_m128d(temp, temp);
-		return result.V;
+		return result.u.V;
 	}
 
 	/****************************************************************************
@@ -1023,9 +1023,9 @@ namespace gm::simd::avx
 		Check(source);
 
 		Vector256d result = {};
-		result.XY = _mm_loadu_pd((double*)(source));
-		result.ZW = _mm_loadu_pd((double*)(source + 2));
-		return result.V;
+		result.u.t.XY = _mm_loadu_pd((double*)(source));
+		result.u.t.ZW = _mm_loadu_pd((double*)(source + 2));
+		return result.u.V;
 	}
 
 	/****************************************************************************
@@ -3263,9 +3263,9 @@ namespace gm::simd::avx
 		Vector256 t2 = _mm256_mul_pd(t, t);
 		Vector256 t3 = _mm256_mul_pd(t, t2);
 		// Mul by the constants against t^2
-		t2 = _mm256_mul_pd(t2, CatMulT2.V);
+		t2 = _mm256_mul_pd(t2, CatMulT2.u.V);
 		// Mul by the constants against t^3
-		t3 = MultiplyAdd(t3, CatMulT3.V, t2);
+		t3 = MultiplyAdd(t3, CatMulT3.u.V, t2);
 		// T3 now has the pre-result.
 		// I need to add t.y only
 		t2 = _mm256_and_pd(t, VECTOR_256U_MASK_Y);
@@ -3351,13 +3351,13 @@ namespace gm::simd::avx
 		vResult = _mm256_sub_pd(vResult, t3);
 		vResult = _mm256_mul_pd(vResult, position0);
 		// Perform the Position1 term and add
-		Vector256 vTemp = _mm256_mul_pd(t3, Catmul3.V);
-		vTemp = NegativeMultiplySubtract(t2, Catmul5.V, vTemp);
-		vTemp = _mm256_add_pd(vTemp, Catmul2.V);
+		Vector256 vTemp = _mm256_mul_pd(t3, Catmul3.u.V);
+		vTemp = NegativeMultiplySubtract(t2, Catmul5.u.V, vTemp);
+		vTemp = _mm256_add_pd(vTemp, Catmul2.u.V);
 		vResult = MultiplyAdd(vTemp, position1, vResult);
 		// Perform the Position2 term and add
-		vTemp = _mm256_mul_pd(t2, Catmul4.V);
-		vTemp = NegativeMultiplySubtract(t3, Catmul3.V, vTemp);
+		vTemp = _mm256_mul_pd(t2, Catmul4.u.V);
+		vTemp = NegativeMultiplySubtract(t3, Catmul3.u.V, vTemp);
 		vTemp = _mm256_add_pd(vTemp, t);
 		vResult = MultiplyAdd(vTemp, position2, vResult);
 		// Position3 is the last term

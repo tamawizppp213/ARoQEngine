@@ -80,7 +80,7 @@ namespace gm::simd::avx2
 
 		avx::Vector256d result = {};
 		result = _mm256_maskload_pd(source, _mm256_castpd_si256(avx::VECTOR_256U_MASK_ABS));
-		return result.V;
+		return result.u.V;
 	}
 
 	#pragma endregion Getter

@@ -26,11 +26,15 @@ using namespace platform;
 using namespace platform::windows;
 using namespace gu;
 
+#pragma warning(disable: 4312)
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-CoreWindow::CoreWindow() : core::CoreWindow()
+CoreWindow::CoreWindow() : core::CoreWindow(), 
+	_previousFullScreenWindowPlacement(WINDOWPLACEMENT()),
+	_previousParentMinimizedWindowPlacement(WINDOWPLACEMENT())
 {
 
 }
@@ -911,7 +915,7 @@ void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
 		// ÉÇÉjÉ^Å[èÓïÒÇÃéÊìæ
 		HMONITOR    monitor = MonitorFromWindow(_hwnd, isTrueFullScreen? MONITOR_DEFAULTTOPRIMARY : MONITOR_DEFAULTTONEAREST);
 		
-		MONITORINFO monitorInfo;
+		MONITORINFO monitorInfo = {};
 		monitorInfo.cbSize = sizeof(MONITORINFO);
 		GetMonitorInfo(monitor, &monitorInfo);
 
@@ -944,7 +948,7 @@ void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
 			::SetWindowPlacement(_hwnd, &_previousFullScreenWindowPlacement);
 		}
 
-		HICON icon = (HICON)::GetClassLong(_hwnd, GCLP_HICON);
+		HICON icon = reinterpret_cast<HICON>(::GetClassLong(_hwnd, GCLP_HICON));
 		if (icon != nullptr)
 		{
 			::SendMessageW(_hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon);
@@ -1061,7 +1065,7 @@ bool CoreWindow::GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& wi
 		const bool isTrueFullscreen = (_windowDesc.WindowMode == core::WindowMode::FullScreen);
 		const auto monitor = MonitorFromWindow(_hwnd, isTrueFullscreen ? MONITOR_DEFAULTTOPRIMARY : MONITOR_DEFAULTTONEAREST);
 		
-		MONITORINFO monitorInfo;
+		MONITORINFO monitorInfo = {};
 		monitorInfo.cbSize = sizeof(MONITORINFO);
 		GetMonitorInfo(monitor, &monitorInfo);
 
@@ -1106,8 +1110,8 @@ bool CoreWindow::ExistPointInWindow(const gu::int32 x, const gu::int32 y) const
 *****************************************************************************/
 void CoreWindow::SetOpacity(const float opacity) const
 {
-	const auto adjustOpacity = max(0, min(opacity, 255));
-	SetLayeredWindowAttributes(_hwnd, 0, adjustOpacity, LWA_ALPHA);
+	const auto adjustOpacity = max(0, min(static_cast<BYTE>(opacity), 255));
+	SetLayeredWindowAttributes(_hwnd, 0, (BYTE)adjustOpacity, LWA_ALPHA);
 }
 
 /****************************************************************************
