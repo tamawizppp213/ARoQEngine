@@ -35,8 +35,8 @@ ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_
 	/*-------------------------------------------------------------------
 	-            Error log
 	---------------------------------------------------------------------*/
-	Check(_engine, "engine is nullptr");
-	Check(width > 0 , "width is non zero");
+	Checkf(_engine, "engine is nullptr");
+	Checkf(width > 0 , "width is non zero");
 	Check(height > 0, "height is non zero");
 
 	/*-------------------------------------------------------------------
