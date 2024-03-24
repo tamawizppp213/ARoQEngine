@@ -1930,12 +1930,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl">
-      <Filter>ヘッダー ファイル</Filter>
-    </None>
-    <None Include="GameUtility\Math\Include\GMSimdFunctions.inl">
-      <Filter>ヘッダー ファイル</Filter>
-    </None>
     <None Include="Shader\Core\ShaderVertexType.hlsli" />
     <None Include="Shader\Core\ShaderColor.hlsli" />
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />

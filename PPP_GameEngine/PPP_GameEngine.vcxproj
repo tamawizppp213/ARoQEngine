@@ -1123,8 +1123,6 @@
     <ClCompile Include="Plugins\DDSLoader\dds_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GameUtility\Math\Include\GMCollisionFunctions.inl" />
-    <None Include="GameUtility\Math\Include\GMSimdFunctions.inl" />
     <None Include="packages.config" />
     <None Include="Shader\Core\ShaderColor.hlsli" />
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />

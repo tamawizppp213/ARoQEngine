@@ -65,7 +65,7 @@ namespace gm
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void __vectorcall Transform(BoundingSphere& Out, gm::Matrix4 M) const {};
+		void __vectorcall Transform(BoundingSphere& Out, gm::Matrix4f M) const {};
 
 		/****************************************************************************
 		**                Constructor and Destructor
