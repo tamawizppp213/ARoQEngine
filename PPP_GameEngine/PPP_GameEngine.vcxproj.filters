@@ -39,9 +39,6 @@
     <ClInclude Include="GameUtility\Math\Include\GMQuaternion.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Math\Include\GMScalar.hpp">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="GameUtility\Math\Include\GMSearch.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
