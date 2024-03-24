@@ -143,7 +143,7 @@ LRESULT CALLBACK PlatformApplication::StaticWindowProcedure(HWND hwnd, UINT mess
 *
 *  @return    bool
 *****************************************************************************/
-bool PlatformApplication::RegisterWindowClass()
+bool PlatformApplication::RegisterWindowClass() const
 {
 	/*---------------------------------------------------------------
 						Register Window Class
@@ -219,7 +219,7 @@ SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 *****************************************************************************/
 void PlatformApplication::SetUpWindow(const SharedPointer<core::CoreWindow>& window, const core::CoreWindowDesc& desc, const gu::SharedPointer<core::CoreWindow>& parentWindow)
 {
-	Check(window, "window is nullptr");
+	Checkf(window, "window is nullptr");
 
 	_windows.Push(StaticPointerCast<windows::CoreWindow>(window));
 	
@@ -698,7 +698,7 @@ void PlatformApplication::GetMonitorsInfo(gu::DynamicArray<core::MonitorInfo>& m
 
 BOOL CALLBACK PlatformApplication::MonitorEnumProcedure(HMONITOR monitor, [[maybe_unused]]HDC monitorDC, [[maybe_unused]]LPRECT rect, LPARAM userData)
 {
-	MONITORINFOEX monitorInfoExtension;
+	MONITORINFOEX monitorInfoExtension = {};
 	monitorInfoExtension.cbSize = sizeof(monitorInfoExtension);
 	GetMonitorInfo(monitor, &monitorInfoExtension);
 

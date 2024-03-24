@@ -130,7 +130,7 @@ namespace platform::windows
 		*****************************************************************************/
 		static BOOL CALLBACK MonitorEnumProcedure(HMONITOR monitor, [[maybe_unused]]HDC monitorDC, [[maybe_unused]]LPRECT rect, LPARAM userData);
 		
-		bool RegisterWindowClass();
+		bool RegisterWindowClass() const;
 
 		LRESULT ProcessDeferredWindowsMessage(const DeferredMessage& message);
 		
