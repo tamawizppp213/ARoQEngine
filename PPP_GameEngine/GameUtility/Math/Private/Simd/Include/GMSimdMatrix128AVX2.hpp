@@ -107,16 +107,6 @@ namespace gm::simd::avx2
 		t0 = _mm256_add_ps(c2, c6);
 		t1 = _mm256_add_ps(c3, c7);
 
-		// Transpose result
-		__m256 vTemp = _mm256_unpacklo_ps(t0, t1);
-		__m256 vTemp2 = _mm256_unpackhi_ps(t0, t1);
-		__m256 vTemp3 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x20);
-		__m256 vTemp4 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x31);
-		vTemp = _mm256_unpacklo_ps(vTemp3, vTemp4);
-		vTemp2 = _mm256_unpackhi_ps(vTemp3, vTemp4);
-		t0 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x20);
-		t1 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x31);
-
 		sse::Matrix128 mResult = {};
 		mResult.Row[0] = _mm256_castps256_ps128(t0);
 		mResult.Row[1] = _mm256_extractf128_ps(t0, 1);

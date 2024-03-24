@@ -75,6 +75,8 @@ namespace gm::simd::avx
 		sse::Vector128 vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&left.Row[0]) + 2);
 		sse::Vector128 vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&left.Row[0]) + 3);
 
+		sse::Matrix128 mResult = {};
+
 		// Perform the operation on the first row
 		vX = _mm_mul_ps(vX, right.Row[0]);
 		vY = _mm_mul_ps(vY, right.Row[1]);
@@ -84,7 +86,7 @@ namespace gm::simd::avx
 		vX = _mm_add_ps(vX, vZ);
 		vY = _mm_add_ps(vY, vW);
 		vX = _mm_add_ps(vX, vY);
-		sse::Vector128 r0 = vX;
+		mResult.Row[0] = vX;
 
 		// Repeat for the other 3 rows
 		vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&left.Row[1]) + 0);
@@ -99,7 +101,7 @@ namespace gm::simd::avx
 		vX = _mm_add_ps(vX, vZ);
 		vY = _mm_add_ps(vY, vW);
 		vX = _mm_add_ps(vX, vY);
-		sse::Vector128 r1 = vX;
+		mResult.Row[1] = vX;
 
 		vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&left.Row[2]) + 0);
 		vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&left.Row[2]) + 1);
@@ -113,7 +115,7 @@ namespace gm::simd::avx
 		vX = _mm_add_ps(vX, vZ);
 		vY = _mm_add_ps(vY, vW);
 		vX = _mm_add_ps(vX, vY);
-		sse::Vector128 r2 = vX;
+		mResult.Row[2] = vX;
 
 		vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&left.Row[3]) + 0);
 		vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&left.Row[3]) + 1);
@@ -127,27 +129,8 @@ namespace gm::simd::avx
 		vX = _mm_add_ps(vX, vZ);
 		vY = _mm_add_ps(vY, vW);
 		vX = _mm_add_ps(vX, vY);
-		sse::Vector128 r3 = vX;
+		mResult.Row[3] = vX;
 
-		// Transpose result
-		// x.x,x.y,y.x,y.y
-		sse::Vector128 vTemp1 = _mm_shuffle_ps(r0, r1, _MM_SHUFFLE(1, 0, 1, 0));
-		// x.z,x.w,y.z,y.w
-		sse::Vector128 vTemp3 = _mm_shuffle_ps(r0, r1, _MM_SHUFFLE(3, 2, 3, 2));
-		// z.x,z.y,w.x,w.y
-		sse::Vector128 vTemp2 = _mm_shuffle_ps(r2, r3, _MM_SHUFFLE(1, 0, 1, 0));
-		// z.z,z.w,w.z,w.w
-		sse::Vector128 vTemp4 = _mm_shuffle_ps(r2, r3, _MM_SHUFFLE(3, 2, 3, 2));
-
-		sse::Matrix128 mResult = {};
-		// x.x,y.x,z.x,w.x
-		mResult.Row[0] = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(2, 0, 2, 0));
-		// x.y,y.y,z.y,w.y
-		mResult.Row[1] = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(3, 1, 3, 1));
-		// x.z,y.z,z.z,w.z
-		mResult.Row[2] = _mm_shuffle_ps(vTemp3, vTemp4, _MM_SHUFFLE(2, 0, 2, 0));
-		// x.w,y.w,z.w,w.w
-		mResult.Row[3] = _mm_shuffle_ps(vTemp3, vTemp4, _MM_SHUFFLE(3, 1, 3, 1));
 		return mResult;
 	}
 	#pragma endregion Math

@@ -46,53 +46,57 @@ namespace gm
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		union
+		union U
 		{
-			struct
+			struct S
 			{
 				float _00, _01, _02, _03;
 				float _10, _11, _12, _13;
 				float _20, _21, _22, _23;
-			};
+			} s;
 			float m[3][4];
 			float a[12];
-		};
+		} u;
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		// @brief : Default constructor (単位行列)
-		Float3x4() : _00(1.0f), _01(0.0f), _02(0.0f), _03(0.0f), _10(0.0f), _11(1.0f), _12(0.0f), _13(0.0f), _20(0.0f), _21(0.0f), _22(1.0f), _23(0.0f) {};
+		Float3x4()
+		{
+			u.s._00 = 1.0f; u.s._01 = 0.0f; u.s._02 = 0.0f; u.s._03 = 0.0f;
+			u.s._10 = 0.0f; u.s._11 = 1.0f; u.s._12 = 0.0f; u.s._13 = 0.0f;
+			u.s._20 = 0.0f; u.s._21 = 0.0f; u.s._22 = 1.0f; u.s._23 = 0.0f;
+		}
 
 		// @brief : 全ての要素で初期化
 		constexpr Float3x4(const float m00, const float m01, const float m02, const float m03,
 			const float m10, const float m11, const float m12, const float m13,
 			const float m20, const float m21, const float m22, const float m23)
-			: _00(m00), _01(m01), _02(m02), _03(m03),
-			_10(m10), _11(m11), _12(m12), _13(m13),
-			_20(m20), _21(m21), _22(m22), _23(m23)
 		{
-
+			u.s._00 = m00; u.s._01 = m01; u.s._02 = m02; u.s._03 = m03;
+			u.s._10 = m10; u.s._11 = m11; u.s._12 = m12; u.s._13 = m13;
+			u.s._20 = m20; u.s._21 = m21; u.s._22 = m22; u.s._23 = m23;
 		}
 
 		// @brief : 配列を使って初期化
-		explicit Float3x4(_In_reads_(16) const float* pArray)
+		explicit Float3x4(_In_reads_(12) const float* pArray)
 		{
 			Check(pArray);
-			m[0][0] = pArray[0];
-			m[0][1] = pArray[1];
-			m[0][2] = pArray[2];
-			m[0][3] = pArray[3];
+			u.m[0][0] = pArray[0];
+			u.m[0][1] = pArray[1];
+			u.m[0][2] = pArray[2];
+			u.m[0][3] = pArray[3];
 
-			m[1][0] = pArray[4];
-			m[1][1] = pArray[5];
-			m[1][2] = pArray[6];
-			m[1][3] = pArray[7];
+			u.m[1][0] = pArray[4];
+			u.m[1][1] = pArray[5];
+			u.m[1][2] = pArray[6];
+			u.m[1][3] = pArray[7];
 
-			m[2][0] = pArray[8];
-			m[2][1] = pArray[9];
-			m[2][2] = pArray[10];
-			m[2][3] = pArray[11];
+			u.m[2][0] = pArray[8];
+			u.m[2][1] = pArray[9];
+			u.m[2][2] = pArray[10];
+			u.m[2][3] = pArray[11];
 		}
 
 		// @brief : copy constructor
@@ -117,61 +121,66 @@ namespace gm
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		union
+		union U
 		{
-			struct
+			struct S
 			{
 				float _00, _01, _02, _03;
 				float _10, _11, _12, _13;
 				float _20, _21, _22, _23;
 				float _30, _31, _32, _33;
-			};
+			} s;
 			float m[4][4];
 			float a[16];
-		};
+		} u;
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
 		// @brief : Default constructor (単位行列)
-		Float4x4() : _00(1.0f), _01(0.0f), _02(0.0f), _03(0.0f), _10(0.0f), _11(1.0f), _12(0.0f), _13(0.0f), _20(0.0f), _21(0.0f), _22(1.0f), _23(0.0f), _30(0.0f), _31(0.0f), _32(0.0f), _33(0.0f) {};
+		Float4x4()
+		{
+			u.s._00 = 1.0f; u.s._01 = 0.0f; u.s._02 = 0.0f; u.s._03 = 0.0f;
+			u.s._10 = 0.0f; u.s._11 = 1.0f; u.s._12 = 0.0f; u.s._13 = 0.0f;
+			u.s._20 = 0.0f; u.s._21 = 0.0f; u.s._22 = 1.0f; u.s._23 = 0.0f;
+			u.s._30 = 0.0f; u.s._31 = 0.0f; u.s._32 = 0.0f; u.s._33 = 1.0f;
+		};
 
 		// @brief : 全ての要素で初期化
 		constexpr Float4x4(const float m00, const float m01, const float m02, const float m03,
 			const float m10, const float m11, const float m12, const float m13,
 			const float m20, const float m21, const float m22, const float m23,
 			const float m30, const float m31, const float m32, const float m33)
-			: _00(m00), _01(m01), _02(m02), _03(m03),
-			_10(m10), _11(m11), _12(m12), _13(m13),
-			_20(m20), _21(m21), _22(m22), _23(m23),
-			_30(m30), _31(m31), _32(m32), _33(m33)
 		{
-
+			u.s._00 = m00; u.s._01 = m01; u.s._02 = m02; u.s._03 = m03;
+			u.s._10 = m10; u.s._11 = m11; u.s._12 = m12; u.s._13 = m13;
+			u.s._20 = m20; u.s._21 = m21; u.s._22 = m22; u.s._23 = m23;
+			u.s._30 = m30; u.s._31 = m31; u.s._32 = m32; u.s._33 = m33;
 		}
 
 		// @brief : 配列を使って初期化
 		explicit Float4x4(_In_reads_(16) const float* pArray)
 		{
 			Check(pArray);
-			m[0][0] = pArray[0];
-			m[0][1] = pArray[1];
-			m[0][2] = pArray[2];
-			m[0][3] = pArray[3];
+			u.m[0][0] = pArray[0];
+			u.m[0][1] = pArray[1];
+			u.m[0][2] = pArray[2];
+			u.m[0][3] = pArray[3];
 
-			m[1][0] = pArray[4];
-			m[1][1] = pArray[5];
-			m[1][2] = pArray[6];
-			m[1][3] = pArray[7];
+			u.m[1][0] = pArray[4];
+			u.m[1][1] = pArray[5];
+			u.m[1][2] = pArray[6];
+			u.m[1][3] = pArray[7];
 
-			m[2][0] = pArray[8];
-			m[2][1] = pArray[9];
-			m[2][2] = pArray[10];
-			m[2][3] = pArray[11];
+			u.m[2][0] = pArray[8];
+			u.m[2][1] = pArray[9];
+			u.m[2][2] = pArray[10];
+			u.m[2][3] = pArray[11];
 
-			m[3][0] = pArray[12];
-			m[3][1] = pArray[13];
-			m[3][2] = pArray[14];
-			m[3][3] = pArray[15];
+			u.m[3][0] = pArray[12];
+			u.m[3][1] = pArray[13];
+			u.m[3][2] = pArray[14];
+			u.m[3][3] = pArray[15];
 		}
 
 		// @brief : copy constructor
@@ -192,13 +201,13 @@ namespace gm
 		// @brief : 要素を( , )を使って二次元配列の要素に直接アクセス (参照渡しのため直接要素を書き換えられます)
 		__forceinline float& operator ()(const gu::uint32 row, const gu::uint32 column)
 		{
-			return m[row][column];
+			return u.m[row][column];
 		}
 
 		// @brief : 要素を( , )を使って二次元配列の要素に直接アクセス(参照渡しのため直接要素を書き換えられます)
 		__forceinline const float& operator()(const gu::uint32 row, const gu::uint32 column) const
 		{
-			return m[row][column];
+			return u.m[row][column];
 		}
 	};
 
@@ -234,7 +243,7 @@ namespace gm
 		__forceinline Float4x4 ToFloat4x4() const
 		{
 			Float4x4 result = {};
-			SIMD_NAME_SPACE::Matrix128Utility::StoreFloat4x4(result.a, _matrix);
+			SIMD_NAME_SPACE::Matrix128Utility::StoreFloat4x4(result.u.a, _matrix);
 			return result;
 		}
 		#pragma endregion Getter
