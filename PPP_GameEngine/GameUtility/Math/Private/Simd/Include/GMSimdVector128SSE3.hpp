@@ -51,11 +51,11 @@ namespace gm::simd::sse3
 		__forceinline static float SIMD_CALL_CONVENTION DotVector4(ConstVector128 left, ConstVector128 right) noexcept;
 
 		/*----------------------------------------------------------------------
-		*  @brief : 1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline static float SIMD_CALL_CONVENTION NormVector2(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormVector3(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormVector4(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector2(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector3(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector4(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 入力ベクトルの単位ベクトルを返します
@@ -147,18 +147,18 @@ namespace gm::simd::sse3
 	}
 
 	/****************************************************************************
-	*                      NormVector2
+	*                      LengthVector2
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::NormVector2(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::LengthVector2(ConstVector128 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::NormVector2(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::LengthVector2(ConstVector128 vector) noexcept
 	{
 		sse::Vector128 squareLength = _mm_mul_ps(vector, vector);
 		sse::Vector128 temp = _mm_hadd_ps(squareLength, squareLength);
@@ -168,18 +168,18 @@ namespace gm::simd::sse3
 	}
 	
 	/****************************************************************************
-	*                      NormVector3
+	*                      LengthVector3
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::NormVector3(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::LengthVector3(ConstVector128 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::NormVector3(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::LengthVector3(ConstVector128 vector) noexcept
 	{
 		sse::Vector128 squareLength = _mm_mul_ps(vector, vector);
 		squareLength = _mm_and_ps(squareLength, sse::VECTOR_128F_MASK_XYZ);
@@ -190,18 +190,18 @@ namespace gm::simd::sse3
 	}
 
 	/****************************************************************************
-	*                      NormVector4
+	*                      LengthVector4
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::NormVector4(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::LengthVector4(ConstVector128 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::NormVector4(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION sse3::Vector128Utility::LengthVector4(ConstVector128 vector) noexcept
 	{
 		sse::Vector128 squareLength = _mm_mul_ps(vector, vector);
 		squareLength = _mm_hadd_ps(squareLength, squareLength);

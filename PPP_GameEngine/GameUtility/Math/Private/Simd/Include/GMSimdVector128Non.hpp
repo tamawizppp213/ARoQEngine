@@ -371,16 +371,16 @@ namespace gm::simd::non
 		/*----------------------------------------------------------------------
 		*  @brief : 1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline static float SIMD_CALL_CONVENTION NormVector2(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormVector3(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormVector4(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector2(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector3(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector4(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline static float SIMD_CALL_CONVENTION NormSquaredVector2(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormSquaredVector3(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormSquaredVector4(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthSquaredVector2(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthSquaredVector3(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthSquaredVector4(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出 (ただし, 返り値はfloatではなくVector128型で返されますので, 後々GetXなどで対応してください.)
@@ -2360,92 +2360,92 @@ namespace gm::simd::non
 	}
 
 	/****************************************************************************
-	*                      NormVector2
+	*                      LengthVector2
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector2(ConstVector128 vector) noexcept
-	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
-	*
-	*  @param[in] ConstVector128 left
-	*  @param[in] ConstVector128 right
-	*
-	*  @return 　　float
-	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector2(ConstVector128 vector) noexcept
-	{
-		return sqrtf(NormSquaredVector2(vector));
-	}
-
-	/****************************************************************************
-	*                      NormVector3
-	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector3(ConstVector128 vector) noexcept
-	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
-	*
-	*  @param[in] ConstVector128 left
-	*  @param[in] ConstVector128 right
-	*
-	*  @return 　　float
-	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector3(ConstVector128 vector) noexcept
-	{
-		return sqrtf(NormSquaredVector3(vector));
-	}
-
-	/****************************************************************************
-	*                      NormVector4
-	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector4(ConstVector128 vector) noexcept
-	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
-	*
-	*  @param[in] ConstVector128 left
-	*  @param[in] ConstVector128 right
-	*
-	*  @return 　　float
-	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector4(ConstVector128 vector) noexcept
-	{
-		return sqrtf(NormSquaredVector4(vector));
-	}
-
-	/****************************************************************************
-	*                      NormSquaredVector2
-	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector2(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector2(ConstVector128 vector) noexcept
 	*
 	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
+	*
+	*  @param[in] ConstVector128 left
+	*  @param[in] ConstVector128 right
+	*
+	*  @return 　　float
+	*****************************************************************************/
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector2(ConstVector128 vector) noexcept
+	{
+		return sqrtf(LengthSquaredVector2(vector));
+	}
+
+	/****************************************************************************
+	*                      LengthVector3
+	*************************************************************************//**
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector3(ConstVector128 vector) noexcept
+	*
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
+	*
+	*  @param[in] ConstVector128 left
+	*  @param[in] ConstVector128 right
+	*
+	*  @return 　　float
+	*****************************************************************************/
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector3(ConstVector128 vector) noexcept
+	{
+		return sqrtf(LengthSquaredVector3(vector));
+	}
+
+	/****************************************************************************
+	*                      LengthVector4
+	*************************************************************************//**
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector4(ConstVector128 vector) noexcept
+	*
+	*  @brief    2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
+	*
+	*  @param[in] ConstVector128 left
+	*  @param[in] ConstVector128 right
+	*
+	*  @return 　　float
+	*****************************************************************************/
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector4(ConstVector128 vector) noexcept
+	{
+		return sqrtf(LengthSquaredVector4(vector));
+	}
+
+	/****************************************************************************
+	*                      LengthSquaredVector2
+	*************************************************************************//**
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector2(ConstVector128 vector) noexcept
+	*
+	*  @brief     2次ノルムの二乗を算出
 	*
 	*  @param[in] ConstVector128 vector
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector2(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector2(ConstVector128 vector) noexcept
 	{
 		return DotVector2(vector, vector);
 	}
 
 	/****************************************************************************
-	*                      NormSquaredVector3
+	*                      LengthSquaredVector3
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector3(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector3(ConstVector128 vector) noexcept
 	*
-	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
+	*  @brief     2次ノルムの二乗を算出
 	*
 	*  @param[in] ConstVector128 vector
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector3(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector3(ConstVector128 vector) noexcept
 	{
 		return DotVector3(vector, vector);
 	}
 
 	/****************************************************************************
-	*                      NormSquaredVector4
+	*                      LengthSquaredVector4
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector4(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector4(ConstVector128 vector) noexcept
 	*
 	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
@@ -2453,7 +2453,7 @@ namespace gm::simd::non
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector4(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector4(ConstVector128 vector) noexcept
 	{
 		return DotVector4(vector, vector);
 	}

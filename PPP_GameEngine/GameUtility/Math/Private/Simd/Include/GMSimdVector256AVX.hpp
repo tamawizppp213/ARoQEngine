@@ -360,18 +360,18 @@ namespace gm::simd::avx
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Negate(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
-		*  @brief : 1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
-		/*----------------------------------------------------------------------*/
-		__forceinline static double SIMD_CALL_CONVENTION NormVector2(ConstVector256 vector) noexcept;
-		__forceinline static double SIMD_CALL_CONVENTION NormVector3(ConstVector256 vector) noexcept;
-		__forceinline static double SIMD_CALL_CONVENTION NormVector4(ConstVector256 vector) noexcept;
-
-		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline static double SIMD_CALL_CONVENTION NormSquaredVector2(ConstVector256 vector) noexcept;
-		__forceinline static double SIMD_CALL_CONVENTION NormSquaredVector3(ConstVector256 vector) noexcept;
-		__forceinline static double SIMD_CALL_CONVENTION NormSquaredVector4(ConstVector256 vector) noexcept;
+		__forceinline static double SIMD_CALL_CONVENTION LengthVector2(ConstVector256 vector) noexcept;
+		__forceinline static double SIMD_CALL_CONVENTION LengthVector3(ConstVector256 vector) noexcept;
+		__forceinline static double SIMD_CALL_CONVENTION LengthVector4(ConstVector256 vector) noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : 2次ノルムの二乗を算出
+		/*----------------------------------------------------------------------*/
+		__forceinline static double SIMD_CALL_CONVENTION LengthSquaredVector2(ConstVector256 vector) noexcept;
+		__forceinline static double SIMD_CALL_CONVENTION LengthSquaredVector3(ConstVector256 vector) noexcept;
+		__forceinline static double SIMD_CALL_CONVENTION LengthSquaredVector4(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出 (ただし, 返り値はdoubleではなくVector256型で返されますので, 後々GetXなどで対応してください.)
@@ -2046,60 +2046,60 @@ namespace gm::simd::avx
 	}
 
 	/****************************************************************************
-	*                      NormVector2
+	*                      LengthVector2
 	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector2(ConstVector256 vector) noexcept
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector2(ConstVector256 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector256 left
 	*  @param[in] ConstVector256 right
 	*
 	*  @return 　　double
 	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector2(ConstVector256 vector) noexcept
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector2(ConstVector256 vector) noexcept
 	{
 		return sqrt(DotVector2(vector, vector));
 	}
 
 	/****************************************************************************
-	*                      NormVector3
+	*                      LengthVector3
 	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector3(ConstVector256 vector) noexcept
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector3(ConstVector256 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector256 left
 	*  @param[in] ConstVector256 right
 	*
 	*  @return 　　double
 	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector3(ConstVector256 vector) noexcept
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector3(ConstVector256 vector) noexcept
 	{
 		return sqrt(DotVector3(vector, vector));
 	}
 
 	/****************************************************************************
-	*                      NormVector4
+	*                      LengthVector4
 	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector4(ConstVector256 vector) noexcept
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector4(ConstVector256 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector256 left
 	*  @param[in] ConstVector256 right
 	*
 	*  @return 　　double
 	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector4(ConstVector256 vector) noexcept
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector4(ConstVector256 vector) noexcept
 	{
 		return sqrt(DotVector4(vector, vector));
 	}
 
 	/****************************************************************************
-	*                      NormSquaredVector2
+	*                      LengthSquaredVector2
 	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector2(ConstVector256 vector) noexcept
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector2(ConstVector256 vector) noexcept
 	*
 	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
@@ -2107,15 +2107,15 @@ namespace gm::simd::avx
 	*
 	*  @return 　　double
 	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector2(ConstVector256 vector) noexcept
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector2(ConstVector256 vector) noexcept
 	{
 		return DotVector2(vector, vector);
 	}
 
 	/****************************************************************************
-	*                      NormSquaredVector3
+	*                      LengthSquaredVector3
 	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector3(ConstVector256 vector) noexcept
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector3(ConstVector256 vector) noexcept
 	*
 	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
@@ -2123,15 +2123,15 @@ namespace gm::simd::avx
 	*
 	*  @return 　　double
 	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector3(ConstVector256 vector) noexcept
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector3(ConstVector256 vector) noexcept
 	{
 		return DotVector3(vector, vector);
 	}
 
 	/****************************************************************************
-	*                      NormSquaredVector4
+	*                      LengthSquaredVector4
 	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector4(ConstVector256 vector) noexcept
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector4(ConstVector256 vector) noexcept
 	*
 	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
@@ -2139,7 +2139,7 @@ namespace gm::simd::avx
 	*
 	*  @return 　　double
 	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector4(ConstVector256 vector) noexcept
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector4(ConstVector256 vector) noexcept
 	{
 		return DotVector4(vector, vector);
 	}

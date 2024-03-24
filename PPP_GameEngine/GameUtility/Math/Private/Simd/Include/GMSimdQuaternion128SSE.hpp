@@ -86,14 +86,14 @@ namespace gm::simd::sse
 		__forceinline static float SIMD_CALL_CONVENTION Dot(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
 
 		/*----------------------------------------------------------------------
-		*  @brief : 1次ノルム (絶対値の総和を取った後に根号を取る)を取得します
+		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline static float SIMD_CALL_CONVENTION Norm(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION Length(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
-		*  @brief : 2次ノルム (全ての要素の2乗和)を取得します
+		*  @brief : 2次ノルムの二乗を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline static float SIMD_CALL_CONVENTION NormSquare(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthSquare(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : クォータニオンの正規化を行います
@@ -279,35 +279,35 @@ namespace gm::simd::sse
 	}
 
 	/****************************************************************************
-	*                       Norm
+	*                       Length
 	*************************************************************************//**
-	*  @fn        float SIMD_CALL_CONVENTION Quaternion128Utility::Norm(ConstQuaternion128 quaternion) noexcept
+	*  @fn        float SIMD_CALL_CONVENTION Quaternion128Utility::Length(ConstQuaternion128 quaternion) noexcept
 	*
-	*  @brief     1次ノルム (絶対値の総和を取った後に根号を取る)を取得します
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstQuaternion128 quaternion
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Quaternion128Utility::Norm(ConstQuaternion128 quaternion) noexcept
+	inline float SIMD_CALL_CONVENTION Quaternion128Utility::Length(ConstQuaternion128 quaternion) noexcept
 	{
-		return Vector128Utility::NormVector4(quaternion);
+		return Vector128Utility::LengthVector4(quaternion);
 	}
 
 	/****************************************************************************
-	*                       NormSquare
+	*                       LengthSquare
 	*************************************************************************//**
-	*  @fn        float SIMD_CALL_CONVENTION Quaternion128Utility::NormSquare(ConstQuaternion128 quaternion) noexcept
+	*  @fn        float SIMD_CALL_CONVENTION Quaternion128Utility::LengthSquare(ConstQuaternion128 quaternion) noexcept
 	*
-	*  @brief     2次ノルム (全ての要素の2乗和)を取得します
+	*  @brief     2次ノルムの二乗を算出
 	*
 	*  @param[in] ConstQuaternion128 quaternion
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Quaternion128Utility::NormSquare(ConstQuaternion128 quaternion) noexcept
+	inline float SIMD_CALL_CONVENTION Quaternion128Utility::LengthSquare(ConstQuaternion128 quaternion) noexcept
 	{
-		return Vector128Utility::NormSquaredVector4(quaternion);
+		return Vector128Utility::LengthSquaredVector4(quaternion);
 	}
 
 	/****************************************************************************
@@ -357,7 +357,7 @@ namespace gm::simd::sse
 	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Inverse(ConstQuaternion128 quaternion) noexcept
 	{
 		// 正規化を実行するために使用
-		Vector128 normSquared = Vector128Utility::Set(Vector128Utility::NormSquaredVector4(quaternion));
+		Vector128 normSquared = Vector128Utility::Set(Vector128Utility::LengthSquaredVector4(quaternion));
 		
 		// 共役なクォータニオン取得
 		Quaternion128 conjugate = Conjugate(quaternion);
@@ -417,7 +417,7 @@ namespace gm::simd::sse
 	*****************************************************************************/
 	inline Quaternion128 SIMD_CALL_CONVENTION Quaternion128Utility::Exp(ConstQuaternion128 quaternion) noexcept
 	{
-		Vector128 Theta = Vector128Utility::Set(Vector128Utility::NormVector3(quaternion));
+		Vector128 Theta = Vector128Utility::Set(Vector128Utility::LengthVector3(quaternion));
 
 		Vector128 SinTheta, CosTheta;
 		Vector128Utility::SinCos(Theta, &SinTheta, &CosTheta);

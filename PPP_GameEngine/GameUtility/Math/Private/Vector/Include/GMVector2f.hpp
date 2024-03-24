@@ -223,14 +223,14 @@ namespace gm
 		__forceinline Vector2f Negate() const { return SIMD_NAME_SPACE::Vector128Utility::Negate(_vector); }
 
 		/*----------------------------------------------------------------------
-		*  @brief : 1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
-		/*----------------------------------------------------------------------*/
-		__forceinline float Norm() const { return SIMD_NAME_SPACE::Vector128Utility::NormVector2(_vector); }
-
-		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline float NormSquared() const { return SIMD_NAME_SPACE::Vector128Utility::NormSquaredVector2(_vector); }
+		__forceinline float Length() const { return SIMD_NAME_SPACE::Vector128Utility::LengthVector2(_vector); }
+
+		/*----------------------------------------------------------------------
+		*  @brief : 2次ノルムの二乗を算出
+		/*----------------------------------------------------------------------*/
+		__forceinline float LengthSquared() const { return SIMD_NAME_SPACE::Vector128Utility::LengthSquaredVector2(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出

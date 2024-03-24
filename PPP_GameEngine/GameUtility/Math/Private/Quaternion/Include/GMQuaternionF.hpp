@@ -67,19 +67,19 @@ namespace gm
 		}
 
 		/*----------------------------------------------------------------------
-		*  @brief : 1Ÿƒmƒ‹ƒ€ (â‘Î’l‚Ì‘˜a‚ğæ‚Á‚½Œã‚Éª†‚ğæ‚é)‚ğæ“¾‚µ‚Ü‚·
+		*  @brief : 2Ÿƒmƒ‹ƒ€ (‘S‚Ä‚Ì—v‘f‚Ì2æ˜a)‚ğæ“¾‚µ‚Ü‚·
 		/*----------------------------------------------------------------------*/
-		__forceinline float Norm() const
+		__forceinline float Length() const
 		{
-			return SIMD_NAME_SPACE::Quaternion128Utility::Norm(_quaternion);
+			return SIMD_NAME_SPACE::Quaternion128Utility::Length(_quaternion);
 		}
 
 		/*----------------------------------------------------------------------
-		*  @brief : 2Ÿƒmƒ‹ƒ€ (‘S‚Ä‚Ì—v‘f‚Ì2æ˜a)‚ğæ“¾‚µ‚Ü‚·
+		*  @brief : 2Ÿƒmƒ‹ƒ€‚É“ñæ‚ğæ“¾‚µ‚Ü‚·
 		/*----------------------------------------------------------------------*/
-		__forceinline float NormSquare() const
+		__forceinline float LengthSquare() const
 		{
-			return SIMD_NAME_SPACE::Quaternion128Utility::NormSquare(_quaternion);
+			return SIMD_NAME_SPACE::Quaternion128Utility::LengthSquare(_quaternion);
 		}
 
 		/*----------------------------------------------------------------------

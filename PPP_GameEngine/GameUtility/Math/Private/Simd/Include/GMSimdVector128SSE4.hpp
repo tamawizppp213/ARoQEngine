@@ -72,11 +72,11 @@ namespace gm::simd::sse4
 
 	#pragma region Math
 		/*----------------------------------------------------------------------
-		*  @brief : 1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline static float SIMD_CALL_CONVENTION NormVector2(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormVector3(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormVector4(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector2(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector3(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector4(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出 (ただし, 返り値はfloatではなくVector128型で返されますので, 後々GetXなどで対応してください.)
@@ -228,52 +228,52 @@ namespace gm::simd::sse4
 	#pragma endregion Getter
 	#pragma region Math
 	/****************************************************************************
-	*                      NormVector2
+	*                      LengthVector2
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector2(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector2(ConstVector128 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector2(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector2(ConstVector128 vector) noexcept
 	{
 		return _mm_cvtss_f32(_mm_sqrt_ps(_mm_dp_ps(vector, vector, 0x3f)));
 	}
 
 	/****************************************************************************
-	*                      NormVector3
+	*                      LengthVector3
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector3(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector3(ConstVector128 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector3(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector3(ConstVector128 vector) noexcept
 	{
 		return _mm_cvtss_f32(_mm_sqrt_ps(_mm_dp_ps(vector, vector, 0x7f)));
 	}
 
 	/****************************************************************************
-	*                      NormVector4
+	*                      LengthVector4
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector4(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector4(ConstVector128 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector4(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector4(ConstVector128 vector) noexcept
 	{
 		return _mm_cvtss_f32(_mm_sqrt_ps(_mm_dp_ps(vector, vector, 0xff)));
 	}

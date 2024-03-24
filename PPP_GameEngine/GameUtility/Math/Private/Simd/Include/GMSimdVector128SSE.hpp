@@ -489,18 +489,18 @@ namespace gm::simd::sse
 		__forceinline static Vector128 SIMD_CALL_CONVENTION Negate(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
-		*  @brief : 1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
-		/*----------------------------------------------------------------------*/
-		__forceinline static float SIMD_CALL_CONVENTION NormVector2(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormVector3(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormVector4(ConstVector128 vector) noexcept;
-
-		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline static float SIMD_CALL_CONVENTION NormSquaredVector2(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormSquaredVector3(ConstVector128 vector) noexcept;
-		__forceinline static float SIMD_CALL_CONVENTION NormSquaredVector4(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector2(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector3(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthVector4(ConstVector128 vector) noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : 2次ノルムの2乗を算出
+		/*----------------------------------------------------------------------*/
+		__forceinline static float SIMD_CALL_CONVENTION LengthSquaredVector2(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthSquaredVector3(ConstVector128 vector) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION LengthSquaredVector4(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出 (ただし, 返り値はfloatではなくVector128型で返されますので, 後々GetXなどで対応してください.)
@@ -2591,18 +2591,18 @@ namespace gm::simd::sse
 	}
 
 	/****************************************************************************
-	*                      NormVector2
+	*                      LengthVector2
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector2(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector2(ConstVector128 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector2(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector2(ConstVector128 vector) noexcept
 	{
 		// Dot積の計算
 		Vector128 squareLength = _mm_mul_ps(vector, vector);
@@ -2618,18 +2618,18 @@ namespace gm::simd::sse
 	}
 
 	/****************************************************************************
-	*                      NormVector3
+	*                     LengthVector3
 	*************************************************************************//**
 	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector3(ConstVector128 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector3(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector3(ConstVector128 vector) noexcept
 	{
 		// Dot積の計算
 		Vector128 squareLength = _mm_mul_ps(vector, vector);
@@ -2656,18 +2656,18 @@ namespace gm::simd::sse
 	}
 
 	/****************************************************************************
-	*                      NormVector4
+	*                      NLengthVector4
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector4(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector4(ConstVector128 vector) noexcept
 	*
-	*  @brief     1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
+	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
 	*  @param[in] ConstVector128 left
 	*  @param[in] ConstVector128 right
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormVector4(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector4(ConstVector128 vector) noexcept
 	{
 		// Dot積の計算
 		Vector128 squareLength = _mm_mul_ps(vector, vector);
@@ -2692,49 +2692,49 @@ namespace gm::simd::sse
 	}
 
 	/****************************************************************************
-	*                      NormSquaredVector2
+	*                      LengthSquaredVector2
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector2(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector2(ConstVector128 vector) noexcept
 	*
-	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
+	*  @brief     2次ノルムの2乗を算出
 	*
 	*  @param[in] ConstVector128 vector
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector2(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector2(ConstVector128 vector) noexcept
 	{
 		return DotVector2(vector, vector);
 	}
 
 	/****************************************************************************
-	*                      NormSquaredVector3
+	*                      LengthSquaredVector3
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector3(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector3(ConstVector128 vector) noexcept
 	*
-	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
+	*  @brief     2次ノルムの2乗を算出
 	*
 	*  @param[in] ConstVector128 vector
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector3(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector3(ConstVector128 vector) noexcept
 	{
 		return DotVector3(vector, vector);
 	}
 
 	/****************************************************************************
-	*                      NormSquaredVector4
+	*                      LengthSquaredVector4
 	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector4(ConstVector128 vector) noexcept
+	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector4(ConstVector128 vector) noexcept
 	*
-	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
+	*  @brief     2次ノルムの2乗を算出
 	*
 	*  @param[in] ConstVector128 vector
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Vector128Utility::NormSquaredVector4(ConstVector128 vector) noexcept
+	inline float SIMD_CALL_CONVENTION Vector128Utility::LengthSquaredVector4(ConstVector128 vector) noexcept
 	{
 		return DotVector4(vector, vector);
 	}

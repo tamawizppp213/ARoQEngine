@@ -44,9 +44,9 @@ namespace gm::simd::sse4
 		__forceinline static float SIMD_CALL_CONVENTION Dot(ConstQuaternion128 left, ConstQuaternion128 right) noexcept;
 
 		/*----------------------------------------------------------------------
-		*  @brief : 1次ノルム (絶対値の総和を取った後に根号を取る)を取得します
+		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline static float SIMD_CALL_CONVENTION Norm(ConstQuaternion128 quaternion) noexcept;
+		__forceinline static float SIMD_CALL_CONVENTION Length(ConstQuaternion128 quaternion) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : クォータニオンの正規化を行います
@@ -81,9 +81,9 @@ namespace gm::simd::sse4
 	}
 
 	/****************************************************************************
-	*                       Norm
+	*                       Length
 	*************************************************************************//**
-	*  @fn        float SIMD_CALL_CONVENTION Quaternion128Utility::Norm(ConstQuaternion128 quaternion) noexcept
+	*  @fn        float SIMD_CALL_CONVENTION Quaternion128Utility::Length(ConstQuaternion128 quaternion) noexcept
 	*
 	*  @brief     1次ノルム (絶対値の総和を取った後に根号を取る)を取得します
 	*
@@ -91,9 +91,9 @@ namespace gm::simd::sse4
 	*
 	*  @return 　　float
 	*****************************************************************************/
-	inline float SIMD_CALL_CONVENTION Quaternion128Utility::Norm(ConstQuaternion128 quaternion) noexcept
+	inline float SIMD_CALL_CONVENTION Quaternion128Utility::Length(ConstQuaternion128 quaternion) noexcept
 	{
-		return Vector128Utility::NormVector4(quaternion);
+		return Vector128Utility::LengthVector4(quaternion);
 	}
 
 	/****************************************************************************

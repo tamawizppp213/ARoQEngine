@@ -375,18 +375,18 @@ namespace gm::simd::non
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Negate(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
-		*  @brief : 1ŽŸƒmƒ‹ƒ€(Še—v‘f‚Ìâ‘Î’l‚Ì˜a‚É‚¨‚¯‚éƒxƒNƒgƒ‹‚Ì‘å‚«‚³)‚ðŽZo
-		/*----------------------------------------------------------------------*/
-		__forceinline static double SIMD_CALL_CONVENTION NormVector2(ConstVector256 vector) noexcept;
-		__forceinline static double SIMD_CALL_CONVENTION NormVector3(ConstVector256 vector) noexcept;
-		__forceinline static double SIMD_CALL_CONVENTION NormVector4(ConstVector256 vector) noexcept;
-
-		/*----------------------------------------------------------------------
 		*  @brief : 2ŽŸƒmƒ‹ƒ€(Še—v‘f‚Ì2æ˜a‚ðƒ‹[ƒg‚ðŽæ‚Á‚½‚Æ‚«‚ÌƒxƒNƒgƒ‹‚Ì‘å‚«‚³)‚ðŽZo
 		/*----------------------------------------------------------------------*/
-		__forceinline static double SIMD_CALL_CONVENTION NormSquaredVector2(ConstVector256 vector) noexcept;
-		__forceinline static double SIMD_CALL_CONVENTION NormSquaredVector3(ConstVector256 vector) noexcept;
-		__forceinline static double SIMD_CALL_CONVENTION NormSquaredVector4(ConstVector256 vector) noexcept;
+		__forceinline static double SIMD_CALL_CONVENTION LengthVector2(ConstVector256 vector) noexcept;
+		__forceinline static double SIMD_CALL_CONVENTION LengthVector3(ConstVector256 vector) noexcept;
+		__forceinline static double SIMD_CALL_CONVENTION LengthVector4(ConstVector256 vector) noexcept;
+
+		/*----------------------------------------------------------------------
+		*  @brief : 2ŽŸƒmƒ‹ƒ€‚Ì“ñæ‚ðŽZo
+		/*----------------------------------------------------------------------*/
+		__forceinline static double SIMD_CALL_CONVENTION LengthSquaredVector2(ConstVector256 vector) noexcept;
+		__forceinline static double SIMD_CALL_CONVENTION LengthSquaredVector3(ConstVector256 vector) noexcept;
+		__forceinline static double SIMD_CALL_CONVENTION LengthSquaredVector4(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : “àÏ‚ðŽZo (‚½‚¾‚µ, •Ô‚è’l‚Ídouble‚Å‚Í‚È‚­Vector256Œ^‚Å•Ô‚³‚ê‚Ü‚·‚Ì‚Å, ŒãXGetX‚È‚Ç‚Å‘Î‰ž‚µ‚Ä‚­‚¾‚³‚¢.)
@@ -2331,100 +2331,100 @@ namespace gm::simd::non
 	}
 
 	/****************************************************************************
-	*                      NormVector2
+	*                      LengthVector2
 	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector2(ConstVector256 vector) noexcept
-	*
-	*  @brief     1ŽŸƒmƒ‹ƒ€(Še—v‘f‚Ìâ‘Î’l‚Ì˜a‚É‚¨‚¯‚éƒxƒNƒgƒ‹‚Ì‘å‚«‚³)‚ðŽZo
-	*
-	*  @param[in] ConstVector256 left
-	*  @param[in] ConstVector256 right
-	*
-	*  @return @@double
-	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector2(ConstVector256 vector) noexcept
-	{
-		return sqrtf(NormSquaredVector2(vector));
-	}
-
-	/****************************************************************************
-	*                      NormVector3
-	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector3(ConstVector256 vector) noexcept
-	*
-	*  @brief     1ŽŸƒmƒ‹ƒ€(Še—v‘f‚Ìâ‘Î’l‚Ì˜a‚É‚¨‚¯‚éƒxƒNƒgƒ‹‚Ì‘å‚«‚³)‚ðŽZo
-	*
-	*  @param[in] ConstVector256 left
-	*  @param[in] ConstVector256 right
-	*
-	*  @return @@double
-	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector3(ConstVector256 vector) noexcept
-	{
-		return sqrtf(NormSquaredVector3(vector));
-	}
-
-	/****************************************************************************
-	*                      NormVector4
-	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector4(ConstVector256 vector) noexcept
-	*
-	*  @brief     1ŽŸƒmƒ‹ƒ€(Še—v‘f‚Ìâ‘Î’l‚Ì˜a‚É‚¨‚¯‚éƒxƒNƒgƒ‹‚Ì‘å‚«‚³)‚ðŽZo
-	*
-	*  @param[in] ConstVector256 left
-	*  @param[in] ConstVector256 right
-	*
-	*  @return @@double
-	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormVector4(ConstVector256 vector) noexcept
-	{
-		return sqrtf(NormSquaredVector4(vector));
-	}
-
-	/****************************************************************************
-	*                      NormSquaredVector2
-	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector2(ConstVector256 vector) noexcept
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector2(ConstVector256 vector) noexcept
 	*
 	*  @brief     2ŽŸƒmƒ‹ƒ€(Še—v‘f‚Ì2æ˜a‚ðƒ‹[ƒg‚ðŽæ‚Á‚½‚Æ‚«‚ÌƒxƒNƒgƒ‹‚Ì‘å‚«‚³)‚ðŽZo
+	*
+	*  @param[in] ConstVector256 left
+	*  @param[in] ConstVector256 right
+	*
+	*  @return @@double
+	*****************************************************************************/
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector2(ConstVector256 vector) noexcept
+	{
+		return sqrtf(LengthSquaredVector2(vector));
+	}
+
+	/****************************************************************************
+	*                      LengthVector3
+	*************************************************************************//**
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector3(ConstVector256 vector) noexcept
+	*
+	*  @brief     2ŽŸƒmƒ‹ƒ€(Še—v‘f‚Ì2æ˜a‚ðƒ‹[ƒg‚ðŽæ‚Á‚½‚Æ‚«‚ÌƒxƒNƒgƒ‹‚Ì‘å‚«‚³)‚ðŽZo
+	*
+	*  @param[in] ConstVector256 left
+	*  @param[in] ConstVector256 right
+	*
+	*  @return @@double
+	*****************************************************************************/
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector3(ConstVector256 vector) noexcept
+	{
+		return sqrtf(LengthSquaredVector3(vector));
+	}
+
+	/****************************************************************************
+	*                      LengthVector4
+	*************************************************************************//**
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector4(ConstVector256 vector) noexcept
+	*
+	*  @brief     2ŽŸƒmƒ‹ƒ€(Še—v‘f‚Ì2æ˜a‚ðƒ‹[ƒg‚ðŽæ‚Á‚½‚Æ‚«‚ÌƒxƒNƒgƒ‹‚Ì‘å‚«‚³)‚ðŽZo
+	*
+	*  @param[in] ConstVector256 left
+	*  @param[in] ConstVector256 right
+	*
+	*  @return @@double
+	*****************************************************************************/
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthVector4(ConstVector256 vector) noexcept
+	{
+		return sqrtf(LengthSquaredVector4(vector));
+	}
+
+	/****************************************************************************
+	*                      LengthSquaredVector2
+	*************************************************************************//**
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector2(ConstVector256 vector) noexcept
+	*
+	*  @brief     2ŽŸƒmƒ‹ƒ€‚Ì“ñæ‚ðŽZo
 	*
 	*  @param[in] ConstVector256 vector
 	*
 	*  @return @@double
 	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector2(ConstVector256 vector) noexcept
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector2(ConstVector256 vector) noexcept
 	{
 		return DotVector2(vector, vector);
 	}
 
 	/****************************************************************************
-	*                      NormSquaredVector3
+	*                      LengthSquaredVector3
 	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector3(ConstVector256 vector) noexcept
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector3(ConstVector256 vector) noexcept
 	*
-	*  @brief     2ŽŸƒmƒ‹ƒ€(Še—v‘f‚Ì2æ˜a‚ðƒ‹[ƒg‚ðŽæ‚Á‚½‚Æ‚«‚ÌƒxƒNƒgƒ‹‚Ì‘å‚«‚³)‚ðŽZo
+	*  @brief     2ŽŸƒmƒ‹ƒ€‚Ì“ñæ‚ðŽZo
 	*
 	*  @param[in] ConstVector256 vector
 	*
 	*  @return @@double
 	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector3(ConstVector256 vector) noexcept
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector3(ConstVector256 vector) noexcept
 	{
 		return DotVector3(vector, vector);
 	}
 
 	/****************************************************************************
-	*                      NormSquaredVector4
+	*                      LengthSquaredVector4
 	*************************************************************************//**
-	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector4(ConstVector256 vector) noexcept
+	*  @fn        inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector4(ConstVector256 vector) noexcept
 	*
-	*  @brief     2ŽŸƒmƒ‹ƒ€(Še—v‘f‚Ì2æ˜a‚ðƒ‹[ƒg‚ðŽæ‚Á‚½‚Æ‚«‚ÌƒxƒNƒgƒ‹‚Ì‘å‚«‚³)‚ðŽZo
+	*  @brief     2ŽŸƒmƒ‹ƒ€‚Ì“ñæ‚ðŽZo
 	*
 	*  @param[in] ConstVector256 vector
 	*
 	*  @return @@double
 	*****************************************************************************/
-	inline double SIMD_CALL_CONVENTION Vector256Utility::NormSquaredVector4(ConstVector256 vector) noexcept
+	inline double SIMD_CALL_CONVENTION Vector256Utility::LengthSquaredVector4(ConstVector256 vector) noexcept
 	{
 		return DotVector4(vector, vector);
 	}
@@ -2565,7 +2565,7 @@ namespace gm::simd::non
 	*****************************************************************************/
 	inline Vector256 SIMD_CALL_CONVENTION Vector256Utility::NormalizeVector2(ConstVector256 vector) noexcept
 	{
-		const double norm = NormVector2(vector);
+		const double norm = LengthVector2(vector);
 		const double reciprocalNorm = norm > 0 ? 1.0f / norm : 0.0f;
 
 		Vector256d result = { { {
@@ -2591,7 +2591,7 @@ namespace gm::simd::non
 	*****************************************************************************/
 	inline Vector256 SIMD_CALL_CONVENTION Vector256Utility::NormalizeVector3(ConstVector256 vector) noexcept
 	{
-		const double norm = NormVector3(vector);
+		const double norm = LengthVector3(vector);
 		const double reciprocalNorm = norm > 0 ? 1.0f / norm : 0.0f;
 
 		Vector256d result = { { {
@@ -2617,7 +2617,7 @@ namespace gm::simd::non
 	*****************************************************************************/
 	inline Vector256 SIMD_CALL_CONVENTION Vector256Utility::NormalizeVector4(ConstVector256 vector) noexcept
 	{
-		const double norm = NormVector4(vector);
+		const double norm = LengthVector4(vector);
 		const double reciprocalNorm = norm > 0 ? 1.0f / norm : 0.0f;
 
 		Vector256d result = { { {
