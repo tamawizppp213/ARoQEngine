@@ -655,7 +655,7 @@
     <ClInclude Include="GameUtility\Math\Include\GMDistribution.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMHash.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMInterpolation.hpp" />
-    <ClInclude Include="GameUtility\Math\Include\GMMath.hpp" />
+    <ClInclude Include="GameUtility\Math\Include\GMMathConstants.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMMatrix.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMQuaternion.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMSearch.hpp" />

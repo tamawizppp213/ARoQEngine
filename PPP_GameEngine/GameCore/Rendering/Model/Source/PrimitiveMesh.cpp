@@ -9,7 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Model/Include/PrimitiveMesh.hpp"
-#include "GameUtility/Math/Include/GMMath.hpp"
+#include "GameUtility/Math/Include/GMMathConstants.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

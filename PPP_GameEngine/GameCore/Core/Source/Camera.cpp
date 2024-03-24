@@ -14,7 +14,7 @@
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
-#include "GameUtility/Math/Include/GMMath.hpp"
+#include "GameUtility/Math/Include/GMMathConstants.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

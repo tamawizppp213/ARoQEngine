@@ -10,7 +10,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameCore/Rendering/Model/External/GLTF/Private/Include/GLTFColor.hpp"
-#include "GameUtility/Math/Include/GMMath.hpp"
+#include "GameUtility/Math/Include/GMMathConstants.hpp"
 #include <limits>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

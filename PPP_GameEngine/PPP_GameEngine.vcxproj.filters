@@ -30,7 +30,7 @@
     <ClInclude Include="GameUtility\Math\Include\GMInterpolation.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GameUtility\Math\Include\GMMath.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMMathConstants.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="GameUtility\Math\Include\GMMatrix.hpp">
