@@ -188,13 +188,13 @@ namespace gu
 
 
 	template<class ElementType1, class ElementType2, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
-	const bool operator == (const SharedPointer<ElementType1,Mode>& left, const SharedPointer<ElementType2, Mode>& right) noexcept
+	bool operator == (const SharedPointer<ElementType1,Mode>& left, const SharedPointer<ElementType2, Mode>& right) noexcept
 	{
 		return left.Get() == right.Get();
 	}
 
 	template<class ElementType1, class ElementType2, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
-	const bool operator != (const SharedPointer<ElementType1, Mode>& left, const SharedPointer<ElementType2,Mode>& right) noexcept
+	bool operator != (const SharedPointer<ElementType1, Mode>& left, const SharedPointer<ElementType2,Mode>& right) noexcept
 	{
 		return left.Get() != right.Get();
 	}

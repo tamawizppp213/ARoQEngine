@@ -318,8 +318,14 @@ namespace rhi::core
 		{
 			switch (pixelFormat)
 			{
-			case PixelFormat::D32_FLOAT: return true;
-			default: return false;
+				case PixelFormat::D32_FLOAT: 
+				{
+					return true;
+				}
+				default: 
+				{
+					return false;
+				}
 			}
 		}
 	};

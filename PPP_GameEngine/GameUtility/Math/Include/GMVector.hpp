@@ -25,9 +25,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Private/Vector/Include/GMVector2f.hpp"
-#include "../Private/Vector/Include/GMVector3f.hpp"
-#include "../Private/Vector/Include/GMVector4f.hpp"
+#include "GameUtility/Math/Private/Vector/Include/GMVector2f.hpp"
+#include "GameUtility/Math/Private/Vector/Include/GMVector3f.hpp"
+#include "GameUtility/Math/Private/Vector/Include/GMVector4f.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
