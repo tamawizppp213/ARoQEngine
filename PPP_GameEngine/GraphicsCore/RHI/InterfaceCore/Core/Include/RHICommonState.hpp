@@ -533,9 +533,9 @@ namespace rhi::core
 			AddressModeV(addressV),
 			AddressModeW(addressW),
 			Border(border),
+			MipLODBias(mipLODBias),
 			MinLOD(minLOD),
-			MaxLOD(maxLOD),
-			MipLODBias(mipLODBias)
+			MaxLOD(maxLOD)
 		{
 		}
 

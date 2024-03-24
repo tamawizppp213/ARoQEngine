@@ -11,11 +11,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../../Simd/Include/GMSimdMacros.hpp"
-#include "../../Vector/Include/GMVector2f.hpp"
-#include "../../Vector/Include/GMVector3f.hpp"
-#include "../../Vector/Include/GMVector4f.hpp"
-#include "../../Quaternion/Include/GMQuaternionF.hpp"
+#include "GameUtility/Math/Private/Simd/Include/GMSimdMacros.hpp"
+#include "GameUtility/Math/Private/Vector/Include/GMVector2f.hpp"
+#include "GameUtility/Math/Private/Vector/Include/GMVector3f.hpp"
+#include "GameUtility/Math/Private/Vector/Include/GMVector4f.hpp"
+#include "GameUtility/Math/Private/Quaternion/Include/GMQuaternionF.hpp"
 #include SIMD_COMPILED_HEADER(GameUtility/Math/Private/Simd/Include, GMSimdMatrix128)
 
 //////////////////////////////////////////////////////////////////////////////////

@@ -91,7 +91,7 @@ namespace gm::simd::sse
 		using VectorFunction = Vector128Utility;
 
 	public:
-	#if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || _GM_VECTORCALL_ || __aarch64__ )
+	#if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || USE_VECTOR_CALL || __aarch64__ )
 		using ConstMatrix128 = const Matrix128;
 	#else
 		using ConstMatrix128 = const Matrix128&;

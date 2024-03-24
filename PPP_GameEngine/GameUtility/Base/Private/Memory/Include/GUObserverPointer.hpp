@@ -57,7 +57,7 @@ namespace gu::details::smart_pointer
 		/*----------------------------------------------------------------------
 		*  @brief : Return the reference count
 		/*----------------------------------------------------------------------*/
-		__forceinline const int32 GetReferenceCount() const { return _referenceController ? _referenceController->GetSharedReferenceCount() : 0; }
+		__forceinline int32 GetReferenceCount() const { return _referenceController ? _referenceController->GetSharedReferenceCount() : 0; }
 
 		/*----------------------------------------------------------------------
 		*  @brief : Resource is valid .

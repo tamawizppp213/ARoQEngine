@@ -614,9 +614,9 @@ void Camera::UpdateSceneConstants(const GameTimerPtr& gameTimer)
 	Matrix4f projection                = GetProjectionMatrix();
 	Matrix4f viewProjection            = view * projection; 
 
-	float viewDeterminant           = Determinant(view);
+	/*float viewDeterminant           = Determinant(view);
 	float projectionDeterminant     = Determinant(projection);
-	float viewProjectionDeterminant = Determinant(viewProjection);
+	float viewProjectionDeterminant = Determinant(viewProjection);*/
 
 	Matrix4f inverseView               = Inverse(view);
 	Matrix4f inverseProjection         = Inverse(projection);

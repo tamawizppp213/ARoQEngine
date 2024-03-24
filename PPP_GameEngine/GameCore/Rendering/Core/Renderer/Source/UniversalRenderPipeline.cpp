@@ -8,10 +8,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/UniversalRenderPipeline.hpp"
-#include "../../BasePass/Include/BasePassZPrepass.hpp"
-#include "../../BasePass/Include/BasePassGBuffer.hpp"
-#include "../../BasePass/Include/BasePassLightCulling.hpp"
+#include "GameCore/Rendering/Core/Renderer/Include/UniversalRenderPipeline.hpp"
+#include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
+#include "GameCore/Rendering/Core/BasePass/Include/BasePassGBuffer.hpp"
+#include "GameCore/Rendering/Core/BasePass/Include/BasePassLightCulling.hpp"
 #include "GameCore/Rendering/Effect/Include/SSAO.hpp"
 #include "GameCore/Rendering/Light/Include/CascadeShadow.hpp"
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"

@@ -29,7 +29,7 @@ namespace gm::simd
 	/*----------------------------------------------------------------------
 	*             複数の引数をまとめて直接値渡しにするVectorCallの使用を行うか
 	*----------------------------------------------------------------------*/
-	#if defined(_MSC_VER) && !defined(_M_ARM) && !defined(_M_ARM64) && !defined(_M_HYBRID_X86_ARM64) && !defined(_M_ARM64EC) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(PLATFORM_NOT_USE_SIMD_INSTRUCTION) && !defined(USE_VECTOR_CALL)
+	#if defined(_MSC_VER) && !defined(_M_ARM) && !defined(_M_ARM64) && !defined(_M_HYBRID_X86_ARM64) && !defined(_M_ARM64EC) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(PLATFORM_NOT_USE_SIMD_INSTRUCTION) && !defined(USE_VECTOR_CALL)
 		#define USE_VECTOR_CALL 1
 	#endif
 

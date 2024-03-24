@@ -136,13 +136,13 @@ namespace gu
 	}
 
 	template<class ElementType1, class Deleter1, class ElementType2, class Deleter2>
-	const bool operator == (const UniquePointer<ElementType1, Deleter1>& left, const UniquePointer<ElementType2, Deleter2>& right) noexcept
+	bool operator == (const UniquePointer<ElementType1, Deleter1>& left, const UniquePointer<ElementType2, Deleter2>& right) noexcept
 	{
 		return left.Get() == right.Get();
 	}
 
 	template<class ElementType1, class Deleter1, class ElementType2, class Deleter2>
-	const bool operator != (const UniquePointer<ElementType1, Deleter1>& left, const UniquePointer<ElementType2, Deleter2>& right) noexcept
+	bool operator != (const UniquePointer<ElementType1, Deleter1>& left, const UniquePointer<ElementType2, Deleter2>& right) noexcept
 	{
 		return left.Get() != right.Get();
 	}

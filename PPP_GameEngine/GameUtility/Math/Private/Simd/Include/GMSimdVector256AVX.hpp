@@ -34,7 +34,7 @@ namespace gm::simd::avx
 	/*----------------------------------------------------------------------
 	*        定数としての変換用, doubleポインタに変換したり, m256の各型に変換したり
 	*----------------------------------------------------------------------*/
-	ALIGNED_STRUCT(16) Vector256d
+	ALIGNED_STRUCT(32) Vector256d
 	{
 		union
 		{
@@ -746,7 +746,7 @@ namespace gm::simd::avx
 	*****************************************************************************/
 	inline Vector256 SIMD_CALL_CONVENTION Vector256Utility::SplatX(ConstVector256 vector) noexcept
 	{
-		return _mm256_shuffle_pd(vector, vector, _MM_SHUFFLE(0, 0, 0, 0));
+		return _mm256_permute4x64_pd(vector, _MM_SHUFFLE(0, 0, 0, 0));
 	}
 
 	/****************************************************************************
@@ -762,7 +762,7 @@ namespace gm::simd::avx
 	*****************************************************************************/
 	inline Vector256 SIMD_CALL_CONVENTION Vector256Utility::SplatY(ConstVector256 vector) noexcept
 	{
-		return _mm256_shuffle_pd(vector, vector, _MM_SHUFFLE(1, 1, 1, 1));
+		return _mm256_permute4x64_pd(vector, _MM_SHUFFLE(1, 1, 1, 1));
 	}
 
 	/****************************************************************************
@@ -778,7 +778,7 @@ namespace gm::simd::avx
 	*****************************************************************************/
 	inline Vector256 SIMD_CALL_CONVENTION Vector256Utility::SplatZ(ConstVector256 vector) noexcept
 	{
-		return _mm256_shuffle_pd(vector, vector, _MM_SHUFFLE(2, 2, 2, 2));
+		return _mm256_permute4x64_pd(vector, _MM_SHUFFLE(2, 2, 2, 2));
 	}
 
 	/****************************************************************************
@@ -794,7 +794,7 @@ namespace gm::simd::avx
 	*****************************************************************************/
 	inline Vector256 SIMD_CALL_CONVENTION Vector256Utility::SplatW(ConstVector256 vector) noexcept
 	{
-		return _mm256_shuffle_pd(vector, vector, _MM_SHUFFLE(3, 3, 3, 3));
+		return _mm256_permute4x64_pd(vector,_MM_SHUFFLE(3, 3, 3, 3));
 	}
 
 	/****************************************************************************
@@ -933,7 +933,7 @@ namespace gm::simd::avx
 	*****************************************************************************/
 	inline double SIMD_CALL_CONVENTION Vector256Utility::GetY(ConstVector256 vector) noexcept
 	{
-		return _mm256_cvtsd_f64(_mm256_shuffle_pd(vector, vector, _MM_SHUFFLE(1, 1, 1, 1)));
+		return _mm256_cvtsd_f64(_mm256_permute4x64_pd(vector,_MM_SHUFFLE(1, 1, 1, 1)));
 	}
 
 	/****************************************************************************
@@ -949,7 +949,7 @@ namespace gm::simd::avx
 	*****************************************************************************/
 	inline double SIMD_CALL_CONVENTION Vector256Utility::GetZ(ConstVector256 vector) noexcept
 	{
-		return _mm256_cvtsd_f64(_mm256_shuffle_pd(vector, vector, _MM_SHUFFLE(2, 2, 2, 2)));
+		return _mm256_cvtsd_f64(_mm256_permute4x64_pd(vector,_MM_SHUFFLE(2, 2, 2, 2)));
 	}
 
 	/****************************************************************************
@@ -965,7 +965,7 @@ namespace gm::simd::avx
 	*****************************************************************************/
 	inline double SIMD_CALL_CONVENTION Vector256Utility::GetW(ConstVector256 vector) noexcept
 	{
-		return _mm256_cvtsd_f64(_mm256_shuffle_pd(vector, vector, _MM_SHUFFLE(3, 3, 3, 3)));
+		return _mm256_cvtsd_f64(_mm256_permute4x64_pd(vector, _MM_SHUFFLE(3, 3, 3, 3)));
 	}
 
 	/****************************************************************************
@@ -2162,7 +2162,7 @@ namespace gm::simd::avx
 		Vector256 multiply = _mm256_mul_pd(left, right);
 
 		// z以降の計算は考慮しないため, yの結果を格納
-		Vector256 y = _mm256_permute_pd(multiply, _MM_SHUFFLE(1, 1, 1, 1));
+		Vector256 y = _mm256_permute4x64_pd(multiply, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// x成分のみの結果に着目する.  
 		y.m256d_f64[0] = multiply.m256d_f64[0] + y.m256d_f64[0];
@@ -2187,19 +2187,19 @@ namespace gm::simd::avx
 		Vector256 multiply = _mm256_mul_pd(left, right);
 
 		// x=Dot.F32[1], y=Dot.F32[2]
-		Vector256 temp = _mm256_permute_pd(multiply, _MM_SHUFFLE(2, 1, 2, 1));
+		Vector256 temp = _mm256_permute4x64_pd(multiply, _MM_SHUFFLE(2, 1, 2, 1));
 
 		// result.F32[0] = x + y 256 bitに対応する_mm_add_ssがないため
 		multiply.m256d_f64[0] = multiply.m256d_f64[0] + temp.m256d_f64[0];
 
 		// x=multiply.F32[2]
-		temp = _mm256_permute_pd(multiply, _MM_SHUFFLE(1, 1, 1, 1));
+		temp = _mm256_permute4x64_pd(multiply, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// Result.F32[0] = (x+y)+z
 		temp.m256d_f64[0] = multiply.m256d_f64[0] + temp.m256d_f64[0];
 
 		// x成分のみの結果に着目する.  
-		return _mm256_cvtsd_f64(_mm256_permute_pd(multiply, _MM_SHUFFLE(0, 0, 0, 0)));
+		return _mm256_cvtsd_f64(_mm256_permute4x64_pd(multiply, _MM_SHUFFLE(0, 0, 0, 0)));
 	}
 
 	/****************************************************************************
@@ -2233,7 +2233,7 @@ namespace gm::simd::avx
 		temp = _mm256_add_pd(temp, temp2);
 
 		// x成分のみの結果に着目する.  
-		return _mm256_cvtsd_f64(_mm256_permute_pd(temp, _MM_SHUFFLE(2, 2, 2, 2)));
+		return _mm256_cvtsd_f64(_mm256_permute4x64_pd(temp, _MM_SHUFFLE(2, 2, 2, 2)));
 	}
 
 	/****************************************************************************
@@ -2252,19 +2252,19 @@ namespace gm::simd::avx
 	{
 		// [ left.x*right.y - left.y*right.x, left.x*right.y - left.y*right.x ]
 		// rightのx, yを入れ替える (w,zは計算上使用しない)
-		Vector256 result = _mm256_permute_pd(right, _MM_SHUFFLE(0, 1, 0, 1));
+		Vector256 result = _mm256_permute4x64_pd(right, _MM_SHUFFLE(0, 1, 0, 1));
 
 		// leftと入れ替え後のrightの各要素を乗算する
 		result = _mm256_mul_pd(result, left);
 
 		// yを抽出する
-		Vector256 y = _mm256_permute_pd(result, _MM_SHUFFLE(1, 1, 1, 1));
+		Vector256 y = _mm256_permute4x64_pd(result, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// 値を減算する (ssに対応する関数がない)
 		result.m256d_f64[0] = result.m256d_f64[0] - y.m256d_f64[0];
 
 		// x成分のみを取り出して結果とする
-		return _mm256_permute_pd(result, _MM_SHUFFLE(0, 0, 0, 0));
+		return _mm256_permute4x64_pd(result, _MM_SHUFFLE(0, 0, 0, 0));
 	}
 
 	/****************************************************************************
@@ -2284,19 +2284,19 @@ namespace gm::simd::avx
 		// [ V1.y*V2.z - V1.z*V2.y, V1.z*V2.x - V1.x*V2.z, V1.x*V2.y - V1.y*V2.x ]
 		
 		// leftの要素を(y1, z1, x1, w1)に順に並べ替える
-		Vector256 temp1 = _mm256_permute_pd(left, _MM_SHUFFLE(3, 0, 2, 1)); 
+		Vector256 temp1 = _mm256_permute4x64_pd(left, _MM_SHUFFLE(3, 0, 2, 1)); 
 
 		// rightの要素を(z2, x2. y2, w2)の順に並べ替える
-		Vector256 temp2 = _mm256_permute_pd(right, _MM_SHUFFLE(3, 1, 0, 2));
+		Vector256 temp2 = _mm256_permute4x64_pd(right, _MM_SHUFFLE(3, 1, 0, 2));
 
 		// 一時ベクトルの要素ごとの乗算
 		Vector256 result = _mm256_mul_pd(temp1, temp2);
 
 		// z1, x1, y1, w1の順にtemp1を並べ替える
-		temp1 = _mm256_permute_pd(temp1, _MM_SHUFFLE(3, 0, 2, 1));
+		temp1 = _mm256_permute4x64_pd(temp1, _MM_SHUFFLE(3, 0, 2, 1));
 		
 		// y2, z2, x2, w2の順にtemp2を並べ替える
-		temp2 = _mm256_permute_pd(temp2, _MM_SHUFFLE(3, 1, 0, 2));
+		temp2 = _mm256_permute4x64_pd(temp2, _MM_SHUFFLE(3, 1, 0, 2));
 
 		result = NegativeMultiplySubtract(temp1, temp2, result);
 
@@ -2325,45 +2325,45 @@ namespace gm::simd::avx
 		//   ((v2.z*v3.y-v2.y*v3.z)*v1.x)-((v2.z*v3.x-v2.x*v3.z)*v1.y)+((v2.y*v3.x-v2.x*v3.y)*v1.z) ]
 
 		// second.zwyz * third.wzxy
-		Vector256 result = _mm256_permute_pd(second, _MM_SHUFFLE(2, 1, 3, 2));
-		Vector256 temp3  = _mm256_permute_pd(third, _MM_SHUFFLE(1, 3, 2, 3));
+		Vector256 result = _mm256_permute4x64_pd(second, _MM_SHUFFLE(2, 1, 3, 2));
+		Vector256 temp3  = _mm256_permute4x64_pd(third, _MM_SHUFFLE(1, 3, 2, 3));
 		result = _mm256_mul_pd(result, temp3);
 
 		// - second.wzwy * third.zwyz
-		Vector256 temp2 = _mm256_permute_pd(second, _MM_SHUFFLE(1, 3, 2, 3));
-		temp3  = _mm256_permute_pd(temp3, _MM_SHUFFLE(1, 3, 0, 1));
+		Vector256 temp2 = _mm256_permute4x64_pd(second, _MM_SHUFFLE(1, 3, 2, 3));
+		temp3  = _mm256_permute4x64_pd(temp3, _MM_SHUFFLE(1, 3, 0, 1));
 		result = NegativeMultiplySubtract(temp2, temp3, result);
 
 		// term1 * first.yxxx
-		Vector256 temp1 = _mm256_permute_pd(first, _MM_SHUFFLE(0, 0, 0, 1));
+		Vector256 temp1 = _mm256_permute4x64_pd(first, _MM_SHUFFLE(0, 0, 0, 1));
 		result = _mm256_mul_pd(result, temp1);
 
 		// second.ywxz * third.wxwx
-		temp2 = _mm256_permute_pd(second, _MM_SHUFFLE(2, 0, 3, 1));
-		temp3 = _mm256_permute_pd(third, _MM_SHUFFLE(0, 3, 0, 3));
+		temp2 = _mm256_permute4x64_pd(second, _MM_SHUFFLE(2, 0, 3, 1));
+		temp3 = _mm256_permute4x64_pd(third, _MM_SHUFFLE(0, 3, 0, 3));
 		temp3 = _mm256_mul_pd(temp3, temp2);
 
 		// - second.wxwx * third.ywxz
-		temp2 = _mm256_permute_pd(temp2, _MM_SHUFFLE(2, 1, 2, 1));
-		temp1 = _mm256_permute_pd(third, _MM_SHUFFLE(2, 0, 3, 1));
+		temp2 = _mm256_permute4x64_pd(temp2, _MM_SHUFFLE(2, 1, 2, 1));
+		temp1 = _mm256_permute4x64_pd(third, _MM_SHUFFLE(2, 0, 3, 1));
 		temp3 = NegativeMultiplySubtract(temp2, temp1, temp3);
 
 		// result - temp * first.zzyy
-		temp1 = _mm256_permute_pd(first, _MM_SHUFFLE(1, 1, 2, 2));
+		temp1 = _mm256_permute4x64_pd(first, _MM_SHUFFLE(1, 1, 2, 2));
 		result = NegativeMultiplySubtract(temp1, temp3, result);
 
 		// second.yzxy * third.zxyx
-		temp2 = _mm256_permute_pd(second, _MM_SHUFFLE(1, 0, 2, 1));
-		temp3 = _mm256_permute_pd(third, _MM_SHUFFLE(0, 1, 0, 2));
+		temp2 = _mm256_permute4x64_pd(second, _MM_SHUFFLE(1, 0, 2, 1));
+		temp3 = _mm256_permute4x64_pd(third, _MM_SHUFFLE(0, 1, 0, 2));
 		temp3 = _mm256_mul_pd(temp3, temp2);
 
 		// -second.zxyx * third.yzxy
-		temp2 = _mm256_permute_pd(temp2, _MM_SHUFFLE(2, 0, 2, 1));
-		temp1 = _mm256_permute_pd(third, _MM_SHUFFLE(1, 0, 2, 1));
+		temp2 = _mm256_permute4x64_pd(temp2, _MM_SHUFFLE(2, 0, 2, 1));
+		temp1 = _mm256_permute4x64_pd(third, _MM_SHUFFLE(1, 0, 2, 1));
 		temp3 = NegativeMultiplySubtract(temp1, temp2, temp3);
 
 		// result + term + first.wwwz
-		temp1 = _mm256_permute_pd(first, _MM_SHUFFLE(2, 3, 3, 3));
+		temp1 = _mm256_permute4x64_pd(first, _MM_SHUFFLE(2, 3, 3, 3));
 		result = MultiplyAdd(temp3, temp1, result);
 	}
 
@@ -2382,9 +2382,9 @@ namespace gm::simd::avx
 	{
 		// 1次norm計算
 		Vector256 squareLength = _mm256_mul_pd(vector, vector);
-		Vector256 temp = _mm256_permute_pd(squareLength, _MM_SHUFFLE(1, 1, 1, 1));
+		Vector256 temp = _mm256_permute4x64_pd(squareLength, _MM_SHUFFLE(1, 1, 1, 1));
 		squareLength   = _mm256_add_pd(squareLength, temp);
-		squareLength   = _mm256_permute_pd(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
+		squareLength   = _mm256_permute4x64_pd(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
 		Vector256 norm = _mm256_sqrt_pd(squareLength);
 
 		// 0で割られる可能性があるかどうかを調べる. 値を持っていたら1
@@ -2425,18 +2425,18 @@ namespace gm::simd::avx
 		Vector256 squareLength = _mm256_mul_pd(vector, vector);
 
 		// z*z, y*y, z*z, y*y
-		Vector256 temp         = _mm256_permute_pd(squareLength, _MM_SHUFFLE(2, 1, 2, 1)); 
+		Vector256 temp         = _mm256_permute4x64_pd(squareLength, _MM_SHUFFLE(2, 1, 2, 1)); 
 
 		// x*x + z*z, y*y, z*z, w*w
 		squareLength .m256d_f64[0] = squareLength.m256d_f64[0] + temp.m256d_f64[0];
 
 		// 全てy*y
-		temp = _mm256_permute_pd(temp, _MM_SHUFFLE(1, 1, 1, 1));
+		temp = _mm256_permute4x64_pd(temp, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// 1要素目がx*x + y*y + z*z
 		squareLength.m256d_f64[0] = squareLength.m256d_f64[0] +  temp.m256d_f64[0];
 		// 全ての要素がドット積
-		squareLength = _mm256_permute_pd(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
+		squareLength = _mm256_permute4x64_pd(squareLength, _MM_SHUFFLE(0, 0, 0, 0));
 
 		// 1次ノルムの計算
 		Vector256 norm = _mm256_sqrt_pd(squareLength);
@@ -2479,13 +2479,13 @@ namespace gm::simd::avx
 		Vector256 squareLength = _mm256_mul_pd(vector, vector);
 
 		// w*w, z*z, w*w, z*z
-		Vector256 temp = _mm256_permute_pd(squareLength, _MM_SHUFFLE(3, 2, 3, 2));
+		Vector256 temp = _mm256_permute4x64_pd(squareLength, _MM_SHUFFLE(3, 2, 3, 2));
 
 		// squareLength(x*x + w*w, y*y + z*z, z*z + w*w, w*w +z*z)
 		squareLength = _mm256_add_pd(squareLength, temp);
 
 		// squareLength(y*y + z*z. x*x+w*w, x*x+w*w, x*x+w*w)
-		squareLength = _mm256_permute_pd(squareLength, _MM_SHUFFLE(1, 0, 0, 0));
+		squareLength = _mm256_permute4x64_pd(squareLength, _MM_SHUFFLE(1, 0, 0, 0));
 
 		// temp(z*z, z*z, y*y + z*z, y*y + z*z 
 		temp = _mm256_shuffle_pd(temp, squareLength, _MM_SHUFFLE(3, 3, 0, 0));
@@ -2494,7 +2494,7 @@ namespace gm::simd::avx
 		squareLength.m256d_f64[0] = squareLength.m256d_f64[0] + temp.m256d_f64[0];
 
 		// 全ての要素が4要素の二乗和
-		squareLength = _mm256_permute_pd(squareLength, _MM_SHUFFLE(2, 2, 2, 2));
+		squareLength = _mm256_permute4x64_pd(squareLength, _MM_SHUFFLE(2, 2, 2, 2));
 
 		// 1次ノルムの計算
 		Vector256 norm = _mm256_sqrt_pd(squareLength);
@@ -3297,16 +3297,16 @@ namespace gm::simd::avx
 		t3 = _mm256_add_pd(t3, VECTOR_256D_IDENTITY_R0);
 		// Now, I have the constants created
 		// Mul the x constant to Position0
-		Vector256 result = _mm256_permute_pd(t3, _MM_SHUFFLE(0, 0, 0, 0));
+		Vector256 result = _mm256_permute4x64_pd(t3, _MM_SHUFFLE(0, 0, 0, 0));
 		result = _mm256_mul_pd(result, startPosition);
 		// Mul the y constant to Tangent0
-		t2 = _mm256_permute_pd(t3, _MM_SHUFFLE(1, 1, 1, 1));
+		t2 = _mm256_permute4x64_pd(t3, _MM_SHUFFLE(1, 1, 1, 1));
 		result = MultiplyAdd(t2, startTangent, result);
 		// Mul the z constant to Position1
-		t2 = _mm256_permute_pd(t3, _MM_SHUFFLE(2, 2, 2, 2));
+		t2 = _mm256_permute4x64_pd(t3, _MM_SHUFFLE(2, 2, 2, 2));
 		result = MultiplyAdd(t2, endPosition, result);
 		// Mul the w constant to Tangent1
-		t3 = _mm256_permute_pd(t3, _MM_SHUFFLE(3, 3, 3, 3));
+		t3 = _mm256_permute4x64_pd(t3, _MM_SHUFFLE(3, 3, 3, 3));
 		result = MultiplyAdd(t3, endTangent, result);
 		return result;
 	}
