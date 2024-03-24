@@ -29,6 +29,7 @@
 #include "GameUtility/Math/Private/Vector/Include/GMVector3f.hpp"
 #include "GameUtility/Math/Private/Vector/Include/GMVector3d.hpp"
 #include "GameUtility/Math/Private/Vector/Include/GMVector4f.hpp"
+#include "GameUtility/Math/Private/Vector/Include/GMVector4d.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

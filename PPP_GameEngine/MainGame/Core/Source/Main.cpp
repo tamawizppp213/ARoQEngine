@@ -28,7 +28,6 @@
 #include "MainGame/Core/Include/Application.hpp"
 #include "GameUtility/Base/Include/GUCommandLine.hpp"
 #include "GameUtility/Base/Include/GUParse.hpp"
-#include "GameUtility/Math/Include/GMVector.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -64,26 +63,6 @@
 #endif
 
     gu::CommandLine::SetUp(argument.CString());
-
-    gm::Vector3d a(1,2,3);
-    gm::Vector3d b(4, 5, 6);
-    const auto plus = a + b;
-    const auto minus = a - b;
-    const auto multiply = a * b;
-    const auto divide = a / b;
-    const auto dot = gm::Dot(a, b);
-    const auto cross = gm::Cross(a, b);
-    const auto norm = a.Length();
-    const auto normalize = a.Normalize();
-
-    printf("plus: %f, %f, %f\n", plus.GetX(), plus.GetY(), plus.GetZ());
-    printf("minus: %f, %f, %f\n", minus.GetX(), minus.GetY(), minus.GetZ());
-    printf("multiply: %f, %f, %f\n", multiply.GetX(), multiply.GetY(), multiply.GetZ());
-    printf("divide: %f, %f, %f\n", divide.GetX(), divide.GetY(), divide.GetZ());
-    printf("dot: %f\n", dot);
-    printf("cross: %f, %f, %f\n", cross.GetX(), cross.GetY(), cross.GetZ());
-    printf("norm: %f\n", norm);
-    printf("normalize: %f, %f, %f\n", normalize.GetX(), normalize.GetY(), normalize.GetZ());
 
     /********************************************
     **         Initialize

@@ -2220,20 +2220,16 @@ namespace gm::simd::avx
 		Vector256 temp2 = right;
 		Vector256 temp = _mm256_mul_pd(left, temp2);
 
-		// 各要素の加算によって, XをZの位置に、YをWの位置にコピーする
-		temp2 = _mm256_shuffle_pd(temp2, temp, _MM_SHUFFLE(1, 0, 0, 0));
+		temp2 = _mm256_permute4x64_pd(temp, _MM_SHUFFLE(3, 2, 3, 2));
 
-		// Z = X+Z; W = Y+W;
 		temp2 = _mm256_add_pd(temp2, temp);
 
-		// W をZの位置にコピー
-		temp = _mm256_shuffle_pd(temp, temp2, _MM_SHUFFLE(0, 3, 0, 0));
+		temp = _mm256_permute4x64_pd(temp2, _MM_SHUFFLE(1, 1, 1, 1));
 
-		// ZとWを両方加算
 		temp = _mm256_add_pd(temp, temp2);
 
 		// x成分のみの結果に着目する.  
-		return _mm256_cvtsd_f64(_mm256_permute4x64_pd(temp, _MM_SHUFFLE(2, 2, 2, 2)));
+		return _mm256_cvtsd_f64(_mm256_permute4x64_pd(temp, _MM_SHUFFLE(0, 0, 0, 0)));
 	}
 
 	/****************************************************************************
@@ -2474,29 +2470,10 @@ namespace gm::simd::avx
 	*****************************************************************************/
 	inline Vector256 SIMD_CALL_CONVENTION Vector256Utility::NormalizeVector4(ConstVector256 vector) noexcept
 	{
-		// x, y, z, wに対するドット積の計算
-		// x*x, y*y, z*z, w*w
-		Vector256 squareLength = _mm256_mul_pd(vector, vector);
-
-		// w*w, z*z, w*w, z*z
-		Vector256 temp = _mm256_permute4x64_pd(squareLength, _MM_SHUFFLE(3, 2, 3, 2));
-
-		// squareLength(x*x + w*w, y*y + z*z, z*z + w*w, w*w +z*z)
-		squareLength = _mm256_add_pd(squareLength, temp);
-
-		// squareLength(y*y + z*z. x*x+w*w, x*x+w*w, x*x+w*w)
-		squareLength = _mm256_permute4x64_pd(squareLength, _MM_SHUFFLE(1, 0, 0, 0));
-
-		// temp(z*z, z*z, y*y + z*z, y*y + z*z 
-		temp = _mm256_shuffle_pd(temp, squareLength, _MM_SHUFFLE(3, 3, 0, 0));
-
-		// ??, ??, x*x+w*w + y*y + z*z, ?? 
-		squareLength.m256d_f64[0] = squareLength.m256d_f64[0] + temp.m256d_f64[0];
-
 		// 全ての要素が4要素の二乗和
-		squareLength = _mm256_permute4x64_pd(squareLength, _MM_SHUFFLE(2, 2, 2, 2));
+		Vector256 squareLength = _mm256_set1_pd(LengthSquaredVector4(vector));
 
-		// 1次ノルムの計算
+		// 2次ノルムの計算
 		Vector256 norm = _mm256_sqrt_pd(squareLength);
 
 		// 0で割られる可能性があるかどうかを調べる. 値を持っていたら1
