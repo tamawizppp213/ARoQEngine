@@ -160,6 +160,9 @@ namespace gm
 		// @brief : 余り
 		__forceinline Vector2f operator% (const Vector2f& right) const { return Vector2f(SIMD_NAME_SPACE::Vector128Utility::Vector128Utility::Mod(_vector, right._vector)); }
 
+		// @brief : 内積
+		__forceinline float operator| (const Vector2f& right) const { return SIMD_NAME_SPACE::Vector128Utility::DotVector2(_vector, right._vector); }
+
 		// @brief : スカラー倍
 		__forceinline        Vector2f operator* (const float right) const { return Vector2f(SIMD_NAME_SPACE::Vector128Utility::Scale(_vector, right)); }
 		__forceinline friend Vector2f operator* (const float left, const Vector2f right) { return Vector2f(SIMD_NAME_SPACE::Vector128Utility::Scale(right._vector, left)); }

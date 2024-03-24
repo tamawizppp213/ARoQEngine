@@ -165,6 +165,9 @@ namespace gm
 		// @brief : 余り
 		__forceinline Vector3d operator% (const Vector3d& right) const { return Vector3d(SIMD_NAME_SPACE::Vector256Utility::Vector256Utility::Mod(_vector, right._vector)); }
 
+		// @brief : 内積
+		__forceinline double operator| (const Vector3d& right) const { return SIMD_NAME_SPACE::Vector256Utility::DotVector3(_vector, right._vector); }
+
 		// @brief : スカラー倍
 		__forceinline        Vector3d operator* (const double right) const { return Vector3d(SIMD_NAME_SPACE::Vector256Utility::Scale(_vector, right)); }
 		__forceinline friend Vector3d operator* (const double left, const Vector3d right) { return Vector3d(SIMD_NAME_SPACE::Vector256Utility::Scale(right._vector, left)); }
