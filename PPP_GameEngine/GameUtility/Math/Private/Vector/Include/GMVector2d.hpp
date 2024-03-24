@@ -5,8 +5,8 @@
 ///             @date   2024/03/03 3:58:44
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GM_VECTOR4F_HPP
-#define GM_VECTOR4F_HPP
+#ifndef GM_VECTOR2D_HPP
+#define GM_VECTOR2D_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -103,10 +103,10 @@ namespace gm
 		static const Vector2d ONE;
 
 		// @brief : (1,0,0,0)
-		static const Vector2d XAXIS;
+		static const Vector2d X_AXIS;
 
 		// @brief : (0,1,0,0)
-		static const Vector2d YAXIS;
+		static const Vector2d Y_AXIS;
 
 #pragma endregion Default Vector
 
@@ -221,34 +221,34 @@ namespace gm
 		/*----------------------------------------------------------------------
 		*  @brief : 1次ノルム(各要素の絶対値の和におけるベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline double Norm() const { return SIMD_NAME_SPACE::Vector256Utility::NormVector4(_vector); }
+		__forceinline double Norm() const { return SIMD_NAME_SPACE::Vector256Utility::NormVector2(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline double NormSquared() const { return SIMD_NAME_SPACE::Vector256Utility::NormSquaredVector4(_vector); }
+		__forceinline double NormSquared() const { return SIMD_NAME_SPACE::Vector256Utility::NormSquaredVector2(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出
 		/*----------------------------------------------------------------------*/
-		__forceinline double Dot(const Vector2d& right) const { return SIMD_NAME_SPACE::Vector256Utility::DotVector4(_vector, right._vector); }
+		__forceinline double Dot(const Vector2d& right) const { return SIMD_NAME_SPACE::Vector256Utility::DotVector2(_vector, right._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 外積を算出 second, thirdに垂直なベクトルを返す
 		/*----------------------------------------------------------------------*/
-		__forceinline Vector2d Cross(const Vector2d& second, const Vector2d& third) const { return SIMD_NAME_SPACE::Vector256Utility::CrossVector4(_vector, second._vector, third._vector); }
+		__forceinline Vector2d Cross(const Vector2d& second) const { return SIMD_NAME_SPACE::Vector256Utility::CrossVector2(_vector, second._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 入力ベクトルの単位ベクトルを返します
 		/*----------------------------------------------------------------------*/
-		__forceinline Vector2d Normalize() const { return SIMD_NAME_SPACE::Vector256Utility::NormalizeVector4(_vector); }
+		__forceinline Vector2d Normalize() const { return SIMD_NAME_SPACE::Vector256Utility::NormalizeVector2(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief     反射ベクトルを算出
 		*  @param[in] const Vector256&f : input  (入射ベクトル)
 		*  @param[in] const Vector256&f : normal (反射を行う法線ベクトル)
 		/*----------------------------------------------------------------------*/
-		__forceinline Vector2d Reflect(const Vector2d& normal) const { return SIMD_NAME_SPACE::Vector256Utility::ReflectVector4(_vector, normal._vector); }
+		__forceinline Vector2d Reflect(const Vector2d& normal) const { return SIMD_NAME_SPACE::Vector256Utility::ReflectVector2(_vector, normal._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief     屈折ベクトルを算出
@@ -256,13 +256,13 @@ namespace gm
 		*  @param[in] const Vector2d& : normal (反射を行う法線ベクトル)
 		*  @param[in] const double    : refractionIndex (屈折率)
 		/*----------------------------------------------------------------------*/
-		__forceinline Vector2d Refract(const Vector2d& normal, const double     refractionIndex) noexcept { return SIMD_NAME_SPACE::Vector256Utility::RefractVector4(_vector, normal._vector, refractionIndex); }
-		__forceinline Vector2d Refract(const Vector2d& normal, const Vector2d& refractionIndex) noexcept { return SIMD_NAME_SPACE::Vector256Utility::RefractVector4V(_vector, normal._vector, refractionIndex._vector); }
+		__forceinline Vector2d Refract(const Vector2d& normal, const double     refractionIndex) noexcept { return SIMD_NAME_SPACE::Vector256Utility::RefractVector2(_vector, normal._vector, refractionIndex); }
+		__forceinline Vector2d Refract(const Vector2d& normal, const Vector2d& refractionIndex) noexcept { return SIMD_NAME_SPACE::Vector256Utility::RefractVector2V(_vector, normal._vector, refractionIndex._vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief : 非常に大きい値か
 		/*----------------------------------------------------------------------*/
-		__forceinline bool IsInfinite() const { return SIMD_NAME_SPACE::Vector256Utility::IsInfiniteVector4(_vector); }
+		__forceinline bool IsInfinite() const { return SIMD_NAME_SPACE::Vector256Utility::IsInfiniteVector2(_vector); }
 
 		/*----------------------------------------------------------------------
 		*  @brief :  ゼロかどうか
@@ -414,15 +414,15 @@ namespace gm
 	/*----------------------------------------------------------------------*/
 	__forceinline double Dot(const Vector2d& left, const Vector2d& right) noexcept
 	{
-		return SIMD_NAME_SPACE::Vector256Utility::DotVector4(left, right);
+		return SIMD_NAME_SPACE::Vector256Utility::DotVector2(left, right);
 	}
 
 	/*----------------------------------------------------------------------
 	*  @brief : 外積を算出 first, second, thirdに垂直なベクトルを返す
 	/*----------------------------------------------------------------------*/
-	__forceinline Vector2d Cross(const Vector2d& first, const Vector2d& second, const Vector2d& third) noexcept
+	__forceinline Vector2d Cross(const Vector2d& first, const Vector2d& second) noexcept
 	{
-		return SIMD_NAME_SPACE::Vector256Utility::CrossVector4(first, second, third);
+		return SIMD_NAME_SPACE::Vector256Utility::CrossVector2(first, second);
 	}
 
 	/*----------------------------------------------------------------------
@@ -430,7 +430,7 @@ namespace gm
 	/*----------------------------------------------------------------------*/
 	__forceinline Vector2d Normalize(const Vector2d& vector) noexcept
 	{
-		return SIMD_NAME_SPACE::Vector256Utility::NormalizeVector4(vector);
+		return SIMD_NAME_SPACE::Vector256Utility::NormalizeVector2(vector);
 	}
 
 	/*----------------------------------------------------------------------
@@ -440,7 +440,7 @@ namespace gm
 	/*----------------------------------------------------------------------*/
 	__forceinline Vector2d Reflect(const Vector2d& input, const Vector2d& normal) noexcept
 	{
-		return SIMD_NAME_SPACE::Vector256Utility::ReflectVector4(input, normal);
+		return SIMD_NAME_SPACE::Vector256Utility::ReflectVector2(input, normal);
 	}
 
 	/*----------------------------------------------------------------------
@@ -451,12 +451,12 @@ namespace gm
 	/*----------------------------------------------------------------------*/
 	__forceinline Vector2d Refract(const Vector2d& input, const Vector2d& normal, const double refractionIndex) noexcept
 	{
-		return SIMD_NAME_SPACE::Vector256Utility::RefractVector4(input, normal, refractionIndex);
+		return SIMD_NAME_SPACE::Vector256Utility::RefractVector2(input, normal, refractionIndex);
 	}
 
 	__forceinline Vector2d RefractV(const Vector2d& input, const Vector2d& normal, const Vector2d& refractionIndex) noexcept
 	{
-		return SIMD_NAME_SPACE::Vector256Utility::RefractVector4V(input, normal, refractionIndex);
+		return SIMD_NAME_SPACE::Vector256Utility::RefractVector2V(input, normal, refractionIndex);
 	}
 
 	/*----------------------------------------------------------------------

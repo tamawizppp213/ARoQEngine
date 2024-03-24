@@ -2787,7 +2787,7 @@ namespace gm::simd::sse
 		multiply = _mm_add_ss(multiply, temp);
 
 		// x=multiply.F32[2]
-		temp = PERMUTE_PS(multiply, _MM_SHUFFLE(1, 1, 1, 1));
+		temp = PERMUTE_PS(temp, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// Result.F32[0] = (x+y)+z
 		temp = _mm_add_ss(multiply, temp);

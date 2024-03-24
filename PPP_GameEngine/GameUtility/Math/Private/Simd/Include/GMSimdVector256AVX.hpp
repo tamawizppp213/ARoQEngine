@@ -2186,20 +2186,20 @@ namespace gm::simd::avx
 		// —v‘f‚²‚Æ‚ÌÏ‚ğŒvZ 
 		Vector256 multiply = _mm256_mul_pd(left, right);
 
-		// x=Dot.F32[1], y=Dot.F32[2]
+		// x=Dot.D64[1], y=Dot.D64[2]
 		Vector256 temp = _mm256_permute4x64_pd(multiply, _MM_SHUFFLE(2, 1, 2, 1));
 
-		// result.F32[0] = x + y 256 bit‚É‘Î‰‚·‚é_mm_add_ss‚ª‚È‚¢‚½‚ß
+		// result.D64[0] = x + y 256 bit‚É‘Î‰‚·‚é_mm_add_ss‚ª‚È‚¢‚½‚ß
 		multiply.m256d_f64[0] = multiply.m256d_f64[0] + temp.m256d_f64[0];
 
-		// x=multiply.F32[2]
-		temp = _mm256_permute4x64_pd(multiply, _MM_SHUFFLE(1, 1, 1, 1));
+		// x=multiply.D64[2]
+		temp = _mm256_permute4x64_pd(temp, _MM_SHUFFLE(1, 1, 1, 1));
 
 		// Result.F32[0] = (x+y)+z
 		temp.m256d_f64[0] = multiply.m256d_f64[0] + temp.m256d_f64[0];
 
 		// x¬•ª‚Ì‚İ‚ÌŒ‹‰Ê‚É’…–Ú‚·‚é.  
-		return _mm256_cvtsd_f64(_mm256_permute4x64_pd(multiply, _MM_SHUFFLE(0, 0, 0, 0)));
+		return _mm256_cvtsd_f64(_mm256_permute4x64_pd(temp, _MM_SHUFFLE(0, 0, 0, 0)));
 	}
 
 	/****************************************************************************
