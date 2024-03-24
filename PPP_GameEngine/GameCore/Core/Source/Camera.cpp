@@ -614,14 +614,13 @@ void Camera::UpdateSceneConstants(const GameTimerPtr& gameTimer)
 	Matrix4f projection                = GetProjectionMatrix();
 	Matrix4f viewProjection            = view * projection; 
 
-	/*Vector4f viewDeterminant           = Determinant(view);
-	Vector4f projectionDeterminant     = Determinant(projection);
-	Vector4f viewProjectionDeterminant = Determinant(viewProjection);*/
-	float viewDeterminant = 0.0f, projectionDeterminant = 0.0f, viewProjectionDeterminant = 0.0f;
+	float viewDeterminant           = Determinant(view);
+	float projectionDeterminant     = Determinant(projection);
+	float viewProjectionDeterminant = Determinant(viewProjection);
 
-	Matrix4f inverseView               = Inverse(view, &viewDeterminant);
-	Matrix4f inverseProjection         = Inverse(projection, &projectionDeterminant);
-	Matrix4f inverseViewProjection     = Inverse(viewProjection, &viewProjectionDeterminant);
+	Matrix4f inverseView               = Inverse(view);
+	Matrix4f inverseProjection         = Inverse(projection);
+	Matrix4f inverseViewProjection     = Inverse(viewProjection);
 	// note: Texture and shadow related features will be added later.
 
 	scene.View                  = view.ToFloat4x4();

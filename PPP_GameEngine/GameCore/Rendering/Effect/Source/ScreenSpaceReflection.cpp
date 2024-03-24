@@ -47,9 +47,9 @@ ScreenSpaceReflection::~ScreenSpaceReflection()
 ScreenSpaceReflection::ScreenSpaceReflection(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& normalMap, const ResourceViewPtr& depthMap, const SSRSettings& settings, const gu::tstring& addName)
 	: _engine(engine), _normalMap(normalMap), _depthMap(depthMap)
 {
-	Check(_engine   , "engine     is nullptr");
-	Check(_normalMap, "normal map is nullptr");
-	Check(_depthMap , "depth map is nullptr");
+	Checkf(_engine   , "engine     is nullptr");
+	Checkf(_normalMap, "normal map is nullptr");
+	Checkf(_depthMap , "depth map is nullptr");
 
 	/*-------------------------------------------------------------------
 	-            Set debug name

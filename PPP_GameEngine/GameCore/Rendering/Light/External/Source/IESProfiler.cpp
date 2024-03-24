@@ -10,7 +10,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/IESProfiler.hpp"
-#include "GameUtility/Math/Include/GMMath.hpp"
+#include "GameUtility/Math/Include/GMMathCOnstants.hpp"
 #include <iostream>
 #include <fstream>
 

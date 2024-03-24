@@ -1071,7 +1071,7 @@ namespace gm::simd::sse
 		sinVector = _mm_shuffle_ps(sinVector, cosVector, _MM_SHUFFLE(3, 0, 3, 0));
 
 		Matrix128 matrix = {};
-		matrix.Row[0] = sinVector;
+		matrix.Row[2] = sinVector;
 		matrix.Row[1] = VECTOR_128F_IDENTITY_R1.V;
 
 		// x = cos, y = 0, z = sin, w = 0
@@ -1079,7 +1079,7 @@ namespace gm::simd::sse
 
 		// x = cos, y = 0, z = -sin, w = 0
 		sinVector = _mm_mul_ps(sinVector, VECTOR_128F_NEGATE_Z);
-		matrix.Row[2] = sinVector;
+		matrix.Row[0] = sinVector;
 		matrix.Row[3] = VECTOR_128F_IDENTITY_R3.V;
 		return matrix;
 	}
