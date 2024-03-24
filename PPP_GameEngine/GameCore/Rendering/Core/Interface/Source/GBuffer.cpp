@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/GBuffer.hpp"
+#include "GameCore/Rendering/Core/Interface/Include/GBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIRenderPass.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayout.hpp"

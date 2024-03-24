@@ -7,9 +7,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/AudioSubmix.hpp"
-#include "../Include/AudioMaster.hpp"
-#include "../Include/AudioSource3D.hpp"
+#include "GameCore/Audio/Core/Include/AudioSubmix.hpp"
+#include "GameCore/Audio/Core/Include/AudioMaster.hpp"
+#include "GameCore/Audio/Core/Include/AudioSource3D.hpp"
 #include <stdexcept>
 #include <xaudio2.h>
 #include <xaudio2fx.h>
