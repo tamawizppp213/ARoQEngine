@@ -1,4 +1,0 @@
-[源ノ角ゴシック (Source Han Sans)]
-Licensed under SIL Open Font License 1.1 (http://scripts.sil.org/OFL)
-
-Author: Adobe: http://store1.adobe.com/cfusion/store/html/index.cfm?store=OLS-JP&event=displayFontPackage&code=1967

@@ -1,0 +1,43 @@
+//////////////////////////////////////////////////////////////////////////////////
+///             @file   GLTFExtension.hpp
+///             @brief  Extension virtual class:
+///             @author // Copyright (c) Microsoft Corporation. All rights reserved.
+///                        Licensed under the MIT License.
+///                     Partially edit by Toide
+///             @date   2022_05_14 
+//////////////////////////////////////////////////////////////////////////////////
+#pragma once
+#ifndef GLTF_EXTENSION_HPP
+#define GLTF_EXTENSION_HPP
+
+//////////////////////////////////////////////////////////////////////////////////
+//                             Include
+//////////////////////////////////////////////////////////////////////////////////
+#include <memory>
+//////////////////////////////////////////////////////////////////////////////////
+//                              Define
+//////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////
+//                         Template Class
+//////////////////////////////////////////////////////////////////////////////////
+namespace gltf
+{
+	namespace detail
+	{
+		class GLTFExtension
+		{
+		public:
+			virtual ~GLTFExtension() = default;
+			virtual std::unique_ptr<GLTFExtension>   Clone() const = 0;
+			virtual bool IsEqual(const GLTFExtension& other) const = 0;
+
+			bool operator==(const GLTFExtension&& rhs) const { return IsEqual(rhs); };
+			bool operator!=(const GLTFExtension&& rhs) const { return !IsEqual(rhs); };
+		
+		protected:
+			GLTFExtension() = default;
+		};
+	}
+}
+#endif
