@@ -1,17 +1,20 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUClassUtility.hpp
-///             @brief  クラスのコピー可能, 不可能を決定するクラスです. 
-///                     使い方としては, コピーの可否などを決定したい基底クラスに継承する形で使用をお願いします. 
-///                     
-///                     NonCopyable    : コピー不可でムーブ可能
-///                     Copyable       : コピーもムーブも可能
-///                     NonCopyAndMove : コピーもムーブも不可能
-///                      
-///                     注意点として, shared_from_thisを使用する場合は特別にshared_from_thisを直接
-///                     呼び出したい派生クラスに継承する形で実装してください. 
+/// @file   GUClassUtility.hpp
+/// @brief  クラスのコピー可能, 不可能を決定するクラスです. @n
+///         使い方としては, コピーの可否などを決定したい基底クラスに継承する形で使用をお願いします. @n                    
+///         @b NonCopyable    : コピー不可でムーブ可能 @n
+///         @b Copyable       : コピーもムーブも可能 @n
+///         @b NonCopyAndMove : コピーもムーブも不可能 @n
+///  
+/// @note  @b NonCopyable    : コピー不可でムーブ可能 @n
+///        @b Copyable       : コピーもムーブも可能 @n
+///        @b NonCopyAndMove : コピーもムーブも不可能 @n
 /// 
-///             @author Toide Yutaro
-///             @date   2022_06_21
+/// @attention 注意点として, shared_from_thisを使用する場合は特別にshared_from_thisを直接
+///            呼び出したい派生クラスに継承する形で実装してください. 
+/// 
+/// @author Toide Yutaro
+/// @date   2022_06_21
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GU_CLASS_UTILITY_HPP
