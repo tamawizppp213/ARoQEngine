@@ -24,17 +24,38 @@ namespace rhi::core
 {
 #pragma region API
 	/****************************************************************************
-	*				  			APIVersion
+	*				  			GraphicsAPI
 	*************************************************************************//**
-	*  @enum      APIVersion
-	* 
-	*  @brief     Graphics api version (Add as needed.)
+	/*  @brief Graphics APIの種類を指定します. 増やす場合はこちらに追加してください
 	*****************************************************************************/
-	enum class APIVersion : gu::uint8
+	enum class GraphicsAPI : gu::uint8
 	{
 		Unknown    = 0,
 		DirectX12  = 1,
 		Vulkan     = 2
+	};
+
+	/****************************************************************************
+	*				     RHIInstanceCreateInfo
+	*************************************************************************//**
+	/*  @brief Graphics APIの選択, CPU, GPUデバッガの有無を指定します
+	*****************************************************************************/
+	struct RHIDebugCreateInfo
+	{
+		/*! @brief CPUのデバッガ (Releaseモード以外で使用可能)*/
+		bool EnableCPUDebugger   = true;
+
+		/*! @brief GPUのデバッガ (Releaseモード以外で使用可能)*/
+		bool EnableGPUDebugger   = false;
+
+		/*! @brief GPU用のブレークポイントを設定できるようにするか*/
+		bool EnableGPUDebugBreak = false;
+
+		RHIDebugCreateInfo() = default;
+
+		RHIDebugCreateInfo(const bool enableCPUDebugger, const bool enableGPUDebugger, const bool enableGPUDebugBreak)
+			: EnableCPUDebugger(enableCPUDebugger), EnableGPUDebugBreak(enableGPUDebugBreak)
+		{};
 	};
 #pragma endregion           API
 #pragma region CommandList
