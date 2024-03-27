@@ -37,10 +37,7 @@ namespace gu
 	struct CommandLine final
 	{
 	public:
-		////////////////////////////////////////////////////////////////////////////
-		///                Public Function
-		////////////////////////////////////////////////////////////////////////////
-		
+		#pragma region Public Function
 		/*!***********************************************************************
 		*  @brief      main関数で使われるargv, argcを使ってコマンドラインを構築します.
 		*  @param[in]  const int32   : コマンドライン引数の数 (一般的にargcと定義されるもの)
@@ -82,9 +79,9 @@ namespace gu
 		**************************************************************************/
 		static void Reset() { _commandLine.ClearAll(); _hasInitialized = false; }
 
-		////////////////////////////////////////////////////////////////////////////
-		///                Public Member Variables
-		////////////////////////////////////////////////////////////////////////////
+		#pragma endregion Public Function
+
+		#pragma region Public Member Variables
 		// @brief : 最大文字長
 		static constexpr uint32 MAX_COMMAND_LINE_LENGTH = 16384;
 
@@ -109,24 +106,24 @@ namespace gu
 		**************************************************************************/
 		static bool HasInitialized() { return _hasInitialized; }
 
-		////////////////////////////////////////////////////////////////////////////
-		///                Constructor and Destructor
-		////////////////////////////////////////////////////////////////////////////
+		#pragma endregion Public Member Variables
+
+		#pragma region Public Constructor and Destructor
+
+		#pragma endregion Public Constructor and Destructor
 
 	private:
-		////////////////////////////////////////////////////////////////////////////
-		///                Private Function
-		////////////////////////////////////////////////////////////////////////////
+		#pragma region Private Function
+	
+		#pragma endregion Private Function
 
-		////////////////////////////////////////////////////////////////////////////
-		///                Private Member Variables
-		////////////////////////////////////////////////////////////////////////////
-		
+		#pragma region Private Member Variables
 		/*! @brief 初期化済みか*/
 		static bool _hasInitialized;
 
 		/*! @brief 一行のコマンドラインを保存しておく文字列*/
 		static tstring _commandLine;
+		#pragma endregion Private Member Variables
 	};
 }
 

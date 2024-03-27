@@ -68,9 +68,7 @@ namespace gu
 	struct DateTime
 	{
 	public:
-		////////////////////////////////////////////////////////////////////////////
-		///                Public Function
-		////////////////////////////////////////////////////////////////////////////
+		#pragma region Public Function
 		/*!***********************************************************************
 		*  @brief      ローカルPCに対する現在のタイムゾーン(指定地域が示す時刻)を考慮して現在時刻を返します.
 		*  @param[in]  void
@@ -128,10 +126,9 @@ namespace gu
 		static bool Validate(const int32 year, const int32 month, const int32 day,
 			const int32 hour, const int32 minute, const int32 second, const int32 millisecond);
 		
-		////////////////////////////////////////////////////////////////////////////
-		///                Public Member Variables
-		////////////////////////////////////////////////////////////////////////////
+		#pragma endregion Public Function
 
+		#pragma region Public Member Variables
 		/*!***********************************************************************
 		*  @brief      日にちのみを取得する. 時刻の部分は00:00:00.000に切り捨てられる
 		*  @return     DateTime : 現在時刻を示す_ticksを持った構造体
@@ -171,9 +168,6 @@ namespace gu
 		**************************************************************************/
 		int32 GetDay() const;
 
-		/*----------------------------------------------------------------------
-		*  @brief : 現在の月を取得する
-		/*----------------------------------------------------------------------*/
 		/*!***********************************************************************
 		*  @brief      日にちを1～31までの範囲で取得する
 		*  @return     int32 : 日
@@ -296,19 +290,21 @@ namespace gu
 
 		__forceinline DateTime& operator -=(const TimeSpan& right) { _ticks -= right.GetTicks(); return *this; }
 
+		#pragma endregion Public Member Variables
+
+		#pragma region Public Operator 
 		/*----------------------------------------------------------------------
 		*  @brief : 指定した日付と同じかどうか, 違うかどうか
 		/*----------------------------------------------------------------------*/
 		__forceinline bool operator==(const DateTime& right) const { return (_ticks == right._ticks); }
 		__forceinline bool operator!=(const DateTime& right) const { return (_ticks != right._ticks); }
-		__forceinline bool operator> (const DateTime& right) const { return (_ticks >  right._ticks); }
+		__forceinline bool operator> (const DateTime& right) const { return (_ticks > right._ticks); }
 		__forceinline bool operator>=(const DateTime& right) const { return (_ticks >= right._ticks); }
-		__forceinline bool operator< (const DateTime& right) const { return (_ticks <  right._ticks); }
+		__forceinline bool operator< (const DateTime& right) const { return (_ticks < right._ticks); }
 		__forceinline bool operator<=(const DateTime& right) const { return (_ticks <= right._ticks); }
+		#pragma endregion Public Operator
 
-		////////////////////////////////////////////////////////////////////////////
-		///                Constructor and Destructor
-		////////////////////////////////////////////////////////////////////////////
+		#pragma region Public Constructor and Destructor
 		/*!***********************************************************************
 		*  @brief   Zero initialize constructor
 		**************************************************************************/
@@ -324,32 +320,32 @@ namespace gu
 		**************************************************************************/
 		DateTime(const int32 year, const int32 month, const int32 day,
 			const int32 hour = 0, const int32 minute = 0, const int32 second = 0, const int32 millisecond = 0);
-
+		#pragma endregion Public Constructor and Destructor
 
 	protected:
-		////////////////////////////////////////////////////////////////////////////
-		///                Protected Function
-		////////////////////////////////////////////////////////////////////////////
+		#pragma region Protected Function
 
-		////////////////////////////////////////////////////////////////////////////
-		///                Protected Member Variables
-		////////////////////////////////////////////////////////////////////////////
+		#pragma endregion Protected Function
+
+		#pragma region Protected Member Variables
 		static constexpr int32  DAY_COUNT_PER_MONTH[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 		static constexpr int32  DAY_COUNT_TO_MONTH [] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
 		static constexpr char8* SHORT_DAY_NAMES[]     = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 		static constexpr char8* LONG_DAY_NAMES[]      = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 		static constexpr char8* SHORT_MONTH_NAMES[]   = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 		static constexpr char8* LONG_MONTH_NAMES[]    = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+		#pragma endregion Protected Member Variables
 
 	private:
-		////////////////////////////////////////////////////////////////////////////
-		///                Private Function
-		////////////////////////////////////////////////////////////////////////////
+		#pragma region Private Function
 
-		////////////////////////////////////////////////////////////////////////////
-		///                Private Member Variables
-		////////////////////////////////////////////////////////////////////////////
+		#pragma endregion Private Function
+
+		#pragma region Private Member Variables
+
 		int64 _ticks = 0;
+
+		#pragma endregion Private Member Variables
 	};
 
 }
