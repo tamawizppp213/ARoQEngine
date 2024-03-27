@@ -30,8 +30,6 @@ tstring CommandLine::_commandLine    = SP("");
 /****************************************************************************
 *                       BuildFromArgumentVector
 *************************************************************************//**
-*  @fn        tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const wchar** argumentVector)
-*
 *  @brief     main関数で使われるargv, argcを使ってコマンドラインを構築します.
 
 *  @param[in] const int32   argumentCount  : コマンドライン引数の数
@@ -85,8 +83,6 @@ tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const wc
 /****************************************************************************
 *                       BuildFromArgumentVector
 *************************************************************************//**
-*  @fn        tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const wchar** argumentVector)
-*
 *  @brief     main関数で使われるargv, argcを使ってコマンドラインを構築します.
 
 *  @param[in] const int32   argumentCount  : コマンドライン引数の数
