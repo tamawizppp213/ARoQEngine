@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::directX12;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement
@@ -76,7 +77,7 @@ gu::SharedPointer<core::RHIDevice> RHIDisplayAdapter::CreateDevice()
 * 
 *  @return    void
 *****************************************************************************/
-void RHIDisplayAdapter::PrintInfo()
+void RHIDisplayAdapter::PrintInfo() const
 {
 	DXGI_ADAPTER_DESC desc = {}; 
 	_adapter->GetDesc(&desc);
@@ -84,33 +85,23 @@ void RHIDisplayAdapter::PrintInfo()
 	/*-------------------------------------------------------------------
 	-                  Print Adapter Name
 	---------------------------------------------------------------------*/
-	std::wstring adapterName  
+	gu::wstring adapterName  
 		         = L"\n//////////////////////////\n Adapter : ";
 	adapterName += desc.Description;
 	adapterName += L"\n//////////////////////////\n";
 
-#if PLATFORM_OS_WINDOWS
-	OutputDebugString(adapterName.c_str());
-#else
-	_RPTWN(_CRT_WARN, L"%s", adapterName.c_str());
-#endif
+	_RPTWN(_CRT_WARN, L"%s", adapterName.CString());
 
 	/*-------------------------------------------------------------------
 	-                  memory description
 	---------------------------------------------------------------------*/
-	const auto systemMemoryStr       = L"System memory: "         + std::to_wstring(desc.DedicatedSystemMemory) + L"\n";
-	const auto videoMemoryStr        = L"Video memory : "         + std::to_wstring(desc.DedicatedVideoMemory) + L"\n";
-	const auto sharedSystemMemoryStr = L"Shared system memory : " + std::to_wstring(desc.SharedSystemMemory) + L"\n";
+	const auto systemMemoryStr       = gu::wstring(L"System memory: ") + gu::wstring::FromNumber(desc.DedicatedSystemMemory);
+	const auto videoMemoryStr        = gu::wstring(L"Video memory : ") + gu::wstring::FromNumber(desc.DedicatedVideoMemory);
+	const auto sharedSystemMemoryStr = gu::wstring(L"Shared system memory :") + gu::wstring::FromNumber(desc.SharedSystemMemory);
 	
-#if PLATFORM_OS_WINDOWS
-	OutputDebugString(systemMemoryStr.c_str());
-	OutputDebugString(videoMemoryStr.c_str());
-	OutputDebugString(sharedSystemMemoryStr.c_str());
-#else
-	_RPTWN(_CRT_WARN, L"%s", systemMemoryStr.c_str());
-	_RPTWN(_CRT_WARN, L"%s", videoMemoryStr.c_str());
-	_RPTWN(_CRT_WARN, L"%s", sharedSystemMemoryStr.c_str());
-#endif
+	_RPTWN(_CRT_WARN, L"%s\n", systemMemoryStr.CString());
+	_RPTWN(_CRT_WARN, L"%s\n", videoMemoryStr.CString());
+	_RPTWN(_CRT_WARN, L"%s\n", sharedSystemMemoryStr.CString());
 
 	/*-------------------------------------------------------------------
 	-                  Print Display Name
@@ -124,18 +115,35 @@ void RHIDisplayAdapter::PrintInfo()
 		output->GetDesc(&outputDesc);
 
 		// Show Device Name to Output Debugger
-		std::wstring text = L"\n***Output: ";
-		text += outputDesc.DeviceName;
-		text += L"n";
+		gu::wstring text(outputDesc.DeviceName);
 
-#if PLATFORM_OS_WINDOWS
-		OutputDebugString(text.c_str());
-#else
-		_RPTWN(_CRT_WARN, L"%s", text.c_str());
-#endif
+		_RPTWN(_CRT_WARN, L"%s\n", text.CString());
 
 		// Release IOutput Pointer
 		SAFE_RELEASE(output);
 	}
 }
+
+/****************************************************************************
+*                     GetOutputCount
+*************************************************************************//**
+/* @brief     アダプタに接続されている出力の数 (モニターなど)を返します.
+*
+*  @param[in] void
+*
+*  @return    gu::uint64 出力の数
+*****************************************************************************/
+uint64 RHIDisplayAdapter::GetOutputCount() const 
+{
+	uint64   result = 0;
+	IOutput* output = nullptr;
+
+	for (uint32 i = 0; _adapter->EnumOutputs(i, (IDXGIOutput**)&output) != DXGI_ERROR_NOT_FOUND; ++i)
+	{
+		result++;
+	}
+
+	return result;
+}
+
 #pragma endregion Debug Function

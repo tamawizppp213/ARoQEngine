@@ -33,9 +33,7 @@ namespace gu::details::string
 	class StringBase : public Copyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
 		/*----------------------------------------------------------------------
 		*  @brief :  •¶Žš—ñ‚ð˜AŒ‹‚µ‚Ü‚·
 		/*----------------------------------------------------------------------*/
@@ -192,7 +190,7 @@ namespace gu::details::string
 			return StringBase<Char, CharByte>(begin, length);
 		}
 
-#pragma region Convert number
+		#pragma region Convert number
 		int8   ToInt8(const uint64 radix = 0) const;
 		int16  ToInt16(const uint64 radix = 0) const;
 		int32  ToInt32(const uint64 radix = 0) const;
@@ -210,7 +208,18 @@ namespace gu::details::string
 		bool TryToUInt16(uint16* outValue, const uint64 radix = 0) const;
 		bool TryToUInt32(uint32* outValue, const uint64 radix = 0) const;
 		bool TryToUInt64(uint64* outValue, const uint64 radix = 0) const;
-#pragma endregion Convert number
+		#pragma endregion Convert number
+
+		#pragma region From number
+		static StringBase<Char, CharByte> FromNumber(const int32  value);
+		static StringBase<Char, CharByte> FromNumber(const int64  value);
+		static StringBase<Char, CharByte> FromNumber(const uint32 value);
+		static StringBase<Char, CharByte> FromNumber(const uint64 value);
+		static StringBase<Char, CharByte> FromNumber(const float  value);
+		static StringBase<Char, CharByte> FromNumber(const double value);
+		#pragma endregion From number
+
+		#pragma endregion 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -929,6 +938,76 @@ namespace gu::details::string
 		TRY_TO_INT_DEF(uint64, ToUInt64);
 	}
 #pragma endregion Convert Number
+#pragma region From Number
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const int32 value)
+	{
+		return FromNumber(static_cast<int64>(value), format);
+	}
+
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const int64  value)
+	{
+		char source[64] = {};
+		const auto length = sprintf(source, "%lld", format);
+
+		Char destination[64] = {};
+		for (uint32 i = 0; i < length; ++i)
+		{
+			destination[i] = (Char)source[i];
+		}
+		return StringBase<Char, CharByte>(destination, length);
+	}
+
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const uint32 value)
+	{
+		return FromNumber(static_cast<uint64>(value), format);
+	}
+
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const uint64 value)
+	{
+		char source[64] = {};
+		const auto length = sprintf(source, "%llu", value);
+
+		Char destination[64] = {};
+		for (uint32 i = 0; i < length; ++i)
+		{
+			destination[i] = (Char)source[i];
+		}
+		return StringBase<Char, CharByte>(destination, length);
+	}
+
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const float value)
+	{
+		char source[64]   = {};
+		const auto length = sprintf(source, "%f", value);
+		
+		Char destination[64] = {};
+		for (uint32 i = 0; i < length; ++i)
+		{
+			destination[i] = (Char)source[i];
+		}
+		return StringBase<Char, CharByte>(destination, length);
+	}
+
+	template<typename Char, int CharByte>
+	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const double value)
+	{
+		char source[64] = {};
+		const auto length = sprintf(source, "%d", value);
+
+		Char destination[64] = {};
+		for (uint32 i = 0; i < length; ++i)
+		{
+			destination[i] = (Char)source[i];
+		}
+		return StringBase<Char, CharByte>(destination, length);
+	}
+
+#pragma endregion From Number
 #pragma endregion Main Function
 #pragma region Property
 	/*----------------------------------------------------------------------

@@ -32,10 +32,7 @@ namespace rhi::directX12
 	class RHIDisplayAdapter : public core::RHIDisplayAdapter, public gu::EnableSharedFromThis<RHIDisplayAdapter>
 	{
 	public:
-
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
 		/*---------------------------------------------------------------
 				@brief :  return logical device shared pointer.
 						  frame count is used for the command allocators
@@ -45,12 +42,23 @@ namespace rhi::directX12
 		/*---------------------------------------------------------------
 				@brief : Describe physical device name and spec(future work)
 		-----------------------------------------------------------------*/
-		void PrintInfo() override;
+		virtual void PrintInfo() const override;
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		#pragma endregion Public Function
+
+		#pragma region Public Member Variables
+
+		/*!**********************************************************************
+		*  @brief  アダプタに直接接続されている出力の数 (モニターなど)を返します.
+		*************************************************************************/
+		virtual gu::uint64 GetOutputCount() const override;
+
+		/*!**********************************************************************
+		*  @brief  DirectX12で使用するIAdapterのComptrを返します.
+		*************************************************************************/
 		AdapterComPtr GetAdapter() { return _adapter; }
+
+		#pragma endregion
 
 		/****************************************************************************
 		**                Constructor and Destructor

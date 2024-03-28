@@ -178,7 +178,7 @@ namespace gu::details::string
 			*outBegin = begin;
 			*outLength = (uint64)(end - begin);
 		}
-#pragma region Convert number
+		#pragma region Convert number
 		template<typename Char>
 		static int8 ToInt8(const Char* string, uint64 stringLength, uint64 radix, const Char** outEndPointer, NumberConversionResult* outResult)
 		{
@@ -341,7 +341,8 @@ namespace gu::details::string
 			return (float)value;
 		}
 
-#pragma endregion Convert number
+		#pragma endregion Convert number
+
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
