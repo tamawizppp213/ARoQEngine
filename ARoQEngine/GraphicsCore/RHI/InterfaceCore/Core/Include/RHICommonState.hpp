@@ -36,7 +36,7 @@ namespace rhi::core
 	};
 
 	/****************************************************************************
-	*				     RHIInstanceCreateInfo
+	*				     RHIDebugCreateInfo
 	*************************************************************************//**
 	/*  @brief Graphics APIの選択, CPU, GPUデバッガの有無を指定します
 	*****************************************************************************/
@@ -54,9 +54,27 @@ namespace rhi::core
 		RHIDebugCreateInfo() = default;
 
 		RHIDebugCreateInfo(const bool enableCPUDebugger, const bool enableGPUDebugger, const bool enableGPUDebugBreak)
-			: EnableCPUDebugger(enableCPUDebugger), EnableGPUDebugBreak(enableGPUDebugBreak)
+			: EnableCPUDebugger(enableCPUDebugger), EnableGPUDebugger(enableGPUDebugger), EnableGPUDebugBreak(enableGPUDebugBreak)
 		{};
 	};
+
+	/****************************************************************************
+	*				     DisplayAdapterVenderType
+	*************************************************************************//**
+	/*  @brief 物理デバイスで使用するアダプタのベンダーIDを取得します. 
+	*****************************************************************************/
+	enum class DisplayAdapterVenderType
+	{
+		None      = 0,         //!< Not assigned
+		Amd       = 0x1002,    //!<　AMD
+		Nvidia    = 0x10DE,    //!< NVIDIA
+		Arm       = 0x13B5,    //!< Arm
+		Intel     = 0x8086,    //!< Intel
+		Apple     = 0x106B,    //!< Apple
+		Microsoft = 0x1414,    //!< Microsoft
+		Unknown   = 0xffffffff //!< Other vender
+	};
+
 #pragma endregion           API
 #pragma region CommandList
 	/****************************************************************************
