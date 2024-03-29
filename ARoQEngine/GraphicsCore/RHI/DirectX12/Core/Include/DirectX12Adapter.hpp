@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIAdapter.hpp
-///             @brief  Physical Device (adapter), Describe gpu information 
-///             @author Toide Yutaro
-///             @date   2022_09_05
+///  @file   DirectX12Adapter.hpp
+///  @brief  論理デバイスに渡す物理デバイス(Apdapter)の設定, GPU情報を取得
+///  @author Toide Yutaro
+///  @date   2024_03_29
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_RHI_ADAPTER_HPP
@@ -27,27 +27,27 @@ namespace rhi::directX12
 	*				  			RHIDisplayAdapter
 	*************************************************************************//**
 	*  @class     RHIDisplayAdapter
-	*  @brief     Physical Device (adapter), Describe gpu information
+	*  @brief     論理デバイスに渡す物理デバイス(Apdapter)の設定, GPU情報を取得
 	*****************************************************************************/
 	class RHIDisplayAdapter : public core::RHIDisplayAdapter, public gu::EnableSharedFromThis<RHIDisplayAdapter>
 	{
 	public:
 		#pragma region Public Function
-		/*---------------------------------------------------------------
-				@brief :  return logical device shared pointer.
-						  frame count is used for the command allocators
-		-----------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief 自身の物理デバイスに基づいて論理デバイスを生成し, そのSharedPointerを渡します.
+		*************************************************************************/
 		gu::SharedPointer<core::RHIDevice> CreateDevice() override;
 
-		/*---------------------------------------------------------------
-				@brief : Describe physical device name and spec(future work)
-		-----------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief 物理デバイスの名前とスペックを出力に表示します@n
+		*         基本的に実行時のログとして使用するものになります. @n
+		*         ファイルや文字列に出力は行わないです.
+		*************************************************************************/
 		virtual void PrintInfo() const override;
 
 		#pragma endregion Public Function
 
 		#pragma region Public Member Variables
-
 		/*!**********************************************************************
 		*  @brief  アダプタに直接接続されている出力の数 (モニターなど)を返します.
 		*************************************************************************/
@@ -60,22 +60,25 @@ namespace rhi::directX12
 
 		#pragma endregion
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
+		
+		/*! @brief Default Constructor*/
 		RHIDisplayAdapter(const gu::SharedPointer<core::RHIInstance>& instance, const AdapterComPtr& adapter);
 
+		/*! @brief Destructor */
 		~RHIDisplayAdapter();
 
-	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma endregion 
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
-		AdapterComPtr _adapter = nullptr;
+	protected:
+		#pragma region Protected Function
+
+		#pragma endregion
+
+		#pragma region Protected Member Variables
+		/* @brief : DirectX12で使用するAdapterのポインタ*/
+		AdapterComPtr _adapter = nullptr;		
+		#pragma endregion Protected Member Variables
 	};
 }
 

@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIAdapter.hpp
-///             @brief  Physical Device (adapter), Describe gpu information 
-///             @author Toide Yutaro
-///             @date   2022_09_05
+///  @file   DirectX12Adapter.cpp
+///  @brief  論理デバイスに渡す物理デバイス(Apdapter)の設定, GPU情報を取得
+///  @author Toide Yutaro
+///  @date   2024_03_29
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -31,13 +31,18 @@ RHIDisplayAdapter::RHIDisplayAdapter(const gu::SharedPointer<core::RHIInstance>&
 {
 	Checkf(_adapter, "adapter is nullptr.\n");
 
-	DXGI_ADAPTER_DESC desc = {};
-	adapter->GetDesc(&desc);
+	DXGI_ADAPTER_DESC3 desc = {};
+	adapter->GetDesc3(&desc);
 	
 	const auto utf8Name = unicode::ToUtf8String(desc.Description);
 	_name     = gu::string(utf8Name.c_str(), utf8Name.length());
 	_venderID = desc.VendorId;
-	_deviceID = desc.DeviceId; 
+	_deviceID = desc.DeviceId;
+	_subSysID = desc.SubSysId;
+	_dedicatedVideoMemory  = desc.DedicatedVideoMemory;
+	_dedicatedSystemMemory = desc.DedicatedSystemMemory;
+	_sharedSystemMemory    = desc.SharedSystemMemory;
+
 	_isDiscreteGPU = desc.DedicatedVideoMemory != 0;
 }
 
@@ -55,7 +60,7 @@ RHIDisplayAdapter::~RHIDisplayAdapter()
 * 
 *  @brief     Return directX12 logical device.
 * 
-*  @param[in] std::uint32_t frameCount
+*  @param[in] void
 * 
 *  @return    gu::SharedPointer<core::RHIDevice> (directX12)
 *****************************************************************************/
@@ -69,9 +74,9 @@ gu::SharedPointer<core::RHIDevice> RHIDisplayAdapter::CreateDevice()
 /****************************************************************************
 *                     PrintInfo
 *************************************************************************//**
-*  @fn        void RHIAdapter::PrintInfo()
-* 
-*  @brief     Print physical device information
+*  @brief   物理デバイスの名前とスペックを出力に表示します@n
+*　         基本的に実行時のログとして使用するものになります. @n
+*  　       ファイルや文字列に出力は行わないです.
 * 
 *  @param[in] void
 * 
