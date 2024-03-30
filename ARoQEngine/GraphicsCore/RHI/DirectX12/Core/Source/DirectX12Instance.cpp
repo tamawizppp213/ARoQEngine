@@ -40,16 +40,16 @@ namespace
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-RHIInstance::RHIInstance(bool enableCPUDebugger, bool enableGPUDebugger, bool useGPUDebugBreak):
-	core::RHIInstance(enableCPUDebugger, enableGPUDebugger, useGPUDebugBreak)
+RHIInstance::RHIInstance(const core::RHIDebugCreateInfo& debugCreateInfo):
+	core::RHIInstance(debugCreateInfo)
 {
 	/*-------------------------------------------------------------------
 	-                   Enable CPU and GPU Debugger
 	---------------------------------------------------------------------*/
 #ifdef _DEBUG
-	if (_enableCPUDebugger) { EnabledDebugLayer(); }
+	if (debugCreateInfo.EnableCPUDebugger) { EnabledDebugLayer(); }
 
-	if (_enableGPUDebugger) { EnabledShaderBasedValidation();}
+	if (debugCreateInfo.EnableGPUDebugger) { EnabledShaderBasedValidation();}
 
 	/*-------------------------------------------------------------------
 	-                   Create Factory
@@ -216,8 +216,6 @@ void RHIInstance::LogAdapters()
 /****************************************************************************
 *                     HasLoadedDirectXAgilitySDK
 *************************************************************************//**
-*  @fn        bool RHIInstance::HasLoadedDirectXAgilitySDK() const
-*
 *  @brief     DirectXのAgilitySDK (最新バージョンのDirectX12を使用するできるか)を返します
 *
 *  @param[in] void

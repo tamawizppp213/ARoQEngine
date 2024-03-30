@@ -154,7 +154,8 @@ namespace rhi::core
 		    @details https://devicehunt.com/view/type/pci/vendor/10DE/device/2684 */
 		gu::uint32 _deviceID = 0;
 
-		/*! @brief 同一のデバイス(GeForce RTX 4090)でも異なるモデルを区別するために使用*/
+		/*! @brief      同一のデバイス(GeForce RTX 4090)でも異なるモデルを区別するために使用
+		    @attention  Vulkanでは使用できません*/
 		gu::uint32 _subSysID = 0;
 
 		/*! @brief CPUと共有されていない専用ビデオメモリのバイト数*/

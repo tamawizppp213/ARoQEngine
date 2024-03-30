@@ -29,6 +29,7 @@ using namespace gu;
 #pragma region Constructor and Destructor
 RHIDisplayAdapter::RHIDisplayAdapter(const gu::SharedPointer<core::RHIInstance>& instance, const AdapterComPtr& adapter) : core::RHIDisplayAdapter(instance),_adapter(adapter)
 {
+	Checkf(instance, "instance is nullptr");
 	Checkf(_adapter, "adapter is nullptr.\n");
 
 	DXGI_ADAPTER_DESC3 desc = {};

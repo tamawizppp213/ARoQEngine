@@ -39,12 +39,10 @@ namespace rhi::directX12
 	class RHIDevice : public core::RHIDevice, public gu::EnableSharedFromThis<RHIDevice>
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
 		void Destroy() override;
 
-#pragma region Create Function
+		#pragma region Create Function
 		void                                              SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) override;
 
 		gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
@@ -142,8 +140,11 @@ namespace rhi::directX12
 			const D3D12_RESOURCE_STATES initialState,
 			const D3D12_CLEAR_VALUE* clearValue = nullptr
 		);
-#pragma endregion Create Function
+		#pragma endregion Create Function
 
+		#pragma endregion Public Function
+
+		#pragma region Public Member Function
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -159,11 +160,16 @@ namespace rhi::directX12
 
 		void SetName(const gu::tstring& name) override;
 
-		/*-------------------------------------------------------------------
-		-               Device Support Check
-		---------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief  DirectXで使用可能な最大の機能レベルを取得します.
+		*************************************************************************/
 		D3D_FEATURE_LEVEL GetMaxSupportedFeatureLevel() const { return _maxSupportedFeatureLevel; }
 
+		/*!**********************************************************************
+		*  @brief  DirectXで使用可能な最大のシェーダーモデルを取得します
+		*  @note   現在は6_9が指定可能なサポートレベルですが, 環境に応じてレベルは下がる場合があります @n
+		*          https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/overviews-direct3d-11-devices-downlevel-intro
+		*************************************************************************/
 		D3D_SHADER_MODEL GetMaxSupportedShaderModel() const { return _maxSupportedShaderModel; }
 
 		D3D12_RESOURCE_BINDING_TIER GetResourceBindingTier() const { return _resourceBindingTier; }
@@ -198,7 +204,10 @@ namespace rhi::directX12
 		
 		bool IsSupportedRenderPass         () const override { return _isSupportedRenderPass; }
 
-		bool IsSupportedDepthBoundsTest    () const override { return _isSupportedDepthBoundsTest; }
+		/*!**********************************************************************
+		*  @brief  ピクセル描画の最小, 最大範囲を適用する機能が使えるか (DepthBoundsTest)
+		*************************************************************************/
+		bool IsSupportedDepthBoundsTest () const override { return _isSupportedDepthBoundsTest; }
 
 		bool IsSupportedSamplerFeedback    () const override { return _isSupportedSamplerFeedback; }
 
@@ -210,25 +219,29 @@ namespace rhi::directX12
 
 		bool IsSupportedAtomicOperation() const override { return _isSupportedAtomicOperation; }
 
+		#pragma endregion Public Member Function
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
 		RHIDevice();
 
 		~RHIDevice();
 
 		RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, const core::RHIMultiGPUMask& mask = core::RHIMultiGPUMask::SingleGPU());
 
+		#pragma endregion Public Constructor and Destructor
+
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Function
+
+		#pragma endregion Protected Function
+
+		#pragma region Protected Member Variables
 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		DeviceComPtr  _device        = nullptr;
+		/*! @brief : DirectX12の論理デバイス*/
+		DeviceComPtr  _device = nullptr;
 
 		/*-------------------------------------------------------------------
 		-               Device Support Check
@@ -241,15 +254,22 @@ namespace rhi::directX12
 		bool _isSupportedMeshShading              = true;
 		bool _isSupportedRenderPass               = true;
 		bool _isSupportedRayQuery                 = true;
+
+		/*! @brief ピクセル描画の最小, 最大範囲を適用する機能が使えるか*/
 		bool _isSupportedDepthBoundsTest          = true;
+
+
 		bool _isSupportedSamplerFeedback          = true;
 		bool _isSupportedBindless                 = true;
 		bool _isSupportedStencilReferenceFromPixelShader   = true;
 		bool _isSupported16bitOperation           = false;
 		bool _isSupportedHeapNotZero = false; // Heap確保のオーバーヘッドを減らすため, ゼロ初期化しないようにする
 
-		/* @brief : The maximum D3D12 feature level supported. 0 if not supported*/
+		/*! @brief サポートされる D3D12 機能レベルの最大値。サポートされていない場合は0*/
 		D3D_FEATURE_LEVEL _maxSupportedFeatureLevel = (D3D_FEATURE_LEVEL)0;
+		
+		/*! @brief サポートされるD3D12機能レベルの最小値 (これ以上の最小値はエラーとなります)*/
+		D3D_FEATURE_LEVEL _minSupportedFeatureLevel = (D3D_FEATURE_LEVEL_11_0);
 
 		/*` @brief : Thre maximum Shader Model supported. 0 i
 		f not supported*/
@@ -381,17 +401,34 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
+		#pragma region Private Function
+
 		void ReportLiveObjects();
 
-		/*-------------------------------------------------------------------
-		-               Device Support Check
-		---------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief  DirectXで使用可能な最大の機能レベルを自動で設定します
+		*  @note   現在は12_2が最大サポートレベルです
+		*************************************************************************/
 		void FindHighestFeatureLevel();
+
+		/*!**********************************************************************
+		*  @brief  DirectXで使用可能な最大のシェーダーモデルを設定します
+		*  @note   現在は6_9が指定可能なサポートレベルですが, 環境に応じてレベルは下がる場合があります@n
+		*          https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/overviews-direct3d-11-devices-downlevel-intro
+		*************************************************************************/
 		void FindHighestShaderModel();
+
 		void CheckDXRSupport();
 		void CheckRenderPassSupport();
 		void CheckVRSSupport();
+
+		/*!**********************************************************************
+		*  @brief  深度値が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させ, 範囲外ならば該当ピクセルを早期棄却する方法
+		*  @note   Deferred Renderingにおけるライトのaccumulation, Deferred RenderingにおけるCascaded Shadow Map, 被写界深度エフェクト, 遠景描画等に使用可能 
+		*          https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/overviews-direct3d-11-devices-downlevel-intro
+		*************************************************************************/
 		void CheckDepthBoundsTestSupport();
+
 		void CheckMultiSampleQualityLevels();
 		void CheckMeshShadingSupport();
 		void CheckResourceTiers();
@@ -408,32 +445,33 @@ namespace rhi::directX12
 		void SetupDefaultCommandSignatures();
 		void SetGPUDebugBreak();
 
-		/*-------------------------------------------------------------------
-		-               Intel extension function
-		---------------------------------------------------------------------*/
-#if USE_INTEL_EXTENSION
-		/*----------------------------------------------------------------------
-		*  @brief :Atomic 64 bitがサポートされているかを返します. 
-		*----------------------------------------------------------------------*/
+	#if USE_INTEL_EXTENSION
+		/*!**********************************************************************
+		*  @brief  :Atomic 64 bitがサポートされているかを返します.
+		*************************************************************************/
 		bool IsSupportedIntelEmulatedAtomic64();
 		
-		/*----------------------------------------------------------------------
-		*  @brief : Intel extension contextを生成します.
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief  Intel extension contextを生成します.
+		*************************************************************************/
 		void CreateIntelExtensionContext();
 
-		/*----------------------------------------------------------------------
-		*  @brief : Intel extension contextを破棄します. 
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief   Intel extension contextを破棄します. 
+		*************************************************************************/
 		void DestroyIntelExtensionContext();
-#endif
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+	#endif
+
+		#pragma endregion Private Function
+
+		#pragma region Private Member Variables
+
 		/*----------------------------------------------------------------------
 		*  @brief : Defaultのディスクリプタヒープ
 		*----------------------------------------------------------------------*/
 		gu::SortedMap<DefaultHeapType, gu::SharedPointer<core::RHIDescriptorHeap>> _defaultHeap;
+
+		#pragma endregion Private Member Variables
 	};
 }
 #endif

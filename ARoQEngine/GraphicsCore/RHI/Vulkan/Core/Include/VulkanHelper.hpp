@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include <vulkan/vulkan.h>
-#include <string>
+#include "GameUtility/Base/Include/GUString.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,10 +24,10 @@ namespace rhi::vulkan
 {
 	struct Entry
 	{
-		std::string   Name          = "";
-		bool          Optional      = false;
-		void*         FeatureStruct = nullptr;
-		std::uint32_t Version       = 0;
+		gu::string  Name          = "";
+		bool        Optional      = false;
+		void*       FeatureStruct = nullptr;
+		gu::uint32  Version       = 0;
 
 		Entry(const char* entryName, bool isOptional = false, void* pointerFeatureStruct = nullptr, std::uint32_t checkVersion = 0)
 			: Name(entryName), Optional(isOptional), FeatureStruct(pointerFeatureStruct), Version(checkVersion)

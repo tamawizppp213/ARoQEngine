@@ -79,7 +79,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	---------------------------------------------------------------------*/
 	ThrowIfFailed(D3D12CreateDevice(
 		gu::StaticPointerCast<RHIDisplayAdapter>(_adapter)->GetAdapter().Get(),      // default adapter
-		D3D_FEATURE_LEVEL_12_0, // minimum feature level
+		_minSupportedFeatureLevel,
 		IID_PPV_ARGS(&_device)));
 
 	const auto& gpuName    = adapter->GetName();
@@ -92,7 +92,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	SetGPUDebugBreak();
 
 	/*-------------------------------------------------------------------
-	-                   Find Highest support model
+	-          Find Highest support feature and shader model
 	---------------------------------------------------------------------*/
 	FindHighestFeatureLevel();
 	FindHighestShaderModel();
@@ -965,9 +965,7 @@ void RHIDevice::CheckMaxHeapSize()
 /****************************************************************************
 *                     FindHighestFeatureLevel
 *************************************************************************//**
-*  @fn        void RHIDevice::FindHighestFeatureLevel()
-*
-*  @brief     Set up max feature level.
+*  @brief     DirectXで使用可能な最大の機能レベルを自動で設定します
 *
 *  @param[in] void
 *
@@ -977,9 +975,7 @@ void RHIDevice::FindHighestFeatureLevel()
 {
 	const D3D_FEATURE_LEVEL featureLevels[] =
 	{
-#if D3D12_CORE_ENABLED
 		D3D_FEATURE_LEVEL_12_2,
-#endif
 		D3D_FEATURE_LEVEL_12_1,
 		D3D_FEATURE_LEVEL_12_0,
 		D3D_FEATURE_LEVEL_11_1,
@@ -1000,23 +996,18 @@ void RHIDevice::FindHighestFeatureLevel()
 /****************************************************************************
 *                     FindHighestShaderModel
 *************************************************************************//**
-*  @fn        void RHIDevice::FindHighestShaderModel()
-*
-*  @brief     Set up max shader model.
-*
-*  @param[in] void
-*
-*  @return 　　void
+*  @brief      DirectXで使用可能な最大のシェーダーモデルを設定します@n
+               現在は6_9が指定可能なサポートレベルですが, 環境に応じてレベルは下がる場合があります
 *****************************************************************************/
 void RHIDevice::FindHighestShaderModel()
 {
 	const D3D_SHADER_MODEL shaderModels[] =
 	{
-#if D3D12_CORE_ENABLED
 		D3D_HIGHEST_SHADER_MODEL,
+		D3D_SHADER_MODEL_6_9,
+		D3D_SHADER_MODEL_6_8,
 		D3D_SHADER_MODEL_6_7,
 		D3D_SHADER_MODEL_6_6,
-#endif
 		D3D_SHADER_MODEL_6_5,
 		D3D_SHADER_MODEL_6_4,
 		D3D_SHADER_MODEL_6_3,
@@ -1036,6 +1027,9 @@ void RHIDevice::FindHighestShaderModel()
 			return;
 		}
 	}
+
+	// 全く見つからなかった場合
+	_maxSupportedShaderModel = D3D_SHADER_MODEL_5_1;
 }
 
 /****************************************************************************
@@ -1158,7 +1152,7 @@ void RHIDevice::CreateIntelExtensionContext()
 	_isSupportedIntelEmulatedAtomic64 = false;
 
 	/*-------------------------------------------------------------------
-	-         ドライバーのインストールディレクトリを検索し, igdext64.dllを見つけます
+	-      ドライバーのインストールディレクトリを検索し, igdext64.dllを見つけます
 	---------------------------------------------------------------------*/
 	if (FAILED(INTC_LoadExtensionsLibrary(false)))
 	{
@@ -1179,14 +1173,6 @@ void RHIDevice::CreateIntelExtensionContext()
 	// サポートされているバージョン数だけインスタンス作成
 	supportedExtensionsVersions.Resize(supportedExtensionVersionCount);
 
-	// 目標のバージョン
-	const INTCExtensionVersion atomicsRequiredVersion =
-	{
-		.HWFeatureLevel = 4,
-		.APIVersion     = 8,
-		.Revision       = 0
-	};
-
 	/*-------------------------------------------------------------------
 	-         サポートされているバージョン情報を取得する
 	---------------------------------------------------------------------*/
@@ -1198,6 +1184,14 @@ void RHIDevice::CreateIntelExtensionContext()
 	_RPT0(_CRT_WARN, "/////////////////////////////////////////////////\n");
 	_RPT0(_CRT_WARN, " Supported Extension Versions in this driver: \n");
 	_RPT0(_CRT_WARN, "/////////////////////////////////////////////////\n");
+
+	// 目標のバージョン
+	const INTCExtensionVersion atomicsRequiredVersion =
+	{
+		.HWFeatureLevel = 4,
+		.APIVersion     = 8,
+		.Revision       = 0
+	};
 
 	INTCExtensionInfo intelExtensionInfo = {};
 	for (uint32 i = 0; i < supportedExtensionVersionCount; ++i)
@@ -1284,16 +1278,6 @@ void RHIDevice::DestroyIntelExtensionContext()
 	/*-------------------------------------------------------------------
 	-              表示
 	---------------------------------------------------------------------*/
-#if PLATFORM_OS_WINDOWS
-	if (result == S_OK)
-	{
-		OutputDebugStringA("Intel Extensions Framework unloaded\n");
-	}
-	else
-	{
-		OutputDebugStringA("Intel Extensions Framework error when unloading\n");
-	}
-#else
 	if (result == S_OK)
 	{
 		_RPT0(_CRT_WARN, "Intel Extensions Framework unloaded\n");
@@ -1302,7 +1286,6 @@ void RHIDevice::DestroyIntelExtensionContext()
 	{
 		_RPT0(_CRT_WARN, "Intel Extensions Framework error when unloading\n");
 	}
-#endif // PLATFORM_OS_WINDOWS
 }
 
 /****************************************************************************
