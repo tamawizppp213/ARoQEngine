@@ -56,28 +56,28 @@ namespace gu
 		/*-------------------------------------------------------------------
 		-           値の取得
 		---------------------------------------------------------------------*/
-		// @brief : 保持する値の左辺値参照を取得する
+		/*! @brief : 保持する値の左辺値参照を取得する*/
 		constexpr ElementType& Value()&
 		{
 			if (!_hasValue) { Check(false); }
 			return _value;
 		}
 
-		// @brief : 保持する値の右辺値参照を取得する
+		/*! @brief : 保持する値の右辺値参照を取得する*/
 		constexpr ElementType&& Value()&&
 		{
 			if (!_hasValue) { Check(false); }
 			return gu::Forward<ElementType>(_value)
 		}
 
-		// @brief : 保持する値の左辺値参照を取得する
+		/*! @brief : 保持する値の左辺値参照を取得する*/
 		constexpr const ElementType& Value() const&
 		{
 			if (!_hasValue) { Check(false); }
 			return _value;
 		}
 
-		// @brief : 保持する値の右辺値参照を取得する
+		/*! @brief : 保持する値の右辺値参照を取得する*/
 		constexpr const ElementType&& Value() const&&
 		{
 			if (!_hasValue) { Check(false); }
@@ -86,38 +86,38 @@ namespace gu
 
 		#pragma endregion Public Function
 		#pragma region Public Operator Function
-		// @brief : 有効値かどうかを返す
+		/*! @brief : 有効値かどうかを返す */
 		constexpr explicit operator bool() const noexcept { return _hasValue; }
 
-		// @brief : メンバアクセス演算子
+		/*! @brief : メンバアクセス演算子 */
 		constexpr       ElementType* operator->()       noexcept { return &_value; }
 		constexpr const ElementType* operator->() const noexcept { return &_value; }
 
-		// @brief : 間接参照演算子 (左辺値参照)
+		/*! @brief : 間接参照演算子 (左辺値参照)*/
 		constexpr ElementType& operator*() & noexcept { return _value; }
 
-		// @brief : 間接参照演算子 (右辺値参照)
+		/*! @brief : 間接参照演算子 (右辺値参照) */
 		constexpr ElementType&& operator*() && noexcept { return gu::Forward<Optional<ElementType>>(_value); }
 
-		// @brief : 間接参照演算子 (const 左辺値参照)
+		/*! @brief : 間接参照演算子 (const 左辺値参照) */
 		constexpr const ElementType& operator* () const& noexcept { return _value; }
 
-		// @brief : 間接参照演算子 8const 右辺値参照)
+		/*! @brief : 間接参照演算子 8const 右辺値参照) */
 		constexpr const ElementType&& operator*() const&& noexcept { return gu::Forward<Optional<ElementType>>(_value); }
 
 		#pragma endregion Public Operator Function
 
 		#pragma region Public Constructor and Destructor
-		// @brief: 値を持っていないオブジェクトを構築する
+		/*! @brief: 値を持っていないオブジェクトを構築する */
 		constexpr Optional() noexcept : _value(), _hasValue(false) {};
 
-		// @brief : 値を持っているオブジェクトを構築する
+		/*! @brief : 値を持っているオブジェクトを構築する */
 		constexpr Optional(const ElementType& value) : _value(value), _hasValue(true) {};
 
-		// @brief : コピーコンストラクタ
+		/*! @brief : コピーコンストラクタ */
 		constexpr Optional(const Optional& other) : _value(other._value), _hasValue(other._hasValue) {};
 
-		// @brief : ムーブコンストラクタ
+		/*! @brief : ムーブコンストラクタ */
 		constexpr Optional(Optional<ElementType>&& other) : _value(gu::Forward<Optional<ElementType>>(other._value)), _hasValue(other._hasValue)
 		{
 			other._hasValue = false;
@@ -125,14 +125,14 @@ namespace gu
 
 		~Optional() = default;
 
-		// @brief : コピー代入演算子
+		/*! @brief : コピー代入演算子 */
 		Optional& operator=(const Optional& other)
 		{
 			if (this != &other) { _value = other._value; _hasValue = other._hasValue; }
 			return *this;
 		}
 
-		// ムーブ代入演算子
+		/*! ムーブ代入演算子 */
 		Optional& operator=(Optional<ElementType>&& other)
 		{
 			if (this != &other)
@@ -152,10 +152,10 @@ namespace gu
 	
 		#pragma region Protected Member Variables
 
-		// @brief : 実際の値
+		/*! @brief : 実際の値 */
 		ElementType _value = ElementType();
 
-		// @brief : 値が代入されているか 
+		/*! @brief : 値が代入されているか */
 		bool _hasValue = false;
 
 		#pragma endregion Private Member Variables
