@@ -93,17 +93,17 @@ namespace rhi::core
 		/*!**********************************************************************
 		*  @brief   NVidiaがベンダーかどうか
 		*************************************************************************/
-		bool IsAdapterNVIDIA() const { return _venderID == (gu::uint32)DisplayAdapterVenderType::Nvidia; }
+		bool IsAdapterNVIDIA() const { return _venderID == (gu::uint32)DisplayAdapterVendorType::Nvidia; }
 
 		/*!**********************************************************************
 		*  @brief   Intelがベンダーかどうか
 		*************************************************************************/
-		bool IsAdapterIntel()  const { return _venderID == (gu::uint32)DisplayAdapterVenderType::Intel;}
+		bool IsAdapterIntel()  const { return _venderID == (gu::uint32)DisplayAdapterVendorType::Intel;}
 
 		/*!**********************************************************************
 		*  @brief   AMDがベンダーかどうか
 		*************************************************************************/
-		bool IsAdapterAMD()    const { return _venderID == (gu::uint32)DisplayAdapterVenderType::Amd; }
+		bool IsAdapterAMD()    const { return _venderID == (gu::uint32)DisplayAdapterVendorType::Amd; }
 
 		/*!**********************************************************************
 		*  @brief   CPUと共有されていない専用ビデオメモリのバイト数

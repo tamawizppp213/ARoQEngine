@@ -43,20 +43,21 @@ namespace rhi::directX12
 		*  @note      DirectX12では外部GPU, ディスクリートGPU, 統合GPUの順に選択されます.　@n
 		*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
 		*************************************************************************/
-		gu::SharedPointer<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		virtual gu::SharedPointer<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
 		
 		/*!**********************************************************************
 		*  @brief     最も性能が低い(消費電力が低い)物理デバイスを自動で選定します. 高い順にiGPU (integrated GPU), dGPU(discrete GPU), xGPU(外部GPU)の順に優先されます
 		*  @note      DirectX12では統合GPU, ディスクリートGPU, 外部GPUの順に選択されます.　@n
 		*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
 		*************************************************************************/
-		gu::SharedPointer<core::RHIDisplayAdapter> SearchMinimumPowerAdapter ()override;
+		virtual gu::SharedPointer<core::RHIDisplayAdapter> SearchMinimumPowerAdapter ()override;
 		
 		/*!**********************************************************************
 		*  @brief     全ての利用可能な物理デバイスを配列の形で返します.
+		* @attention この関数は, 配列の順番が特に指定がありません. 
 		*  @return    gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> : 物理デバイスの配列
 		*************************************************************************/
-		gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		virtual gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
 		
 		/*!**********************************************************************
 		*  @brief     出力欄に全ての物理デバイスを記入します
@@ -106,12 +107,23 @@ namespace rhi::directX12
 		/* @brief : Acquire the debug information when the Device is removed.*/
 		void EnabledGPUClashDebuggingModes(); 
 
-		/* @brief : Select High performance or minimum power ( (High) xGPU, dGPU iGPU (Low))*/
-		gu::SharedPointer<core::RHIDisplayAdapter> SearchAdapter(const DXGI_GPU_PREFERENCE preference);
-		
+		/*!**********************************************************************
+		*  @brief     高性能または最小電力を示すAdapterを選択（（高）xGPU、dGPU iGPU（低）
+		*  @return    gu::SharedPointer<RHIDisplayAdapter> : 物理デバイスのポインタ
+		*************************************************************************/
+		gu::SharedPointer<core::RHIDisplayAdapter> SearchAdapter(const DXGI_GPU_PREFERENCE preference) const;
+
 		#pragma endregion
 
 		#pragma region Protected Member Variables
+		/*! @brief コマンドラインで指定されている場合, WARPデバイスで作るようにする
+		*   @note  コマンドラインでは"warp"コマンドを打ってください*/
+		static bool SHOULD_CREATE_WITH_WARP;
+
+		/*! @brief コマンドラインで指定されている場合, ソフトウェアレンダリングを許可する
+		*   @note  コマンドラインでは, "allowSoftwareRenderingを打ってください"*/
+		static bool ALLOW_SOFTWARE_RENDERING;
+
 		FactoryComPtr _factory = nullptr;
 
 		bool _useDRED        = false;

@@ -15,20 +15,21 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Instance.hpp"
 // Vulkan
 #include "GraphicsCore/RHI/Vulkan/Core/Include/VulkanInstance.hpp"
+#include "GameUtility/Base/Include/GUParse.hpp"
+#include "GameUtility/Base/Include/GUCommandLine.hpp"
 #include "stdio.h"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::core;
-
+using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+#pragma region Public Function
 /****************************************************************************
 *                     CreateInstance
 *************************************************************************//**
-*  @fn        gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core::GraphicsAPI graphicsAPI, const RHIDebugCreateInfo& debugCreateInfo)
-*
 *  @brief     手動でGraphics APIを選択します. @n
               そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
 *
@@ -54,6 +55,7 @@ gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core
 		default:
 		{
 			Confirmf(false, "Unknown API");
+			return nullptr;
 		}
 	}
 }
@@ -61,8 +63,6 @@ gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core
 /****************************************************************************
 *                     CreateInstance
 *************************************************************************//**
-*  @fn        gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core::RHIDebugCreateInfo& debugCreateInfo)
-*
 *  @brief     プラットフォームに合わせて自動でGraphics APIを選択します. @n
               そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
 *
@@ -74,3 +74,37 @@ gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core
 {
 	return gu::MakeShared<DEFAULT_GRAPHICS_API::RHIInstance>(debugCreateInfo);
 }
+
+/****************************************************************************
+*                     GetPreferredAdapterVendor
+*************************************************************************//**
+*  @brief    物理デバイスの好みがある場合は, コマンドラインの結果に基づいてDisplayAdapterVenderTypeを返す @n
+*            コマンドラインの文字列は, prefer_(DisplayAdapterVenderTypeに指定されるベンダー名)で指定してください
+* 
+*  @return   DisplayAdapterVendorType
+*****************************************************************************/
+DisplayAdapterVendorType rhi::core::RHIInstance::GetPreferredAdapterVendor() const
+{
+	if(Parse::Contains(CommandLine::Get(), SP("prefer_AMD")))
+	{
+		return DisplayAdapterVendorType::Amd;
+	}
+
+	if (Parse::Contains(CommandLine::Get(), SP("prefer_Intel")))
+	{
+		return DisplayAdapterVendorType::Intel;
+	}
+
+	if (Parse::Contains(CommandLine::Get(), SP("prefer_Nvidia")))
+	{
+		return DisplayAdapterVendorType::Nvidia;
+	}
+
+	if (Parse::Contains(CommandLine::Get(), SP("prefer_Microsoft")))
+	{
+		return DisplayAdapterVendorType::Microsoft;
+	}
+
+	return DisplayAdapterVendorType::Unknown;
+}
+#pragma endregion Public Function

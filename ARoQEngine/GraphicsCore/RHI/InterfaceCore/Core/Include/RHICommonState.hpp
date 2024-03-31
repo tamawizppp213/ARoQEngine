@@ -59,11 +59,11 @@ namespace rhi::core
 	};
 
 	/****************************************************************************
-	*				     DisplayAdapterVenderType
+	*				     DisplayAdapterVendorType
 	*************************************************************************//**
 	/*  @brief 物理デバイスで使用するアダプタのベンダーIDを取得します. 
 	*****************************************************************************/
-	enum class DisplayAdapterVenderType : gu::uint32
+	enum class DisplayAdapterVendorType : gu::uint32
 	{
 		None      = 0,         //!< Not assigned
 		Amd       = 0x1002,    //!<　AMD
