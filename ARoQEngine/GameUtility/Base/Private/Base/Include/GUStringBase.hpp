@@ -92,11 +92,11 @@ namespace gu::details::string
 		/*----------------------------------------------------------------------*/
 		__forceinline bool Contains(const Char* string, const bool useCaseSensitivity) const
 		{
-			return Find(string, 0, useCaseSensitivity) >= 0;
+			return Find(string, 0, useCaseSensitivity) != NPOS;
 		}
 		__forceinline bool Contains(const StringBase<Char, CharByte>& string, const bool useCaseSensitivity) const
 		{
-			return Find(string, 0, useCaseSensitivity) >= 0;
+			return Find(string, 0, useCaseSensitivity) != NPOS;
 		}
 
 		/*----------------------------------------------------------------------
@@ -969,10 +969,10 @@ namespace gu::details::string
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const uint64 value)
 	{
 		char source[64] = {};
-		const auto length = sprintf(source, "%llu", value);
+		const auto length = sprintf_s(source, "%llu", value);
 
 		Char destination[64] = {};
-		for (uint32 i = 0; i < length; ++i)
+		for (int32 i = 0; i < length; ++i)
 		{
 			destination[i] = (Char)source[i];
 		}
@@ -983,7 +983,7 @@ namespace gu::details::string
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const float value)
 	{
 		char source[64]   = {};
-		const auto length = sprintf(source, "%f", value);
+		const auto length = sprintf_s(source, "%f", value);
 		
 		Char destination[64] = {};
 		for (uint32 i = 0; i < length; ++i)
@@ -997,7 +997,7 @@ namespace gu::details::string
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const double value)
 	{
 		char source[64] = {};
-		const auto length = sprintf(source, "%d", value);
+		const auto length = sprintf_s(source, "%d", value);
 
 		Char destination[64] = {};
 		for (uint32 i = 0; i < length; ++i)
