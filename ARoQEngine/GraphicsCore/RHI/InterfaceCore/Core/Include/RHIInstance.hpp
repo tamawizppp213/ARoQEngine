@@ -75,12 +75,12 @@ namespace rhi::core
 		*  @attention この関数は, 配列の順番が特に指定がありません. 
 		*  @return    gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> : 物理デバイスの配列
 		*************************************************************************/
-		virtual gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> EnumrateAdapters() = 0;
+		virtual gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> EnumrateAdapters() const = 0;
 		
 		/*!**********************************************************************
 		*  @brief     出力欄に全ての物理デバイスを記入します
 		*************************************************************************/
-		virtual void LogAdapters() = 0;
+		virtual void LogAdapters() const = 0;
 
 		/*!**********************************************************************
 		*  @brief     物理デバイスの好みがある場合は, コマンドラインの結果に基づいてDisplayAdapterVenderTypeを返す @n

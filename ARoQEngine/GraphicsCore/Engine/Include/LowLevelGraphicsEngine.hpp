@@ -65,7 +65,7 @@ public:
 	**                Public Function
 	*****************************************************************************/
 	/* @brief : Rendering engine start function.*/
-	void StartUp(rhi::core::APIVersion apiVersion, void* hwnd, void* hInstance);
+	void StartUp(rhi::core::GraphicsAPI apiVersion, void* hwnd, void* hInstance);
 
 	/* @brief : The first call to the Draw function generates the back buffer image and executes the Default render pass. */
 	void BeginDrawFrame();
@@ -151,7 +151,7 @@ protected:
 	**                Private Member Variables
 	*****************************************************************************/
 	/* @brief : Graphics API version. (DirectX12 or Vulkan)*/
-	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::Unknown;
+	rhi::core::GraphicsAPI _apiVersion = rhi::core::GraphicsAPI::Unknown;
 
 	/* @brief : graphics API instance (select graphics api)*/
 	InstancePtr _instance = nullptr;

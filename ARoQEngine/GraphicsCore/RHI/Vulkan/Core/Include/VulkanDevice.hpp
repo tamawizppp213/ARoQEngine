@@ -114,7 +114,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		inline VkDevice GetDevice() { return _logicalDevice; }
+		inline VkDevice GetDevice() const { return _logicalDevice; }
 		
 		//inline VkSurfaceKHR      GetSurface() { return _surface; }
 		

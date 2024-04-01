@@ -156,20 +156,6 @@ RHIInstance::RHIInstance(const core::RHIDebugCreateInfo& debugInfo)
 	FindNewestVulkanAPIVersion();
 
 	if (!CheckVulkanSupportInEngine()) { Confirmf(false, "Unsupported API version\n"); return; }
-	
-	/*-------------------------------------------------------------------
-	-               Set Application Infomation
-	---------------------------------------------------------------------*/
-	const VkApplicationInfo applicationInfo =
-	{
-		.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO, // structure type
-		.pNext              = nullptr,
-		.pApplicationName   = "Graphics Device Vulkan",           // application name
-		.applicationVersion = VK_MAKE_VERSION(1,0,0),             // application version (特に使用しない)
-		.pEngineName        = EngineName,                         // engine name
-		.engineVersion      = VK_MAKE_VERSION(1,0,0),             // engine version      (特に使用しない)
-		.apiVersion         = VK_MAKE_VERSION(_majorVersion, _minorVersion, _patchVersion), // newest version
-	};
 
 	/*-------------------------------------------------------------------
 	-          Acquire Extension Infomation (for debugging layer)
@@ -183,6 +169,20 @@ RHIInstance::RHIInstance(const core::RHIDebugCreateInfo& debugInfo)
 	{
 		convertFoundExtensions[i] = foundExtensions[i].CString();
 	}
+
+	/*-------------------------------------------------------------------
+	-               Set Application Infomation
+	---------------------------------------------------------------------*/
+	const VkApplicationInfo applicationInfo =
+	{
+		.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO, // structure type
+		.pNext              = nullptr,
+		.pApplicationName   = "Graphics Device Vulkan",           // application name
+		.applicationVersion = VK_MAKE_VERSION(1,0,0),             // application version (特に使用しない)
+		.pEngineName        = EngineName,                         // engine name
+		.engineVersion      = VK_MAKE_VERSION(1,0,0),             // engine version      (特に使用しない)
+		.apiVersion         = VK_MAKE_VERSION(_majorVersion, _minorVersion, _patchVersion), // newest version
+	};
 
 	/*-------------------------------------------------------------------
 	-               Set VKInstance Create Infomation
@@ -216,7 +216,7 @@ RHIInstance::RHIInstance(const core::RHIDebugCreateInfo& debugInfo)
 	VkResult vkResult = vkCreateInstance(&createInfo, nullptr, &_instance);
 	if (vkResult != VkResult::VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to create vulkan instance.");
+		Confirmf(false, "failed to create vulkan instance.\n");
 	}
 
 	/*-------------------------------------------------------------------
@@ -229,7 +229,7 @@ RHIInstance::RHIInstance(const core::RHIDebugCreateInfo& debugInfo)
 	PopulateDebugMessengerCreateInfo(debugCreateInfo);
 	if (::CreateDebugUtilsMessengerEXT(_instance, &debugCreateInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
 	{
-		throw std::runtime_error("failed to set up debug messenger!");
+		Confirmf(false, "failed to set up debug messenger!");
 	}
 #endif
 }
@@ -240,8 +240,14 @@ RHIInstance::~RHIInstance()
 	printf("Destroy RHI Instance : (Vulkan)\n");
 #endif
 	if (_debugMessenger){DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);}
-	if (_instance)     { vkDestroyInstance(_instance, nullptr); }
-	_instanceLayers.Clear(); _instanceLayers.ShrinkToFit();
+	
+	if (_instance) 
+	{
+		vkDestroyInstance(_instance, nullptr); 
+	}
+
+	_instanceLayers.Clear();
+	_instanceLayers.ShrinkToFit();
 }
 
 #pragma endregion Constructor and Destructor
@@ -249,12 +255,11 @@ RHIInstance::~RHIInstance()
 /****************************************************************************
 *                     EnumrateAdapters
 *************************************************************************//**
-*  @fn        gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>> EnumrateAdapters()
-*  @brief     Return all availablle adapter lists
+/* @brief     Return all availablle adapter lists
 *  @param[in] void
 *  @return 　　gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>> 
 *****************************************************************************/
-gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters() const
 {
 	gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
@@ -272,74 +277,120 @@ gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::Enumra
 	}
 	return adapterLists;
 }
+
 /****************************************************************************
 *                     SearchHighPerformanceAdapter
 *************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
-*  @brief     Return discrete GPU adapter. not found : first adapter
+/* @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの多いものから
+*              (High) xGPU, dGPU iGPU (Low) selected
+*
 *  @param[in] void
-*  @return 　　gu::SharedPointer<core::RHIAdapter>
+*
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
 gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 {
-	return SearchAdapter(VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU);
+	const VkPhysicalDeviceType types[] =
+	{
+		VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU,
+		VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU,
+		VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU,
+		VK_PHYSICAL_DEVICE_TYPE_CPU
+	};
+
+	for (auto type : types)
+	{
+		const auto adapter = SearchAdapter(type);
+		if(adapter)
+		{
+			return adapter;
+		}
+	}
+
+	return nullptr;
 }
 
 /****************************************************************************
 *                     SearchMinimumPowerAdapter
 *************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
-*  @brief     Return integrated GPU adapter. not found : first adapter
+/* @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの少ないものから
+*             (Low) iGPU, dGPU xGPU (High)
+*
 *  @param[in] void
-*  @return 　　gu::SharedPointer<core::RHIAdapter>
+*
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
 gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
 {
-	return SearchAdapter(VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU);
+	const VkPhysicalDeviceType types[] =
+	{
+		VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU,
+		VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU,
+		VK_PHYSICAL_DEVICE_TYPE_CPU
+	};
+
+	for (auto type : types)
+	{
+		const auto adapter = SearchAdapter(type);
+		if (adapter)
+		{
+			return adapter;
+		}
+	}
+
+	return nullptr;
 }
 
 /****************************************************************************
 *                     SearchAdapter
 *************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
-*  @brief     Return proper GPU adapte. not found : first found adapter 
-*  @param[in] void
-*  @return 　　gu::SharedPointer<core::RHIAdapter>
+/* @brief     高性能または最小電力を示すAdapterを選択（（高）xGPU、dGPU iGPU（低）
+*
+*  @param[in] const DXGI_GPU_PREFERENCE preference (high performance or minimum power)
+*
+*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
 *****************************************************************************/
 gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPhysicalDeviceType deviceType)
 {
-	const auto& devices = EnumratePhysicalDevices();
-	if (devices.Size() == 0) { return nullptr; }
+	/*-------------------------------------------------------------------
+	-         物理デバイスを一通り取得する.
+	---------------------------------------------------------------------*/
+	const auto& physicalDevices = EnumratePhysicalDevices();
+	if (physicalDevices.Size() == 0)
+	{
+		_RPT0(_CRT_WARN, "SearchAdapter could not find a compatible Vulkan device or driver\n");
+		_RPT0(_CRT_WARN, "Make sure your video card supports Vulkan and try updating your video driver to a more recent version (proceed with any pending reboots)\n");
+		return nullptr; 
+	}
 
 	// 必要となるものがなければ最初に見つけたAdapterを渡す. 
-	gu::SharedPointer<core::RHIDisplayAdapter> adapter = gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), devices[0]);
-	for (int i = 1; i < devices.Size(); ++i)
+	for (int i = 0; i < physicalDevices.Size(); ++i)
 	{
 		/*-------------------------------------------------------------------
 		-               Get properties
 		---------------------------------------------------------------------*/
 		VkPhysicalDeviceProperties properties = {};
-		vkGetPhysicalDeviceProperties(devices[i], &properties);
+		vkGetPhysicalDeviceProperties(physicalDevices[i], &properties);
 		/*-------------------------------------------------------------------
-		-               Discrete GPU check
+		-               Target device type check
 		---------------------------------------------------------------------*/
 		if (properties.deviceType == deviceType)
 		{
-			adapter = gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), devices[i]); break;
+			return gu::MakeShared<vulkan::RHIDisplayAdapter>(SharedFromThis(), physicalDevices[i]);
 		}
 	}
 
-	return adapter;
+	return nullptr;
 }
+
 /****************************************************************************
 *                     LogAdapters
 *************************************************************************//**
-*  @fn        void RHIInstance::LogAdapters()
-*  @brief     Show all available adapter information using Output debug string
+/* @brief     Show all available adapter information using Output debug string
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void RHIInstance::LogAdapters()
+void RHIInstance::LogAdapters() const
 {
 	auto adapterList = EnumrateAdapters();
 	for (auto& adapter : adapterList)

@@ -41,25 +41,35 @@ namespace rhi::vulkan
 		*  @brief   全ての利用可能な物理デバイスを配列の形で返します.
 		*  @return  gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> : 物理デバイスの配列
 		*************************************************************************/
-		gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		virtual gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() const override;
 		
-		/*vulkan : dGPU (not : first select gpu) */
-		gu::SharedPointer<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
+		/*!**********************************************************************
+		*  @brief     最も性能が高い物理デバイスを自動で選定します. 高い順にxGPU(外部GPU), dGPU(discrete GPU), iGPU (integrated GPU)の順に優先されます
+		*  @note      Vulkanではまだ外部GPUが対応できておらず, ディスクリートGPU, integrated GPU (最初に選択されたGPU)の順に選択されます@n
+		*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
 		
-		/*vulkan : iGPU (not : first select gpu) */
-		gu::SharedPointer<core::RHIDisplayAdapter> SearchMinimumPowerAdapter() override;
+		/*!**********************************************************************
+		*  @brief   最も性能が低い(消費電力が低い)物理デバイスを自動で選定します. 高い順にiGPU (integrated GPU), dGPU(discrete GPU), xGPU(外部GPU)の順に優先されます
+		*  @note    Vulkanではまだ外部GPUが対応できておらず, integrated GPU, ディスクリートGPU (最初に選択されたGPU)の順に選択されます
+		*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<core::RHIDisplayAdapter> SearchMinimumPowerAdapter() override;
 		
 		/* OutputDebugString : adapter list*/
-		void LogAdapters() override;
+		virtual void LogAdapters() const override;
 		#pragma endregion Public Function
 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
 		#pragma region Public Member Variables
-		VkInstance       GetVkInstance()       { return _instance; }
-		
-		const VkInstance GetVkInstance() const { return _instance; }
+
+		/*!**********************************************************************
+		*  @brief   VulkanのInstanceを返します/
+		*************************************************************************/
+		VkInstance GetVkInstance() const { return _instance; }
 
 		gu::DynamicArray<VkLayerProperties> GetInstanceLayers() const;
  
@@ -107,7 +117,12 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		bool CheckValidationLayerSupport(); // check enable cpu and gpu debugger
 		
+		/*!**********************************************************************
+		*  @brief     DeviceTypeに基づく物理デバイスを選択
+		*  @return    gu::SharedPointer<RHIDisplayAdapter> : 物理デバイスのポインタ
+		*************************************************************************/
 		gu::SharedPointer<core::RHIDisplayAdapter> SearchAdapter(const VkPhysicalDeviceType deviceType);
+
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/

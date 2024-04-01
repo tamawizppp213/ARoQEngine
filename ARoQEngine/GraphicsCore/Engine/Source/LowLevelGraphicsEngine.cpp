@@ -59,17 +59,17 @@ LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 * 
 *  @return 　　void
 *****************************************************************************/
-void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, void* hwnd, void* hInstance)
+void LowLevelGraphicsEngine::StartUp(GraphicsAPI apiVersion, void* hwnd, void* hInstance)
 {
 	_apiVersion = apiVersion;
 	/*-------------------------------------------------------------------
 	-      Create Instance
 	---------------------------------------------------------------------*/
 #if _DEBUG
-	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, true, false, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, { true, false, false });
 	_instance->LogAdapters();
 #else
-	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, false, false, false);
+	_instance = rhi::core::RHIInstance::CreateInstance(apiVersion, { false, false, false });
 #endif
 
 	/*-------------------------------------------------------------------
@@ -394,8 +394,8 @@ void LowLevelGraphicsEngine::SetUpHeap()
 	heapCount.CBVDescCount = CBV_DESC_COUNT; 
 	heapCount.SRVDescCount = SRV_DESC_COUNT;
 	heapCount.UAVDescCount = UAV_DESC_COUNT;
-	heapCount.DSVDescCount = _apiVersion == APIVersion::DirectX12 ? DSV_DESC_COUNT : 0;
-	heapCount.RTVDescCount = _apiVersion == APIVersion::DirectX12 ? RTV_DESC_COUNT : 0;
+	heapCount.DSVDescCount = _apiVersion == GraphicsAPI::DirectX12 ? DSV_DESC_COUNT : 0;
+	heapCount.RTVDescCount = _apiVersion == GraphicsAPI::DirectX12 ? RTV_DESC_COUNT : 0;
 	heapCount.SamplerDescCount = MAX_SAMPLER_STATE;
 	_device->SetUpDefaultHeap(heapCount);
 
@@ -439,7 +439,7 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat);
 
 		// vulkanの場合, 初期RenderTargetはUnlnownである必要があるとのこと
-		if (_apiVersion == APIVersion::Vulkan) { colorAttachment.InitialLayout = core::ResourceState::Common; }
+		if (_apiVersion == GraphicsAPI::Vulkan) { colorAttachment.InitialLayout = core::ResourceState::Common; }
 
 		_renderPass = _device->CreateRenderPass(colorAttachment, depthAttachment);
 		_renderPass->SetClearValue(clearColor, clearDepthColor);

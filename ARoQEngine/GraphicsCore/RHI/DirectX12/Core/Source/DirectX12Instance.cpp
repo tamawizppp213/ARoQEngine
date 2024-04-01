@@ -82,8 +82,6 @@ RHIInstance::~RHIInstance()
 /****************************************************************************
 *                     SearchHighPerformanceAdapter
 *************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
-* 
 *  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの多いものから 
 *             (High) xGPU, dGPU iGPU (Low) selected
 * 
@@ -99,8 +97,6 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAda
 /****************************************************************************
 *                     SearchMinimumPowerAdapter
 *************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapter()
-* 
 *  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの少ないものから
 *             (Low) iGPU, dGPU xGPU (High)
 * 
@@ -116,8 +112,6 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapte
 /****************************************************************************
 *                     SearchAdapter
 *************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI_GPU_PREFERENCE preference) const
-* 
 *  @brief     高性能または最小電力を示すAdapterを選択（（高）xGPU、dGPU iGPU（低）
 * 
 *  @param[in] const DXGI_GPU_PREFERENCE preference (high performance or minimum power)
@@ -267,7 +261,7 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI
 * 
 *  @return 　　gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> 物理デバイスの配列
 *****************************************************************************/
-gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters()
+gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::EnumrateAdapters() const
 {
 	gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> adapterLists = {};
 
@@ -309,7 +303,7 @@ gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::Enumra
 * 
 *  @return 　　void
 *****************************************************************************/
-void RHIInstance::LogAdapters()
+void RHIInstance::LogAdapters() const
 {
 	auto adapterList = EnumrateAdapters();
 	

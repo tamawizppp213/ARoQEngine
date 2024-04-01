@@ -57,12 +57,12 @@ namespace rhi::directX12
 		* @attention この関数は, 配列の順番が特に指定がありません. 
 		*  @return    gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> : 物理デバイスの配列
 		*************************************************************************/
-		virtual gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() override;
+		virtual gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() const override;
 		
 		/*!**********************************************************************
 		*  @brief     出力欄に全ての物理デバイスを記入します
 		*************************************************************************/
-		void LogAdapters() override;
+		void LogAdapters() const override;
 
 		#pragma endregion Public Function
 
