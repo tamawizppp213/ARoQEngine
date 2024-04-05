@@ -98,13 +98,28 @@ namespace rhi::directX12
 
 	protected:
 		#pragma region Protected Function
-		/*! @brief : CPU debugger*/
-		void EnabledDebugLayer();            // debug mode only use
+		/*!**********************************************************************
+		*  @brief    DirectX12におけるCPUのデバッグ機能をOnにする
+		*  @note     デバッグモードにしか使用できません
+		*************************************************************************/
+		void EnabledDebugLayer(); // debug mode only use
 
-		/* @brief : GPU debugger*/
+		/*!**********************************************************************
+		*  @brief     GPUベースのバリデーション
+		*  @note      FPSに強く影響を与えることから, Release時には使用しないようにしてください
+		*  @details   以下のことが行えます. @n
+		*             1. 初期化されていない、または互換性のないディスクリプタをシェーダで使用する @n
+		*             2. 削除されたResourceを参照するディスクリプタをシェーダで使用する @n
+		*             3. 昇格したリソースの状態とリソースの状態の減衰の検証 @n
+		*             4. シェーダーにおけるディスクリプタ・ヒープの終端を超えたインデックス付け @n
+		*             5. 互換性のない状態でシェーダーがリソースにアクセスした @n
+		*             6. 初期化されていない、または互換性のないサンプラーをシェーダーで使用する @n
+		*************************************************************************/
 		void EnabledShaderBasedValidation(); // It has a significant impact on the frame rate.
 		
-		/* @brief : Acquire the debug information when the Device is removed.*/
+		/*!**********************************************************************
+		*  @brief     Deviceが削除されたときの情報を記述する(DRED)などの有効化
+		*************************************************************************/
 		void EnabledGPUClashDebuggingModes(); 
 
 		/*!**********************************************************************
@@ -126,8 +141,13 @@ namespace rhi::directX12
 
 		FactoryComPtr _factory = nullptr;
 
+		/* @brief GPUがクラッシュした際、予期しないデバイス削除エラーが検出された後に原因を解析できるような機能を追加するか*/
 		bool _useDRED        = false;
+
+		/* @brief BreadcrumbContextを使用するか*/
 		bool _useDREDContext = false;
+
+		/* @brief 軽量版のDREDを使用するか*/
 		bool _useLightWeightDRED = false;
 
 		#pragma endregion

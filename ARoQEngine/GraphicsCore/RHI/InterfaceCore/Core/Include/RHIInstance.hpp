@@ -103,6 +103,10 @@ namespace rhi::core
 		*************************************************************************/
 		bool UseGPUDebugBreak() const { return _debugInfo.EnableGPUDebugBreak; }
 
+		/*!**********************************************************************
+		*  @brief    メッセージの深刻度を設定します.
+		*************************************************************************/
+		MessageSeverity GetMessageSeverity() const { return _debugInfo.GPUDebugBreakOnSeverity; }
 		#pragma endregion Public Member Function
 
 		#pragma region Public Constructor and Destructor

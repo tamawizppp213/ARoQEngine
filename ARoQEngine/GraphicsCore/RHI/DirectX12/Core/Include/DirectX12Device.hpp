@@ -148,7 +148,7 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		DeviceComPtr  GetDevice () const noexcept { return _device; }
+		DeviceComPtr GetDevice () const noexcept { return _device; }
 
 		gu::uint32 GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
 		
@@ -172,8 +172,23 @@ namespace rhi::directX12
 		*************************************************************************/
 		D3D_SHADER_MODEL GetMaxSupportedShaderModel() const { return _maxSupportedShaderModel; }
 
+		/*!**********************************************************************
+		*  @brief  パイプラインで使用可能なリソースの上限値を確認するために使用する
+		*  @note    1. CBV : Tier 1, 2は14まで. Tier3 はDescripterHeapの最大数 @n
+        *           2. SRV : Tier 1は128まで. Tier2, 3はDescripterHeapの最大数 @n
+        *           3. UAV : Tier1は機能レベル 11.1+以上で64, それ以外で8, Tier2は64, Tier3はDescripterHeapの最大数@n
+        *           4. Sampler : Tier1は16, それ以外で2048 @n
+        *           5. ヒープ内のDescripterの最大数 Tier1, 2は1,000,000、Tier3は無制限 pn
+        * 　　　　　　https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/hardware-support
+		*************************************************************************/
 		D3D12_RESOURCE_BINDING_TIER GetResourceBindingTier() const { return _resourceBindingTier; }
 
+		/*!**********************************************************************
+		*  @brief  異種間のResourceHeapをどこまで混在させるのが行えるかを調べるレベルを取得します
+		*  @note   HeapTierの方では, バッファー, RenderTargetとDepthStencil, TargetStencil, 深度ステンシルテクスチャのレンダリングを同一ヒープで使用できるかを調べます
+        * 　　　　　 Tier1が排他, Tier2が混在可能です.
+        * 　　　　　 https://learn.microsoft.com/ja-jp/windows/win32/api/d3d12/ne-d3d12-d3d12_resource_heap_tier
+		*************************************************************************/
 		D3D12_RESOURCE_HEAP_TIER GetResourceHeapTier() const { return _resourceHeapTier; }
 
 		D3D12_RAYTRACING_TIER GetRayTracingTier() const { return _rayTracingTier; }
@@ -431,6 +446,13 @@ namespace rhi::directX12
 
 		void CheckMultiSampleQualityLevels();
 		void CheckMeshShadingSupport();
+
+		/*!**********************************************************************
+		*  @brief  パイプラインで使用可能なリソースの上限値を確認するために使用する
+		*  @note   詳細はGetResourceBindingTier, GetResourceHeapTierを確認してください
+		* 　　　　　　https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/hardware-support @n
+		*          https://learn.microsoft.com/ja-jp/windows/win32/api/d3d12/ne-d3d12-d3d12_resource_heap_tier @n
+		*************************************************************************/
 		void CheckResourceTiers();
 		void CheckMaxHeapSize();
 		void CheckBindlessSupport();
@@ -443,7 +465,11 @@ namespace rhi::directX12
 		void CheckMaxRootSignatureVersion();
 		void SetupDisplayHDRMetaData();
 		void SetupDefaultCommandSignatures();
-		void SetGPUDebugBreak();
+
+		/*!**********************************************************************
+		*  @brief  RHIInstanceで定義した深刻度の大きさにしたがってGPUのDebugBreakを行う
+		*************************************************************************/
+		void SetGPUDebugBreak() const;
 
 	#if USE_INTEL_EXTENSION
 		/*!**********************************************************************

@@ -121,11 +121,12 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	CheckWaveLaneSupport();
 	SetupDisplayHDRMetaData();
 	SetupDefaultCommandSignatures();
-
-#if USE_INTEL_EXTENSION
-	CreateIntelExtensionContext();
-#endif
 	CheckAtomicOperation();
+	
+	/*if (USE_INTEL_EXTENSION && adapter->IsAdapterIntel())
+	{
+		CreateIntelExtensionContext();
+	}*/
 }
 
 #pragma endregion Constructor and Destructor
@@ -882,15 +883,9 @@ void RHIDevice::CheckDepthBoundsTestSupport()
 /****************************************************************************
 *                     CheckResourceTiers
 *************************************************************************//**
-*  @fn        void RHIDevice::CheckResourceTiers()
-*
-*  @brief     パイプラインで使用可能なリソースの上限値を確認するために使用する
-* 　　　　　　　　
-*  @param[in] void
-*
-*  @return 　　void
-*  
-*  @details    大きく異なるのは以下の点です
+/* @brief     パイプラインで使用可能なリソースの上限値を確認するために使用する
+* 
+*  @details   大きく異なるのは以下の点です
 *             1. CBV : Tier 1, 2は14まで. Tier3 はDescripterHeapの最大数
 *             2. SRV : Tier 1は128まで. Tier2, 3はDescripterHeapの最大数
 *             3. UAV : Tier1は機能レベル 11.1+以上で64, それ以外で8, Tier2は64, Tier3はDescripterHeapの最大数
@@ -1291,8 +1286,6 @@ void RHIDevice::DestroyIntelExtensionContext()
 /****************************************************************************
 *                     IsSupportedIntelEmulatedAtomic64
 *************************************************************************//**
-*  @fn        bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
-*
 *  @brief     Atomic 64 bitがサポートされているかを返します.
 *
 *  @param[in] void
@@ -1313,6 +1306,7 @@ bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
 	---------------------------------------------------------------------*/
 	return _intelExtensionContext && _isSupportedIntelEmulatedAtomic64;
 }
+
 #endif // USE_INTEL_EXTENSION
 
 
@@ -1362,15 +1356,13 @@ gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core:
 /****************************************************************************
 *                     SetGPUDebugBreak
 *************************************************************************//**
-*  @fn        void RHIDevice::SetGPUDebugBreak()
-*
-*  @brief     Set gpu debug break
+*  @brief     RHIInstanceで定義した深刻度の大きさにしたがってGPUのDebugBreakを行う
 *
 *  @param[in] void
 *
 *  @return    void
 *****************************************************************************/
-void RHIDevice::SetGPUDebugBreak()
+void RHIDevice::SetGPUDebugBreak() const
 {
 	/*-------------------------------------------------------------------
 	-              GPU debug breakを使用するか
@@ -1385,11 +1377,14 @@ void RHIDevice::SetGPUDebugBreak()
 	_device.As(&infoQueue);
 
 	if (!infoQueue) { return; }
-
+	
 	/*-------------------------------------------------------------------
 	-              深刻度の設定 (現在はerrorのみ対応いたします.)
 	---------------------------------------------------------------------*/
-	infoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, TRUE);
+	for (uint32 i = 0; i <= (uint32)dxInstance->GetMessageSeverity(); ++i)
+	{
+		infoQueue->SetBreakOnSeverity((D3D12_MESSAGE_SEVERITY)i, TRUE);
+	}
 }
 
 /****************************************************************************

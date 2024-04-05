@@ -26,7 +26,7 @@ namespace engine::setting
 {
 	struct GraphicsSettings
 	{
-		rhi::core::APIVersion APIversion;
+		rhi::core::GraphicsAPI APIversion;
 	};
 
 	struct StartUpParameters

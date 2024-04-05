@@ -65,7 +65,7 @@ private:
 	*****************************************************************************/
 	GameInput& _gameInput             = GameInput::Instance();
 	GameManager& _gameManager         = GameManager::Instance();
-	rhi::core::APIVersion _apiVersion = rhi::core::APIVersion::DirectX12;
+	rhi::core::GraphicsAPI _apiVersion = rhi::core::GraphicsAPI::DirectX12;
 	bool _isApplicationPaused = false;
 };
 #endif

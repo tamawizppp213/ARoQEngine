@@ -379,7 +379,7 @@ void RHIInstance::EnabledDebugLayer()
 *****************************************************************************/
 void RHIInstance::EnabledShaderBasedValidation()
 {
-#if D3D12_MAX_DEBUG_INTERFACE >= 3
+#if PLATFORM_OS_WINDOWS && D3D12_MAX_DEBUG_INTERFACE >= 3
 	DebugComPtr debugController;
 
 	// Get Debugger
@@ -407,6 +407,10 @@ void RHIInstance::EnabledShaderBasedValidation()
 *****************************************************************************/
 void RHIInstance::EnabledGPUClashDebuggingModes()
 {
+	_useDRED            = false;
+	_useLightWeightDRED = false;
+	_useDREDContext     = false;
+
 	/*-------------------------------------------------------------------
 	-                Dred setting default
 	---------------------------------------------------------------------*/
@@ -415,15 +419,20 @@ void RHIInstance::EnabledGPUClashDebuggingModes()
 	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(dredSettings.GetAddressOf()))))
 	{
 		// Turn on AutoBreadCrumbs and Page Fault reporting.
+		// GPUクラッシュ時にどの命令が問題を引き起こしたかを特定する
 		dredSettings->SetAutoBreadcrumbsEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
+		
+		// メモリアクセス違反が発生した場所を特定する
 		dredSettings->SetPageFaultEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
 
 		_useDRED = true;
-		OutputDebugStringA("dred enabled\n");
+		_useLightWeightDRED = false;
+
+		_RPT0(_CRT_WARN, "DRED enabled\n");
 	}
 	else
 	{
-		OutputDebugStringA(" DRED requested but interface was not found, hresult: %x. DRED only works on Windows 10 1903+.");
+		_RPT0(_CRT_WARN, "DRED requested but interface was not found, hresult: %x. DRED only works on Windows 10 1903+.");
 	}
 #endif
 
@@ -436,7 +445,7 @@ void RHIInstance::EnabledGPUClashDebuggingModes()
 	{
 		dredSettings1->SetBreadcrumbContextEnablement(D3D12_DRED_ENABLEMENT_FORCED_ON);
 		_useDREDContext = true;
-		OutputDebugStringA("dred breadcrumb context enabled\n");
+		_RPT0(_CRT_WARN, "dred breadcrumb context enabled\n");
 	}
 #endif
 
@@ -453,7 +462,7 @@ void RHIInstance::EnabledGPUClashDebuggingModes()
 		dredSettings2->UseMarkersOnlyAutoBreadcrumbs(true);
 		_useDREDContext = true;
 		_useLightWeightDRED = true;
-		OutputDebugStringA("dred breadcrumb context enabled\n");
+		_RPT0(_CRT_WARN, "dred breadcrumb context enabled\n");
 	}
 #endif
 }

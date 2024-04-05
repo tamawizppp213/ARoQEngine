@@ -36,6 +36,20 @@ namespace rhi::core
 	};
 
 	/****************************************************************************
+	*				     MessageSeverity
+	*************************************************************************//**
+	/*  @brief メッセージの深刻度を設定します
+	*****************************************************************************/
+	enum class MessageSeverity : gu::uint8
+	{
+		Corruption,
+		Error,
+		Warning,
+		Info,
+		Message
+	};
+
+	/****************************************************************************
 	*				     RHIDebugCreateInfo
 	*************************************************************************//**
 	/*  @brief Graphics APIの選択, CPU, GPUデバッガの有無を指定します
@@ -51,10 +65,13 @@ namespace rhi::core
 		/*! @brief GPU用のブレークポイントを設定できるようにするか*/
 		bool EnableGPUDebugBreak = false;
 
+		/*! @brief GPU用のブレークポイントを設定する場合にどこまでの深刻度を設定するか*/
+		MessageSeverity GPUDebugBreakOnSeverity = MessageSeverity::Error;
+
 		RHIDebugCreateInfo() = default;
 
-		RHIDebugCreateInfo(const bool enableCPUDebugger, const bool enableGPUDebugger, const bool enableGPUDebugBreak)
-			: EnableCPUDebugger(enableCPUDebugger), EnableGPUDebugger(enableGPUDebugger), EnableGPUDebugBreak(enableGPUDebugBreak)
+		RHIDebugCreateInfo(const bool enableCPUDebugger, const bool enableGPUDebugger, const bool enableGPUDebugBreak, const MessageSeverity severity = MessageSeverity::Error)
+			: EnableCPUDebugger(enableCPUDebugger), EnableGPUDebugger(enableGPUDebugger), EnableGPUDebugBreak(enableGPUDebugBreak), GPUDebugBreakOnSeverity(severity)
 		{};
 	};
 

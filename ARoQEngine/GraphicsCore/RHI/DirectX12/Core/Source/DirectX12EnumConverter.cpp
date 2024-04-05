@@ -9,8 +9,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
+#include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include <stdexcept>
-#include <vector>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +20,20 @@ using namespace rhi::directX12;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+D3D12_MESSAGE_SEVERITY EnumConverter::Convert(const rhi::core::MessageSeverity severity)
+{
+	switch (severity)
+	{
+		using enum core::MessageSeverity;
+		case Corruption: return D3D12_MESSAGE_SEVERITY_CORRUPTION;
+		case Error     : return D3D12_MESSAGE_SEVERITY_ERROR;
+		case Warning   : return D3D12_MESSAGE_SEVERITY_WARNING;
+		case Info      : return D3D12_MESSAGE_SEVERITY_INFO;
+		case Message   : return D3D12_MESSAGE_SEVERITY_MESSAGE;
+		default:
+			throw std::runtime_error("Not supported message severity type (directX12 api)");
+	}
+}
 #pragma region CommandList
 D3D12_COMMAND_LIST_TYPE EnumConverter::Convert(const rhi::core::CommandListType type)
 {
@@ -318,7 +332,7 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 {
 	using enum core::ResourceUsage;
 
-	static std::vector<core::ResourceUsage> sourcePool =
+	static gu::DynamicArray<core::ResourceUsage> sourcePool =
 	{
 		None,
 		VertexBuffer,
@@ -330,7 +344,7 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 		Shared,
 	};
 
-	static std::vector<D3D12_RESOURCE_FLAGS> targetPool =
+	static gu::DynamicArray<D3D12_RESOURCE_FLAGS> targetPool =
 	{
 		D3D12_RESOURCE_FLAG_NONE,
 		D3D12_RESOURCE_FLAG_NONE,
@@ -344,7 +358,7 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 
 	auto res = D3D12_RESOURCE_FLAG_NONE;
 
-	for (size_t index = 0; index < sourcePool.size(); index++)
+	for (size_t index = 0; index < sourcePool.Size(); index++)
 	{
 		if (gu::HasAnyFlags(usage, sourcePool[index]))
 			res = res | targetPool[index];
