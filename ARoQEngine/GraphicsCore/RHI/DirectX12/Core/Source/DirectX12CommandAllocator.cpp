@@ -7,16 +7,16 @@
 ///                     When the Reset function in this class is called, these memories cleans up. 
 ///                     To acieve the maximum frame rate, you should create each command list one by one.
 ///             @author Toide Yutaro
-///             @date   2022_06_24
+///             @date   2024_04_06
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/DirectX12CommandAllocator.hpp"
-#include "../Include/DirectX12Device.hpp"
-#include "../Include/DirectX12EnumConverter.hpp"
-#include "../Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandAllocator.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 //////////////////////////////////////////////////////////////////////////////////
@@ -28,11 +28,13 @@ using namespace rhi;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
+/*! @brief デストラクタ*/
 RHICommandAllocator::~RHICommandAllocator()
 {
 	if (_commandAllocator) { _commandAllocator.Reset(); }
 }
 
+/*! @brief デバイスとコマンドリストの種類で生成するコンストラクタ*/
 RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const gu::tstring& name) : rhi::core::RHICommandAllocator(device, type)
 {
 	const auto dxDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get())->GetDevice();
@@ -49,9 +51,7 @@ RHICommandAllocator::RHICommandAllocator(const gu::SharedPointer<rhi::core::RHID
 /****************************************************************************
 *                     CleanUp
 *************************************************************************//**
-*  @fn        void RHICommandAllocator::CleanUp()
-*
-*  @brief     コマンドアロケーターをリセットします (コマンドバッファの削除)
+/* @brief     コマンドアロケーターをリセットします (コマンドバッファの削除)
 			  あらゆるバインドされたコマンドリストはこの関数を呼ばれる前に閉じておく必要があります
 			　加えて, GPU上のコマンドが実行されるまで, この関数は呼んではなりません
 *
@@ -67,9 +67,7 @@ void RHICommandAllocator::CleanUp()
 /****************************************************************************
 *                     SetName
 *************************************************************************//**
-*  @fn        void RHICommandAllocator::CleanUp()
-*
-*  @brief     デバッグ表示名の設定
+/* @brief     デバッグ表示名の設定
 *
 *  @param[in] const gu::tstring& name
 *

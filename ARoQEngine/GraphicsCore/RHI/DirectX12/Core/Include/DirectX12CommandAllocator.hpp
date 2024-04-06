@@ -1,13 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12CommandAllocator.hpp
-///             @brief  DirectX12CommandAllocator
-///                     This class is used to store the command list memory.
-///                     Every time a command list is reset, it will allocate a block of memory.
-///                     Even if a command list is reset, these memories aren't lost. 
-///                     When the Reset function in this class is called, these memories cleans up. 
-///                     To acieve the maximum frame rate, you should create each command list one by one.
-///             @author Toide Yutaro
-///             @date   2022_06_24
+/// @file   DirectX12CommandAllocator.hpp
+/// @brief  このクラスは、コマンドリストのメモリを格納するために使用されます. @n 
+///         コマンドリストのリセット関数が呼ばれると、メモリブロックを書き込み状態に移行することになります. @n
+///         Cleanupを行った時点で, コマンドアロケータの中身を全て破棄します. その際, GPU命令は既に実行完了していないとエラーが出ます. 
+/// @author Toide Yutaro
+/// @date   2024_04_06
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_COMMAND_ALLOCATOR_HPP
@@ -18,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandAllocator.hpp"
 #include "DirectX12Core.hpp"
-#include "GameUtility/Base/Include/GUSmartPointer.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -31,55 +28,59 @@ namespace rhi::directX12
 	/****************************************************************************
 	*				  			RHICommandAllocator
 	*************************************************************************//**
-	*  @class     RHICommandAllocator
-	*  @brief     Command allocator
+	/* @class     RHICommandAllocator
+	*  @brief     コマンドリストのメモリを格納するために使用されます @n
+	*             コマンドリストでアロケータにGPU命令を格納し, コマンドキューで命令を実行. 完了したらCleanupで中身を消去します.
 	*****************************************************************************/
 	class RHICommandAllocator : public rhi::core::RHICommandAllocator
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		/*---------------------------------------------------------------
-		　　　　　@brief : コマンドアロケーターをリセットします (コマンドバッファの削除)
-			   @note 　: あらゆるバインドされたコマンドリストはこの関数を呼ばれる前に閉じておく必要があります
-						加えて, GPU上のコマンドが実行されるまで, この関数は呼んではなりません
-		-----------------------------------------------------------------*/
-		void CleanUp() override;
+		#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief  コマンドアロケーターをリセットします (コマンドバッファの削除) @n
+		*          あらゆるバインドされたコマンドリストはこの関数を呼ばれる前に閉じておく必要があります.@n
+		*          加えて, GPU上のコマンドが実行されるまで, この関数は呼んではなりません
+		*************************************************************************/
+		virtual void CleanUp() override;
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		/*---------------------------------------------------------------
-		　　　　　@brief : コマンドリストの種類を返します (Graphics, compute, copy)
-		-----------------------------------------------------------------*/
+		#pragma endregion
+
+		#pragma region Public Member Variables
+		/*!**********************************************************************
+		*  @brief   DirectX12で使用するコマンドアロケータです
+		*************************************************************************/
 		CommandAllocatorComPtr GetAllocator() { return _commandAllocator; }
 
-		/*---------------------------------------------------------------
-		　　　　　@brief : デバッグ用の表示名を設定します
-		-----------------------------------------------------------------*/
-		void SetName(const gu::tstring& name) override;
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief   デバッグ用の表示名を設定します
+		*************************************************************************/
+		virtual void SetName(const gu::tstring& name) override;
+		#pragma endregion
+		
+		#pragma region Public Constructor and Destructor
+
+		/*! @brief デフォルトコンストラクタ*/
 		RHICommandAllocator() = default;
 
+		/*! @brief デストラクタ*/
 		~RHICommandAllocator();
 
+		/*! @brief デバイスとコマンドリストの種類で生成するコンストラクタ*/
 		explicit RHICommandAllocator(
-			const gu::SharedPointer<rhi::core::RHIDevice>& device, 
+			const gu::SharedPointer<rhi::core::RHIDevice>& device,
 			const core::CommandListType type,
 			const gu::tstring& name);
+		#pragma endregion 
 
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+		#pragma region Protected Member Variables
+		/*! @brief  DirectX12で使用するコマンドアロケータです*/
 		CommandAllocatorComPtr _commandAllocator = nullptr;
+
+		#pragma endregion
 	};
 }
 #endif

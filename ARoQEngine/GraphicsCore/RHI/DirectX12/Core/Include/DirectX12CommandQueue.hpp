@@ -78,7 +78,8 @@ namespace rhi::directX12
 		gu::uint64 GetTimestampFrequency() override;
 
 		/*!**********************************************************************
-		*  @brief   GPUとCPUの計測時間をMicroSeconds単位で取得します
+		*  @brief  GPUとCPUの計測時刻をMicroSeconds単位で取得します@n
+		* 　　　　　　測定したい区間でそれぞれTimestampの結果を保存し, その差分を引けば計測時間を測定可能です
 		*************************************************************************/
 		core::GPUTimingCalibrationTimestamp GetCalibrationTimestamp() override;
 
