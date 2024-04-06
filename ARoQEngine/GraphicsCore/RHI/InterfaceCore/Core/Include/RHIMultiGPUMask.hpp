@@ -70,15 +70,19 @@ namespace rhi::core
 
 		/*! @brief : 描画に使用されるGPU数です.*/
 		static           gu::uint32 GPU_COUNT_FOR_RENDERING;
+
+		/*! @brief : 仮想マルチGPUを使用するか*/
+		static           gu::uint32 VIRTUAL_MULTI_GPU;
 	#else
 		static constexpr gu::int32 MAX_GPU_COUNT = 1;
 		static           gu::uint32 GPU_COUNT_FOR_RENDERING;
+		static           gu::uint32 VIRTUAL_MULTI_GPU;
 	#endif
 
 		/*!**********************************************************************
 		*  @brief  ビットマスクの値を直接取得します
 		*************************************************************************/
-		__forceinline gu::uint32 Value() const { return _mask; }
+		__forceinline gu::uint32 Value() const { return VIRTUAL_MULTI_GPU ? 1 : _mask; }
 
 		/*!**********************************************************************
 		*  @brief   IDは一つだけ持っているか. (複数のビットマスクがオンになっており, 複数のGPUが指定されていないか)
