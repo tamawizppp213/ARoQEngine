@@ -942,17 +942,17 @@ namespace gu::details::string
 	template<typename Char, int CharByte>
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const int32 value)
 	{
-		return FromNumber(static_cast<int64>(value), format);
+		return FromNumber(static_cast<int64>(value));
 	}
 
 	template<typename Char, int CharByte>
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const int64  value)
 	{
 		char source[64] = {};
-		const auto length = sprintf(source, "%lld", format);
+		const auto length = sprintf(source, "%lld", value);
 
 		Char destination[64] = {};
-		for (uint32 i = 0; i < length; ++i)
+		for (int32 i = 0; i < length; ++i)
 		{
 			destination[i] = (Char)source[i];
 		}
@@ -962,7 +962,7 @@ namespace gu::details::string
 	template<typename Char, int CharByte>
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const uint32 value)
 	{
-		return FromNumber(static_cast<uint64>(value), format);
+		return FromNumber(static_cast<uint64>(value));
 	}
 
 	template<typename Char, int CharByte>
