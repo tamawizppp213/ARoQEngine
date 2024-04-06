@@ -81,12 +81,9 @@ RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& de
 /****************************************************************************
 *                     BeginRecording
 *************************************************************************//**
-*  @fn        void RHICommandList::BeginRecording()
-*
-*  @brief     This function must be called at draw function initially (stillMidFrame = false
-*             If still mid frame is set false, this function clears the command allocator
-*
-*  @param[in] const bool stillMidFrame (default: false)
+/* @brief     コマンドリストを記録状態に変更します. これはDraw関数の最初に使用します @n
+*  @param[in] 描画フレーム中に呼ばれる場合にコマンドアロケータの中身をResetするかを決定するbool値.@n
+*             描画フレーム中に呼ぶのは, コマンドリストを切り替える際に使用される可能性があるためです.
 *
 *  @return    void
 *****************************************************************************/
@@ -119,8 +116,6 @@ void RHICommandList::BeginRecording(const bool stillMidFrame)
 /****************************************************************************
 *                     EndRecording
 *************************************************************************//**
-*  @fn        void RHICommandList::EndRecording()
-*
 *  @brief     コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
 * 
 *  @param[in] void
@@ -132,7 +127,7 @@ void RHICommandList::EndRecording()
 	/*-------------------------------------------------------------------
 	-      　既に閉じられているならこの後の処理は行わない
 	---------------------------------------------------------------------*/
-	if (IsClosed()) { OutputDebugStringA("Already closed. \n");  return; }
+	if (IsClosed()) { _RPT0(_CRT_WARN, "Already closed. \n");  return; }
 	
 	/*-------------------------------------------------------------------
 	-      　記録状態からクローズ状態に以降する

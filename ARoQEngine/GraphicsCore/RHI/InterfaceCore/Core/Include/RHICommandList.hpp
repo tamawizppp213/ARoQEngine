@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-/// @file   RHIDevice.hpp
-///             @brief  Device
-///             @author Toide Yutaro
-///             @date   2022_06_09
+///  @file   RHICommandList.hpp
+///  @brief  GPUの描画命令をまとめたクラス. BeginRecordingとEndRecordingは1フレームの開始と終了時に呼んでください. 
+///  @author Toide Yutaro
+///  @date   2024_04_06
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef RHI_COMMANDLIST_HPP
@@ -39,30 +39,27 @@ namespace rhi::core
 	class RHIDescriptorHeap;
 
 	/****************************************************************************
-	*				  			RHIDevice
+	*				  			RHICommandList
 	*************************************************************************//**
-	*  @class     RHIDevice
-	*  @brief     Device interface
+	*  @class     RHICommandList
+	*  @brief     GPUの描画命令をまとめたクラス. BeginRecordingとEndRecordingは1フレームの開始と終了時に呼んでください. 
 	*****************************************************************************/
 	class RHICommandList : public gu::NonCopyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		/*-------------------------------------------------------------------
-		-               Draw Frame Function
-		---------------------------------------------------------------------*/
-		/*----------------------------------------------------------------------
-		*  @brief : This function must be called at draw function initially (stillMidFrame = false). 
-		            If still mid frame is set false, this function clears the command allocator.
-		/*----------------------------------------------------------------------*/
+		#pragma region Public Function
+		#pragma region Main Draw Frame 
+		/*!**********************************************************************
+		*  @brief     コマンドリストを記録状態に変更します. これはDraw関数の最初に使用します @n
+		*  @param[in] const bool stillMidFrame : 
+		*             描画フレーム中に呼ばれる場合にコマンドアロケータの中身をResetするかを決定するbool値.@n
+		*             描画フレーム中に呼ぶのは, コマンドリストを切り替える際に使用される可能性があるためです. 
+		*************************************************************************/
 		virtual void BeginRecording(const bool stillMidFrame = false) = 0;
 
-		/*----------------------------------------------------------------------
-		*  @brief : This function must be called at draw function at end, 
-		            The command list is closed, it transits the executable state.
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
+		*************************************************************************/
 		virtual void EndRecording  () = 0; // Call end function at end
 
 		/*----------------------------------------------------------------------
@@ -79,6 +76,22 @@ namespace rhi::core
 		            基本的には, BeginRecordingを使用してください.*/
 		virtual void Reset(const gu::SharedPointer<RHICommandAllocator>& changeAllocator = nullptr) = 0;
 
+		/*!**********************************************************************
+		*  @brief     コマンドリストをアロケータに新規に詰め込める状態にあるかを確認します
+		*  @param[in] void
+		*  @return    bool : 新規に詰め込める場合にtrueになる
+		*************************************************************************/
+		bool IsOpen() const { return _isOpen; }
+
+		/*!**********************************************************************
+		*  @brief     コマンドリストが閉じて新規にアロケータに詰め込めない状態であるかを確認します. @n
+		*             閉じた状態になったら, コマンドキューのExecute関数を呼び出してGPU命令を実行してください. 
+		*  @param[in] void
+		*  @return    bool : コマンドリストが閉じた状態でtrueを返す
+		*************************************************************************/
+		bool IsClosed() const { return !_isOpen; }
+
+		#pragma endregion Main Draw Frame
 		/*-------------------------------------------------------------------
 		-               Common command
 		---------------------------------------------------------------------*/
@@ -89,7 +102,7 @@ namespace rhi::core
 		//virtual void TransitLayout(const gu::SharedPointer<GPUTexture>& texture, const ResourceLayout& newLayout) = 0;
 		//virtual void TransitLayout(const gu::SharedPointer<GPUBuffer>& buffer, const ResourceLayout& newLayout) = 0;
 
-#pragma region Query
+		#pragma region Query
 		/*----------------------------------------------------------------------
 		*  @brief :  Starts the query to get GPU information.
 		/*----------------------------------------------------------------------*/
@@ -99,9 +112,9 @@ namespace rhi::core
 		*  @brief :  End the query to get GPU information.
 		/*----------------------------------------------------------------------*/
 		virtual void EndQuery(const QueryResultLocation& location) = 0;
-#pragma endregion Query
+		#pragma endregion Query
 
-#pragma region Graphics Command Function
+		#pragma region Graphics Command Function
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
@@ -157,12 +170,11 @@ namespace rhi::core
 		/*----------------------------------------------------------------------*/
 		virtual void DispatchMesh(const std::uint32_t threadGroupCountX = 1, const std::uint32_t threadGroupCountY = 1, const std::uint32_t threadGroupCountZ = 1) = 0;
 		
-#pragma region Graphics Command Function
 		/*-------------------------------------------------------------------
 		-                RayTracing Command
 		---------------------------------------------------------------------*/
 		
-#pragma region Copy
+		#pragma region Copy
 		/*-------------------------------------------------------------------
 		-                Copy Resource
 		---------------------------------------------------------------------*/
@@ -173,7 +185,7 @@ namespace rhi::core
 		*           GPU版memcpy
 		/*----------------------------------------------------------------------*/
 		virtual void CopyBufferRegion(const gu::SharedPointer<GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) = 0;
-#pragma endregion Copys
+		#pragma endregion Copys
 		/*-------------------------------------------------------------------
 		-                Transition layout
 		---------------------------------------------------------------------*/
@@ -181,9 +193,10 @@ namespace rhi::core
 		
 		virtual void TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) = 0;
 		
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		#pragma endregion
+		#pragma endregion 
+		
+		#pragma region Public Member Variables
 		gu::SharedPointer<RHICommandAllocator> GetCommandAllocator() const noexcept { return _commandAllocator; }
 		
 		/* @brief : Command list type (graphics, copy, or compute)*/
@@ -191,56 +204,58 @@ namespace rhi::core
 		
 		/* @brief : このコマンドリストを特定するための固有IDです. 毎フレームコマンドリストがResetされたとしても残ります.*/
 		std::uint64_t GetID() const { return _commandListID; }
-		/*-------------------------------------------------------------------
-		-                Command list open or close
-		---------------------------------------------------------------------*/
-		/* @brief :  コマンドリストを詰め込める状態にあるかを確認します. */
-		bool IsOpen  () const { return _isOpen; }
-		
-		/* @brief : コマンドリストが閉じた状態(詰め込めない状態)にあるかを確認します. */
-		bool IsClosed() const { return !_isOpen; }
 
 		/* @brief : デバイスをセットします. */
 		void SetDevice(gu::SharedPointer<RHIDevice> device) { _device = device; }
 
 		virtual void SetName(const gu::tstring& name) = 0;
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		RHICommandList()          = default;
-		
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor 
+
+		#pragma endregion
+	protected:
+		#pragma region Protected Constructor and Destructor 
+
+		/*! @brief デフォルトコンストラクタ*/
+		RHICommandList() = default;
+
+		/*! @brief デストラクタ*/
 		virtual ~RHICommandList() = default;
-		
+
+		/*! @brief 論理デバイスとコマンドを貯めるアロケータを使って生成するコンストラクタ*/
 		explicit RHICommandList(
 			const gu::SharedPointer<RHIDevice>& device,
 			const gu::SharedPointer<RHICommandAllocator>& commandAllocator)
 			: _device(device), _commandAllocator(commandAllocator) { };
 
-	protected:
-		/****************************************************************************
-		**                Private Function
-		*****************************************************************************/
+		#pragma endregion
+		
+		#pragma region Protected Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Private Member Variables
-		*****************************************************************************/
-		gu::SharedPointer<RHIDevice>           _device           = nullptr;
+		#pragma region Protected Member Variables
+
+		gu::SharedPointer<RHIDevice>           _device = nullptr;
 
 		gu::SharedPointer<RHICommandAllocator> _commandAllocator = nullptr;
 
-		gu::SharedPointer<core::RHIRenderPass> _renderPass       = nullptr;
+		gu::SharedPointer<core::RHIRenderPass> _renderPass = nullptr;
 
-		gu::SharedPointer<core::RHIFrameBuffer>_frameBuffer      = nullptr;
+		gu::SharedPointer<core::RHIFrameBuffer>_frameBuffer = nullptr;
 
 		core::CommandListType _commandListType = CommandListType::Unknown;
-		
+
 		/* @brief : コマンドリストが詰め込める状態にあるかを確認します*/
 		bool _isOpen = false;
 
 		bool _beginRenderPass = false;
 
 		std::uint64_t _commandListID = 0;
+
+		#pragma endregion
+		
 	};
 }
 #endif

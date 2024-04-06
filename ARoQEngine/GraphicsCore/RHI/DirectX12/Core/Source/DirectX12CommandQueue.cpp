@@ -186,6 +186,7 @@ core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
 	gu::uint64 gpuTimestamp = 0;
 	gu::uint64 cpuTimestamp = 0;
 
+	// 
 	ThrowIfFailed(_commandQueue->GetClockCalibration(&gpuTimestamp, &cpuTimestamp));
 
 	/*-------------------------------------------------------------------

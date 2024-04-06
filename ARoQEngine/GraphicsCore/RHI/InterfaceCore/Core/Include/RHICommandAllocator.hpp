@@ -52,6 +52,7 @@ namespace rhi::core
 		
 		/*!**********************************************************************
 		*  @brief   コマンドリストの種類を返します (Graphics, compute, copy)
+		*  @return  core::CommandList : コマンドリストの種類
 		*************************************************************************/
 		core::CommandListType GetCommandListType() const { return _commandListType; }
 

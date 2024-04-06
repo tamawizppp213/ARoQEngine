@@ -30,27 +30,27 @@ namespace rhi::directX12
 	class RHIFrameBuffer;
 
 	/****************************************************************************
-	*				  			RHIDevice
+	*				  			RHICommandList
 	*************************************************************************//**
-	*  @class     RHIDevice
-	*  @brief     Device interface
+	*  @class     RHICommandList
+	*  @brief     GPUの描画命令をまとめたクラス. BeginRecordingとEndRecordingは1フレームの開始と終了時に呼んでください.
 	*****************************************************************************/
 	class RHICommandList : public rhi::core::RHICommandList, public gu::EnableSharedFromThis<RHICommandList>
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		/*----------------------------------------------------------------------
-		*  @brief : コマンドリストを記録状態に変更します. これはDraw関数の最初に使用します
-		*           stillMidFrameは, コマンドアロケーターの中身をResetするかを決定します.
-		/*----------------------------------------------------------------------*/
-		void BeginRecording(const bool stillMidFrame) override;
+		#pragma region Public Function
+		#pragma region Main Draw Frame 
+		/*!**********************************************************************
+		*  @brief     コマンドリストを記録状態に変更します. これはDraw関数の最初に使用します @n
+		*  @param[in] 描画フレーム中に呼ばれる場合にコマンドアロケータの中身をResetするかを決定するbool値.@n
+		*             描画フレーム中に呼ぶのは, コマンドリストを切り替える際に使用される可能性があるためです.
+		*************************************************************************/
+		virtual void BeginRecording(const bool stillMidFrame) override;
 
-		/*----------------------------------------------------------------------
-		*  @brief : コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
-		/*----------------------------------------------------------------------*/
-		void EndRecording  () override;
+		/*!**********************************************************************
+		*  @brief     コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
+		*************************************************************************/
+		virtual void EndRecording () override;
 
 		/*----------------------------------------------------------------------
 		*  @brief : RenderPassを開始します.基本的には各Draw関数のBeginRecordingの後に呼ばれます
@@ -73,7 +73,8 @@ namespace rhi::directX12
 		---------------------------------------------------------------------*/
 		void SetDescriptorHeap(const gu::SharedPointer<core::RHIDescriptorHeap>& heap) override;
 
-#pragma region Query
+		#pragma endregion Main Draw Frame
+        #pragma region Query
 		/*----------------------------------------------------------------------
 		*  @brief : GPU情報を取得するためのクエリを開始します
 		/*----------------------------------------------------------------------*/
@@ -83,8 +84,8 @@ namespace rhi::directX12
 		*  @brief : GPU情報を取得するためのクエリを終了します
 		/*----------------------------------------------------------------------*/
 		void EndQuery(const core::QueryResultLocation& location) override;
-#pragma endregion Query
-#pragma region Graphics Command Function
+		#pragma endregion Query
+		#pragma region Graphics Command Function
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
@@ -135,7 +136,7 @@ namespace rhi::directX12
 		*  @brief :Mesh shaderで使用する描画関数です. 
 		/*----------------------------------------------------------------------*/
 		void DispatchMesh(const std::uint32_t threadGroupCountX = 1, const std::uint32_t threadGroupCountY = 1, const std::uint32_t threadGroupCountZ = 1) override;
-#pragma endregion Graphics Command Function
+        #pragma endregion Graphics Command Function
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/
@@ -172,6 +173,8 @@ namespace rhi::directX12
 		*           組み合わせに応じて自動でバッファかテクスチャかを判定します
 		/*----------------------------------------------------------------------*/
 		void CopyResource(const gu::SharedPointer<core::GPUResource>& dest, const gu::SharedPointer<core::GPUResource>& source);
+		
+		#pragma endregion 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
