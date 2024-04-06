@@ -48,7 +48,7 @@ RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& 
 		.Type     = dxCommandListType,                    // Enable to execute all command 
 		.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL,  // Command queue priority (¡Œã•Ï‚¦‚é‚©‚à)
 		.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE,        // Timeout‚Íí‚É—LŒø‚É‚µ‚Ä‚¨‚­.
-		.NodeMask = 0                                     // Single GPU
+		.NodeMask = device->GetGPUMask().Value()          // Single GPU
 	};
 
 	/*-------------------------------------------------------------------

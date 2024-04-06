@@ -117,7 +117,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	CheckStencilReferenceFromPixelShaderSupport();
 	CheckSamplerFeedbackSupport();
 	CheckAllowTearingSupport();
-	CheckMaxRootSignatureVersion();
+	CheckHighestRootSignatureVersion();
 	CheckWaveLaneSupport();
 	SetupDisplayHDRMetaData();
 	SetupDefaultCommandSignatures();
@@ -1104,29 +1104,29 @@ void RHIDevice::CheckAtomicOperation()
 }
 
 /****************************************************************************
-*                     CheckMaxRootSignatureVersion
+*                     CheckHighestRootSignatureVersion
 *************************************************************************//**
-*  @fn        void RHIDevice::CheckMaxRootSignatureVersion()
-*
-*  @brief     RootSignatureの最新バージョンを調べます
-*             1_0 or 1: Default
-*             1_1     : Descriptorに対して最適化を行うためのフラグを設置可能
+*  @brief  現在の指定可能な最大のRootSignatureのバージョンを調べます. @n
+*           GetHighestRootSignatureVersionを参照してください
 *
 *  @param[in] void
 *
 *  @return 　　void
 *****************************************************************************/
-void RHIDevice::CheckMaxRootSignatureVersion()
+void RHIDevice::CheckHighestRootSignatureVersion()
 {
-	D3D12_FEATURE_DATA_ROOT_SIGNATURE options = {};
-	options.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+	D3D12_FEATURE_DATA_ROOT_SIGNATURE options{};
 
-	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &options, sizeof(options))))
+	// 初期値の設定
+	options.HighestVersion = _highestRootSignatureVersion;
+
+	// バージョンを順次遡りながら, サポートされている最大値を取得する
+	while (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &options, sizeof(options))))
 	{
-		options.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+		options.HighestVersion = static_cast<D3D_ROOT_SIGNATURE_VERSION>(options.HighestVersion - 1);
 	}
 
-	_maxRootSignatureVersion = options.HighestVersion;
+	_highestRootSignatureVersion = options.HighestVersion;
 }
 
 #if USE_INTEL_EXTENSION
@@ -1404,7 +1404,7 @@ void RHIDevice::SetupDefaultCommandSignatures()
 	-              ExecuteIndirect draw index command signatures
 	---------------------------------------------------------------------*/
 	{
-		D3D12_INDIRECT_ARGUMENT_DESC indirectArgumentDesc;
+		D3D12_INDIRECT_ARGUMENT_DESC indirectArgumentDesc = {};
 		indirectArgumentDesc.Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED;
 
 		const D3D12_COMMAND_SIGNATURE_DESC commandSignatureDesc =

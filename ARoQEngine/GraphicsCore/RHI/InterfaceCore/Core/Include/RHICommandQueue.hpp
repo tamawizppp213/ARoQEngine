@@ -1,9 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHICommandQueue.hpp
-///             @brief  Send drawing commands to the GPU, 
-///                     provide methods for synchronous processing of drawing command execution
-///             @author Toide Yutaro
-///             @date   2022_09_23
+///  @file   RHICommandQueue.hpp
+///  @brief  コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信します.(Execute関数) @n
+///          また, コマンドキュー間のGPU側の同期も行うことが可能です (Wait, Signal) @n
+///  @author Toide Yutaro
+///  @date   2024_04_06
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef RHI_COMMAND_QUEUE_HPP
@@ -31,12 +31,12 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			RHICommandQueue
 	*************************************************************************//**
-	*  @class     RHICommandQueue
-	*  @brief     Send drawing commands to the GPU, 
-	              provide methods for synchronous processing of drawing command execution
-                                             |
-                  set signal value (t=1)     | wait (t=1)-> execute gpu commands
-				  --------------------------------------> t
+	/* @class     RHICommandQueue
+	*  @brief     コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信します.(Execute関数) @n
+	*             また, コマンドキュー間のGPU側の同期も行うことが可能です (Wait, Signal) @n
+    *                                         |
+    *              set signal value (t=1)     | wait (t=1)-> execute gpu commands
+	*			  --------------------------------------> t
 	*****************************************************************************/
 	class RHICommandQueue : public gu::NonCopyable
 	{
@@ -44,6 +44,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
+		#pragma region Public Function
 		/*----------------------------------------------------------------------
 		*  @brief : Used to wait for another Command queue to complete execution. (in GPU)
 		/*----------------------------------------------------------------------*/
@@ -60,6 +61,7 @@ namespace rhi::core
 		/*----------------------------------------------------------------------*/
 		virtual void Execute(const gu::DynamicArray<gu::SharedPointer<RHICommandList>>& commandLists) = 0;
 
+	#pragma endregion 
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

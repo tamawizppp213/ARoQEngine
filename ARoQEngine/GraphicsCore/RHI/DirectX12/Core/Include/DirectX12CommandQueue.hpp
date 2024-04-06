@@ -1,10 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12CommandQueue.hpp
-///             @brief  Send drawing commands to the GPU,
-///                     provide methods for synchronous processing of drawing command execution
-///                     There are three types : Graphics, Compute, Copy command queue.
-///             @author Toide Yutaro
-///             @date   2022_09_23
+///  @file   DirectX12RHICommandQueue.hpp
+///  @brief  コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信します.(Execute関数) @n
+///          また, コマンドキュー間のGPU側の同期も行うことが可能です (Wait, Signal) @n
+///  @author Toide Yutaro
+///  @date   2024_04_06
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_COMMAND_QUEUE_HPP
@@ -27,20 +26,20 @@ namespace rhi::directX12
 	/****************************************************************************
 	*				  			RHICommandQueue
 	*************************************************************************//**
-	*  @class     RHICommandQueue
-	*  @brief     Send drawing commands to the GPU,
-				  provide methods for synchronous processing of drawing command execution
-				  There are three types : Graphics, Compute, Copy command queue.
+	/* @class     RHICommandQueue
+	*  @brief     コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信します.(Execute関数) @n
+	*             また, コマンドキュー間のGPU側の同期も行うことが可能です (Wait, Signal) @n
+	*                                         |
+	*              set signal value (t=1)     | wait (t=1)-> execute gpu commands
+	*			  --------------------------------------> t
 	*****************************************************************************/
 	class RHICommandQueue : public rhi::core::RHICommandQueue
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		/*----------------------------------------------------------------------
-		*  @brief :  他のコマンドキューとの実行順序を保証するため, ほかのコマンドキューの実行完了を待つ
-		/*----------------------------------------------------------------------*/
+		#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief  他のコマンドキューとの実行順序を保証するため, ほかのコマンドキューの実行完了を待つ
+		*************************************************************************/
 		void Wait  (const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 value) override;
 		
 		/*----------------------------------------------------------------------
@@ -54,6 +53,9 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------*/
 		void Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
 
+		#pragma endregion
+
+		#pragma region Public Member Variables
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -70,23 +72,30 @@ namespace rhi::directX12
 		*  @brief : GPUとCPUの計測時間をMicroSeconds単位で取得します
 		/*----------------------------------------------------------------------*/
 		core::GPUTimingCalibrationTimestamp GetCalibrationTimestamp() override;
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+
+		#pragma endregion 
+
+		#pragma region Public Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		RHICommandQueue() = default;
 		
+		/*! @brief デストラクタ*/
 		~RHICommandQueue();
 		
+		/*! @brief デバイスとコマンドキューの種類を指定して作成するコンストラクタ*/
 		explicit RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& device, const core::CommandListType type, const gu::tstring& name);
-	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+		#pragma endregion 
+
+	protected:
+		#pragma region Protected Function
+		
+		#pragma endregion 
+		
+		#pragma region Protected Member Variables
+		/*! @brief DirectX12で使用されるコマンドキューの生ポインタ*/
 		CommandQueueComPtr _commandQueue = nullptr;
+		#pragma endregion 	
 	};
 }
 #endif

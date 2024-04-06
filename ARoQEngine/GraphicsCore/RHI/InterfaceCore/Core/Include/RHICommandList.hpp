@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHIDevice.hpp
+/// @file   RHIDevice.hpp
 ///             @brief  Device
 ///             @author Toide Yutaro
 ///             @date   2022_06_09

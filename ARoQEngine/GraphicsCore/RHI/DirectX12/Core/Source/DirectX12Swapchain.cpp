@@ -456,14 +456,14 @@ void RHISwapchain::LogHDROutput()
 	/*-------------------------------------------------------------------
 	-       Log output
 	---------------------------------------------------------------------*/
-	std::string hdrSentense 
+	gu::string hdrSentense 
 		         = "////////////////////////////////////////////////\n";
 	hdrSentense += "             HDR meta data\n";
 	hdrSentense += "////////////////////////////////////////////////\n";
-	hdrSentense += "MinLuminance : " + std::to_string(outputDesc.MinLuminance) + "[nits]\n";
-	hdrSentense += "MaxLuminance : " + std::to_string(outputDesc.MaxLuminance) + "[nits]\n";
-	hdrSentense += "MaxFullFrameLuminance : " + std::to_string(outputDesc.MaxFullFrameLuminance) + "[nits]\n";
-	OutputDebugStringA(hdrSentense.c_str());
+	hdrSentense += gu::string("MinLuminance : ") + gu::string::FromNumber(outputDesc.MinLuminance) + "[nits]\n";
+	hdrSentense += gu::string("MaxLuminance : ") + gu::string::FromNumber(outputDesc.MaxLuminance) + "[nits]\n";
+	hdrSentense += gu::string("MaxFullFrameLuminance : ") + gu::string::FromNumber(outputDesc.MaxFullFrameLuminance) + "[nits]\n";
+	OutputDebugStringA(hdrSentense.CString());
 }
 #pragma endregion Main Function
 

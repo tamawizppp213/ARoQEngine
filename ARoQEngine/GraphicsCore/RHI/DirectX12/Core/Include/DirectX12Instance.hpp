@@ -139,6 +139,7 @@ namespace rhi::directX12
 		*   @note  コマンドラインでは, "allowSoftwareRenderingを打ってください"*/
 		static bool ALLOW_SOFTWARE_RENDERING;
 
+		/*! @brief Factoryのポインタ*/
 		FactoryComPtr _factory = nullptr;
 
 		/* @brief GPUがクラッシュした際、予期しないデバイス削除エラーが検出された後に原因を解析できるような機能を追加するか*/

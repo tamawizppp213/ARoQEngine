@@ -144,10 +144,10 @@ namespace rhi::directX12
 
 		#pragma endregion Public Function
 
-		#pragma region Public Member Function
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		#pragma region Public Member Variables
+		/*!**********************************************************************
+		*  @brief  DirectX12で使用する論理デバイスのComポインタ
+		*************************************************************************/
 		DeviceComPtr GetDevice () const noexcept { return _device; }
 
 		gu::uint32 GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
@@ -197,7 +197,13 @@ namespace rhi::directX12
 
 		CommandSignaturePtr GetDefaultDrawIndexedIndirectCommandSignature() const { return _drawIndexedIndirectCommandSignature; }
 
-		D3D_ROOT_SIGNATURE_VERSION GetMaxRootSignatureVersion() const { return _maxRootSignatureVersion; }
+		/*!**********************************************************************
+		*  @brief  現在の指定可能な最大のRootSignatureのバージョンです. @n
+		*          1_0 or 1 : 通常のRootSignature @n
+		*          1_1      : Descriptorに対して最適化を行うためのフラグを設置可能 @n
+		*          1_2      : Static samplerの設定幅が広がる @n
+		*************************************************************************/
+		D3D_ROOT_SIGNATURE_VERSION GetHighestRootSignatureVersion() const { return _highestRootSignatureVersion; }
 
 		gu::uint32 MaxUsableSamplerHeapCount() const { return _maxSamplerHeapCount; }
 
@@ -376,12 +382,9 @@ namespace rhi::directX12
 		/*-------------------------------------------------------------------
 		-              RootSignature
 		---------------------------------------------------------------------*/
-		/*----------------------------------------------------------------------
-		*  @brief : RootSignatureの最新バージョン
-		* 　　　　　　　1_0 or 1: Default 
-		*           1_1     : Descriptorに対して最適化を行うためのフラグを設置可能
-		/*----------------------------------------------------------------------*/
-		D3D_ROOT_SIGNATURE_VERSION _maxRootSignatureVersion = D3D_ROOT_SIGNATURE_VERSION_1;
+		/* @brief     現在サポートされている最大のRootSignatureのバージョンです.
+		   @attention CheckHighestRootSignatureVersion関数の仕様上, 常に最新バージョンの値に更新しておいてください. */
+		D3D_ROOT_SIGNATURE_VERSION _highestRootSignatureVersion = D3D_ROOT_SIGNATURE_VERSION_1_2;
 
 		/*-------------------------------------------------------------------
 		-               Atomic
@@ -462,7 +465,12 @@ namespace rhi::directX12
 		void CheckWaveLaneSupport();
 		void CheckNative16bitOperation();
 		void CheckAtomicOperation();
-		void CheckMaxRootSignatureVersion();
+
+		/*!**********************************************************************
+		*  @brief  現在の指定可能な最大のRootSignatureのバージョンを調べます. 
+		*  @note   GetHighestRootSignatureVersionを参照してください
+		*************************************************************************/
+		void CheckHighestRootSignatureVersion();
 		void SetupDisplayHDRMetaData();
 		void SetupDefaultCommandSignatures();
 

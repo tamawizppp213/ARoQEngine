@@ -275,7 +275,7 @@ void RHIResourceLayout::SetUp()
 	-                   Set Rootsignature descriptor
 	---------------------------------------------------------------------*/
 	D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-	rootSignatureDesc.Version = rhiDevice->GetMaxRootSignatureVersion() >= D3D_ROOT_SIGNATURE_VERSION_1_1 ? D3D_ROOT_SIGNATURE_VERSION_1_1 : D3D_ROOT_SIGNATURE_VERSION_1_0;
+	rootSignatureDesc.Version = rhiDevice->GetHighestRootSignatureVersion() >= D3D_ROOT_SIGNATURE_VERSION_1_1 ? D3D_ROOT_SIGNATURE_VERSION_1_1 : D3D_ROOT_SIGNATURE_VERSION_1_0;
 
 	if (_desc.ResourceLayoutType == core::RootSignatureType::RayTracingLocal)
 	{
@@ -355,7 +355,7 @@ HRESULT RHIResourceLayout::SerializeVersionedRootSignature(
 	-       Search max root signatrue version from the device
 	---------------------------------------------------------------------*/
 	const auto device     = gu::StaticPointerCast<directX12::RHIDevice>(_device);
-	const auto maxVersion = device->GetMaxRootSignatureVersion();
+	const auto maxVersion = device->GetHighestRootSignatureVersion();
 
 	// 利用可能なバージョンが1_1以上である場合は常にVersionedRootsignatureを呼び出す
 	if (maxVersion >= D3D_ROOT_SIGNATURE_VERSION_1_1)
