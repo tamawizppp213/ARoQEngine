@@ -45,58 +45,72 @@ namespace rhi::core
 		**                Public Function
 		*****************************************************************************/
 		#pragma region Public Function
-		/*----------------------------------------------------------------------
-		*  @brief : Used to wait for another Command queue to complete execution. (in GPU)
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     他のコマンドキューとの実行順序を保証するため, ほかのコマンドキューの実行完了を待つ@n
+		*             Fenceが持つWaitはCPU側も処理が止まってしまいますが, @n
+		*             CommandQueueのWaitは指定したValue以上の値になるまでGPU内でのみ処理を止めます.
+		*  @param[in] 外部からGPUの同期を行うためのFence
+		*  @param[in] GPUの待機処理を終了し, CommandQueueの実行を再開する時の値
+		*************************************************************************/
 		virtual void Wait   (const gu::SharedPointer<RHIFence>& fence, const gu::uint64 value) = 0;
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Update the fence value (value) when the Command Queue execution completes.
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     コマンドキューの実行が完了したら, フェンスの値(value)を更新する
+		*  @param[in] 外部からGPUの同期を行うためのFence
+		*  @param[in] コマンドキューの実行完了時に更新される値
+		*************************************************************************/
 		virtual void Signal (const gu::SharedPointer<RHIFence>& fence, const gu::uint64 value) = 0;
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Execute command list contents. normally set graphics, compute, transfer commandlist
-		             All CommandLists to be assigned must be Closed.
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     コマンドリストに貯めた内容を実行する. 通常はset graphics, compute, transfer commandlist
+		*  @param[in] GPUのコマンドを貯めたコマンドリスト
+		*************************************************************************/
 		virtual void Execute(const gu::DynamicArray<gu::SharedPointer<RHICommandList>>& commandLists) = 0;
 
-	#pragma endregion 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+	    #pragma endregion 
+		
+		#pragma region Public Member Variables
+		/*!**********************************************************************
+		*  @brief    コマンドリストの種類
+		*************************************************************************/
 		core::CommandListType GetType() const { return _commandListType; }
 		
+		/*!**********************************************************************
+		*  @brief     デバッグ名
+		*************************************************************************/
 		virtual void SetName(const gu::tstring& name) = 0;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Return the gpu timestamp frequency [Hz] of the command queue
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief   コマンドキュー中のGPUタイムスタンプをHz単位で返します.
+		*************************************************************************/
 		virtual gu::uint64 GetTimestampFrequency() = 0;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Return the gpu timestamp frequency [Hz] of the command queue
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief   GPUとCPUの計測時間をMicroSeconds単位で取得します
+		*************************************************************************/
 		virtual GPUTimingCalibrationTimestamp GetCalibrationTimestamp() = 0;
-
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma endregion
+		
+		#pragma region Public Constructor and Destructor
+		#pragma endregion 
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		RHICommandQueue() = default;
 		
+		/*! @brief デストラクタ*/
 		virtual ~RHICommandQueue() = default;
 		
+		/*! @brief デバイスとコマンドキューの種類を指定して作成するコンストラクタ*/
 		explicit RHICommandQueue(const gu::SharedPointer<RHIDevice>& device, const CommandListType type) :  _device(device), _commandListType(type) {};
-		
+		#pragma endregion 
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		/*! @brief コマンドリストの種類*/
 		CommandListType  _commandListType = CommandListType::Unknown;
 
+		/*! @brief 論理デバイス*/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 	};
 }

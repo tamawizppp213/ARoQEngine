@@ -674,6 +674,14 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\DirectX12\Resource\Include\DirectX12GPUDiagnosticBuffer.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIMacro.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIMultiGPUMask.hpp">
       <SubType>
       </SubType>

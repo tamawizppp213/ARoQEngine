@@ -10,16 +10,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/DirectX12CommandQueue.hpp"
-#include "../Include/DirectX12CommandList.hpp"
-#include "../Include/DirectX12EnumConverter.hpp"
-#include "../Include/DirectX12Fence.hpp"
-#include "../Include/DirectX12Device.hpp"
-#include "../Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandQueue.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12CommandList.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Fence.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Device.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Adapter.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Instance.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include <memory>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -36,19 +37,22 @@ RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& 
 	Check(device);
 	Check(type != core::CommandListType::Unknown);
 
-	const auto dxDevice = static_cast<RHIDevice*>(device.Get())->GetDevice();
-
-	D3D12_COMMAND_LIST_TYPE dxCommandListType = EnumConverter::Convert(_commandListType);
+	const auto dxDevice   = static_cast<RHIDevice*>(device.Get())->GetDevice();
+	const auto dxAdapter  = gu::StaticPointerCast<RHIDisplayAdapter>(device->GetDisplayAdapter());
+	const auto dxInstance = static_cast<RHIInstance*>(dxAdapter->GetInstance());
 
 	/*-------------------------------------------------------------------
 	-                   Set up command queue info
 	---------------------------------------------------------------------*/
+	const auto dxCommandListType        = EnumConverter::Convert(_commandListType);
+	const auto fullSupportDebuggingMode = dxInstance->GetGPUCrashDebuggingMode() == GPUCrashDebuggingMode::All;
 	const D3D12_COMMAND_QUEUE_DESC cmdQDesc =
 	{
 		.Type     = dxCommandListType,                    // Enable to execute all command 
 		.Priority = D3D12_COMMAND_QUEUE_PRIORITY_NORMAL,  // Command queue priority (今後変えるかも)
-		.Flags    = D3D12_COMMAND_QUEUE_FLAG_NONE,        // Timeoutは常に有効にしておく.
-		.NodeMask = device->GetGPUMask().Value()          // Single GPU
+		                                                  // デバッグしているタイミングでは, GPUのタイムアウトをoffにすることでデバッグを途中で切らない.
+		.Flags    = fullSupportDebuggingMode ? D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT : D3D12_COMMAND_QUEUE_FLAG_NONE,        // Timeoutは常に有効にしておく.
+		.NodeMask = device->GetGPUMask().Value()          //　GPUマスクを使ってマルチGPUにも対応できるように変更
 	};
 
 	/*-------------------------------------------------------------------

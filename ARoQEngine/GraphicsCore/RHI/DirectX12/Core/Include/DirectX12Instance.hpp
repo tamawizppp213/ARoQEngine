@@ -25,6 +25,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::directX12
 {
+	/*!**********************************************************************
+	*  @brief  GPUがクラッシュした際のデバッグの設定
+	*************************************************************************/
+	enum class GPUCrashDebuggingMode
+	{
+		None = 0x0,
+		Dred = 0x1, //!<デバイスが削除された際のデバッグ情報
+		All = Dred
+	};
+
 	/****************************************************************************
 	*				  			RHIInstance
 	*************************************************************************//**
@@ -73,6 +83,11 @@ namespace rhi::directX12
 		FactoryComPtr GetFactory() const noexcept { return _factory; }
 
 		/*!**********************************************************************
+		*  @brief     GPUがクラッシュした際のデバッグの設定
+		*************************************************************************/
+		GPUCrashDebuggingMode GetGPUCrashDebuggingMode() const { return _gpuCrashDebuggingMode; }
+
+		/*!**********************************************************************
 		*  @brief     DirectXAgilitySDKがロード済みかを返します
 		*************************************************************************/
 		#if D3D12_CORE_ENABLED
@@ -92,6 +107,7 @@ namespace rhi::directX12
 		/*! @brief : Debuggerを使うコンストラクタ*/
 		RHIInstance(const core::RHIDebugCreateInfo& debugCreateInfo); 
 		
+		/*! @brief デストラクタ*/
 		~RHIInstance();
 
 		#pragma endregion
@@ -151,6 +167,7 @@ namespace rhi::directX12
 		/* @brief 軽量版のDREDを使用するか*/
 		bool _useLightWeightDRED = false;
 
+		GPUCrashDebuggingMode _gpuCrashDebuggingMode = GPUCrashDebuggingMode::None;
 		#pragma endregion
 
 	};

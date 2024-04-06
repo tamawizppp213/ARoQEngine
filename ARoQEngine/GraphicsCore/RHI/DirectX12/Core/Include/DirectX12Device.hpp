@@ -29,7 +29,6 @@ struct INTCExtensionInfo;
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::directX12
 {
-
 	/****************************************************************************
 	*				  			Device class
 	*************************************************************************//**
@@ -404,9 +403,7 @@ namespace rhi::directX12
 		CommandSignaturePtr _drawIndexedIndirectCommandSignature = nullptr;
 
 	private:
-		/****************************************************************************
-		**                Private Enum Class
-		*****************************************************************************/
+		#pragma region Private Enum Class
 		// Descriotor heap
 		enum DefaultHeapType
 		{
@@ -415,6 +412,8 @@ namespace rhi::directX12
 			DSV,
 			Sampler,
 		};
+
+		#pragma endregion 
 
 		/****************************************************************************
 		**                Private Function
