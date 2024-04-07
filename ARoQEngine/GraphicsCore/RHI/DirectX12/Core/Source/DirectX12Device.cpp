@@ -869,6 +869,7 @@ void RHIDevice::CheckAllowTearingSupport()
 *****************************************************************************/
 void RHIDevice::CheckDepthBoundsTestSupport()
 {
+	#if PLATFORM_OS_WINDOWS
 	D3D12_FEATURE_DATA_D3D12_OPTIONS2 options{};
 	if (SUCCEEDED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS2, &options, sizeof(options))))
 	{
@@ -878,6 +879,7 @@ void RHIDevice::CheckDepthBoundsTestSupport()
 	{
 		_isSupportedDepthBoundsTest = false;
 	}
+	#endif
 }
 
 /****************************************************************************

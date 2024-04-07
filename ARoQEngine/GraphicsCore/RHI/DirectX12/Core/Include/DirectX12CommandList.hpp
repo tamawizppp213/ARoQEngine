@@ -48,7 +48,7 @@ namespace rhi::directX12
 		virtual void BeginRecording(const bool stillMidFrame) override;
 
 		/*!**********************************************************************
-		*  @brief     コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
+		*  @brief  コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
 		*************************************************************************/
 		virtual void EndRecording () override;
 
@@ -84,23 +84,56 @@ namespace rhi::directX12
 		*  @brief : GPU情報を取得するためのクエリを終了します
 		/*----------------------------------------------------------------------*/
 		void EndQuery(const core::QueryResultLocation& location) override;
+
 		#pragma endregion Query
 		#pragma region Graphics Command Function
-		/*-------------------------------------------------------------------
-		-                Graphics Command
-		---------------------------------------------------------------------*/
-		/*----------------------------------------------------------------------
-		*  @brief : 深度が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させます.
-		/*----------------------------------------------------------------------*/
-		void SetDepthBounds(const float minDepth, const float maxDepth) override;
+		/*!**********************************************************************
+		*  @brief     深度が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させます.
+		*  @param[in] const float : 最小の深度情報
+		*  @param[in] const float : 最大の深度情報
+		*  @return    void
+		*************************************************************************/
+		virtual void SetDepthBounds(const float minDepth, const float maxDepth) override;
 
-		void SetPrimitiveTopology(const core::PrimitiveTopology topology) override;
+		/*!**********************************************************************
+		*  @brief     頂点情報のつなぎ方を設定します. 
+		*  @param[in] const core::PrimitiveTopology : プリミティブのトポロジー種類
+		*************************************************************************/
+		virtual void SetPrimitiveTopology(const core::PrimitiveTopology topology) override;
 
-		void SetViewport(const core::Viewport* viewport, const std::uint32_t numViewport = 1) override;
+		/*!**********************************************************************
+		*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
+		*  @param[in] const core::Viewport& : 描画領域を示す単一のビューポート
+		*************************************************************************/
+		virtual void SetViewport(const core::Viewport& viewport) override;
+
+		/*!**********************************************************************
+		*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
+		*  @param[in] const core::Viewport* : 描画領域を記述した配列, もしくは単一のViewportのアドレス
+		*  @param[in] const gu::uint32 : ビューポートの配列数 (Defaultは1)
+		*************************************************************************/
+		virtual void SetViewport(const core::Viewport* viewport, const gu::uint32 numViewport) override;
 		
-		void SetScissor (const core::ScissorRect* rect, const std::uint32_t numRect = 1) override;
+		/*!**********************************************************************
+		*  @brief     VRのような立体視を行う時に設定する描画領域です.シザー矩形もViewportに合わせて自動で設定します
+		*  @param[in] const core::Viewport& 左側の視野を示す描画領域
+		*  @param[in] const core::Viewport& 右側の視野を示す描画領域
+		*************************************************************************/
+		virtual void SetStereoViewport(const core::Viewport& leftView, const core::Viewport& rightView) override ;
+
+		/*!**********************************************************************
+		*  @brief     ビューポート内で実際に描画される領域を制限するためのシザー矩形を手動で設定します.
+		*  @param[in] const core::ScissorRect* : 描画領域を制限するためのシザー矩形の配列
+		*  @param[in] const gu::uint32 : シザー矩形の配列数
+		*************************************************************************/
+		virtual void SetScissor (const core::ScissorRect* rect, const gu::uint32 numRect = 1) override;
 		
-		void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
+		/*!**********************************************************************
+		*  @brief     描画領域を示すビューポートと, その中で実際に描画される範囲を指定するシザー矩形をそれぞれ手動で設定します.
+		*  @param[in] const core::Viewport& 描画領域を示すビューポート
+		*  @param[in] const core::ScissorRect& 実際に描画される範囲を示すシザー矩形
+		*************************************************************************/
+		virtual void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
 		
 		void SetResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override;
 		
@@ -120,22 +153,22 @@ namespace rhi::directX12
 		* 　　　　　　 baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
 		*           startInstanceLocation : 描画を行う最初のインスタンス番号
 		/*----------------------------------------------------------------------*/
-		void DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0, std::uint32_t startInstanceLocation = 0) override;
+		void DrawIndexedInstanced(gu::uint32 indexCountPerInstance, gu::uint32 instanceCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0, gu::uint32 startInstanceLocation = 0) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief : インデックスがついているモデルでかつ, インスタンシング描画が必要ないプリミティブを描画します.
 		/*----------------------------------------------------------------------*/
-		void DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0) override;
+		void DrawIndexed(gu::uint32 indexCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です
 		/*----------------------------------------------------------------------*/
-		void DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const std::uint32_t drawCallCount) override;
+		void DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const gu::uint32 drawCallCount) override;
 
 		/*----------------------------------------------------------------------
 		*  @brief :Mesh shaderで使用する描画関数です. 
 		/*----------------------------------------------------------------------*/
-		void DispatchMesh(const std::uint32_t threadGroupCountX = 1, const std::uint32_t threadGroupCountY = 1, const std::uint32_t threadGroupCountZ = 1) override;
+		void DispatchMesh(const gu::uint32 threadGroupCountX = 1, const gu::uint32 threadGroupCountY = 1, const gu::uint32 threadGroupCountZ = 1) override;
         #pragma endregion Graphics Command Function
 		/*-------------------------------------------------------------------
 		-                Compute Command
@@ -144,14 +177,14 @@ namespace rhi::directX12
 		
 		void SetComputePipeline(const gu::SharedPointer<core::GPUComputePipelineState>& pipeline) override;
 		
-		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1) override;
+		void Dispatch(gu::uint32 threadGroupCountX = 1, gu::uint32 threadGroupCountY = 1, gu::uint32 threadGroupCountZ = 1) override;
 		
 		/*-------------------------------------------------------------------
 		-                Transition layout
 		---------------------------------------------------------------------*/
 		void TransitionResourceState (const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after) override ;
 
-		void TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override ;
+		void TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override ;
 
 		void TransitionResourceStates(const gu::DynamicArray<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters);
 		

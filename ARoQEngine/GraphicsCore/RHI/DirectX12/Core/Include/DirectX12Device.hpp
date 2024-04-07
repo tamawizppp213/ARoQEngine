@@ -440,9 +440,10 @@ namespace rhi::directX12
 		void CheckVRSSupport();
 
 		/*!**********************************************************************
-		*  @brief  深度値が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させ, 範囲外ならば該当ピクセルを早期棄却する方法
-		*  @note   Deferred Renderingにおけるライトのaccumulation, Deferred RenderingにおけるCascaded Shadow Map, 被写界深度エフェクト, 遠景描画等に使用可能 
-		*          https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/overviews-direct3d-11-devices-downlevel-intro
+		*  @brief     深度値が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させ, 範囲外ならば該当ピクセルを早期棄却する方法
+		*             Deferred Renderingにおけるライトのaccumulation, Deferred RenderingにおけるCascaded Shadow Map, 被写界深度エフェクト, 遠景描画等に使用可能 @n
+		*             https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/overviews-direct3d-11-devices-downlevel-intro @n
+		*  @attention PLATFORM_OS_WINDOWS環境で使用可能な機能です.
 		*************************************************************************/
 		void CheckDepthBoundsTestSupport();
 

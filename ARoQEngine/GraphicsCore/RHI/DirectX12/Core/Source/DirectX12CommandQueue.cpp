@@ -72,10 +72,9 @@ RHICommandQueue::~RHICommandQueue()
 /****************************************************************************
 *							Wait
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
-* 
-*  @brief     Used to wait for another Command queue to complete execution. (in GPU)
-*             FenceのWaitはCPU側も処理が止まりますが, CommandQueueのWaitは, 指定したValue以上の値になるまで, GPU内のみで処理を止めることになります. 
+/*  @brief    他のコマンドキューとの実行順序を保証するため, ほかのコマンドキューの実行完了を待つ@n
+*             Fenceが持つWaitはCPU側も処理が止まってしまいますが, @n
+*             CommandQueueのWaitは指定したValue以上の値になるまでGPU内でのみ処理を止めます.
 * 
 *  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *  @param[in] std::uint64_t value
@@ -91,8 +90,6 @@ void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, gu::u
 /****************************************************************************
 *							Signal
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
-* 
 *  @brief     Update value when the Command Queue execution completes.
 *             GPU内で処理が完結します.　
 * 
@@ -111,11 +108,9 @@ void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, gu:
 /****************************************************************************
 *							Execute
 *************************************************************************//**
-*  @fn        void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
+/* @brief     コマンドリストに貯めた内容を実行する. 通常はset graphics, compute, transfer commandlist
 * 
-*  @brief     Execute command list contents. normally set graphics, compute, transfer commandlist
-* 
-*  @param[in] const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists
+*  @param[in] GPUのコマンドを貯めたコマンドリスト配列
 * 
 *  @return 　　void
 *****************************************************************************/
@@ -143,8 +138,6 @@ void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core
 /****************************************************************************
 *							GetTimestampFrequency
 *************************************************************************//**
-*  @fn        gu::uint64 RHICommandQueue::GetTimestampFrequency()
-*
 *  @brief     コマンドキュー中のGPUタイムスタンプをHz単位で返します.
 *
 *  @param[in] void
@@ -162,9 +155,8 @@ gu::uint64 RHICommandQueue::GetTimestampFrequency()
 /****************************************************************************
 *							GetCalibrationTimestamp
 *************************************************************************//**
-*  @fn        core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
-*
-*  @brief     GPUとCPUの計測時間を取得します
+*  @brief      GPUとCPUの計測時刻をMicroSeconds単位で取得します@n
+* 　　　　　　測定したい区間でそれぞれTimestampの結果を保存し, その差分を引けば計測時間を測定可能です
 *
 *  @param[in] void
 *
@@ -186,7 +178,6 @@ core::GPUTimingCalibrationTimestamp RHICommandQueue::GetCalibrationTimestamp()
 	gu::uint64 gpuTimestamp = 0;
 	gu::uint64 cpuTimestamp = 0;
 
-	// 
 	ThrowIfFailed(_commandQueue->GetClockCalibration(&gpuTimestamp, &cpuTimestamp));
 
 	/*-------------------------------------------------------------------

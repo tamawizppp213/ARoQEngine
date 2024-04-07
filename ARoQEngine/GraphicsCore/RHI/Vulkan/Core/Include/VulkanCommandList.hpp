@@ -74,11 +74,40 @@ namespace rhi::vulkan
 		
 		void SetPrimitiveTopology(const core::PrimitiveTopology topology) override;
 		
-		void SetViewport          (const core::Viewport* viewport, const std::uint32_t numViewport = 1)override;
+		/*!**********************************************************************
+		*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
+		*  @param[in] const core::Viewport& : 描画領域を示す単一のビューポート
+		*************************************************************************/
+		virtual void SetViewport(const core::Viewport& viewport) override {  };
+
+		/*!**********************************************************************
+		*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
+		*  @param[in] const core::Viewport* : 描画領域を記述した配列, もしくは単一のViewportのアドレス
+		*  @param[in] const gu::uint32 : ビューポートの配列数 (Defaultは1)
+		*************************************************************************/
+		void SetViewport (const core::Viewport* viewport, const gu::uint32 numViewport = 1)override;
 		
-		void SetScissor           (const core::ScissorRect* rect , const std::uint32_t numRect = 1) override;
-		
-		void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
+		/*!**********************************************************************
+		*  @brief     VRのような立体視を行う時に設定する描画領域です
+		*  @param[in] const core::Viewport& 左側の視野を示す描画領域
+		*  @param[in] const core::Viewport& 右側の視野を示す描画領域
+		*************************************************************************/
+		virtual void SetStereoViewport(const core::Viewport& leftView, const core::Viewport& rightView) override {};
+
+		/*!**********************************************************************
+		*  @brief     ビューポート内で実際に描画される領域を制限するためのシザー矩形を手動で設定します.
+		*  @param[in] const core::ScissorRect* : 描画領域を制限するためのシザー矩形の配列
+		*  @param[in] const gu::uint32 : シザー矩形の配列数
+		*************************************************************************/
+		virtual void SetScissor(const core::ScissorRect* rect, const gu::uint32 numRect = 1) override;
+
+		/*!**********************************************************************
+		*  @brief     描画領域を示すビューポートと, その中で実際に描画される範囲を指定するシザー矩形をそれぞれ手動で設定します.
+		*  @param[in] const core::Viewport& 描画領域を示すビューポート
+		*  @param[in] const core::ScissorRect& 実際に描画される範囲を示すシザー矩形
+		*************************************************************************/
+		virtual void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
+
 		/*-------------------------------------------------------------------
 		-                Graphics Command
 		---------------------------------------------------------------------*/
@@ -90,31 +119,31 @@ namespace rhi::vulkan
 		
 		void SetIndexBuffer  (const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
 		
-		void DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0)override;
+		void DrawIndexed(gu::uint32 indexCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0)override;
 		
-		void DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation = 0, std::uint32_t baseVertexLocation = 0, std::uint32_t startInstanceLocation = 0)override;
+		void DrawIndexedInstanced(gu::uint32 indexCountPerInstance, gu::uint32 instanceCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0, gu::uint32 startInstanceLocation = 0)override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です
 		/*----------------------------------------------------------------------*/
-		void DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const std::uint32_t drawCallCount) override {};
+		void DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const gu::uint32 drawCallCount) override {};
 
 		/*----------------------------------------------------------------------
 		*  @brief :Mesh shaderで使用する描画関数です.
 		/*----------------------------------------------------------------------*/
-		void DispatchMesh(const std::uint32_t threadGroupCountX = 1, const std::uint32_t threadGroupCountY = 1, const std::uint32_t threadGroupCountZ = 1) override {};
+		void DispatchMesh(const gu::uint32 threadGroupCountX = 1, const gu::uint32 threadGroupCountY = 1, const gu::uint32 threadGroupCountZ = 1) override {};
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/
 		void SetComputeResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override{};
 		
-		void Dispatch(std::uint32_t threadGroupCountX = 1, std::uint32_t threadGroupCountY = 1, std::uint32_t threadGroupCountZ = 1)override;
+		void Dispatch(gu::uint32 threadGroupCountX = 1, gu::uint32 threadGroupCountY = 1, gu::uint32 threadGroupCountZ = 1)override;
 		/*-------------------------------------------------------------------
 		-                Transition Resource State
 		---------------------------------------------------------------------*/
 		void TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after) override;
 		
-		void TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override;
+		void TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override;
 		
 		void CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source) override {};;
 		
@@ -159,15 +188,15 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		VkAccessFlags SelectVkAccessFlag(const VkImageLayout imageLayout);
 	};
-	inline void rhi::vulkan::RHICommandList::DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation, std::uint32_t baseVertexLocation)
+	inline void rhi::vulkan::RHICommandList::DrawIndexed(gu::uint32 indexCount, gu::uint32 startIndexLocation, gu::uint32 baseVertexLocation)
 	{
 		vkCmdDrawIndexed(_commandBuffer, indexCount, 1, startIndexLocation, baseVertexLocation, 0);
 	}
-	inline void rhi::vulkan::RHICommandList::DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation, std::uint32_t baseVertexLocation, std::uint32_t startInstanceLocation)
+	inline void rhi::vulkan::RHICommandList::DrawIndexedInstanced(gu::uint32 indexCountPerInstance, gu::uint32 instanceCount, gu::uint32 startIndexLocation, gu::uint32 baseVertexLocation, gu::uint32 startInstanceLocation)
 	{
 		vkCmdDrawIndexed(_commandBuffer, indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startIndexLocation);
 	}
-	inline void rhi::vulkan::RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t threadGroupCountY, std::uint32_t threadGroupCountZ)
+	inline void rhi::vulkan::RHICommandList::Dispatch(gu::uint32 threadGroupCountX, gu::uint32 threadGroupCountY, gu::uint32 threadGroupCountZ)
 	{
 		vkCmdDispatch(_commandBuffer, threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 	}

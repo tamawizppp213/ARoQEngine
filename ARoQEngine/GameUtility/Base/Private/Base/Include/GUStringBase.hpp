@@ -949,7 +949,7 @@ namespace gu::details::string
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const int64  value)
 	{
 		char source[64] = {};
-		const auto length = sprintf(source, "%lld", value);
+		const auto length = sprintf_s(source, "%lld", value);
 
 		Char destination[64] = {};
 		for (int32 i = 0; i < length; ++i)
@@ -986,7 +986,7 @@ namespace gu::details::string
 		const auto length = sprintf_s(source, "%f", value);
 		
 		Char destination[64] = {};
-		for (uint32 i = 0; i < length; ++i)
+		for (int32 i = 0; i < length; ++i)
 		{
 			destination[i] = (Char)source[i];
 		}

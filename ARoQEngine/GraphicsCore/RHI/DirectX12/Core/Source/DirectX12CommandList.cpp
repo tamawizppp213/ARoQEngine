@@ -209,7 +209,7 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
 	gu::DynamicArray<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
-	TransitionResourceStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().Data(), states.Data());
+	TransitionResourceStates(static_cast<gu::uint32>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().Data(), states.Data());
 
 	/*-------------------------------------------------------------------
 	-          Select renderpass and frame buffer action
@@ -245,7 +245,7 @@ void RHICommandList::EndRenderPass()
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
 	gu::DynamicArray<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
-	TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().Data(), states.Data());
+	TransitionResourceStates(static_cast<gu::uint32>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().Data(), states.Data());
 	_beginRenderPass = false;
 }
 
@@ -255,10 +255,11 @@ void RHICommandList::EndRenderPass()
 /****************************************************************************
 *                       SetDepthBounds
 *************************************************************************//**
-*  @fn        void RHICommandList::SetDepthBounds(const float minDepth, const float maxDepth)
-*
-*  @brief     深度が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させます.
-
+/* @brief     深度が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させます.
+*  
+*  @param[in] const float 最小の深度情報
+*  @param[in] const float 最大の深度情報
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHICommandList::SetDepthBounds(const float minDepth, const float maxDepth)
@@ -336,11 +337,9 @@ void RHICommandList::EndQuery(const core::QueryResultLocation& location)
 /****************************************************************************
 *                       SetPrimitiveTopology
 *************************************************************************//**
-*  @fn        void RHICommandList::SetPrimitiveTopology(core::PrimitiveTopology topology)
+/* @brief    頂点情報のつなぎ方を設定します. 
 * 
-*  @brief     Regist Primitive topology to command list
-* 
-*  @param[in] const core::PrimitiveTopology
+*  @param[in] プリミティブのトポロジー種類
 * 
 *  @return 　　void
 *****************************************************************************/
@@ -352,54 +351,138 @@ void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology
 /****************************************************************************
 *                       SetViewport
 *************************************************************************//**
-*  @fn        void rhi::directX12::RHICommandList::SetViewport(const core::Viewport* viewport, std::uint32_t numViewport)
-*  @brief     Regist multi viewport to command list
-*  @param[in] const core::Viewport view port
-*  @param[in] std::uint32_t viewport count
+*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
+*  @param[in] const core::Viewport* : 描画領域を示す単一のビューポート
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::SetViewport(const core::Viewport* viewport, const std::uint32_t numViewport)
+void RHICommandList::SetViewport(const core::Viewport& viewport)
+{
+	const D3D12_VIEWPORT v = 
+	{
+		.TopLeftX = viewport.TopLeftX,
+		.TopLeftY = viewport.TopLeftY,
+		.Width    = viewport.Width,
+		.Height   = viewport.Height,
+		.MinDepth = viewport.MinDepth,
+		.MaxDepth = viewport.MaxDepth
+	};
+
+
+	const D3D12_RECT r =
+	{
+		.left   = static_cast<LONG>(viewport.TopLeftX),
+		.top    = static_cast<LONG>(viewport.TopLeftY),
+		.right  = static_cast<LONG>(viewport.TopLeftX + viewport.Width),
+		.bottom = static_cast<LONG>(viewport.TopLeftY + viewport.Height)
+	};
+
+	_commandList->RSSetViewports(1, &v);
+	_commandList->RSSetScissorRects(1, &r);
+}
+
+
+/****************************************************************************
+*                       SetViewport
+*************************************************************************//**
+*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します
+*  @param[in] const core::Viewport* : 描画領域を記述した配列, もしくは単一のViewportのアドレス
+*  @param[in] const gu::uint32 : ビューポートの配列数
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::SetViewport(const core::Viewport* viewport, const gu::uint32 numViewport)
 {
 	gu::DynamicArray<D3D12_VIEWPORT> v(numViewport);
-	for (UINT i = 0; i < numViewport; ++i)
+	for (uint32 i = 0; i < numViewport; ++i)
 	{
-		v[i].TopLeftX = viewport->TopLeftX;
-		v[i].TopLeftY = viewport->TopLeftY;
-		v[i].Width    = viewport->Width;
-		v[i].Height   = viewport->Height;
-		v[i].MaxDepth = viewport->MaxDepth;
-		v[i].MinDepth = viewport->MinDepth;
+		v[i].TopLeftX = viewport[i].TopLeftX;
+		v[i].TopLeftY = viewport[i].TopLeftY;
+		v[i].Width    = viewport[i].Width;
+		v[i].Height   = viewport[i].Height;
+		v[i].MaxDepth = viewport[i].MaxDepth;
+		v[i].MinDepth = viewport[i].MinDepth;
 	}
-	_commandList->RSSetViewports(numViewport, v.Data());
+
+	gu::DynamicArray<D3D12_RECT> r(numViewport);
+	for (uint32 i = 0; i < numViewport; ++i)
+	{
+		r[i].left   = static_cast<LONG>(viewport[i].TopLeftX);
+		r[i].top    = static_cast<LONG>(viewport[i].TopLeftY);
+		r[i].right  = static_cast<LONG>(viewport[i].TopLeftX + viewport[i].Width);
+		r[i].bottom = static_cast<LONG>(viewport[i].TopLeftY + viewport[i].Height);
+	}
+	_commandList->RSSetViewports   (numViewport, v.Data());
+	_commandList->RSSetScissorRects(numViewport, r.Data());
 }
+
+/****************************************************************************
+*                       SetViewport
+*************************************************************************//**
+/* @brief     VRのような立体視を行う時に設定する描画領域です
+* 
+*  @param[in] const core::Viewport& 左側の視野を示す描画領域
+*  @param[in] const core::Viewport& 右側の視野を示す描画領域
+* 
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::SetStereoViewport(const core::Viewport& leftView, const core::Viewport& rightView)
+{
+	D3D12_VIEWPORT viewports[2] = {};
+
+	viewports[0].TopLeftX = leftView.TopLeftX;
+	viewports[0].TopLeftY = leftView.TopLeftY;
+	viewports[0].Width    = leftView.Width;
+	viewports[0].Height   = leftView.Height;
+	viewports[0].MinDepth = leftView.MinDepth;
+	viewports[0].MaxDepth = leftView.MaxDepth;
+
+	viewports[1].TopLeftX = leftView.TopLeftX;
+	viewports[1].TopLeftY = leftView.TopLeftY;
+	viewports[1].Width    = leftView.Width;
+	viewports[1].Height   = leftView.Height;
+	viewports[1].MinDepth = leftView.MinDepth;
+	viewports[1].MaxDepth = leftView.MaxDepth;
+
+	D3D12_RECT scissorRects[2] =
+	{
+		{(LONG)viewports[0].TopLeftX, (LONG)viewports[0].TopLeftY, (LONG)(viewports[0].TopLeftX + viewports[0].Width), (LONG)(viewports[0].TopLeftY + viewports[0].Height)},
+		{(LONG)viewports[1].TopLeftX, (LONG)viewports[1].TopLeftY, (LONG)(viewports[1].TopLeftX + viewports[1].Width), (LONG)(viewports[1].TopLeftY + viewports[1].Height)}
+	};
+
+	_commandList->RSSetViewports   (2, viewports);
+	_commandList->RSSetScissorRects(2, scissorRects);
+}
+
 /****************************************************************************
 *                       SetScissorRect
 *************************************************************************//**
-*  @fn        void rhi::directX12::RHICommandList::SetScissor(const core::ScissorRect* rect, std::uint32_t numRect)
-*  @brief     Regist multi scissorRect to command list
-*  @param[in] const core::ScissorRect*
-*  @param[in] std::uint32_t numRect
+/*  @brief     ビューポート内で実際に描画される領域を制限するためのシザー矩形を手動で設定します.
+* 
+*  @param[in] const core::ScissorRect* : 描画領域を制限するためのシザー矩形の配列
+*  @param[in] const gu::uint32 : シザー矩形の配列数
+* 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::SetScissor(const core::ScissorRect* rect, const std::uint32_t numRect)
+void RHICommandList::SetScissor(const core::ScissorRect* rect, const gu::uint32 numRect)
 {
 	gu::DynamicArray<D3D12_RECT> r(numRect);
 	for (UINT i = 0; i < numRect; ++i)
 	{
-		r[i].left = rect->Left;
-		r[i].right = rect->Right;
+		r[i].left   = rect->Left;
+		r[i].right  = rect->Right;
 		r[i].bottom = rect->Bottom;
-		r[i].top = rect->Top;
+		r[i].top    = rect->Top;
 	}
 	_commandList->RSSetScissorRects(numRect, r.Data());
 }
+
 /****************************************************************************
 *                       SetViewportAndScissor
 *************************************************************************//**
-*  @fn        void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect)
-*  @brief     Regist viewport and scissorRect to command list
-*  @param[in] const core::Viewport& viewport
-*  @param[in] const core::ScissorRect& rect
+/* @brief     描画領域を示すビューポートと, その中で実際に描画される範囲を指定するシザー矩形をそれぞれ手動で設定します.
+* 
+*  @param[in] const core::Viewport& 描画領域を示すビューポート
+*  @param[in] const core::ScissorRect& 実際に描画される範囲を示すシザー矩形
+* 
 *  @return 　　void
 *****************************************************************************/
 void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect)
@@ -489,30 +572,30 @@ void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& bu
 	_commandList->IASetIndexBuffer(&view);
 }
 
-void RHICommandList::DrawIndexed(std::uint32_t indexCount, std::uint32_t startIndexLocation, std::uint32_t baseVertexLocation)
+void RHICommandList::DrawIndexed(gu::uint32 indexCount, gu::uint32 startIndexLocation, gu::uint32 baseVertexLocation)
 {
 	_commandList->DrawIndexedInstanced(indexCount, 1, startIndexLocation, baseVertexLocation, 0);
 }
 
 
-void RHICommandList::DrawIndexedInstanced(std::uint32_t indexCountPerInstance, std::uint32_t instanceCount, std::uint32_t startIndexLocation, std::uint32_t baseVertexLocation, std::uint32_t startInstanceLocation)
+void RHICommandList::DrawIndexedInstanced(gu::uint32 indexCountPerInstance, gu::uint32 instanceCount, gu::uint32 startIndexLocation, gu::uint32 baseVertexLocation, gu::uint32 startInstanceLocation)
 {
 	_commandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
-void RHICommandList::DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const std::uint32_t drawCallCount)
+void RHICommandList::DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const gu::uint32 drawCallCount)
 {
 	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device);
 	const auto dxBuffer = gu::StaticPointerCast<directX12::GPUBuffer>(argumentBuffer);
 	_commandList->ExecuteIndirect(dxDevice->GetDefaultDrawIndexedIndirectCommandSignature().Get(), drawCallCount, dxBuffer->GetResourcePtr(), 0, nullptr, 0);
 }
 
-void RHICommandList::DispatchMesh(const std::uint32_t threadGroupCountX, const std::uint32_t threadGroupCountY, const std::uint32_t threadGroupCountZ)
+void RHICommandList::DispatchMesh(const gu::uint32 threadGroupCountX, const gu::uint32 threadGroupCountY, const gu::uint32 threadGroupCountZ)
 {
 	_commandList->DispatchMesh(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
 
-void RHICommandList::Dispatch(std::uint32_t threadGroupCountX, std::uint32_t threadGroupCountY, std::uint32_t threadGroupCountZ)
+void RHICommandList::Dispatch(gu::uint32 threadGroupCountX, gu::uint32 threadGroupCountY, gu::uint32 threadGroupCountZ)
 {
 	_commandList->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 }
@@ -541,20 +624,20 @@ void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTe
 /****************************************************************************
 *                     TransitionResourceStates
 *************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
+*  @fn        void RHICommandList::TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
 *
 *  @brief     Transition resource layout using barrier
 *
-*  @param[in] const std::uint32_t numStates
+*  @param[in] const gu::uint32 numStates
 *  @param[in] const gu::SharedPointer<core::GPUTexture>* texture array,
 *  @param[in] core::ResourceState* state array
 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
+void RHICommandList::TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
 {
 	gu::DynamicArray<BARRIER> barriers = {};
-	for (std::uint32_t i = 0; i < numStates; ++i)
+	for (gu::uint32 i = 0; i < numStates; ++i)
 	{
 		BARRIER barrier = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(textures[i])->GetResource().Get(),
 			EnumConverter::Convert(textures[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
@@ -789,7 +872,7 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 		dsvDesc.cpuDescriptor          = dsvHandle;
 	}
 
-	_commandList->BeginRenderPass(static_cast<std::uint32_t>(rtvDescs.Size()), hasRTV ? rtvDescs.Data() : nullptr, hasDSV ? &dsvDesc : nullptr, D3D12_RENDER_PASS_FLAG_NONE);
+	_commandList->BeginRenderPass(static_cast<gu::uint32>(rtvDescs.Size()), hasRTV ? rtvDescs.Data() : nullptr, hasDSV ? &dsvDesc : nullptr, D3D12_RENDER_PASS_FLAG_NONE);
 }
 
 /****************************************************************************
@@ -862,7 +945,7 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 	/*-------------------------------------------------------------------
 	-          Set render target and depth stencil
 	---------------------------------------------------------------------*/
-	_commandList->OMSetRenderTargets(static_cast<std::uint32_t>(rtvHandle.Size()), hasRTV ? rtvHandle.Data() : nullptr, FALSE, hasDSV ? &dsvHandle : nullptr);
+	_commandList->OMSetRenderTargets(static_cast<gu::uint32>(rtvHandle.Size()), hasRTV ? rtvHandle.Data() : nullptr, FALSE, hasDSV ? &dsvHandle : nullptr);
 }
 
 #pragma endregion Private Function

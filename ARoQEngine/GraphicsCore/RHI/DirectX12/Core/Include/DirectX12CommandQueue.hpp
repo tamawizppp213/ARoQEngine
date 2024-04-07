@@ -29,8 +29,8 @@ namespace rhi::directX12
 	/* @class     RHICommandQueue
 	*  @brief     コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信します.(Execute関数) @n
 	*             また, コマンドキュー間のGPU側の同期も行うことが可能です (Wait, Signal) @n
-	*                                         |
-	*              set signal value (t=1)     | wait (t=1)-> execute gpu commands
+	*                                         |@n
+	*              set signal value (t=1)     | wait (t=1)-> execute gpu commands @n
 	*			  --------------------------------------> t
 	*****************************************************************************/
 	class RHICommandQueue : public rhi::core::RHICommandQueue
@@ -41,21 +41,21 @@ namespace rhi::directX12
 		*  @brief     他のコマンドキューとの実行順序を保証するため, ほかのコマンドキューの実行完了を待つ@n
 		*             Fenceが持つWaitはCPU側も処理が止まってしまいますが, @n
 		*             CommandQueueのWaitは指定したValue以上の値になるまでGPU内でのみ処理を止めます.
-		*  @param[in] 外部からGPUの同期を行うためのFence
-		*  @param[in] GPUの待機処理を終了し, CommandQueueの実行を再開する時の値
+		*  @param[in] const gu::SharedPointer<core::RHIFence> : 外部からGPUの同期を行うためのFence
+		*  @param[in] const gu::uint64 : GPUの待機処理を終了し, CommandQueueの実行を再開する時の値
 		*************************************************************************/
 		void Wait  (const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 value) override;
 		
 		/*!**********************************************************************
 		*  @brief     コマンドキューの実行が完了したら, フェンスの値(value)を更新する
-		*  @param[in] 外部からGPUの同期を行うためのFence
-		*  @param[in] コマンドキューの実行完了時に更新される値
+		*  @param[in] const gu::SharedPointer<core::RHIFence>& 外部からGPUの同期を行うためのFence
+		*  @param[in] const gu::uint64 コマンドキューの実行完了時に更新される値
 		*************************************************************************/
 		void Signal(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 value) override;
 		
 		/*!**********************************************************************
 		*  @brief     コマンドリストに貯めた内容を実行する. 通常はset graphics, compute, transfer commandlist
-		*  @param[in] GPUのコマンドを貯めたコマンドリスト
+		*  @param[in] GPUのコマンドを貯めたコマンドリスト配列
 		*************************************************************************/
 		void Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
 

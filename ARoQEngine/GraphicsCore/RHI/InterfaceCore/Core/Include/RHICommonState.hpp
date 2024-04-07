@@ -163,8 +163,8 @@ namespace rhi::core
 	*****************************************************************************/
 	struct Viewport
 	{
-		float TopLeftX  = 0.0f; 
-		float TopLeftY  = 0.0f;
+		float TopLeftX  = 0.0f; // ピクセル単位
+		float TopLeftY  = 0.0f; // ピクセル単位
 		float Width     = 0.0f;
 		float Height    = 0.0f;
 		float MinDepth  = 0.0f;
