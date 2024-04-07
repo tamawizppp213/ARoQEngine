@@ -1252,18 +1252,18 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		ClearValue        ClearColor       = ClearValue();                   // clear color 
 		size_t            Width            = 1;                              // texture width
 		size_t            Height           = 1;                              // texture height
 		size_t            DepthOrArraySize = 1;                              // texture depth or array size
 		size_t            ByteSize         = 0;                              // total byte size
 		size_t            MipLevels        = 1;                              // mipmap levels
 		PixelFormat       PixelFormat      = PixelFormat::Unknown;           // pixel color format 
+		ResourceState     State = ResourceState::GeneralRead;    // resource layout
+		ResourceUsage     ResourceUsage = ResourceUsage::None;            // how to use resource 
 		MultiSample       Sample           = MultiSample::Count1;            // multi sample count
 		ResourceDimension Dimension        = ResourceDimension::Dimension1D; // texture resource dimension
 		ResourceType      ResourceType     = ResourceType::Unknown;          // GPU resource type
-		ResourceUsage     ResourceUsage    = ResourceUsage::None;            // how to use resource 
-		ClearValue        ClearColor       = ClearValue();                   // clear color 
-		ResourceState     State            = ResourceState::GeneralRead;    // resource layout
 		MemoryHeap        HeapType         = MemoryHeap::Default;            // gpu heap type
 		/****************************************************************************
 		**                Public Function
@@ -1365,7 +1365,7 @@ namespace rhi::core
 		Load,     
 		DontCare
 	};
-	enum class AttachmentStore
+	enum class AttachmentStore : gu::uint8
 	{
 		Store,
 		DontCare
@@ -1432,10 +1432,10 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		ResourceState   InitialLayout = ResourceState::Common;        // initial resource layout  
+		ResourceState   FinalLayout   = ResourceState::Present;       // final desired resource layout
 		PixelFormat     Format        = PixelFormat::Unknown;         // pixel format
 		MultiSample     SampleCount   = MultiSample::Count1;          // multi sample count (default: single sample count)
-		ResourceState   InitialLayout = ResourceState::Common;        // initial resource layout  
-		ResourceState  FinalLayout    = ResourceState::Present;       // final desired resource layout
 		AttachmentLoad  LoadOp        = AttachmentLoad::Clear;        // at the beginning of a render path, erase already existing data with a specific value
 		AttachmentStore StoreOp       = AttachmentStore::Store;       // at the end of a render pass, save data on memory
 		AttachmentLoad  StencilLoad   = AttachmentLoad::DontCare;     // stencil; 
