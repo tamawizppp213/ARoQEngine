@@ -72,8 +72,11 @@ namespace rhi::core
 		/*----------------------------------------------------------------------*/
 		virtual void EndRenderPass() = 0;
 
-		/* @brief : コマンドリストを詰め込み可能な状態に変更します. またコマンドアロケータ中のコマンドバッファの内容を先頭に戻します.
-		            基本的には, BeginRecordingを使用してください.*/
+		/*!**********************************************************************
+		*  @brief     コマンドリストを記録状態に変更します.またコマンドアロケータ中のコマンドバッファの内容を先頭に戻します.
+		*  @param[in] コマンドアロケータを変更するかどうか
+		*  @attention 基本的には, ResetではなくBeginRecordingを使用してください.
+		*************************************************************************/
 		virtual void Reset(const gu::SharedPointer<RHICommandAllocator>& changeAllocator = nullptr) = 0;
 
 		/*!**********************************************************************
@@ -163,7 +166,7 @@ namespace rhi::core
 		*************************************************************************/
 		virtual void SetViewportAndScissor(const Viewport& viewport, const ScissorRect& rect)       = 0;
 		
-		virtual void SetVertexBuffer      (const gu::SharedPointer<GPUBuffer>& buffer) = 0;
+		virtual void SetVertexBuffer(const gu::SharedPointer<GPUBuffer>& buffer) = 0;
 		
 		virtual void SetVertexBuffers     (const gu::DynamicArray<gu::SharedPointer<GPUBuffer>>& buffers, const size_t startSlot = 0) = 0;
 		
@@ -269,8 +272,10 @@ namespace rhi::core
 
 		#pragma region Protected Member Variables
 
-		gu::SharedPointer<RHIDevice>           _device = nullptr;
+		/*! @brief 論理デバイス*/
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 
+		/*! @brief コマンドリストを貯めておくアロケータ*/
 		gu::SharedPointer<RHICommandAllocator> _commandAllocator = nullptr;
 
 		gu::SharedPointer<core::RHIRenderPass> _renderPass = nullptr;

@@ -55,18 +55,19 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------
 		*  @brief : RenderPassを開始します.基本的には各Draw関数のBeginRecordingの後に呼ばれます
 		/*----------------------------------------------------------------------*/
-		void BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer) override;
+		virtual void BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief : RenderPassを終了します.基本的には各Draw関数のEndRecording前に呼ばれます
 		/*----------------------------------------------------------------------*/
-		void EndRenderPass() override;
+		virtual void EndRenderPass() override;
 
-		/*----------------------------------------------------------------------
-		*  @brief : Proceed to the record state. コマンドリストを記録状態に変更します.
-		            基本的には, ResetではなくBeginRecordingを使用してください.
-		/*----------------------------------------------------------------------*/
-		void Reset(const gu::SharedPointer<core::RHICommandAllocator>& changeAllocator = nullptr) override;
+		/*!**********************************************************************
+		*  @brief     コマンドリストを記録状態に変更します.またコマンドアロケータ中のコマンドバッファの内容を先頭に戻します.
+		*  @param[in] コマンドアロケータを変更するかどうか
+		*  @attention 基本的には, ResetではなくBeginRecordingを使用してください.
+		*************************************************************************/
+		virtual void Reset(const gu::SharedPointer<core::RHICommandAllocator>& changeAllocator = nullptr) override;
 
 		/*-------------------------------------------------------------------
 		-               Common command

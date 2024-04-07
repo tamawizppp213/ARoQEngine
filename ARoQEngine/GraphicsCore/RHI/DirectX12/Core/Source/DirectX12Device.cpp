@@ -112,6 +112,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	CheckMultiSampleQualityLevels();
 	CheckDepthBoundsTestSupport();
 	CheckResourceTiers();
+	CheckAdditionalUAVType();
 	CheckMaxHeapSize();
 	CheckBindlessSupport();
 	CheckStencilReferenceFromPixelShaderSupport();
@@ -136,11 +137,9 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 /****************************************************************************
 *                     SetUpDefaultHeap
 *************************************************************************//**
-*  @fn        void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
+/* @brief     各ディスクリプタヒープをDefaultHeapCountに基づいて作成します
 *
-*  @brief     Set up default descriptor heap
-*
-*  @param[in] const core::DefaultHeapCount& heapCount
+*  @param[in] const core::DefaultHeapCount ディスクリプタヒープのサイズを決定する構造体
 *
 *  @return    void
 *****************************************************************************/
@@ -374,36 +373,45 @@ gu::SharedPointer<core::RHIQuery> RHIDevice::CreateQuery(const core::QueryHeapTy
 /****************************************************************************
 *                     CreateCommittedResource
 *************************************************************************//**
-*  @fn        HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,const D3D12_RESOURCE_DESC& resourceDesc,const D3D12_HEAP_PROPERTIES& heapProps,const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue)
-*
-*  @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
+/* @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
 *             参考はD3D12Resources.cpp(UE5)
 *
-*  @param[in] const ResourceComPtr&  resource, 
-*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
-*  @param[in] D3D12_HEAP_PROPERTIES& ヒープの設定
-*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
-*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
+*  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
+*  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
+*  @param[in]  const D3D12_HEAP_PROPERTIES& : どの場所にメモリを確保するか等メモリ確保の仕方を設定する
+*  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
+*  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
 * 
 *  @return 　　HRESULT
 *****************************************************************************/
 HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 	const D3D12_RESOURCE_DESC& resourceDesc,
 	const D3D12_HEAP_PROPERTIES& heapProps,
-	const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue)
+	const D3D12_RESOURCE_STATES initialState, 
+	const D3D12_CLEAR_VALUE* clearValue)
 {
-	// Stateの初期化が必要かどうか
-	const bool requireInitialize = (resourceDesc.Flags & (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0;
+	// GPUのメモリ確保した後にその情報を格納する先が見つからない場合はそのまま終了
+	if (!resource.GetAddressOf()) 
+	{
+		return E_POINTER; 
+	}
+
+	// clearValueを使って初期化が必要かどうか
+	// レンダーターゲットとDepthStencilは初期化が必要です. 
+	const bool requireInitialize = (resourceDesc.Flags & 
+		(D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0;
 	
 	/*-------------------------------------------------------------------
-	-            Heap flagの設定
+	-        ヒープの作成フラグとGPUResourceを作成するときのフラグを作成
 	---------------------------------------------------------------------*/
 	D3D12_HEAP_FLAGS heapFlags = (_isSupportedHeapNotZero && !requireInitialize)
 		? D3D12_HEAP_FLAG_CREATE_NOT_ZEROED : D3D12_HEAP_FLAG_NONE;
 
-	auto localDesc = resourceDesc;
+	// resourceDescのコピーを取る.
+	// これにより, 設定にミスがあった時の自動補正を以下で行えるようにする
+	D3D12_RESOURCE_DESC localDesc = resourceDesc;
 
-	// 共有リソース
+	// 共有リソースである場合はFlag_Sharedを追加する.
 	if (resourceDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS)
 	{
 		heapFlags |= D3D12_HEAP_FLAG_SHARED;
@@ -415,7 +423,7 @@ HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 		}
 	}
 
-	// RayTracingのAcceleration Structureを使用する場合
+	// RayTracingのAcceleration Structureを使用する場合, UNORDERED_ACCESSは使用可能にしておく
 	if (initialState == D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE)
 	{
 		localDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
@@ -424,8 +432,57 @@ HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 	/*-------------------------------------------------------------------
 	-            ヒープ領域の確保とGPUにメモリを確保する
 	---------------------------------------------------------------------*/
-	// 今後の方針としては, uncompressed uavを使用するときは処理を分岐する
-	return _device->CreateCommittedResource(&heapProps, heapFlags, &localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));;
+	HRESULT result = S_OK;
+
+	// Intel拡張を使用する場合は独自の関数を使用する
+#if USE_INTEL_EXTENSION
+	if (IsSupportedIntelEmulatedAtomic64())
+	{
+		INTC_D3D12_RESOURCE_DESC_0001 intelLocalDesc{};
+		intelLocalDesc.pD3D12Desc = &localDesc;
+		intelLocalDesc.EmulatedTyped64bitAtomics = true;
+
+		result = INTC_D3D12_CreateCommittedResource(_intelExtensionContext, &heapProps, heapFlags, &intelLocalDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+	else
+#endif
+
+	// 非圧縮のUAVを使用
+	if (IsSupportedAdditionalUAVType() && resourceDesc.Format != DXGI_FORMAT::DXGI_FORMAT_UNKNOWN && (localDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
+	{
+		const D3D12_RESOURCE_DESC1 localDesc1 =
+		{
+			.Dimension                = localDesc.Dimension,
+			.Alignment                = localDesc.Alignment,
+			.Width                    = localDesc.Width,
+			.Height                   = localDesc.Height,
+			.DepthOrArraySize         = localDesc.DepthOrArraySize,
+			.MipLevels                = localDesc.MipLevels,
+			.Format                   = localDesc.Format,
+			.SampleDesc               = localDesc.SampleDesc,
+			.Layout                   = localDesc.Layout,
+			.Flags                    = localDesc.Flags,
+			.SamplerFeedbackMipRegion = {}
+		};
+
+		// Bufferとなる場合は必ずUndefinedから始める必要があるが, それ以外はテクスチャ形式を使用可能なためCOMMONを使用する.
+		const D3D12_BARRIER_LAYOUT barrierInitialLayout = localDesc1.Dimension == D3D12_RESOURCE_DIMENSION::D3D12_RESOURCE_DIMENSION_BUFFER 
+			? D3D12_BARRIER_LAYOUT_UNDEFINED : D3D12_BARRIER_LAYOUT_COMMON;
+
+		ID3D12ProtectedResourceSession* protectedSession = nullptr;
+
+		// SRVとURVで使用されるDXGI_FORMATにおいて, 互いにキャスト可能なもののリストを提供する.
+		gu::DynamicArray<DXGI_FORMAT> castableFormats = GetCastableFormats(localDesc1.Format);
+
+		result = _device->CreateCommittedResource3(&heapProps, heapFlags, &localDesc1, barrierInitialLayout, clearValue,
+			protectedSession, castableFormats.Size(), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+	else
+	{
+		result = _device->CreateCommittedResource(&heapProps, heapFlags, &localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+
+	return result;
 }
 
 /****************************************************************************
@@ -435,20 +492,26 @@ HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 *
 *  @brief     Heap内にまだマップまでは行わない予約済みのリソースを作成
 *
-*  @param[in] const ResourceComPtr&  resource,
-*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
-*  @param[in] D3D12_HEAP_PROPERTIES& ヒープの設定
-*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
-*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
+*  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
+*  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
+*  @param[in]  const D3D12_HEAP_PROPERTIES& : どの場所にメモリを確保するか等メモリ確保の仕方を設定する
+*  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
+*  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
 *
 *  @return 　　HRESULT
 *****************************************************************************/
 HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_HEAP_PROPERTIES& heapProp, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
 {
+	// GPUのメモリ確保した後にその情報を格納する先が見つからない場合はそのまま終了
+	if (!resource.GetAddressOf())
+	{
+		return E_POINTER;
+	}
+
 	/*-------------------------------------------------------------------
 	-            Flagの設定
 	---------------------------------------------------------------------*/
-	auto localDesc   = resourceDesc;
+	D3D12_RESOURCE_DESC localDesc   = resourceDesc;
 	localDesc.Layout = D3D12_TEXTURE_LAYOUT_64KB_UNDEFINED_SWIZZLE;
 
 	/*-------------------------------------------------------------------
@@ -465,18 +528,83 @@ HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12
 *  @brief     既に作成済みのヒープに配置されるリソースを作成する.
 *             Committed, Reserved, Placedの中では最も高速に動作する
 *
-*  @param[in] const ResourceComPtr&  resource,
-*  @param[in] const D3D12_RESOURCE_DESC&  resourceの設定 : ほとんどの場合はconstですが, 設定ミスがある場合には変更が入ります
-*  @param[in] const HeapComPtr& ヒープ
-* 　@param[in] const gu::uint64 heapのoffsetバイト数
-*  @param[in] const D3D12_RESOURCE_STATES 最初に設定するresource state
-*  @param[in] const D3D12_CLEAR_VALUE&    クリアカラー
+*  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
+*  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
+*  @param[in]  const HeapComPtr&            : 既に確保済みのGPUヒープ領域
+*  @param[in]  const gu::uint64             : 確保するヒープのオフセット
+*  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
+*  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
 *
 *  @return 　　HRESULT
 *****************************************************************************/
 HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const HeapComPtr& heap, const gu::uint64 heapOffset, const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue )
 {
-	return _device->CreatePlacedResource(heap.Get(), heapOffset, &resourceDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	// GPUのメモリ確保した後にその情報を格納する先が見つからない場合はそのまま終了
+	if (!resource.GetAddressOf())
+	{
+		return E_POINTER;
+	}
+
+	// Heapの存在を確認する
+	if (heap == nullptr || heap.GetAddressOf() || heap.Get())
+	{
+		return E_POINTER;
+	}
+
+	/*-------------------------------------------------------------------
+	-            ヒープ領域の確保とGPUにメモリを確保する
+	---------------------------------------------------------------------*/
+	HRESULT result = S_OK;
+
+	// Intel拡張を使用する場合は独自の関数を使用する
+#if USE_INTEL_EXTENSION
+	if (IsSupportedIntelEmulatedAtomic64())
+	{
+		D3D12_RESOURCE_DESC localDesc = resourceDesc;
+		INTC_D3D12_RESOURCE_DESC_0001 intelLocalDesc{};
+		intelLocalDesc.pD3D12Desc = &localDesc;
+		intelLocalDesc.EmulatedTyped64bitAtomics = true;
+
+		result = INTC_D3D12_CreatePlacedResource(_intelExtensionContext, heap.Get(), heapOffset, &intelLocalDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+	else
+#endif
+	// 非圧縮のUAVを使用
+	if (IsSupportedAdditionalUAVType() && resourceDesc.Format != DXGI_FORMAT::DXGI_FORMAT_UNKNOWN && (resourceDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
+	{
+		const D3D12_RESOURCE_DESC1 localDesc1 =
+		{
+			.Dimension                = resourceDesc.Dimension,
+			.Alignment                = resourceDesc.Alignment,
+			.Width                    = resourceDesc.Width,
+			.Height                   = resourceDesc.Height,
+			.DepthOrArraySize         = resourceDesc.DepthOrArraySize,
+			.MipLevels                = resourceDesc.MipLevels,
+			.Format                   = resourceDesc.Format,
+			.SampleDesc               = resourceDesc.SampleDesc,
+			.Layout                   = resourceDesc.Layout,
+			.Flags                    = resourceDesc.Flags,
+			.SamplerFeedbackMipRegion = {}
+		};
+
+		// Bufferとなる場合は必ずUndefinedから始める必要があるが, それ以外はテクスチャ形式を使用可能なためCOMMONを使用する.
+		const D3D12_BARRIER_LAYOUT barrierInitialLayout = localDesc1.Dimension == D3D12_RESOURCE_DIMENSION::D3D12_RESOURCE_DIMENSION_BUFFER
+			? D3D12_BARRIER_LAYOUT_UNDEFINED : D3D12_BARRIER_LAYOUT_COMMON;
+
+		ID3D12ProtectedResourceSession* protectedSession = nullptr;
+
+		// SRVとURVで使用されるDXGI_FORMATにおいて, 互いにキャスト可能なもののリストを提供する.
+		gu::DynamicArray<DXGI_FORMAT> castableFormats = GetCastableFormats(localDesc1.Format);
+
+		result = _device->CreatePlacedResource2(heap.Get(), heapOffset, &localDesc1, barrierInitialLayout, clearValue,
+			castableFormats.Size(), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+	else
+	{
+		result = _device->CreatePlacedResource(heap.Get(), heapOffset, &resourceDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+
+	return result;
 }
 
 #pragma endregion           Create Resource Function
@@ -927,6 +1055,15 @@ void RHIDevice::CheckStencilReferenceFromPixelShaderSupport()
 	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options)))) { return; }
 	_isSupportedStencilReferenceFromPixelShader = options.PSSpecifiedStencilRefSupported != 0;
 }
+
+void RHIDevice::CheckAdditionalUAVType()
+{
+	D3D12_FEATURE_DATA_D3D12_OPTIONS options{};
+
+	if (FAILED(_device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS, &options, sizeof(options)))) { return; }
+	_isSupportedAdditionalUAVType = options.TypedUAVLoadAdditionalFormats != 0;
+}
+
 /****************************************************************************
 *                     CheckMaxHeapSize()
 *************************************************************************//**
