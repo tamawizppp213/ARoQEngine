@@ -89,11 +89,13 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		/* @brief : max descriptor count in each descriptor heap type*/
+		gu::SortedMap<DescriptorHeapType, MaxDescriptorSize> _heapInfo;
+
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 		/* @brief : max total heap count (ex. CBV + SRV + UAV)*/
 		MaxDescriptorSize _totalHeapCount = 0;
-		/* @brief : max descriptor count in each descriptor heap type*/
-		gu::SortedMap<DescriptorHeapType, MaxDescriptorSize> _heapInfo;
+
 		static constexpr int INVALID_ID = -1;
 	};
 }

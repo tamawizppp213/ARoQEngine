@@ -147,6 +147,21 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		/*! @brief : 物理デバイス名 */
+		gu::string _name = "";
+
+		/*! @brief : Instance handler*/
+		gu::SharedPointer<RHIInstance> _instance = nullptr;
+
+		/*! @brief CPUと共有されていない専用ビデオメモリのバイト数*/
+		gu::uint64 _dedicatedVideoMemory = 0;
+
+		/*! @brief CPUと共有されていない専用システムメモリのバイト数*/
+		gu::uint64 _dedicatedSystemMemory = 0;
+
+		/*! @brief CPUと共有されるシステムメモリのバイト数*/
+		gu::uint64 _sharedSystemMemory = 0;
+
 		/*! @brief 物理デバイス自体を作っている会社を特定するためのID*/
 		gu::uint32 _venderID = 0;
 
@@ -158,23 +173,8 @@ namespace rhi::core
 		    @attention  Vulkanでは使用できません*/
 		gu::uint32 _subSysID = 0;
 
-		/*! @brief CPUと共有されていない専用ビデオメモリのバイト数*/
-		gu::uint64 _dedicatedVideoMemory = 0;
-
-		/*! @brief CPUと共有されていない専用システムメモリのバイト数*/
-		gu::uint64 _dedicatedSystemMemory = 0;
-
-		/*! @brief CPUと共有されるシステムメモリのバイト数*/
-		gu::uint64 _sharedSystemMemory = 0;
-
-		/*! @brief : Instance handler*/
-		gu::SharedPointer<RHIInstance> _instance = nullptr;
-
 		/*! @brief : true : dGPU, xGPU, false : iGPU*/
 		bool _isDiscreteGPU = false;
-		
-		/*! @brief : 物理デバイス名 */
-		gu::string _name = "";
 	};
 }
 

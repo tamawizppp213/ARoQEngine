@@ -100,7 +100,7 @@ namespace rhi::core
 	*  @enum      CommandListType
 	*  @brief     Command list (graphics, compute, or copy)
 	*****************************************************************************/
-	enum class CommandListType
+	enum class CommandListType : gu::uint8
 	{
 		Unknown,    // For Initialize
 		Graphics,   // Graphics command list (directX12 api includes all command list type (use this) )
@@ -116,7 +116,7 @@ namespace rhi::core
 	*  @enum      IndexType
 	*  @brief     UINT 32 or 16. This value shows byte count.
 	*****************************************************************************/
-	enum class IndexType
+	enum class IndexType : gu::uint8
 	{
 		UInt32 = 4,
 		UInt16 = 2,
@@ -127,7 +127,7 @@ namespace rhi::core
 	*  @enum      InputFormat
 	*  @brief     Input layout format.  
 	*****************************************************************************/
-	enum class InputFormat
+	enum class InputFormat : gu::uint8
 	{
 		Unknown,
 		R32_FLOAT,          // 4  byte format
@@ -202,14 +202,14 @@ namespace rhi::core
 	*****************************************************************************/
 	struct WindowInfo
 	{
-		size_t Width     = 0;       // window width
-		size_t Height    = 0;       // window height
+		gu::uint64 Width     = 0;       // window width
+		gu::uint64 Height    = 0;       // window height
 		void*  Handle    = nullptr; // window handle pointer 
 		void*  HInstance = nullptr; // window instance for Windows API
 
 		WindowInfo()  = default;
 
-		WindowInfo(size_t width, size_t height, void* handle, void* hInstance = nullptr)
+		WindowInfo(gu::uint64 width, gu::uint64 height, void* handle, void* hInstance = nullptr)
 		{
 			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
 		}
@@ -219,7 +219,7 @@ namespace rhi::core
 #pragma endregion    Window Surface
 #pragma region Pixel
 
-	enum class ShadingRate
+	enum class ShadingRate : gu::uint8
 	{
 		K_1x1,
 		K_1x2,
@@ -236,7 +236,7 @@ namespace rhi::core
 	*  @enum      DisplayOutputFormat
 	*  @brief     Color format
 	*****************************************************************************/
-	enum class DisplayOutputFormat
+	enum class DisplayOutputFormat : gu::uint8
 	{
 		SDR_SRGB,
 		SDR_Rec709,
@@ -257,7 +257,7 @@ namespace rhi::core
 	* 　　　　　 　　　https://garagefarm.net/jp-blog/what-is-color-space-and-why-you-should-use-aces
 	*             https://qiita.com/UWATechnology/items/2a40dbc66bf48041d405
 	*****************************************************************************/
-	enum class DisplayColorGamut
+	enum class DisplayColorGamut : gu::uint8
 	{
 		SRGB_D65,    // srgb color format    + white point D65 (Windows標準色域)
 		DCIP3_D65,   // dcpi3   color format + white point D65 (映像撮影に使われるカラーフィルムの色域に対応した広範囲の色域を表現できる規格)

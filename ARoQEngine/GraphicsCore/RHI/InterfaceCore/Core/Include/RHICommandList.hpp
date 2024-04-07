@@ -277,14 +277,14 @@ namespace rhi::core
 
 		gu::SharedPointer<core::RHIFrameBuffer>_frameBuffer = nullptr;
 
+		gu::uint64 _commandListID = 0;
+
 		core::CommandListType _commandListType = CommandListType::Unknown;
 
 		/* @brief : コマンドリストが詰め込める状態にあるかを確認します*/
 		bool _isOpen = false;
 
 		bool _beginRenderPass = false;
-
-		std::uint64_t _commandListID = 0;
 
 		#pragma endregion
 		

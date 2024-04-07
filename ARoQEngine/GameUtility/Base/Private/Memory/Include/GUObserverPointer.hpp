@@ -199,9 +199,9 @@ namespace gu::details::smart_pointer
 		/****************************************************************************
 		**                Private Member Variables
 		*****************************************************************************/
-		ElementType* _elementPointer = nullptr;
-
 		ReferenceControllerBase<Mode>* _referenceController = nullptr;
+
+		ElementType* _elementPointer = nullptr;
 
 	private:
 		template<class OtherType, SharedPointerThreadMode>

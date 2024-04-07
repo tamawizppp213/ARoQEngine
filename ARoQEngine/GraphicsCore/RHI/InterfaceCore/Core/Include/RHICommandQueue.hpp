@@ -107,11 +107,11 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		/*! @brief コマンドリストの種類*/
-		CommandListType  _commandListType = CommandListType::Unknown;
-
 		/*! @brief 論理デバイス*/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
+
+		/*! @brief コマンドリストの種類*/
+		CommandListType  _commandListType = CommandListType::Unknown;
 	};
 }
 #endif
