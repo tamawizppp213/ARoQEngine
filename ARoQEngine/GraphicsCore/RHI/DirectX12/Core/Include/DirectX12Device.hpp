@@ -49,16 +49,17 @@ namespace rhi::directX12
 		/*!**********************************************************************
 		*  @brief     各ディスクリプタヒープをDefaultHeapCountに基づいて作成します
 		*  @param[in] const core::DefaultHeapCount ディスクリプタヒープのサイズを決定する構造体
+		*  @return    void
 		*************************************************************************/
 		virtual void SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) override;
 
-		gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
+		virtual gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
-		gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
+		virtual gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
-		gu::SharedPointer<core::RHIFence>                   CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("")) override;
+		virtual gu::SharedPointer<core::RHIFence>                   CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("")) override;
 		
-		gu::SharedPointer<core::RHICommandList>             CreateCommandList(const gu::SharedPointer<core::RHICommandAllocator>& commandAllocator, const gu::tstring& name) override;
+		virtual gu::SharedPointer<core::RHICommandList>             CreateCommandList(const gu::SharedPointer<core::RHICommandAllocator>& commandAllocator, const gu::tstring& name) override;
 		
 		/*!**********************************************************************
 		*  @brief     コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信するコマンドキューを作成します
@@ -66,7 +67,7 @@ namespace rhi::directX12
 		*  @param[in] const gu::tstring : デバッグ名
 		*  @return    gu::SharedPointer<core::RHICommandQueue> コマンドキューのポインタ
 		*************************************************************************/
-		gu::SharedPointer<core::RHICommandQueue> CreateCommandQueue(const core::CommandListType type, const gu::tstring& name) override;
+		virtual gu::SharedPointer<core::RHICommandQueue> CreateCommandQueue(const core::CommandListType type, const gu::tstring& name) override;
 		
 		/*!**********************************************************************
 		*  @brief     コマンドリストのメモリを格納するために使用されるコマンドアロケータを作成します
@@ -74,54 +75,60 @@ namespace rhi::directX12
 		*  @param[in] const gu::tstring : デバッグ名
 		*  @return    gu::SharedPointer<core::RHICommandAllocator> コマンドアロケータのポインタ
 		*************************************************************************/
-		gu::SharedPointer<core::RHICommandAllocator> CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name) override;
+		virtual gu::SharedPointer<core::RHICommandAllocator> CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name) override;
 		
-		gu::SharedPointer<core::RHISwapchain>               CreateSwapchain       (const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const gu::uint32 vsync = 0, const bool isValidHDR = true) override;
+		virtual gu::SharedPointer<core::RHISwapchain>               CreateSwapchain       (const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const gu::uint32 vsync = 0, const bool isValidHDR = true) override;
 		
-		gu::SharedPointer<core::RHISwapchain>               CreateSwapchain(const core::SwapchainDesc& desc) override;
+		virtual gu::SharedPointer<core::RHISwapchain>               CreateSwapchain(const core::SwapchainDesc& desc) override;
 
-		gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap  (const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
+		virtual gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap  (const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		
-		gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap(const gu::SortedMap<core::DescriptorHeapType, size_t>& heapInfo) override;
+		virtual gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap(const gu::SortedMap<core::DescriptorHeapType, size_t>& heapInfo) override;
 		
-		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const gu::Optional<core::Attachment>& depth) override;
+		virtual gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const gu::DynamicArray<core::Attachment>& colors, const gu::Optional<core::Attachment>& depth) override;
 		
-		gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const core::Attachment& color, const gu::Optional<core::Attachment>& depth) override;
+		virtual gu::SharedPointer<core::RHIRenderPass>              CreateRenderPass(const core::Attachment& color, const gu::Optional<core::Attachment>& depth) override;
 		
-		gu::SharedPointer<core::GPUGraphicsPipelineState>   CreateGraphicPipelineState(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override ;  // after action: setting pipeline
+		virtual gu::SharedPointer<core::GPUGraphicsPipelineState>   CreateGraphicPipelineState(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override ;  // after action: setting pipeline
 		
-		gu::SharedPointer<core::GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
+		virtual gu::SharedPointer<core::GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 		
-		gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const gu::Optional<core::Constant32Bits>& constant32Bits = {}, const gu::tstring& name=SP("ResourceLayout")) override;
+		virtual gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const gu::Optional<core::Constant32Bits>& constant32Bits = {}, const gu::tstring& name=SP("ResourceLayout")) override;
 		
-		gu::SharedPointer<core::GPUPipelineFactory>         CreatePipelineFactory() override;
+		virtual gu::SharedPointer<core::GPUPipelineFactory>         CreatePipelineFactory() override;
 		
-		gu::SharedPointer<core::GPUResourceView>            CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
+		virtual gu::SharedPointer<core::GPUResourceView>            CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
-		gu::SharedPointer<core::GPUResourceView>            CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
+		virtual gu::SharedPointer<core::GPUResourceView>            CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
-		gu::SharedPointer<core::GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo); // both
+		virtual gu::SharedPointer<core::GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo); // both
 		
-		gu::SharedPointer<core::GPUBuffer>                  CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) override;
+		/*!**********************************************************************
+		*  @brief     GPUで確保するバッファを作成します. (頂点データやインデックスデータの確保などに使用します.)
+		*  @param[in] const core::GPUBufferMetaData& : バッファを作る際に必要な情報をまとめた構造体
+		*  @param[in] const gu::tstring& : デバッグ名
+		*  @return    gu::SharedPointer<GPUBuffer> : GPUバッファのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<core::GPUBuffer> CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) override;
 		
-		gu::SharedPointer<core::GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("")) override;
+		virtual gu::SharedPointer<core::GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("")) override;
 		
-		gu::SharedPointer<core::GPUTexture>                 CreateTextureEmpty() override;
+		virtual gu::SharedPointer<core::GPUTexture>                 CreateTextureEmpty() override;
 
 		//gu::SharedPointer<core::GPURayTracingPipelineState> CreateRayTracingPipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override;
 		
-		gu::SharedPointer<core::RayTracingGeometry>         CreateRayTracingGeometry(const core::RayTracingGeometryFlags flags, const gu::SharedPointer<core::GPUBuffer>& vertexBuffer, const gu::SharedPointer<core::GPUBuffer>& indexBuffer = nullptr) override;
+		virtual gu::SharedPointer<core::RayTracingGeometry>         CreateRayTracingGeometry(const core::RayTracingGeometryFlags flags, const gu::SharedPointer<core::GPUBuffer>& vertexBuffer, const gu::SharedPointer<core::GPUBuffer>& indexBuffer = nullptr) override;
 		
-		gu::SharedPointer<core::ASInstance>                 CreateASInstance(
+		virtual gu::SharedPointer<core::ASInstance>                 CreateASInstance(
 			const gu::SharedPointer<core::BLASBuffer>& blasBuffer, const gm::Float3x4& blasTransform, 
 			const gu::uint32 instanceID, const gu::uint32 instanceContributionToHitGroupIndex,
 			const gu::uint32 instanceMask = 0xFF, const core::RayTracingInstanceFlags flags = core::RayTracingInstanceFlags::None) override;
 		
-		gu::SharedPointer<core::BLASBuffer>                 CreateRayTracingBLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags) override;
+		virtual gu::SharedPointer<core::BLASBuffer>                 CreateRayTracingBLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::RayTracingGeometry>>& geometryDesc, const core::BuildAccelerationStructureFlags flags) override;
 		
-		gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
+		virtual gu::SharedPointer<core::TLASBuffer>                 CreateRayTracingTLASBuffer(const gu::DynamicArray<gu::SharedPointer<core::ASInstance>>& asInstances, const core::BuildAccelerationStructureFlags flags) override;
 
-		gu::SharedPointer<core::RHIQuery> CreateQuery(const core::QueryHeapType heapType) override;
+		virtual gu::SharedPointer<core::RHIQuery> CreateQuery(const core::QueryHeapType heapType) override;
 
 		/*!**********************************************************************
 		*  @brief     Heap領域の確保と実際にGPUにデータをメモリに確保するのを両方行う関数
@@ -147,7 +154,6 @@ namespace rhi::directX12
 		*  @note       本関数はDirectX12専用の関数です.
 		*  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
 		*  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
-		*  @param[in]  const D3D12_HEAP_PROPERTIES& : どの場所にメモリを確保するか等メモリ確保の仕方を設定する
 		*  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
 		*  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
 		*  @return     HRESULT : 処理が成功したか
@@ -156,7 +162,6 @@ namespace rhi::directX12
 		(
 			ResourceComPtr& resource,
 			const D3D12_RESOURCE_DESC& resourceDesc, // ほとんどはconst
-			const D3D12_HEAP_PROPERTIES& heapProp,
 			const D3D12_RESOURCE_STATES initialState,
 			const D3D12_CLEAR_VALUE* clearValue = nullptr
 		);
@@ -188,18 +193,22 @@ namespace rhi::directX12
 		#pragma region Public Member Variables
 		/*!**********************************************************************
 		*  @brief  DirectX12で使用する論理デバイスのComポインタ
+		*  @return DeviceComPtr : 論理デバイスのCOMポインタ. (GPUResourceの作成等に使用する)
 		*************************************************************************/
-		DeviceComPtr GetDevice () const noexcept { return _device; }
+		DeviceComPtr GetDevice() const noexcept { return _device; }
 
 		gu::uint32 GetShadingRateImageTileSize() const { return _variableRateShadingImageTileSize; }
 		
-		gu::SharedPointer<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
+		virtual gu::SharedPointer<core::RHIDescriptorHeap> GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 
 		gu::uint32 GetNodeCount() const { return _deviceNodeCount; }
 
 		const rhi::core::HDRDisplayInfo& GetHDRDisplayInfo() const { return _displayInfo; }
 
-		void SetName(const gu::tstring& name) override;
+		/*!**********************************************************************
+		*  @brief  デバッグ名を設定する.
+		*************************************************************************/
+		virtual void SetName(const gu::tstring& name) override;
 
 		/*!**********************************************************************
 		*  @brief  DirectXで使用可能な最大の機能レベルを取得します.
@@ -503,7 +512,7 @@ namespace rhi::directX12
 
 		/*!**********************************************************************
 		*  @brief  パイプラインで使用可能なリソースの上限値を確認するために使用する
-		*  @note   詳細はGetResourceBindingTier, GetResourceHeapTierを確認してください
+		*  @note   詳細はGetResourceBindingTier, GetResourceHeapTierを確認してください@n
 		* 　　　　　　https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/hardware-support @n
 		*          https://learn.microsoft.com/ja-jp/windows/win32/api/d3d12/ne-d3d12-d3d12_resource_heap_tier @n
 		*************************************************************************/

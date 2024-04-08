@@ -134,7 +134,13 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo) = 0; // both
 		
-		virtual gu::SharedPointer<GPUBuffer>                  CreateBuffer (const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) = 0;
+		/*!**********************************************************************
+		*  @brief     GPUで確保するバッファを作成します. (頂点データやインデックスデータの確保などに使用します.)
+		*  @param[in] const core::GPUBufferMetaData& : バッファを作る際に必要な情報をまとめた構造体
+		*  @param[in] const gu::tstring& : デバッグ名
+		*  @return    gu::SharedPointer<GPUBuffer> : GPUバッファのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<GPUBuffer> CreateBuffer (const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) = 0;
 		
 		virtual gu::SharedPointer<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("")) = 0;
 		

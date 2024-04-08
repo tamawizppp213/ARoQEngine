@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   DirectX12Adapter.cpp
+///          DirectX12Adapter.cpp
 ///  @brief  論理デバイスに渡す物理デバイス(Apdapter)の設定, GPU情報を取得
 ///  @author Toide Yutaro
 ///  @date   2024_03_29
@@ -57,9 +57,7 @@ RHIDisplayAdapter::~RHIDisplayAdapter()
 /****************************************************************************
 *                     CreateDevice
 *************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDevice> RHIDisplayAdapter::CreateDevice(const std::uint32_t frameCount)
-* 
-*  @brief     Return directX12 logical device.
+/* @brief     Return directX12 logical device.
 * 
 *  @param[in] void
 * 
@@ -75,7 +73,7 @@ gu::SharedPointer<core::RHIDevice> RHIDisplayAdapter::CreateDevice()
 /****************************************************************************
 *                     PrintInfo
 *************************************************************************//**
-*  @brief   物理デバイスの名前とスペックを出力に表示します@n
+/*  @brief   物理デバイスの名前とスペックを出力に表示します@n
 *　         基本的に実行時のログとして使用するものになります. @n
 *  　       ファイルや文字列に出力は行わないです.
 * 

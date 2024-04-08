@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-//              @file   DirectX12Device.cpp
-///             @brief  Logical Device : to use for create GPU resources 
-///             @author Toide Yutaro
-///             @date   2022_06_21
+///  @file   DirectX12Device.cpp
+///  @brief  Logical Device : to use for create GPU resources 
+///  @author Toide Yutaro
+///  @date   2022_06_21
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -373,7 +373,7 @@ gu::SharedPointer<core::RHIQuery> RHIDevice::CreateQuery(const core::QueryHeapTy
 /****************************************************************************
 *                     CreateCommittedResource
 *************************************************************************//**
-/* @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
+* @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
 *             参考はD3D12Resources.cpp(UE5)
 *
 *  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
@@ -488,19 +488,16 @@ HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 /****************************************************************************
 *                     CreateReservedResource
 *************************************************************************//**
-*  @fn        HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_HEAP_PROPERTIES& heapProp, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
-*
-*  @brief     Heap内にまだマップまでは行わない予約済みのリソースを作成
+*  @brief     既に存在しているHeap内にまだマップまでは行わない予約済みのリソースを作成
 *
 *  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
 *  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
-*  @param[in]  const D3D12_HEAP_PROPERTIES& : どの場所にメモリを確保するか等メモリ確保の仕方を設定する
 *  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
 *  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
 *
 *  @return 　　HRESULT
 *****************************************************************************/
-HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_HEAP_PROPERTIES& heapProp, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
+HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
 {
 	// GPUのメモリ確保した後にその情報を格納する先が見つからない場合はそのまま終了
 	if (!resource.GetAddressOf())
@@ -514,17 +511,56 @@ HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12
 	D3D12_RESOURCE_DESC localDesc   = resourceDesc;
 	localDesc.Layout = D3D12_TEXTURE_LAYOUT_64KB_UNDEFINED_SWIZZLE;
 
+	// RayTracingのAcceleration Structureを使用する場合, UNORDERED_ACCESSは使用可能にしておく
+	if (initialState == D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE)
+	{
+		localDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	}
+
 	/*-------------------------------------------------------------------
 	-            Heap内にまだマップまでは行わない予約済みのリソースを作成
 	---------------------------------------------------------------------*/
-	return _device->CreateReservedResource(&localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	HRESULT result = S_OK;
+	if (IsSupportedAdditionalUAVType() && resourceDesc.Format != DXGI_FORMAT::DXGI_FORMAT_UNKNOWN && (localDesc.Flags & D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS))
+	{
+		const D3D12_RESOURCE_DESC1 localDesc1 =
+		{
+			.Dimension                = localDesc.Dimension,
+			.Alignment                = localDesc.Alignment,
+			.Width                    = localDesc.Width,
+			.Height                   = localDesc.Height,
+			.DepthOrArraySize         = localDesc.DepthOrArraySize,
+			.MipLevels                = localDesc.MipLevels,
+			.Format                   = localDesc.Format,
+			.SampleDesc               = localDesc.SampleDesc,
+			.Layout                   = localDesc.Layout,
+			.Flags                    = localDesc.Flags,
+			.SamplerFeedbackMipRegion = {}
+		};
+
+		// Bufferとなる場合は必ずUndefinedから始める必要があるが, それ以外はテクスチャ形式を使用可能なためCOMMONを使用する.
+		const D3D12_BARRIER_LAYOUT barrierInitialLayout = localDesc1.Dimension == D3D12_RESOURCE_DIMENSION::D3D12_RESOURCE_DIMENSION_BUFFER 
+			? D3D12_BARRIER_LAYOUT_UNDEFINED : D3D12_BARRIER_LAYOUT_COMMON;
+
+		ID3D12ProtectedResourceSession* protectedSession = nullptr;
+
+		// SRVとURVで使用されるDXGI_FORMATにおいて, 互いにキャスト可能なもののリストを提供する.
+		gu::DynamicArray<DXGI_FORMAT> castableFormats = GetCastableFormats(localDesc1.Format);
+
+		result = _device->CreateReservedResource2(&localDesc, barrierInitialLayout, clearValue,
+			protectedSession, castableFormats.Size(), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+	else
+	{
+		result = _device->CreateReservedResource(&localDesc, initialState, clearValue, IID_PPV_ARGS(resource.GetAddressOf()));
+	}
+
+	return result;
 }
 
 /****************************************************************************
 *                     CreatePlacedResource
 *************************************************************************//**
-*  @fn        HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const HeapComPtr& heap,const gu::uint64 heapOffset,const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue = nullptr)
-*
 *  @brief     既に作成済みのヒープに配置されるリソースを作成する.
 *             Committed, Reserved, Placedの中では最も高速に動作する
 *
@@ -985,12 +1021,11 @@ void RHIDevice::CheckAllowTearingSupport()
 /****************************************************************************
 *                     DepthBoundsTestSupport
 *************************************************************************//**
-*  @fn        void RHIDevice::CheckDepthBoundsTestSupport()
-*
 *  @brief      深度値が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させ, 範囲外ならば該当ピクセルを早期棄却する方法
 		　　　　 Deferred Renderingにおけるライトのaccumulation, Deferred RenderingにおけるCascaded Shadow Map, 被写界深度エフェクト, 遠景描画等に使用可能 
 *              https://microsoft.github.io/DirectX-Specs/d3d/DepthBoundsTest.html
 *              https://shikihuiku.wordpress.com/tag/depthboundstest/
+* 
 *  @param[in] void
 *
 *  @return 　　void

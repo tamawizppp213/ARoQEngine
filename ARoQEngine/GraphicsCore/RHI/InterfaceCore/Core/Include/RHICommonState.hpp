@@ -30,9 +30,9 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class GraphicsAPI : gu::uint8
 	{
-		Unknown    = 0,
-		DirectX12  = 1,
-		Vulkan     = 2
+		Unknown    = 0, //!< グラフィクスAPIを指定していない 
+		DirectX12  = 1, //!< DirectX12
+		Vulkan     = 2  //!< Vulkan
 	};
 
 	/****************************************************************************
@@ -42,11 +42,11 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class MessageSeverity : gu::uint8
 	{
-		Corruption,
-		Error,
-		Warning,
-		Info,
-		Message
+		Corruption, //!< 致命的なエラー
+		Error,      //!< 標準エラー
+		Warning,    //!< 警告
+		Info,       //!< Information
+		Message     //!< メッセージ
 	};
 
 	/****************************************************************************
@@ -98,15 +98,15 @@ namespace rhi::core
 	*				  			CommandListType
 	*************************************************************************//**
 	*  @enum      CommandListType
-	*  @brief     Command list (graphics, compute, or copy)
+	*  @brief     GPU命令を出すためのコマンドリストの種類
 	*****************************************************************************/
 	enum class CommandListType : gu::uint8
 	{
-		Unknown,    // For Initialize
-		Graphics,   // Graphics command list (directX12 api includes all command list type (use this) )
-		Compute,    // Compute command list. This type is used to async compute command
-		Copy,       // Copy command list
-		CountOfType
+		Unknown,    //!< 初期化の際に使用します
+		Graphics,   //!< 描画用のコマンドリスト (directX12では, このコマンドリストでCompute, Copy両方の役割も担うことが出来ます.)
+		Compute,    //!< コンピュートシェーダーを使用するコマンドリスト (非同期コンピュートに使用)
+		Copy,       //!< GPUリソースのコピーに使用します.
+		CountOfType //!< CommandListの種類数
 	};
 #pragma endregion   CommandList
 #pragma region Index
@@ -1197,9 +1197,9 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		size_t         Stride        = 0;                           // element byte size
-		size_t         Count         = 0;                           // element array count 
-		size_t         ByteSize      = 0;
+		gu::uint64     Stride        = 0;                           // element byte size
+		gu::uint64     Count         = 0;                           // element array count 
+		gu::uint64     ByteSize      = 0;
 		ResourceType   ResourceType  = ResourceType::Unknown;       // GPU resource type
 		ResourceUsage  ResourceUsage = ResourceUsage::None;         // how to use resource 
 		ResourceState  State         = ResourceState::GeneralRead; // resource layout
