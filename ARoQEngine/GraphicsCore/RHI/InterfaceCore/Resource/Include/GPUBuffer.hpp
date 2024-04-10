@@ -67,7 +67,7 @@ namespace rhi::core
 		virtual void CopyEnd() = 0;
 
 		
-		void TransitionBarrierState(const core::BarrierState after) override
+		void TransitionResourceState(const core::ResourceState after) override
 		{
 			if (_metaData.State != after) { _metaData.State = after; }
 		}
@@ -112,7 +112,7 @@ namespace rhi::core
 		/*----------------------------------------------------------------------
 		*  @brief :  Return GPU Resource State which tells how to read memory 
 		/*----------------------------------------------------------------------*/
-		BarrierState GetBarrierState() const noexcept override { return _metaData.State; }
+		ResourceState GetResourceState() const noexcept override { return _metaData.State; }
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Return Buffer Usage Flag. (Vertex, Index, or Constant Buffer)

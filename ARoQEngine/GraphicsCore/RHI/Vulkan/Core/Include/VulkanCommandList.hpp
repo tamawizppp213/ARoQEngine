@@ -141,9 +141,9 @@ namespace rhi::vulkan
 		/*-------------------------------------------------------------------
 		-                Transition Resource State
 		---------------------------------------------------------------------*/
-		void TransitionBarrierState(const gu::SharedPointer<core::GPUTexture>& texture, core::BarrierState after) override;
+		void TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after) override;
 		
-		void TransitionBarrierStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::BarrierState* afters) override;
+		void TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override;
 		
 		void CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source) override {};;
 		

@@ -50,7 +50,7 @@ namespace rhi::core
 
 		virtual void Write(const gu::SharedPointer<RHICommandList>& commandList, const gm::RGBA* pixel) = 0;
 
-		void TransitionBarrierState(const core::BarrierState after) override
+		void TransitionResourceState(const core::ResourceState after) override
 		{
 			if (_metaData.State != after) { _metaData.State = after; }
 		}
@@ -107,7 +107,7 @@ namespace rhi::core
 		/* @brief : Get alignment*/
 		inline size_t GetAlignment() const noexcept { return _alignment; }
 
-		core::BarrierState GetBarrierState() const noexcept override{ return _metaData.State; }
+		core::ResourceState GetResourceState() const noexcept override{ return _metaData.State; }
 
 		GPUTextureMetaData&      GetMetaData()                { return _metaData; }
 

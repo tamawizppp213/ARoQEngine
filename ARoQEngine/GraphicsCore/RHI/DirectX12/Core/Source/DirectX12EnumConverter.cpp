@@ -434,7 +434,7 @@ D3D12_HEAP_TYPE  EnumConverter::Convert(const rhi::core::MemoryHeap memoryHeap)
 			throw std::runtime_error("not supported heap type (directX12 api)");
 	}
 }
-D3D12_RESOURCE_STATES EnumConverter::Convert(const rhi::core::BarrierState resourceState)
+D3D12_RESOURCE_STATES EnumConverter::Convert(const rhi::core::ResourceState resourceState)
 {
 	static D3D12_RESOURCE_STATES states[] = {
 		D3D12_RESOURCE_STATE_COMMON,

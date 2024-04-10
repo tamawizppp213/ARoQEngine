@@ -208,8 +208,8 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 	/*-------------------------------------------------------------------
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
-	gu::DynamicArray<core::BarrierState> states(frameBuffer->GetRenderTargetSize(), core::BarrierState::RenderTarget);
-	TransitionBarrierStates(static_cast<gu::uint32>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().Data(), states.Data());
+	gu::DynamicArray<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
+	TransitionResourceStates(static_cast<gu::uint32>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().Data(), states.Data());
 
 	/*-------------------------------------------------------------------
 	-          Select renderpass and frame buffer action
@@ -244,8 +244,8 @@ void RHICommandList::EndRenderPass()
 	/*-------------------------------------------------------------------
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
-	gu::DynamicArray<core::BarrierState> states(_frameBuffer->GetRenderTargetSize(), core::BarrierState::Present);
-	TransitionBarrierStates(static_cast<gu::uint32>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().Data(), states.Data());
+	gu::DynamicArray<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
+	TransitionResourceStates(static_cast<gu::uint32>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().Data(), states.Data());
 	_beginRenderPass = false;
 }
 
@@ -602,52 +602,52 @@ void RHICommandList::Dispatch(gu::uint32 threadGroupCountX, gu::uint32 threadGro
 
 #pragma region Transition Resource State
 /****************************************************************************
-*                     TransitionBarrierState
+*                     TransitionResourceState
 *************************************************************************//**
-*  @fn        void RHICommandList::TransitionBarrierState(const gu::SharedPointer<core::GPUTexture>& textures, core::BarrierState afters)
+*  @fn        void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& textures, core::ResourceState afters)
 *
 *  @brief     Transition a single resource layout using barrier
 *
 *  @param[in] const gu::SharedPointer<core::GPUTexture>& texture array,
-*  @param[in] core::BarrierState state array
+*  @param[in] core::ResourceState state array
 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::TransitionBarrierState(const gu::SharedPointer<core::GPUTexture>& texture, core::BarrierState after)
+void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after)
 {
 	BARRIER barrier = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(texture)->GetResource().Get(),
-		EnumConverter::Convert(texture->GetBarrierState()), EnumConverter::Convert(after));
+		EnumConverter::Convert(texture->GetResourceState()), EnumConverter::Convert(after));
 	_commandList->ResourceBarrier(1, &barrier);
-	texture->TransitionBarrierState(after);
+	texture->TransitionResourceState(after);
 }
 
 /****************************************************************************
-*                     TransitionBarrierStates
+*                     TransitionResourceStates
 *************************************************************************//**
-*  @fn        void RHICommandList::TransitionBarrierStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::BarrierState* afters)
+*  @fn        void RHICommandList::TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
 *
 *  @brief     Transition resource layout using barrier
 *
 *  @param[in] const gu::uint32 numStates
 *  @param[in] const gu::SharedPointer<core::GPUTexture>* texture array,
-*  @param[in] core::BarrierState* state array
+*  @param[in] core::ResourceState* state array
 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::TransitionBarrierStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::BarrierState* afters)
+void RHICommandList::TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
 {
 	gu::DynamicArray<BARRIER> barriers = {};
 	for (gu::uint32 i = 0; i < numStates; ++i)
 	{
 		BARRIER barrier = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(textures[i])->GetResource().Get(),
-			EnumConverter::Convert(textures[i]->GetBarrierState()), EnumConverter::Convert(afters[i]));
-		textures[i]->TransitionBarrierState(afters[i]);
+			EnumConverter::Convert(textures[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
+		textures[i]->TransitionResourceState(afters[i]);
 		barriers.Push(barrier);
 	}
 	_commandList->ResourceBarrier(numStates, barriers.Data());
 }
 
-void RHICommandList::TransitionBarrierStates(const gu::DynamicArray<gu::SharedPointer<core::GPUResource>>& resources, core::BarrierState* afters)
+void RHICommandList::TransitionResourceStates(const gu::DynamicArray<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters)
 {
 	gu::DynamicArray<BARRIER> barriers(resources.Size());
 	for (uint32 i = 0; i < resources.Size(); ++i)
@@ -655,14 +655,14 @@ void RHICommandList::TransitionBarrierStates(const gu::DynamicArray<gu::SharedPo
 		if (resources[i]->IsTexture())
 		{
 			barriers[i] = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(resources[i])->GetResource().Get(),
-				EnumConverter::Convert(resources[i]->GetBarrierState()), EnumConverter::Convert(afters[i]));
-			resources[i]->TransitionBarrierState(afters[i]);
+				EnumConverter::Convert(resources[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
+			resources[i]->TransitionResourceState(afters[i]);
 		}
 		else
 		{
 			barriers[i] = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUBuffer>(resources[i])->GetResource().Get(),
-				EnumConverter::Convert(resources[i]->GetBarrierState()), EnumConverter::Convert(afters[i]));
-			resources[i]->TransitionBarrierState(afters[i]);
+				EnumConverter::Convert(resources[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
+			resources[i]->TransitionResourceState(afters[i]);
 		}
 	}
 	_commandList->ResourceBarrier((UINT)barriers.Size(), barriers.Data());
@@ -705,10 +705,10 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUTexture>& des
 void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& dest, const gu::SharedPointer<core::GPUResource>& source)
 {
 	gu::SharedPointer<core::GPUResource> resources[] = { dest, source };
-	rhi::core::BarrierState befores[] = { dest->GetBarrierState()            , source->GetBarrierState() };
-	rhi::core::BarrierState afters[] = { core::BarrierState::CopyDestination, core::BarrierState::CopySource };
+	rhi::core::ResourceState befores[] = { dest->GetResourceState()            , source->GetResourceState() };
+	rhi::core::ResourceState afters[] = { core::ResourceState::CopyDestination, core::ResourceState::CopySource };
 
-	TransitionBarrierStates({ dest, source }, afters);
+	TransitionResourceStates({ dest, source }, afters);
 
 	if (dest->IsTexture() && source->IsTexture())
 	{
@@ -729,7 +729,7 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& de
 			gu::StaticPointerCast<directX12::GPUBuffer>(source)->GetResource().Get());
 	}
 
-	TransitionBarrierStates({ dest, source }, befores);
+	TransitionResourceStates({ dest, source }, befores);
 }
 
 /****************************************************************************
@@ -749,7 +749,7 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& de
 *****************************************************************************/
 void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize)
 {
-	using enum core::BarrierState;
+	using enum core::ResourceState;
 
 	const auto rhiDestBuffer   = static_cast<directX12::GPUBuffer*>(dest.Get());
 	const auto rhiSourceBuffer = static_cast<directX12::GPUBuffer*>(source.Get());
@@ -766,11 +766,11 @@ void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& 
 	/*-------------------------------------------------------------------
 	-           Prepare copy barrier resource 
 	---------------------------------------------------------------------*/
-	core::BarrierState befores[] = { dest->GetBarrierState(), source->GetBarrierState() };
-	core::BarrierState afters[]  = { CopyDestination, CopySource };
+	core::ResourceState befores[] = { dest->GetResourceState(), source->GetResourceState() };
+	core::ResourceState afters[]  = { CopyDestination, CopySource };
 
 	// バリアにより, リソースの読み方を伝える
-	TransitionBarrierStates({ dest, source }, afters);
+	TransitionResourceStates({ dest, source }, afters);
 
 	/*-------------------------------------------------------------------
 	-           Prepare copy barrier resource
@@ -780,7 +780,7 @@ void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& 
 	/*-------------------------------------------------------------------
 	-           After copy barrier resource
 	---------------------------------------------------------------------*/
-	TransitionBarrierStates({ dest, source }, befores);
+	TransitionResourceStates({ dest, source }, befores);
 }
 
 

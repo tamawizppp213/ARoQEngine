@@ -133,7 +133,7 @@ void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& comman
 		{
 			.sampler     = nullptr,
 			.imageView   = _imageView,
-			.imageLayout = EnumConverter::Convert(vkTexture->GetBarrierState())
+			.imageLayout = EnumConverter::Convert(vkTexture->GetResourceState())
 		};
 		
 		writeDesc.pImageInfo     = &imageInfo;

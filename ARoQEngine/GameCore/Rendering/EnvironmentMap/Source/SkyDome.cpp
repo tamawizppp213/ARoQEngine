@@ -134,7 +134,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, BarrierState::Common);
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(addName + SP("IB"));
 		_indexBuffers[i]->Pack(sphereMesh.Indices.data(), commandList);
@@ -163,7 +163,7 @@ void SkyDome::PrepareSkyObject(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-			Copy Sky object data
 	---------------------------------------------------------------------*/
-	const auto cbMetaData = GPUBufferMetaData::ConstantBuffer(sizeof(Matrix4f), 1, MemoryHeap::Upload, BarrierState::Common);
+	const auto cbMetaData = GPUBufferMetaData::ConstantBuffer(sizeof(Matrix4f), 1, MemoryHeap::Upload, ResourceState::Common);
 	_skyObject = device->CreateBuffer(cbMetaData);
 	_skyObject->SetName(addName + SP("CB"));
 	_skyObject->Pack(&skyData, commandList);

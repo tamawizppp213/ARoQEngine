@@ -76,7 +76,7 @@ namespace rhi::directX12
 		static D3D12_RESOURCE_FLAGS        Convert(const rhi::core::ResourceUsage usage);
 #pragma region GPUBuffer 
 		static D3D12_HEAP_TYPE            Convert(const rhi::core::MemoryHeap memoryHeap);
-		static D3D12_RESOURCE_STATES      Convert(const rhi::core::BarrierState resourceLayout);
+		static D3D12_RESOURCE_STATES      Convert(const rhi::core::ResourceState resourceLayout);
 #pragma endregion GPUBuffer
 #pragma region GPUTexture
 		static D3D12_RESOURCE_DIMENSION   Convert(const rhi::core::ResourceDimension dimension);

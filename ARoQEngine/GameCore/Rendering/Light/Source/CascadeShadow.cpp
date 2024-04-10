@@ -142,7 +142,7 @@ void CascadeShadow::PrepareResourceView(const gu::tstring& name)
 			_shadowDesc.UseSoftShadow
 		};
 
-		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(CascadeShadowInfo), 1, MemoryHeap::Upload, BarrierState::Common);
+		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(CascadeShadowInfo), 1, MemoryHeap::Upload, ResourceState::Common);
 		const auto buffer   = device->CreateBuffer(metaData);
 		buffer->SetName(name + SP("ShadowInfo"));
 		buffer->Pack(&shadowInfo, nullptr);

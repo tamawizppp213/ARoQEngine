@@ -36,7 +36,7 @@ GameWorldInfo::GameWorldInfo(const LowLevelGraphicsEnginePtr& engine, const std:
 	-            Prepare constant and upload buffer
 	---------------------------------------------------------------------*/
 	const GameWorldConstant world = { .World = gm::Float4x4()};
-	const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(GameWorldConstant), maxInstanceCount, MemoryHeap::Upload, BarrierState::Common, (void*)&world);
+	const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(GameWorldConstant), maxInstanceCount, MemoryHeap::Upload, ResourceState::Common, (void*)&world);
 	
 	_gameWorldConstants = device->CreateBuffer(bufferInfo);
 	_resourceView       = device->CreateResourceView(ResourceViewType::ConstantBuffer, _gameWorldConstants);

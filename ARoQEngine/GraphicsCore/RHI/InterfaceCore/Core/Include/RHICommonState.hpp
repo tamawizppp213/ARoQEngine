@@ -1024,12 +1024,11 @@ namespace rhi::core
 	};
 
 	/****************************************************************************
-	*				  			ResourceLayout
+	*				  			ResourceState
 	*************************************************************************//**
-	*  @class     BarrierState
-	*  @brief     How to use resource
+	*  @brief    GPUリソースの状態を定義します. 
 	*****************************************************************************/
-	enum class BarrierState : gu::uint8
+	enum class ResourceState : gu::uint8
 	{
 		Common,
 		GeneralRead,
@@ -1091,7 +1090,7 @@ namespace rhi::core
 	*  @enum      ResourceViewType
 	*  @brief     How to read gpu resource buffer
 	*****************************************************************************/
-	enum class ResourceViewType : gu::uint32
+	enum class ResourceViewType : gu::uint8
 	{
 		Unknown,
 		ConstantBuffer       , // 256 alighment buffer
@@ -1187,21 +1186,6 @@ namespace rhi::core
 	};
 
 	ENUM_CLASS_FLAGS(ResourceUsage);
-	/*inline ResourceUsage operator | (const ResourceUsage& left, const ResourceUsage& right)
-	{
-		return static_cast<ResourceUsage>(static_cast<gu::uint32>(left) | static_cast<gu::uint32>(right));
-	}
-
-	inline ResourceUsage operator & (const ResourceUsage& left, const ResourceUsage& right)
-	{
-		return static_cast<ResourceUsage>( static_cast<gu::uint32>(left) & static_cast<gu::uint32>(right));
-	}
-
-	inline bool EnumHas(const ResourceUsage& left, const ResourceUsage& right)
-	{
-		if ((left & right) == right) return true;
-		return false;
-	}*/
 
 	enum class BindlessResourceType
 	{
@@ -1225,7 +1209,7 @@ namespace rhi::core
 		gu::uint64     ByteSize      = 0;
 		ResourceType   ResourceType  = ResourceType::Unknown;       // GPU resource type
 		ResourceUsage  ResourceUsage = ResourceUsage::None;         // how to use resource 
-		BarrierState  State          = BarrierState::GeneralRead; // resource layout
+		ResourceState  State          = ResourceState::GeneralRead; // resource layout
 		MemoryHeap     HeapType      = MemoryHeap::Default;         // memory heap type
 		PixelFormat    Format        = PixelFormat::Unknown;        // 基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある
 		void*          InitData      = nullptr; // Init Data
@@ -1244,16 +1228,16 @@ namespace rhi::core
 		*****************************************************************************/
 		GPUBufferMetaData() = default;
 
-		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, BarrierState layout, MemoryHeap heapType, void* initData = nullptr);
+		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState layout, MemoryHeap heapType, void* initData = nullptr);
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
 		//static GPUBufferMetaData UploadBuffer(const PixelFormat format, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
 		static GPUBufferMetaData UploadBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
 		static GPUBufferMetaData DefaultBuffer (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, void* initData = nullptr);
-		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const BarrierState state = BarrierState::Common, void* initData = nullptr); // auto alignment 
-		static GPUBufferMetaData VertexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const BarrierState state = BarrierState::GeneralRead, void* initData = nullptr);
-		static GPUBufferMetaData IndexBuffer   (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const BarrierState state = BarrierState::Common, void* initData = nullptr);
+		static GPUBufferMetaData ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 
+		static GPUBufferMetaData VertexBuffer  (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead, void* initData = nullptr);
+		static GPUBufferMetaData IndexBuffer   (const size_t stride, const size_t count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common, void* initData = nullptr);
 	private:
 		size_t CalcConstantBufferByteSize(const size_t byteSize) { return (byteSize + 255) & ~255; }
 	};
@@ -1281,7 +1265,7 @@ namespace rhi::core
 		size_t            ByteSize         = 0;                              // total byte size
 		size_t            MipLevels        = 1;                              // mipmap levels
 		PixelFormat       PixelFormat      = PixelFormat::Unknown;           // pixel color format 
-		BarrierState      State            = BarrierState::GeneralRead;    // resource layout
+		ResourceState      State            = ResourceState::GeneralRead;    // resource layout
 		ResourceUsage     ResourceUsage = ResourceUsage::None;            // how to use resource 
 		MultiSample       Sample           = MultiSample::Count1;            // multi sample count
 		ResourceDimension Dimension        = ResourceDimension::Dimension1D; // texture resource dimension
@@ -1405,8 +1389,8 @@ namespace rhi::core
 		**                Static Function
 		*****************************************************************************/
 		static Attachment RenderTarget( const PixelFormat format,
-			const BarrierState  initialState  = BarrierState::RenderTarget,
-			const BarrierState  finalState    = BarrierState::Present,
+			const ResourceState  initialState  = ResourceState::RenderTarget,
+			const ResourceState  finalState    = ResourceState::Present,
 			const AttachmentLoad load          = AttachmentLoad::Clear,
 			const AttachmentStore store        = AttachmentStore::Store )
 		{
@@ -1414,8 +1398,8 @@ namespace rhi::core
 		}
 
 		static Attachment RenderTargetMultiSample( const PixelFormat format, const MultiSample sample,
-			const BarrierState   initialState  = BarrierState::RenderTarget,
-			const BarrierState   finalState    = BarrierState::Present,
+			const ResourceState   initialState  = ResourceState::RenderTarget,
+			const ResourceState   finalState    = ResourceState::Present,
 			const AttachmentLoad  load          = AttachmentLoad::Clear,
 			const AttachmentStore store         = AttachmentStore::Store
 		)
@@ -1424,8 +1408,8 @@ namespace rhi::core
 		}
 
 		static Attachment DepthStencil(const PixelFormat format,
-			const BarrierState   initialState  = BarrierState::Common,
-			const BarrierState   finalState    = BarrierState::DepthStencil,
+			const ResourceState   initialState  = ResourceState::Common,
+			const ResourceState   finalState    = ResourceState::DepthStencil,
 			const AttachmentLoad  load          = AttachmentLoad::Clear,
 			const AttachmentStore store         = AttachmentStore::Store,
 			const AttachmentLoad  stencilLoad   = AttachmentLoad::DontCare,
@@ -1436,8 +1420,8 @@ namespace rhi::core
 		}
 
 		static Attachment DepthStencilMultiSample(const PixelFormat format, const MultiSample sample,
-			const BarrierState   initialState = BarrierState::DepthStencil,
-			const BarrierState   finalState   = BarrierState::GeneralRead,
+			const ResourceState   initialState = ResourceState::DepthStencil,
+			const ResourceState   finalState   = ResourceState::GeneralRead,
 			const AttachmentLoad  load         = AttachmentLoad::Clear,
 			const AttachmentStore store        = AttachmentStore::Store,
 			const AttachmentLoad  stencilLoad  = AttachmentLoad::DontCare,
@@ -1454,8 +1438,8 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		BarrierState   InitialLayout = BarrierState::Common;        // initial resource layout  
-		BarrierState   FinalLayout   = BarrierState::Present;       // final desired resource layout
+		ResourceState   InitialLayout = ResourceState::Common;        // initial resource layout  
+		ResourceState   FinalLayout   = ResourceState::Present;       // final desired resource layout
 		PixelFormat     Format        = PixelFormat::Unknown;         // pixel format
 		MultiSample     SampleCount   = MultiSample::Count1;          // multi sample count (default: single sample count)
 		AttachmentLoad  LoadOp        = AttachmentLoad::Clear;        // at the beginning of a render path, erase already existing data with a specific value
@@ -1468,8 +1452,8 @@ namespace rhi::core
 		Attachment() = default;
 		Attachment(
 			const PixelFormat     format,
-			const BarrierState   initialState,
-			const BarrierState   finalState,
+			const ResourceState   initialState,
+			const ResourceState   finalState,
 			const AttachmentLoad  load,
 			const AttachmentStore store,
 			const AttachmentLoad  stencilLoad,

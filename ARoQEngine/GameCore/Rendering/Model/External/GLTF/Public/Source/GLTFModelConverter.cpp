@@ -93,8 +93,8 @@ void GLTFConverter::PrepareTotalMesh([[maybe_unused]]const GameModelPtr model, [
 	///*-------------------------------------------------------------------
 	//-            Total mesh
 	//---------------------------------------------------------------------*/
-	//const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.size(), MemoryHeap::Upload, BarrierState::Common, vertices.get());
-	//const auto ibData = GPUBufferMetaData::IndexBuffer(sizeof(UINT32), file.Indices.size(), MemoryHeap::Default, BarrierState::Common, file.Indices.data());
+	//const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.size(), MemoryHeap::Upload, ResourceState::Common, vertices.get());
+	//const auto ibData = GPUBufferMetaData::IndexBuffer(sizeof(UINT32), file.Indices.size(), MemoryHeap::Default, ResourceState::Common, file.Indices.data());
 	//model->_totalMesh = std::make_shared<Mesh>(model->_engine, vbData, ibData);
 }
 
@@ -135,7 +135,7 @@ void GLTFConverter::PrepareEachMaterialMesh([[maybe_unused]]const GameModelPtr m
 	//	};
 
 	//	// GPU constant buffer information
-	//	GPUBufferMetaData bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1, MemoryHeap::Upload, BarrierState::Common, &pbrMaterial);
+	//	GPUBufferMetaData bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(PBRMaterial), 1, MemoryHeap::Upload, ResourceState::Common, &pbrMaterial);
 
 	//	// material buffer
 	//	material = std::make_shared<Material>(model->_engine, bufferInfo, unicode::ToWString(file.Materials[i].MaterialName));

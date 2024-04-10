@@ -277,7 +277,7 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 		}
 
 		{
-			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), indices.Size(), MemoryHeap::Default, BarrierState::Common);
+			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), indices.Size(), MemoryHeap::Default, ResourceState::Common);
 			
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(name + SP("IB"));

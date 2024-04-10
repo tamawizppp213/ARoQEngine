@@ -266,7 +266,7 @@ void GaussianBlur::PrepareBlurParameters(const gu::tstring& name)
 	parameter.Weights[0] = gm::Float4(0, 0, 0, 0);
 	parameter.Weights[1] = gm::Float4(0, 0, 0, 0);
 
-	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurParameter), 1, MemoryHeap::Upload, BarrierState::Common);
+	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurParameter), 1, MemoryHeap::Upload, ResourceState::Common);
 	
 	const auto blurParameter = _engine->GetDevice()->CreateBuffer(metaData);
 	// Blur parameter gpu resource name 
@@ -288,7 +288,7 @@ void GaussianBlur::PrepareBlurParameters(const gu::tstring& name)
 void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name)
 {
 	const auto device   = _engine->GetDevice();
-	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(TextureSizeParameter), 1, MemoryHeap::Upload, BarrierState::Common);
+	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(TextureSizeParameter), 1, MemoryHeap::Upload, ResourceState::Common);
 	
 	const auto textureSizeBuffer = device->CreateBuffer(metaData);
 	textureSizeBuffer->SetName(name + SP("TextureSize"));
@@ -354,7 +354,7 @@ void GaussianBlur::PreparePipelineState(const gu::tstring& name)
 	else
 	{
 		// render pass
-		const auto colorAttachment = Attachment::RenderTarget(_engine->GetBackBufferFormat(), BarrierState::RenderTarget, BarrierState::Present, AttachmentLoad::Load);
+		const auto colorAttachment = Attachment::RenderTarget(_engine->GetBackBufferFormat(), ResourceState::RenderTarget, ResourceState::Present, AttachmentLoad::Load);
 		_xBlur.RenderPass = device->CreateRenderPass(colorAttachment, {});
 		_yBlur.RenderPass = device->CreateRenderPass(colorAttachment, {});
 
@@ -499,7 +499,7 @@ void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, BarrierState::Common);
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(addName + SP("FinalIB"));
 		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
