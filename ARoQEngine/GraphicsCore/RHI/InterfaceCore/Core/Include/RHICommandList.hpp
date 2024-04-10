@@ -224,9 +224,9 @@ namespace rhi::core
 		/*-------------------------------------------------------------------
 		-                Transition layout
 		---------------------------------------------------------------------*/
-		virtual void TransitionResourceState (const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after) = 0;
+		virtual void TransitionBarrierState (const gu::SharedPointer<core::GPUTexture>& texture, core::BarrierState after) = 0;
 		
-		virtual void TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) = 0;
+		virtual void TransitionBarrierStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::BarrierState* afters) = 0;
 		
 		#pragma endregion
 		#pragma endregion 

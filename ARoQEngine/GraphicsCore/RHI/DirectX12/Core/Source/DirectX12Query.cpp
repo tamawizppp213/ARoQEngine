@@ -57,7 +57,7 @@ RHIQuery::RHIQuery(const SharedPointer<core::RHIDevice>& device,
 	---------------------------------------------------------------------*/
 	auto metaData = rhi::core::GPUBufferMetaData::UploadBuffer
 		            ( GetResultStrideByteSize(), count, rhi::core::MemoryHeap::Readback, nullptr );
-	metaData.State = core::ResourceState::CopyDestination;
+	metaData.State = core::BarrierState::CopyDestination;
 
 	_resultBuffer = rhiDevice->CreateBuffer(metaData, L"ReadbackBuffer");
 	_resultBuffer->SetName(PrepareResultBufferName());

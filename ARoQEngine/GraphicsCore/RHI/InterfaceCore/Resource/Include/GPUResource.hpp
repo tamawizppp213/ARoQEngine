@@ -39,10 +39,10 @@ namespace rhi::core
 		/*!**********************************************************************
 		*  @brief     GPUのリソース状態を変更します. 
 		*  @attention ここではリソースのメンバ変数を変更するだけのために使用するため, Barrierなどと併用して使用します.
-		*  @param[in] const core::ResourceState GPU処理が完了した後のリソース状態
+		*  @param[in] const core::BarrierState GPU処理が完了した後のリソース状態
 		*  @return    void
 		*************************************************************************/
-		virtual void TransitionResourceState(const core::ResourceState after) = 0;
+		virtual void TransitionBarrierState(const core::BarrierState after) = 0;
 
 		#pragma endregion
 
@@ -57,9 +57,9 @@ namespace rhi::core
 		/*!**********************************************************************
 		*  @brief     現時点のGPUResourceの扱い方 (IndexBufferとして使用するなど...)を取得します
 		*  @param[in] void
-		*  @return    core::ResourceState リソースの扱い方
+		*  @return    core::BarrierState リソースの扱い方
 		*************************************************************************/
-		virtual core::ResourceState GetResourceState() const noexcept = 0;
+		virtual core::BarrierState GetBarrierState() const noexcept = 0;
 		
 		/*!**********************************************************************
 		*  @brief     テクスチャとして使用している場合にtrueを返します

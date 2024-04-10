@@ -63,7 +63,7 @@ TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	{
 		core::GPUBufferMetaData metaData = core::GPUBufferMetaData::DefaultBuffer(preBuildInfo.ScratchDataSizeInBytes, 1);
 		metaData.ResourceUsage = core::ResourceUsage::UnorderedAccess;
-		metaData.State = core::ResourceState::Common;
+		metaData.State = core::BarrierState::Common;
 		_scratch = dxDevice->CreateBuffer(metaData);
 	}
 
@@ -73,7 +73,7 @@ TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	{
 		core::GPUBufferMetaData metaData = core::GPUBufferMetaData::DefaultBuffer(preBuildInfo.ResultDataMaxSizeInBytes, 1);
 		metaData.ResourceUsage = core::ResourceUsage::UnorderedAccess;
-		metaData.State = core::ResourceState::RayTracingAccelerationStructure;
+		metaData.State = core::BarrierState::RayTracingAccelerationStructure;
 		_destination = dxDevice->CreateBuffer(metaData);
 	}
 
@@ -92,7 +92,7 @@ TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	{
 		core::GPUBufferMetaData metaData = core::GPUBufferMetaData::UploadBuffer(
 			sizeof(D3D12_RAYTRACING_INSTANCE_DESC), numInstance);
-		metaData.State = core::ResourceState::GeneralRead;
+		metaData.State = core::BarrierState::GeneralRead;
 		_asInstanceDescsBuffer = dxDevice->CreateBuffer(metaData);
 		_asInstanceDescsBuffer->Pack(dxDescs.Data(), nullptr); // upload bufferÇÃÇΩÇﬂÅAnullptr
 	}

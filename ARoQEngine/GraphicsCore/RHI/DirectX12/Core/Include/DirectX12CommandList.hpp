@@ -183,11 +183,11 @@ namespace rhi::directX12
 		/*-------------------------------------------------------------------
 		-                Transition layout
 		---------------------------------------------------------------------*/
-		void TransitionResourceState (const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after) override ;
+		void TransitionBarrierState (const gu::SharedPointer<core::GPUTexture>& texture, core::BarrierState after) override ;
 
-		void TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override ;
+		void TransitionBarrierStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::BarrierState* afters) override ;
 
-		void TransitionResourceStates(const gu::DynamicArray<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters);
+		void TransitionBarrierStates(const gu::DynamicArray<gu::SharedPointer<core::GPUResource>>& resources, core::BarrierState* afters);
 		
 		/*-------------------------------------------------------------------
 		-                Copy

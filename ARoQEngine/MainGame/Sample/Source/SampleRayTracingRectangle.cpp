@@ -216,7 +216,7 @@ void SampleRayTracingRectangle::BuildBuffer()
 			sizeof(std::uint32_t),
 			rectangle.Indices.size(),
 			rhi::core::MemoryHeap::Default,
-			rhi::core::ResourceState::Common);
+			rhi::core::BarrierState::Common);
 		_indexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
 		_indexBuffer->SetName(SP("IndexBuffer"));
 		_indexBuffer->Pack(rectangle.Indices.data(), _engine->GetCommandList(CommandListType::Copy));

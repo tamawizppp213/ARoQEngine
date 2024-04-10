@@ -143,7 +143,7 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const gu::tstring& name)
 	-              Index Buffer
 	---------------------------------------------------------------------*/
 	{
-		const auto metaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), mesh.Indices.size(), MemoryHeap::Default, ResourceState::Common);
+		const auto metaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), mesh.Indices.size(), MemoryHeap::Default, BarrierState::Common);
 		_indexCount = mesh.Indices.size();
 
 		_indexBuffer = device->CreateBuffer(metaData);

@@ -337,10 +337,10 @@ void GPUTexture::Write(const gu::SharedPointer<core::RHICommandList>& commandLis
 	/*-------------------------------------------------------------------
 	-                 Copy Texture Data
 	---------------------------------------------------------------------*/
-	const auto state = GetResourceState();
-	dxCommandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopySource);
+	const auto state = GetBarrierState();
+	dxCommandList->TransitionBarrierState(SharedFromThis(), core::BarrierState::CopySource);
 	UpdateSubresources(dxCommandList->GetCommandList().Get(), _resource.Get(), uploadBuffer.Get(), 0, 0, static_cast<UINT>(subResources.size()), subResources.data());
-	dxCommandList->TransitionResourceState(SharedFromThis(), state);
+	dxCommandList->TransitionBarrierState(SharedFromThis(), state);
 }
 
 /****************************************************************************
@@ -391,13 +391,13 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 	-       Create read back buffer to read gpu memory to the cpu memory
 	---------------------------------------------------------------------*/
 	auto metaData       = core::GPUBufferMetaData::UploadBuffer(core::PixelFormatSizeOf::Get(_metaData.PixelFormat), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
-	metaData.State      = core::ResourceState::CopyDestination;
+	metaData.State      = core::BarrierState::CopyDestination;
 	const auto buffer   = _device->CreateBuffer(metaData);
 	const auto dxBuffer = gu::StaticPointerCast<GPUBuffer>(buffer);
 
 	//Transition the resource if necessary
-	const auto state = GetResourceState();
-	dxCommandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopySource);
+	const auto state = GetBarrierState();
+	dxCommandList->TransitionBarrierState(SharedFromThis(), core::BarrierState::CopySource);
 
 	/*-------------------------------------------------------------------
 	-       Get the copy target location
@@ -414,7 +414,7 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 	const auto copySrcLocation  = TEXTURE_COPY_LOCATION(_resource.Get(), 0);
 
 	dxCommandList->GetCommandList()->CopyTextureRegion(&copyDestLocation, 0, 0, 0, &copySrcLocation, nullptr);
-	dxCommandList->TransitionResourceState(SharedFromThis(), state);
+	dxCommandList->TransitionBarrierState(SharedFromThis(), state);
 
 	/*-------------------------------------------------------------------
 	-       Execute and Wait GPU

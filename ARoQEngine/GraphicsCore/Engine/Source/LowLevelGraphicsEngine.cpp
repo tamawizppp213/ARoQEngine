@@ -439,7 +439,7 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat);
 
 		// vulkan‚Ìê‡, ‰ŠúRenderTarget‚ÍUnlnown‚Å‚ ‚é•K—v‚ª‚ ‚é‚Æ‚Ì‚±‚Æ
-		if (_apiVersion == GraphicsAPI::Vulkan) { colorAttachment.InitialLayout = core::ResourceState::Common; }
+		if (_apiVersion == GraphicsAPI::Vulkan) { colorAttachment.InitialLayout = core::BarrierState::Common; }
 
 		_renderPass = _device->CreateRenderPass(colorAttachment, depthAttachment);
 		_renderPass->SetClearValue(clearColor, clearDepthColor);
@@ -449,11 +449,11 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 	-      set continue drawing render pass (for texture rendering)
 	---------------------------------------------------------------------*/
 	{
-		core::Attachment colorAttachment = core::Attachment::RenderTarget(_pixelFormat, core::ResourceState::RenderTarget,
-			core::ResourceState::Present, core::AttachmentLoad::Load);
+		core::Attachment colorAttachment = core::Attachment::RenderTarget(_pixelFormat, core::BarrierState::RenderTarget,
+			core::BarrierState::Present, core::AttachmentLoad::Load);
 
-		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat, core::ResourceState::DepthStencil, 
-			core::ResourceState::DepthStencil,core::AttachmentLoad::Load);
+		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat, core::BarrierState::DepthStencil, 
+			core::BarrierState::DepthStencil,core::AttachmentLoad::Load);
 
 		_drawContinueRenderPass = _device->CreateRenderPass(colorAttachment, depthAttachment);
 		_drawContinueRenderPass->SetClearValue(clearColor, clearDepthColor);

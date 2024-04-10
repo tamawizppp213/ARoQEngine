@@ -96,7 +96,7 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, BarrierState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(addName + SP("IB"));
 		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);

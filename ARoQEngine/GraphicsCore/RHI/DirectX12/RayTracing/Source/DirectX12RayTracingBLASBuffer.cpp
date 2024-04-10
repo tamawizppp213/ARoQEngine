@@ -67,7 +67,7 @@ BLASBuffer::BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	{
 		core::GPUBufferMetaData metaData = core::GPUBufferMetaData::DefaultBuffer(preBuildInfo.ScratchDataSizeInBytes, 1);
 		metaData.ResourceUsage = core::ResourceUsage::UnorderedAccess;
-		metaData.State         = core::ResourceState::Common;
+		metaData.State         = core::BarrierState::Common;
 		_scratch = dxDevice->CreateBuffer(metaData);
 	}
 
@@ -77,7 +77,7 @@ BLASBuffer::BLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	{
 		core::GPUBufferMetaData metaData = core::GPUBufferMetaData::DefaultBuffer(preBuildInfo.ResultDataMaxSizeInBytes, 1);
 		metaData.ResourceUsage = core::ResourceUsage::UnorderedAccess;
-		metaData.State         = core::ResourceState::RayTracingAccelerationStructure;
+		metaData.State         = core::BarrierState::RayTracingAccelerationStructure;
 		_destination = dxDevice->CreateBuffer(metaData);
 	}
 

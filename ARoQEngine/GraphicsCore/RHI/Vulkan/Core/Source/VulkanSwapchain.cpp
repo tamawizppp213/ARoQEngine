@@ -509,7 +509,7 @@ void RHISwapchain::InitializeSwapchain()
 			static_cast<size_t>(_desc.WindowInfo.Width), static_cast<size_t>(_desc.WindowInfo.Height),
 			_desc.PixelFormat, 1, core::ResourceUsage::RenderTarget);
 
-		info.State = core::ResourceState::Common;
+		info.State = core::BarrierState::Common;
 
 		_backBuffers[index] = gu::MakeShared<vulkan::GPUTexture>(_device, info, _vkImages[index]);
 	}

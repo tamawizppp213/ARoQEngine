@@ -105,7 +105,7 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 			static_cast<size_t>(_desc.WindowInfo.Height), 
 			_desc.PixelFormat, 1, core::ResourceUsage::RenderTarget);
 
-		info.State = core::ResourceState::Present;
+		info.State = core::BarrierState::Present;
 
 		_backBuffers[index] = gu::MakeShared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
 	}
@@ -337,7 +337,7 @@ void RHISwapchain::SetUp()
 		auto info = core::GPUTextureMetaData::Texture2D(
 			static_cast<size_t>(_desc.WindowInfo.Width), static_cast<size_t>(_desc.WindowInfo.Height), _desc.PixelFormat, 1, 
 			core::ResourceUsage::RenderTarget);
-		info.State = core::ResourceState::Common;
+		info.State = core::BarrierState::Common;
 
 		_backBuffers[i] = gu::MakeShared<directX12::GPUTexture>(_device, backBuffer, info, L"BackBuffer");
 	}

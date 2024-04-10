@@ -177,7 +177,7 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, BarrierState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(name + SP("IB"));
 		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);

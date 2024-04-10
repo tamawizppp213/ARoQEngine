@@ -119,8 +119,8 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 	/*-------------------------------------------------------------------
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
-	//gu::DynamicArray<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
-	//TransitionResourceStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().data(), states.data());
+	//gu::DynamicArray<core::BarrierState> states(frameBuffer->GetRenderTargetSize(), core::BarrierState::RenderTarget);
+	//TransitionBarrierStates(static_cast<std::uint32_t>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().data(), states.data());
 
 	/*-------------------------------------------------------------------
 	-               Set clear values
@@ -155,8 +155,8 @@ void RHICommandList::EndRenderPass()
 	/*-------------------------------------------------------------------
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
-	//gu::DynamicArray<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
-	//TransitionResourceStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
+	//gu::DynamicArray<core::BarrierState> states(_frameBuffer->GetRenderTargetSize(), core::BarrierState::Present);
+	//TransitionBarrierStates(static_cast<std::uint32_t>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().data(), states.data());
 }
 #pragma endregion SetUp Draw Frame
 #pragma region GPU Command
@@ -285,36 +285,36 @@ void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& bu
 #pragma endregion Graphics Command
 #pragma region TransitionResourceLayout
 /****************************************************************************
-*                     TransitionResourceStates
+*                     TransitionBarrierStates
 *************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceStates(const gu::SharedPointer<core::GPUTexture>& textures, core::ResourceState afters)
+*  @fn        void RHICommandList::TransitionBarrierStates(const gu::SharedPointer<core::GPUTexture>& textures, core::BarrierState afters)
 *
 *  @brief     Transition a single resource layout using barrier
 *
 *  @param[in] const gu::SharedPointer<core::GPUTexture>& texture array,
-*  @param[in] core::ResourceState state array
+*  @param[in] core::BarrierState state array
 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after)
+void RHICommandList::TransitionBarrierState(const gu::SharedPointer<core::GPUTexture>& texture, core::BarrierState after)
 {
-	TransitionResourceStates(1, &texture, &after);
+	TransitionBarrierStates(1, &texture, &after);
 }
 
 /****************************************************************************
-*                     TransitionResourceStates
+*                     TransitionBarrierStates
 *************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
+*  @fn        void RHICommandList::TransitionBarrierStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::BarrierState* afters)
 *
 *  @brief     Transition resource layout using barrier
 *
 *  @param[in] const std::uint32_t numStates
 *  @param[in] const gu::SharedPointer<core::GPUTexture>* texture array,
-*  @param[in] core::ResourceState* state array
+*  @param[in] core::BarrierState* state array
 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
+void RHICommandList::TransitionBarrierStates(const std::uint32_t numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::BarrierState* afters)
 {
 	if (numStates <= 0) { return; }
 
@@ -328,7 +328,7 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 		imageMemoryBarrier.pNext               = nullptr;
 		imageMemoryBarrier.srcAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.oldLayout);
 		imageMemoryBarrier.dstAccessMask       = SelectVkAccessFlag(imageMemoryBarrier.newLayout);
-		imageMemoryBarrier.oldLayout           = EnumConverter::Convert(vkTexture->GetResourceState());
+		imageMemoryBarrier.oldLayout           = EnumConverter::Convert(vkTexture->GetBarrierState());
 		imageMemoryBarrier.newLayout           = EnumConverter::Convert(afters[i]);
 		imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 		imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
@@ -339,7 +339,7 @@ void RHICommandList::TransitionResourceStates(const std::uint32_t numStates, con
 		imageMemoryBarrier.subresourceRange.layerCount     = static_cast<std::uint32_t>(vkTexture->GetArrayLength());
 		imageMemoryBarrier.subresourceRange.levelCount     = static_cast<std::uint32_t>(vkTexture->GetMipMapLevels());
 
-		vkTexture->TransitionResourceState(afters[i]);
+		vkTexture->TransitionBarrierState(afters[i]);
 	}
 
 	vkCmdPipelineBarrier(_commandBuffer, 

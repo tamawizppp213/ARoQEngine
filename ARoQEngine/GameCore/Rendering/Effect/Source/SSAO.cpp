@@ -206,7 +206,7 @@ void SSAO::PrepareSSAOSettings(const gu::tstring& name)
 	}
 
 	// create constant buffer for ssao setting.
-	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SSAOSetting), 1, MemoryHeap::Upload, ResourceState::Common);
+	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SSAOSetting), 1, MemoryHeap::Upload, BarrierState::Common);
 	const auto buffer   = device->CreateBuffer(metaData);
 	buffer->SetName(name + SP("SSAOSetting"));
 	buffer->Pack(&_setting, nullptr);
@@ -236,7 +236,7 @@ void SSAO::PrepareBlurMode(const gu::tstring& name)
 		BlurMode blurMode = {};
 
 		// create constant buffer for blur mode setting
-		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurMode), 1, MemoryHeap::Upload, ResourceState::Common);
+		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurMode), 1, MemoryHeap::Upload, BarrierState::Common);
 		const auto buffer = device->CreateBuffer(metaData);
 		buffer->SetName(name + SP("BlurMode"));
 		buffer->Pack(&blurMode, nullptr);
@@ -251,7 +251,7 @@ void SSAO::PrepareBlurMode(const gu::tstring& name)
 		BlurMode blurMode = {};
 
 		// create constant buffer for blur mode setting
-		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurMode), 1, MemoryHeap::Upload, ResourceState::Common);
+		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurMode), 1, MemoryHeap::Upload, BarrierState::Common);
 		const auto buffer = device->CreateBuffer(metaData);
 		buffer->SetName(name + SP("BlurMode"));
 		buffer->Pack(&blurMode, nullptr);
@@ -391,7 +391,7 @@ void SSAO::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, BarrierState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(addName + SP("IB"));
 		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);

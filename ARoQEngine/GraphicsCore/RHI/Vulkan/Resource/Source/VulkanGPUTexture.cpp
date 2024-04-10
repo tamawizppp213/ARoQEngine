@@ -160,7 +160,7 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
 	}
 	// •K‚¸Å‰‚ÍUndefined‚©‚çŽn‚ß‚é.
-	_metaData.State = rhi::core::ResourceState::Common;
+	_metaData.State = rhi::core::BarrierState::Common;
 
 	/*-------------------------------------------------------------------
 	-                 Create texture buffers
@@ -198,9 +198,9 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 	};
 
 	const auto vkBuffer      = gu::StaticPointerCast<vulkan::GPUBuffer>(_stagingBuffer)->GetBuffer();
-	commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopyDestination);
+	commandList->TransitionBarrierState(SharedFromThis(), core::BarrierState::CopyDestination);
 	vkCmdCopyBufferToImage(vkCommandList, vkBuffer, _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
-	commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::GeneralRead);
+	commandList->TransitionBarrierState(SharedFromThis(), core::BarrierState::GeneralRead);
 
 }
 #pragma endregion Main Function

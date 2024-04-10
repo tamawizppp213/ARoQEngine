@@ -221,7 +221,7 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addNa
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
 		{
-			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, BarrierState::Common);
 			const auto bufferName = addName + SP("IB");
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(bufferName);

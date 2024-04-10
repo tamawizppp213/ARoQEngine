@@ -138,7 +138,7 @@ void Sobel::SetColor(const gm::Float4& color)
 void Sobel::PrepareOutlineInfo(const gu::tstring& name)
 {
 	const auto device   = _engine->GetDevice();
-	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(OutlineInfo), 1, MemoryHeap::Upload, ResourceState::Common);
+	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(OutlineInfo), 1, MemoryHeap::Upload, BarrierState::Common);
 	const auto buffer   = device->CreateBuffer(metaData);
 	buffer->SetName(name + SP("OutlineInfo"));
 
