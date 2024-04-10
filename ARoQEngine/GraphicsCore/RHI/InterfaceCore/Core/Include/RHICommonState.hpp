@@ -22,7 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 namespace rhi::core
 {
-#pragma region API
+	#pragma region API
 	/****************************************************************************
 	*				  			GraphicsAPI
 	*************************************************************************//**
@@ -92,8 +92,9 @@ namespace rhi::core
 		Unknown   = 0xffffffff //!< Other vender
 	};
 
-#pragma endregion           API
-#pragma region CommandList
+	#pragma endregion 
+
+	#pragma region CommandList
 	/****************************************************************************
 	*				  			CommandListType
 	*************************************************************************//**
@@ -108,8 +109,8 @@ namespace rhi::core
 		Copy,       //!< GPUリソースのコピーに使用します.
 		CountOfType //!< CommandListの種類数
 	};
-#pragma endregion   CommandList
-#pragma region Index
+	#pragma endregion 
+	#pragma region Index
 	/****************************************************************************
 	*				  			IndexType
 	*************************************************************************//**
@@ -153,41 +154,68 @@ namespace rhi::core
 			}
 		}
 	};
-#pragma endregion         Index
+	#pragma endregion         Index
+
 	#pragma region Window Surface
 	/****************************************************************************
 	*				  			Viewport 
 	*************************************************************************//**
-	*  @class     Viewport 
-	*  @brief     Rect Viewport 
+	/*! @brief   描画領域を設定する構造体です.
 	*****************************************************************************/
 	struct Viewport
 	{
-		float TopLeftX  = 0.0f; // ピクセル単位
-		float TopLeftY  = 0.0f; // ピクセル単位
+		/*! @brief Viewport左上隅を指定する位置をピクセル単位に基づいて指定します*/
+		float TopLeftX  = 0.0f;
+
+		/*! @brief Viewport左上隅を指定する位置をピクセル単位に基づいて指定します*/
+		float TopLeftY  = 0.0f;
+
+		/*! @brief Viewportの幅をピクセル単位に基づいて指定します*/
 		float Width     = 0.0f;
+
+		/*! @brief Viewportの高さをピクセル単位に基づいて指定します*/
 		float Height    = 0.0f;
+
+		/*! @brief 最小の深度を0.0f～1.0fの間で指定します.*/
 		float MinDepth  = 0.0f;
+
+		/*! @brief 最大の深度を0.0f～1.0fの間で指定します. */
 		float MaxDepth  = 1.0f;
+
+		/*! @brief デフォルトコンストラクタ*/
 		Viewport() = default;
+
+		/*! @brief Viewportを規定する情報を一通り登録するコンストラクタです*/
 		Viewport(float topLeftX, float topLeftY, float width, float height, float minDepth = 0.0f, float maxDepth = 1.0f)
 		{
 			this->TopLeftX = topLeftX; this->TopLeftY = topLeftY; this->Width = width; this->Height = height; this->MinDepth = minDepth; this->MaxDepth = maxDepth;
 		}
 	};
+
 	/****************************************************************************
 	*				  			ScissorRect
 	*************************************************************************//**
-	*  @class     ScissorRect
-	*  @brief     Scissor Rectangle
+	*  @brief   Viewportの中で実際に描画される範囲を指定するシザー矩形
+	*  @note    http://angra.blog31.fc2.com/blog-entry-52.html (シザー矩形の表示される領域説明. ただし, 座標系は異なるため注意)
 	*****************************************************************************/
 	struct ScissorRect
 	{
+		/*! @brief ビューポートの左端の位置を0として, そこからの描画開始位置をピクセル単位で指定します.*/
 		long Left   = 0; // Left window position
+
+		/*! @brief ビューポートの上端の位置を0として, そこからの描画開始位置をピクセル単位で指定します.*/
 		long Top    = 0; // top window position
-		long Right  = 0; // right window position
-		long Bottom = 0; // bottom window position
+
+		/*! @brief ビューポートの左端の位置を0として, そこからの描画幅をピクセル単位で指定します.*/
+		long Right  = 0;
+
+		/*! @brief ビューポートの上端の位置を0として, そこｋらの描画高さをピクセル単位で指定します*/
+		long Bottom = 0; 
+
+		/*! @brief デフォルトコンストラクタ*/
 		ScissorRect() = default;
+
+		/*! @brief 描画領域を直接指定するコンストラクタ*/
 		ScissorRect(long left, long top, long right, long bottom)
 		{
 			this->Left = left; this->Top = top; this->Right = right; this->Bottom = bottom;
@@ -197,18 +225,26 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			WindowInfo
 	*************************************************************************//**
-	*  @struct    WindowInfo
-	*  @brief     Window size and window handle pointer
+	*  @brief   ビューポートとは異なり, 純粋なウィンドウのサイズやWindowハンドルを取得するクラスです
 	*****************************************************************************/
 	struct WindowInfo
 	{
-		gu::uint64 Width     = 0;       // window width
-		gu::uint64 Height    = 0;       // window height
-		void*  Handle    = nullptr; // window handle pointer 
-		void*  HInstance = nullptr; // window instance for Windows API
+		/*! @brief ウィンドウの幅をピクセル単位で指定します*/
+		gu::uint64 Width     = 0; 
 
+		/*! @brief ウィンドウの高さをピクセル単位で指定します*/
+		gu::uint64 Height    = 0;
+
+		/*! @brief ウィンドウ領域のハンドル*/
+		void*  Handle    = nullptr;
+
+		/*! @brief ウィンドウのインスタンスハンドルです (WindowsAPIのみ使用します.)*/
+		void*  HInstance = nullptr;
+
+		/*! @brief デフォルトコンストラクタ*/
 		WindowInfo()  = default;
 
+		/*! @brief 直接ウィンドウ情報を指定します*/
 		WindowInfo(gu::uint64 width, gu::uint64 height, void* handle, void* hInstance = nullptr)
 		{
 			this->Width = width; this->Height = height; this->Handle = handle; this->HInstance = hInstance;
@@ -216,7 +252,8 @@ namespace rhi::core
 
 	};
 
-#pragma endregion    Window Surface
+	#pragma endregion
+
 #pragma region Pixel
 
 	enum class ShadingRate : gu::uint8
@@ -992,7 +1029,7 @@ namespace rhi::core
 	*  @class     ResourceState
 	*  @brief     How to use resource
 	*****************************************************************************/
-	enum class ResourceState : gu::uint32
+	enum class ResourceState : gu::uint8
 	{
 		Common,
 		GeneralRead,
@@ -1013,27 +1050,30 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			MemoryHeap
 	*************************************************************************//**
-	*  @class     MemoryHeap
-	*  @brief     memory type
+	/* @brief  GPUのメモリを格納するヒープ領域の種類を決定します. 
 	*****************************************************************************/
 	enum class MemoryHeap : gu::uint8
 	{
-		Default, // Memory area visible only from GPU  
-		Upload,  // Memory area visible to CPU and GPU (Read from GPU is used for one time.)
-		Readback,// 
-		Custom   // for directX12
+		Default, //!< GPU側でのみ見ることが出来るメモリ領域です. この場合, Mapでの読み書きは行えませんが, GPU内の処理で完結する作業は高速です
+		Upload,  //!< CPUからGPUにメモリを転送するのに使用します. Mapを使ってCPUが一度書き込み, GPUで一度読み取るデータに最適
+		Readback,//!< CPUからの読み取りを行う時に使用する, (GPUが書き込みを行い, それをCPUが読み取るデータに最適)
+		Custom   //!< DirectX12用にカスタマイズするヒープ領域
 	};
 
-	enum class DescriptorHeapType
+	/****************************************************************************
+	*				  			DescriptorHeapType
+	*************************************************************************//**
+	/* @brief 　リソースを読み取る際のビューについて, ディスクリプタを貯めておくヒープ領域を指定する
+	*****************************************************************************/
+	enum class DescriptorHeapType : gu::uint8
 	{
-		CBV,         // const buffer view
-		SRV,         // shader resource view
-		UAV,         // unordered access view
-		SAMPLER,     // dynamic sampler state
+		CBV,         //!< Constant Buffer View (ユーザーが設定するGPUパラメータなどを設定します. )
+		SRV,         //!< Shader Resource View (テクスチャなどを読み取るときに使用します)
+		UAV,         //!< Unordered Access View (テクスチャの読み書きが入るときに使用します)  
+		SAMPLER,     //!< Dynamic Sampler State (テクスチャのサンプリングする方法を定義するときに使用します (普段はStatic Samplerを使用するため, あまり使用しません))
 
-		// directX12 api only heap type
-		RTV,         // render target (only directX12)
-		DSV,         // depth stencil (only directX12)
+		RTV,         //!< Render Target View (Swapchainに描画するときに使用します. (DirectX12だけで使用することが可能です))
+		DSV,         //!< Depth Stencil View (深度テクスチャを読み書きする際に使用します.  (DirectX12だけで使用することが可能です)
 	};
 
 	struct DefaultHeapCount
@@ -1171,21 +1211,6 @@ namespace rhi::core
 	};
 #pragma region GPUBuffer
 	/****************************************************************************
-	*				  			BufferType
-	*************************************************************************//**
-	*  @enum      BufferType
-	*  @brief     buffer type 
-	*****************************************************************************/
-	enum class BufferType
-	{
-		Vertex,   // Vertex buffers
-		Index,    // Index buffer 
-		Constant, // 256 byte alignment buffer
-		Upload,   // CPU readonly buffer
-		Default,  // GPU readonly buffer
-	};
-
-	/****************************************************************************
 	*				  			GPUBufferInfo
 	*************************************************************************//**
 	*  @class     GPUBufferInfo
@@ -1194,9 +1219,7 @@ namespace rhi::core
 	struct GPUBufferMetaData
 	{
 	public:
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		#pragma region Public Member Variables
 		gu::uint64     Stride        = 0;                           // element byte size
 		gu::uint64     Count         = 0;                           // element array count 
 		gu::uint64     ByteSize      = 0;
@@ -1204,10 +1227,9 @@ namespace rhi::core
 		ResourceUsage  ResourceUsage = ResourceUsage::None;         // how to use resource 
 		ResourceState  State         = ResourceState::GeneralRead; // resource layout
 		MemoryHeap     HeapType      = MemoryHeap::Default;         // memory heap type
-		BufferType     BufferType    = BufferType::Upload;          // static or dynamic buffer
 		PixelFormat    Format        = PixelFormat::Unknown;        // 基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある
 		void*          InitData      = nullptr; // Init Data
-
+		#pragma endregion 
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
@@ -1222,7 +1244,7 @@ namespace rhi::core
 		*****************************************************************************/
 		GPUBufferMetaData() = default;
 
-		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState layout, MemoryHeap heapType, core::BufferType bufferType, void* initData = nullptr);
+		GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState layout, MemoryHeap heapType, void* initData = nullptr);
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/

@@ -342,6 +342,7 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 		DepthStencil,
 		UnorderedAccess,
 		Shared,
+		DrawIndirect
 	};
 
 	static gu::DynamicArray<D3D12_RESOURCE_FLAGS> targetPool =
@@ -353,7 +354,8 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage
 		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
 		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
 		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
-		D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS
+		D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS,
+		D3D12_RESOURCE_FLAG_NONE
 	};
 
 	auto res = D3D12_RESOURCE_FLAG_NONE;

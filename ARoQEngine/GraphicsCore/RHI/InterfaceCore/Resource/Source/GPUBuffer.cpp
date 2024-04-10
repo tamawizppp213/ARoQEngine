@@ -29,14 +29,14 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<RHIDevice>& device, const core::GPU
 	/*-------------------------------------------------------------------
 	-           Constant Buffer Check (for 256 byte alignment )
 	---------------------------------------------------------------------*/
-	bool isConstantBuffer = _metaData.BufferType == BufferType::Constant;
+	bool isConstantBuffer = gu::HasAnyFlags(GetUsage(), ResourceUsage::ConstantBuffer);
+
 	/*-------------------------------------------------------------------
 	-          Set Stride and Element Count
 	---------------------------------------------------------------------*/
 	// If you select the constant buffer, 256 byte alignment is needed.
 	_metaData.Stride   = isConstantBuffer ? static_cast<size_t>(CalcConstantBufferByteSize((std::uint32_t)_metaData.Stride)) : _metaData.Stride;
 	_metaData.ByteSize = _metaData.Stride * _metaData.Count;
-	_isTexture = false;
 }
 
 void GPUBuffer::Update(const void* data, const size_t dataLength)

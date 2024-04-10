@@ -21,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::directX12;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -56,7 +57,7 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const cor
 		.Dimension          = D3D12_RESOURCE_DIMENSION_BUFFER,
 		.Alignment          = metaData.Stride > 0 && 
 		                      (gu::HasAnyFlags(usage, StructuredBuffer) ||
-							  !gu::HasAnyFlags(usage, ByteAddress | DrawIndirect)) ? (UINT64)0: (UINT64)4,
+							  !gu::HasAnyFlags(usage, ByteAddress | DrawIndirect)) ? (uint64)0: (uint64)4,
 		.Width              = static_cast<UINT64>(GetTotalByteSize()),
 		.Height             = 1, // For 1D buffer
 		.DepthOrArraySize   = 1, // For 1D buffer

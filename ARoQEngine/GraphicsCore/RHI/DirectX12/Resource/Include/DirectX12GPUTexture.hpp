@@ -48,6 +48,16 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief     バッファとしてのGPUリソースかどうかを判定します.
+		*************************************************************************/
+		__forceinline virtual bool IsBuffer() const override { return false; }
+
+		/*!**********************************************************************
+		*  @brief     テクスチャとしてのGPUリソースかどうかを判定します.
+		*************************************************************************/
+		__forceinline virtual bool IsTexture() const override { return true; }
+
 		ResourceComPtr            GetResource         () { return _resource; }
 		
 		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return _resource->GetGPUVirtualAddress(); }

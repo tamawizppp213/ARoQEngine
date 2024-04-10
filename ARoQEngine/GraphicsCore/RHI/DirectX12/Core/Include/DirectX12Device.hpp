@@ -57,7 +57,7 @@ namespace rhi::directX12
 		
 		virtual gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
-		virtual gu::SharedPointer<core::RHIFence>                   CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("")) override;
+		virtual gu::SharedPointer<core::RHIFence> CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("")) override;
 		
 		virtual gu::SharedPointer<core::RHICommandList>             CreateCommandList(const gu::SharedPointer<core::RHICommandAllocator>& commandAllocator, const gu::tstring& name) override;
 		

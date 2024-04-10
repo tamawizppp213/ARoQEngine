@@ -36,7 +36,7 @@ Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaD
 #ifdef _DEBUG
 	Check(bufferInfo.Count == 1);
 	Check(bufferInfo.ResourceUsage == ResourceUsage::ConstantBuffer);
-	Check(bufferInfo.BufferType == BufferType::Constant);
+
 #endif
 
 	/*-------------------------------------------------------------------
@@ -172,7 +172,7 @@ Material::GPUResourceViewPtr Material::LoadTexture(const gu::tstring& filePath, 
 *****************************************************************************/
 void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::tstring& name)
 {
-	if (bufferInfo.BufferType != BufferType::Constant)
+	if (gu::HasAnyFlags(bufferInfo.ResourceUsage, ResourceUsage::ConstantBuffer))
 	{
 		OutputDebugStringA("SetUpBuffer: Unavailable buffer type");
 		return;

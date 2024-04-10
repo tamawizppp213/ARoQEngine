@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUBuffer.hpp
-///             @brief  GPU Buffer 
-///             @author Toide Yutaro
-///             @date   2022_07_08
+///  @file   GPUBuffer.hpp
+///  @brief  テクスチャ以外のバッファ. 頂点, インデックスバッファなどの作成に使用します. 
+///  @author Toide Yutaro
+///  @date   2024_04_09
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GPU_BUFFER_HPP
@@ -12,12 +12,13 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GPUResource.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////////////
-//                         Template Class
+//                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
 namespace rhi::core
@@ -27,7 +28,7 @@ namespace rhi::core
 	*				  			GPUBuffer
 	*************************************************************************//**
 	*  @class     GPUBuffer
-	*  @brief     Buffer
+	*  @brief     テクスチャ以外のバッファ. 頂点, インデックスバッファなどの作成に使用します.
 	*****************************************************************************/
 	class GPUBuffer : public GPUResource, public gu::EnableSharedFromThis<GPUBuffer>
 	{
@@ -43,7 +44,7 @@ namespace rhi::core
 		/*----------------------------------------------------------------------
 		*  @brief :  Call at once in each frame (If you need). CopyStart + CopyTotalData + CopyEnd. 
 		/*----------------------------------------------------------------------*/
-		void         Update(const void* data, const size_t dataLength);
+		void         Update(const void* data, const gu::uint64 dataLength);
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Call map function
@@ -53,12 +54,12 @@ namespace rhi::core
 		/*----------------------------------------------------------------------
 		*  @brief :  GPU copy to one element
 		/*----------------------------------------------------------------------*/
-		virtual void CopyData(const void* data, const size_t elementIndex) = 0;
+		virtual void CopyData(const void* data, const gu::uint64 elementIndex) = 0;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  GPU copy the specified range
 		/*----------------------------------------------------------------------*/
-		virtual void CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset = 0) = 0;
+		virtual void CopyTotalData(const void* data, const gu::uint64 dataLength, const gu::uint64 indexOffset = 0) = 0;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Call unmap function
@@ -71,23 +72,37 @@ namespace rhi::core
 			if (_metaData.State != after) { _metaData.State = after; }
 		}
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		/*----------------------------------------------------------------------
-		*  @brief :  Return Buffer Array Length
-		/*----------------------------------------------------------------------*/
-		__forceinline size_t GetElementCount   () const { return _metaData.Count; }
+		#pragma region Public Member Variables
+		/*!**********************************************************************
+		*  @brief     バッファとしてのGPUリソースかどうかを判定します.
+		*************************************************************************/
+		__forceinline virtual bool IsBuffer() const override { return true; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Return Buffer Element Byte Size
-		/*----------------------------------------------------------------------*/
-		__forceinline size_t GetElementByteSize() const { return _metaData.Stride; }
+		/*!**********************************************************************
+		*  @brief     テクスチャとしてのGPUリソースかどうかを判定します.
+		*************************************************************************/
+		__forceinline virtual bool IsTexture() const override { return false; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Return Count * Stride
-		/*----------------------------------------------------------------------*/
-		__forceinline size_t GetTotalByteSize  () const { return _metaData.ByteSize; }
+		/*!**********************************************************************
+		*  @brief     バッファに格納される要素の最大数を返します. 
+		*  @param[in] void
+		*  @return    gu::uint64 バッファに格納される要素の最大個数
+		*************************************************************************/
+		__forceinline gu::uint64 GetElementCount() const { return _metaData.Count; }
+
+		/*!**********************************************************************
+		*  @brief     1要素に必要な型情報のバイト数
+		*  @param[in] void
+		*  @return    gu::uint64 型のバイト数
+		*************************************************************************/
+		__forceinline gu::uint64 GetElementByteSize() const { return _metaData.Stride; }
+
+		/*!**********************************************************************
+		*  @brief     GPUBufferで使用している全体のバイト数を計算します. elementCount * elementByteSizeで返します. 
+		*  @param[in] void
+		*  @return    gu::uint64 全体のバイト数
+		*************************************************************************/
+		__forceinline gu::uint64 GetTotalByteSize() const { return _metaData.ByteSize; }
 
 		/*----------------------------------------------------------------------
 		*  @brief :  Return GPU Resource Type. (Basically Buffer or RaytracingAccelerationStructure) 
@@ -105,11 +120,6 @@ namespace rhi::core
 		__forceinline ResourceUsage GetUsage() const { return _metaData.ResourceUsage; }
 		
 		/*----------------------------------------------------------------------
-		*  @brief :  Return Buffer Type
-		/*----------------------------------------------------------------------*/
-		__forceinline BufferType GetBufferType() const { return _metaData.BufferType; }
-		
-		/*----------------------------------------------------------------------
 		*  @brief :  Return Heap region type (Default, Upload, Readback, Custom)
 		/*----------------------------------------------------------------------*/
 		__forceinline MemoryHeap GetMemoryHeapType() const { return _metaData.HeapType; }
@@ -122,20 +132,20 @@ namespace rhi::core
 		__forceinline GPUBufferMetaData& GetMetaData()                      { return _metaData; }
 		__forceinline const GPUBufferMetaData& GetMetaData() const noexcept { return _metaData; }
 		
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-
+		#pragma endregion 
+		
 	protected:
+		#pragma region Protected Constructor and Destructor
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GPUBuffer() { _isTexture = false; };
+		GPUBuffer();
 
 		~GPUBuffer() = default;
 
 		explicit GPUBuffer(const gu::SharedPointer<RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::tstring& name);
 		
+		#pragma endregion
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
@@ -143,9 +153,9 @@ namespace rhi::core
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
-		gu::uint8* _mappedData = nullptr;
-
 		GPUBufferMetaData _metaData = {};
+
+		gu::uint8* _mappedData = nullptr;
 	};
 }
 

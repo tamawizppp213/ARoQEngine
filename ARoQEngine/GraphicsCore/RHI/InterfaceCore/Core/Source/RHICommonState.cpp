@@ -84,10 +84,10 @@ SamplerInfo SamplerInfo::GetDefaultSampler(DefaultSamplerType type)
 }
 
 #pragma region GPUBuffer
-GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState state, MemoryHeap heapType, core::BufferType bufferType, void* initData )
-	: Stride(stride), Count(count), ResourceUsage(usage), State(state), HeapType(heapType), BufferType(bufferType),ResourceType(core::ResourceType::Buffer), InitData(initData)
+GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState state, MemoryHeap heapType, void* initData )
+	: Stride(stride), Count(count), ResourceUsage(usage), State(state), HeapType(heapType), ResourceType(core::ResourceType::Buffer), InitData(initData)
 {
-	if (bufferType == BufferType::Constant) { Stride = CalcConstantBufferByteSize(stride); }
+	if (gu::HasAnyFlags(ResourceUsage, ResourceUsage::ConstantBuffer)) { Stride = CalcConstantBufferByteSize(stride); }
 	ByteSize = Stride * Count;
 }
 
@@ -100,23 +100,23 @@ GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::Resource
 
 GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, initData);
 }
 GPUBufferMetaData GPUBufferMetaData::DefaultBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::Common, heap, BufferType::Default, initData);
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::Common, heap, initData);
 }
 GPUBufferMetaData GPUBufferMetaData::ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, state, heap, BufferType::Constant, initData);
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, state, heap, initData);
 }
 GPUBufferMetaData GPUBufferMetaData::VertexBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::VertexBuffer, state, heap, BufferType::Vertex, initData);
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::VertexBuffer, state, heap, initData);
 }
 GPUBufferMetaData GPUBufferMetaData::IndexBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::IndexBuffer, state, heap, BufferType::Index, initData);
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::IndexBuffer, state, heap, initData);
 }
 #pragma endregion GPUBuffer
 #pragma region GPUTexture

@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12GPUBuffer.hpp
-///             @brief  GPU Buffer 
-///             @author Toide Yutaro
-///             @date   2022_07_08
+///  @file   DirectX12GPUBuffer.hpp
+///  @brief  テクスチャ以外のバッファ. 頂点, インデックスバッファなどの作成に使用します. 
+///  @author Toide Yutaro
+///  @date   2022_07_08
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_GPU_BUFFER_HPP
