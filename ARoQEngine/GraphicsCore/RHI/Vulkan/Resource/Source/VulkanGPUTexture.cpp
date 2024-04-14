@@ -198,9 +198,9 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 	};
 
 	const auto vkBuffer      = gu::StaticPointerCast<vulkan::GPUBuffer>(_stagingBuffer)->GetBuffer();
-	commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopyDestination);
+	//commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopyDestination);
 	vkCmdCopyBufferToImage(vkCommandList, vkBuffer, _image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
-	commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::GeneralRead);
+	//commandList->TransitionResourceState(SharedFromThis(), core::ResourceState::GeneralRead);
 
 }
 #pragma endregion Main Function
@@ -233,10 +233,10 @@ void GPUTexture::Prepare()
 		.format                = EnumConverter::Convert(_metaData.PixelFormat),                 // pixel format
 		.extent                = VkExtent3D(static_cast<std::uint32_t>(_metaData.Width),        // texel size
 		                                    static_cast<std::uint32_t>(_metaData.Height),       
-		                        (_metaData.Dimension == core::ResourceDimension::Dimension3D ?
+		                        (_metaData.Dimension == core::ResourceDimension::Texture3D ?
 								static_cast<std::uint32_t>(_metaData.DepthOrArraySize) : 1)),
 		.mipLevels             = static_cast<std::uint32_t>(_metaData.MipLevels),               // max mipmap levels
-		.arrayLayers           = static_cast<uint32_t>(_metaData.Dimension == core::ResourceDimension::Dimension3D ? 
+		.arrayLayers           = static_cast<uint32_t>(_metaData.Dimension == core::ResourceDimension::Texture3D ? 
 								  1 : _metaData.DepthOrArraySize),
 		.samples               = EnumConverter::Convert(_metaData.Sample),
 		.tiling                = VkImageTiling::VK_IMAGE_TILING_OPTIMAL,

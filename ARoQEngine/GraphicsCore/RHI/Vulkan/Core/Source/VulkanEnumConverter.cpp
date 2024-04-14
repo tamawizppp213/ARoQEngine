@@ -385,9 +385,9 @@ VkImageType EnumConverter::Convert(const rhi::core::ResourceDimension dimension)
 {
 	switch (dimension)
 	{
-		case core::ResourceDimension::Dimension1D: return VkImageType::VK_IMAGE_TYPE_1D;
-		case core::ResourceDimension::Dimension2D: return VkImageType::VK_IMAGE_TYPE_2D;
-		case core::ResourceDimension::Dimension3D: return VkImageType::VK_IMAGE_TYPE_3D;
+		case core::ResourceDimension::Texture1D: return VkImageType::VK_IMAGE_TYPE_1D;
+		case core::ResourceDimension::Texture2D: return VkImageType::VK_IMAGE_TYPE_2D;
+		case core::ResourceDimension::Texture3D: return VkImageType::VK_IMAGE_TYPE_3D;
 		default:
 			throw std::runtime_error("not supported resource dimension (vulkan api) ");
 	}
@@ -445,13 +445,13 @@ VkImageViewType EnumConverter::Convert(const rhi::core::ResourceDimension dimens
 {
 	switch (dimension)
 	{
-		case core::ResourceDimension::Dimension1D: return length == 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_1D : VkImageViewType::VK_IMAGE_VIEW_TYPE_1D_ARRAY;
-		case core::ResourceDimension::Dimension2D:
+		case core::ResourceDimension::Texture1D: return length == 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_1D : VkImageViewType::VK_IMAGE_VIEW_TYPE_1D_ARRAY;
+		case core::ResourceDimension::Texture2D:
 		{
 			return  usage == core::ResourceType::TextureCube ? (length > 6 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE_ARRAY : VkImageViewType::VK_IMAGE_VIEW_TYPE_CUBE) :
 				(length == 1 ? VkImageViewType::VK_IMAGE_VIEW_TYPE_2D : VkImageViewType::VK_IMAGE_VIEW_TYPE_2D_ARRAY);
 		}
-		case core::ResourceDimension::Dimension3D: return VkImageViewType::VK_IMAGE_VIEW_TYPE_3D;
+		case core::ResourceDimension::Texture3D: return VkImageViewType::VK_IMAGE_VIEW_TYPE_3D;
 		default:
 			throw std::runtime_error("not support image view type");
 	}

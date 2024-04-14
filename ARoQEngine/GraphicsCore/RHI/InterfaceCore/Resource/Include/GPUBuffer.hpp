@@ -30,12 +30,20 @@ namespace rhi::core
 	*  @class     GPUBuffer
 	*  @brief     テクスチャ以外のバッファ. 頂点, インデックスバッファなどの作成に使用します.
 	*****************************************************************************/
-	class GPUBuffer : public GPUResource, public gu::EnableSharedFromThis<GPUBuffer>
+	class  GPUBuffer : public GPUResource, public gu::EnableSharedFromThis<GPUBuffer>
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief  　　GPUにメモリを配置します. 融通が効くようにbyte単位で指定します. 
+		*  @param[in] const void* : GPUにアップロードしたCPU側のメモリ配列
+		*  @param[in] const gu::uint64 メモリの確保するバイトサイズ
+		*  @param[in] const gu::uint64 メモリを確保する初期オフセット [byte]
+		*  @param[in] const gu::SharedPointer<RHICommandList> GraphicsかCopyのコマンドリスト
+		*  @return    void
+		*************************************************************************/
+		virtual void Upload(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte = 0, const gu::SharedPointer<RHICommandList>& commandList = nullptr) = 0;
+
 		// @brief : Basically for Default Buffer Initialize. Total Buffer Copy
 		//          Create temp upload buffer and copy this to default buffer (default buffer uses commandList)
 		//           https://zenn.dev/lriki/scraps/5bb7f5a23bba16 (今後確認したい)
@@ -44,18 +52,13 @@ namespace rhi::core
 		/*----------------------------------------------------------------------
 		*  @brief :  Call at once in each frame (If you need). CopyStart + CopyTotalData + CopyEnd. 
 		/*----------------------------------------------------------------------*/
-		void         Update(const void* data, const gu::uint64 dataLength);
+		virtual void Update(const void* data, const gu::uint64 dataLength) = 0;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Call map function
 		/*----------------------------------------------------------------------*/
 		virtual void CopyStart() = 0;
 		 
-		/*----------------------------------------------------------------------
-		*  @brief :  GPU copy to one element
-		/*----------------------------------------------------------------------*/
-		virtual void CopyData(const void* data, const gu::uint64 elementIndex) = 0;
-		
 		/*----------------------------------------------------------------------
 		*  @brief :  GPU copy the specified range
 		/*----------------------------------------------------------------------*/
@@ -66,12 +69,7 @@ namespace rhi::core
 		/*----------------------------------------------------------------------*/
 		virtual void CopyEnd() = 0;
 
-		
-		void TransitionResourceState(const core::ResourceState after) override
-		{
-			if (_metaData.State != after) { _metaData.State = after; }
-		}
-
+		#pragma endregion 
 		#pragma region Public Member Variables
 		/*!**********************************************************************
 		*  @brief     バッファとしてのGPUリソースかどうかを判定します.
@@ -102,16 +100,17 @@ namespace rhi::core
 		*  @param[in] void
 		*  @return    gu::uint64 全体のバイト数
 		*************************************************************************/
-		__forceinline gu::uint64 GetTotalByteSize() const { return _metaData.ByteSize; }
+		__forceinline gu::uint64 GetTotalByteSize() const { return _metaData.GetTotalByte(); }
 
 		/*----------------------------------------------------------------------
 		*  @brief :  Return GPU Resource Type. (Basically Buffer or RaytracingAccelerationStructure) 
 		/*----------------------------------------------------------------------*/
 		__forceinline ResourceType  GetResourceType() const { return _metaData.ResourceType; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Return GPU Resource State which tells how to read memory 
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     GPUリソースの状態を定義します. リソース状態を変更する際は, TransitionResourceState(コマンドリスト)を使用してください.  
+		*  @return    ResourceState : GPUリソースの状態
+		*************************************************************************/
 		ResourceState GetResourceState() const noexcept override { return _metaData.State; }
 		
 		/*----------------------------------------------------------------------
@@ -124,25 +123,38 @@ namespace rhi::core
 		/*----------------------------------------------------------------------*/
 		__forceinline MemoryHeap GetMemoryHeapType() const { return _metaData.HeapType; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  First pointer of CPU memory to be registered in Map
-		/*----------------------------------------------------------------------*/
-		__forceinline gu::uint8* GetCPUMemory() { return _mappedData; }
+		/*!**********************************************************************
+		*  @brief     Mapに登録されるCPUメモリの最初のポインタを返します
+		*  @return    gu::uint8* マップした先頭ポインタ
+		*************************************************************************/
+		virtual gu::uint8* GetCPUMappedAddress() = 0;
+
+		/*!**********************************************************************
+		*  @brief     GPUのアドレスをgu::uint64という形で仮想的に表現したものを返します. 
+		*  @return    gu::uint64 GPUのアドレス値
+		*************************************************************************/
+		virtual gu::uint64 GetGPUVirtualAddress() = 0;
 
 		__forceinline GPUBufferMetaData& GetMetaData()                      { return _metaData; }
 		__forceinline const GPUBufferMetaData& GetMetaData() const noexcept { return _metaData; }
 		
+		/*!**********************************************************************
+		*  @brief     現時点のGPUResourceの扱い方 (IndexBufferとして使用するなど...)を設定します
+		*  @attention 手動での切り替えは基本的に行わないでください. (この関数はバリアの使用を目的として使用します.)
+		*  @return    void
+		*************************************************************************/
+		__forceinline virtual void SetResourceState(const core::ResourceState state) override { _metaData.State = state;}
 		#pragma endregion 
 		
 	protected:
 		#pragma region Protected Constructor and Destructor
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		/*! @brief デフォルトコンストラクタ*/
 		GPUBuffer();
 
+		/*! @brief デストラクタ*/
 		~GPUBuffer() = default;
 
+		/*! @brief バッファの作成情報を使うコンストラクタ*/
 		explicit GPUBuffer(const gu::SharedPointer<RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::tstring& name);
 		
 		#pragma endregion
@@ -154,8 +166,6 @@ namespace rhi::core
 		**                Protected Member Variables
 		*****************************************************************************/
 		GPUBufferMetaData _metaData = {};
-
-		gu::uint8* _mappedData = nullptr;
 	};
 }
 

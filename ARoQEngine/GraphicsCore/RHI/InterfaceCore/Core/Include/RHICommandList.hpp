@@ -215,34 +215,88 @@ namespace rhi::core
 		---------------------------------------------------------------------*/
 		virtual void CopyResource(const gu::SharedPointer<GPUTexture>& dest, const gu::SharedPointer<GPUTexture>& source) = 0;
 		
-		/*----------------------------------------------------------------------
-		*  @brief : バッファの領域をあるリソースから別のリソースにコピーする. 
-		*           GPU版memcpy
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     GPUバッファの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer> : コピー先のバッファ
+		*  @param[in] const gu::uint64 : コピー先の初期書き取りポインタをずらすoffset byte
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer> : コピー元のバッファ
+		*  @param[in] const gu::uint64 : コピー元の初期読み取りポインタをずらすoffset byte
+		*  @param[in] const gu::uint64 : コピーを行う範囲 (byteSizeで指定)
+		*  @return void
+		*************************************************************************/
 		virtual void CopyBufferRegion(const gu::SharedPointer<GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) = 0;
 		#pragma endregion Copys
-		/*-------------------------------------------------------------------
-		-                Transition layout
-		---------------------------------------------------------------------*/
-		virtual void TransitionResourceState (const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after) = 0;
+
+		#pragma region Resource Barrier
+		/*!**********************************************************************
+		*  @brief  単独のGPUリソースの状態遷移を示します. @n
+		*          リソースの使い方が変わるタイミングで呼び出します.
+		*  @param[in] const gu::SharedPointer<core::GPUResource> GPUリソース
+		*  @param[in] const core::ResourceState 遷移前のリソース状態
+		*  @param[in] const core::ResourceState 遷移後のリソース状態
+		*  @param[in] const gu::uint32 サブリソースを示すインデックス (デフォルトは全てのサブリソースを示します) 0xfffffffの場合は全てのインデックスで有効化されます
+		*  @return    void
+		*************************************************************************/
+		virtual void PushTransitionBarrier(const gu::SharedPointer<core::GPUResource>& buffer  , const core::ResourceState after, const gu::uint32 subresource = 0xffffffff) = 0;
 		
-		virtual void TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) = 0;
+		/*!**********************************************************************
+		*  @brief  同じメモリ領域にマッピングされた複数のGPUリソースに対し, 使用するリソース自体を切り替える際に使用します. @n
+		*          同時に使用しないことが担保されているリソースのメモリを節約することが可能となります. @n
+		*          ただし, 本関数を使用する場合は,CreateCommittedResourceでは無く, CreatePlacedResourceを使用した方法でヒープの確保を行ってください.@n
+		*          (別々のヒープを作ってしまうことになり, 同じメモリ領域を扱わなくなるため.)
+		*  @note   https://logicalbeat.jp/blog/8185/ (AliasingBarrierの活用方法についての記述)
+		*  @param[in] const gu::SharedPointer<core::GPUResource> 切り替える前に使用していたGPUリソース
+		*  @param[in] const gu::SharedPointer<core::GPUResource> 切り替える前に使用していたGPUリソース
+		*  @return    void
+		*************************************************************************/
+		virtual void PushAliasingBarrier(const gu::SharedPointer<core::GPUResource>& before  , const gu::SharedPointer<core::GPUResource>& after) = 0;
 		
-		#pragma endregion
+		/*!**********************************************************************
+		*  @brief     Unordered access view専用の状態バリア @n
+		*             UAVの読み書き中にほかのUAVが対象リソースを読み書きする描画コマンドの実行を防ぐことを目的とします @n
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> Unordered access viewを持つGPUバッファ
+		*  @return    void
+		*************************************************************************/
+		virtual void PushUAVBarrier(const gu::SharedPointer<core::GPUResource>& texture) = 0;
+
+		/*!**********************************************************************
+		*  @brief  コマンドリストを使ってResourceBarrierをまとめて呼び出します.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
+		virtual void FlushResourceBarriers() = 0;
+		
+		#pragma endregion Resource Barrier
+
 		#pragma endregion 
 		
 		#pragma region Public Member Variables
+		/*!**********************************************************************
+		*  @brief     コマンドリストのメモリを格納するコマンドアロケータのポインタを返します
+		*  @return    gu::SharedPointer<RHICommandAllocator> コマンドアロケータのポインタ
+		*************************************************************************/
 		gu::SharedPointer<RHICommandAllocator> GetCommandAllocator() const noexcept { return _commandAllocator; }
 		
-		/* @brief : Command list type (graphics, copy, or compute)*/
+		/*!**********************************************************************
+		*  @brief     現在のコマンドリストの種類を返します. 
+		*  @return    CommandListType コマンドリストの種類 [graphics, copy, compute]
+		*************************************************************************/
 		CommandListType GetType() const { return _commandListType; }
 		
-		/* @brief : このコマンドリストを特定するための固有IDです. 毎フレームコマンドリストがResetされたとしても残ります.*/
-		std::uint64_t GetID() const { return _commandListID; }
+		/*!**********************************************************************
+		*  @brief     このコマンドリストを特定するための固有IDです. 毎フレームコマンドリストがResetされたとしても残ります.　現在は特に使用していない
+		*  @return    コマンドリストを特定する固有ID
+		*************************************************************************/
+		gu::uint64 GetID() const { return _commandListID; }
 
-		/* @brief : デバイスをセットします. */
+		/*!**********************************************************************
+		*  @brief     論理デバイスを設定します. 
+		*************************************************************************/
 		void SetDevice(gu::SharedPointer<RHIDevice> device) { _device = device; }
 
+		/*!**********************************************************************
+		*  @brief     デバッグ名を設定します
+		*************************************************************************/
 		virtual void SetName(const gu::tstring& name) = 0;
 
 		#pragma endregion
@@ -278,17 +332,22 @@ namespace rhi::core
 		/*! @brief コマンドリストを貯めておくアロケータ*/
 		gu::SharedPointer<RHICommandAllocator> _commandAllocator = nullptr;
 
+		/*! @brief 描画用のレンダーパス*/
 		gu::SharedPointer<core::RHIRenderPass> _renderPass = nullptr;
 
+		/*! @brief フレームバッファ*/
 		gu::SharedPointer<core::RHIFrameBuffer>_frameBuffer = nullptr;
 
+		/*! @brief コマンドリストを特定する固有ID*/
 		gu::uint64 _commandListID = 0;
 
+		/*! @brief コマンドリストの種類*/
 		core::CommandListType _commandListType = CommandListType::Unknown;
 
-		/* @brief : コマンドリストが詰め込める状態にあるかを確認します*/
+		/*! @brief : コマンドリストが詰め込める状態にあるかを確認します*/
 		bool _isOpen = false;
 
+		/*! @brief : レンダーパスを実行しているか*/
 		bool _beginRenderPass = false;
 
 		#pragma endregion

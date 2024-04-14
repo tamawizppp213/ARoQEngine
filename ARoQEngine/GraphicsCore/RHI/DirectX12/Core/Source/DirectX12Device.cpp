@@ -376,7 +376,7 @@ gu::SharedPointer<core::RHIQuery> RHIDevice::CreateQuery(const core::QueryHeapTy
 * @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
 *             参考はD3D12Resources.cpp(UE5)
 *
-*  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
+*  @param[out] const ResourceComPtr&        :これからメモリを確保したいGPUリソース
 *  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
 *  @param[in]  const D3D12_HEAP_PROPERTIES& : どの場所にメモリを確保するか等メモリ確保の仕方を設定する
 *  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
@@ -475,7 +475,7 @@ HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 		gu::DynamicArray<DXGI_FORMAT> castableFormats = GetCastableFormats(localDesc1.Format);
 
 		result = _device->CreateCommittedResource3(&heapProps, heapFlags, &localDesc1, barrierInitialLayout, clearValue,
-			protectedSession, castableFormats.Size(), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
+			protectedSession, static_cast<uint32>(castableFormats.Size()), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
 	}
 	else
 	{
@@ -548,7 +548,7 @@ HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12
 		gu::DynamicArray<DXGI_FORMAT> castableFormats = GetCastableFormats(localDesc1.Format);
 
 		result = _device->CreateReservedResource2(&localDesc, barrierInitialLayout, clearValue,
-			protectedSession, castableFormats.Size(), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
+			protectedSession, static_cast<uint32>(castableFormats.Size()), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
 	}
 	else
 	{
@@ -627,13 +627,11 @@ HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_R
 		const D3D12_BARRIER_LAYOUT barrierInitialLayout = localDesc1.Dimension == D3D12_RESOURCE_DIMENSION::D3D12_RESOURCE_DIMENSION_BUFFER
 			? D3D12_BARRIER_LAYOUT_UNDEFINED : D3D12_BARRIER_LAYOUT_COMMON;
 
-		ID3D12ProtectedResourceSession* protectedSession = nullptr;
-
 		// SRVとURVで使用されるDXGI_FORMATにおいて, 互いにキャスト可能なもののリストを提供する.
 		gu::DynamicArray<DXGI_FORMAT> castableFormats = GetCastableFormats(localDesc1.Format);
 
 		result = _device->CreatePlacedResource2(heap.Get(), heapOffset, &localDesc1, barrierInitialLayout, clearValue,
-			castableFormats.Size(), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
+			static_cast<uint32>(castableFormats.Size()), castableFormats.Data(), IID_PPV_ARGS(resource.GetAddressOf()));
 	}
 	else
 	{

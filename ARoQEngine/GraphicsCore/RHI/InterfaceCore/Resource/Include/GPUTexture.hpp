@@ -50,10 +50,6 @@ namespace rhi::core
 
 		virtual void Write(const gu::SharedPointer<RHICommandList>& commandList, const gm::RGBA* pixel) = 0;
 
-		void TransitionResourceState(const core::ResourceState after) override
-		{
-			if (_metaData.State != after) { _metaData.State = after; }
-		}
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -90,7 +86,7 @@ namespace rhi::core
 		inline size_t GetMipMapLevels() const noexcept { return _metaData.MipLevels; }
 
 		/* @brief : Get Arrays*/
-		inline size_t GetArrayLength() const noexcept { return _metaData.Dimension == ResourceDimension::Dimension3D ?  1 : _metaData.DepthOrArraySize; }
+		inline size_t GetArrayLength() const noexcept { return _metaData.Dimension == ResourceDimension::Texture3D ?  1 : _metaData.DepthOrArraySize; }
 
 		/* @brief : Is Array*/
 		inline bool IsArray() const noexcept

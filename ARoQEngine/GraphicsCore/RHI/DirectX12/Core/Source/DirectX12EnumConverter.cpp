@@ -379,9 +379,9 @@ D3D12_RESOURCE_DIMENSION   EnumConverter::Convert(const rhi::core::ResourceDimen
 
 	switch (dimension)
 	{
-		case Dimension1D: return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
-		case Dimension2D: return D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-		case Dimension3D: return D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+		case Texture1D: return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+		case Texture2D: return D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		case Texture3D: return D3D12_RESOURCE_DIMENSION_TEXTURE3D;
 		case Buffer     : return D3D12_RESOURCE_DIMENSION_BUFFER;
 		default:
 			throw std::runtime_error("not supported resource dimension (directX12 api)");

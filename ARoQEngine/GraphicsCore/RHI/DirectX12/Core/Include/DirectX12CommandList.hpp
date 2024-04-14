@@ -22,13 +22,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
+
 namespace rhi::directX12
 {
 	class RHIDevice;
 	class RHICommandAllocator;
 	class RHIRenderPass;
 	class RHIFrameBuffer;
-
+	class GPUBarrierBatcher;
 	/****************************************************************************
 	*				  			RHICommandList
 	*************************************************************************//**
@@ -183,19 +184,18 @@ namespace rhi::directX12
 		/*-------------------------------------------------------------------
 		-                Transition layout
 		---------------------------------------------------------------------*/
-		void TransitionResourceState (const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after) override ;
-
-		void TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters) override ;
-
-		void TransitionResourceStates(const gu::DynamicArray<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters);
 		
-		/*-------------------------------------------------------------------
-		-                Copy
-		---------------------------------------------------------------------*/
-		/*----------------------------------------------------------------------
-		*  @brief : バッファの領域をあるリソースから別のリソースにコピーする. GPU memcpy
-		/*----------------------------------------------------------------------*/
-		void CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) override;
+		#pragma region Copy Function
+		/*!**********************************************************************
+		*  @brief     GPUバッファの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer> : コピー先のバッファ
+		*  @param[in] const gu::uint64 : コピー先の初期書き取りポインタをずらすoffset byte
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer> : コピー元のバッファ
+		*  @param[in] const gu::uint64 : コピー元の初期読み取りポインタをずらすoffset byte
+		*  @param[in] const gu::uint64 : コピーを行う範囲 (byteSizeで指定)
+		*  @return void
+		*************************************************************************/
+		virtual void CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) override;
 
 		/*----------------------------------------------------------------------
 		*  @brief : テクスチャの領域をまとめて別のリソースにコピーする
@@ -207,7 +207,49 @@ namespace rhi::directX12
 		*           組み合わせに応じて自動でバッファかテクスチャかを判定します
 		/*----------------------------------------------------------------------*/
 		void CopyResource(const gu::SharedPointer<core::GPUResource>& dest, const gu::SharedPointer<core::GPUResource>& source);
+		#pragma endregion
+
+		#pragma region Resource Barrier
+		/*!**********************************************************************
+		*  @brief  単独のGPUリソースの状態遷移を示します. @n
+		*          リソースの使い方が変わるタイミングで呼び出します.
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer> GPUバッファ
+		*  @param[in] const core::ResourceState 遷移前のリソース状態
+		*  @param[in] const core::ResourceState 遷移後のリソース状態
+		*  @param[in] const gu::uint32 サブリソースを示すインデックス (デフォルトは全てのサブリソースを示します) 0xfffffffの場合は全てのインデックスで有効化されます
+		*  @return    void
+		*************************************************************************/
+		virtual void PushTransitionBarrier(const gu::SharedPointer<core::GPUResource>& buffer  , const core::ResourceState after, const gu::uint32 subresource = 0xffffffff) override;
 		
+		/*!**********************************************************************
+		*  @brief  同じメモリ領域にマッピングされた複数のGPUリソースに対し, 使用するリソース自体を切り替える際に使用します. @n
+		*          同時に使用しないことが担保されているリソースのメモリを節約することが可能となります. @n
+		*          ただし, 本関数を使用する場合は,CreateCommittedResourceでは無く, CreatePlacedResourceを使用した方法でヒープの確保を行ってください.@n
+		*          (別々のヒープを作ってしまうことになり, 同じメモリ領域を扱わなくなるため.)
+		*  @note   https://logicalbeat.jp/blog/8185/ (AliasingBarrierの活用方法についての記述)
+		*  @param[in] const gu::SharedPointer<core::GPUResource> 切り替える前に使用していたGPUリソース
+		*  @param[in] const gu::SharedPointer<core::GPUResource> 切り替える前に使用していたGPUリソース
+		*  @return    void
+		*************************************************************************/
+		virtual void PushAliasingBarrier(const gu::SharedPointer<core::GPUResource>& before  , const gu::SharedPointer<core::GPUResource>& after) override;
+		
+		/*!**********************************************************************
+		*  @brief     Unordered access view専用の状態バリア @n
+		*             UAVの読み書き中にほかのUAVが対象リソースを読み書きする描画コマンドの実行を防ぐことを目的とします @n
+		*  @param[in] const gu::SharedPointer<core::GPUResource> Unordered access viewを持つGPUリソース
+		*  @return    void
+		*************************************************************************/
+		virtual void PushUAVBarrier(const gu::SharedPointer<core::GPUResource>& buffer) override;
+		
+		/*!**********************************************************************
+		*  @brief  コマンドリストを使ってResourceBarrierをまとめて呼び出します.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
+		virtual void FlushResourceBarriers() override;
+		
+		#pragma endregion Resource Barrier
+
 		#pragma endregion 
 		/****************************************************************************
 		**                Public Member Variables
@@ -232,9 +274,14 @@ namespace rhi::directX12
 		/****************************************************************************
 		**                Protected Member Variables
 		*****************************************************************************/
+		/*! @brief DirectX12で使用するバリアを管理*/
+		gu::SharedPointer<GPUBarrierBatcher> _barrierBatcher = nullptr;
+
+		/*! @brief directX12で使用するコマンドリスト*/
 		CommandListComPtr _commandList = nullptr;
 		
 	private:
+		
 		void BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer);
 		
 		void OMSetFrameBuffer   (const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer);

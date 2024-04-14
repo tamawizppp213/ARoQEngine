@@ -1,19 +1,24 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///  @file   DirectX12GPUBarrierBatcher.hpp
-///  @brief  temp
+///  @brief  GPUのリソース状態を安全に使用するためのクラスです. @n
+///          GPUリソースの使い方が変わった場合にはPushTransitionBarrier, @n
+///          同じGPUヒープ領域に異なるリソースを排他的に使用するならPushAliasingBarrier @n
+///          UnorderedAccessViewの読み書きを実行が完了するまでほかの影響を与えないならPushUAVBarrierを実行すること
 ///  @author toide
 ///  @date   2024/04/13 23:32:27
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_GPU_BARRIER_BATCHER_HPP
-#define  DIRECTX12_GPU_BARRIER_BATCHER_HPP
+#define DIRECTX12_GPU_BARRIER_BATCHER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/GUClassUtility.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Core.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Container/Include/GUPair.hpp"
 #include <d3d12.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -22,15 +27,22 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
+namespace rhi::core
+{
+	class GPUResource;
+}
+
 namespace rhi::directX12
 {
 	class RHICommandList;
-	
 	/****************************************************************************
 	*				  		GPUBarrierBatcher
 	*************************************************************************//**
 	/*  @class     GPUBarrierBatcher
-	*   @brief     temp
+	*   @brief     GPUのリソース状態を安全に使用するためのクラスです. @n
+	*              GPUリソースの使い方が変わった場合にはPushTransitionBarrier, @n
+	*              同じGPUヒープ領域に異なるリソースを排他的に使用するならPushAliasingBarrier @n
+	*              UnorderedAccessViewの読み書きを実行が完了するまでほかの影響を与えないならPushUAVBarrierを実行すること
 	*****************************************************************************/
 	class GPUBarrierBatcher : public gu::NonCopyable
 	{
@@ -45,13 +57,12 @@ namespace rhi::directX12
 		/*!**********************************************************************
 		*  @brief  単独のGPUリソースの状態遷移を示します. @n
 		*          リソースの使い方が変わるタイミングで呼び出します. 
-		*  @param[in] ID3D12Resource* GPUリソース
-		*  @param[in] const D3D12_RESOURCE_STATES 遷移前のリソース状態
+		*  @param[in] gu::SharedPointer<GPUResource>& GPUリソース (これだけGPUResourceを代入するのは後でリソースの遷移後の状態を代入する必要があるため)
 		*  @param[in] const D3D12_RESOURCE_STATES 遷移後のリソース状態
 		*  @param[in] const gu::uint32 サブリソースを示すインデックス (デフォルトは全てのサブリソースを示します)
-		*  @return    void
+		*  @return    bool Barrierが登録されたらtrue
 		*************************************************************************/
-		void PushTransitionBarrier(ID3D12Resource* resource, const D3D12_RESOURCE_STATES before, const D3D12_RESOURCE_STATES after, const gu::uint32 subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES);
+		bool PushTransitionBarrier(const gu::SharedPointer<core::GPUResource>& resource, const core::ResourceState after, const gu::uint32 subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES);
 
 		/*!**********************************************************************
 		*  @brief  同じメモリ領域にマッピングされた複数のGPUリソースに対し, 使用するリソース自体を切り替える際に使用します. @n
@@ -97,12 +108,19 @@ namespace rhi::directX12
 
 		#pragma region Public Constructor and Destructor
 		/*! @brief デフォルトコンストラクタ*/
-		GPUBarrierBatcher() = default;
+		GPUBarrierBatcher() : _barriers(), _afterTransitions()
+		{
+			// メモリ領域を事前に確保することで高速化
+			_barriers.Reserve(8);
+			_afterTransitions.Reserve(8);
+		}
 
 		~GPUBarrierBatcher()
 		{
 			_barriers.Clear();
 			_barriers.ShrinkToFit();
+			_afterTransitions.Clear();
+			_afterTransitions.ShrinkToFit();
 		}
 		#pragma endregion 
 
@@ -131,6 +149,7 @@ namespace rhi::directX12
 		#pragma region Private Member Variables
 		/*! @brief GPUのバリアを貯めておく場所*/
 		gu::DynamicArray<GPUBarrier> _barriers = {};
+		gu::DynamicArray<gu::Pair<core::ResourceState, gu::SharedPointer<core::GPUResource>>> _afterTransitions = {};
 		#pragma endregion 
 
 	};

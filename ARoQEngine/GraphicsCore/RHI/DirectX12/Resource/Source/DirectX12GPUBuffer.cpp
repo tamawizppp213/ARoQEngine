@@ -85,6 +85,79 @@ GPUBuffer::~GPUBuffer()
 
 #pragma region Public Function
 /****************************************************************************
+*                     Upload
+*************************************************************************//**
+*  @brief     GPUにメモリを配置します. 融通が効くようにbyte単位で指定します.
+*
+*  @param[in] const void* : GPUにアップロードしたCPU側のメモリ配列
+*  @param[in] const gu::uint64 メモリの確保するバイトサイズ
+*  @param[in] const gu::uint64 メモリを確保する初期オフセット [byte]
+*  @param[in] const gu::SharedPointer<RHICommandList> GraphicsかCopyのコマンドリスト
+*
+*  @return 　　void
+*****************************************************************************/
+void GPUBuffer::Upload(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte, const gu::SharedPointer<core::RHICommandList>& commandList)
+{
+	const auto rhiDevice = gu::StaticPointerCast<rhi::directX12::RHIDevice>(_device);
+	const auto dxDevice  = rhiDevice->GetDevice();
+
+	const auto bufferSize = _metaData.GetTotalByte();
+	Check(allocateByteSize + offsetByte <= bufferSize);
+
+	if (_metaData.IsCPUAccessible() && HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::AnyDynamic))
+	{
+		Memory::Copy(&_mappedData[offsetByte], data, allocateByteSize);
+	}
+	else
+	{
+		/*-------------------------------------------------------------------
+		-         CPUメモリのデータをデフォルトのバッファにコピーする。
+		-         この時, コピー用の中間バッファを経由して行う.
+		---------------------------------------------------------------------*/
+		// 中間バッファで使用するGPUヒープの設定
+		const D3D12_HEAP_PROPERTIES uploadHeapProp
+		{
+			.Type                 = D3D12_HEAP_TYPE_UPLOAD,
+			.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+			.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+			.CreationNodeMask     = rhiDevice->GetGPUMask().Value(),
+			.VisibleNodeMask      = rhiDevice->GetGPUMask().Value()
+		};
+
+		// upload bufferで使用するdescriptor
+		const D3D12_RESOURCE_DESC uploadBufferDesc =
+		{
+			.Dimension        = D3D12_RESOURCE_DIMENSION::D3D12_RESOURCE_DIMENSION_BUFFER,
+			.Alignment        = 0,
+			.Width            = bufferSize,
+			.Height           = 1, // For 1D buffer
+			.DepthOrArraySize = 1, // For 1D buffer
+			.MipLevels        = 1,
+			.Format           = DXGI_FORMAT_UNKNOWN,
+			.SampleDesc       = {1, 0},
+			.Layout           = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+			.Flags            = D3D12_RESOURCE_FLAG_NONE
+		};
+
+		const D3D12_SUBRESOURCE_DATA subresourceData =
+		{
+			.pData      = data,
+			.RowPitch   = static_cast<LONG_PTR>(bufferSize),
+			.SlicePitch = static_cast<LONG_PTR>(bufferSize)  // 今回は1次元バッファのため, 特に使用されない. 
+		};
+
+		// CreateCommittedResource -> Heap確保 + 実際にGPUにメモリの確保を両方やってくれる.
+		ThrowIfFailed(rhiDevice->CreateCommittedResource
+		(
+			_intermediateBuffer, uploadBufferDesc, uploadHeapProp, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr)
+		);
+
+
+		_intermediateBuffer->SetName(L"Intermediate Buffer");
+	}
+}
+
+/****************************************************************************
 *                     CopyStart
 *************************************************************************//**
 *  @fn        void GPUBuffer::CopyStart()
@@ -102,24 +175,6 @@ void GPUBuffer::CopyStart()
 	ThrowIfFailed(_resource->Map(0, nullptr, reinterpret_cast<void**>(&_mappedData)));
 }
 
-/****************************************************************************
-*                     CopyData
-*************************************************************************//**
-*  @fn        void GPUBuffer::CopyData()
-* 
-*  @brief     GPU copy to one element
-* 
-*  @param[in] const void* dataPtr
-* 
-*  @param[in] const size_t elementIndex
-* 
-*  @return 　　void
-*****************************************************************************/
-void GPUBuffer::CopyData(const void* data, const size_t elementIndex)
-{
-	Check(elementIndex <= _metaData.Count);
-	gu::Memory::Copy(&_mappedData[elementIndex * _metaData.Stride], data, _metaData.Stride);
-}
 
 /****************************************************************************
 *                     CopyTotalData
@@ -136,7 +191,7 @@ void GPUBuffer::CopyData(const void* data, const size_t elementIndex)
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset)
+void GPUBuffer::CopyTotalData(const void* data, const gu::uint64 dataLength, const gu::uint64 indexOffset)
 {
 	Check(dataLength + indexOffset <= _metaData.Count);
 	gu::Memory::Copy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (size_t)dataLength);

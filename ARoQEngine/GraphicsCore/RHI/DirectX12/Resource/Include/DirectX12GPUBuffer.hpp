@@ -27,32 +27,44 @@ namespace rhi::directX12
 	*				  			GPUBuffer
 	*************************************************************************//**
 	*  @class     GPUBuffer
-	*  @brief     Buffer
+	*  @brief     テクスチャ以外のバッファ. 頂点, インデックスバッファなどの作成に使用します.
 	*****************************************************************************/
 	class GPUBuffer : public core::GPUBuffer
 	{
-	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+	public:	
+#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief  　　GPUにメモリを配置します. 融通が効くようにbyte単位で指定します.
+		*  @param[in] const void* : GPUにアップロードしたCPU側のメモリ配列
+		*  @param[in] const gu::uint64 メモリの確保するバイトサイズ
+		*  @param[in] const gu::uint64 メモリを確保する初期オフセット [byte]
+		*  @param[in] const gu::SharedPointer<RHICommandList> GraphicsかCopyのコマンドリスト
+		*  @return    void
+		*************************************************************************/
+		virtual void Upload(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte, const gu::SharedPointer<core::RHICommandList>& commandList) override;
+
 		// @brief : Basically for Default Buffer Initialize. Total Buffer Copy
 		//          Create temp upload buffer and copy this to default buffer
 		void Pack(const void* data, const gu::SharedPointer<rhi::core::RHICommandList>& copyCommandList = nullptr) override;
 		
+		/*----------------------------------------------------------------------
+		*  @brief :  Call at once in each frame (If you need). CopyStart + CopyTotalData + CopyEnd.
+		/*----------------------------------------------------------------------*/
+		virtual void Update(const void* data, const gu::uint64 dataLength) override
+		{
+			CopyStart();
+			CopyTotalData(data, dataLength);
+		}
+
 		/*----------------------------------------------------------------------
 		*  @brief : 　Map関数を呼び出す
 		/*----------------------------------------------------------------------*/
 		void CopyStart() override;
 
 		/*----------------------------------------------------------------------
-		*  @brief :  指定されたインデックスにしたがってデータをコピーする
-		/*----------------------------------------------------------------------*/
-		void CopyData(const void* data, const size_t elementIndex) override ;
-
-		/*----------------------------------------------------------------------
 		*  @brief :  指定されたインデックスのoffsetにしたがって, 指定の配列数分だけコピーする
 		/*----------------------------------------------------------------------*/
-		void CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset = 0) override;
+		void CopyTotalData(const void* data, const gu::uint64 dataLength, const gu::uint64 indexOffset = 0) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Unmapを呼び出すときに使用します
@@ -73,6 +85,18 @@ namespace rhi::directX12
 
 		void SetName(const gu::tstring& name) override;
 		
+		/*!**********************************************************************
+		*  @brief     Mapに登録されるCPUメモリの最初のポインタを返します
+		*  @return    gu::uint8* マップした先頭ポインタ
+		*************************************************************************/
+		virtual gu::uint8* GetCPUMappedAddress() override { return _mappedData; };
+
+		/*!**********************************************************************
+		*  @brief     GPUのアドレスをgu::uint64という形で仮想的に表現したものを返します.
+		*  @return    gu::uint64 GPUのアドレス値
+		*************************************************************************/
+		virtual gu::uint64 GetGPUVirtualAddress() override { return _resource->GetGPUVirtualAddress(); }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -95,6 +119,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 		ResourceComPtr _resource = nullptr;
 		ResourceComPtr _intermediateBuffer = nullptr; // for default buffer
+		gu::uint8* _mappedData = nullptr;
 	};
 }
 #endif

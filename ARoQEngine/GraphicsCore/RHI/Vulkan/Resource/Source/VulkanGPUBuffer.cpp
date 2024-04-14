@@ -75,11 +75,11 @@ void GPUBuffer::Pack(const void* data, const gu::SharedPointer<core::RHICommandL
 		/*-------------------------------------------------------------------
 		-           Create intermediate buffer
 		---------------------------------------------------------------------*/
-		if (vkMapMemory(vkDevice, _stagingMemory, 0, _metaData.ByteSize, 0, reinterpret_cast<void**>(&_stagingMappedData)) != VK_SUCCESS)
+		if (vkMapMemory(vkDevice, _stagingMemory, 0, _metaData.GetTotalByte(), 0, reinterpret_cast<void**>(&_stagingMappedData)) != VK_SUCCESS)
 		{
 			throw std::runtime_error("failed to vk map memory.");
 		};
-		std::memcpy(_stagingMappedData, data, _metaData.ByteSize);
+		std::memcpy(_stagingMappedData, data, _metaData.GetTotalByte());
 		vkUnmapMemory(vkDevice, _stagingMemory);
 
 		/*-------------------------------------------------------------------
@@ -89,7 +89,7 @@ void GPUBuffer::Pack(const void* data, const gu::SharedPointer<core::RHICommandL
 		{
 			.srcOffset = 0, 
 			.dstOffset = 0,
-			.size      = _metaData.ByteSize
+			.size      = _metaData.GetTotalByte()
 		};
 
 		const auto vkCommandList = gu::StaticPointerCast<vulkan::RHICommandList>(copyCommandList)->GetCommandList();
@@ -130,27 +130,6 @@ void GPUBuffer::CopyStart()
 	{
 		throw std::runtime_error("failed to vk map memory.");
 	};
-}
-
-/****************************************************************************
-*                     CopyData
-*************************************************************************//**
-*  @fn        void GPUBuffer::CopyData()
-* 
-*  @brief     GPU copy to one element 
-* 
-*  @param[in] const void* dataPtr
-* 
-*  @param[in] const size_t elementIndex
-* 
-*  @return Å@Å@void
-*****************************************************************************/
-void GPUBuffer::CopyData(const void* data, const size_t elementIndex)
-{
-#ifdef _DEBUG
-	assert(elementIndex <= _metaData.Count);
-#endif
-	std::memcpy(&_mappedData[elementIndex * _metaData.Stride], data, _metaData.Stride);
 }
 
 /****************************************************************************
@@ -236,7 +215,7 @@ void GPUBuffer::Prepare(VkBuffer& buffer, VkDeviceMemory& memory, VkMemoryProper
 		.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
 		.pNext                 = nullptr,
 		.flags                 = 0,
-		.size                  = _metaData.ByteSize,
+		.size                  = _metaData.GetTotalByte(),
 		.usage                 = EnumConverter::Convert(_metaData.ResourceUsage).first, // ñäÑ
 		.sharingMode           = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
 		.queueFamilyIndexCount = 0,

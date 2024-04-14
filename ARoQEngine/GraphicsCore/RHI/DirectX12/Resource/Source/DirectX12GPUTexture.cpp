@@ -338,9 +338,11 @@ void GPUTexture::Write(const gu::SharedPointer<core::RHICommandList>& commandLis
 	-                 Copy Texture Data
 	---------------------------------------------------------------------*/
 	const auto state = GetResourceState();
-	dxCommandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopySource);
+	dxCommandList->PushTransitionBarrier(SharedFromThis(), core::ResourceState::CopySource);
+	dxCommandList->FlushResourceBarriers();
 	UpdateSubresources(dxCommandList->GetCommandList().Get(), _resource.Get(), uploadBuffer.Get(), 0, 0, static_cast<UINT>(subResources.size()), subResources.data());
-	dxCommandList->TransitionResourceState(SharedFromThis(), state);
+	dxCommandList->PushTransitionBarrier(SharedFromThis(), state);
+	dxCommandList->FlushResourceBarriers();
 }
 
 /****************************************************************************
@@ -397,7 +399,8 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 
 	//Transition the resource if necessary
 	const auto state = GetResourceState();
-	dxCommandList->TransitionResourceState(SharedFromThis(), core::ResourceState::CopySource);
+	dxCommandList->PushTransitionBarrier(SharedFromThis(), core::ResourceState::CopySource);
+	dxCommandList->FlushResourceBarriers();
 
 	/*-------------------------------------------------------------------
 	-       Get the copy target location
@@ -414,7 +417,8 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 	const auto copySrcLocation  = TEXTURE_COPY_LOCATION(_resource.Get(), 0);
 
 	dxCommandList->GetCommandList()->CopyTextureRegion(&copyDestLocation, 0, 0, 0, &copySrcLocation, nullptr);
-	dxCommandList->TransitionResourceState(SharedFromThis(), state);
+	dxCommandList->PushTransitionBarrier(SharedFromThis(), state);
+	dxCommandList->FlushResourceBarriers();
 
 	/*-------------------------------------------------------------------
 	-       Execute and Wait GPU
@@ -430,7 +434,7 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 	-       Buffer copy
 	---------------------------------------------------------------------*/
 	buffer->CopyStart();
-	image.pixels = buffer->GetCPUMemory();
+	image.pixels = buffer->GetCPUMappedAddress();
 	buffer->CopyEnd();
 
 	const auto stdFilePath = std::wstring(filePath.CString());

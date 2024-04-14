@@ -132,8 +132,8 @@ namespace rhi::directX12
 
 		/*!**********************************************************************
 		*  @brief     Heap領域の確保と実際にGPUにデータをメモリに確保するのを両方行う関数
-		*  @note      本関数はDirectX12専用の関数です. 
-		*  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
+		*  @note      本関数はDirectX12専用の関数です. Heapの最低Alignmentは64kBです. 
+		*  @param[out] const ResourceComPtr&        :これからメモリを確保したいGPUリソース
 		*  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
 		*  @param[in]  const D3D12_HEAP_PROPERTIES& : どの場所にメモリを確保するか等メモリ確保の仕方を設定する
 		*  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態

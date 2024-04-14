@@ -211,7 +211,7 @@ namespace gc::rendering
 		lightBuffer->CopyStart();
 		for (std::uint32_t i = 0; i < (std::uint32_t)_updateIDs.size(); ++i)
 		{
-			lightBuffer->CopyData(&_lights[i], _updateIDs[i]);
+			//lightBuffer->CopyData(&_lights[i], _updateIDs[i]);
 		}
 		lightBuffer->CopyEnd();
 

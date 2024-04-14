@@ -41,12 +41,16 @@ namespace rhi::vulkan
 		// @brief : Begin Map Function
 		void CopyStart() override;
 		
-		// @brief : GPU copy to one element 
-		void CopyData(const void* data, const size_t elementIndex) override ;
-		
 		// @brief : GPU copy the specified range
 		void CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset = 0) override;
 		
+		/*----------------------------------------------------------------------
+		*  @brief :  Call at once in each frame (If you need). CopyStart + CopyTotalData + CopyEnd.
+		/*----------------------------------------------------------------------*/
+		virtual void Update(const void* data, const gu::uint64 dataLength) override {};
+
+		virtual void Upload(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte = 0, const gu::SharedPointer<core::RHICommandList>& commandList = nullptr) override {}
+
 		// @brief : Unmap Function
 		void CopyEnd() override;
 
@@ -66,6 +70,25 @@ namespace rhi::vulkan
 		*  @brief     テクスチャとしてのGPUリソースかどうかを判定します.
 		*************************************************************************/
 		__forceinline virtual bool IsTexture() const override { return false; }
+
+		/*!**********************************************************************
+		*  @brief     Mapに登録されるCPUメモリの最初のポインタを返します
+		*  @return    gu::uint8* マップした先頭ポインタ
+		*************************************************************************/
+		virtual gu::uint8* GetCPUMappedAddress() override { return _mappedData; }
+
+		/*!**********************************************************************
+		*  @brief     GPUのアドレスをgu::uint64という形で仮想的に表現したものを返します.
+		*  @return    gu::uint64 GPUのアドレス値
+		*************************************************************************/
+		virtual gu::uint64 GetGPUVirtualAddress()override { return 0; };
+
+		/*!**********************************************************************
+		*  @brief     現時点のGPUResourceの扱い方 (IndexBufferとして使用するなど...)を設定します
+		*  @attention 手動での切り替えは基本的に行わないでください. (この関数はバリアの使用を目的として使用します.)
+		*  @return    void
+		*************************************************************************/
+		__forceinline virtual void SetResourceState(const core::ResourceState state) override { _metaData.State = state; }
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -99,7 +122,7 @@ namespace rhi::vulkan
 		VkDeviceMemory _stagingMemory = nullptr;
 
 		std::uint8_t* _stagingMappedData = nullptr;
-	
+		std::uint8_t* _mappedData = nullptr;
 	private:
 		void Prepare(VkBuffer& buffer, VkDeviceMemory& memory, VkMemoryPropertyFlags flags);
 	};

@@ -132,7 +132,7 @@ void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandL
 void Material::PackMaterial(const void* data)
 {
 	const auto buffer = _materialBufferView->GetBuffer();
-	buffer->Update(data, 1);
+	//buffer->Update(data, 1);
 }
 
 /****************************************************************************

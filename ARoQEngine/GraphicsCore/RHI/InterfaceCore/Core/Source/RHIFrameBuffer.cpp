@@ -59,7 +59,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 	for (int i = 0; i < _renderTargets.Size(); ++i)
 	{
 		if (!_renderTargets[i]) { continue; }
-		if (_renderTargets[i]->GetDimension() != ResourceDimension::Dimension2D) { throw std::runtime_error("Wrong render target dimension"); }
+		if (_renderTargets[i]->GetDimension() != ResourceDimension::Texture2D) { throw std::runtime_error("Wrong render target dimension"); }
 		if (!gu::HasAnyFlags(_renderTargets[i]->GetUsage(), core::ResourceUsage::RenderTarget))
 		{ 
 			throw std::runtime_error("Wrong resource usage"); 
@@ -68,7 +68,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 
 	if (_depthStencil)
 	{
-		if (_depthStencil->GetDimension() != ResourceDimension::Dimension2D ) { throw std::runtime_error("Wrong depthStencil dimension"); }
+		if (_depthStencil->GetDimension() != ResourceDimension::Texture2D ) { throw std::runtime_error("Wrong depthStencil dimension"); }
 		if (!gu::HasAnyFlags(_depthStencil->GetUsage(), ResourceUsage::DepthStencil)) { throw std::runtime_error("Wrong resource usage"); }
 	}
 }

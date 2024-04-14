@@ -41,10 +41,6 @@ namespace rhi::directX12
 
 		void Write(const gu::SharedPointer<core::RHICommandList>& commandList, const gm::RGBA* pixel) override;
 
-		void TransitionState(D3D12_RESOURCE_STATES after)
-		{
-			_usageState = _usageState == after ? _usageState : after;
-		}
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
@@ -58,12 +54,21 @@ namespace rhi::directX12
 		*************************************************************************/
 		__forceinline virtual bool IsTexture() const override { return true; }
 
-		ResourceComPtr            GetResource         () { return _resource; }
+		ResourceComPtr GetResource () { return _resource; }
 		
+		Resource* GetResourcePtr() { return _resource.Get(); }
+
 		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return _resource->GetGPUVirtualAddress(); }
 		
 		void SetName(const gu::tstring& name) override;
 		
+		/*!**********************************************************************
+		*  @brief     現時点のGPUResourceの扱い方 (IndexBufferとして使用するなど...)を設定します
+		*  @attention 手動での切り替えは基本的に行わないでください. (この関数はバリアの使用を目的として使用します.)
+		*  @return    void
+		*************************************************************************/
+		__forceinline virtual void SetResourceState(const core::ResourceState state) override { _metaData.State = state; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

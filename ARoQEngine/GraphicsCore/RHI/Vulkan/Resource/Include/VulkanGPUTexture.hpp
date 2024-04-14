@@ -73,6 +73,14 @@ namespace rhi::vulkan
 		*  @brief     テクスチャとしてのGPUリソースかどうかを判定します.
 		*************************************************************************/
 		__forceinline virtual bool IsTexture() const override { return true; }
+
+		/*!**********************************************************************
+		*  @brief     現時点のGPUResourceの扱い方 (IndexBufferとして使用するなど...)を設定します
+		*  @attention 手動での切り替えは基本的に行わないでください. (この関数はバリアの使用を目的として使用します.)
+		*  @return    void
+		*************************************************************************/
+		__forceinline virtual void SetResourceState(const core::ResourceState state) override { _metaData.State = state; }
+
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/

@@ -24,6 +24,7 @@
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUResourceView.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12BaseStruct.hpp"
 #include "Platform/Core/Include/CorePlatformMacros.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBarrierBatcher.hpp"
 #include <stdexcept>
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -73,6 +74,8 @@ RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& de
 	ThrowIfFailed(_commandList->SetName(name.CString()));
 	ThrowIfFailed(_commandList->Close());
 	_isOpen = false;
+
+	_barrierBatcher = gu::MakeShared<GPUBarrierBatcher>();
 }
 
 #pragma endregion Constructor and Destructor
@@ -209,7 +212,11 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
 	gu::DynamicArray<core::ResourceState> states(frameBuffer->GetRenderTargetSize(), core::ResourceState::RenderTarget);
-	TransitionResourceStates(static_cast<gu::uint32>(frameBuffer->GetRenderTargetSize()), frameBuffer->GetRenderTargets().Data(), states.Data());
+	for (uint64 i = 0; i < frameBuffer->GetRenderTargetSize(); ++i)
+	{
+		PushTransitionBarrier(frameBuffer->GetRenderTargets()[i], states[i]);
+	}
+	FlushResourceBarriers();
 
 	/*-------------------------------------------------------------------
 	-          Select renderpass and frame buffer action
@@ -245,7 +252,12 @@ void RHICommandList::EndRenderPass()
 	-          Layout Transition (RenderTarget -> Present)
 	---------------------------------------------------------------------*/
 	gu::DynamicArray<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
-	TransitionResourceStates(static_cast<gu::uint32>(_frameBuffer->GetRenderTargetSize()), _frameBuffer->GetRenderTargets().Data(), states.Data());
+	for (uint64 i = 0; i < _frameBuffer->GetRenderTargetSize(); ++i)
+	{
+		PushTransitionBarrier(_frameBuffer->GetRenderTargets()[i], states[i]);
+	}
+	FlushResourceBarriers();
+
 	_beginRenderPass = false;
 }
 
@@ -601,71 +613,63 @@ void RHICommandList::Dispatch(gu::uint32 threadGroupCountX, gu::uint32 threadGro
 }
 
 #pragma region Transition Resource State
-/****************************************************************************
-*                     TransitionResourceState
-*************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& textures, core::ResourceState afters)
-*
-*  @brief     Transition a single resource layout using barrier
-*
-*  @param[in] const gu::SharedPointer<core::GPUTexture>& texture array,
-*  @param[in] core::ResourceState state array
-
-*  @return 　　void
-*****************************************************************************/
-void RHICommandList::TransitionResourceState(const gu::SharedPointer<core::GPUTexture>& texture, core::ResourceState after)
+/*!**********************************************************************
+*  @brief  単独のGPUリソースの状態遷移を示します. @n
+*          リソースの使い方が変わるタイミングで呼び出します.
+*  @param[in] const gu::SharedPointer<core::GPUResource> GPUリソース
+*  @param[in] const core::ResourceState 遷移前のリソース状態
+*  @param[in] const core::ResourceState 遷移後のリソース状態
+*  @param[in] const gu::uint32 サブリソースを示すインデックス (デフォルトは全てのサブリソースを示します) 0xfffffffの場合は全てのインデックスで有効化されます
+*  @return    void
+*************************************************************************/
+void RHICommandList::PushTransitionBarrier(const gu::SharedPointer<core::GPUResource>& resource, const core::ResourceState after, const gu::uint32 subresource)
 {
-	BARRIER barrier = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(texture)->GetResource().Get(),
-		EnumConverter::Convert(texture->GetResourceState()), EnumConverter::Convert(after));
-	_commandList->ResourceBarrier(1, &barrier);
-	texture->TransitionResourceState(after);
+	if (resource->GetResourceState() == after) { return; }
+
+	_barrierBatcher->PushTransitionBarrier(resource, after, subresource );
 }
 
-/****************************************************************************
-*                     TransitionResourceStates
-*************************************************************************//**
-*  @fn        void RHICommandList::TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
-*
-*  @brief     Transition resource layout using barrier
-*
-*  @param[in] const gu::uint32 numStates
-*  @param[in] const gu::SharedPointer<core::GPUTexture>* texture array,
-*  @param[in] core::ResourceState* state array
-
-*  @return 　　void
-*****************************************************************************/
-void RHICommandList::TransitionResourceStates(const gu::uint32 numStates, const gu::SharedPointer<core::GPUTexture>* textures, core::ResourceState* afters)
+/*!**********************************************************************
+*  @brief  同じメモリ領域にマッピングされた複数のGPUリソースに対し, 使用するリソース自体を切り替える際に使用します. @n
+*          同時に使用しないことが担保されているリソースのメモリを節約することが可能となります. @n
+*          ただし, 本関数を使用する場合は,CreateCommittedResourceでは無く, CreatePlacedResourceを使用した方法でヒープの確保を行ってください.@n
+*          (別々のヒープを作ってしまうことになり, 同じメモリ領域を扱わなくなるため.)
+*  @note   https://logicalbeat.jp/blog/8185/ (AliasingBarrierの活用方法についての記述)
+*  @param[in] const gu::SharedPointer<core::GPUResource> 切り替える前に使用していたGPUリソース
+*  @param[in] const gu::SharedPointer<core::GPUResource> 切り替える前に使用していたGPUリソース
+*  @return    void
+*************************************************************************/
+void RHICommandList::PushAliasingBarrier(const gu::SharedPointer<core::GPUResource>& before, const gu::SharedPointer<core::GPUResource>& after)
 {
-	gu::DynamicArray<BARRIER> barriers = {};
-	for (gu::uint32 i = 0; i < numStates; ++i)
-	{
-		BARRIER barrier = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(textures[i])->GetResource().Get(),
-			EnumConverter::Convert(textures[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
-		textures[i]->TransitionResourceState(afters[i]);
-		barriers.Push(barrier);
-	}
-	_commandList->ResourceBarrier(numStates, barriers.Data());
+	_barrierBatcher->PushAliasingBarrier
+	(
+		before->IsBuffer() ? gu::StaticPointerCast<directX12::GPUBuffer>(before)->GetResourcePtr() : gu::StaticPointerCast<directX12::GPUTexture>(before)->GetResourcePtr(),
+		after ->IsBuffer() ? gu::StaticPointerCast<directX12::GPUBuffer>(after) ->GetResourcePtr() : gu::StaticPointerCast<directX12::GPUTexture>(after) ->GetResourcePtr()
+	);
+}
+		
+/*!**********************************************************************
+*  @brief     Unordered access view専用の状態バリア @n
+*             UAVの読み書き中にほかのUAVが対象リソースを読み書きする描画コマンドの実行を防ぐことを目的とします @n
+*  @param[in] const gu::SharedPointer<core::GPUResource> Unordered access viewを持つGPUバッファ
+*  @return    void
+*************************************************************************/
+void RHICommandList::PushUAVBarrier(const gu::SharedPointer<core::GPUResource>& resource)
+{
+	_barrierBatcher->PushUAVBarrier
+	(
+		resource->IsBuffer() ? gu::StaticPointerCast<directX12::GPUBuffer>(resource)->GetResourcePtr() : gu::StaticPointerCast<directX12::GPUTexture>(resource)->GetResourcePtr()
+	);
 }
 
-void RHICommandList::TransitionResourceStates(const gu::DynamicArray<gu::SharedPointer<core::GPUResource>>& resources, core::ResourceState* afters)
+/*!**********************************************************************
+*  @brief  コマンドリストを使ってResourceBarrierをまとめて呼び出します.
+*  @param[in] void
+*  @return    void
+*************************************************************************/
+void RHICommandList::FlushResourceBarriers()
 {
-	gu::DynamicArray<BARRIER> barriers(resources.Size());
-	for (uint32 i = 0; i < resources.Size(); ++i)
-	{
-		if (resources[i]->IsTexture())
-		{
-			barriers[i] = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUTexture>(resources[i])->GetResource().Get(),
-				EnumConverter::Convert(resources[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
-			resources[i]->TransitionResourceState(afters[i]);
-		}
-		else
-		{
-			barriers[i] = BARRIER::Transition(gu::StaticPointerCast<directX12::GPUBuffer>(resources[i])->GetResource().Get(),
-				EnumConverter::Convert(resources[i]->GetResourceState()), EnumConverter::Convert(afters[i]));
-			resources[i]->TransitionResourceState(afters[i]);
-		}
-	}
-	_commandList->ResourceBarrier((UINT)barriers.Size(), barriers.Data());
+	_barrierBatcher->Flush(_commandList.Get());
 }
 
 #pragma endregion Transition Resource State
@@ -697,8 +701,8 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUTexture>& des
 *  @brief     あるリソースの領域をまとめて別のリソースにコピーする. 
 *           組み合わせに応じて自動でバッファかテクスチャかを判定します
 *
-*  @param[in] const gu::SharedPointer<core::GPUBuffer> コピー先のバッファ
-*  @param[in] const gu::SharedPointer<core::GPUBuffer>& コピー元のバッファ
+*  @param[in] gu::SharedPointer<core::GPUBuffer> コピー先のバッファ
+*  @param[in] gu::SharedPointer<core::GPUBuffer>& コピー元のバッファ
 
 *  @return 　　void
 *****************************************************************************/
@@ -708,7 +712,9 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& de
 	rhi::core::ResourceState befores[] = { dest->GetResourceState()            , source->GetResourceState() };
 	rhi::core::ResourceState afters[] = { core::ResourceState::CopyDestination, core::ResourceState::CopySource };
 
-	TransitionResourceStates({ dest, source }, afters);
+	_barrierBatcher->PushTransitionBarrier(dest, afters[0]);
+	_barrierBatcher->PushTransitionBarrier(source, afters[1]);
+	_barrierBatcher->Flush(_commandList.Get());
 
 	if (dest->IsTexture() && source->IsTexture())
 	{
@@ -729,58 +735,66 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& de
 			gu::StaticPointerCast<directX12::GPUBuffer>(source)->GetResource().Get());
 	}
 
-	TransitionResourceStates({ dest, source }, befores);
+	_barrierBatcher->PushTransitionBarrier(dest  , befores[0]);
+	_barrierBatcher->PushTransitionBarrier(source, befores[1]);
+	_barrierBatcher->Flush(_commandList.Get());
 }
 
 /****************************************************************************
 *                     CopyBufferRegion
 *************************************************************************//**
-*  @fn        void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize)
+*  @brief     GPUバッファの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
 *
-*  @brief     バッファの領域をあるリソースから別のリソースにコピーする.
-*
-*  @param[in] const gu::SharedPointer<core::GPUBuffer> コピー先のバッファ
-*  @param[in] const gu::uint64 destOffset コピー先の書き出す初期バイト数, (ポインタでないことに注意)
-*  @param[in] const gu::SharedPointer<core::GPUBuffer>& コピー元のバッファ, 
-*  @param[in] const gu::uint64 sourceOffset コピー元の書き出す初期バイト数 (ポインタでないことに注意), 
+*  @param[in] const gu::SharedPointer<core::GPUBuffer> : コピー先のバッファ
+*  @param[in] const gu::uint64 : コピー先の初期書き取りポインタをずらすoffset byte
+*  @param[in] const gu::SharedPointer<core::GPUBuffer> : コピー元のバッファ
+*  @param[in] const gu::uint64 : コピー元の初期読み取りポインタをずらすoffset byte
 *  @param[in] const gu::uint64 copyByteSize コピーしたいバイト数
 
 *  @return 　　void
 *****************************************************************************/
-void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize)
+void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& destination, const gu::uint64 destinationOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize)
 {
 	using enum core::ResourceState;
 
-	const auto rhiDestBuffer   = static_cast<directX12::GPUBuffer*>(dest.Get());
-	const auto rhiSourceBuffer = static_cast<directX12::GPUBuffer*>(source.Get());
-	const auto destResource    = rhiDestBuffer->GetResourcePtr();
-	const auto sourceResource  = rhiSourceBuffer->GetResourcePtr();
+	const auto rhiDestBuffer       = static_cast<directX12::GPUBuffer*>(destination.Get());
+	const auto rhiSourceBuffer     = static_cast<directX12::GPUBuffer*>(source.Get());
+	const auto destinationResource = rhiDestBuffer  ->GetResourcePtr();
+	const auto sourceResource      = rhiSourceBuffer->GetResourcePtr();
 
 	/*-------------------------------------------------------------------
-	-           Copyable resource check
+	-       コピー可能かのチェック
 	---------------------------------------------------------------------*/
-	Checkf(sourceResource != destResource, "CopyBufferRegion cannot be used on the same resource. This can happen when both the source and the dest are suballocated from the same resource.");
-	Check(destOffset   + copyByteSize <= rhiDestBuffer  ->GetTotalByteSize());
-	Check(sourceOffset + copyByteSize <= rhiSourceBuffer->GetTotalByteSize());
+	//"CopyBufferRegionを同じリソースで使用することはできません. 
+	// これは、コピー元とコピー先の両方が同じリソースからサブアロケートされている場合に発生する可能性があります")；
+	Checkf(sourceResource != destinationResource, "CopyBufferRegion cannot be used on the same resource. This can happen when both the source and the dest are suballocated from the same resource.");
+	
+	// バッファの範囲内に収まっているか
+	Check(destinationOffset + copyByteSize <= rhiDestBuffer  ->GetTotalByteSize());
+	Check(sourceOffset      + copyByteSize <= rhiSourceBuffer->GetTotalByteSize());
 
 	/*-------------------------------------------------------------------
-	-           Prepare copy barrier resource 
+	-         コピーの初期状態と終了状態の定義
 	---------------------------------------------------------------------*/
-	core::ResourceState befores[] = { dest->GetResourceState(), source->GetResourceState() };
-	core::ResourceState afters[]  = { CopyDestination, CopySource };
+	core::ResourceState barrierAfterStates[]   = { destination->GetResourceState(), source->GetResourceState() };
+	core::ResourceState barrierBeforeStates[]  = { CopyDestination, CopySource };
 
 	// バリアにより, リソースの読み方を伝える
-	TransitionResourceStates({ dest, source }, afters);
+	_barrierBatcher->PushTransitionBarrier(gu::StaticPointerCast<core::GPUResource>(destination), barrierAfterStates[0]);
+	_barrierBatcher->PushTransitionBarrier(gu::StaticPointerCast<core::GPUResource>(source     ), barrierAfterStates[1]);
+	_barrierBatcher->Flush(_commandList.Get());
 
 	/*-------------------------------------------------------------------
-	-           Prepare copy barrier resource
+	-           GPU領域のコピー
 	---------------------------------------------------------------------*/
-	_commandList->CopyBufferRegion(destResource, destOffset, sourceResource, sourceOffset, copyByteSize);
+	_commandList->CopyBufferRegion(destinationResource, destinationOffset, sourceResource, sourceOffset, copyByteSize);
 
 	/*-------------------------------------------------------------------
-	-           After copy barrier resource
+	-          元の状態に戻す
 	---------------------------------------------------------------------*/
-	TransitionResourceStates({ dest, source }, befores);
+	_barrierBatcher->PushTransitionBarrier(gu::StaticPointerCast<core::GPUResource>(destination), barrierBeforeStates[0]);
+	_barrierBatcher->PushTransitionBarrier(gu::StaticPointerCast<core::GPUResource>(source)     , barrierBeforeStates[1]);
+	_barrierBatcher->Flush(_commandList.Get());
 }
 
 

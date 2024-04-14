@@ -84,43 +84,45 @@ SamplerInfo SamplerInfo::GetDefaultSampler(DefaultSamplerType type)
 }
 
 #pragma region GPUBuffer
-GPUBufferMetaData::GPUBufferMetaData(size_t stride, size_t count, core::ResourceUsage usage, ResourceState state, MemoryHeap heapType, void* initData )
+GPUBufferMetaData::GPUBufferMetaData(gu::uint64 stride, gu::uint64 count, core::ResourceUsage usage, ResourceState state, MemoryHeap heapType, void* initData )
 	: Stride(stride), Count(count), ResourceUsage(usage), State(state), HeapType(heapType), ResourceType(core::ResourceType::Buffer), InitData(initData)
 {
-	if (gu::HasAnyFlags(ResourceUsage, ResourceUsage::ConstantBuffer)) { Stride = CalcConstantBufferByteSize(stride); }
-	ByteSize = Stride * Count;
+	if (gu::HasAnyFlags(ResourceUsage, ResourceUsage::ConstantBuffer)) 
+	{
+		Stride = CalcConstantBufferByteSize(stride); 
+	}
 }
 
-//GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const PixelFormat format, const size_t count, const MemoryHeap heap, void* initData)
+//GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const PixelFormat format, const gu::uint64 count, const MemoryHeap heap, void* initData)
 //{
 //	auto info = GPUBufferMetaData(InputFormatSizeOf::Get(format), count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, BufferType::Upload, initData);
 //	//info.Format = format;
 //	return info;
 //}
 
-GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
+GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap, void* initData)
 {
 	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, initData);
 }
-GPUBufferMetaData GPUBufferMetaData::DefaultBuffer(const size_t stride, const size_t count, const MemoryHeap heap, void* initData)
+GPUBufferMetaData GPUBufferMetaData::DefaultBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap, void* initData)
 {
 	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::Common, heap, initData);
 }
-GPUBufferMetaData GPUBufferMetaData::ConstantBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state, void* initData)
+GPUBufferMetaData GPUBufferMetaData::ConstantBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap, const ResourceState state, void* initData)
 {
 	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, state, heap, initData);
 }
-GPUBufferMetaData GPUBufferMetaData::VertexBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state, void* initData)
+GPUBufferMetaData GPUBufferMetaData::VertexBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap, const ResourceState state, void* initData)
 {
 	return GPUBufferMetaData(stride, count, core::ResourceUsage::VertexBuffer, state, heap, initData);
 }
-GPUBufferMetaData GPUBufferMetaData::IndexBuffer(const size_t stride, const size_t count, const MemoryHeap heap, const ResourceState state, void* initData)
+GPUBufferMetaData GPUBufferMetaData::IndexBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap, const ResourceState state, void* initData)
 {
 	return GPUBufferMetaData(stride, count, core::ResourceUsage::IndexBuffer, state, heap, initData);
 }
 #pragma endregion GPUBuffer
 #pragma region GPUTexture
-GPUTextureMetaData GPUTextureMetaData::Texture1D(const size_t width, const core::PixelFormat format, const size_t mipLevels, const core::ResourceUsage usage)
+GPUTextureMetaData GPUTextureMetaData::Texture1D(const gu::uint64 width, const core::PixelFormat format, const gu::uint64 mipLevels, const core::ResourceUsage usage)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -130,14 +132,14 @@ GPUTextureMetaData GPUTextureMetaData::Texture1D(const size_t width, const core:
 	metaData.MipLevels        = mipLevels;
 	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension1D;
+	metaData.Dimension        = core::ResourceDimension::Texture1D;
 	metaData.ResourceType     = core::ResourceType::Texture1D;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = MultiSample::Count1;
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::Texture1DArray(const size_t width, const size_t length, const core::PixelFormat format, const size_t mipLevels, const core::ResourceUsage usage)
+GPUTextureMetaData GPUTextureMetaData::Texture1DArray(const gu::uint64 width, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels, const core::ResourceUsage usage)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -147,14 +149,14 @@ GPUTextureMetaData GPUTextureMetaData::Texture1DArray(const size_t width, const 
 	metaData.MipLevels        = mipLevels;
 	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension1D;
+	metaData.Dimension        = core::ResourceDimension::Texture1D;
 	metaData.ResourceType     = core::ResourceType::Texture1DArray;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = MultiSample::Count1;
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::Texture2D(const size_t width, const size_t height, const core::PixelFormat format, const size_t mipLevels, const core::ResourceUsage usage)
+GPUTextureMetaData GPUTextureMetaData::Texture2D(const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const gu::uint64 mipLevels, const core::ResourceUsage usage)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -164,14 +166,14 @@ GPUTextureMetaData GPUTextureMetaData::Texture2D(const size_t width, const size_
 	metaData.MipLevels        = mipLevels;
 	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension2D;
+	metaData.Dimension        = core::ResourceDimension::Texture2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = MultiSample::Count1;
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::Texture2DArray(const size_t width, const size_t height, const size_t length, const core::PixelFormat format, const size_t mipLevels, const core::ResourceUsage usage)
+GPUTextureMetaData GPUTextureMetaData::Texture2DArray(const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels, const core::ResourceUsage usage)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -181,14 +183,14 @@ GPUTextureMetaData GPUTextureMetaData::Texture2DArray(const size_t width, const 
 	metaData.MipLevels        = mipLevels;
 	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension2D;
+	metaData.Dimension        = core::ResourceDimension::Texture2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = MultiSample::Count1;
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::Texture3D(const size_t width, const size_t height, const size_t depth, const core::PixelFormat format, const size_t mipLevels, const core::ResourceUsage usage)
+GPUTextureMetaData GPUTextureMetaData::Texture3D(const gu::uint64 width, const gu::uint64 height, const gu::uint64 depth, const core::PixelFormat format, const gu::uint64 mipLevels, const core::ResourceUsage usage)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -198,14 +200,14 @@ GPUTextureMetaData GPUTextureMetaData::Texture3D(const size_t width, const size_
 	metaData.MipLevels        = mipLevels;
 	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension3D;
+	metaData.Dimension        = core::ResourceDimension::Texture3D;
 	metaData.ResourceType     = core::ResourceType::Texture3D;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = MultiSample::Count1;
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::Texture2DMultiSample(const size_t width, const size_t height, const core::PixelFormat format, const core::MultiSample sample, const size_t mipLevels, const core::ResourceUsage usage)
+GPUTextureMetaData GPUTextureMetaData::Texture2DMultiSample(const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::MultiSample sample, const gu::uint64 mipLevels, const core::ResourceUsage usage)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -215,14 +217,14 @@ GPUTextureMetaData GPUTextureMetaData::Texture2DMultiSample(const size_t width, 
 	metaData.MipLevels        = mipLevels;
 	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension2D;
+	metaData.Dimension        = core::ResourceDimension::Texture2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = sample;
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::Texture2DArrayMultiSample(const size_t width, const size_t height, const size_t length, const core::PixelFormat format, const core::MultiSample sample, const size_t mipLevels, const core::ResourceUsage usage)
+GPUTextureMetaData GPUTextureMetaData::Texture2DArrayMultiSample(const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const core::MultiSample sample, const gu::uint64 mipLevels, const core::ResourceUsage usage)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -232,14 +234,14 @@ GPUTextureMetaData GPUTextureMetaData::Texture2DArrayMultiSample(const size_t wi
 	metaData.MipLevels        = mipLevels;
 	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension2D;
+	metaData.Dimension        = core::ResourceDimension::Texture2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DArrayMultiSample;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = sample;
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::CubeMap(const size_t width, const size_t height, const core::PixelFormat format, const size_t mipLevels, const core::ResourceUsage usage)
+GPUTextureMetaData GPUTextureMetaData::CubeMap(const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const gu::uint64 mipLevels, const core::ResourceUsage usage)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -249,14 +251,14 @@ GPUTextureMetaData GPUTextureMetaData::CubeMap(const size_t width, const size_t 
 	metaData.MipLevels        = mipLevels;
 	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension2D;
+	metaData.Dimension        = core::ResourceDimension::Texture2D;
 	metaData.ResourceType     = core::ResourceType::TextureCube;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = MultiSample::Count1;
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::CubeMapArray(const size_t width, const size_t height, const size_t length, const core::PixelFormat format, const size_t mipLevels, const core::ResourceUsage usage)
+GPUTextureMetaData GPUTextureMetaData::CubeMapArray(const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels, const core::ResourceUsage usage)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -266,14 +268,14 @@ GPUTextureMetaData GPUTextureMetaData::CubeMapArray(const size_t width, const si
 	metaData.MipLevels        = mipLevels;
 	metaData.ResourceUsage    = usage | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension2D;
+	metaData.Dimension        = core::ResourceDimension::Texture2D;
 	metaData.ResourceType     = core::ResourceType::TextureCubeArray;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = MultiSample::Count1;
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::RenderTarget(const size_t width, const size_t height, const core::PixelFormat format, const core::ClearValue& clearValue)
+GPUTextureMetaData GPUTextureMetaData::RenderTarget(const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::ClearValue& clearValue)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -283,7 +285,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTarget(const size_t width, const si
 	metaData.MipLevels        = 1;
 	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess | ResourceUsage::ShaderResource; // for frame buffer
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension2D;
+	metaData.Dimension        = core::ResourceDimension::Texture2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = MultiSample::Count1;
@@ -292,7 +294,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTarget(const size_t width, const si
 	return metaData;
 
 }
-GPUTextureMetaData GPUTextureMetaData::RenderTargetMultiSample(const size_t width, const size_t height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue)
+GPUTextureMetaData GPUTextureMetaData::RenderTargetMultiSample(const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -302,7 +304,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTargetMultiSample(const size_t widt
 	metaData.MipLevels        = 1;
 	metaData.ResourceUsage    = core::ResourceUsage::RenderTarget | ResourceUsage::UnorderedAccess | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Dimension2D;
+	metaData.Dimension        = core::ResourceDimension::Texture2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = sample;
@@ -310,7 +312,7 @@ GPUTextureMetaData GPUTextureMetaData::RenderTargetMultiSample(const size_t widt
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::DepthStencil(const size_t width, const size_t height, const core::PixelFormat format, const core::ClearValue& clearValue)
+GPUTextureMetaData GPUTextureMetaData::DepthStencil(const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::ClearValue& clearValue)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -320,7 +322,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencil(const size_t width, const si
 	metaData.MipLevels        = 1;
 	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::DepthStencil;
-	metaData.Dimension        = core::ResourceDimension::Dimension2D;
+	metaData.Dimension        = core::ResourceDimension::Texture2D;
 	metaData.ResourceType     = core::ResourceType::Texture2D;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = MultiSample::Count1;
@@ -328,7 +330,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencil(const size_t width, const si
 	metaData.CalculateByteSize();
 	return metaData;
 }
-GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t width, const size_t height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue)
+GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue)
 {
 	GPUTextureMetaData metaData = {};
 	metaData.Width            = width;
@@ -338,7 +340,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const size_t widt
 	metaData.MipLevels        = 1;
 	metaData.ResourceUsage    = core::ResourceUsage::DepthStencil | ResourceUsage::ShaderResource;
 	metaData.State            = ResourceState::DepthStencil;
-	metaData.Dimension        = core::ResourceDimension::Dimension2D;
+	metaData.Dimension        = core::ResourceDimension::Texture2D;
 	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
 	metaData.HeapType         = core::MemoryHeap::Default;
 	metaData.Sample           = sample;
