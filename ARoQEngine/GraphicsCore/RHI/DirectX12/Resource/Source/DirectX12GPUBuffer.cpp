@@ -15,6 +15,7 @@
 #include "../../Core/Include/DirectX12BaseStruct.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 #include "GameUtility/Memory/Include/GUMemory.hpp"
+#include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBarrierBatcher.hpp"
 #include <stdexcept>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -50,6 +51,7 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const cor
 	---------------------------------------------------------------------*/
 	const auto usage     = metaData.ResourceUsage;
 	const auto isDynamic = gu::HasAnyFlags(usage, core::ResourceUsage::AnyDynamic);
+	printf("%d\n", isDynamic);
 	Check(isDynamic ? _metaData.HeapType != core::MemoryHeap::Default : true);
 
 	const D3D12_RESOURCE_DESC resourceDesc = 
@@ -58,7 +60,7 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const cor
 		.Alignment          = metaData.Stride > 0 && 
 		                      (gu::HasAnyFlags(usage, StructuredBuffer) ||
 							  !gu::HasAnyFlags(usage, ByteAddress | DrawIndirect)) ? (uint64)0: (uint64)4,
-		.Width              = static_cast<UINT64>(GetTotalByteSize()),
+		.Width              = static_cast<uint64>(GetTotalByteSize()),
 		.Height             = 1, // For 1D buffer
 		.DepthOrArraySize   = 1, // For 1D buffer
 		.MipLevels          = 1,
@@ -106,7 +108,9 @@ void GPUBuffer::Upload(const void* data, const gu::uint64 allocateByteSize, cons
 
 	if (_metaData.IsCPUAccessible() && HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::AnyDynamic))
 	{
+		CopyStart();
 		Memory::Copy(&_mappedData[offsetByte], data, allocateByteSize);
+		CopyEnd();
 	}
 	else
 	{
@@ -129,7 +133,7 @@ void GPUBuffer::Upload(const void* data, const gu::uint64 allocateByteSize, cons
 		{
 			.Dimension        = D3D12_RESOURCE_DIMENSION::D3D12_RESOURCE_DIMENSION_BUFFER,
 			.Alignment        = 0,
-			.Width            = bufferSize,
+			.Width            = allocateByteSize,
 			.Height           = 1, // For 1D buffer
 			.DepthOrArraySize = 1, // For 1D buffer
 			.MipLevels        = 1,
@@ -139,11 +143,11 @@ void GPUBuffer::Upload(const void* data, const gu::uint64 allocateByteSize, cons
 			.Flags            = D3D12_RESOURCE_FLAG_NONE
 		};
 
-		const D3D12_SUBRESOURCE_DATA subresourceData =
+		D3D12_SUBRESOURCE_DATA subresourceData =
 		{
 			.pData      = data,
-			.RowPitch   = static_cast<LONG_PTR>(bufferSize),
-			.SlicePitch = static_cast<LONG_PTR>(bufferSize)  // 今回は1次元バッファのため, 特に使用されない. 
+			.RowPitch   = static_cast<LONG_PTR>(allocateByteSize),
+			.SlicePitch = static_cast<LONG_PTR>(allocateByteSize)  // 今回は1次元バッファのため, 特に使用されない. 
 		};
 
 		// CreateCommittedResource -> Heap確保 + 実際にGPUにメモリの確保を両方やってくれる.
@@ -152,8 +156,20 @@ void GPUBuffer::Upload(const void* data, const gu::uint64 allocateByteSize, cons
 			_intermediateBuffer, uploadBufferDesc, uploadHeapProp, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr)
 		);
 
-
 		_intermediateBuffer->SetName(L"Intermediate Buffer");
+
+		/*-------------------------------------------------------------------
+		-      Schedule to copy the data to the default buffer resource
+		---------------------------------------------------------------------*/
+		const auto dxCommandList = gu::StaticPointerCast<directX12::RHICommandList>(commandList)->GetCommandList();
+		const auto beforeState   = EnumConverter::Convert(_metaData.State);
+		const auto before        = GPUBarrier::CreateTransition(_resource.Get(), beforeState, D3D12_RESOURCE_STATE_COPY_DEST);
+
+		dxCommandList->ResourceBarrier(1, &before);
+		UpdateSubresources<1>(dxCommandList.Get(), _resource.Get(), _intermediateBuffer.Get(), offsetByte, 0, 1, &subresourceData);
+
+		auto after = GPUBarrier::CreateTransition(_resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, beforeState);
+		dxCommandList->ResourceBarrier(1, &after);
 	}
 }
 
@@ -185,16 +201,16 @@ void GPUBuffer::CopyStart()
 * 
 *  @param[in] void*  dataPtr
 * 
-*  @param[in] size_t dataLength
+*  @param[in] gu::uint64 dataLength
 * 
-*  @param[in] size_t indexOffset (default 0)
+*  @param[in] gu::uint64 indexOffset (default 0)
 * 
 *  @return 　　void
 *****************************************************************************/
 void GPUBuffer::CopyTotalData(const void* data, const gu::uint64 dataLength, const gu::uint64 indexOffset)
 {
 	Check(dataLength + indexOffset <= _metaData.Count);
-	gu::Memory::Copy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (size_t)dataLength);
+	gu::Memory::Copy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (gu::uint64)dataLength);
 }
 
 /****************************************************************************
@@ -220,63 +236,6 @@ void GPUBuffer::SetName(const gu::tstring& name)
 
 void GPUBuffer::Pack(const void* data, const gu::SharedPointer<core::RHICommandList>& copyCommandList)
 {
-	const auto rhiDevice = static_cast<rhi::directX12::RHIDevice*>(_device.Get());
-	const auto dxDevice  = rhiDevice->GetDevice();
-	if ((!_metaData.IsCPUAccessible()))
-	{
-		Check(copyCommandList->GetType() == core::CommandListType::Copy);
-
-		/*-------------------------------------------------------------------
-		-          Copy CPU memory data into our default buffer,
-		-          we need to create an intermediate upload heap
-		---------------------------------------------------------------------*/
-		const D3D12_HEAP_PROPERTIES uploadHeapProp
-		{
-			.Type                 = D3D12_HEAP_TYPE_UPLOAD,
-			.CPUPageProperty      = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
-			.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
-			.CreationNodeMask     = rhiDevice->GetGPUMask().Value(),
-			.VisibleNodeMask      = rhiDevice->GetGPUMask().Value()
-		};
-
-		const auto uploadTempBuffer = RESOURCE_DESC::Buffer(GetTotalByteSize());
-
-		// CreateCommittedResource -> Heap確保 + 実際にGPUにメモリを書き込むを両方やってくれる.
-		ThrowIfFailed(rhiDevice->CreateCommittedResource
-		(
-			_intermediateBuffer, uploadTempBuffer, uploadHeapProp, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr)
-		);
-
-		_intermediateBuffer->SetName(L"Intermediate Buffer");
-		
-		/*-------------------------------------------------------------------
-		-      Describe the data we want to copy into the default buffer.
-		---------------------------------------------------------------------*/
-		D3D12_SUBRESOURCE_DATA subResourceData = {};
-		subResourceData.pData      = data;
-		subResourceData.RowPitch   = GetTotalByteSize();
-		subResourceData.SlicePitch = subResourceData.RowPitch;
-
-		/*-------------------------------------------------------------------
-		-      Schedule to copy the data to the default buffer resource
-		---------------------------------------------------------------------*/
-		const auto dxCommandList = gu::StaticPointerCast<directX12::RHICommandList>(copyCommandList)->GetCommandList();
-		const auto beforeState = EnumConverter::Convert(_metaData.State);
-		const auto before      = BARRIER::Transition(_resource.Get(), beforeState, D3D12_RESOURCE_STATE_COPY_DEST);
-		
-		dxCommandList->ResourceBarrier(1, &before);
-		UpdateSubresources<1>(dxCommandList.Get(), _resource.Get(), _intermediateBuffer.Get(), 0, 0, 1, &subResourceData);
-		
-		auto after = BARRIER::Transition(_resource.Get(),  D3D12_RESOURCE_STATE_COPY_DEST, beforeState);
-		dxCommandList->ResourceBarrier(1, &after);
-	}
-	else if (_metaData.HeapType == core::MemoryHeap::Upload || _metaData.HeapType == core::MemoryHeap::Readback)
-	{
-		Update(data, GetElementCount());
-	}
-	else
-	{
-		throw std::runtime_error("Unknown memory heap type");
-	}
+	Upload(data, GetTotalByteSize(), 0, copyCommandList);
 }
 #pragma endregion Public Function

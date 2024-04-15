@@ -181,10 +181,6 @@ namespace rhi::directX12
 		
 		void Dispatch(gu::uint32 threadGroupCountX = 1, gu::uint32 threadGroupCountY = 1, gu::uint32 threadGroupCountZ = 1) override;
 		
-		/*-------------------------------------------------------------------
-		-                Transition layout
-		---------------------------------------------------------------------*/
-		
 		#pragma region Copy Function
 		/*!**********************************************************************
 		*  @brief     GPUバッファの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
@@ -200,7 +196,7 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------
 		*  @brief : テクスチャの領域をまとめて別のリソースにコピーする
 		/*----------------------------------------------------------------------*/
-		void CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source) override;
+		virtual void CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief : あるリソースの領域をまとめて別のリソースにコピーする. 
@@ -257,34 +253,41 @@ namespace rhi::directX12
 		CommandListComPtr GetCommandList() const noexcept { return _commandList; }
 
 		void SetName(const gu::tstring& name) override;
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		
+		#pragma region Public Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		RHICommandList() = default;
 
+		/*! @brief デストラクタ*/
 		~RHICommandList();
 
-		explicit RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, 
+		/*! @brief デバイスとコマンドアロケータを作るコンストラクタです*/
+		explicit RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& device, 
+			const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator, 
 			const gu::tstring& name);
-	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma endregion 
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+	protected:
+		#pragma region Protected Function
+		#pragma endregion 
+
+		#pragma region Protected Member Variables
+
 		/*! @brief DirectX12で使用するバリアを管理*/
 		gu::SharedPointer<GPUBarrierBatcher> _barrierBatcher = nullptr;
 
 		/*! @brief directX12で使用するコマンドリスト*/
 		CommandListComPtr _commandList = nullptr;
+
+		#pragma endregion Protected Member Variable
 		
 	private:
-		
+		#pragma region Private Function
 		void BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer);
 		
 		void OMSetFrameBuffer   (const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer);
+		#pragma endregion Private Function
+
 	};
 }
 #endif

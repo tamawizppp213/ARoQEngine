@@ -35,6 +35,65 @@ namespace rhi::core
 namespace rhi::directX12
 {
 	class RHICommandList;
+
+	/****************************************************************************
+	*				  		GPUBarrier
+	*************************************************************************//**
+	/*  @brief     GPUのリソースを排他的に処理を行うクラスです. 
+	*****************************************************************************/
+	struct GPUBarrier : public D3D12_RESOURCE_BARRIER
+	{
+		/*!**********************************************************************
+		*  @brief  単独のGPUリソースの状態遷移を示します. @n
+		*          リソースの使い方が変わるタイミングで呼び出します. 
+		*  @param[in] ID3D12Resource* GPUリソース (これだけGPUResourceを代入するのは後でリソースの遷移後の状態を代入する必要があるため)
+		*  @param[in] const D3D12_RESOURCE_STATES 遷移後のリソース状態
+		*  @param[in] const gu::uint32 サブリソースを示すインデックス (デフォルトは全てのサブリソースを示します)
+		*************************************************************************/
+		static inline GPUBarrier CreateTransition(ID3D12Resource* resource, const D3D12_RESOURCE_STATES before, const D3D12_RESOURCE_STATES after, const gu::uint32 subresource = 0xffffffff)
+		{
+			return 
+			{
+				D3D12_RESOURCE_BARRIER_TYPE_TRANSITION,
+				D3D12_RESOURCE_BARRIER_FLAG_NONE,
+				{ resource, subresource, before, after }
+			};
+		}
+
+		/*!**********************************************************************
+		*  @brief  同じメモリ領域にマッピングされた複数のGPUリソースに対し, 使用するリソース自体を切り替える際に使用します. @n
+		*  @param[in] ID3D12Resource* 切り替える前に使用していたGPUリソース
+		*  @param[in] ID3D12Resource* 切り替えた後に使用する予定のGPUリソース
+		*  @return    void
+		*************************************************************************/
+		static inline GPUBarrier CreateAliasing(ID3D12Resource* before, ID3D12Resource* after)
+		{
+			GPUBarrier barrier = {};
+			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_ALIASING;
+			barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+			barrier.Aliasing.pResourceBefore = before;
+			barrier.Aliasing.pResourceAfter = after;
+			return barrier;
+		}
+
+		/*!**********************************************************************
+		*  @brief  Unordered access view専用の状態バリア @n
+		*          UAVの読み書き中にほかのUAVが対象リソースを読み書きする描画コマンドの実行を防ぐことを目的とします @n
+		*  @param[in] ID3D12Resource* Unordered access viewを持つGPUリソース
+		*  @return    void
+		*************************************************************************/
+		static inline GPUBarrier CreateUAV(ID3D12Resource* resource)
+		{
+			GPUBarrier barrier = {};
+			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+			barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+			barrier.UAV.pResource = resource;
+			return barrier;
+		}
+
+		operator const D3D12_RESOURCE_BARRIER& () const { return *this; }
+	};
+
 	/****************************************************************************
 	*				  		GPUBarrierBatcher
 	*************************************************************************//**
@@ -46,12 +105,6 @@ namespace rhi::directX12
 	*****************************************************************************/
 	class GPUBarrierBatcher : public gu::NonCopyable
 	{
-	private :
-		struct GPUBarrier : public D3D12_RESOURCE_BARRIER
-		{
-			operator const D3D12_RESOURCE_BARRIER& () const { return *this; }
-		};
-
 	public:
 		#pragma region Public Function
 		/*!**********************************************************************
@@ -149,6 +202,7 @@ namespace rhi::directX12
 		#pragma region Private Member Variables
 		/*! @brief GPUのバリアを貯めておく場所*/
 		gu::DynamicArray<GPUBarrier> _barriers = {};
+
 		gu::DynamicArray<gu::Pair<core::ResourceState, gu::SharedPointer<core::GPUResource>>> _afterTransitions = {};
 		#pragma endregion 
 

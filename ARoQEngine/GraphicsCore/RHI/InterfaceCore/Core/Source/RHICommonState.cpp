@@ -102,23 +102,28 @@ GPUBufferMetaData::GPUBufferMetaData(gu::uint64 stride, gu::uint64 count, core::
 
 GPUBufferMetaData GPUBufferMetaData::UploadBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::GeneralRead, heap, initData);
+	using enum core::ResourceUsage;
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer | Dynamic, ResourceState::GeneralRead, heap, initData);
 }
 GPUBufferMetaData GPUBufferMetaData::DefaultBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, ResourceState::Common, heap, initData);
+	using enum core::ResourceUsage;
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer | Static, ResourceState::Common, heap, initData);
 }
 GPUBufferMetaData GPUBufferMetaData::ConstantBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap, const ResourceState state, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer, state, heap, initData);
+	using enum core::ResourceUsage;
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::ConstantBuffer | Dynamic, state, heap, initData);
 }
 GPUBufferMetaData GPUBufferMetaData::VertexBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap, const ResourceState state, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::VertexBuffer, state, heap, initData);
+	using enum core::ResourceUsage;
+	return GPUBufferMetaData(stride, count, VertexBuffer | Dynamic, state, heap, initData);
 }
 GPUBufferMetaData GPUBufferMetaData::IndexBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap, const ResourceState state, void* initData)
 {
-	return GPUBufferMetaData(stride, count, core::ResourceUsage::IndexBuffer, state, heap, initData);
+	using enum core::ResourceUsage;
+	return GPUBufferMetaData(stride, count, core::ResourceUsage::IndexBuffer | Static, state, heap, initData);
 }
 #pragma endregion GPUBuffer
 #pragma region GPUTexture

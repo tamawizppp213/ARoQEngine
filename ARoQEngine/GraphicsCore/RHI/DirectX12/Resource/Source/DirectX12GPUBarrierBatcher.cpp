@@ -71,19 +71,7 @@ bool GPUBarrierBatcher::PushTransitionBarrier(const gu::SharedPointer<core::GPUR
 	/*-------------------------------------------------------------------
 	-         V‹K‚ÌƒoƒŠƒA‚ðì¬‚·‚é. 
 	---------------------------------------------------------------------*/
-	GPUBarrier barrier =
-	{
-		D3D12_RESOURCE_BARRIER_TYPE_TRANSITION,
-		D3D12_RESOURCE_BARRIER_FLAG_NONE,
-		{
-			dxResource,
-			subresource,
-			dxBeforeState,
-			dxAfterState
-		}
-	};
-	
-	_barriers.Push(gu::type::Forward<GPUBarrier>(barrier));
+	_barriers.Push(gu::type::Forward<GPUBarrier>(GPUBarrier::CreateTransition(dxResource,  dxBeforeState, dxAfterState, subresource)));
 	_afterTransitions.Push({ after, resource });
 	return true;
 }
@@ -100,12 +88,7 @@ bool GPUBarrierBatcher::PushTransitionBarrier(const gu::SharedPointer<core::GPUR
 *****************************************************************************/
 void GPUBarrierBatcher::PushAliasingBarrier(ID3D12Resource* beforeResource, ID3D12Resource* afterResource)
 {
-	GPUBarrier barrier = {};
-	barrier.Type  = D3D12_RESOURCE_BARRIER_TYPE_ALIASING;
-	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrier.Aliasing.pResourceBefore = beforeResource;
-	barrier.Aliasing.pResourceAfter  = afterResource;
-	_barriers.Push(gu::type::Forward<GPUBarrier>(barrier));
+	_barriers.Push(gu::type::Forward<GPUBarrier>(GPUBarrier::CreateAliasing(beforeResource, afterResource)));
 }
 
 /****************************************************************************
@@ -123,11 +106,7 @@ void GPUBarrierBatcher::PushAliasingBarrier(ID3D12Resource* beforeResource, ID3D
 *****************************************************************************/
 void GPUBarrierBatcher::PushUAVBarrier(ID3D12Resource* resource)
 {
-	GPUBarrier barrier = {};
-	barrier.Type          = D3D12_RESOURCE_BARRIER_TYPE_UAV;
-	barrier.Flags         = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrier.UAV.pResource = resource;
-	_barriers.Push(gu::type::Forward<GPUBarrier>(barrier));
+	_barriers.Push(gu::type::Forward<GPUBarrier>(GPUBarrier::CreateUAV(resource)));
 }
 
 /****************************************************************************
