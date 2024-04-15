@@ -34,9 +34,6 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		// @brief : Basically for Default Buffer Initialize. Total Buffer Copy
-		//          Create temp upload buffer and copy this to default buffer
-		void Pack(const void* data, const gu::SharedPointer<core::RHICommandList>& copyCommandList) override;
 		
 		// @brief : Begin Map Function
 		void CopyStart() override;

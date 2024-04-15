@@ -120,7 +120,7 @@ void ScreenSpaceReflection::PrepareBuffer(const SSRSettings& settings, const gu:
 	-			Set Information
 	---------------------------------------------------------------------*/
 	_settings = settings;
-	buffer->Pack(&_settings, nullptr);
+	buffer->Upload(&_settings, metaData.GetTotalByte(), 0, nullptr);
 	_settingsView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 }
 
@@ -213,7 +213,7 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addNa
 			const auto bufferName = addName + SP("VB");
 			_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
 			_vertexBuffers[i]->SetName(gu::tstring(bufferName));
-			_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
+			_vertexBuffers[i]->Upload(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
 
 		}
 		
@@ -225,7 +225,7 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addNa
 			const auto bufferName = addName + SP("IB");
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(bufferName);
-			_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
+			_indexBuffers[i]->Upload(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
 		}
 
 	}

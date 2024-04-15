@@ -106,7 +106,7 @@ void Vignette::PrepareBuffer(const gu::tstring& name)
 	/*-------------------------------------------------------------------
 	-			Set Information
 	---------------------------------------------------------------------*/
-	buffer->Pack(&_settings, nullptr);
+	buffer->Upload(&_settings, metaData.GetTotalByte(), 0, nullptr);
 	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 

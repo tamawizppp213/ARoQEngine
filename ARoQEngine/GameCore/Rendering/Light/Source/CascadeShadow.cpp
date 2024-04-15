@@ -145,7 +145,7 @@ void CascadeShadow::PrepareResourceView(const gu::tstring& name)
 		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(CascadeShadowInfo), 1, MemoryHeap::Upload, ResourceState::Common);
 		const auto buffer   = device->CreateBuffer(metaData);
 		buffer->SetName(name + SP("ShadowInfo"));
-		buffer->Pack(&shadowInfo, nullptr);
+		buffer->Upload(&shadowInfo, metaData.GetTotalByte(), 0, nullptr);
 		_shadowInfoView = device->CreateResourceView(ResourceViewType::Buffer, buffer, 0, 0, nullptr);
 	}
 }

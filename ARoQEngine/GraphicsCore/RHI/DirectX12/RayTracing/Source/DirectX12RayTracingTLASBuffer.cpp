@@ -94,7 +94,7 @@ TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 			sizeof(D3D12_RAYTRACING_INSTANCE_DESC), numInstance);
 		metaData.State = core::ResourceState::GeneralRead;
 		_asInstanceDescsBuffer = dxDevice->CreateBuffer(metaData);
-		_asInstanceDescsBuffer->Pack(dxDescs.Data(), nullptr); // upload bufferÇÃÇΩÇﬂÅAnullptr
+		_asInstanceDescsBuffer->Upload(dxDescs.Data(), metaData.GetTotalByte(), 0 , nullptr); // upload bufferÇÃÇΩÇﬂÅAnullptr
 	}
 
 	/*-------------------------------------------------------------------

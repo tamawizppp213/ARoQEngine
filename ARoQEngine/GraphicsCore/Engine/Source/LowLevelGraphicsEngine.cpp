@@ -148,6 +148,8 @@ void LowLevelGraphicsEngine::StartUp(GraphicsAPI apiVersion, void* hwnd, void* h
 * 
 *  @return @@void
 *****************************************************************************/
+gu::uint64 start = 0;
+gu::uint64 end = 0;
 void LowLevelGraphicsEngine::BeginDrawFrame()
 {
 	/*-------------------------------------------------------------------
@@ -161,6 +163,7 @@ void LowLevelGraphicsEngine::BeginDrawFrame()
 	---------------------------------------------------------------------*/
 	graphicsCommandList->BeginRecording(false);
 	computeCommandList ->BeginRecording(false);
+	start = _commandQueues[core::CommandListType::Graphics]->GetCalibrationTimestamp().GPUMicroseconds;
 }
 
 /****************************************************************************
@@ -213,6 +216,9 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	---------------------------------------------------------------------*/
 	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, ++_fenceValue);
 	SetUpFence(); // reset fence value for the next frame
+
+	end = _commandQueues[core::CommandListType::Graphics]->GetCalibrationTimestamp().GPUMicroseconds;
+	//printf("%f\n", 1e6 / (end - start));
 }
 
 /****************************************************************************

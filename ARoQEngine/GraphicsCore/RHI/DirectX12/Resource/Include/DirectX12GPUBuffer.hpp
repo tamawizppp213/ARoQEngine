@@ -43,10 +43,6 @@ namespace rhi::directX12
 		*************************************************************************/
 		virtual void Upload(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte, const gu::SharedPointer<core::RHICommandList>& commandList) override;
 
-		// @brief : Basically for Default Buffer Initialize. Total Buffer Copy
-		//          Create temp upload buffer and copy this to default buffer
-		void Pack(const void* data, const gu::SharedPointer<rhi::core::RHICommandList>& copyCommandList = nullptr) override;
-		
 		/*----------------------------------------------------------------------
 		*  @brief :  Call at once in each frame (If you need). CopyStart + CopyTotalData + CopyEnd.
 		/*----------------------------------------------------------------------*/
@@ -106,20 +102,22 @@ namespace rhi::directX12
 		
 		explicit GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("Buffer"));
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion 
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+		#pragma region Protected Member Variables
+		/*! @brief DirectX12で使用するGPUリソース*/
 		ResourceComPtr _resource = nullptr;
+
+		/*! @brief GPUにアップロードする際に使用する中間バッファ*/
 		ResourceComPtr _intermediateBuffer = nullptr; // for default buffer
+
+		/*! @brief Mapを行う際に使用するCPU側のバッファ領域*/
 		gu::uint8* _mappedData = nullptr;
+
+		/*! @brief CPUからGPUにUploadが実行中かどうか(Mapが既に呼ばれているかどうか)*/
+		bool _useCPUMapped = false;
+		#pragma endregion Protected Member Variables
 	};
 }
 #endif

@@ -109,7 +109,7 @@ void WhiteBalance::PrepareBuffer(const WhiteBalanceSettings& settings, const gu:
 	-			Set Information
 	---------------------------------------------------------------------*/
 	_settings = settings;
-	buffer->Pack(&_settings, nullptr);
+	buffer->Upload(&_settings, metaData.GetTotalByte(), 0, nullptr);
 	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 

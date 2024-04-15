@@ -281,7 +281,7 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 			
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(name + SP("IB"));
-			_indexBuffers[i]->Pack(indices.Data(), _engine->GetCommandList(CommandListType::Copy));
+			_indexBuffers[i]->Upload(indices.Data(), ibMetaData.GetTotalByte(), 0, _engine->GetCommandList(CommandListType::Copy));
 		}
 	}
 }

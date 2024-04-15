@@ -638,6 +638,6 @@ void Camera::UpdateSceneConstants(const GameTimerPtr& gameTimer)
 	scene.TotalTime               = gameTimer->TotalTime();
 	scene.DeltaTime               = gameTimer->DeltaTime();
 
-	_sceneConstantBuffer->Pack(&scene, nullptr); 
+	_sceneConstantBuffer->Upload(&scene, _sceneConstantBuffer->GetTotalByteSize(), 0, nullptr); 
 }
 #pragma endregion Protected Function

@@ -147,7 +147,7 @@ void Sobel::PrepareOutlineInfo(const gu::tstring& name)
 	---------------------------------------------------------------------*/
 	// pack
 	_outlineInfo.Color = _outlineInfo.Color;
-	buffer->Pack(&_outlineInfo, nullptr);
+	buffer->Upload(&_outlineInfo, metaData.GetTotalByte(), 0, nullptr);
 	
 	// create resource view
 	_outlineCBV = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, 0,0,nullptr);

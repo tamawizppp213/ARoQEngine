@@ -43,11 +43,6 @@ namespace rhi::core
 		*  @return    void
 		*************************************************************************/
 		virtual void Upload(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte = 0, const gu::SharedPointer<RHICommandList>& commandList = nullptr) = 0;
-
-		// @brief : Basically for Default Buffer Initialize. Total Buffer Copy
-		//          Create temp upload buffer and copy this to default buffer (default buffer uses commandList)
-		//           https://zenn.dev/lriki/scraps/5bb7f5a23bba16 (ç°å„ämîFÇµÇΩÇ¢)
-		virtual void Pack(const void* data, const gu::SharedPointer<RHICommandList>& commandList = nullptr) = 0;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Call at once in each frame (If you need). CopyStart + CopyTotalData + CopyEnd. 

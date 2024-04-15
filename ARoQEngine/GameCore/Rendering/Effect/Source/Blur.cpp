@@ -272,7 +272,7 @@ void GaussianBlur::PrepareBlurParameters(const gu::tstring& name)
 	// Blur parameter gpu resource name 
 	blurParameter->SetName(name + SP("BlurParameter"));
 	// Pack blur paramter init data 
-	blurParameter->Pack(&parameter, nullptr);
+	blurParameter->Upload(&parameter, metaData.GetTotalByte(), 0, nullptr);
 
 	_blurParameterView = device->CreateResourceView(ResourceViewType::ConstantBuffer, blurParameter,0,0, nullptr);
 }
@@ -302,7 +302,7 @@ void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std
 	_textureSize.YBlurTexture[0]    = width / 2;
 	_textureSize.YBlurTexture[1]    = height / 2;
 
-	textureSizeBuffer->Pack(&_textureSize, nullptr);
+	textureSizeBuffer->Upload(&_textureSize, metaData.GetTotalByte(), 0,  nullptr);
 	_textureSizeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, textureSizeBuffer,0,0, nullptr);
 }
 
@@ -490,11 +490,11 @@ void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
 		_vertexBuffers[i]->SetName(addName + SP("FinalVB"));
-		_vertexBuffers[i]->Pack(rectMesh.Vertices.data()); // Map
+		_vertexBuffers[i]->Upload(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
 		_xBlur.VB[i] = device->CreateBuffer(vbMetaData);
 		_yBlur.VB[i] = device->CreateBuffer(vbMetaData);
-		_xBlur.VB[i]->Pack(rectMesh.Vertices.data()); // Map
-		_yBlur.VB[i]->Pack(rectMesh.Vertices.data()); // Map
+		_xBlur.VB[i]->Upload(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
+		_yBlur.VB[i]->Upload(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
 
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
@@ -502,11 +502,11 @@ void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(addName + SP("FinalIB"));
-		_indexBuffers[i]->Pack(rectMesh.Indices.data(), commandList);
+		_indexBuffers[i]->Upload(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
 		_xBlur.IB[i] = device->CreateBuffer(vbMetaData);
 		_yBlur.IB[i] = device->CreateBuffer(vbMetaData);
-		_xBlur.IB[i]->Pack(rectMesh.Indices.data(), commandList);
-		_yBlur.IB[i]->Pack(rectMesh.Indices.data(), commandList);
+		_xBlur.IB[i]->Upload(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
+		_yBlur.IB[i]->Upload(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
 		_xBlur.VB[i]->SetName(addName + SP("XVB"));
 		_yBlur.VB[i]->SetName(addName + SP("YVB"));
 		_xBlur.IB[i]->SetName(addName + SP("XIB"));

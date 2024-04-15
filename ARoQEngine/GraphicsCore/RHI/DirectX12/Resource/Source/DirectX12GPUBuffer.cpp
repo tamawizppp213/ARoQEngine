@@ -51,7 +51,7 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const cor
 	---------------------------------------------------------------------*/
 	const auto usage     = metaData.ResourceUsage;
 	const auto isDynamic = gu::HasAnyFlags(usage, core::ResourceUsage::AnyDynamic);
-	printf("%d\n", isDynamic);
+
 	Check(isDynamic ? _metaData.HeapType != core::MemoryHeap::Default : true);
 
 	const D3D12_RESOURCE_DESC resourceDesc = 
@@ -189,6 +189,8 @@ void GPUBuffer::CopyStart()
 	Check(_metaData.IsCPUAccessible());
 
 	ThrowIfFailed(_resource->Map(0, nullptr, reinterpret_cast<void**>(&_mappedData)));
+
+	_useCPUMapped = true;
 }
 
 
@@ -209,6 +211,7 @@ void GPUBuffer::CopyStart()
 *****************************************************************************/
 void GPUBuffer::CopyTotalData(const void* data, const gu::uint64 dataLength, const gu::uint64 indexOffset)
 {
+	Check(_useCPUMapped);
 	Check(dataLength + indexOffset <= _metaData.Count);
 	gu::Memory::Copy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (gu::uint64)dataLength);
 }
@@ -227,6 +230,7 @@ void GPUBuffer::CopyTotalData(const void* data, const gu::uint64 dataLength, con
 void GPUBuffer::CopyEnd()
 {
 	_resource->Unmap(0, nullptr);
+	_useCPUMapped = false;
 }
 
 void GPUBuffer::SetName(const gu::tstring& name)
@@ -234,8 +238,4 @@ void GPUBuffer::SetName(const gu::tstring& name)
 	ThrowIfFailed(_resource->SetName(name.CString()));
 }
 
-void GPUBuffer::Pack(const void* data, const gu::SharedPointer<core::RHICommandList>& copyCommandList)
-{
-	Upload(data, GetTotalByteSize(), 0, copyCommandList);
-}
 #pragma endregion Public Function
