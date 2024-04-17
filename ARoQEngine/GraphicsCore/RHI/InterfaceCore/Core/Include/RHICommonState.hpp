@@ -431,20 +431,42 @@ namespace rhi::core
 	*****************************************************************************/
 	struct ClearValue
 	{
+		/*! @brief 色の種類をRGBAで指定します. */
 		enum ColorType { Red, Green, Blue, Alpha };
-		gu::float32        Color[4] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
-		gu::float32        Depth    = 1.0f;
-		gu::uint8 Stencil  = 0;
 
-		ClearValue() = default;
-		ClearValue(float red, float green, float blue, float alpha)
+		/*! @brief DepthStencilの構造体*/
+		struct DepthStencilValue
 		{
-			Color[0] = red; Color[1] = green; Color[2] = blue; Color[3] = alpha;
+			gu::float32 Depth;
+			gu::uint32  Stencil;
+		};
+
+		/*!@brief : クリアカラーの種別 (RGBAかデプス/ステンシル)*/
+		union ClearType
+		{
+			gu::float32       Color[4];
+			DepthStencilValue DSV;
+		} Type ;
+
+		/*! @brief デフォルトコンストラクタ*/
+		ClearValue() 
+		{
+			Type.Color[0] = 1.0f;
+			Type.Color[1] = 1.0f;
+			Type.Color[2] = 1.0f;
+			Type.Color[3] = 1.0f;
+		}
+
+		/*! @brief RGBAで指定するクリアカラーの色*/
+		ClearValue(const float red, const float green, const float blue, const float alpha)
+		{
+			Type.Color[0] = red; Type.Color[1] = green; Type.Color[2] = blue; Type.Color[3] = alpha;
 		};
 		
-		explicit ClearValue(float depth, gu::uint8 stencil = 0)
+		/*! @brief 深度値とステンシル値で色を初期化します*/
+		explicit ClearValue(const float depth, const gu::uint32 stencil = 0)
 		{
-			Depth = depth; Stencil = stencil; 
+			Type.DSV.Depth = depth; Type.DSV.Stencil = stencil; 
 		}
 	};
 #pragma endregion         Pixel

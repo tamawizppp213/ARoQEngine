@@ -844,10 +844,10 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 		// set render pass load op
 		D3D12_RENDER_PASS_BEGINNING_ACCESS begin = {};
 		begin.Type = EnumConverter::Convert(renderPass->GetColorAttachment(i)->LoadOp);
-		begin.Clear.ClearValue.Color[0] = renderPass->GetClearColor()[i].Color[core::ClearValue::Red];
-		begin.Clear.ClearValue.Color[1] = renderPass->GetClearColor()[i].Color[core::ClearValue::Green];
-		begin.Clear.ClearValue.Color[2] = renderPass->GetClearColor()[i].Color[core::ClearValue::Blue];
-		begin.Clear.ClearValue.Color[3] = renderPass->GetClearColor()[i].Color[core::ClearValue::Alpha];
+		begin.Clear.ClearValue.Color[0] = renderPass->GetClearColor()[i].Type.Color[core::ClearValue::Red];
+		begin.Clear.ClearValue.Color[1] = renderPass->GetClearColor()[i].Type.Color[core::ClearValue::Green];
+		begin.Clear.ClearValue.Color[2] = renderPass->GetClearColor()[i].Type.Color[core::ClearValue::Blue];
+		begin.Clear.ClearValue.Color[3] = renderPass->GetClearColor()[i].Type.Color[core::ClearValue::Alpha];
 		// set render pass store op
 		D3D12_RENDER_PASS_ENDING_ACCESS end = {};
 		end.Type = EnumConverter::Convert(renderPass->GetColorAttachment(i)->StoreOp);
@@ -875,8 +875,8 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 		D3D12_RENDER_PASS_ENDING_ACCESS    depthEnd     = { EnumConverter::Convert(renderPass->GetDepthAttachment()->StoreOp), {} };
 		D3D12_RENDER_PASS_BEGINNING_ACCESS stencilBegin = { EnumConverter::Convert(renderPass->GetDepthAttachment()->StencilLoad), {} };
 		D3D12_RENDER_PASS_ENDING_ACCESS    stencilEnd   = { EnumConverter::Convert(renderPass->GetDepthAttachment()->StencilStore), {} };
-		depthBegin.Clear.ClearValue.DepthStencil.Depth     = renderPass->GetDepthClear()->Depth;
-		stencilBegin.Clear.ClearValue.DepthStencil.Stencil = renderPass->GetDepthClear()->Stencil;
+		depthBegin.Clear.ClearValue.DepthStencil.Depth     = renderPass->GetDepthClear()->Type.DSV.Depth;
+		stencilBegin.Clear.ClearValue.DepthStencil.Stencil = renderPass->GetDepthClear()->Type.DSV.Stencil;
 		
 		// set depth stencil descriptor
 		dsvDesc.DepthBeginningAccess   = depthBegin;
@@ -939,7 +939,7 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 	{
 		const auto colorAttachment = renderPass->GetColorAttachment(i);
 		if (colorAttachment->LoadOp != core::AttachmentLoad::Clear) { continue; }
-		_commandList->ClearRenderTargetView(rtvHandle[i], renderPass->GetClearColor()[i].Color, 0, nullptr);
+		_commandList->ClearRenderTargetView(rtvHandle[i], renderPass->GetClearColor()[i].Type.Color, 0, nullptr);
 	}
 	// depth stencil 
 	if (hasDSV)
@@ -953,7 +953,7 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 		// clear depth stencil
 		if (clearFlags)
 		{
-			_commandList->ClearDepthStencilView(dsvHandle, clearFlags, renderPass->GetDepthClear()->Depth, renderPass->GetDepthClear()->Stencil, 0, nullptr);
+			_commandList->ClearDepthStencilView(dsvHandle, clearFlags, renderPass->GetDepthClear()->Type.DSV.Depth, renderPass->GetDepthClear()->Type.DSV.Stencil, 0, nullptr);
 		}
 	}
 	/*-------------------------------------------------------------------

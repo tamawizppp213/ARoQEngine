@@ -536,15 +536,15 @@ void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDes
 	clearValue.Format = resourceDesc.Format;
 	if (gu::HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::RenderTarget))
 	{
-		clearValue.Color[0] = _metaData.ClearColor.Color[0];
-		clearValue.Color[1] = _metaData.ClearColor.Color[1];
-		clearValue.Color[2] = _metaData.ClearColor.Color[2];
-		clearValue.Color[3] = _metaData.ClearColor.Color[3];
+		clearValue.Color[0] = _metaData.ClearColor.Type.Color[0];
+		clearValue.Color[1] = _metaData.ClearColor.Type.Color[1];
+		clearValue.Color[2] = _metaData.ClearColor.Type.Color[2];
+		clearValue.Color[3] = _metaData.ClearColor.Type.Color[3];
 	}
 	else if(gu::HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::DepthStencil))
 	{
-		clearValue.DepthStencil.Depth   = _metaData.ClearColor.Depth;
-		clearValue.DepthStencil.Stencil = _metaData.ClearColor.Stencil;
+		clearValue.DepthStencil.Depth   = _metaData.ClearColor.Type.DSV.Depth;
+		clearValue.DepthStencil.Stencil = (gu::uint8)_metaData.ClearColor.Type.DSV.Stencil;
 	}
 
 	ThrowIfFailed(dxDevice->CreateCommittedResource(
