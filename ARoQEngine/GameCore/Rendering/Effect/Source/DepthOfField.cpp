@@ -155,7 +155,7 @@ void Dof::SetUpBlurParameter(const float width, const float height, const float 
 	_blurParameter.TextureSize[0] = width;
 	_blurParameter.TextureSize[1] = height;
 	_blurParameter.Radius         = radius;
-	_blurParameterView->GetBuffer()->Update(&_blurParameter, 1);
+	_blurParameterView->GetBuffer()->UploadByte(&_blurParameter, sizeof(_blurParameter));
 }
 /****************************************************************************
 *							SetUpClipSize
@@ -174,7 +174,7 @@ void Dof::SetUpClipSize(float nearClip, float farClip)
 {
 	_clipSize.Near = nearClip;
 	_clipSize.Far  = farClip;
-	_clipSizeView->GetBuffer()->Update(&_clipSize, 1);
+	_clipSizeView->GetBuffer()->UploadByte(&_clipSize, sizeof(_clipSize));
 }
 #pragma endregion Public Function
 #pragma region Protected Function

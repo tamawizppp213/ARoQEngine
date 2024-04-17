@@ -66,14 +66,14 @@ RHIQuery::RHIQuery(const SharedPointer<core::RHIDevice>& device,
 	-                  Readback bufferのmap
 	---------------------------------------------------------------------*/
 	// read back heap自体は永続的にマップされることを許容しているため, 今回は一度だけマップを行う対応とする
-	_resultBuffer->CopyStart();
+	_resultBuffer->Map();
 }
 
 RHIQuery::~RHIQuery()
 {
 	if (_resultBuffer)
 	{
-		_resultBuffer->CopyEnd();
+		_resultBuffer->Unmap();
 		_resultBuffer.Reset();
 	}
 }

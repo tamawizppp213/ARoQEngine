@@ -133,13 +133,13 @@ void UIRenderer::AddFrameObjects(const gu::DynamicArray<ui::Image>& images, cons
 	const auto& vertexBuffer = _vertexBuffers[currentFrame];
 	const auto  oneRectVertexCount = 4;
 
-	vertexBuffer->CopyStart();
+	vertexBuffer->Map();
 	// _maxWritableUICount - _totalImageCount is c‚è‚Ì“o˜^‚Å‚«‚é”
 	for (std::uint32_t i = 0; i < std::min<std::uint32_t>((std::uint32_t)images.Size(), _maxWritableUICount - _totalImageCount); ++i)
 	{
-		vertexBuffer->CopyTotalData(images[i].GetVertices(), 4, ((size_t)i + (size_t)_totalImageCount) * (size_t)oneRectVertexCount);
+		vertexBuffer->UploadIndex(images[i].GetVertices(), 4, ((size_t)i + (size_t)_totalImageCount) * (size_t)oneRectVertexCount, nullptr, true);
 	}
-	vertexBuffer->CopyEnd();
+	vertexBuffer->Unmap();
 
 	/*-------------------------------------------------------------------
 	-               Count sprite num
@@ -221,7 +221,7 @@ void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t 
 		Vertex(Float3(0, 0, 0), Float3(0, 0, 0), Float4(1, 1, 1, 1), Float2(0, 0))
 	);
 	
-	_vertexBuffers[frameIndex]->Update(v.Data(), vertexCount);
+	_vertexBuffers[frameIndex]->UploadByte(v.Data(), sizeof(Vertex) * vertexCount);
 }
 
 /****************************************************************************
@@ -281,7 +281,7 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 			
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(name + SP("IB"));
-			_indexBuffers[i]->Upload(indices.Data(), ibMetaData.GetTotalByte(), 0, _engine->GetCommandList(CommandListType::Copy));
+			_indexBuffers[i]->UploadByte(indices.Data(), ibMetaData.GetTotalByte(), 0, _engine->GetCommandList(CommandListType::Copy));
 		}
 	}
 }

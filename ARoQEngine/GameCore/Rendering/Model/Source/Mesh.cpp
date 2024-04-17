@@ -136,7 +136,7 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const gu::tstring& name)
 		const auto metaData = GPUBufferMetaData::VertexBuffer(sizeof(gm::Vertex), mesh.Vertices.size(), rhi::core::MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(metaData);
 		_vertexBuffers[i]->SetName(name + SP("VB"));
-		_vertexBuffers[i]->Upload(mesh.Vertices.data(), metaData.GetTotalByte(), 0, nullptr);
+		_vertexBuffers[i]->UploadByte(mesh.Vertices.data(), metaData.GetTotalByte(), 0, nullptr);
 	}
 
 	/*-------------------------------------------------------------------
@@ -148,7 +148,7 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const gu::tstring& name)
 
 		_indexBuffer = device->CreateBuffer(metaData);
 		_indexBuffer->SetName(name + SP("IB"));
-		_indexBuffer->Upload(mesh.Indices.data(), metaData.GetTotalByte(), 0, copyCommandList);
+		_indexBuffer->UploadByte(mesh.Indices.data(), metaData.GetTotalByte(), 0, copyCommandList);
 	}
 
 	_hasCreatedNewBuffer = true;
@@ -186,7 +186,7 @@ void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData&
 
 		_vertexBuffers[i]->SetName(name + SP("VB"));
 
-		if (vertexInfo.InitData) { _vertexBuffers[i]->Upload(vertexInfo.InitData, vertexInfo.GetTotalByte()); }
+		if (vertexInfo.InitData) { _vertexBuffers[i]->UploadByte(vertexInfo.InitData, vertexInfo.GetTotalByte()); }
 	}
 
 	/*-------------------------------------------------------------------
@@ -199,7 +199,7 @@ void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData&
 
 		_indexCount = indexInfo.Count;
 
-		if (indexInfo.InitData) { _indexBuffer->Upload(indexInfo.InitData, indexInfo.GetTotalByte(), 0, copyCommandList); }
+		if (indexInfo.InitData) { _indexBuffer->UploadByte(indexInfo.InitData, indexInfo.GetTotalByte(), 0, copyCommandList); }
 	}
 
 	_hasCreatedNewBuffer = true;

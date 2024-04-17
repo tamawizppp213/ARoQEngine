@@ -187,7 +187,7 @@ void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::tstrin
 	materialBuffer->SetName(name + SP("CB"));
 	if (bufferInfo.InitData)
 	{
-		materialBuffer->Update(bufferInfo.InitData, 1);
+		materialBuffer->UploadByte(bufferInfo.InitData, materialBuffer->GetTotalByteSize());
 	}
 
 	_materialBufferView = device->CreateResourceView(

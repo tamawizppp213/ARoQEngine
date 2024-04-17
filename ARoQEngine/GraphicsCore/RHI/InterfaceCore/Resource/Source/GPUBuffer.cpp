@@ -19,8 +19,8 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 namespace
 {
-	static inline std::uint32_t CalcConstantBufferByteSize(std::uint32_t byteSize) { return (byteSize + 255) & ~255; }
-	static inline std::uint32_t AlignmentValue(std::uint32_t size, std::uint32_t alignment) { return (size + alignment - (size % alignment)); }
+	static inline gu::uint32 CalcConstantBufferByteSize(const gu::uint32 byteSize) { return (byteSize + 255) & ~255; }
+	static inline gu::uint32 AlignmentValue(const gu::uint32 size, const gu::uint32 alignment) { return (size + alignment - (size % alignment)); }
 }
 
 GPUBuffer::GPUBuffer(const gu::SharedPointer<RHIDevice>& device, const core::GPUBufferMetaData& metaData, [[maybe_unused]]const gu::tstring& name)
@@ -35,13 +35,6 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<RHIDevice>& device, const core::GPU
 	-          Set Stride and Element Count
 	---------------------------------------------------------------------*/
 	// If you select the constant buffer, 256 byte alignment is needed.
-	_metaData.Stride   = isConstantBuffer ? static_cast<size_t>(CalcConstantBufferByteSize((std::uint32_t)_metaData.Stride)) : _metaData.Stride;
+	_metaData.Stride   = isConstantBuffer ? static_cast<size_t>(CalcConstantBufferByteSize((gu::uint32)_metaData.Stride)) : _metaData.Stride;
 
-}
-
-void GPUBuffer::Update(const void* data, const size_t dataLength)
-{
-	CopyStart();
-	CopyTotalData(data, dataLength, 0);
-	CopyEnd();
 }

@@ -95,10 +95,11 @@ GPUBuffer::~GPUBuffer()
 *  @param[in] const gu::uint64 メモリの確保するバイトサイズ
 *  @param[in] const gu::uint64 メモリを確保する初期オフセット [byte]
 *  @param[in] const gu::SharedPointer<RHICommandList> GraphicsかCopyのコマンドリスト
+*  @param[in] const bool 手動でマップを行うか
 *
 *  @return 　　void
 *****************************************************************************/
-void GPUBuffer::Upload(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte, const gu::SharedPointer<core::RHICommandList>& commandList)
+void GPUBuffer::UploadByte(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte, const gu::SharedPointer<core::RHICommandList>& commandList, const bool useMapManually)
 {
 	const auto rhiDevice = gu::StaticPointerCast<rhi::directX12::RHIDevice>(_device);
 	const auto dxDevice  = rhiDevice->GetDevice();
@@ -108,9 +109,16 @@ void GPUBuffer::Upload(const void* data, const gu::uint64 allocateByteSize, cons
 
 	if (_metaData.IsCPUAccessible() && HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::AnyDynamic))
 	{
-		CopyStart();
-		Memory::Copy(&_mappedData[offsetByte], data, allocateByteSize);
-		CopyEnd();
+		if (useMapManually)
+		{
+			Memory::Copy(&_mappedData[offsetByte], data, allocateByteSize);
+		}
+		else
+		{
+			Map();
+			Memory::Copy(&_mappedData[offsetByte], data, allocateByteSize);
+			Unmap();
+		}
 	}
 	else
 	{
@@ -174,17 +182,15 @@ void GPUBuffer::Upload(const void* data, const gu::uint64 allocateByteSize, cons
 }
 
 /****************************************************************************
-*                     CopyStart
+*                     Map
 *************************************************************************//**
-*  @fn        void GPUBuffer::CopyStart()
-* 
-*  @brief     Call Map Function
+/* @brief     手動でCPUからGPUにデータをアップロードする準備として使用します.
 * 
 *  @param[in] void
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUBuffer::CopyStart()
+void GPUBuffer::Map()
 {
 	Check(_metaData.IsCPUAccessible());
 
@@ -195,44 +201,49 @@ void GPUBuffer::CopyStart()
 
 
 /****************************************************************************
-*                     CopyTotalData
+*                     UploadIndex
 *************************************************************************//**
-*  @fn        void GPUBuffer::CopyData()
+/* @brief     配列の要素を指定するインデックスを使ってCPUからGPUにメモリを配置します.
 * 
-*  @brief     GPU copy the specified range
-* 
-*  @param[in] void*  dataPtr
-* 
-*  @param[in] gu::uint64 dataLength
-* 
-*  @param[in] gu::uint64 indexOffset (default 0)
+*  @param[in] const void* : GPUにアップロードしたいCPU側のメモリ配列
+*  @param[in] const gu::uint64 : 配列の要素数
+*  @param[in] const gu::uint64 : メモリを確保する初期インデックス
+*  @param[in] const gu::SharedPointer<RHICommandList> GraphicsかCopyのコマンドリスト
+*  @param[in] const bool 手動でマップを行うか
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUBuffer::CopyTotalData(const void* data, const gu::uint64 dataLength, const gu::uint64 indexOffset)
+void GPUBuffer::UploadIndex(const void* data, const gu::uint64 elementCount, const gu::uint64 offsetIndex, const gu::SharedPointer<core::RHICommandList>& commandList, const bool useMapManually)
 {
 	Check(_useCPUMapped);
-	Check(dataLength + indexOffset <= _metaData.Count);
-	gu::Memory::Copy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (gu::uint64)dataLength);
+	Check(elementCount + offsetIndex <= _metaData.Count);
+	UploadByte(data, elementCount * _metaData.Stride, offsetIndex * _metaData.Stride, commandList, useMapManually);
 }
 
 /****************************************************************************
-*                     CopyEnd
+*                     Unmap
 *************************************************************************//**
-*  @fn        void GPUBuffer::CopyEnd()
-* 
-*  @brief     Call UnMap Function
+/* @brief     CPUからGPUにデータをアップロードするのを止める場合に使用します.
 * 
 *  @param[in] void
 * 
-*  @return 　　void
+*  @return 　　const gu::tstring デバッグ表示名
 *****************************************************************************/
-void GPUBuffer::CopyEnd()
+void GPUBuffer::Unmap()
 {
 	_resource->Unmap(0, nullptr);
 	_useCPUMapped = false;
 }
 
+/****************************************************************************
+*                    SetName
+*************************************************************************//**
+/* @brief     デバッグ表示名を設定します.
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
 void GPUBuffer::SetName(const gu::tstring& name)
 {
 	ThrowIfFailed(_resource->SetName(name.CString()));

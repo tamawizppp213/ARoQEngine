@@ -70,7 +70,7 @@ void Vignette::Draw()
 {
 	if (_isSettingChanged)
 	{
-		_resourceViews[0]->GetBuffer()->Update(&_settings, 1);
+		_resourceViews[0]->GetBuffer()->UploadByte(&_settings, sizeof(_settings));
 		_isSettingChanged = false;
 	}
 
@@ -106,7 +106,7 @@ void Vignette::PrepareBuffer(const gu::tstring& name)
 	/*-------------------------------------------------------------------
 	-			Set Information
 	---------------------------------------------------------------------*/
-	buffer->Upload(&_settings, metaData.GetTotalByte(), 0, nullptr);
+	buffer->UploadByte(&_settings, metaData.GetTotalByte(), 0, nullptr);
 	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 

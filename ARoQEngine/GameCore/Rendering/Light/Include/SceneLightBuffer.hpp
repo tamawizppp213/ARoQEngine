@@ -208,12 +208,12 @@ namespace gc::rendering
 		const auto lightBuffer = _lightDataView->GetBuffer();
 
 		// clear
-		lightBuffer->CopyStart();
+		lightBuffer->Map();
 		for (std::uint32_t i = 0; i < (std::uint32_t)_updateIDs.size(); ++i)
 		{
-			//lightBuffer->CopyData(&_lights[i], _updateIDs[i]);
+			lightBuffer->UploadIndex(&_lights[i], _updateIDs[i], 0, nullptr, true);
 		}
-		lightBuffer->CopyEnd();
+		lightBuffer->Unmap();
 
 		// clear update IDs
 		_updateIDs.clear();

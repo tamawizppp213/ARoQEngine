@@ -146,7 +146,7 @@ void GameModel::Update(const float deltaTime, const bool enableUpdateChild)
 #endif
         };
 
-        _gameWorld->GetBuffer()->Update(&world, 1);
+        _gameWorld->GetBuffer()->UploadByte(&world, sizeof(GameWorldConstant));
     }
 
     GameActor::Update(deltaTime, enableUpdateChild);

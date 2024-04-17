@@ -181,7 +181,7 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 		);
 
 		_stagingBuffer = _device->CreateBuffer(stagingInfo, L"StagingBuffer");
-		_stagingBuffer->Update(image->pixels, pixelSize);
+		_stagingBuffer->UploadByte(image->pixels, sizeof(gu::uint8) * pixelSize);
 	}
 
 	/*-------------------------------------------------------------------

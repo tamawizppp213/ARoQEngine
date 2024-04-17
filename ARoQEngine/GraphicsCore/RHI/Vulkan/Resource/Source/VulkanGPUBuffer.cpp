@@ -119,7 +119,7 @@ GPUBuffer::~GPUBuffer()
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
-void GPUBuffer::CopyStart()
+void GPUBuffer::Map()
 {
 #if _DEBUG
 	assert(_metaData.IsCPUAccessible());
@@ -145,19 +145,19 @@ void GPUBuffer::CopyStart()
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const size_t indexOffset)
+void GPUBuffer::UploadIndex(const void* data, const gu::uint64 elementCount, const gu::uint64 offsetIndex, const gu::SharedPointer<core::RHICommandList>& commandList, const bool useMapManually)
 {
 #ifdef _DEBUG
-	assert(dataLength + indexOffset <= _metaData.Count);
+	assert(elementCount + offsetIndex <= _metaData.Count);
 #endif
 
-	std::memcpy(&_mappedData[indexOffset * _metaData.Stride], data, _metaData.Stride * (size_t)dataLength);
+	std::memcpy(&_mappedData[offsetIndex * _metaData.Stride], data, _metaData.Stride * (size_t)elementCount);
 }
 
 /****************************************************************************
-*                     CopyEnd
+*                     Unmap
 *************************************************************************//**
-*  @fn        void GPUBuffer::CopyEnd()
+*  @fn        void GPUBuffer::Unmap()
 * 
 *  @brief     Call UnMap Function
 * 
@@ -165,7 +165,7 @@ void GPUBuffer::CopyTotalData(const void* data, const size_t dataLength, const s
 * 
 *  @return 　　void
 *****************************************************************************/
-void GPUBuffer::CopyEnd()
+void GPUBuffer::Unmap()
 {
 	VkDevice vkDevice = gu::StaticPointerCast<vulkan::RHIDevice>(_device)->GetDevice();
 	vkUnmapMemory(vkDevice, _memory);

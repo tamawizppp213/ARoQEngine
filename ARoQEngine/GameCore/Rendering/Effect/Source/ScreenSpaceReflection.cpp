@@ -78,7 +78,7 @@ void ScreenSpaceReflection::Draw(const ResourceViewPtr& scene)
 	if (!scene) { return; }
 	if (_isSettingChanged)
 	{
-		_settingsView->GetBuffer()->Update(&_settings, 1);
+		_settingsView->GetBuffer()->UploadByte(&_settings, sizeof(_settings));
 		_isSettingChanged = false;
 	}
 
@@ -120,7 +120,7 @@ void ScreenSpaceReflection::PrepareBuffer(const SSRSettings& settings, const gu:
 	-			Set Information
 	---------------------------------------------------------------------*/
 	_settings = settings;
-	buffer->Upload(&_settings, metaData.GetTotalByte(), 0, nullptr);
+	buffer->UploadByte(&_settings, metaData.GetTotalByte(), 0, nullptr);
 	_settingsView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer);
 }
 
@@ -213,7 +213,7 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addNa
 			const auto bufferName = addName + SP("VB");
 			_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
 			_vertexBuffers[i]->SetName(gu::tstring(bufferName));
-			_vertexBuffers[i]->Upload(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
+			_vertexBuffers[i]->UploadByte(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
 
 		}
 		
@@ -225,7 +225,7 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addNa
 			const auto bufferName = addName + SP("IB");
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(bufferName);
-			_indexBuffers[i]->Upload(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
+			_indexBuffers[i]->UploadByte(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
 		}
 
 	}

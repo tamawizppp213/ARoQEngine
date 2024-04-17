@@ -86,7 +86,7 @@ void SSAO::Draw(const ResourceViewPtr& scene)
 	---------------------------------------------------------------------*/
 	if (_isUpdated)
 	{
-		_settingView->GetBuffer()->Update(&_setting, 1);
+		_settingView->GetBuffer()->UploadByte(&_setting, sizeof(&_setting));
 		_isUpdated = false;
 	}
 
@@ -209,7 +209,7 @@ void SSAO::PrepareSSAOSettings(const gu::tstring& name)
 	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(SSAOSetting), 1, MemoryHeap::Upload, ResourceState::Common);
 	const auto buffer   = device->CreateBuffer(metaData);
 	buffer->SetName(name + SP("SSAOSetting"));
-	buffer->Upload(&_setting, metaData.GetTotalByte(), 0, nullptr);
+	buffer->UploadByte(&_setting, metaData.GetTotalByte(), 0, nullptr);
 
 	// create constant buffer view.
 	_settingView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer,0,0, nullptr);
@@ -239,7 +239,7 @@ void SSAO::PrepareBlurMode(const gu::tstring& name)
 		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurMode), 1, MemoryHeap::Upload, ResourceState::Common);
 		const auto buffer = device->CreateBuffer(metaData);
 		buffer->SetName(name + SP("BlurMode"));
-		buffer->Upload(&blurMode, metaData.GetTotalByte(), 0, nullptr);
+		buffer->UploadByte(&blurMode, metaData.GetTotalByte(), 0, nullptr);
 
 		// create constant buffer view
 		_blurVerticalModeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, 0,0,nullptr);
@@ -254,7 +254,7 @@ void SSAO::PrepareBlurMode(const gu::tstring& name)
 		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(BlurMode), 1, MemoryHeap::Upload, ResourceState::Common);
 		const auto buffer = device->CreateBuffer(metaData);
 		buffer->SetName(name + SP("BlurMode"));
-		buffer->Upload(&blurMode, metaData.GetTotalByte(), 0, nullptr);
+		buffer->UploadByte(&blurMode, metaData.GetTotalByte(), 0, nullptr);
 
 		// create constant buffer view
 		_blurHorizontalModeView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer,0,0, nullptr);
@@ -386,7 +386,7 @@ void SSAO::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
 		_vertexBuffers[i]->SetName(addName + SP("VB"));
-		_vertexBuffers[i]->Upload(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
+		_vertexBuffers[i]->UploadByte(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
 
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
@@ -394,7 +394,7 @@ void SSAO::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(addName + SP("IB"));
-		_indexBuffers[i]->Upload(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), commandList);
+		_indexBuffers[i]->UploadByte(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), commandList);
 
 	}
 }

@@ -1,6 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///  @file   GPUBuffer.hpp
-///  @brief  テクスチャ以外のバッファ. 頂点, インデックスバッファなどの作成に使用します. 
+///  @brief  テクスチャ以外のバッファ. 頂点, インデックスバッファなどの作成に使用します. @n
+///          バッファの確保を行う場合は事前にGPUBufferMetaDataを使ってメモリ領域を確保しておき@n
+///          CPUからGPUにデータをアップロードします. Upload関数は2種類あり, @n
+///          UploadIndex : 配列のインデックスを指定することで確保する方式 @n
+/// 　　　　　 UploadByte : バイト数を直接指定することで確保する方式があります. 
 ///  @author Toide Yutaro
 ///  @date   2024_04_09
 //////////////////////////////////////////////////////////////////////////////////
@@ -27,43 +31,47 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			GPUBuffer
 	*************************************************************************//**
-	*  @class     GPUBuffer
+	/* @class     GPUBuffer
 	*  @brief     テクスチャ以外のバッファ. 頂点, インデックスバッファなどの作成に使用します.
 	*****************************************************************************/
-	class  GPUBuffer : public GPUResource, public gu::EnableSharedFromThis<GPUBuffer>
+	class GPUBuffer : public GPUResource, public gu::EnableSharedFromThis<GPUBuffer>
 	{
 	public:
 		#pragma region Public Function
 		/*!**********************************************************************
 		*  @brief  　　GPUにメモリを配置します. 融通が効くようにbyte単位で指定します. 
-		*  @param[in] const void* : GPUにアップロードしたCPU側のメモリ配列
+		*  @param[in] const void* : GPUにアップロードしたいCPU側のメモリ配列
 		*  @param[in] const gu::uint64 メモリの確保するバイトサイズ
 		*  @param[in] const gu::uint64 メモリを確保する初期オフセット [byte]
 		*  @param[in] const gu::SharedPointer<RHICommandList> GraphicsかCopyのコマンドリスト
+		*  @param[in] const bool 手動でマップを行うか
 		*  @return    void
 		*************************************************************************/
-		virtual void Upload(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte = 0, const gu::SharedPointer<RHICommandList>& commandList = nullptr) = 0;
-		
-		/*----------------------------------------------------------------------
-		*  @brief :  Call at once in each frame (If you need). CopyStart + CopyTotalData + CopyEnd. 
-		/*----------------------------------------------------------------------*/
-		virtual void Update(const void* data, const gu::uint64 dataLength) = 0;
-		
-		/*----------------------------------------------------------------------
-		*  @brief :  Call map function
-		/*----------------------------------------------------------------------*/
-		virtual void CopyStart() = 0;
+		virtual void UploadByte(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte = 0, const gu::SharedPointer<RHICommandList>& commandList = nullptr, const bool useMapManually = false) = 0;
 		 
-		/*----------------------------------------------------------------------
-		*  @brief :  GPU copy the specified range
-		/*----------------------------------------------------------------------*/
-		virtual void CopyTotalData(const void* data, const gu::uint64 dataLength, const gu::uint64 indexOffset = 0) = 0;
-		
-		/*----------------------------------------------------------------------
-		*  @brief :  Call unmap function
-		/*----------------------------------------------------------------------*/
-		virtual void CopyEnd() = 0;
+		/*!**********************************************************************
+		*  @brief  　　配列の要素を指定するインデックスを使ってCPUからGPUにメモリを配置します. 
+		*  @note      暗黙的に同じバイト数の並びが存在することが求められます
+		*  @param[in] const void* : GPUにアップロードしたいCPU側のメモリ配列
+		*  @param[in] const gu::uint64 : 配列の要素数
+		*  @param[in] const gu::uint64 : メモリを確保する初期インデックス
+		*  @param[in] const gu::SharedPointer<RHICommandList> GraphicsかCopyのコマンドリスト
+		*  @param[in] const bool 手動でマップを行うか
+		*  @return    void
+		*************************************************************************/
+		virtual void UploadIndex(const void* data, const gu::uint64 elementCount, const gu::uint64 offsetIndex = 0, const gu::SharedPointer<RHICommandList>& commandList = nullptr, const bool useMapManually = false) = 0;
 
+		/*!**********************************************************************
+		*  @brief     手動でCPUからGPUにデータをアップロードする準備として使用します.
+		*  @attention subresourceのインデックスはバッファとしての利用しか考えていないため, 0が代入されます
+		*************************************************************************/
+		virtual void Map() = 0;
+
+		/*!**********************************************************************
+		*  @brief     CPUからGPUにデータをアップロードするのを止める場合に使用します. 
+		*  @attention 1フレームで同一リソースに何回もmap, unmapを呼ばないようにしてください. (処理負荷の観点で)
+		*************************************************************************/
+		virtual void Unmap() = 0;
 		#pragma endregion 
 		#pragma region Public Member Variables
 		/*!**********************************************************************
@@ -97,9 +105,11 @@ namespace rhi::core
 		*************************************************************************/
 		__forceinline gu::uint64 GetTotalByteSize() const { return _metaData.GetTotalByte(); }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Return GPU Resource Type. (Basically Buffer or RaytracingAccelerationStructure) 
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     GPUResourceの種類を指定します.(Bufferの場合はBufferかRaytracingAccelerationStructureを指定することになります) 
+		*  @param[in] void
+		*  @return    ResourceType GPUリソースの種類
+		*************************************************************************/
 		__forceinline ResourceType  GetResourceType() const { return _metaData.ResourceType; }
 		
 		/*!**********************************************************************
@@ -108,14 +118,14 @@ namespace rhi::core
 		*************************************************************************/
 		ResourceState GetResourceState() const noexcept override { return _metaData.State; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Return Buffer Usage Flag. (Vertex, Index, or Constant Buffer)
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     Bufferの使用方法 (Vertex, Index, or Constant Buffer)を定義するEnumを返します 
+		*************************************************************************/
 		__forceinline ResourceUsage GetUsage() const { return _metaData.ResourceUsage; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Return Heap region type (Default, Upload, Readback, Custom)
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief   GPUのメモリを格納するヒープ領域の種類を決定するEnumを返します (Default, Upload, Readback, Custom)
+		*************************************************************************/
 		__forceinline MemoryHeap GetMemoryHeapType() const { return _metaData.HeapType; }
 
 		/*!**********************************************************************
@@ -130,6 +140,10 @@ namespace rhi::core
 		*************************************************************************/
 		virtual gu::uint64 GetGPUVirtualAddress() = 0;
 
+		/*!**********************************************************************
+		*  @brief     バッファの情報を直接格納しているメタデータを取得します
+		*  @return    GPUBufferMetaData メタデータ
+		*************************************************************************/
 		__forceinline GPUBufferMetaData& GetMetaData()                      { return _metaData; }
 		__forceinline const GPUBufferMetaData& GetMetaData() const noexcept { return _metaData; }
 		
@@ -153,14 +167,19 @@ namespace rhi::core
 		explicit GPUBuffer(const gu::SharedPointer<RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::tstring& name);
 		
 		#pragma endregion
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
+		#pragma region Protected Function
+		
+		#pragma endregion 
+
+		#pragma region Protected Member Variables
+
+		/*! @brief バッファの情報を格納している構造体*/
 		GPUBufferMetaData _metaData = {};
+
+		#pragma endregion 
+
+		
 	};
 }
 

@@ -145,7 +145,7 @@ void CascadeShadow::PrepareResourceView(const gu::tstring& name)
 		const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(CascadeShadowInfo), 1, MemoryHeap::Upload, ResourceState::Common);
 		const auto buffer   = device->CreateBuffer(metaData);
 		buffer->SetName(name + SP("ShadowInfo"));
-		buffer->Upload(&shadowInfo, metaData.GetTotalByte(), 0, nullptr);
+		buffer->UploadByte(&shadowInfo, metaData.GetTotalByte(), 0, nullptr);
 		_shadowInfoView = device->CreateResourceView(ResourceViewType::Buffer, buffer, 0, 0, nullptr);
 	}
 }
@@ -252,6 +252,6 @@ void CascadeShadow::Update(const gu::SharedPointer<GameTimer>& gameTimer, const 
 		shadowInfo.LVPC[i] = lvpcMatrices[i].ToFloat4x4();
 	}
 
-	_shadowInfoView->GetBuffer()->Update(&shadowInfo, 1);
+	_shadowInfoView->GetBuffer()->UploadByte(&shadowInfo, sizeof(shadowInfo));
 }
 #pragma endregion SetUp Function

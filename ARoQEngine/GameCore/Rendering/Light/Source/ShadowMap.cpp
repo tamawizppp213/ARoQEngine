@@ -172,7 +172,7 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
 		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
 		_vertexBuffers[i]->SetName(name + SP("VB"));
-		_vertexBuffers[i]->Upload(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
+		_vertexBuffers[i]->UploadByte(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
 
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
@@ -180,7 +180,7 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
 		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(name + SP("IB"));
-		_indexBuffers[i]->Upload(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
+		_indexBuffers[i]->UploadByte(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
 
 	}
 }

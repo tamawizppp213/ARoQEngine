@@ -118,7 +118,7 @@ void Sobel::Draw(const ResourceViewPtr& sourceSRV)
 void Sobel::SetColor(const gm::Float4& color)
 {
 	_outlineInfo.Color = color;
-	_outlineCBV->GetBuffer()->Update(&_outlineInfo, 1);
+	_outlineCBV->GetBuffer()->UploadByte(&_outlineInfo, sizeof(_outlineInfo));
 }
 
 #pragma endregion Main Function
@@ -147,7 +147,7 @@ void Sobel::PrepareOutlineInfo(const gu::tstring& name)
 	---------------------------------------------------------------------*/
 	// pack
 	_outlineInfo.Color = _outlineInfo.Color;
-	buffer->Upload(&_outlineInfo, metaData.GetTotalByte(), 0, nullptr);
+	buffer->UploadByte(&_outlineInfo, metaData.GetTotalByte(), 0, nullptr);
 	
 	// create resource view
 	_outlineCBV = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer, 0,0,nullptr);

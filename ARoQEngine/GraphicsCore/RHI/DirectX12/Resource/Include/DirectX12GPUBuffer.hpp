@@ -35,51 +35,68 @@ namespace rhi::directX12
 #pragma region Public Function
 		/*!**********************************************************************
 		*  @brief  　　GPUにメモリを配置します. 融通が効くようにbyte単位で指定します.
-		*  @param[in] const void* : GPUにアップロードしたCPU側のメモリ配列
+		*  @param[in] const void* : GPUにアップロードしたいCPU側のメモリ配列
 		*  @param[in] const gu::uint64 メモリの確保するバイトサイズ
 		*  @param[in] const gu::uint64 メモリを確保する初期オフセット [byte]
 		*  @param[in] const gu::SharedPointer<RHICommandList> GraphicsかCopyのコマンドリスト
+		*  @param[in] const bool 手動でマップを行うか
 		*  @return    void
 		*************************************************************************/
-		virtual void Upload(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte, const gu::SharedPointer<core::RHICommandList>& commandList) override;
+		virtual void UploadByte(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte, const gu::SharedPointer<core::RHICommandList>& commandList, const bool useMapManually) override;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Call at once in each frame (If you need). CopyStart + CopyTotalData + CopyEnd.
-		/*----------------------------------------------------------------------*/
-		virtual void Update(const void* data, const gu::uint64 dataLength) override
-		{
-			CopyStart();
-			CopyTotalData(data, dataLength);
-		}
-
-		/*----------------------------------------------------------------------
-		*  @brief : 　Map関数を呼び出す
-		/*----------------------------------------------------------------------*/
-		void CopyStart() override;
-
-		/*----------------------------------------------------------------------
-		*  @brief :  指定されたインデックスのoffsetにしたがって, 指定の配列数分だけコピーする
-		/*----------------------------------------------------------------------*/
-		void CopyTotalData(const void* data, const gu::uint64 dataLength, const gu::uint64 indexOffset = 0) override;
+		/*!**********************************************************************
+		*  @brief  　　配列の要素を指定するインデックスを使ってCPUからGPUにメモリを配置します.
+		*  @note      暗黙的に同じバイト数の並びが存在することが求められます
+		*  @param[in] const void* : GPUにアップロードしたいCPU側のメモリ配列
+		*  @param[in] const gu::uint64 : 配列の要素数
+		*  @param[in] const gu::uint64 : メモリを確保する初期インデックス
+		*  @param[in] const gu::SharedPointer<RHICommandList> GraphicsかCopyのコマンドリスト
+		*  @param[in] const bool 手動でマップを行うか
+		*  @return    void
+		*************************************************************************/
+		virtual void UploadIndex(const void* data, const gu::uint64 elementCount, const gu::uint64 offsetIndex, const gu::SharedPointer<core::RHICommandList>& commandList, const bool useMapManually) override;
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Unmapを呼び出すときに使用します
-		/*----------------------------------------------------------------------*/
-		void CopyEnd() override ;
+		/*!**********************************************************************
+		*  @brief     手動でCPUからGPUにデータをアップロードする準備として使用します.
+		*  @attention subresourceのインデックスはバッファとしての利用しか考えていないため, 0が代入されます
+		*************************************************************************/
+		virtual void Map() override;
 
-		
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief     CPUからGPUにデータをアップロードするのを止める場合に使用します.
+		*  @attention 1フレームで同一リソースに何回もmap, unmapを呼ばないようにしてください. (処理負荷の観点で) @n
+		*             subresourceのインデックスはバッファとしての利用しか考えていないため, 0が代入されます
+		*************************************************************************/
+		virtual void Unmap() override;
+
+		#pragma region Public Member Varialbles
+		/*!**********************************************************************
+		*  @brief     DirectX12で使用するGPUリソース
+		*  @return    ResourceComptr　ComPtrのGPUリソース
+		*************************************************************************/
 		ResourceComPtr GetResource   () const noexcept { return _resource; }
 		
-		Resource*      GetResourcePtr() const noexcept { return _resource.Get(); }
+		/*!**********************************************************************
+		*  @brief     DirectX12で使用するGPUリソースの生ポインタ
+		*************************************************************************/
+		Resource* GetResourcePtr() const noexcept { return _resource.Get(); }
 		
-		Resource**     GetAddressOf  () { return _resource.GetAddressOf();}
+		/*!**********************************************************************
+		*  @brief     DirectX12で使用するGPUリソースのアドレス
+		*************************************************************************/
+		Resource** GetAddressOf  () { return _resource.GetAddressOf();}
 
+		/*!**********************************************************************
+		*  @brief     DirectX12で使用するGPUアドレス
+		*  @return    D3D12_GPU_VIRTUAL_ADDRESS : uint64型で表現されるGPUアドレス
+		*************************************************************************/
 		D3D12_GPU_VIRTUAL_ADDRESS GetDxGPUVirtualAddress() const { return _resource->GetGPUVirtualAddress(); }
 
-		void SetName(const gu::tstring& name) override;
+		/*!**********************************************************************
+		*  @brief     デバッグ表示名を設定します.
+		*  @param[in] const gu::tstring デバッグ表示名
+		*************************************************************************/
+		virtual void SetName(const gu::tstring& name) override;
 		
 		/*!**********************************************************************
 		*  @brief     Mapに登録されるCPUメモリの最初のポインタを返します
@@ -93,16 +110,21 @@ namespace rhi::directX12
 		*************************************************************************/
 		virtual gu::uint64 GetGPUVirtualAddress() override { return _resource->GetGPUVirtualAddress(); }
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma endregion
+
+		#pragma region Public Constructor and Destrcutor
+		/*! @brief デフォルトコンストラクタ*/
 		GPUBuffer() = default;
 		
+		/*! @brief デストラクタ*/
 		~GPUBuffer();
 		
+		/*! @brief デバイスとバッファの作成情報を使って生成するコンストラクタ*/
 		explicit GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("Buffer"));
+		#pragma endregion 
 	protected:
 		#pragma region Protected Function
+		
 		#pragma endregion 
 
 		#pragma region Protected Member Variables

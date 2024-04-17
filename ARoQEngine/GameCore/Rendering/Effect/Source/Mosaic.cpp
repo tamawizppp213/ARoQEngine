@@ -107,7 +107,7 @@ void Mosaic::PrepareBuffer(const float blockSize, const gu::tstring& name)
 	_mosaicInfo.BlockSize  = blockSize;
 	_mosaicInfo.Padding    = 0.0f;
 
-	buffer->Upload(&_mosaicInfo, metaData.GetTotalByte(), 0, nullptr);
+	buffer->UploadByte(&_mosaicInfo, metaData.GetTotalByte(), 0, nullptr);
 	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 

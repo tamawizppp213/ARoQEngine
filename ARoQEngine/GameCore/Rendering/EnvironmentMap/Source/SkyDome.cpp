@@ -129,7 +129,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
 		_vertexBuffers[i]->SetName(addName + SP("VB"));
-		_vertexBuffers[i]->Upload(sphereMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
+		_vertexBuffers[i]->UploadByte(sphereMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
 
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
@@ -137,7 +137,7 @@ void SkyDome::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(addName + SP("IB"));
-		_indexBuffers[i]->Upload(sphereMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
+		_indexBuffers[i]->UploadByte(sphereMesh.Indices.data(), ibMetaData.GetTotalByte(), 0, commandList);
 
 	}
 }
@@ -166,7 +166,7 @@ void SkyDome::PrepareSkyObject(const gu::tstring& addName)
 	const auto cbMetaData = GPUBufferMetaData::ConstantBuffer(sizeof(Matrix4f), 1, MemoryHeap::Upload, ResourceState::Common);
 	_skyObject = device->CreateBuffer(cbMetaData);
 	_skyObject->SetName(addName + SP("CB"));
-	_skyObject->Upload(&skyData, cbMetaData.GetTotalByte(), 0, commandList);
+	_skyObject->UploadByte(&skyData, cbMetaData.GetTotalByte(), 0, commandList);
 }
 
 /****************************************************************************

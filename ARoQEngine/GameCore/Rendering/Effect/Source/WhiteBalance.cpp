@@ -73,7 +73,7 @@ void WhiteBalance::Draw()
 {
 	if (_isSettingChanged)
 	{
-		_resourceViews[0]->GetBuffer()->Update(&_settings, 1);
+		_resourceViews[0]->GetBuffer()->UploadByte(&_settings, sizeof(_settings));
 		_isSettingChanged = false;
 	}
 
@@ -109,7 +109,7 @@ void WhiteBalance::PrepareBuffer(const WhiteBalanceSettings& settings, const gu:
 	-			Set Information
 	---------------------------------------------------------------------*/
 	_settings = settings;
-	buffer->Upload(&_settings, metaData.GetTotalByte(), 0, nullptr);
+	buffer->UploadByte(&_settings, metaData.GetTotalByte(), 0, nullptr);
 	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 

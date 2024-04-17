@@ -433,9 +433,8 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 	/*-------------------------------------------------------------------
 	-       Buffer copy
 	---------------------------------------------------------------------*/
-	buffer->CopyStart();
+	buffer->UploadByte(buffer->GetCPUMappedAddress(), buffer->GetTotalByteSize());
 	image.pixels = buffer->GetCPUMappedAddress();
-	buffer->CopyEnd();
 
 	const auto stdFilePath = std::wstring(filePath.CString());
 	const auto extension = file::FileSystem::GetExtension(stdFilePath);

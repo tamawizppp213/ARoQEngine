@@ -208,7 +208,7 @@ void SampleRectangle::BuildBuffer()
 			rhi::core::MemoryHeap::Upload);
 		_vertexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
 		_vertexBuffer->SetName(SP("VertexBuffer"));
-		_vertexBuffer->Upload(rectangle.Vertices.data(), metaData.GetTotalByte());
+		_vertexBuffer->UploadByte(rectangle.Vertices.data(), metaData.GetTotalByte());
 	}
 	/*-------------------------------------------------------------------
 	-             Index Buffer
@@ -221,7 +221,7 @@ void SampleRectangle::BuildBuffer()
 			rhi::core::ResourceState::Common);
 		_indexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
 		_indexBuffer->SetName(SP("IndexBuffer"));
-		_indexBuffer->Upload(rectangle.Indices.data(), metaData.GetTotalByte(), 0, _engine->GetCommandList(CommandListType::Copy));
+		_indexBuffer->UploadByte(rectangle.Indices.data(), metaData.GetTotalByte(), 0, _engine->GetCommandList(CommandListType::Copy));
 	
 	}
 }
