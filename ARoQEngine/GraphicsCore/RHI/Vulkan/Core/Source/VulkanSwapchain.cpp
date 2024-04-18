@@ -507,7 +507,7 @@ void RHISwapchain::InitializeSwapchain()
 	{
 		auto info = core::GPUTextureMetaData::Texture2D(
 			static_cast<size_t>(_desc.WindowInfo.Width), static_cast<size_t>(_desc.WindowInfo.Height),
-			_desc.PixelFormat, 1, core::ResourceUsage::RenderTarget);
+			_desc.PixelFormat, 1, core::BufferCreateFlags::RenderTarget);
 
 		info.State = core::ResourceState::Common;
 

@@ -32,7 +32,7 @@ namespace rhi::vulkan
 	class EnumConverter
 	{
 	public:
-		using VulkanResourceUsage = std::pair<VkBufferUsageFlags, VkImageUsageFlags>;
+		using VulkanBufferUsageFlags = std::pair<VkBufferUsageFlags, VkImageUsageFlags>;
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
@@ -70,10 +70,10 @@ namespace rhi::vulkan
 #pragma endregion Input Layout
 #pragma region GPUResource
 		static VkDescriptorType       Convert(const rhi::core::DescriptorHeapType heapType);
-		static VulkanResourceUsage    Convert(const rhi::core::ResourceUsage usage);
+		static VulkanBufferUsageFlags Convert(const rhi::core::BufferCreateFlags usage);
 #pragma region GPUTexture
 		static VkImageType            Convert(const rhi::core::ResourceDimension dimension);
-		static VkImageAspectFlags     Convert(const rhi::core::PixelFormat format, const rhi::core::ResourceUsage usage);
+		static VkImageAspectFlags     Convert(const rhi::core::PixelFormat format, const rhi::core::BufferCreateFlags usage);
 		static VkImageViewType        Convert(const rhi::core::ResourceType type);
 		static VkImageViewType        Convert(const rhi::core::ResourceDimension dimension, const rhi::core::ResourceType usage, const size_t length);
 		static VkImageCreateFlags     Convert(const rhi::core::ResourceType type, const size_t arrayLength);

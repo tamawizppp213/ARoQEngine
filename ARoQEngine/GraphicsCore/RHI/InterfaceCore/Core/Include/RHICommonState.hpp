@@ -425,9 +425,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			ClearValue
 	*************************************************************************//**
-	*  @class     ClearValue
-	*  @brief     Clear value 
-	*             Pixel用とDepth, Stencil用は必ず分けてClearValueを作成してください. 
+	/*  @brief     画面クリア時に初期化で塗りつぶされる色
 	*****************************************************************************/
 	struct ClearValue
 	{
@@ -791,25 +789,17 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			MultiSample
 	*************************************************************************//**
-	*  @class     MultiSample
-	*  @brief     Basically use count1 , in use MSAA, we use count4 
+	/*  @brief  サンプリングの数を指定します. 基本的にはCount1を使用し, MSAAなどを使用するときはCount4を主に使用します.
 	*****************************************************************************/
 	enum class MultiSample : gu::uint8
 	{
-		Count1 = 1,       // 1
-		Count2 = 2,       // 2
-		Count4 = 4,       // 4
-		Count8 = 8,       // 8
-		Count16 = 16,     // 16
-		Count32 = 32,     // 32
-		Count64 = 64      // 64
-	};
-
-	class MultiSampleSizeOf
-	{
-	public: 
-		MultiSampleSizeOf() = default;
-		static gu::uint64 Get(const MultiSample sample) { return static_cast<gu::uint64>(sample); }
+		Count1 = 1,       //!<  1  pixel
+		Count2 = 2,       //!<  2  pixel
+		Count4 = 4,       //!<  4  pixel
+		Count8 = 8,       //!<  8  pixel
+		Count16 = 16,     //!<  16 pixel
+		Count32 = 32,     //!<  32 pixel 
+		Count64 = 64      //!<  64 pixel
 	};
 
 	/****************************************************************************
@@ -1053,7 +1043,8 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			ResourceState
 	*************************************************************************//**
-	/*  @brief GPUリソースの状態を定義します. リソース状態を変更する際は, TransitionResourceState(コマンドリスト)を使用してください.  
+	/*  @brief GPUリソースの状態を定義します. @n
+	*   リソース状態を変更する際は, PushTransitionBarrierとFlushResourceBarrier(コマンドリスト)を使用してください.  
 	*****************************************************************************/
 	enum class ResourceState : gu::uint8
 	{
@@ -1176,86 +1167,6 @@ namespace rhi::core
 		DepthStencil         , // depth and stencil 
 	};
 
-	/****************************************************************************
-	*				  			ResourceUsage
-	*************************************************************************//**
-	/*  @brief  リソースの使用方法について定義しています
-	*****************************************************************************/
-	enum class ResourceUsage : gu::uint32
-	{
-		None = 0,
-
-		/// バッファへの書き込みは一度だけ行われる
-		Static                = 0x000001,
-
-		/// バッファは時々書き込まれ, GPUは読み取り専用でCPUは書き込み専用となる. 
-		Dynamic               = 0x000002,
-
-		/// バッファの寿命は1フレーム. フレームごとに書き込むか新しいものを作るかの対応が必要となる.
-		Volatile              = 0x000004,
-
-		///　Unorder access viewを作成する
-		UnorderedAccess       = 0x000008,
-
-		/// byte adress buffer : バイト単位でインデックスが作成される読み取り専用バッファ (基本uint32)
-		ByteAddress           = 0x000010,
-
-		/// コピー元として使用するGPUバッファ
-		SourceCopy            = 0x000020,
-
-		/// Stream出力ターゲットとして使用するGPUバッファ
-		StreamOutput          = 0x000040,
-
-		/// DispatchIndirectまたはDrawIndirectが使用する引数を含むバッファを作成する
-		DrawIndirect          = 0x000080,
-
-		/// シェーダ・リソースとしてバインドできるバッファを作成します。 
-		/// 頂点バッファのような、通常はシェーダリソースとして使用されないバッファにのみ必要です。
-		ShaderResource        = 0x000100,
-
-		/// CPUに直接アクセス可能なバッファ
-		CPUAccessible         = 0x000200,
-
-		/// バッファは高速VRAMに置く
-		FastVRAM              = 0x000400,
-
-		/// 外部のRHIやプロセスと共有できるバッファを作成する
-		Shared                = 0x000800,
-
-		/// RayTracing用のAcceleration structureを作成する
-		AccelerationStructure = 0x001000,
-
-		/// 頂点バッファとして使用する
-		VertexBuffer          = 0x002000,
-
-		/// インデックスバッファとして使用する
-		IndexBuffer           = 0x004000,
-
-		/// 構造化バッファ
-		StructuredBuffer      = 0x008000,
-
-		/// 定数バッファ
-		ConstantBuffer        = 0x010000,
-
-		/// レンダーターゲット
-		RenderTarget          = 0x020000, // allow render target
-
-		/// デプスステンシル
-		DepthStencil          = 0x040000, // allow depth stencil
-
-		/// バッファメモリは、ドライバのエイリアシングによって共有されるのではなく、複数のGPUに対して個別に割り当てられる
-		MultiGPUAllocate      = 0x080000,
-
-		/// バッファをレイトレーシングのアクセラレーション構造を構築するためのスクラッチバッファとして使用できるようにします
-		/// バッファのアライメントのみを変更し、他のフラグと組み合わせることができます
-		Scratch = 0x100000,
-
-		/// バッファは時々書き込まれ, GPUは読み取り専用でCPUは書き込み専用となる. 
-		AnyDynamic = (Dynamic | Volatile),
-	};
-
-	ENUM_CLASS_FLAGS(ResourceUsage);
-
 	enum class BindlessResourceType
 	{
 		Unsupported = 0,
@@ -1263,6 +1174,86 @@ namespace rhi::core
 		AllShaderTypes = 2,
 	};
 #pragma region GPUBuffer
+	/****************************************************************************
+	*				  			BufferCreateFlags
+	*************************************************************************//**
+	/*  @brief  バッファの使用方法について定義しています
+	*****************************************************************************/
+	enum class BufferCreateFlags : gu::uint32
+	{
+		None = 0,
+
+		/// バッファへの書き込みは一度だけ行われる
+		Static                = 1 << 0,
+
+		/// バッファは時々書き込まれ, GPUは読み取り専用でCPUは書き込み専用となる. 
+		Dynamic               = 1 << 1,
+
+		/// バッファの寿命は1フレーム. フレームごとに書き込むか新しいものを作るかの対応が必要となる.
+		Volatile              = 1 << 2,
+
+		///　Unorder access viewを作成する
+		UnorderedAccess       = 1 << 3,
+
+		/// byte adress buffer : バイト単位でインデックスが作成される読み取り専用バッファ (基本uint32)
+		ByteAddress           = 1 << 4,
+
+		/// コピー元として使用するGPUバッファ
+		SourceCopy            = 1 << 5,
+
+		/// Stream出力ターゲットとして使用するGPUバッファ
+		StreamOutput          = 1 << 6,
+
+		/// DispatchIndirectまたはDrawIndirectが使用する引数を含むバッファを作成する
+		DrawIndirect          = 1 << 7,
+
+		/// シェーダ・リソースとしてバインドできるバッファを作成します。 
+		/// 頂点バッファのような、通常はシェーダリソースとして使用されないバッファにのみ必要です。
+		ShaderResource        = 1 << 8,
+
+		/// CPUに直接アクセス可能なバッファ
+		CPUAccessible         = 1 << 9,
+
+		/// バッファは高速VRAMに置く
+		FastVRAM              = 1 << 10,
+
+		/// 外部のRHIやプロセスと共有できるバッファを作成する
+		Shared                = 1 << 11,
+
+		/// RayTracing用のAcceleration structureを作成する
+		AccelerationStructure = 1 << 12,
+
+		/// 頂点バッファとして使用する
+		VertexBuffer          = 1 << 13,
+
+		/// インデックスバッファとして使用する
+		IndexBuffer           = 1 << 14,
+
+		/// 構造化バッファ
+		StructuredBuffer      = 1 << 15,
+
+		/// 定数バッファ
+		ConstantBuffer        = 1 << 16,
+
+		/// バッファメモリは、ドライバのエイリアシングによって共有されるのではなく、複数のGPUに対して個別に割り当てられる
+		MultiGPUAllocate      = 1 << 17,
+
+		/// バッファをレイトレーシングのアクセラレーション構造を構築するためのスクラッチバッファとして使用できるようにします
+		/// バッファのアライメントのみを変更し、他のフラグと組み合わせることができます
+		Scratch               = 1 << 18,
+
+		/// レンダーターゲット
+		RenderTarget          = 1 << 19, // allow render target
+
+		/// デプスステンシル
+		DepthStencil          = 1 << 20, // allow depth stencil
+
+		/// バッファは時々書き込まれ, GPUは読み取り専用でCPUは書き込み専用となる. 
+		AnyDynamic = (Dynamic | Volatile),
+	};
+
+	ENUM_CLASS_FLAGS(BufferCreateFlags);
+
 	/****************************************************************************
 	*				  			GPUBufferInfo
 	*************************************************************************//**
@@ -1282,7 +1273,7 @@ namespace rhi::core
 		ResourceType   ResourceType  = ResourceType::Unknown;
 
 		/// リソースの使用方法
-		ResourceUsage  ResourceUsage = ResourceUsage::None;
+		BufferCreateFlags Usage = BufferCreateFlags::None;
 
 		/// 現在のリソースのバリアの状態
 		ResourceState  State         = ResourceState::GeneralRead;
@@ -1318,7 +1309,7 @@ namespace rhi::core
 		GPUBufferMetaData() = default;
 
 		/*! @brief 直接Buffer情報から生成するコンストラクタ*/
-		GPUBufferMetaData(gu::uint64 stride, gu::uint64 count, core::ResourceUsage usage, ResourceState layout, MemoryHeap heapType, void* initData = nullptr);
+		GPUBufferMetaData(gu::uint64 stride, gu::uint64 count, core::BufferCreateFlags usage, ResourceState layout, MemoryHeap heapType, void* initData = nullptr);
 		#pragma endregion 
 		#pragma region Static Function
 		//static GPUBufferMetaData UploadBuffer(const PixelFormat format, const gu::uint64 count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
@@ -1348,15 +1339,29 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		ClearValue        ClearColor       = ClearValue();                   // clear color 
-		gu::uint64            Width            = 1;                              // texture width
-		gu::uint64            Height           = 1;                              // texture height
-		gu::uint64            DepthOrArraySize = 1;                              // texture depth or array size
-		gu::uint64            ByteSize         = 0;                              // total byte size
-		gu::uint64            MipLevels        = 1;                              // mipmap levels
+		/*! @brief 画面クリア時の初期化で塗りつぶされる色 (RenderTarget, DepthStencilなどに使用します.)*/
+		ClearValue ClearColor = ClearValue();
+
+		/*! @brief テクスチャの幅です. (pixel単位で指定します)*/
+		gu::uint32 Width = 1;
+
+		/*! @brief テクスチャの高さです. (pixel単位で指定します)*/
+		gu::uint32 Height = 1;
+
+		/*! @brief 2Dテクスチャの配列であればArraySizeが適用され, 3Dテクスチャの場合はDepthが適用されます. */
+		gu::uint16 DepthOrArraySize = 1;
+
+		/*! @brief ミップマップの個数 (2を指定すると, ミップマップの値が0と1のものを使用するという意味です)*/
+		gu::uint8  MipMapLevels = 1;
+
+		/*! @brief GPUリソースの状態を定義します. (状態変更はコマンドリストのPushTransitionBarrierとFlushResourceBarriersを使用)*/
+		ResourceState State = ResourceState::GeneralRead; 
+
+		/*! @brief GPUリソースの使用方法を定義します.*/
+		BufferCreateFlags BufferCreateFlags = BufferCreateFlags::None;
+
+		/*! @brief */
 		PixelFormat       PixelFormat      = PixelFormat::Unknown;           // pixel color format 
-		ResourceState      State            = ResourceState::GeneralRead;    // resource layout
-		ResourceUsage     ResourceUsage = ResourceUsage::None;            // how to use resource 
 		MultiSample       Sample           = MultiSample::Count1;            // multi sample count
 		ResourceDimension Dimension        = ResourceDimension::Texture1D; // texture resource dimension
 		ResourceType      ResourceType     = ResourceType::Unknown;          // GPU resource type
@@ -1377,22 +1382,22 @@ namespace rhi::core
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
-		static GPUTextureMetaData Texture1D                (const gu::uint64 width, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture1DArray           (const gu::uint64 width, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture2D                (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture2DArray           (const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture3D                (const gu::uint64 width, const gu::uint64 height, const gu::uint64 depth, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture2DMultiSample     (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::MultiSample sample, const gu::uint64 mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData Texture2DArrayMultiSample(const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const core::MultiSample sample, const gu::uint64 mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData CubeMap                  (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
-		static GPUTextureMetaData CubeMapArray             (const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::ResourceUsage usage = core::ResourceUsage::None);
+		static GPUTextureMetaData Texture1D                (const gu::uint64 width, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
+		static GPUTextureMetaData Texture1DArray           (const gu::uint64 width, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
+		static GPUTextureMetaData Texture2D                (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
+		static GPUTextureMetaData Texture2DArray           (const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
+		static GPUTextureMetaData Texture3D                (const gu::uint64 width, const gu::uint64 height, const gu::uint64 depth, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
+		static GPUTextureMetaData Texture2DMultiSample     (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::MultiSample sample, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
+		static GPUTextureMetaData Texture2DArrayMultiSample(const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const core::MultiSample sample, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
+		static GPUTextureMetaData CubeMap                  (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
+		static GPUTextureMetaData CubeMapArray             (const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
 		static GPUTextureMetaData RenderTarget             (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::ClearValue& clearValue = core::ClearValue());
 		static GPUTextureMetaData RenderTargetMultiSample  (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue = ClearValue());
 		static GPUTextureMetaData DepthStencil             (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::ClearValue& clearValue = core::ClearValue());
 		static GPUTextureMetaData DepthStencilMultiSample  (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue = ClearValue());
 
 	private:
-		inline void CalculateByteSize() { ByteSize =  Width * Height * (Dimension == ResourceDimension::Texture3D ? DepthOrArraySize : 1) * PixelFormatSizeOf::Get(PixelFormat) * MultiSampleSizeOf::Get(Sample); }
+		inline gu::uint64 CalculateByteSize() { return  Width * Height * (Dimension == ResourceDimension::Texture3D ? DepthOrArraySize : 1) * PixelFormatSizeOf::Get(PixelFormat) * static_cast<gu::uint64>(Sample); }
 	};
 
 #pragma endregion        GPUTexture

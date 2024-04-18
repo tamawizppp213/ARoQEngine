@@ -62,7 +62,7 @@ TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	---------------------------------------------------------------------*/
 	{
 		core::GPUBufferMetaData metaData = core::GPUBufferMetaData::DefaultBuffer(preBuildInfo.ScratchDataSizeInBytes, 1);
-		metaData.ResourceUsage = core::ResourceUsage::UnorderedAccess;
+		metaData.Usage = core::BufferCreateFlags::UnorderedAccess;
 		metaData.State = core::ResourceState::Common;
 		_scratch = dxDevice->CreateBuffer(metaData);
 	}
@@ -72,7 +72,7 @@ TLASBuffer::TLASBuffer(const gu::SharedPointer<core::RHIDevice>& device,
 	---------------------------------------------------------------------*/
 	{
 		core::GPUBufferMetaData metaData = core::GPUBufferMetaData::DefaultBuffer(preBuildInfo.ResultDataMaxSizeInBytes, 1);
-		metaData.ResourceUsage = core::ResourceUsage::UnorderedAccess;
+		metaData.Usage = core::BufferCreateFlags::UnorderedAccess;
 		metaData.State = core::ResourceState::RayTracingAccelerationStructure;
 		_destination = dxDevice->CreateBuffer(metaData);
 	}

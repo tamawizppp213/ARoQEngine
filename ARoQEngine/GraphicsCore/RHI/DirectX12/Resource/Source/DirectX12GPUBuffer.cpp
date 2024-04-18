@@ -30,7 +30,7 @@ using namespace gu;
 GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUBufferMetaData& metaData, const gu::tstring& name)
 	:core::GPUBuffer(device, metaData, name)
 {
-	using enum core::ResourceUsage;
+	using enum core::BufferCreateFlags;
 
 	const auto rhiDevice = static_cast<directX12::RHIDevice*>(device.Get());
 
@@ -49,8 +49,8 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const cor
 	/*-------------------------------------------------------------------
 	-           Set resource desc
 	---------------------------------------------------------------------*/
-	const auto usage     = metaData.ResourceUsage;
-	const auto isDynamic = gu::HasAnyFlags(usage, core::ResourceUsage::AnyDynamic);
+	const auto usage     = metaData.Usage;
+	const auto isDynamic = gu::HasAnyFlags(usage, core::BufferCreateFlags::AnyDynamic);
 
 	Check(isDynamic ? _metaData.HeapType != core::MemoryHeap::Default : true);
 
@@ -67,7 +67,7 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<core::RHIDevice>& device, const cor
 		.Format             = DXGI_FORMAT_UNKNOWN,
 		.SampleDesc         = {1, 0},
 		.Layout             = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
-		.Flags              = EnumConverter::Convert(metaData.ResourceUsage)
+		.Flags              = EnumConverter::Convert(metaData.Usage)
 	};
 
 	/*-------------------------------------------------------------------
@@ -107,7 +107,7 @@ void GPUBuffer::UploadByte(const void* data, const gu::uint64 allocateByteSize, 
 	const auto bufferSize = _metaData.GetTotalByte();
 	Check(allocateByteSize + offsetByte <= bufferSize);
 
-	if (_metaData.IsCPUAccessible() && HasAnyFlags(_metaData.ResourceUsage, core::ResourceUsage::AnyDynamic))
+	if (_metaData.IsCPUAccessible() && HasAnyFlags(_metaData.Usage, core::BufferCreateFlags::AnyDynamic))
 	{
 		if (useMapManually)
 		{

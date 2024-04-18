@@ -24,13 +24,13 @@ RayTracingGeometry::RayTracingGeometry(const gu::SharedPointer<RHIDevice>& devic
 	const gu::SharedPointer<GPUBuffer>& indexBuffer)
 	: _device(device), _geometryFlags(flags), _vertexBuffer(vertexBuffer), _indexBuffer(indexBuffer)
 {
-	if (gu::HasAnyFlags(vertexBuffer->GetUsage(), ResourceUsage::VertexBuffer))
+	if (gu::HasAnyFlags(vertexBuffer->GetUsage(), BufferCreateFlags::VertexBuffer))
 	{
 		throw std::runtime_error("Different buffer type (vertex buffer). Please set vertex buffer");
 	}
 	if (indexBuffer)
 	{
-		if (gu::HasAnyFlags(indexBuffer->GetUsage(), ResourceUsage::IndexBuffer))
+		if (gu::HasAnyFlags(indexBuffer->GetUsage(), BufferCreateFlags::IndexBuffer))
 		{
 			throw std::runtime_error("Different buffer type (index buffer). Please set index buffer");
 		}

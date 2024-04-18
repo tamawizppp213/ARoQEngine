@@ -169,8 +169,8 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const gu::tstring& name)
 *****************************************************************************/
 void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const gu::tstring& name)
 {
-	if (gu::HasAnyFlags(vertexInfo.ResourceUsage, ResourceUsage::VertexBuffer)) { OutputDebugStringA("Please set vertex buffer\n"); return; }
-	if (gu::HasAnyFlags(indexInfo .ResourceUsage, ResourceUsage::IndexBuffer))  { OutputDebugStringA("Please set index buffer\n "); return ;}
+	if (gu::HasAnyFlags(vertexInfo.Usage, BufferCreateFlags::VertexBuffer)) { OutputDebugStringA("Please set vertex buffer\n"); return; }
+	if (gu::HasAnyFlags(indexInfo .Usage, BufferCreateFlags::IndexBuffer))  { OutputDebugStringA("Please set index buffer\n "); return ;}
 
 	const auto totalFrameSize  = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
 	const auto device          = _engine->GetDevice();

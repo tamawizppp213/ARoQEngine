@@ -121,7 +121,7 @@ namespace rhi::core
 		/*!**********************************************************************
 		*  @brief     Bufferの使用方法 (Vertex, Index, or Constant Buffer)を定義するEnumを返します 
 		*************************************************************************/
-		__forceinline ResourceUsage GetUsage() const { return _metaData.ResourceUsage; }
+		__forceinline BufferCreateFlags GetUsage() const { return _metaData.Usage; }
 		
 		/*!**********************************************************************
 		*  @brief   GPUのメモリを格納するヒープ領域の種類を決定するEnumを返します (Default, Upload, Readback, Custom)

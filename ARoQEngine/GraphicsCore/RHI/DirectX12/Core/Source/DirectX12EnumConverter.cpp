@@ -328,11 +328,11 @@ DXGI_FORMAT EnumConverter::Convert(const core::InputFormat inputFormat)
 }
 #pragma endregion      Input Layput
 #pragma region GPUResource
-D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::ResourceUsage usage)
+D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::BufferCreateFlags usage)
 {
-	using enum core::ResourceUsage;
+	using enum core::BufferCreateFlags;
 
-	static gu::DynamicArray<core::ResourceUsage> sourcePool =
+	static gu::DynamicArray<core::BufferCreateFlags> sourcePool =
 	{
 		None,
 		VertexBuffer,

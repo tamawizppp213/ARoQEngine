@@ -216,7 +216,7 @@ void GPUBuffer::Prepare(VkBuffer& buffer, VkDeviceMemory& memory, VkMemoryProper
 		.pNext                 = nullptr,
 		.flags                 = 0,
 		.size                  = _metaData.GetTotalByte(),
-		.usage                 = EnumConverter::Convert(_metaData.ResourceUsage).first, // –ðŠ„
+		.usage                 = EnumConverter::Convert(_metaData.Usage).first, // –ðŠ„
 		.sharingMode           = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
 		.queueFamilyIndexCount = 0,
 		.pQueueFamilyIndices   = nullptr

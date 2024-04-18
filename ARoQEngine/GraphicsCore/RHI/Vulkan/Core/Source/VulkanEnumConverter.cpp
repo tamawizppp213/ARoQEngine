@@ -340,30 +340,30 @@ VkFormat EnumConverter::Convert(const rhi::core::InputFormat inputFormat)
 /*-------------------------------------------------------------------
 -                      Resource Usage type
 ---------------------------------------------------------------------*/
-EnumConverter::VulkanResourceUsage EnumConverter::Convert(const core::ResourceUsage usage)
+EnumConverter::VulkanBufferUsageFlags EnumConverter::Convert(const core::BufferCreateFlags usage)
 {
-	static std::vector<core::ResourceUsage> sourcePool =
+	static std::vector<core::BufferCreateFlags> sourcePool =
 	{
-		core::ResourceUsage::None,
-		core::ResourceUsage::VertexBuffer,
-		core::ResourceUsage::IndexBuffer,
-		core::ResourceUsage::ConstantBuffer,
-		core::ResourceUsage::RenderTarget,
-		core::ResourceUsage::DepthStencil,
-		core::ResourceUsage::UnorderedAccess,
+		core::BufferCreateFlags::None,
+		core::BufferCreateFlags::VertexBuffer,
+		core::BufferCreateFlags::IndexBuffer,
+		core::BufferCreateFlags::ConstantBuffer,
+		core::BufferCreateFlags::RenderTarget,
+		core::BufferCreateFlags::DepthStencil,
+		core::BufferCreateFlags::UnorderedAccess,
 	};
 
-	static std::vector<VulkanResourceUsage> targetPool = {
-		VulkanResourceUsage(0, 0) ,
-		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 0),
-		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 0),
-		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0),
-		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT),
-		VulkanResourceUsage(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT),
-		VulkanResourceUsage(VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 0)
+	static std::vector<VulkanBufferUsageFlags> targetPool = {
+		VulkanBufferUsageFlags(0, 0) ,
+		VulkanBufferUsageFlags(VkBufferUsageFlagBits::VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 0),
+		VulkanBufferUsageFlags(VkBufferUsageFlagBits::VK_BUFFER_USAGE_INDEX_BUFFER_BIT, 0),
+		VulkanBufferUsageFlags(VkBufferUsageFlagBits::VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 0),
+		VulkanBufferUsageFlags(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT),
+		VulkanBufferUsageFlags(0, VkImageUsageFlagBits::VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT),
+		VulkanBufferUsageFlags(VkBufferUsageFlagBits::VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, 0)
 	};
 
-	auto result = VulkanResourceUsage(0, 0);
+	auto result = VulkanBufferUsageFlags(0, 0);
 	for (size_t i = 0; i < sourcePool.size(); ++i)
 	{
 		if (gu::HasAnyFlags(usage, sourcePool[i]))
@@ -429,9 +429,9 @@ VkDescriptorType EnumConverter::Convert(const rhi::core::DescriptorHeapType heap
 /*-------------------------------------------------------------------
 -                        Resource Usage type
 ---------------------------------------------------------------------*/
-VkImageAspectFlags  EnumConverter::Convert(const rhi::core::PixelFormat format, const rhi::core::ResourceUsage usage)
+VkImageAspectFlags  EnumConverter::Convert(const rhi::core::PixelFormat format, const rhi::core::BufferCreateFlags usage)
 {
-	if (gu::HasAnyFlags(usage, core::ResourceUsage::DepthStencil))
+	if (gu::HasAnyFlags(usage, core::BufferCreateFlags::DepthStencil))
 	{
 		if (core::PixelFormatSizeOf::IsDepthOnly(format)) { return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT; }
 		return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT | VkImageAspectFlagBits::VK_IMAGE_ASPECT_STENCIL_BIT;

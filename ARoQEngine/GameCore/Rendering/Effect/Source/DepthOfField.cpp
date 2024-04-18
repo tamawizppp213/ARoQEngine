@@ -187,13 +187,13 @@ void Dof::PrepareRenderBuffer(const size_t width, const size_t height)
 	_unorderedAccessViews.Resize(4);
 	for (size_t i = 0; i < _shaderResourceViews.Size(); ++i)
 	{
-		const auto textureInfo   = GPUTextureMetaData::Texture2D(width, height, format, 1, ResourceUsage::UnorderedAccess);
+		const auto textureInfo   = GPUTextureMetaData::Texture2D(width, height, format, 1, BufferCreateFlags::UnorderedAccess);
 		const auto texture       = device->CreateTexture(textureInfo, SP("Dof::RWTexture"));
 		_unorderedAccessViews[i] = device->CreateResourceView(ResourceViewType::Texture, texture);
 		_shaderResourceViews[i]  = device->CreateResourceView(ResourceViewType::Texture, texture);
 	}
 	{
-		const auto textureInfo = GPUTextureMetaData::Texture2D(width, height, format, 1, ResourceUsage::UnorderedAccess);
+		const auto textureInfo = GPUTextureMetaData::Texture2D(width, height, format, 1, BufferCreateFlags::UnorderedAccess);
 		const auto texture     = device->CreateTexture(textureInfo, SP("Dof::FinalBuffer"));
 		_unorderedAccessViews[3] = device->CreateResourceView(ResourceViewType::Texture, texture);
 	}

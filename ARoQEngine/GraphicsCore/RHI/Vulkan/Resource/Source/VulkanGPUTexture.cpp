@@ -235,12 +235,12 @@ void GPUTexture::Prepare()
 		                                    static_cast<std::uint32_t>(_metaData.Height),       
 		                        (_metaData.Dimension == core::ResourceDimension::Texture3D ?
 								static_cast<std::uint32_t>(_metaData.DepthOrArraySize) : 1)),
-		.mipLevels             = static_cast<std::uint32_t>(_metaData.MipLevels),               // max mipmap levels
+		.mipLevels             = static_cast<std::uint32_t>(_metaData.MipMapLevels),               // max mipmap levels
 		.arrayLayers           = static_cast<uint32_t>(_metaData.Dimension == core::ResourceDimension::Texture3D ? 
 								  1 : _metaData.DepthOrArraySize),
 		.samples               = EnumConverter::Convert(_metaData.Sample),
 		.tiling                = VkImageTiling::VK_IMAGE_TILING_OPTIMAL,
-		.usage                 = EnumConverter::Convert(_metaData.ResourceUsage).second,        // image resource usage
+		.usage                 = EnumConverter::Convert(_metaData.BufferCreateFlags).second,        // image resource usage
 		.sharingMode           = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
 		.queueFamilyIndexCount = 0,
 		.pQueueFamilyIndices   = nullptr,

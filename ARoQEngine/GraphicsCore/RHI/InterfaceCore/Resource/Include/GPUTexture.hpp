@@ -77,13 +77,13 @@ namespace rhi::core
 		inline ResourceDimension GetDimension  () const noexcept { return _metaData.Dimension; }
 
 		/* @brief : Get resource usage*/
-		inline ResourceUsage GetUsage() const noexcept { return _metaData.ResourceUsage; }
+		inline BufferCreateFlags GetUsage() const noexcept { return _metaData.BufferCreateFlags; }
 
 		/* @brief : Get Clear Value (normally color : white)*/
 		inline ClearValue        GetClearValue () const noexcept { return _metaData.ClearColor; }
 
 		/* @brief : Get miplevels count*/
-		inline size_t GetMipMapLevels() const noexcept { return _metaData.MipLevels; }
+		inline size_t GetMipMapLevels() const noexcept { return _metaData.MipMapLevels; }
 
 		/* @brief : Get Arrays*/
 		inline size_t GetArrayLength() const noexcept { return _metaData.Dimension == ResourceDimension::Texture3D ?  1 : _metaData.DepthOrArraySize; }

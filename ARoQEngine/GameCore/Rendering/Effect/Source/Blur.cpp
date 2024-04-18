@@ -421,7 +421,7 @@ void GaussianBlur::PrepareResourceView()
 
 	//  xblur
 	{
-		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight(), format, 1, ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
+		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight(), format, 1, BufferCreateFlags::UnorderedAccess | BufferCreateFlags::RenderTarget);
 		const auto destTexture = device->CreateTexture(dstData);
 		
 		_unorderedResourceViews[0] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, 0,0,nullptr); // x half texture uav
@@ -434,7 +434,7 @@ void GaussianBlur::PrepareResourceView()
 	}
 	// yblur
 	{
-		const auto dstData         = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight() / 2, format, 1, ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
+		const auto dstData         = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth() / 2, Screen::GetScreenHeight() / 2, format, 1, BufferCreateFlags::UnorderedAccess | BufferCreateFlags::RenderTarget);
 		const auto destTexture     = device->CreateTexture(dstData);
 		_unorderedResourceViews[1] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture, 0,0,nullptr);
 		_shaderResourceViews[1]    = device->CreateResourceView(ResourceViewType::Texture  , destTexture, 0,0,nullptr);
@@ -446,7 +446,7 @@ void GaussianBlur::PrepareResourceView()
 	}
 	// finalblur
 	{
-		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth()    , Screen::GetScreenHeight()    , format, 1, ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
+		const auto dstData     = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth()    , Screen::GetScreenHeight()    , format, 1, BufferCreateFlags::UnorderedAccess | BufferCreateFlags::RenderTarget);
 		const auto destTexture = device->CreateTexture(dstData);
 		_unorderedResourceViews[2] = device->CreateResourceView(ResourceViewType::RWTexture, destTexture,0,0, nullptr);
 

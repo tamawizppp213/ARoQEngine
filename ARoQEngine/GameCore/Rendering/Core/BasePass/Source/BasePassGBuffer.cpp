@@ -178,7 +178,7 @@ void GBuffer::PrepareFrameBuffers(const gu::tstring& name)
 	{
 		auto renderInfo = GPUTextureMetaData::RenderTarget(_desc.Width, _desc.Height, PixelFormat::R32G32B32A32_FLOAT, clearColor);
 		auto depthInfo  = GPUTextureMetaData::DepthStencil(_desc.Width, _desc.Height, PixelFormat::D32_FLOAT, depthClearColor);
-		renderInfo.ResourceUsage = (ResourceUsage::UnorderedAccess | ResourceUsage::RenderTarget);
+		renderInfo.BufferCreateFlags = (BufferCreateFlags::UnorderedAccess | BufferCreateFlags::RenderTarget);
 		gu::DynamicArray<TexturePtr> renderTexture(_desc.BufferCount);
 		for (size_t j = 0; j < _desc.BufferCount; ++j)
 		{

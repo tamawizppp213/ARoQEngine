@@ -73,7 +73,7 @@ namespace rhi::directX12
 #pragma region GPUResource
 		static D3D12_DESCRIPTOR_HEAP_TYPE  Convert(const rhi::core::DescriptorHeapType heapType);
 		static D3D12_DESCRIPTOR_RANGE_TYPE Convert1(const rhi::core::DescriptorHeapType descriptorType);
-		static D3D12_RESOURCE_FLAGS        Convert(const rhi::core::ResourceUsage usage);
+		static D3D12_RESOURCE_FLAGS        Convert(const rhi::core::BufferCreateFlags usage);
 #pragma region GPUBuffer 
 		static D3D12_HEAP_TYPE            Convert(const rhi::core::MemoryHeap memoryHeap);
 		static D3D12_RESOURCE_STATES      Convert(const rhi::core::ResourceState resourceLayout);

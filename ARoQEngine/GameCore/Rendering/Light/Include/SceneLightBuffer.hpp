@@ -255,7 +255,7 @@ namespace gc::rendering
 
 			// set up light ID buffer ()
 			auto bufferInfo          = GPUBufferMetaData::DefaultBuffer(sizeof(std::int32_t), count * tileCount);
-			bufferInfo.ResourceUsage = ResourceUsage::UnorderedAccess;
+			bufferInfo.Usage = BufferCreateFlags::UnorderedAccess;
 			const auto buffer        = device->CreateBuffer(bufferInfo, L"LightID");
 
 			// Create light id uav resource view

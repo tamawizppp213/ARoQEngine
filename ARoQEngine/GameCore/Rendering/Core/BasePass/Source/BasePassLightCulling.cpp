@@ -121,7 +121,7 @@ void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 	for (size_t i = 0; i < _lightIDLists.Size(); ++i)
 	{
 		auto bufferInfo          = GPUBufferMetaData::UploadBuffer(sizeof(int), desc.LightCounts[i] * tileCount);
-		bufferInfo.ResourceUsage = ResourceUsage::UnorderedAccess;
+		bufferInfo.Usage = BufferCreateFlags::UnorderedAccess;
 
 		const auto bufferName = L"LightCulling::LightIDLists::" + std::to_wstring(i);
 		const auto buffer = device->CreateBuffer(bufferInfo, gu::tstring(bufferName.c_str(), bufferName.size()));

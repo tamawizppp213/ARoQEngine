@@ -29,7 +29,7 @@ GPUBuffer::GPUBuffer(const gu::SharedPointer<RHIDevice>& device, const core::GPU
 	/*-------------------------------------------------------------------
 	-           Constant Buffer Check (for 256 byte alignment )
 	---------------------------------------------------------------------*/
-	bool isConstantBuffer = gu::HasAnyFlags(GetUsage(), ResourceUsage::ConstantBuffer);
+	bool isConstantBuffer = gu::HasAnyFlags(GetUsage(), BufferCreateFlags::ConstantBuffer);
 
 	/*-------------------------------------------------------------------
 	-          Set Stride and Element Count

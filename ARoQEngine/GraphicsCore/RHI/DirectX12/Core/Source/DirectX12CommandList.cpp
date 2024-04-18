@@ -521,7 +521,7 @@ void RHICommandList::SetVertexBuffer(const gu::SharedPointer<core::GPUBuffer>& b
 {
 #if __DEBUG
 	// Is vertex buffer
-	assert(buffer->GetUsage() == core::ResourceUsage::VertexBuffer);
+	assert(buffer->GetUsage() == core::BufferCreateFlags::VertexBuffer);
 #endif
 
 	// Set up vertex buffer view
@@ -560,7 +560,7 @@ void RHICommandList::SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<c
 	for (size_t i = 0; i < views.Size(); ++i)
 	{
 #if __DEBUG
-		assert(buffers[i]->GetUsage() == core::ResourceUsage::VertexBuffer);
+		assert(buffers[i]->GetUsage() == core::BufferCreateFlags::VertexBuffer);
 #endif
 		views[i].BufferLocation = gu::StaticPointerCast<directX12::GPUBuffer>(buffers[i])->GetResourcePtr()->GetGPUVirtualAddress();
 		views[i].SizeInBytes    = static_cast<UINT>(buffers[i]->GetTotalByteSize());
@@ -573,7 +573,7 @@ void RHICommandList::SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<c
 void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType)
 {
 #if __DEBUG
-	assert(buffer->GetUsage() == core::ResourceUsage::IndexBuffer);
+	assert(buffer->GetUsage() == core::BufferCreateFlags::IndexBuffer);
 #endif
 
 	D3D12_INDEX_BUFFER_VIEW view = {};
