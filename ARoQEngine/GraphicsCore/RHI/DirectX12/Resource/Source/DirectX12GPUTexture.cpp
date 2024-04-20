@@ -124,12 +124,9 @@ void GPUTexture::SetName(const gu::tstring& name)
 *****************************************************************************/
 void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 {
-
-#ifdef _DEBUG
-	assert(_device);
-	assert(commandList);
-	assert(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
-#endif
+	Check(_device);
+	Check(commandList);
+	Check(commandList->GetCommandAllocator()->GetCommandListType() == core::CommandListType::Graphics);
 
 	const auto dxDevice      = static_cast<directX12::RHIDevice*>(_device.Get())->GetDevice();
 	const auto dxCommandList = static_cast<directX12::RHICommandList*>(commandList.Get())->GetCommandList();
@@ -487,10 +484,6 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 }
 
 #pragma endregion Public Function
-void GPUTexture::Pack([[maybe_unused]]const gu::SharedPointer<core::RHICommandList>& commandList)
-{
-	
-}
 
 /****************************************************************************
 *                     AllocateGPUTextureBuffer

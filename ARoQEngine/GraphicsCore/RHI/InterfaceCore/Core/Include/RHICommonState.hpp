@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHICommonState.hpp
-///             @brief  CommonState
-///             @author Toide Yutaro
-///             @date   2022_06_12
+///  @file   RHICommonState.hpp
+///  @brief  Render Hardware Interfaceにおいて, 様々なフラグを管理している
+///  @author Toide Yutaro
+///  @date   2024_04_21
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef RHI_COMMON_STATE_HPP

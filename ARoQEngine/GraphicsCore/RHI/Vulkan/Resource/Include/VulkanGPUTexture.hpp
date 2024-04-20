@@ -102,7 +102,6 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void Pack([[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList) override{};
 		
 		/****************************************************************************
 		**                Protected Member Variables

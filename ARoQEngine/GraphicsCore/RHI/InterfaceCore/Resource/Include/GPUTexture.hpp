@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GPUTexture.hpp
-///             @brief  Texture 
-///             @author Toide Yutaro
-///             @date   2022_11_13
+///  @file   GPUTexture.hpp
+///  @brief  テクスチャとして使用する場合のGPUリソースです.
+///  @author Toide Yutaro
+///  @date   2024_04_21
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GPU_TEXTURE_HPP
@@ -40,15 +40,13 @@ namespace rhi::core
 	class GPUTexture : public GPUResource, public gu::EnableSharedFromThis<GPUTexture>
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
 		virtual void Load(const gu::tstring& filePath, const gu::SharedPointer<RHICommandList>& commandList) = 0;
 
 		virtual void Save(const gu::tstring& filePath, const gu::SharedPointer<RHICommandList>& commandList, const gu::SharedPointer<RHICommandQueue>& commandQueue) = 0;
 
 		virtual void Write(const gu::SharedPointer<RHICommandList>& commandList, const gm::RGBA* pixel) = 0;
-
+		#pragma endregion
 		#pragma region Public Member Variables
 		/*!**********************************************************************
 		*  @brief     テクスチャの幅をpixel単位で指定します. その際, ミップマップレベルを指定すればその値だけサイズを半分にします.
@@ -219,7 +217,7 @@ namespace rhi::core
 		#pragma endregion 
 		
 		#pragma region Protected Function
-		virtual void Pack(const gu::SharedPointer<core::RHICommandList>& commandList) = 0;
+
 		#pragma endregion Protected Function
 
 		#pragma region Protected Member Variables

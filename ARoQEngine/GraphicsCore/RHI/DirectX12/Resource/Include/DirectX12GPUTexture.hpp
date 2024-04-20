@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12GPUBuffer.hpp
-///             @brief  GPU Buffer 
-///             @author Toide Yutaro
-///             @date   2022_07_08
+///  @file   DirectX12GPUTexture.hpp
+///  @brief  テクスチャとして使用する場合のGPUリソースです.
+///  @author Toide Yutaro
+///  @date   2024_04_21
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_GPU_TEXTURE_HPP
@@ -31,14 +31,14 @@ namespace rhi::directX12
 	class GPUTexture: public core::GPUTexture
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
 		void Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList) override;
 		
 		void Save(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)override;
 
 		void Write(const gu::SharedPointer<core::RHICommandList>& commandList, const gm::RGBA* pixel) override;
+
+		#pragma endregion
 
 		#pragma region Public Member Variables
 		/*!**********************************************************************
@@ -51,16 +51,29 @@ namespace rhi::directX12
 		*************************************************************************/
 		__forceinline virtual bool IsTexture() const override { return true; }
 
-		ResourceComPtr GetResource () { return _resource; }
+		/*!**********************************************************************
+		*  @brief     DirectX12で使用するGPUリソース
+		*  @return    ResourceComptr　ComPtrのGPUリソース
+		*************************************************************************/
+		ResourceComPtr GetResource () const noexcept { return _resource; }
 		
-		Resource* GetResourcePtr() { return _resource.Get(); }
+		/*!**********************************************************************
+		*  @brief     DirectX12で使用するGPUリソースの生ポインタ
+		*************************************************************************/
+		Resource* GetResourcePtr() const noexcept { return _resource.Get(); }
 
+		/*!**********************************************************************
+		*  @brief     DirectX12で使用するGPUアドレス
+		*  @return    D3D12_GPU_VIRTUAL_ADDRESS : uint64型で表現されるGPUアドレス
+		*************************************************************************/
 		D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() { return _resource->GetGPUVirtualAddress(); }
 		
+		/*!**********************************************************************
+		*  @brief     デバッグ表示名を設定します.
+		*  @param[in] const gu::tstring デバッグ表示名
+		*************************************************************************/
 		void SetName(const gu::tstring& name) override;
 		
-		#pragma endregion
-
 		/*!**********************************************************************
 		*  @brief     現時点のGPUResourceの扱い方 (IndexBufferとして使用するなど...)を設定します
 		*  @attention 手動での切り替えは基本的に行わないでください. (この関数はバリアの使用を目的として使用します.)
@@ -68,46 +81,54 @@ namespace rhi::directX12
 		*************************************************************************/
 		__forceinline virtual void SetResourceState(const core::ResourceState state) override { _metaData.State = state; }
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		GPUTexture() = default;
 
+		/*! @brief デストラクタ*/
 		~GPUTexture();
-		
+
+		/*! @brief 論理デバイスを使ってデフォルト状態でテクスチャを作成します*/
 		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::tstring& name = SP(""));
-		
+
+		/*! @brief 論理デバイスとテクスチャ作成情報を使ったコンストラクタ*/
 		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP(""));
-		
+
+		/*! @brief DirectX12専用のコンストラクタです*/
 		explicit GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const ResourceComPtr& texture, const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP(""));
+		#pragma endregion
 	
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+		#pragma endregion 
 
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
-		void Pack([[maybe_unused]]const gu::SharedPointer<core::RHICommandList>& commandList) override;
-
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
-		ResourceComPtr        _resource = nullptr;
-
-		ResourceComPtr        _stagingBuffer = nullptr; // 必要なくなったタイミングで捨てたい
+		#pragma region Protected Function
 		
+		#pragma endregion
+
+		#pragma region Protected Member Variables
+		/*! @brief DirectX12で使用するGPUリソース*/
+		ResourceComPtr _resource = nullptr;
+
+		/*! @brief GPUにアップロードする際に使用する中間バッファ*/
+		ResourceComPtr _stagingBuffer = nullptr; // 必要なくなったタイミングで捨てたい
+		
+		/*! @brief DirectX12のリソース状態を格納しています.*/
 		D3D12_RESOURCE_STATES _usageState = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
 		
 		bool _hasAllocated = false;
+		#pragma endregion
+
 	private:
-		/****************************************************************************
-		**                Private Function
-		*****************************************************************************/
+		#pragma region Private Function
+
 		void AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, bool isDiscreteGPU );
 
 		void ConvertDxMetaData       (D3D12_RESOURCE_DESC& resourceDesc);
+
+		#pragma endregion
 		
 	};
 }
