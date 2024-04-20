@@ -238,7 +238,7 @@ void GPUResourceView::CreateImageView()
 		(
 			GetImageAspectFlags(imageViewCreateInfo.format),        // aspect mask
 			0,                                                      // base mip levels
-			static_cast<std::uint32_t>(vkImage->GetMipMapLevels()), // level count
+			static_cast<std::uint32_t>(vkImage->GetMaxMipMapLevel()), // level count
 			0,                                                      // base array layer
 			static_cast<std::uint32_t>(vkImage->GetArrayLength())   // layer count
 		)

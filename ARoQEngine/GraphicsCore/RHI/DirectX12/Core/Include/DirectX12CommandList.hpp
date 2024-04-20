@@ -247,13 +247,20 @@ namespace rhi::directX12
 		#pragma endregion Resource Barrier
 
 		#pragma endregion 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		#pragma region Public Member Variables
+		/*!**********************************************************************
+		*  @brief     コマンドリストのComptrを返します
+		*  @return CommandListComPtr コマンドリスト
+		*************************************************************************/
 		CommandListComPtr GetCommandList() const noexcept { return _commandList; }
 
-		void SetName(const gu::tstring& name) override;
+		/*!**********************************************************************
+		*  @brief     デバッグ表示名を設定します
+		*  @param[in] const gu::tstring& 表示名 
+		*************************************************************************/
+		virtual void SetName(const gu::tstring& name) override;
 		
+		#pragma endregion
 		#pragma region Public Constructor and Destructor
 		/*! @brief デフォルトコンストラクタ*/
 		RHICommandList() = default;

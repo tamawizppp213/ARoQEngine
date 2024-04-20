@@ -177,7 +177,7 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 		const auto stagingInfo = core::GPUBufferMetaData::UploadBuffer
 		(
 			sizeof(std::uint8_t),
-			pixelSize
+			(gu::uint32)pixelSize
 		);
 
 		_stagingBuffer = _device->CreateBuffer(stagingInfo, L"StagingBuffer");
@@ -240,7 +240,7 @@ void GPUTexture::Prepare()
 								  1 : _metaData.DepthOrArraySize),
 		.samples               = EnumConverter::Convert(_metaData.Sample),
 		.tiling                = VkImageTiling::VK_IMAGE_TILING_OPTIMAL,
-		.usage                 = EnumConverter::Convert(_metaData.BufferCreateFlags).second,        // image resource usage
+		//.usage                 = EnumConverter::Convert(_metaData.).second,        // image resource usage
 		.sharingMode           = VkSharingMode::VK_SHARING_MODE_EXCLUSIVE,
 		.queueFamilyIndexCount = 0,
 		.pQueueFamilyIndices   = nullptr,

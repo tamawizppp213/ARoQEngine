@@ -174,16 +174,16 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 	---------------------------------------------------------------------*/
 	if (dxMetaData.IsCubemap())
 	{
-		_metaData = core::GPUTextureMetaData::CubeMap(image->width, image->height, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::CubeMap(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	else if (dxMetaData.IsVolumemap())
 	{
-		_metaData = core::GPUTextureMetaData::Texture3D(image->width, image->height, dxMetaData.depth, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::Texture3D(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.depth), ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	else
 	{
-		_metaData = core::GPUTextureMetaData::Texture2DArray(image->width, image->height, dxMetaData.arraySize,
-			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::Texture2DArray(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.arraySize),
+			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 
 	/*-------------------------------------------------------------------
@@ -392,7 +392,7 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 	/*-------------------------------------------------------------------
 	-       Create read back buffer to read gpu memory to the cpu memory
 	---------------------------------------------------------------------*/
-	auto metaData       = core::GPUBufferMetaData::UploadBuffer(core::PixelFormatSizeOf::Get(_metaData.PixelFormat), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
+	auto metaData       = core::GPUBufferMetaData::UploadBuffer(static_cast<gu::uint32>(core::PixelFormatSizeOf::Get(_metaData.PixelFormat)), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
 	metaData.State      = core::ResourceState::CopyDestination;
 	const auto buffer   = _device->CreateBuffer(metaData);
 	const auto dxBuffer = gu::StaticPointerCast<GPUBuffer>(buffer);
@@ -534,14 +534,14 @@ void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDes
 	---------------------------------------------------------------------*/
 	D3D12_CLEAR_VALUE clearValue = {};
 	clearValue.Format = resourceDesc.Format;
-	if (gu::HasAnyFlags(_metaData.BufferCreateFlags, core::BufferCreateFlags::RenderTarget))
+	if (gu::HasAnyFlags(_metaData.Usage, core::TextureCreateFlags::RenderTargetable))
 	{
 		clearValue.Color[0] = _metaData.ClearColor.Type.Color[0];
 		clearValue.Color[1] = _metaData.ClearColor.Type.Color[1];
 		clearValue.Color[2] = _metaData.ClearColor.Type.Color[2];
 		clearValue.Color[3] = _metaData.ClearColor.Type.Color[3];
 	}
-	else if(gu::HasAnyFlags(_metaData.BufferCreateFlags, core::BufferCreateFlags::DepthStencil))
+	else if(gu::HasAnyFlags(_metaData.Usage, core::TextureCreateFlags::DepthStencilTargetable))
 	{
 		clearValue.DepthStencil.Depth   = _metaData.ClearColor.Type.DSV.Depth;
 		clearValue.DepthStencil.Stencil = (gu::uint8)_metaData.ClearColor.Type.DSV.Stencil;
@@ -549,8 +549,8 @@ void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDes
 
 	ThrowIfFailed(dxDevice->CreateCommittedResource(
 		&heapProperty, D3D12_HEAP_FLAG_NONE, &resourceDesc, EnumConverter::Convert(_metaData.State),
-		gu::HasAnyFlags(_metaData.BufferCreateFlags, core::BufferCreateFlags::RenderTarget) ||
-		gu::HasAnyFlags(_metaData.BufferCreateFlags, core::BufferCreateFlags::DepthStencil) ? &clearValue : nullptr,
+		gu::HasAnyFlags(_metaData.Usage, core::TextureCreateFlags::RenderTargetable) ||
+		gu::HasAnyFlags(_metaData.Usage, core::TextureCreateFlags::DepthStencilTargetable) ? &clearValue : nullptr,
 		IID_PPV_ARGS(_resource.GetAddressOf())));
 
 	/*-------------------------------------------------------------------
@@ -574,6 +574,6 @@ void GPUTexture::ConvertDxMetaData(D3D12_RESOURCE_DESC& resourceDesc)
 	resourceDesc.SampleDesc.Count   = static_cast<UINT>(_metaData.Sample);
 	resourceDesc.SampleDesc.Quality = 0;
 	resourceDesc.Layout             = D3D12_TEXTURE_LAYOUT::D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	resourceDesc.Flags              = EnumConverter::Convert(_metaData.BufferCreateFlags);
+	resourceDesc.Flags              = EnumConverter::Convert(_metaData.Usage);
 
 }

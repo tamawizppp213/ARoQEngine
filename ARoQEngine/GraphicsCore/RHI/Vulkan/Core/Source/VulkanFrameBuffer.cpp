@@ -77,8 +77,8 @@ void RHIFrameBuffer::Prepare()
 		imageViews[index] = gu::StaticPointerCast<vulkan::GPUResourceView>(_renderTargetViews[index])->GetImageView();
 
 		// set rener target size
-		_width  = std::max(_width , _renderTargets[index]->GetWidth());
-		_height = std::max(_height, _renderTargets[index]->GetHeight());
+		_width  = (_width > _renderTargets[index]->GetWidth()) ? _width : _renderTargets[index]->GetWidth();
+		_height = _height > _renderTargets[index]->GetHeight() ? _height : _renderTargets[index]->GetHeight();
 	}
 
 	// Depth Stencil
@@ -93,8 +93,8 @@ void RHIFrameBuffer::Prepare()
 	}
 
 	// width, height must be set more than 0.
-	_width  = std::max(_width , 1LLU);
-	_height = std::max(_height, 1LLU);
+	_width  = _width > 1LLU ? _width : 1LLU;
+	_height = _height > 1LLU ? _height : 1LLU;
 
 	/*-------------------------------------------------------------------
 	-               Create Frame Buffer Info

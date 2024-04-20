@@ -1014,7 +1014,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			ResourceDimension
 	*************************************************************************//**
-	/* @brief    GPUリソースの状態を定義します. リソース状態を変更する際は, TransitionResourceState(コマンドリスト)を使用してください.
+	/* @brief   GPUリソースの形式を指定します. バッファなのかn次元テクスチャなのか
 	*****************************************************************************/
 	enum class ResourceDimension : gu::uint8
 	{
@@ -1024,20 +1024,25 @@ namespace rhi::core
 		Texture3D  //!< 3次元テクスチャ
 	};
 
+	/****************************************************************************
+	*				  		ResourceType
+	*************************************************************************//**
+	/* @brief   ResourceDimensionの詳細を記述します. 
+	*****************************************************************************/
 	enum class ResourceType : gu::uint8
 	{
-		Unknown                           = 0,
-		Buffer                            = 1,
-		Texture1D                         = 2,
-		Texture1DArray                    = 3,
-		Texture2D                         = 4,
-		Texture2DArray                    = 5,
-		Texture2DMultiSample              = 6,
-		Texture2DArrayMultiSample         = 7,
-		Texture3D                         = 8,
-		TextureCube                       = 9,
-		TextureCubeArray                  = 10,
-		RaytracingAccelerationStructure   = 11
+		Unknown                           = 0,  //!< 未知のGPUリソースの種類です
+		Buffer                            = 1,  //!< バッファとして使用します
+		Texture1D                         = 2,  //!< 1次元のテクスチャとして使用します
+		Texture1DArray                    = 3,  //!< 1次元のテクスチャ配列として使用します
+		Texture2D                         = 4,  //!< 2次元のテクスチャとして使用します
+		Texture2DArray                    = 5,  //!< 2次元のテクスチャ配列として使用します
+		Texture2DMultiSample              = 6,  //!< 2次元のテクスチャ(マルチサンプリングを使用)を使用します
+		Texture2DArrayMultiSample         = 7,  //!< 2次元のテクスチャ配列(マルチサンプリングを使用)を使用します
+		Texture3D                         = 8,  //!< 3次元のボリュームテクスチャとして使用します
+		TextureCube                       = 9,  //!< キューブマップテクスチャを使用します
+		TextureCubeArray                  = 10, //!< キューブマップテクスチャ配列として使用します
+		RaytracingAccelerationStructure   = 11  //!< レイトレーシングの加速構造として使用します.
 	};
 
 	/****************************************************************************
@@ -1263,29 +1268,30 @@ namespace rhi::core
 	{
 	public:
 		#pragma region Public Member Variables
-		/// 1要素に必要なバイトサイズ
-		gu::uint64     Stride        = 0;
+		/*! @brief 1要素に必要なバイトサイズ*/
+		gu::uint32 Stride = 0;
 		
-		/// 要素の個数
-		gu::uint64     Count         = 0;
+		/*! @brief 要素の個数*/
+		gu::uint32 Count  = 0;
 
-		/// GPUリソースの種類
-		ResourceType   ResourceType  = ResourceType::Unknown;
-
-		/// リソースの使用方法
+		/*! @brief GPUリソースの使用方法*/
 		BufferCreateFlags Usage = BufferCreateFlags::None;
 
-		/// 現在のリソースのバリアの状態
-		ResourceState  State         = ResourceState::GeneralRead;
+		/*! @brief ピクセルのフォーマット.基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある */
+		PixelFormat Format = PixelFormat::Unknown;
+
+		/*! @brief GPUバッファを作成するときの最初のCPUメモリの領域 */
+		void* InitData = nullptr;
+
+		/*! @brief GPUリソースの種類*/
+		ResourceType ResourceType = ResourceType::Unknown;
+
+		/*! @brief 現在のリソースのバリア状態*/
+		ResourceState State = ResourceState::GeneralRead;
 		
-		/// @brief GPUのメモリを格納するヒープ領域の種類を決定します.
-		MemoryHeap     HeapType      = MemoryHeap::Default;
+		/*! @brief GPUのメモリを格納するヒープ領域の種類を決定します. */
+		MemoryHeap HeapType = MemoryHeap::Default;
 		
-		/// @brief ピクセルのフォーマット. 基本的には使用しないが, Vulkanのビュー指定に必要となる場合がある
-		PixelFormat    Format        = PixelFormat::Unknown;
-		
-		/// @brief GPUバッファを作成するときの最初のCPUメモリの領域
-		void*          InitData      = nullptr;
 		#pragma endregion 
 		#pragma region Public Function
 		/*!**********************************************************************
@@ -1302,22 +1308,42 @@ namespace rhi::core
 		*  @brief  　　GPUBufferの全体に占めるバイト数を取得します
 		*  @return    gu::uint64 バッファのサイズ
 		*************************************************************************/
-		__forceinline gu::uint64 GetTotalByte() const { return Stride * Count; }
+		__forceinline gu::uint64 GetTotalByte() const { return static_cast<gu::uint64>(Stride * Count); }
 		#pragma endregion 
+
 		#pragma region Public Constructor and Destructor
 		/*! @brief デフォルトコンストラクタ*/
 		GPUBufferMetaData() = default;
 
 		/*! @brief 直接Buffer情報から生成するコンストラクタ*/
-		GPUBufferMetaData(gu::uint64 stride, gu::uint64 count, core::BufferCreateFlags usage, ResourceState layout, MemoryHeap heapType, void* initData = nullptr);
+		GPUBufferMetaData(gu::uint32 stride, gu::uint32 count, core::BufferCreateFlags usage, ResourceState layout, MemoryHeap heapType, void* initData = nullptr);
 		#pragma endregion 
+
 		#pragma region Static Function
-		//static GPUBufferMetaData UploadBuffer(const PixelFormat format, const gu::uint64 count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
-		static GPUBufferMetaData UploadBuffer  (const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
-		static GPUBufferMetaData DefaultBuffer (const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap = MemoryHeap::Default, void* initData = nullptr);
-		static GPUBufferMetaData ConstantBuffer(const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 
-		static GPUBufferMetaData VertexBuffer  (const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead, void* initData = nullptr);
-		static GPUBufferMetaData IndexBuffer   (const gu::uint64 stride, const gu::uint64 count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common, void* initData = nullptr);
+		/*!**********************************************************************
+		*  @brief  CPUからGPUにメモリを転送するのに使用します. Mapを使ってCPUが一度書き込み, GPUで一度読み取るデータに最適
+		*************************************************************************/
+		static GPUBufferMetaData UploadBuffer  (const gu::uint32 stride, const gu::uint32 count, const MemoryHeap heap = MemoryHeap::Upload, void* initData = nullptr);
+		
+		/*!**********************************************************************
+		*  @brief  GPU側でのみ見ることが出来るメモリ領域です. この場合, Mapでの読み書きは行えませんが, GPU内の処理で完結する作業は高速です
+		*************************************************************************/
+		static GPUBufferMetaData DefaultBuffer (const gu::uint32 stride, const gu::uint32 count, const MemoryHeap heap = MemoryHeap::Default, void* initData = nullptr);
+		
+		/*!**********************************************************************
+		*  @brief  定数用のバッファです. これは256 byteのアラインメントが発生します
+		*************************************************************************/
+		static GPUBufferMetaData ConstantBuffer(const gu::uint32 stride, const gu::uint32 count, const MemoryHeap heap = MemoryHeap::Upload , const ResourceState state = ResourceState::Common, void* initData = nullptr); // auto alignment 
+		
+		/*!**********************************************************************
+		*  @brief  頂点データ用のバッファです
+		*************************************************************************/
+		static GPUBufferMetaData VertexBuffer  (const gu::uint32 stride, const gu::uint32 count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::GeneralRead, void* initData = nullptr);
+		
+		/*!**********************************************************************
+		*  @brief  インデックスデータ用のバッファです
+		*************************************************************************/
+		static GPUBufferMetaData IndexBuffer   (const gu::uint32 stride, const gu::uint32 count, const MemoryHeap heap = MemoryHeap::Default, const ResourceState state = ResourceState::Common, void* initData = nullptr);
 		#pragma endregion 
 	private:
 		gu::uint64 CalcConstantBufferByteSize(const gu::uint64 byteSize) { return (byteSize + 255) & ~255; }
@@ -1325,22 +1351,110 @@ namespace rhi::core
 #pragma endregion         GPUBuffer
 #pragma region GPUTexture
 	
-	
+	/****************************************************************************
+	*				  			TextureCreateFlags
+	*************************************************************************//**
+	/*  @brief  テクスチャの使用方法について定義しています
+	*****************************************************************************/
+	enum class TextureCreateFlags : gu::uint64
+	{
+		None = 0,
+
+		/// レンダーターゲットとして使用可能なテクスチャです
+		RenderTargetable       = 1ull << 0,
+
+		/// マルチサンプルなテクスチャと通常テクスチャをブレンドする際にResolveを行うテクスチャです
+		ResolveTargetable      = 1ull << 1,
+
+		/// Depth Stencilとして使用可能なテクスチャです
+		DepthStencilTargetable    = 1ull << 2,
+
+		/// Shader resourceとして使用可能なテクスチャです
+		ShaderResource            = 1ull << 3,
+
+		/// sRGBのGamma空間として符号化されているテクスチャです.  
+		SRGB                      = 1ull << 4,
+
+		/// CPUによって記述可能なテクスチャデータです
+		CPUWritable               = 1ull << 5,
+
+		/// タイリングされていないテクスチャとして使用
+		NoTiling                  = 1ull << 6,
+
+		/// 動画用のデコーダとして使用します
+		VideoDecode               = 1ull << 7,
+
+		/// テクスチャが書き込まれる可能性があるときに使用します
+		Dynamic                   = 1ull << 8,
+
+		/// レンダーパスのアタッチメントとして使用されます
+		InputAttachmentRead       = 1ull << 9,
+
+		///視線の中心に高い解像度をおくテクスチャのエンコーディングを使用する際に使用
+		Foveation                 = 1ull << 10,
+
+		/// Volume Textureのタイリング用
+		Tiling3D                  = 1ull << 11,
+
+		/// GPUやCPUのバックエンドを持たず, TileBasedDifferred Renderingのタイルメモリ上のみに存在します. 
+		Memoryless                = 1ull << 12,
+
+		/// ShaderResourceViewを作成しないようにします
+		DisableSRVCreation        = 1ull << 13,
+
+		/// Unordered access viewを使用可能です
+		UnorderedAccess           = 1ull << 14,
+
+		/// スワップチェインでバックバッファとして使用可能です
+		Presentable               = 1ull << 15,
+
+		/// CPUのReadBackリソースとして使用可能です.
+		CPUReadback               = 1ull << 16,
+
+		/// FastVRAMを使用する
+		FastVRAM                  = 1ull << 17,
+
+		/// 仮想メモリに割り当てられるテクスチャ
+		Virtual                   = 1ull << 18,
+
+		/// レンダーターゲットは高速なClearを使用しない
+		NoFastClear               = 1ull << 19,
+
+		/// DepthStencilのResolve用のテクスチャです
+		DepthStencilResolveTarget = 1ull << 20,
+
+		/// このテクスチャがストリーミング可能な2Dテクスチャであり、テクスチャストリーミングプールのバジェットにカウントされるべきであることを示すために使用されるフラグ
+		Streamable                = 1ull << 21,
+
+		/// Atomic操作が使用可能 (64bit)
+		Atomic64Compatible        = 1ull << 22,
+
+		/// Atomic操作が使用可能
+		AtomicCompatible          = 1ull << 23,
+
+		/// 外部アクセスが使用可能
+		External                  = 1ull << 24,
+
+		/// 予約リソース
+		ReservedResource          = 1ull << 25
+	};
+
+	ENUM_CLASS_FLAGS(TextureCreateFlags);
+
 	/****************************************************************************
 	*				  			GPUTextureMetaData
 	*************************************************************************//**
-	*  @class     GPUTextureMetaData
-	*  @brief     GPU total infomation
+	/*  @brief   テクスチャの作成情報を一通り管理している構造体
 	*****************************************************************************/
 	struct GPUTextureMetaData
 	{
 	public:
-	
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		#pragma region Public Member Variables
 		/*! @brief 画面クリア時の初期化で塗りつぶされる色 (RenderTarget, DepthStencilなどに使用します.)*/
 		ClearValue ClearColor = ClearValue();
+
+		/*! @brief GPUリソースの使用方法を定義します.*/
+		TextureCreateFlags Usage = TextureCreateFlags::None;
 
 		/*! @brief テクスチャの幅です. (pixel単位で指定します)*/
 		gu::uint32 Width = 1;
@@ -1357,44 +1471,264 @@ namespace rhi::core
 		/*! @brief GPUリソースの状態を定義します. (状態変更はコマンドリストのPushTransitionBarrierとFlushResourceBarriersを使用)*/
 		ResourceState State = ResourceState::GeneralRead; 
 
-		/*! @brief GPUリソースの使用方法を定義します.*/
-		BufferCreateFlags BufferCreateFlags = BufferCreateFlags::None;
+		/*! @brief 1ピクセルの型定義*/
+		PixelFormat PixelFormat = PixelFormat::Unknown;
 
-		/*! @brief */
-		PixelFormat       PixelFormat      = PixelFormat::Unknown;           // pixel color format 
-		MultiSample       Sample           = MultiSample::Count1;            // multi sample count
-		ResourceDimension Dimension        = ResourceDimension::Texture1D; // texture resource dimension
-		ResourceType      ResourceType     = ResourceType::Unknown;          // GPU resource type
-		MemoryHeap        HeapType         = MemoryHeap::Default;            // gpu heap type
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		bool IsCPUAccessible() const
-		{
-			return HeapType == MemoryHeap::Upload || HeapType == MemoryHeap::Readback
-				|| (HeapType == MemoryHeap::Custom);
-		}
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
-		GPUTextureMetaData() = default;
-		
-		/****************************************************************************
-		**                Static Function
-		*****************************************************************************/
-		static GPUTextureMetaData Texture1D                (const gu::uint64 width, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
-		static GPUTextureMetaData Texture1DArray           (const gu::uint64 width, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
-		static GPUTextureMetaData Texture2D                (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
-		static GPUTextureMetaData Texture2DArray           (const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
-		static GPUTextureMetaData Texture3D                (const gu::uint64 width, const gu::uint64 height, const gu::uint64 depth, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
-		static GPUTextureMetaData Texture2DMultiSample     (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::MultiSample sample, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
-		static GPUTextureMetaData Texture2DArrayMultiSample(const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const core::MultiSample sample, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
-		static GPUTextureMetaData CubeMap                  (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
-		static GPUTextureMetaData CubeMapArray             (const gu::uint64 width, const gu::uint64 height, const gu::uint64 length, const core::PixelFormat format, const gu::uint64 mipLevels = 1, const core::BufferCreateFlags usage = core::BufferCreateFlags::None);
-		static GPUTextureMetaData RenderTarget             (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::ClearValue& clearValue = core::ClearValue());
-		static GPUTextureMetaData RenderTargetMultiSample  (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue = ClearValue());
-		static GPUTextureMetaData DepthStencil             (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::ClearValue& clearValue = core::ClearValue());
-		static GPUTextureMetaData DepthStencilMultiSample  (const gu::uint64 width, const gu::uint64 height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue = ClearValue());
+		/*! @brief サンプリングの個数を定義します*/
+		MultiSample Sample = MultiSample::Count1;
+
+		/*! @brief GPUリソースの次元定義 (バッファなのかn次元テクスチャなのか)*/
+		ResourceDimension Dimension = ResourceDimension::Texture2D;
+
+		/*! @brief ResourceDimensionの詳細です*/
+		ResourceType ResourceType = ResourceType::Unknown;
+
+		/*! @brief GPUのメモリを格納するヒープ領域の種類を決定します. */
+		MemoryHeap HeapType = MemoryHeap::Default;
+		#pragma endregion
+
+		#pragma region Static Function
+		/*!**********************************************************************
+		*  @brief  　 1次元のテクスチャの基本設定を返します.  
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture1D 
+		(
+			const gu::uint32 width, 
+			const core::PixelFormat format, 
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 1次元のテクスチャ配列の基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint16               テクスチャの配列数
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture1DArray 
+		(
+			const gu::uint32 width, 
+			const gu::uint16 length, 
+			const core::PixelFormat format,
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 2次元のテクスチャの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture2D
+		(
+			const gu::uint32 width,
+			const gu::uint32 height, 
+			const core::PixelFormat format,
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 2次元のテクスチャ配列の基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const gu::uint16               テクスチャの配列数
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture2DArray
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height, 
+			const gu::uint16 length, 
+			const core::PixelFormat format, 
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 3次元のテクスチャの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const gu::uint16               テクスチャの奥行 [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture3D
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height, 
+			const gu::uint16 depth, 
+			const core::PixelFormat format, 
+			const gu::uint8 mipLevels = 1,
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 2次元のテクスチャ(マルチサンプリングの指定あり)の基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::MultiSample        何ピクセルのサンプリングを行うか
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture2DMultiSample
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height,
+			const core::PixelFormat format, 
+			const core::MultiSample sample, 
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 2次元のテクスチャ配列(マルチサンプリングの指定あり)の基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const gu::uint16               テクスチャ配列数
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::MultiSample        何ピクセルのサンプリングを行うか
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData Texture2DArrayMultiSample
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height, 
+			const gu::uint16 length, 
+			const core::PixelFormat format, 
+			const core::MultiSample sample, 
+			const gu::uint8 mipLevels = 1,
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 キューブマップの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData CubeMap
+		(
+			const gu::uint32 width,
+			const gu::uint32 height, 
+			const core::PixelFormat format, 
+			const gu::uint8 mipLevels = 1,
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 キューブマップ配列の基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const gu::uint16               テクスチャ配列数
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const gu::uint8                ミップマップ (Defaultは1)
+		*  @param[in] const core::TextureCreateFlags テクスチャの使用方法 (DefaultはNone)
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData CubeMapArray
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height,
+			const gu::uint16 length, 
+			const core::PixelFormat format, 
+			const gu::uint8 mipLevels = 1, 
+			const core::TextureCreateFlags usage = core::TextureCreateFlags::None
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 レンダーターゲットの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::ClearValue         クリアカラー
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData RenderTarget
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height, 
+			const core::PixelFormat format, 
+			const core::ClearValue& clearValue = core::ClearValue()
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 レンダーターゲットの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::MultiSample        何ピクセルのサンプリングを行うか
+		*  @param[in] const core::ClearValue         クリアカラー
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData RenderTargetMultiSample
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height,
+			const core::PixelFormat format, 
+			const core::MultiSample sample, 
+			const core::ClearValue& clearValue = ClearValue()
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 デプスステンシルの基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::ClearValue         クリアカラー
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData DepthStencil 
+		(
+			const gu::uint32 width,
+			const gu::uint32 height,
+			const core::PixelFormat format,
+			const core::ClearValue& clearValue = core::ClearValue()
+		);
+
+		/*!**********************************************************************
+		*  @brief  　 デプスステンシルの(マルチサンプルの指定あり)基本設定を返します.
+		*  @param[in] const gu::uint32               テクスチャの横幅 [pixel]
+		*  @param[in] const gu::uint32               テクスチャの高さ [pixel]
+		*  @param[in] const core::PixelFormal        1ピクセルあたりの型を定義します
+		*  @param[in] const core::MultiSample        何ピクセルのサンプリングを行うか
+		*  @param[in] const core::ClearValue         クリアカラー
+		*  @return    GPUTextureMetaData
+		*************************************************************************/
+		static GPUTextureMetaData DepthStencilMultiSample 
+		(
+			const gu::uint32 width, 
+			const gu::uint32 height, 
+			const core::PixelFormat format, 
+			const core::MultiSample sample, 
+			const core::ClearValue& clearValue = ClearValue()
+		);
+
+		#pragma endregion 
 
 	private:
 		inline gu::uint64 CalculateByteSize() { return  Width * Height * (Dimension == ResourceDimension::Texture3D ? DepthOrArraySize : 1) * PixelFormatSizeOf::Get(PixelFormat) * static_cast<gu::uint64>(Sample); }

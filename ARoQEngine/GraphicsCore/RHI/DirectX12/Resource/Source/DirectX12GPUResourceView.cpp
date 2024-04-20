@@ -178,7 +178,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::Texture1D:
 			{
 				resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE1D;
-				resourceViewDesc.Texture1D.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.Texture1D.MipLevels           = static_cast<UINT>(_texture->GetMaxMipMapLevel());
 				resourceViewDesc.Texture1D.MostDetailedMip     = 0;
 				resourceViewDesc.Texture1D.ResourceMinLODClamp = 0.0f;
 				break;
@@ -186,7 +186,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::Texture2D:
 			{
 				resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2D;
-				resourceViewDesc.Texture2D.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.Texture2D.MipLevels           = static_cast<UINT>(_texture->GetMaxMipMapLevel());
 				resourceViewDesc.Texture2D.MostDetailedMip     = 0; 
 				resourceViewDesc.Texture2D.PlaneSlice          = static_cast<UINT>(_planeSlice);
 				resourceViewDesc.Texture2D.ResourceMinLODClamp = 0; // Accessible all the mipmap level resources. 
@@ -196,7 +196,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::Texture3D:
 			{
 				resourceViewDesc.ViewDimension                 = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE3D;
-				resourceViewDesc.Texture3D.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.Texture3D.MipLevels           = static_cast<UINT>(_texture->GetMaxMipMapLevel());
 				resourceViewDesc.Texture3D.MostDetailedMip     = 0;
 				resourceViewDesc.Texture3D.ResourceMinLODClamp = 0.0f;
 				break;
@@ -204,7 +204,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			case core::ResourceType::TextureCube:
 			{
 				resourceViewDesc.ViewDimension                   = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURECUBE;
-				resourceViewDesc.TextureCube.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.TextureCube.MipLevels           = static_cast<UINT>(_texture->GetMaxMipMapLevel());
 				resourceViewDesc.TextureCube.MostDetailedMip     = 0;
 				resourceViewDesc.TextureCube.ResourceMinLODClamp = 0.0f;
 				break;
@@ -213,7 +213,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			{
 				resourceViewDesc.ViewDimension                      = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE1DARRAY;
 				resourceViewDesc.Texture1DArray.FirstArraySlice     = 0;
-				resourceViewDesc.Texture1DArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.Texture1DArray.MipLevels           = static_cast<UINT>(_texture->GetMaxMipMapLevel());
 				resourceViewDesc.Texture1DArray.MostDetailedMip     = 0;
 				resourceViewDesc.Texture1DArray.ArraySize           = static_cast<UINT>(_texture->GetArrayLength());
 				resourceViewDesc.Texture1DArray.ResourceMinLODClamp = 0; // Accessible all the mipmap level resources. 
@@ -223,7 +223,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			{
 				resourceViewDesc.ViewDimension                      = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
 				resourceViewDesc.Texture2DArray.FirstArraySlice     = 0;
-				resourceViewDesc.Texture2DArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.Texture2DArray.MipLevels           = static_cast<UINT>(_texture->GetMaxMipMapLevel());
 				resourceViewDesc.Texture2DArray.MostDetailedMip     = 0;
 				resourceViewDesc.Texture2DArray.ArraySize           = static_cast<UINT>(_texture->GetArrayLength());
 				resourceViewDesc.Texture2DArray.PlaneSlice          = _planeSlice;
@@ -247,7 +247,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 			{
 				resourceViewDesc.ViewDimension                        = D3D12_SRV_DIMENSION::D3D12_SRV_DIMENSION_TEXTURECUBEARRAY;
 				resourceViewDesc.TextureCubeArray.First2DArrayFace    = 0;
-				resourceViewDesc.TextureCubeArray.MipLevels           = static_cast<UINT>(_texture->GetMipMapLevels());
+				resourceViewDesc.TextureCubeArray.MipLevels           = static_cast<UINT>(_texture->GetMaxMipMapLevel());
 				resourceViewDesc.TextureCubeArray.MostDetailedMip     = 0;
 				resourceViewDesc.TextureCubeArray.ResourceMinLODClamp = 0;
 				resourceViewDesc.TextureCubeArray.NumCubes            = static_cast<UINT>(_texture->GetArrayLength() / 6);

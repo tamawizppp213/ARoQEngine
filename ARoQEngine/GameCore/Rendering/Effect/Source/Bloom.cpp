@@ -197,7 +197,7 @@ void Bloom::PrepareResourceView(const gu::tstring& name)
 
 	if (!_luminanceSRV || !_luminanceUAV)
 	{
-		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, BufferCreateFlags::UnorderedAccess);
+		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, TextureCreateFlags::UnorderedAccess);
 		const auto texture = device->CreateTexture(metaData, name + SP("Luminance"));
 		_luminanceSRV = device->CreateResourceView(ResourceViewType::Texture  , texture,0,0, nullptr);
 		_luminanceUAV = device->CreateResourceView(ResourceViewType::RWTexture, texture,0,0, nullptr);

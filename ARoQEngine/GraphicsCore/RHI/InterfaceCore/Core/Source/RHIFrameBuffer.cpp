@@ -60,7 +60,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 	{
 		if (!_renderTargets[i]) { continue; }
 		if (_renderTargets[i]->GetDimension() != ResourceDimension::Texture2D) { throw std::runtime_error("Wrong render target dimension"); }
-		if (!gu::HasAnyFlags(_renderTargets[i]->GetUsage(), core::BufferCreateFlags::RenderTarget))
+		if (!gu::HasAnyFlags(_renderTargets[i]->GetUsage(), core::TextureCreateFlags::RenderTargetable))
 		{ 
 			throw std::runtime_error("Wrong resource usage"); 
 		}
@@ -69,7 +69,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 	if (_depthStencil)
 	{
 		if (_depthStencil->GetDimension() != ResourceDimension::Texture2D ) { throw std::runtime_error("Wrong depthStencil dimension"); }
-		if (!gu::HasAnyFlags(_depthStencil->GetUsage(), BufferCreateFlags::DepthStencil)) { throw std::runtime_error("Wrong resource usage"); }
+		if (!gu::HasAnyFlags(_depthStencil->GetUsage(), TextureCreateFlags::DepthStencilTargetable)) { throw std::runtime_error("Wrong resource usage"); }
 	}
 }
 #pragma endregion Prepare
@@ -80,8 +80,8 @@ Viewport RHIFrameBuffer::GetFullViewport(const size_t index) const noexcept
 	return
 	{
 		0.0f, 0.0f,
-		(float)_renderTargets[index]->GetWidth(_renderTargets[index]->GetMipMapLevels()),
-		(float)_renderTargets[index]->GetHeight(_renderTargets[index]->GetMipMapLevels()),
+		(float)_renderTargets[index]->GetWidth(0),
+		(float)_renderTargets[index]->GetHeight(0),
 		0.0f, 1.0f
 	};
 }
@@ -91,8 +91,8 @@ ScissorRect RHIFrameBuffer::GetFullScissorRect(const size_t index) const noexcep
 	return 
 	{
 		0,0, 
-		(long)_renderTargets[index]->GetWidth(_renderTargets[index]->GetMipMapLevels()),
-		(long)_renderTargets[index]->GetHeight(_renderTargets[index]->GetMipMapLevels())
+		(long)_renderTargets[index]->GetWidth(0),
+		(long)_renderTargets[index]->GetHeight(0)
 	};
 }
 

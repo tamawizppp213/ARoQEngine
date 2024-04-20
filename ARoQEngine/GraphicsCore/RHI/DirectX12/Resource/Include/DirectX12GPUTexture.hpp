@@ -24,10 +24,9 @@
 namespace rhi::directX12
 {
 	/****************************************************************************
-	*				  			GPUBuffer
+	*				  			GPUTexture
 	*************************************************************************//**
-	*  @class     GPUBuffer
-	*  @brief     Buffer
+	/*  @brief     テクスチャとして使用する場合のGPUリソースです.
 	*****************************************************************************/
 	class GPUTexture: public core::GPUTexture
 	{
@@ -41,9 +40,7 @@ namespace rhi::directX12
 
 		void Write(const gu::SharedPointer<core::RHICommandList>& commandList, const gm::RGBA* pixel) override;
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
+		#pragma region Public Member Variables
 		/*!**********************************************************************
 		*  @brief     バッファとしてのGPUリソースかどうかを判定します.
 		*************************************************************************/
@@ -62,6 +59,8 @@ namespace rhi::directX12
 		
 		void SetName(const gu::tstring& name) override;
 		
+		#pragma endregion
+
 		/*!**********************************************************************
 		*  @brief     現時点のGPUResourceの扱い方 (IndexBufferとして使用するなど...)を設定します
 		*  @attention 手動での切り替えは基本的に行わないでください. (この関数はバリアの使用を目的として使用します.)

@@ -171,7 +171,7 @@ void Sobel::PrepareResourceView()
 
 	// sobel texture
 	{
-		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, BufferCreateFlags::UnorderedAccess);
+		const auto metaData = GPUTextureMetaData::Texture2D(Screen::GetScreenWidth(), Screen::GetScreenHeight(), format, 1, TextureCreateFlags::UnorderedAccess);
 		const auto texture = device->CreateTexture(metaData);
 		_uav = device->CreateResourceView(ResourceViewType::RWTexture, texture,0,0, nullptr);
 		_srv = device->CreateResourceView(ResourceViewType::Texture  , texture,0,0, nullptr);

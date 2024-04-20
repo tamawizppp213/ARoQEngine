@@ -233,7 +233,7 @@ void ZPrepass::PrepareFrameBuffers(const gu::tstring& name)
 		auto renderInfo    = GPUTextureMetaData::RenderTarget(_width, _height, PixelFormat::R32_FLOAT, clearColor);
 		auto depthInfo     = GPUTextureMetaData::DepthStencil(_width, _height, PixelFormat::D32_FLOAT, clearDepthColor);
 
-		renderInfo.BufferCreateFlags = (BufferCreateFlags::UnorderedAccess | BufferCreateFlags::RenderTarget);
+		renderInfo.Usage = (TextureCreateFlags::UnorderedAccess | TextureCreateFlags::RenderTargetable);
 
 		const auto renderTexture = device->CreateTexture(renderInfo, name + SP("RenderTarget"));
 		const auto depthTexture  = device->CreateTexture(depthInfo , name + SP("DepthStemcil"));

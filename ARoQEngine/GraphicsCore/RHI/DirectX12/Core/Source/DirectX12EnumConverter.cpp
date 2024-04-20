@@ -373,6 +373,43 @@ D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::BufferCreateFlags u
 
 	return res;
 }
+
+D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::TextureCreateFlags usage)
+{
+	using enum core::TextureCreateFlags;
+
+	static gu::DynamicArray<core::TextureCreateFlags> sourcePool =
+	{
+		None,
+		RenderTargetable,
+		DepthStencilTargetable,
+		UnorderedAccess,
+	};
+
+	static gu::DynamicArray<D3D12_RESOURCE_FLAGS> targetPool =
+	{
+		D3D12_RESOURCE_FLAG_NONE,
+		D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET,
+		D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
+		D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
+	};
+
+	auto res = D3D12_RESOURCE_FLAG_NONE;
+
+	for (size_t index = 0; index < sourcePool.Size(); index++)
+	{
+		if (gu::HasAnyFlags(usage, sourcePool[index]))
+			res = res | targetPool[index];
+	}
+
+	if (!gu::HasAnyFlags(usage, ShaderResource))
+	{
+		res |= D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
+	}
+
+	return res;
+}
+
 D3D12_RESOURCE_DIMENSION   EnumConverter::Convert(const rhi::core::ResourceDimension dimension)
 {
 	using enum core::ResourceDimension;

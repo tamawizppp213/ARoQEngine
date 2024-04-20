@@ -33,6 +33,7 @@ namespace rhi::vulkan
 	{
 	public:
 		using VulkanBufferUsageFlags = std::pair<VkBufferUsageFlags, VkImageUsageFlags>;
+
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
