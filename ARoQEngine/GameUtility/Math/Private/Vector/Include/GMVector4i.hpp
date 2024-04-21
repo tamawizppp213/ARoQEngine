@@ -161,6 +161,21 @@ namespace gm
 			return x <= right.x && y <= right.y && z <= right.z && w <= right.w;
 		}
 
+		/*! @brief 右シフト*/
+		__forceinline Vector4i operator >> (const IntType right) const { return Vector4i(x >> right, y >> right, z >> right, w >> right); }
+
+		/*! @brief 左シフト*/
+		__forceinline Vector4i operator << (const IntType right) const { return Vector4i(x << right, y << right, z << right, w << right); }
+
+		/*! @brief bit and */
+		__forceinline Vector4i operator &(const IntType right) const { return Vector4i(x & right, y & right, z & right, w & right); }
+
+		/*! @brief bit or */
+		__forceinline Vector4i operator |(const IntType right) const { return Vector4i(x | right, y | right, z | right, w | right); }
+
+		/*! @brief bit xor*/
+		__forceinline Vector4i operator ^(const IntType right) const { return Vector4i(x ^ right, y ^ right, z ^ right, w ^ right); }
+
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor

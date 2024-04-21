@@ -75,7 +75,7 @@ namespace gm
 		/*!**********************************************************************
 		*  @brief     0ベクトルかどうかを返します
 		*************************************************************************/
-		__forceinline bool IsZero() { return *this == Vector3i(0, 0, 0); }
+		__forceinline bool IsZero() const { return *this == Vector3i(0, 0, 0); }
 
 		#pragma endregion 
 
@@ -118,6 +118,21 @@ namespace gm
 
 		/*! @brief 除算*/
 		__forceinline Vector3i& operator /=(const Vector3i& right) { *this = *this / right; return *this; }
+
+		/*! @brief 右シフト*/
+		__forceinline Vector3i operator >> (const IntType right) const { return Vector3i(x >> right, y >> right, z >> right); }
+
+		/*! @brief 左シフト*/
+		__forceinline Vector3i operator << (const IntType right) const { return Vector3i(x << right, y << right, z << right); }
+
+		/*! @brief bit and */
+		__forceinline Vector3i operator &(const IntType right) const { return Vector3i(x & right, y & right, z & right); }
+
+		/*! @brief bit or */
+		__forceinline Vector3i operator |(const IntType right) const { return Vector3i(x | right, y | right, z | right); }
+
+		/*! @brief bit xor*/
+		__forceinline Vector3i operator ^(const IntType right) const { return Vector3i(x ^ right, y ^ right, z ^ right); }
 
 		/*! @brief 全ての要素が等しいか*/
 		__forceinline bool operator ==(const Vector3i& right) const noexcept
