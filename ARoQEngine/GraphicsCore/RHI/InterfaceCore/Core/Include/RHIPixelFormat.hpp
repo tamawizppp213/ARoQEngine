@@ -96,11 +96,11 @@ namespace rhi::core
 		// Block compression format (画像を4x4ピクセル単位のブロックに分割して, それぞれのブロックごとに圧縮を行う方式)
 		// https://www.webtech.co.jp/blog/optpix_labs/format/6993/
 		BC1_UNORM            = 49, //!< 2 byte RGB(5,6,5bit) + 2 byte RGB(5,6,5bit) + 4 byte(2 bit * 4 pixel * 4 pixelで, 2bitには3色+透明か4色の組み合わせを格納)で0～1のLinearテクスチャ 
-		BC1_SRGB             = 50, //!< 2 byte RGB(5,6,5bit) + 2 byte RGB(5,6,5bit) + 4 byte(2 bit * 4 pixel * 4 pixelで, 2bitには3色+透明か4色の組み合わせを格納)で0～1のSRGBテクスチャ 
+		BC1_UNORM_SRGB       = 50, //!< 2 byte RGB(5,6,5bit) + 2 byte RGB(5,6,5bit) + 4 byte(2 bit * 4 pixel * 4 pixelで, 2bitには3色+透明か4色の組み合わせを格納)で0～1のSRGBテクスチャ 
 		BC2_UNORM            = 51, //!< 8 byte (4bitでの各ピクセル毎のアルファ値) + 2 byte RGB(5,6,5bit) + 2 byte RGB(5,6,5bit) + 4 byte(2 bit * 4 pixel * 4 pixelで, 2bitには3色+透明か4色の組み合わせを格納)で0～1のLinearテクスチャ
-		BC2_SRGB             = 52, //!< 8 byte (4bitでの各ピクセル毎のアルファ値) + 2 byte RGB(5,6,5bit) + 2 byte RGB(5,6,5bit) + 4 byte(2 bit * 4 pixel * 4 pixelで, 2bitには3色+透明か4色の組み合わせを格納)で0～1のSRGBテクスチャ
+		BC2_UNORM_SRGB       = 52, //!< 8 byte (4bitでの各ピクセル毎のアルファ値) + 2 byte RGB(5,6,5bit) + 2 byte RGB(5,6,5bit) + 4 byte(2 bit * 4 pixel * 4 pixelで, 2bitには3色+透明か4色の組み合わせを格納)で0～1のSRGBテクスチャ
 		BC3_UNORM            = 53, //!< 1 byte (アルファの代表値0) + 1 byte (アルファの代表値1) + 6 byte (ピクセル毎のインデックス各3bitを使って線形補間) + 2 byte(RGB 5,6,5bit) + 2 byte(RGB 5,6,5bit) + 4byte(ピクセル毎のインデックス(各2bit)) 
-		BC3_SRGB             = 54, //!< 1 byte (アルファの代表値0) + 1 byte (アルファの代表値1) + 6 byte (ピクセル毎のインデックス各3bitを使って線形補間) + 2 byte(RGB 5,6,5bit) + 2 byte(RGB 5,6,5bit) + 4byte(ピクセル毎のインデックス(各2bit)) 
+		BC3_UNORM_SRGB       = 54, //!< 1 byte (アルファの代表値0) + 1 byte (アルファの代表値1) + 6 byte (ピクセル毎のインデックス各3bitを使って線形補間) + 2 byte(RGB 5,6,5bit) + 2 byte(RGB 5,6,5bit) + 4byte(ピクセル毎のインデックス(各2bit)) 
 		BC4_UNORM            = 55, //!< 1チャンネルの情報だけを格納する(輝度とかハイトマップとか)1 byte(代表値 0), 1 byte (代表値1) + 6 byte(各ピクセル毎のインデックス各3bit) 0.0～1.0
 		BC4_SNORM            = 56, //!< 1チャンネルの情報だけを格納する(輝度とかハイトマップとか)1 byte(代表値 0), 1 byte (代表値1) + 6 byte(各ピクセル毎のインデックス各3bit) -1.0～1.0
 		BC5_UNORM            = 57, //!< 2チャンネルの情報を格納します(法線マップのxy成分を格納してzは計算で出す等) 1 byte(成分1の代表値0) + 1 byte(成分1の代表値1) + 6 byte成分1の各ピクセル毎のインデックス(3bit)が成分2も同じだけ格納 0.0～1.0
@@ -267,7 +267,10 @@ namespace rhi::core
 		/*! @brief 対象ピクセルフォーマットに対して, 実現可能なGPUリソースの使い方を定義*/
 		PixelFormatCapabilities Capabilities = PixelFormatCapabilities::None;
 
-		/*! @brief 画像データの設定情報*/
+		/*! @brief プラットフォームで設定するピクセルフォーマット (DirectX12やVulkanのEnum管理に使用します.)*/
+		gu::uint32 PlatformFormat = 0;
+
+		/*! @brief 画像データの設定情報 ()*/
 		PixelFormat Format = PixelFormat::Unknown;
 
 		/*! @brief 今回のプラットフォームとレンダリングの組み合わせでサポートされているフォーマットか*/

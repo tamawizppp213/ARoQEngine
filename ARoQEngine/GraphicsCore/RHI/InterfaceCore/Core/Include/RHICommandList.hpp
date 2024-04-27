@@ -210,9 +210,12 @@ namespace rhi::core
 		---------------------------------------------------------------------*/
 		
 		#pragma region Copy
-		/*-------------------------------------------------------------------
-		-                Copy Resource
-		---------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     テクスチャの領域を全てのSubresource込みで別のテクスチャにコピーする
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー先のテクスチャ
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー元のテクスチャ
+		*  @return void
+		*************************************************************************/
 		virtual void CopyResource(const gu::SharedPointer<GPUTexture>& dest, const gu::SharedPointer<GPUTexture>& source) = 0;
 		
 		/*!**********************************************************************
@@ -225,6 +228,15 @@ namespace rhi::core
 		*  @return void
 		*************************************************************************/
 		virtual void CopyBufferRegion(const gu::SharedPointer<GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) = 0;
+		
+		/*!**********************************************************************
+		*  @brief     GPUテクスチャの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー先のテクスチャ
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー元のテクスチャ
+		*  @param[in] const core::GPUTextureCopyInfo : コピーする際の情報
+		*  @return void
+		*************************************************************************/
+		virtual void CopyTextureRegion(const gu::SharedPointer<core::GPUTexture>& destination, const gu::SharedPointer<core::GPUTexture>& source, const core::GPUTextureCopyInfo& copyInfo) = 0;
 		#pragma endregion Copys
 
 		#pragma region Resource Barrier

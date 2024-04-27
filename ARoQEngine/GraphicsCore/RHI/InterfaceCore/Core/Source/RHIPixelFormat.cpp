@@ -70,11 +70,11 @@ namespace
 		PixelFormatInfo(PixelFormat::R10G10B10A2_UNORM   ,          1,          1,          1,            4,          4, true),
 		PixelFormatInfo(PixelFormat::R10G10B10A2_UINT    ,          1,          1,          1,            4,          4, true),
 		PixelFormatInfo(PixelFormat::BC1_UNORM           ,          4,          4,          1,            8,          3, true),
-		PixelFormatInfo(PixelFormat::BC1_SRGB            ,          4,          4,          1,            8,          3, true),
+		PixelFormatInfo(PixelFormat::BC1_UNORM_SRGB      ,          4,          4,          1,            8,          3, true),
 		PixelFormatInfo(PixelFormat::BC2_UNORM           ,          4,          4,          1,            16,         4, true),
-		PixelFormatInfo(PixelFormat::BC2_SRGB            ,          4,          4,          1,            16,         4, true),
+		PixelFormatInfo(PixelFormat::BC2_UNORM_SRGB      ,          4,          4,          1,            16,         4, true),
 		PixelFormatInfo(PixelFormat::BC3_UNORM           ,          4,          4,          1,            16,         4, true),
-		PixelFormatInfo(PixelFormat::BC3_SRGB            ,          4,          4,          1,            16,         4, true),
+		PixelFormatInfo(PixelFormat::BC3_UNORM_SRGB      ,          4,          4,          1,            16,         4, true),
 		PixelFormatInfo(PixelFormat::BC4_UNORM           ,          4,          4,          1,             8,         1, true),
 		PixelFormatInfo(PixelFormat::BC4_SNORM           ,          4,          4,          1,             8,         1, true),
 		PixelFormatInfo(PixelFormat::BC5_UNORM           ,          4,          4,          1,            16,         2, true),
@@ -282,11 +282,11 @@ bool PixelFormatInfo::IsBlockCompressed() const
 	switch (Format)
 	{
 		case BC1_UNORM:
-		case BC1_SRGB:
+		case BC1_UNORM_SRGB:
 		case BC2_UNORM:
-		case BC2_SRGB:
+		case BC2_UNORM_SRGB:
 		case BC3_UNORM:
-		case BC3_SRGB:
+		case BC3_UNORM_SRGB:
 		case BC4_UNORM:
 		case BC4_SNORM:
 		case BC5_UNORM:

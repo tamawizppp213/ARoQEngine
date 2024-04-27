@@ -76,6 +76,16 @@ namespace rhi::core
 		gu::uint16 GetDepth (const gu::uint8 mipLevel = 0) const noexcept;
 
 		/*!**********************************************************************
+		*  @brief     テクスチャのWidth, Height, Depthをpixel単位で指定します
+		*  @param[in] const gu::uint8 テクスチャのミップマップレベル
+		*  @return    gm::Vector3i<uint32>
+		*************************************************************************/
+		__forceinline gm::Vector3i<gu::uint32> GetTexelSize(const gu::uint8 mipLevel = 0) const noexcept
+		{
+			return gm::Vector3i<gu::uint32>(GetWidth(mipLevel), GetHeight(0), static_cast<gu::uint32>(GetDepth()));
+		}
+
+		/*!**********************************************************************
 		*  @brief     テクスチャ全体のバイトサイズを計算します. 
 		*  @param[in] const gu::uint8 テクスチャのミップマップレベル
 		*  @return    gu::uint64 テクスチャのバイトサイズ
@@ -194,7 +204,7 @@ namespace rhi::core
 		*  @brief     Textureの作成情報を一通り管理している構造体を変換
 		*  @return    GPUTextureMetaData
 		*************************************************************************/
-		__forceinline const GPUTextureMetaData GetMetaData() const noexcept { return _metaData; }
+		__forceinline const GPUTextureMetaData& GetMetaData() const noexcept { return _metaData; }
 
 		#pragma endregion 
 

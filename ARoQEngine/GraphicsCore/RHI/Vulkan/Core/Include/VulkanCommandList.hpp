@@ -152,6 +152,14 @@ namespace rhi::vulkan
 		/*----------------------------------------------------------------------*/
 		void CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) override {};
 
+		/*!**********************************************************************
+		*  @brief     GPUテクスチャの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー先のテクスチャ
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー元のテクスチャ
+		*  @param[in] const core::GPUTextureCopyInfo : コピーする際の情報
+		*  @return void
+		*************************************************************************/
+		virtual void CopyTextureRegion(const gu::SharedPointer<core::GPUTexture>& destination, const gu::SharedPointer<core::GPUTexture>& source, const core::GPUTextureCopyInfo& copyInfo) override {};
 		#pragma region Resource Barrier
 		
 		/*!**********************************************************************

@@ -21,6 +21,7 @@
 #include "../Include/DirectX12FrameBuffer.hpp"
 #include "../Include/DirectX12Instance.hpp"
 #include "../Include/DirectX12Query.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIPixelFormat.hpp"
 #include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUTexture.hpp"
 #include "GraphicsCore/RHI/DirectX12/Resource/Include/DirectX12GPUBuffer.hpp"
@@ -105,6 +106,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	/*-------------------------------------------------------------------
 	-                   Device Support Check
 	---------------------------------------------------------------------*/
+	SetupPlatformPixelFormats();
 	CheckDXRSupport();
 	CheckVRSSupport();
 	CheckRenderPassSupport();
@@ -1161,6 +1163,85 @@ void RHIDevice::FindHighestFeatureLevel()
 }
 
 /****************************************************************************
+*                    SetupPlatformPixelFormats
+*************************************************************************//**
+*  @brief     DirectX12で使用可能なピクセルフォーマットを設定する
+*
+*  @param[in] void
+*
+*  @return 　　void
+*****************************************************************************/
+void RHIDevice::SetupPlatformPixelFormats()
+{
+	using namespace rhi::core;
+	using enum PixelFormat;
+	
+	PixelFormatInfo::Get(Unknown             ).PlatformFormat = DXGI_FORMAT_UNKNOWN;
+	PixelFormatInfo::Get(R32G32B32A32_FLOAT  ).PlatformFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	PixelFormatInfo::Get(R32G32B32A32_UINT   ).PlatformFormat = DXGI_FORMAT_R32G32B32A32_UINT;
+	PixelFormatInfo::Get(R32G32B32A32_SINT   ).PlatformFormat = DXGI_FORMAT_R32G32B32A32_SINT;
+	PixelFormatInfo::Get(R16G16B16A16_FLOAT  ).PlatformFormat = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	PixelFormatInfo::Get(R16G16B16A16_UINT   ).PlatformFormat = DXGI_FORMAT_R16G16B16A16_UINT;
+	PixelFormatInfo::Get(R16G16B16A16_SINT   ).PlatformFormat = DXGI_FORMAT_R16G16B16A16_SINT;
+	PixelFormatInfo::Get(R16G16B16A16_UNORM  ).PlatformFormat = DXGI_FORMAT_R16G16B16A16_UNORM;
+	PixelFormatInfo::Get(R16G16B16A16_SNORM  ).PlatformFormat = DXGI_FORMAT_R16G16B16A16_SNORM;
+	PixelFormatInfo::Get(R8G8B8A8_UINT       ).PlatformFormat = DXGI_FORMAT_R8G8B8A8_UINT;
+	PixelFormatInfo::Get(R8G8B8A8_SINT       ).PlatformFormat = DXGI_FORMAT_R8G8B8A8_SINT;
+	PixelFormatInfo::Get(R8G8B8A8_UNORM      ).PlatformFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	PixelFormatInfo::Get(R8G8B8A8_SNORM      ).PlatformFormat = DXGI_FORMAT_R8G8B8A8_SNORM;
+	PixelFormatInfo::Get(R8G8B8A8_UNORM_SRGB ).PlatformFormat = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	PixelFormatInfo::Get(B8G8R8A8_UNORM      ).PlatformFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
+	PixelFormatInfo::Get(B8G8R8A8_UNORM_SRGB ).PlatformFormat = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+	PixelFormatInfo::Get(R32G32B32_FLOAT     ).PlatformFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+	PixelFormatInfo::Get(R32G32B32_UINT      ).PlatformFormat = DXGI_FORMAT_R32G32B32_UINT;
+	PixelFormatInfo::Get(R32G32B32_SINT      ).PlatformFormat = DXGI_FORMAT_R32G32B32_SINT;
+	PixelFormatInfo::Get(R32G32_FLOAT        ).PlatformFormat = DXGI_FORMAT_R32G32_FLOAT;
+	PixelFormatInfo::Get(R32G32_UINT         ).PlatformFormat = DXGI_FORMAT_R32G32_UINT;
+	PixelFormatInfo::Get(R32G32_SINT         ).PlatformFormat = DXGI_FORMAT_R32G32_SINT;
+	PixelFormatInfo::Get(R16G16_FLOAT        ).PlatformFormat = DXGI_FORMAT_R16G16_FLOAT;
+	PixelFormatInfo::Get(R16G16_UINT         ).PlatformFormat = DXGI_FORMAT_R16G16_UINT;
+	PixelFormatInfo::Get(R16G16_SINT         ).PlatformFormat = DXGI_FORMAT_R16G16_SINT;
+	PixelFormatInfo::Get(R8G8_UINT           ).PlatformFormat = DXGI_FORMAT_R8G8_UINT;
+	PixelFormatInfo::Get(R8G8_SINT           ).PlatformFormat = DXGI_FORMAT_R8G8_SINT;
+	PixelFormatInfo::Get(R8G8_UNORM          ).PlatformFormat = DXGI_FORMAT_R8G8_UNORM;
+	PixelFormatInfo::Get(R8G8_SNORM          ).PlatformFormat = DXGI_FORMAT_R8G8_SNORM;
+	PixelFormatInfo::Get(D32_FLOAT           ).PlatformFormat = DXGI_FORMAT_D32_FLOAT;
+	PixelFormatInfo::Get(R32_FLOAT           ).PlatformFormat  = DXGI_FORMAT_R32_FLOAT;
+	PixelFormatInfo::Get(R32_UINT            ).PlatformFormat = DXGI_FORMAT_R32_UINT;
+	PixelFormatInfo::Get(R32_SINT            ).PlatformFormat = DXGI_FORMAT_R32_SINT;
+	PixelFormatInfo::Get(D16_UNORM           ).PlatformFormat = DXGI_FORMAT_D16_UNORM;
+	PixelFormatInfo::Get(R16_FLOAT           ).PlatformFormat = DXGI_FORMAT_R16_FLOAT;
+	PixelFormatInfo::Get(R16_UINT            ).PlatformFormat = DXGI_FORMAT_R16_UINT;
+	PixelFormatInfo::Get(R16_SINT            ).PlatformFormat = DXGI_FORMAT_R16_SINT;
+	PixelFormatInfo::Get(R16_UNORM           ).PlatformFormat = DXGI_FORMAT_R16_UNORM;
+	PixelFormatInfo::Get(R16_SNORM           ).PlatformFormat = DXGI_FORMAT_R16_SNORM;
+	PixelFormatInfo::Get(R8_UINT             ).PlatformFormat = DXGI_FORMAT_R8_UINT;
+	PixelFormatInfo::Get(R8_SINT             ).PlatformFormat = DXGI_FORMAT_R8_SINT;
+	PixelFormatInfo::Get(R8_UNORM            ).PlatformFormat = DXGI_FORMAT_R8_UNORM;
+	PixelFormatInfo::Get(R8_SNORM            ).PlatformFormat = DXGI_FORMAT_R8_SNORM;
+	PixelFormatInfo::Get(A8_UNORM            ).PlatformFormat = DXGI_FORMAT_A8_UNORM;
+	PixelFormatInfo::Get(R1_UNORM            ).PlatformFormat = DXGI_FORMAT_R1_UNORM;
+	PixelFormatInfo::Get(D32_FLOAT_S8X24_UINT).PlatformFormat = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+	PixelFormatInfo::Get(D24_UNORM_S8_UINT   ).PlatformFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	PixelFormatInfo::Get(R10G10B10A2_UNORM   ).PlatformFormat = DXGI_FORMAT_R10G10B10A2_UNORM;
+	PixelFormatInfo::Get(R10G10B10A2_UINT    ).PlatformFormat = DXGI_FORMAT_R10G10B10A2_UINT;
+	PixelFormatInfo::Get(BC1_UNORM           ).PlatformFormat = DXGI_FORMAT_BC1_UNORM;
+	PixelFormatInfo::Get(BC1_UNORM_SRGB      ).PlatformFormat = DXGI_FORMAT_BC1_UNORM_SRGB;
+	PixelFormatInfo::Get(BC2_UNORM           ).PlatformFormat = DXGI_FORMAT_BC2_UNORM;
+	PixelFormatInfo::Get(BC2_UNORM_SRGB      ).PlatformFormat = DXGI_FORMAT_BC2_UNORM_SRGB;
+	PixelFormatInfo::Get(BC3_UNORM           ).PlatformFormat = DXGI_FORMAT_BC3_UNORM;
+	PixelFormatInfo::Get(BC3_UNORM_SRGB      ).PlatformFormat = DXGI_FORMAT_BC3_UNORM_SRGB;
+	PixelFormatInfo::Get(BC4_UNORM           ).PlatformFormat = DXGI_FORMAT_BC4_UNORM;
+	PixelFormatInfo::Get(BC4_SNORM           ).PlatformFormat = DXGI_FORMAT_BC4_SNORM;
+	PixelFormatInfo::Get(BC5_UNORM           ).PlatformFormat = DXGI_FORMAT_BC5_UNORM;
+	PixelFormatInfo::Get(BC5_SNORM           ).PlatformFormat = DXGI_FORMAT_BC5_SNORM;
+	PixelFormatInfo::Get(BC7_UNORM           ).PlatformFormat = DXGI_FORMAT_BC7_UNORM;
+	PixelFormatInfo::Get(BC7_UNORM_SRGB      ).PlatformFormat = DXGI_FORMAT_BC7_UNORM_SRGB;
+	PixelFormatInfo::Get(BC6H_UFLOAT16       ).PlatformFormat = DXGI_FORMAT_BC6H_UF16;
+	PixelFormatInfo::Get(BC6H_SFLOAT16       ).PlatformFormat = DXGI_FORMAT_BC6H_SF16;
+}
+
+/****************************************************************************
 *                     FindHighestShaderModel
 *************************************************************************//**
 *  @brief      DirectXで使用可能な最大のシェーダーモデルを設定します@n
@@ -1168,6 +1249,7 @@ void RHIDevice::FindHighestFeatureLevel()
 *****************************************************************************/
 void RHIDevice::FindHighestShaderModel()
 {
+	
 	const D3D_SHADER_MODEL shaderModels[] =
 	{
 		D3D_HIGHEST_SHADER_MODEL,

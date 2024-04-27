@@ -29,6 +29,7 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
+#include "GameUtility/Memory/Include/GUAlignment.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -363,7 +364,7 @@ void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology
 /****************************************************************************
 *                       SetViewport
 *************************************************************************//**
-*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
+/*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
 *  @param[in] const core::Viewport* : 描画領域を示す単一のビューポート
 *  @return 　　void
 *****************************************************************************/
@@ -396,7 +397,7 @@ void RHICommandList::SetViewport(const core::Viewport& viewport)
 /****************************************************************************
 *                       SetViewport
 *************************************************************************//**
-*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します
+/*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します
 *  @param[in] const core::Viewport* : 描画領域を記述した配列, もしくは単一のViewportのアドレス
 *  @param[in] const gu::uint32 : ビューポートの配列数
 *  @return 　　void
@@ -677,10 +678,7 @@ void RHICommandList::FlushResourceBarriers()
 /****************************************************************************
 *                     CopyResource
 *************************************************************************//**
-*  @fn      void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source)
-
-*
-*  @brief   あるリソースの領域をまとめて別のリソースにコピーする.
+/* @brief   あるリソースの領域をまとめて別のリソースにコピーする.
 *           組み合わせに応じて自動でバッファかテクスチャかを判定します
 *
 *  @param[in] const gu::SharedPointer<core::GPUTexture>& コピー先のバッファ
@@ -696,9 +694,7 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUTexture>& des
 /****************************************************************************
 *                     CopyResource
 *************************************************************************//**
-*  @fn        void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& dest, const gu::SharedPointer<core::GPUResource>& source)
-*
-*  @brief     あるリソースの領域をまとめて別のリソースにコピーする. 
+/* @brief     あるリソースの領域をまとめて別のリソースにコピーする. 
 *           組み合わせに応じて自動でバッファかテクスチャかを判定します
 *
 *  @param[in] gu::SharedPointer<core::GPUBuffer> コピー先のバッファ
@@ -743,7 +739,7 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& de
 /****************************************************************************
 *                     CopyBufferRegion
 *************************************************************************//**
-*  @brief     GPUバッファの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
+/*  @brief     GPUバッファの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
 *
 *  @param[in] const gu::SharedPointer<core::GPUBuffer> : コピー先のバッファ
 *  @param[in] const gu::uint64 : コピー先の初期書き取りポインタをずらすoffset byte
@@ -797,6 +793,128 @@ void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& 
 	_barrierBatcher->Flush(_commandList.Get());
 }
 
+/****************************************************************************
+*                     CopyTextureRegion
+*************************************************************************//**
+/*  @brief     GPUテクスチャの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
+*
+*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー先のテクスチャ
+*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー元のテクスチャ
+*  @param[in] const core::GPUTextureCopyInfo : コピーする際の情報
+
+*  @return 　　void
+*****************************************************************************/
+void RHICommandList::CopyTextureRegion(const gu::SharedPointer<core::GPUTexture>& destination, const gu::SharedPointer<core::GPUTexture>& source, const core::GPUTextureCopyInfo& copyInfo)
+{
+	const auto  dxDestinationTexture  = static_cast<directX12::GPUTexture*>(destination.Get());
+	const auto  dxSourceTexture       = static_cast<directX12::GPUTexture*>(source.Get());
+	const auto& dxDestinationDesc     = dxDestinationTexture->GetMetaData();
+	const auto& dxSourceDesc          = dxSourceTexture->GetMetaData();
+
+	/*-------------------------------------------------------------------
+	-         コピーの仕方を確認する
+	---------------------------------------------------------------------*/
+	// 全てのピクセルをコピーするかどうか
+	const bool isAllPixel       = destination->GetByteSize() == source->GetByteSize() &&
+		                          (copyInfo.TexelSize.IsZero() || copyInfo.TexelSize == source->GetTexelSize());
+
+	// 全てのサブリソースIDをコピーするかどうか
+	const bool isAllSubresource = (dxDestinationDesc.MipMapLevels == dxSourceDesc.MipMapLevels) && 
+		                          (dxSourceDesc.MipMapLevels      == copyInfo.MipMapCount) && 
+		                          (destination->GetArrayLength()  == source->GetArrayLength()) && 
+		                          (source->GetArrayLength()       == copyInfo.ArraySliceCount);
+
+	// GPUからCPUにReadbackが発生するかどうか
+	const bool useReadback = gu::HasAnyFlags(destination->GetUsage(), core::TextureCreateFlags::CPUReadback);
+
+	// 範囲チェック
+	Checkf(copyInfo.ArraySliceCount + copyInfo.DestinationInitArraySlice <= destination->GetArrayLength()   , "This function exceeds the array slice count in the destination texture\n");
+	Checkf(copyInfo.ArraySliceCount + copyInfo.SourceInitArraySlice      <= source     ->GetArrayLength()   , "This function exceeds the array slice count in the source texture\n");
+	Checkf(copyInfo.MipMapCount     + copyInfo.DestinationInitMipMap     <= destination->GetMaxMipMapLevel(), "This function exceeds the mipmap count in the destination texture\n ");
+	Checkf(copyInfo.MipMapCount     + copyInfo.SourceInitMipMap          <= source     ->GetMaxMipMapLevel(), "This function exceeds the mipmap count in the source texture \n");
+
+
+	/*-------------------------------------------------------------------
+	-         コピーの初期状態と終了状態の定義
+	---------------------------------------------------------------------*/
+	core::ResourceState barrierAfterStates[]  = { destination->GetResourceState(), source->GetResourceState() };
+	core::ResourceState barrierBeforeStates[] = { core::ResourceState::CopyDestination, core::ResourceState::CopySource };
+
+	// バリアにより, リソースの読み方を伝える
+	_barrierBatcher->PushTransitionBarrier(gu::StaticPointerCast<core::GPUResource>(destination), barrierAfterStates[0]);
+	_barrierBatcher->PushTransitionBarrier(gu::StaticPointerCast<core::GPUResource>(source)     , barrierAfterStates[1]);
+
+	/*-------------------------------------------------------------------
+	-       一部分のみコピーする場合
+	---------------------------------------------------------------------*/
+	if (!isAllPixel || !isAllSubresource || useReadback)
+	{
+		const auto copyTexelSize = copyInfo.TexelSize.IsZero() ? source->GetTexelSize() >> copyInfo.SourceInitMipMap : copyInfo.TexelSize;
+
+		// テクスチャ配列の種類に応じてコピー
+		for (gu::uint16 sliceIndex = 0; sliceIndex < copyInfo.ArraySliceCount; ++sliceIndex)
+		{
+			const auto sourceSliceIndex      = copyInfo.SourceInitArraySlice      + sliceIndex;
+			const auto destinationSliceIndex = copyInfo.DestinationInitArraySlice + sliceIndex;
+
+			// mipmapのレベルに応じてコピー
+			for (gu::uint32 mipmapIndex = 0; mipmapIndex < copyInfo.MipMapCount; ++mipmapIndex)
+			{
+				const auto sourceMipmapIndex      = copyInfo.SourceInitMipMap      + mipmapIndex;
+				const auto destinationMipmapIndex = copyInfo.DestinationInitMipMap + mipmapIndex;
+				const auto endCopyPosition        = copyInfo.SourceInitTexelPosition + copyTexelSize;
+
+				// Todo : Box (まだアラインメントの指定が入っていません)
+				const D3D12_BOX sourceBox =
+				{
+					.left   = copyInfo.SourceInitTexelPosition.x >> mipmapIndex,
+					.top    = copyInfo.SourceInitTexelPosition.y >> mipmapIndex,
+					.front  = copyInfo.SourceInitTexelPosition.z >> mipmapIndex, 
+					.right  = 0, //gu::Alignment::AlignUpArbitary(endCopyPosition.x > 1u << mipmapIndex ? 1u : endCopyPosition.x >> mipmapIndex),
+					.bottom = 0,
+					.back   = 0
+				};
+
+				// コピー元のCopyLocation
+				D3D12_TEXTURE_COPY_LOCATION sourceCopyLocation{};
+				sourceCopyLocation.pResource = dxSourceTexture->GetResourcePtr();
+				sourceCopyLocation.Type      = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+				sourceCopyLocation.SubresourceIndex = dxSourceTexture->GetSubresourceIndex(sourceMipmapIndex, sourceSliceIndex, 0);
+
+				// コピー先のCopyLocation
+				D3D12_TEXTURE_COPY_LOCATION destinationCopyLocation{};
+				destinationCopyLocation.pResource = dxDestinationTexture->GetResourcePtr();
+				destinationCopyLocation.Type      = useReadback ? D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT : D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+				destinationCopyLocation.SubresourceIndex = dxDestinationTexture->GetSubresourceIndex(destinationMipmapIndex, destinationSliceIndex, 0);
+
+				// readbackが指定される場合, footprintを行う
+				if (useReadback)
+				{
+					// Todo
+				}
+
+				// コピーの実行
+				_commandList->CopyTextureRegion(&destinationCopyLocation, 0, 0, 0, &sourceCopyLocation, &sourceBox);
+			}
+		}
+	}
+	/*-------------------------------------------------------------------
+	-      　全ての領域をコピーする場合
+	---------------------------------------------------------------------*/
+	else
+	{
+		_commandList->CopyResource(
+			gu::StaticPointerCast<directX12::GPUTexture>(destination)->GetResource().Get(),
+			gu::StaticPointerCast<directX12::GPUTexture>(source)     ->GetResource().Get());
+	}
+
+	/*-------------------------------------------------------------------
+	-       元の状態に戻す
+	---------------------------------------------------------------------*/
+	_barrierBatcher->PushTransitionBarrier(gu::StaticPointerCast<core::GPUResource>(destination), barrierBeforeStates[0]);
+	_barrierBatcher->PushTransitionBarrier(gu::StaticPointerCast<core::GPUResource>(source), barrierBeforeStates[1]);
+	_barrierBatcher->Flush(_commandList.Get());
+}
 
 #pragma endregion Copy
 #pragma endregion GPU Command

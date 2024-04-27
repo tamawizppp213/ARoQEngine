@@ -43,7 +43,7 @@ namespace rhi::vulkan
 		*  @param[in] const bool : 手動でマップを行うか
 		*  @return    void
 		*************************************************************************/
-		virtual void UploadByte(const void* data, const gu::uint64 allocateByteSize, const gu::uint64 offsetByte, const gu::SharedPointer<core::RHICommandList>& commandList, const bool useMapManually) override {};
+		virtual void UploadByte([[maybe_unused]]const void* data, [[maybe_unused]] const gu::uint64 allocateByteSize, [[maybe_unused]] const gu::uint64 offsetByte, [[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList, [[maybe_unused]] const bool useMapManually) override {};
 
 		/*!**********************************************************************
 		*  @brief  　　配列の要素を指定するインデックスを使ってCPUからGPUにメモリを配置します.
@@ -55,7 +55,7 @@ namespace rhi::vulkan
 		*  @param[in] const bool : 手動でマップを行うか
 		*  @return    void
 		*************************************************************************/
-		virtual void UploadIndex(const void* data, const gu::uint64 elementCount, const gu::uint64 offsetIndex, const gu::SharedPointer<core::RHICommandList>& commandList, const bool useMapManually) override;
+		virtual void UploadIndex([[maybe_unused]] const void* data, [[maybe_unused]] const gu::uint64 elementCount, [[maybe_unused]] const gu::uint64 offsetIndex, [[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList, [[maybe_unused]] const bool useMapManually) override;
 
 		/****************************************************************************
 		**                Public Member Variables

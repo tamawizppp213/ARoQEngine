@@ -1,9 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUUUID.hpp
-///             @brief  Universally Unique Identifier
-///                     全てのResource中辛一いに識別するために使用されるラベル
-///             @author toide
-///             @date   2023/10/28 23:21:04
+///  @file   GUUUID.hpp
+///  @brief  Universally Unique Identifier@n
+///          全てのResourceを一意に識別するために使用されるラベル
+///  @author toide
+///  @date   2023/10/28 23:21:04
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GUUUID_HPP

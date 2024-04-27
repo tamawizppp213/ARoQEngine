@@ -13,6 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUEnumClassFlags.hpp"
+#include "GameUtility/Math/Private/Vector/Include/GMVector3i.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIPixelFormat.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -110,17 +112,17 @@ namespace rhi::core
 		CountOfType //!< CommandListの種類数
 	};
 	#pragma endregion 
+
 	#pragma region Index
 	/****************************************************************************
 	*				  			IndexType
 	*************************************************************************//**
-	*  @enum      IndexType
-	*  @brief     UINT 32 or 16. This value shows byte count.
+	/*  @brief  gu::uint 32 or 16. 値はバイト数を指定することになります
 	*****************************************************************************/
 	enum class IndexType : gu::uint8
 	{
-		UInt32 = 4,
-		UInt16 = 2,
+		UInt32 = 4, // 32 bitのインデックス
+		UInt16 = 2, // 16 bitのインデックス
 	};
 	/****************************************************************************
 	*				  			InputFormat
@@ -137,6 +139,7 @@ namespace rhi::core
 		R32G32B32A32_FLOAT, // 16 byte format
 		R32G32B32A32_INT,   // 16 byte format
 	};
+
 	class InputFormatSizeOf
 	{
 	public :
@@ -154,7 +157,7 @@ namespace rhi::core
 			}
 		}
 	};
-	#pragma endregion         Index
+	#pragma endregion
 
 	#pragma region Window Surface
 	/****************************************************************************
@@ -254,7 +257,7 @@ namespace rhi::core
 
 	#pragma endregion
 
-#pragma region Pixel
+	#pragma region Pixel
 
 	enum class ShadingRate : gu::uint8
 	{
@@ -326,56 +329,6 @@ namespace rhi::core
 
 
 	/****************************************************************************
-	*				  			PixelFormat
-	*************************************************************************//**
-	*  @class     PixelFormat
-	*  @brief     Render pixel format 
-	*****************************************************************************/
-	enum class PixelFormat
-	{
-		Unknown,  
-
-		// RGBA format
-		R32G32B32A32_FLOAT,
-		R16G16B16A16_FLOAT, 
-		R8G8B8A8_UNORM,
-		B8G8R8A8_UNORM,
-
-		// RGB format
-		R32G32B32_FLOAT,
-		R16G16B16_FLOAT,
-
-		// RG format
-		R32G32_FLOAT,
-
-		// Single format
-		D32_FLOAT,
-		R32_FLOAT,
-		R32_SINT,
-		R32_UINT,
-		R16_FLOAT,
-		R16_SINT,
-		R16_UINT,
-		R8_SINT,
-		R8_UINT,
-
-		// Block compression format (画像を4x4ピクセル単位のブロックに分割して, それぞれのブロックごとに圧縮を行う方式)
-		// https://www.webtech.co.jp/blog/optpix_labs/format/6993/
-		BC1_UNORM,   // 8byte : RGB, RGBA画像
-		BC2_UNORM,   // 16byte:RGBA(16諧調アルファ)
-		BC3_UNORM,   // 16byte:RGBA(多階調アルファ)
-		BC4_UNORM,   // 8byte :1成分のデータ (ハイトマップ等)
-		BC5_UNORM,   // 16byte:2成分のデータ (法線マップ等)
-		BC7_UNORM,   // 16byte:HDRのRGB画像
-		BC6H_UNORM,  // 16byte:RGB画像, RGBA画像 (多階調アルファ)
-
-		R10G10B10A2_UNORM,
-		D24_UNORM_S8_UINT,
-		B8G8R8A8_UNORM_SRGB,
-		CountOfPixelFormat
-	};
-
-	/****************************************************************************
 	*				  			PixelFormatSizeOf
 	*************************************************************************//**
 	*  @class     PixelFormatSizeOf
@@ -422,6 +375,7 @@ namespace rhi::core
 			}
 		}
 	};
+
 	/****************************************************************************
 	*				  			ClearValue
 	*************************************************************************//**
@@ -467,7 +421,7 @@ namespace rhi::core
 			Type.DSV.Depth = depth; Type.DSV.Stencil = stencil; 
 		}
 	};
-#pragma endregion         Pixel
+	#pragma endregion         Pixel
 #pragma region Shader
 	/****************************************************************************
 	*				  			ShaderVisibleFlag
@@ -1003,7 +957,7 @@ namespace rhi::core
 	};
 
 	#pragma endregion InputAssemblyState
-#pragma region GPUResource
+	#pragma region GPUResource
 	enum class RootSignatureType : gu::uint8
 	{
 		Rasterize,
@@ -1178,7 +1132,8 @@ namespace rhi::core
 		OnlyRayTracing = 1,
 		AllShaderTypes = 2,
 	};
-#pragma region GPUBuffer
+
+	#pragma region GPUBuffer
 	/****************************************************************************
 	*				  			BufferCreateFlags
 	*************************************************************************//**
@@ -1348,8 +1303,9 @@ namespace rhi::core
 	private:
 		gu::uint64 CalcConstantBufferByteSize(const gu::uint64 byteSize) { return (byteSize + 255) & ~255; }
 	};
-#pragma endregion         GPUBuffer
-#pragma region GPUTexture
+	#pragma endregion
+
+	#pragma region GPUTexture
 	
 	/****************************************************************************
 	*				  			TextureCreateFlags
@@ -1734,8 +1690,43 @@ namespace rhi::core
 		inline gu::uint64 CalculateByteSize() { return  Width * Height * (Dimension == ResourceDimension::Texture3D ? DepthOrArraySize : 1) * PixelFormatSizeOf::Get(PixelFormat) * static_cast<gu::uint64>(Sample); }
 	};
 
-#pragma endregion        GPUTexture
-#pragma region RayTracing
+	/****************************************************************************
+	*				  			GPUTextureCopyInfo
+	*************************************************************************//**
+	/*  @brief   テクスチャをGPU上でコピーする際に使用する構造体
+	*****************************************************************************/
+	struct GPUTextureCopyInfo
+	{
+		/*! @brief コピーしたいテクスチャのバイトサイズ. その際, 0を指定すると全体をコピーするという意味になります.*/
+		gm::Vector3i<gu::uint32> TexelSize = gm::Vector3i<gu::uint32>::Zero();
+
+		/*! @brief コピー先の読み取り開始テクセル位置. 基本は0に設定されます*/
+		gm::Vector3i<gu::uint32> DestinationInitTexelPosition = gm::Vector3i<gu::uint32>::Zero();
+
+		/*! @brief コピー元の読み取り開始テクセル位置. 基本は0に設定されます*/
+		gm::Vector3i<gu::uint32> SourceInitTexelPosition = gm::Vector3i<gu::uint32>::Zero();
+ 
+		/*! @brief コピー先のMipmapの初期値*/
+		gu::uint32 DestinationInitMipMap = 0;
+
+		/*! @brief コピー元のMipmapの初期値*/
+		gu::uint32 SourceInitMipMap      = 0;
+
+		//! @brief コピー先の, テクスチャ配列上のテクスチャ種類の初期値
+		gu::uint16 DestinationInitArraySlice = 0;
+
+		//! @brief コピー元の, テクスチャ配列上のテクスチャ種類の初期値
+		gu::uint16 SourceInitArraySlice = 0;
+
+		/*! @brief テクスチャ配列の場合におけるテクスチャの種類*/
+		gu::uint16 ArraySliceCount = 1;
+
+		/*! @brief ミップマップの個数*/
+		gu::uint8  MipMapCount = 1;
+	};
+	#pragma endregion 
+
+	#pragma region RayTracing
 	/****************************************************************************
 	*				  			RayTracingGeometryFlags
 	*************************************************************************//**
@@ -1791,8 +1782,9 @@ namespace rhi::core
 		gu::uint64 UpdateScratchDataSize    = 0;
 	};
 	
-#pragma endregion RayTracing
-#pragma endregion GPUResource
+	#pragma endregion 
+
+	#pragma endregion GPUResource
 #pragma region Render Pass
 	enum class AttachmentLoad : gu::uint8
 	{

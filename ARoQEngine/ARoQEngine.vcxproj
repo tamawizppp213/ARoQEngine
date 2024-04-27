@@ -392,6 +392,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Include\GMVectorInt.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Math\Private\Matrix\Include\GMMatrix3f.hpp">
       <SubType>
       </SubType>
@@ -512,6 +516,14 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector2i.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector3i.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector4d.hpp">
       <SubType>
       </SubType>
@@ -529,6 +541,14 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector3d.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Math\Private\Vector\Include\GMVector4i.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Memory\Include\GUAlignment.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -687,6 +707,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIMultiGPUMask.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GraphicsCore\RHI\InterfaceCore\Core\Include\RHIPixelFormat.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -1026,6 +1050,10 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIMultiGPUMask.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GraphicsCore\RHI\InterfaceCore\Core\Source\RHIPixelFormat.cpp">
       <SubType>
       </SubType>
     </ClCompile>

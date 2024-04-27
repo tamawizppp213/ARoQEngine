@@ -193,15 +193,29 @@ namespace rhi::directX12
 		*************************************************************************/
 		virtual void CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& dest, const gu::uint64 destOffset, const gu::SharedPointer<core::GPUBuffer>& source, const gu::uint64 sourceOffset, const gu::uint64 copyByteSize) override;
 
-		/*----------------------------------------------------------------------
-		*  @brief : テクスチャの領域をまとめて別のリソースにコピーする
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     GPUテクスチャの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー先のテクスチャ
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー元のテクスチャ
+		*  @param[in] const core::GPUTextureCopyInfo : コピーする際の情報
+		*  @return void
+		*************************************************************************/
+		virtual void CopyTextureRegion(const gu::SharedPointer<core::GPUTexture>& destination, const gu::SharedPointer<core::GPUTexture>& source, const core::GPUTextureCopyInfo& copyInfo) override;
+
+		/*!**********************************************************************
+		*  @brief     テクスチャの領域を全てのSubresource込みで別のテクスチャにコピーする
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー先のテクスチャ
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー元のテクスチャ
+		*  @return void
+		*************************************************************************/
 		virtual void CopyResource(const gu::SharedPointer<core::GPUTexture>& dest, const gu::SharedPointer<core::GPUTexture>& source) override;
 		
-		/*----------------------------------------------------------------------
-		*  @brief : あるリソースの領域をまとめて別のリソースにコピーする. 
-		*           組み合わせに応じて自動でバッファかテクスチャかを判定します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     GPUリソースの領域を別のGPUリソースにコピーする. (バッファとテクスチャのような異種間のリソースでも大丈夫です)
+		*  @param[in] const gu::SharedPointer<core::GPUResource> : コピー先のリソース
+		*  @param[in] const gu::SharedPointer<core::GPUResource> : コピー元のリソース
+		*  @return void
+		*************************************************************************/
 		void CopyResource(const gu::SharedPointer<core::GPUResource>& dest, const gu::SharedPointer<core::GPUResource>& source);
 		#pragma endregion
 
@@ -247,6 +261,7 @@ namespace rhi::directX12
 		#pragma endregion Resource Barrier
 
 		#pragma endregion 
+
 		#pragma region Public Member Variables
 		/*!**********************************************************************
 		*  @brief     コマンドリストのComptrを返します
@@ -261,6 +276,7 @@ namespace rhi::directX12
 		virtual void SetName(const gu::tstring& name) override;
 		
 		#pragma endregion
+
 		#pragma region Public Constructor and Destructor
 		/*! @brief デフォルトコンストラクタ*/
 		RHICommandList() = default;

@@ -64,6 +64,7 @@ namespace
 	}
 }
 
+#pragma region Constructor and Destructor 
 GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::tstring& name) : core::GPUTexture(device, name)
 {
 	
@@ -104,6 +105,8 @@ GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const R
 	_hasAllocated = true;
 }
 
+#pragma endregion Constructor and Destructor
+
 #pragma region Public Function
 void GPUTexture::SetName(const gu::tstring& name)
 {
@@ -113,8 +116,6 @@ void GPUTexture::SetName(const gu::tstring& name)
 /****************************************************************************
 *                     Load
 *************************************************************************//**
-*  @fn        void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
-*
 *  @brief     Load texture 
 *
 *  @param[in] const gu::tstring& filePath
