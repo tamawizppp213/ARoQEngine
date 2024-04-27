@@ -138,6 +138,7 @@ namespace gu
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, nullptr)) \
 		{                 \
 			gu::ErrorLogger::PutDebugBreak(); \
+			gu::ErrorLogger::ExecuteCrash();\
 		}\
     }
 #endif
@@ -152,6 +153,7 @@ namespace gu
 		if(!(expression) && gu::ErrorLogger::CheckOrVerifyFailed(#expression, __FILE__, __LINE__, format)) \
 		{                 \
 			gu::ErrorLogger::PutDebugBreak(); \
+			gu::ErrorLogger::ExecuteCrash();\
 		}\
     }
 #endif
