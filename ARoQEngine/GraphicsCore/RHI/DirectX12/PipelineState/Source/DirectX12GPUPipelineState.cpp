@@ -48,7 +48,9 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	desc.BlendState            = _blendState          ? static_cast<GPUBlendState*>       (_blendState         .Get())->GetBlendState()        : D3D12_BLEND_DESC();
 	desc.RasterizerState       = _rasterizerState     ? static_cast<GPURasterizerState*>  (_rasterizerState    .Get())->GetRasterizerState()   : D3D12_RASTERIZER_DESC();
 	desc.Flags                 = D3D12_PIPELINE_STATE_FLAG_NONE;
-	desc.DSVFormat             = EnumConverter::Convert(_renderPass->GetDepthAttachment().HasValue() ? _renderPass->GetDepthAttachment()->Format : core::PixelFormat::Unknown);
+	desc.DSVFormat             = _renderPass->GetDepthAttachment().HasValue() ?
+		                         (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_renderPass->GetDepthAttachment()->Format).PlatformFormat : 
+		                         (DXGI_FORMAT)core::PixelFormatInfo::GetConst(core::PixelFormat::Unknown).PlatformFormat;
 	desc.IBStripCutValue       = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED;
 	desc.NodeMask              = _device->GetGPUMask().Value();
 	desc.NumRenderTargets      = static_cast<UINT>(_renderPass->GetColorAttachmentSize());
@@ -58,7 +60,7 @@ void GPUGraphicsPipelineState::CompleteSetting()
 
 	for (int i = 0; i < _renderPass->GetColorAttachmentSize(); ++i)
 	{
-		desc.RTVFormats[i] = EnumConverter::Convert(_renderPass->GetColorAttachment(i)->Format);
+		desc.RTVFormats[i] = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_renderPass->GetColorAttachment(i)->Format).PlatformFormat;
 	}
 	
 	/*-------------------------------------------------------------------

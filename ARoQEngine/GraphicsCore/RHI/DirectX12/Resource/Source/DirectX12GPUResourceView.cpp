@@ -164,7 +164,7 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 	---------------------------------------------------------------------*/
 	if (_texture)
 	{
-		resourceViewDesc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
+		resourceViewDesc.Format = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_texture->GetPixelFormat()).PlatformFormat;
 		
 		// For depth stencil texture
 		// EnumConverterÇ≈ÇÕD32Ç™ìnÇ≥ÇÍÇƒÇµÇ‹Ç§ÇΩÇﬂ, ì¡ï Ç…à»â∫ÇÃëŒâûÇçsÇ¢Ç‹ÇµÇΩ. 
@@ -364,7 +364,7 @@ void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptor
 	---------------------------------------------------------------------*/
 	if (_texture)
 	{
-		resourceViewDesc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
+		resourceViewDesc.Format = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_texture->GetPixelFormat()).PlatformFormat;
 		switch (_texture->GetResourceType())
 		{
 			case core::ResourceType::Texture1D:
@@ -433,7 +433,7 @@ void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptor
 		if (_buffer->GetResourceType() == core::ResourceType::Buffer)
 		{
 			resourceViewDesc.ViewDimension               = D3D12_UAV_DIMENSION_BUFFER;
-			resourceViewDesc.Format                      = EnumConverter::Convert(_buffer->GetMetaData().Format);
+			resourceViewDesc.Format                      = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_buffer->GetMetaData().Format).PlatformFormat;
 			resourceViewDesc.Buffer.CounterOffsetInBytes = 0;
 			resourceViewDesc.Buffer.FirstElement         = 0;
 			resourceViewDesc.Buffer.Flags                = D3D12_BUFFER_UAV_FLAG_NONE;
@@ -481,7 +481,7 @@ void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptor
 	---------------------------------------------------------------------*/
 	if (_texture)
 	{
-		desc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
+		desc.Format = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_texture->GetPixelFormat()).PlatformFormat;
 
 		switch (_texture->GetResourceType())
 		{
@@ -594,7 +594,7 @@ void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptor
 	D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
 	if (_texture)
 	{
-		desc.Format = EnumConverter::Convert(_texture->GetPixelFormat());
+		desc.Format = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_texture->GetPixelFormat()).PlatformFormat;
 		desc.Flags  = D3D12_DSV_FLAG_NONE;
 		switch (_texture->GetResourceType())
 		{

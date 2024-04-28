@@ -238,7 +238,7 @@ void RHISwapchain::SetUp()
 	/*-------------------------------------------------------------------
 	-        BackBuffer format
 	---------------------------------------------------------------------*/
-	_backBufferFormat = EnumConverter::Convert(_desc.PixelFormat);
+	_backBufferFormat = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_desc.PixelFormat).PlatformFormat;
 
 	/*-------------------------------------------------------------------
 	-        —§‘Ì‹‚ğs‚¤‚½‚ß‚É, —¼–Ú‚Å‰æ‘œ‚ğ‚¸‚ç‚·‘Î‰‚ğs‚¤‚©‚Ç‚¤‚©

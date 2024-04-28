@@ -48,7 +48,6 @@ namespace rhi::directX12
 		static D3D12_TEXTURE_ADDRESS_MODE Convert(const rhi::core::SamplerAddressMode addressingMode);
 		static D3D12_STATIC_BORDER_COLOR  Convert(const rhi::core::BorderColor borderColor);
 #pragma endregion Sampler State
-		static DXGI_FORMAT                Convert(const rhi::core::PixelFormat pixelFormat);
 		static DXGI_FORMAT                Convert(const rhi::core::IndexType   indexFormat);
 		static DXGI_FORMAT                Convert(const rhi::core::InputFormat inputFormat);
 #pragma region BlendState

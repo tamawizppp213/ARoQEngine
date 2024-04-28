@@ -564,7 +564,7 @@ void GPUTexture::ConvertDxMetaData(D3D12_RESOURCE_DESC& resourceDesc)
 	resourceDesc.Height             = static_cast<UINT>(_metaData.Height);
 	resourceDesc.DepthOrArraySize   = static_cast<UINT16>(_metaData.DepthOrArraySize);
 	resourceDesc.MipLevels          = static_cast<UINT16>(_metaData.MipMapLevels);
-	resourceDesc.Format             = EnumConverter::Convert(_metaData.PixelFormat);
+	resourceDesc.Format             = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_metaData.PixelFormat).PlatformFormat;
 	resourceDesc.SampleDesc.Count   = static_cast<UINT>(_metaData.Sample);
 	resourceDesc.SampleDesc.Quality = 0;
 	resourceDesc.Layout             = D3D12_TEXTURE_LAYOUT::D3D12_TEXTURE_LAYOUT_UNKNOWN;

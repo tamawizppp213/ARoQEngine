@@ -139,36 +139,6 @@ D3D12_FILTER EnumConverter::Convert(const rhi::core::FilterOption filter)
 	}
 }
 #pragma endregion Sampler State
-DXGI_FORMAT  EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
-{
-	switch (pixelFormat)
-	{
-		using enum core::PixelFormat;
-
-		case R8G8B8A8_UNORM     : return DXGI_FORMAT_R8G8B8A8_UNORM;
-		case B8G8R8A8_UNORM     : return DXGI_FORMAT_B8G8R8A8_UNORM;
-		case R16G16B16A16_FLOAT : return DXGI_FORMAT_R16G16B16A16_FLOAT;
-		case R32G32B32A32_FLOAT : return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case R32G32_FLOAT       : return DXGI_FORMAT_R32G32_FLOAT;
-		case R32G32B32_FLOAT    : return DXGI_FORMAT_R32G32B32_FLOAT;
-		case D24_UNORM_S8_UINT  : return DXGI_FORMAT_D24_UNORM_S8_UINT;
-		case R10G10B10A2_UNORM  : return DXGI_FORMAT_R10G10B10A2_UNORM;
-		case D32_FLOAT          : return DXGI_FORMAT_D32_FLOAT;
-		case R32_FLOAT          : return DXGI_FORMAT_R32_FLOAT;
-		case B8G8R8A8_UNORM_SRGB: return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
-		case BC1_UNORM          : return DXGI_FORMAT_BC1_UNORM;
-		case BC2_UNORM          : return DXGI_FORMAT_BC2_UNORM;          
-		case BC3_UNORM          : return DXGI_FORMAT_BC3_UNORM;
-		case BC4_UNORM          : return DXGI_FORMAT_BC4_UNORM;
-		case BC5_UNORM          : return DXGI_FORMAT_BC5_UNORM;
-		case BC7_UNORM          : return DXGI_FORMAT_BC7_UNORM;
-		case BC6H_UFLOAT16      : return DXGI_FORMAT_BC6H_UF16;
-		case Unknown            : return DXGI_FORMAT_UNKNOWN;
-
-		default:
-			throw std::runtime_error("not supported Pixel Format type (directX12 api)");
-	}
-}
 DXGI_FORMAT EnumConverter::Convert(const rhi::core::IndexType indexFormat)
 {
 	switch (indexFormat)
