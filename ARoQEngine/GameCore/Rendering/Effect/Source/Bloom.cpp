@@ -16,7 +16,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUResourceView.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
-
+#include <stdio.h>
 #include "GameUtility/Base/Include/Screen.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
