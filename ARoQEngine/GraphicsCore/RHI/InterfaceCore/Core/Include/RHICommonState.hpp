@@ -327,55 +327,6 @@ namespace rhi::core
 		ScissorRect Rect = {};
 	};
 
-
-	/****************************************************************************
-	*				  			PixelFormatSizeOf
-	*************************************************************************//**
-	*  @class     PixelFormatSizeOf
-	*  @brief     Get pixel size. Call the static function "Get"
-	*****************************************************************************/
-	class PixelFormatSizeOf
-	{
-	public:
-		PixelFormatSizeOf() = delete;
-		static gu::uint64 Get(const core::PixelFormat pixelFormat)
-		{
-			switch (pixelFormat)
-			{
-			case PixelFormat::R16G16B16A16_FLOAT:
-				return 8;
-			case PixelFormat::R8G8B8A8_UNORM:
-			case PixelFormat::B8G8R8A8_UNORM:
-			case PixelFormat::BC1_UNORM:
-			case PixelFormat::D32_FLOAT:
-				return 4;
-			case PixelFormat::R32G32B32A32_FLOAT:
-				return 16;
-			case PixelFormat::R32G32B32_FLOAT:
-				return 12;
-			case PixelFormat::D24_UNORM_S8_UINT:
-			case PixelFormat::R10G10B10A2_UNORM:
-				return 4;
-			default:
-				return 0;
-			}
-		}
-		static bool IsDepthOnly(const PixelFormat pixelFormat)
-		{
-			switch (pixelFormat)
-			{
-				case PixelFormat::D32_FLOAT: 
-				{
-					return true;
-				}
-				default: 
-				{
-					return false;
-				}
-			}
-		}
-	};
-
 	/****************************************************************************
 	*				  			ClearValue
 	*************************************************************************//**
@@ -1687,7 +1638,9 @@ namespace rhi::core
 		#pragma endregion 
 
 	private:
-		inline gu::uint64 CalculateByteSize() { return  Width * Height * (Dimension == ResourceDimension::Texture3D ? DepthOrArraySize : 1) * PixelFormatSizeOf::Get(PixelFormat) * static_cast<gu::uint64>(Sample); }
+		inline gu::uint64 CalculateByteSize() { 
+			return  Width * Height * (Dimension == ResourceDimension::Texture3D ? DepthOrArraySize : 1) * PixelFormatInfo::GetConst(PixelFormat).BlockBytes * static_cast<gu::uint64>(Sample); 
+		}
 	};
 
 	/****************************************************************************

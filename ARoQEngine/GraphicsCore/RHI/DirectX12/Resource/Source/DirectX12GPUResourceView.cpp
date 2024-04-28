@@ -729,12 +729,12 @@ const gu::SharedPointer<directX12::RHIDescriptorHeap> GPUResourceView::SelectDes
 }
 #pragma endregion Setup view
 #pragma region Property
-D3D12_CPU_DESCRIPTOR_HANDLE GPUResourceView::GetCPUHandler()
+D3D12_CPU_DESCRIPTOR_HANDLE GPUResourceView::GetCPUHandler() const
 {
 	const auto dxHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_heap);
 	return dxHeap->GetCPUDescHandler(_heapOffset.first, _heapOffset.second);
 }
-D3D12_GPU_DESCRIPTOR_HANDLE GPUResourceView::GetGPUHandler()
+D3D12_GPU_DESCRIPTOR_HANDLE GPUResourceView::GetGPUHandler() const
 {
 	const auto dxHeap = gu::StaticPointerCast<directX12::RHIDescriptorHeap>(_heap);
 	return dxHeap->GetGPUDescHandler(_heapOffset.first, _heapOffset.second);

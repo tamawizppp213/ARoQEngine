@@ -48,12 +48,12 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------
 		*  @brief : CPUのポインタを返すハンドラを取得します
 		/*----------------------------------------------------------------------*/
-		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandler();
+		D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandler() const;
 
 		/*----------------------------------------------------------------------
 		*  @brief : GPUのポインタを返すハンドラを取得します
 		/*----------------------------------------------------------------------*/
-		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandler();
+		D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandler() const;
 
 		/****************************************************************************
 		**                Constructor and Destructor

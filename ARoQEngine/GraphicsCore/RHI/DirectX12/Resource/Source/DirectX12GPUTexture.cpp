@@ -390,7 +390,7 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 	/*-------------------------------------------------------------------
 	-       Create read back buffer to read gpu memory to the cpu memory
 	---------------------------------------------------------------------*/
-	auto metaData       = core::GPUBufferMetaData::UploadBuffer(static_cast<gu::uint32>(core::PixelFormatSizeOf::Get(_metaData.PixelFormat)), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
+	auto metaData       = core::GPUBufferMetaData::UploadBuffer(static_cast<gu::uint32>(core::PixelFormatInfo::GetConst(_metaData.PixelFormat).BlockBytes), _metaData.Width * _metaData.Height, core::MemoryHeap::Readback, nullptr);
 	metaData.State      = core::ResourceState::CopyDestination;
 	const auto buffer   = _device->CreateBuffer(metaData);
 	const auto dxBuffer = gu::StaticPointerCast<GPUBuffer>(buffer);

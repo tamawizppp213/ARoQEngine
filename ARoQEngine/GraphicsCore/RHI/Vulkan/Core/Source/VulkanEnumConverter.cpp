@@ -433,7 +433,7 @@ VkImageAspectFlags  EnumConverter::Convert(const rhi::core::PixelFormat format, 
 {
 	if (gu::HasAnyFlags(usage, core::BufferCreateFlags::DepthStencil))
 	{
-		if (core::PixelFormatSizeOf::IsDepthOnly(format)) { return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT; }
+		if (core::PixelFormatInfo::GetConst(format).IsDepthStencil()) { return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT; }
 		return VkImageAspectFlagBits::VK_IMAGE_ASPECT_DEPTH_BIT | VkImageAspectFlagBits::VK_IMAGE_ASPECT_STENCIL_BIT;
 	}
 	return VkImageAspectFlagBits::VK_IMAGE_ASPECT_COLOR_BIT;

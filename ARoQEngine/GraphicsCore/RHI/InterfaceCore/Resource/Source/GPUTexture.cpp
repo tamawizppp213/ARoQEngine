@@ -31,6 +31,6 @@ gu::uint16 GPUTexture::GetDepth(const gu::uint8 mipLevel) const noexcept
 gu::uint64 GPUTexture::GetByteSize(const gu::uint8 mipLevel) const noexcept
 {
 	return GetWidth(mipLevel) * GetHeight(mipLevel) * GetDepth(mipLevel)
-		* core::PixelFormatSizeOf::Get(GetPixelFormat()) 
+		* core::PixelFormatInfo::GetConst(GetPixelFormat()).BlockBytes
 		* static_cast<gu::uint64>(GetMultiSample());
 }
