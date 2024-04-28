@@ -204,6 +204,12 @@ namespace rhi::core
 		*  @return   ピクセルフォーマット情報
 		*************************************************************************/
 		static const PixelFormatInfo& GetConst(const PixelFormat format);
+
+		/*!**********************************************************************
+		*  @brief    PlatformFormatから対象のPixelFormatInfoを取得します
+		*  @return   PixelFormatInfo
+		*************************************************************************/
+		static const PixelFormatInfo& FindByPlatformFormat(const gu::uint32 platformFormat);
 		#pragma endregion
 
 		#pragma region Public Function

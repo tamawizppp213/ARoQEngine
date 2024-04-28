@@ -17,6 +17,7 @@ using namespace gu;
 
 namespace
 {
+	// Todo : Unordered mapÇÃÇÊÇ§Ç…ì¡íËÇ≈Ç´ÇÍÇŒçÇë¨âªÇ™ê}ÇÍÇ‹Ç∑.
 	PixelFormatInfo g_PixelFormats[(gu::uint8)PixelFormat::CountOfPixelFormat] =
 	{
 		//              PixelFormat                      BlockSizeX, BlockSizeY, BlockSizeZ, BlockBytes, ChannelCount, Supported 
@@ -120,6 +121,24 @@ const PixelFormatInfo& PixelFormatInfo::GetConst(const PixelFormat format)
 
 	return index < (gu::uint32)PixelFormat::CountOfPixelFormat ? g_PixelFormats[index] : g_PixelFormats[0];
 }
+
+/*!**********************************************************************
+*  @brief    PlatformFormatÇ©ÇÁëŒè€ÇÃPixelFormatInfoÇéÊìæÇµÇ‹Ç∑
+*  @return   PixelFormatInfo
+*************************************************************************/
+const PixelFormatInfo& PixelFormatInfo::FindByPlatformFormat(const gu::uint32 platformFormat)
+{
+	for (const auto& pixelFormat : g_PixelFormats)
+	{
+		if (pixelFormat.PlatformFormat == platformFormat)
+		{
+			return pixelFormat;
+		}
+	}
+
+	return g_PixelFormats[0];
+}
+
 
 #pragma endregion Static Function
 #pragma region Public Function
@@ -298,9 +317,9 @@ bool PixelFormatInfo::IsBlockCompressed() const
 		{
 			return true;
 		}
-
-		return false;
 	}
+
+	return false;
 }
 
 #pragma endregion Format Check
