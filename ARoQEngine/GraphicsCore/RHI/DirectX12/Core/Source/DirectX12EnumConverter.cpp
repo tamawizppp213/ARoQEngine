@@ -139,19 +139,7 @@ D3D12_FILTER EnumConverter::Convert(const rhi::core::FilterOption filter)
 	}
 }
 #pragma endregion Sampler State
-DXGI_FORMAT EnumConverter::Convert(const rhi::core::IndexType indexFormat)
-{
-	switch (indexFormat)
-	{
-		using enum core::IndexType;
 
-		case UInt32: return DXGI_FORMAT_R32_UINT;
-		case UInt16: return DXGI_FORMAT_R16_UINT;
-		
-		default:
-			throw std::runtime_error("not supported Index Format type (directX12 api)");
-	}
-}
 #pragma region BlendState
 D3D12_BLEND_OP EnumConverter::Convert(const rhi::core::BlendOperator blendOperator)
 {
@@ -281,21 +269,7 @@ D3D12_INPUT_CLASSIFICATION EnumConverter::Convert(const rhi::core::InputClassifi
 			throw std::runtime_error("not supported classication type.");
 	}
 }
-DXGI_FORMAT EnumConverter::Convert(const core::InputFormat inputFormat)
-{
-	using enum core::InputFormat;
 
-	switch (inputFormat)
-	{
-		case R32G32_FLOAT      : return DXGI_FORMAT_R32G32_FLOAT;
-		case R32G32B32_FLOAT   : return DXGI_FORMAT_R32G32B32_FLOAT;
-		case R32G32B32A32_FLOAT: return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case R32G32B32A32_INT  : return DXGI_FORMAT_R32G32B32A32_SINT;
-		case R32_FLOAT         : return DXGI_FORMAT_R32_FLOAT;
-		default:
-			throw std::runtime_error("not supported input format");
-	}
-}
 #pragma endregion      Input Layput
 #pragma region GPUResource
 D3D12_RESOURCE_FLAGS EnumConverter::Convert(const rhi::core::BufferCreateFlags usage)

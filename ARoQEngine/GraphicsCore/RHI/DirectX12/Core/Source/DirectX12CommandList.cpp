@@ -571,7 +571,7 @@ void RHICommandList::SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<c
 	_commandList->IASetVertexBuffers(static_cast<UINT>(startSlot), static_cast<UINT>(views.Size()), views.Data());
 }
 
-void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType)
+void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::PixelFormat indexType)
 {
 #if __DEBUG
 	assert(buffer->GetUsage() == core::BufferCreateFlags::IndexBuffer);
@@ -580,7 +580,7 @@ void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& bu
 	D3D12_INDEX_BUFFER_VIEW view = {};
 	view.BufferLocation = gu::StaticPointerCast<directX12::GPUBuffer>(buffer)->GetResourcePtr()->GetGPUVirtualAddress();
 	view.SizeInBytes    = static_cast<UINT>(buffer->GetTotalByteSize());
-	view.Format         = EnumConverter::Convert(indexType);
+	view.Format         = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(indexType).PlatformFormat;
 
 	_commandList->IASetIndexBuffer(&view);
 }

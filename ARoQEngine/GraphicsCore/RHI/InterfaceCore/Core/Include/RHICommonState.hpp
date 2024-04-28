@@ -113,52 +113,6 @@ namespace rhi::core
 	};
 	#pragma endregion 
 
-	#pragma region Index
-	/****************************************************************************
-	*				  			IndexType
-	*************************************************************************//**
-	/*  @brief  gu::uint 32 or 16. 値はバイト数を指定することになります
-	*****************************************************************************/
-	enum class IndexType : gu::uint8
-	{
-		UInt32 = 4, // 32 bitのインデックス
-		UInt16 = 2, // 16 bitのインデックス
-	};
-	/****************************************************************************
-	*				  			InputFormat
-	*************************************************************************//**
-	*  @enum      InputFormat
-	*  @brief     Input layout format.  
-	*****************************************************************************/
-	enum class InputFormat : gu::uint8
-	{
-		Unknown,
-		R32_FLOAT,          // 4  byte format
-		R32G32_FLOAT,       // 8  byte format
-		R32G32B32_FLOAT,    // 12 byte format
-		R32G32B32A32_FLOAT, // 16 byte format
-		R32G32B32A32_INT,   // 16 byte format
-	};
-
-	class InputFormatSizeOf
-	{
-	public :
-		InputFormatSizeOf() = delete;
-		static gu::uint64 Get(const core::InputFormat inputFormat)
-		{
-			switch (inputFormat)
-			{
-				case InputFormat::R32G32_FLOAT      : return 8;
-				case InputFormat::R32G32B32_FLOAT   : return 12;
-				case InputFormat::R32G32B32A32_INT  :
-				case InputFormat::R32G32B32A32_FLOAT: return 16;
-				case InputFormat::R32_FLOAT         : return 4;
-				default: return 0;
-			}
-		}
-	};
-	#pragma endregion
-
 	#pragma region Window Surface
 	/****************************************************************************
 	*				  			Viewport 

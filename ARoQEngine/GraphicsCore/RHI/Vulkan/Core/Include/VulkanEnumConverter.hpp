@@ -50,8 +50,7 @@ namespace rhi::vulkan
 #pragma endregion SamplerState
 #pragma region BlendState
 		static VkFormat               Convert(const rhi::core::PixelFormat   pixelFormat);
-		static VkFormat               Convert(const rhi::core::InputFormat   inputFormat);
-		static VkIndexType            Convert(const rhi::core::IndexType     indexFormat);
+		//static VkIndexType            Convert(const rhi::core::IndexType     indexFormat);
 		static VkBlendOp              Convert(const rhi::core::BlendOperator blendOperator);
 		static VkBlendFactor          Convert(const rhi::core::BlendFactor   blendFactor);
 		static VkColorComponentFlags  Convert(const rhi::core::ColorMask     colorMask);

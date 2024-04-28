@@ -277,10 +277,10 @@ void RHICommandList::SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<c
 	vkCmdBindVertexBuffers(_commandBuffer, static_cast<std::uint32_t>(startSlot), 
 		static_cast<std::uint32_t>(vkBuffers.Size()), vkBuffers.Data(), offsets.Data());
 }
-void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType)
+void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::PixelFormat indexType)
 {
 	const auto vkBuffer = gu::StaticPointerCast<vulkan::GPUBuffer>(buffer)->GetBuffer();
-	vkCmdBindIndexBuffer(_commandBuffer, vkBuffer, 0, EnumConverter::Convert(indexType));
+	vkCmdBindIndexBuffer(_commandBuffer, vkBuffer, 0, (VkIndexType)core::PixelFormatInfo::GetConst(indexType).PlatformFormat);
 }
 #pragma endregion Graphics Command
 #pragma region TransitionResourceLayout

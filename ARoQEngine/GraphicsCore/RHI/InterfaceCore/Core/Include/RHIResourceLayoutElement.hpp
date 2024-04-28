@@ -127,7 +127,7 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/
-		InputFormat         Format         = InputFormat::Unknown;
+		PixelFormat         Format         = PixelFormat::Unknown;
 		InputClassification Classification = InputClassification::PerVertex;
 		size_t              Slot           = 0;
 		gu::string          SemanticName   = "";
@@ -139,7 +139,7 @@ namespace rhi::core
 
 		~InputLayoutElement() = default;
 
-		explicit InputLayoutElement(const gu::string& name, const InputFormat format, const InputClassification classification = InputClassification::PerVertex,  const size_t slot = 0) : Format(format), SemanticName(name), Classification(classification), Slot(slot) {};
+		explicit InputLayoutElement(const gu::string& name, const PixelFormat format, const InputClassification classification = InputClassification::PerVertex, const size_t slot = 0) : Format(format), SemanticName(name), Classification(classification), Slot(slot) {};
 	};
 
 	struct Value32Bit

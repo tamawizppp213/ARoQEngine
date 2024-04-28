@@ -39,7 +39,7 @@ rhi::directX12::GPUInputAssemblyState::GPUInputAssemblyState(
 			{
 				element.SemanticName.CString(),                // SemanticName
 				0,                                           // SemanticIndex
-				EnumConverter::Convert(element.Format),      // Format
+				(DXGI_FORMAT)core::PixelFormatInfo::GetConst(element.Format).PlatformFormat,      // Format
 				static_cast<std::uint32_t>(element.Slot),    // InputSlot
 				offsetInBytes[element.Slot],                 // AlignedByteOffset
 				EnumConverter::Convert(element.Classification), // InputSlotClass
@@ -63,7 +63,7 @@ rhi::directX12::GPUInputAssemblyState::GPUInputAssemblyState(
 			inputTypes[slot].second = element.Classification;
 		}
 
-		offsetInBytes[element.Slot] += static_cast<std::uint32_t>(core::InputFormatSizeOf::Get(element.Format));
+		offsetInBytes[element.Slot] += static_cast<std::uint32_t>(core::PixelFormatInfo::GetConst(element.Format).BlockBytes);
 	}
 
 	_inputLayout.NumElements        = static_cast<std::uint32_t>(_inputLayoutElements.Size());

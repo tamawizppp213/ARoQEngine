@@ -170,7 +170,7 @@ namespace rhi::core
 		
 		virtual void SetVertexBuffers     (const gu::DynamicArray<gu::SharedPointer<GPUBuffer>>& buffers, const size_t startSlot = 0) = 0;
 		
-		virtual void SetIndexBuffer       (const gu::SharedPointer<GPUBuffer>& buffer, const IndexType indexType = IndexType::UInt32) = 0;
+		virtual void SetIndexBuffer       (const gu::SharedPointer<GPUBuffer>& buffer, const PixelFormat indexType = PixelFormat::R32_UINT) = 0;
 		
 		virtual void SetGraphicsPipeline  (const gu::SharedPointer<GPUGraphicsPipelineState>& pipeline) = 0;
 		

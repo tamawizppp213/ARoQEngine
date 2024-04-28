@@ -43,16 +43,7 @@ VkFormat EnumConverter::Convert(const rhi::core::PixelFormat pixelFormat)
 			throw std::runtime_error("not supported Pixel Format type (vulkan api)");
 	}
 }
-VkIndexType EnumConverter::Convert(const rhi::core::IndexType indexFormat)
-{
-	switch (indexFormat)
-	{
-		case core::IndexType::UInt32: return VkIndexType::VK_INDEX_TYPE_UINT32;
-		case core::IndexType::UInt16: return VkIndexType::VK_INDEX_TYPE_UINT16;
-		default:
-			throw std::runtime_error("not supported Index Format type (vulkan api)");
-	}
-}
+
 #pragma region Shader Stage
 VkShaderStageFlagBits  EnumConverter::Convert(const rhi::core::ShaderType type)
 {
@@ -322,19 +313,6 @@ VkVertexInputRate EnumConverter::Convert(const rhi::core::InputClassification cl
 	}
 }
 
-VkFormat EnumConverter::Convert(const rhi::core::InputFormat inputFormat)
-{
-	switch (inputFormat)
-	{
-		case core::InputFormat::R32G32_FLOAT      : return VkFormat::VK_FORMAT_R32G32_SFLOAT;
-		case core::InputFormat::R32G32B32_FLOAT   : return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
-		case core::InputFormat::R32G32B32A32_FLOAT: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
-		case core::InputFormat::R32G32B32A32_INT  : return VkFormat::VK_FORMAT_R32G32B32A32_SINT;
-		case core::InputFormat::R32_FLOAT         : return VkFormat::VK_FORMAT_R32_SFLOAT;
-		default:
-			throw std::runtime_error("not supported input layout format type (vulkan api)");
-	}
-}
 #pragma endregion      Input Layout
 #pragma region GPUResource
 /*-------------------------------------------------------------------

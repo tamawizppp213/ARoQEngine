@@ -145,7 +145,7 @@ namespace rhi::directX12
 		
 		void SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
 		
-		void SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::IndexType indexType = core::IndexType::UInt32) override;
+		void SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::PixelFormat indexType = core::PixelFormat::R32_UINT) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief : インデックスがついているモデルでかつ, インスタンシング描画が必要となるプリミティブを描画します.
