@@ -129,227 +129,280 @@ GPUBufferMetaData GPUBufferMetaData::IndexBuffer(const gu::uint32 stride, const 
 #pragma region GPUTexture
 GPUTextureMetaData GPUTextureMetaData::Texture1D(const gu::uint32 width, const core::PixelFormat format, const gu::uint8 mipLevels, const core::TextureCreateFlags usage)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = 1;
-	metaData.DepthOrArraySize = 1;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = mipLevels;
-	metaData.Usage            = usage | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture1D;
-	metaData.ResourceType     = core::ResourceType::Texture1D;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = MultiSample::Count1;
+	GPUTextureMetaData metaData =
+	{
+		.ClearColor       = ClearValue(),
+		.Usage            = usage | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = 1,
+		.DepthOrArraySize = 1,
+		.MipMapLevels     = mipLevels,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = MultiSample::Count1,
+		.Dimension        = core::ResourceDimension::Texture1D,
+		.ResourceType     = core::ResourceType::Texture1D,
+		.HeapType         = core::MemoryHeap::Default,
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
 GPUTextureMetaData GPUTextureMetaData::Texture1DArray(const gu::uint32 width, const gu::uint16 length, const core::PixelFormat format, const gu::uint8 mipLevels, const core::TextureCreateFlags usage)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = 1;
-	metaData.DepthOrArraySize = length;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = mipLevels;
-	metaData.Usage            = usage | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture1D;
-	metaData.ResourceType     = core::ResourceType::Texture1DArray;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = MultiSample::Count1;
+	GPUTextureMetaData metaData =
+	{
+		.ClearColor       = ClearValue(),
+		.Usage            = usage | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = 1,
+		.DepthOrArraySize = 1,
+		.MipMapLevels     = mipLevels,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = MultiSample::Count1,
+		.Dimension        = core::ResourceDimension::Texture1D,
+		.ResourceType     = core::ResourceType::Texture1DArray,
+		.HeapType         = core::MemoryHeap::Default,
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
 GPUTextureMetaData GPUTextureMetaData::Texture2D(const gu::uint32 width, const gu::uint32 height, const core::PixelFormat format, const gu::uint8 mipLevels, const core::TextureCreateFlags usage)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = 1;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = mipLevels;
-	metaData.Usage            = usage | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture2D;
-	metaData.ResourceType     = core::ResourceType::Texture2D;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = MultiSample::Count1;
+	GPUTextureMetaData metaData =
+	{
+		.ClearColor       = ClearValue(),
+		.Usage            = usage | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = 1,
+		.MipMapLevels     = mipLevels,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = MultiSample::Count1,
+		.Dimension        = core::ResourceDimension::Texture2D,
+		.ResourceType     = core::ResourceType::Texture2D,
+		.HeapType         = core::MemoryHeap::Default,
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
 GPUTextureMetaData GPUTextureMetaData::Texture2DArray(const gu::uint32 width, const gu::uint32 height, const gu::uint16 length, const core::PixelFormat format, const gu::uint8 mipLevels, const core::TextureCreateFlags usage)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = length;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = mipLevels;
-	metaData.Usage            = usage | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture2D;
-	metaData.ResourceType     = core::ResourceType::Texture2D;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = MultiSample::Count1;
+	GPUTextureMetaData metaData =
+	{
+		.ClearColor       = ClearValue(),
+		.Usage            = usage | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = length,
+		.MipMapLevels     = mipLevels,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = MultiSample::Count1,
+		.Dimension        = core::ResourceDimension::Texture2D,
+		.ResourceType     = core::ResourceType::Texture2DArray,
+		.HeapType         = core::MemoryHeap::Default,
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
 GPUTextureMetaData GPUTextureMetaData::Texture3D(const gu::uint32 width, const gu::uint32 height, const gu::uint16 depth, const core::PixelFormat format, const gu::uint8 mipLevels, const core::TextureCreateFlags usage)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = depth;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = mipLevels;
-	metaData.Usage            = usage | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture3D;
-	metaData.ResourceType     = core::ResourceType::Texture3D;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = MultiSample::Count1;
+	GPUTextureMetaData metaData =
+	{
+		.ClearColor       = ClearValue(),
+		.Usage            = usage | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = depth,
+		.MipMapLevels     = mipLevels,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = MultiSample::Count1,
+		.Dimension        = core::ResourceDimension::Texture3D,
+		.ResourceType     = core::ResourceType::Texture3D,
+		.HeapType         = core::MemoryHeap::Default,
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
+
 GPUTextureMetaData GPUTextureMetaData::Texture2DMultiSample(const gu::uint32 width, const gu::uint32 height, const core::PixelFormat format, const core::MultiSample sample, const gu::uint8 mipLevels, const core::TextureCreateFlags usage)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = 1;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = mipLevels;
-	metaData.Usage            = usage | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture2D;
-	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = sample;
+	GPUTextureMetaData metaData =
+	{
+		.ClearColor       = ClearValue(),
+		.Usage            = usage | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = 1,
+		.MipMapLevels     = mipLevels,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = sample,
+		.Dimension        = core::ResourceDimension::Texture2D,
+		.ResourceType     = core::ResourceType::Texture2DMultiSample,
+		.HeapType         = core::MemoryHeap::Default,
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
+
 GPUTextureMetaData GPUTextureMetaData::Texture2DArrayMultiSample(const gu::uint32 width, const gu::uint32 height, const gu::uint16 length, const core::PixelFormat format, const core::MultiSample sample, const gu::uint8 mipLevels, const core::TextureCreateFlags usage)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = length;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = mipLevels;
-	metaData.Usage            = usage | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture2D;
-	metaData.ResourceType     = core::ResourceType::Texture2DArrayMultiSample;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = sample;
+	GPUTextureMetaData metaData =
+	{
+		.ClearColor       = ClearValue(),
+		.Usage            = usage | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = length,
+		.MipMapLevels     = mipLevels,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = sample,
+		.Dimension        = core::ResourceDimension::Texture2D,
+		.ResourceType     = core::ResourceType::Texture2DArrayMultiSample,
+		.HeapType         = core::MemoryHeap::Default,
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
+
 GPUTextureMetaData GPUTextureMetaData::CubeMap(const gu::uint32 width, const gu::uint32 height, const core::PixelFormat format, const gu::uint8 mipLevels, const core::TextureCreateFlags usage)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = 6;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = mipLevels;
-	metaData.Usage            = usage | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture2D;
-	metaData.ResourceType     = core::ResourceType::TextureCube;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = MultiSample::Count1;
+	GPUTextureMetaData metaData =
+	{
+		.ClearColor       = ClearValue(),
+		.Usage            = usage | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = 6,
+		.MipMapLevels     = mipLevels,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = MultiSample::Count1,
+		.Dimension        = core::ResourceDimension::Texture2D,
+		.ResourceType     = core::ResourceType::TextureCube,
+		.HeapType         = core::MemoryHeap::Default,
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
 GPUTextureMetaData GPUTextureMetaData::CubeMapArray(const gu::uint32 width, const gu::uint32 height, const gu::uint16 length, const core::PixelFormat format, const gu::uint8 mipLevels, const core::TextureCreateFlags usage)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = 6 * length;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = mipLevels;
-	metaData.Usage            = usage | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture2D;
-	metaData.ResourceType     = core::ResourceType::TextureCubeArray;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = MultiSample::Count1;
+	GPUTextureMetaData metaData =
+	{
+		.ClearColor       = ClearValue(),
+		.Usage            = usage | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = (gu::uint16)(6 * length),
+		.MipMapLevels     = mipLevels,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = MultiSample::Count1,
+		.Dimension        = core::ResourceDimension::Texture2D,
+		.ResourceType     = core::ResourceType::TextureCubeArray,
+		.HeapType         = core::MemoryHeap::Default,
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
 GPUTextureMetaData GPUTextureMetaData::RenderTarget(const gu::uint32 width, const gu::uint32 height, const core::PixelFormat format, const core::ClearValue& clearValue)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = 1;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = 1;
-	metaData.Usage            = core::TextureCreateFlags::RenderTargetable | TextureCreateFlags::UnorderedAccess | TextureCreateFlags::ShaderResource; // for frame buffer
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture2D;
-	metaData.ResourceType     = core::ResourceType::Texture2D;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = MultiSample::Count1;
-	metaData.ClearColor       = clearValue;
+	GPUTextureMetaData metaData =
+	{
+		.ClearColor       = clearValue,
+		.Usage            = core::TextureCreateFlags::RenderTargetable | TextureCreateFlags::UnorderedAccess | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = 1,
+		.MipMapLevels     = 1,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = MultiSample::Count1,
+		.Dimension        = core::ResourceDimension::Texture2D,
+		.ResourceType     = core::ResourceType::Texture2D,
+		.HeapType         = core::MemoryHeap::Default,
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 
 }
 GPUTextureMetaData GPUTextureMetaData::RenderTargetMultiSample(const gu::uint32 width, const gu::uint32 height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = 1;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = 1;
-	metaData.Usage            = core::TextureCreateFlags::RenderTargetable | TextureCreateFlags::UnorderedAccess | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::GeneralRead;
-	metaData.Dimension        = core::ResourceDimension::Texture2D;
-	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = sample;
-	metaData.ClearColor       = clearValue;
+	GPUTextureMetaData metaData = 
+	{
+		.ClearColor       = clearValue,
+		.Usage            = core::TextureCreateFlags::RenderTargetable | TextureCreateFlags::UnorderedAccess | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = 1,
+		.MipMapLevels     = 1,
+		.State            = ResourceState::GeneralRead,
+		.PixelFormat      = format,
+		.Sample           = sample,
+		.Dimension        = core::ResourceDimension::Texture2D,
+		.ResourceType     = core::ResourceType::Texture2DMultiSample,
+		.HeapType         = core::MemoryHeap::Default
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
+
 GPUTextureMetaData GPUTextureMetaData::DepthStencil(const gu::uint32 width, const gu::uint32 height, const core::PixelFormat format, const core::ClearValue& clearValue)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = 1;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = 1;
-	metaData.Usage            = core::TextureCreateFlags::DepthStencilTargetable | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::DepthStencil;
-	metaData.Dimension        = core::ResourceDimension::Texture2D;
-	metaData.ResourceType     = core::ResourceType::Texture2D;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = MultiSample::Count1;
-	metaData.ClearColor       = clearValue;
+	GPUTextureMetaData metaData = 
+	{
+		.ClearColor       = clearValue,
+		.Usage            = core::TextureCreateFlags::DepthStencilTargetable | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = 1,
+		.MipMapLevels     = 1,
+		.State            = ResourceState::DepthStencil,
+		.PixelFormat      = format,
+		.Sample           = MultiSample::Count1,
+		.Dimension        = core::ResourceDimension::Texture2D,
+		.ResourceType     = core::ResourceType::Texture2D,
+		.HeapType         = core::MemoryHeap::Default
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
+
 GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const gu::uint32 width, const gu::uint32 height, const core::PixelFormat format, const core::MultiSample sample, const core::ClearValue& clearValue)
 {
-	GPUTextureMetaData metaData = {};
-	metaData.Width            = width;
-	metaData.Height           = height;
-	metaData.DepthOrArraySize = 1;
-	metaData.PixelFormat      = format;
-	metaData.MipMapLevels     = 1;
-	metaData.Usage            = core::TextureCreateFlags::DepthStencilTargetable | TextureCreateFlags::ShaderResource;
-	metaData.State            = ResourceState::DepthStencil;
-	metaData.Dimension        = core::ResourceDimension::Texture2D;
-	metaData.ResourceType     = core::ResourceType::Texture2DMultiSample;
-	metaData.HeapType         = core::MemoryHeap::Default;
-	metaData.Sample           = sample;
-	metaData.ClearColor       = clearValue;
+	GPUTextureMetaData metaData = 
+	{
+		.ClearColor       = clearValue,
+		.Usage            = core::TextureCreateFlags::DepthStencilTargetable | TextureCreateFlags::ShaderResource,
+		.Width            = width,
+		.Height           = height,
+		.DepthOrArraySize = 1,
+		.MipMapLevels     = 1,
+		.State            = ResourceState::DepthStencil,
+		.PixelFormat      = format,
+		.Sample           = sample,
+		.Dimension        = core::ResourceDimension::Texture2D,
+		.ResourceType     = core::ResourceType::Texture2DMultiSample,
+		.HeapType         = core::MemoryHeap::Default
+	};
+
 	metaData.CalculateByteSize();
 	return metaData;
 }
