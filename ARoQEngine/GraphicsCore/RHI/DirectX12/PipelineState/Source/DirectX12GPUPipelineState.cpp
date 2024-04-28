@@ -38,7 +38,7 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 	desc.PrimitiveTopologyType = EnumConverter::Convert1(_inputAssemblyState->GetPrimitiveTopology());
 	desc.pRootSignature        = _resourceLayout      ? static_cast<RHIResourceLayout*>(_resourceLayout.Get())->GetRootSignature().Get() : nullptr;
-	desc.InputLayout           = _inputAssemblyState  ? static_cast<GPUInputAssemblyState*>(_inputAssemblyState.Get())->GetLayout()            : D3D12_INPUT_LAYOUT_DESC();
+	desc.InputLayout           = _inputAssemblyState  ? static_cast<GPUInputAssemblyState*>(_inputAssemblyState.Get())->GetDxLayoutDesc()      : D3D12_INPUT_LAYOUT_DESC();
 	desc.VS                    = _vertexShaderState   ? static_cast<GPUShaderState*>      (_vertexShaderState  .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
 	desc.PS                    = _pixelShaderState    ? static_cast<GPUShaderState*>      (_pixelShaderState   .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
 	desc.HS                    = _hullShaderState     ? static_cast<GPUShaderState*>      (_hullShaderState    .Get())->GetShader()            : D3D12_SHADER_BYTECODE();

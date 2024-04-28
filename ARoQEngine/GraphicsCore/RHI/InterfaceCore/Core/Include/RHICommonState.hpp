@@ -843,22 +843,33 @@ namespace rhi::core
 	};
 
 #pragma endregion  DepthStencilState
-#pragma region InputAssemblyState
+	#pragma region InputAssemblyState
+	/****************************************************************************
+	*				  			PrimitiveTopology
+	*************************************************************************//**
+	/* @brief   隣接する各頂点同士の接続方法を指定します
+	*  @note    Triangle ListとStripの描画の違い : https://sorceryforce.net/ja/tips/xna-primitive3d-sequencing-triangle
+	*****************************************************************************/
 	enum class PrimitiveTopology : gu::uint8
 	{
-		Undefined     = 0,
-		PointList     = 1,
-		LineList      = 2,
-		LineStrip     = 3,
-		TriangleList  = 4,
-		TriangleStrip = 5,
-		CountOfPrimitiveTopology
+		Undefined     = 0,       //!< 未定義です
+		PointList     = 1,       //!< 点群データです. 隣接する頂点同士を接続することは行いません. 
+		LineList      = 2,       //!< 隣接する頂点同士を線で結びます. この時, 頂点の再利用は行いません.
+		LineStrip     = 3,       //!< 隣接する頂点同士を線で結びます. この時, 頂点の再利用は行うようにします.
+		TriangleList  = 4,       //!< 隣接する頂点を三角形で結びます. 3Dメッシュを作成する時のモードです. この時頂点の再利用は行いません. 
+		TriangleStrip = 5,       //!< 隣接する頂点を三角形で結びます. 3Dメッシュを作成するときのモードです. この時頂点の再利用を行うため頂点数を減らせますが, 1点を共有するポリゴンの描画は出来ません. http://neareal.net/index.php?ComputerGraphics%2FXNA%2FVertex%2FSimpleVertex_3
+		CountOfPrimitiveTopology //!< 種類数/
 	};
 
+	/****************************************************************************
+	*				  			InputClassification
+	*************************************************************************//**
+	/* @brief   入力レイアウトが頂点ごとに設定されるものか, インスタンスごとに設定されるものかを指定します
+	*****************************************************************************/
 	enum class InputClassification : gu::uint8
 	{
-		PerVertex   = 0,
-		PerInstance = 1,
+		PerVertex   = 0, //!< 頂点ごとに指定のInputLayoutElementの要素を適用します
+		PerInstance = 1, //!< 描画インスタンスごとに指定のInputLayoutElementの要素を適用します.
 	};
 
 	#pragma endregion InputAssemblyState

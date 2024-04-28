@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12GPUInputAssemblyState.hpp
-///             @brief  Input assembly
-///             @author Toide Yutaro
-///             @date   2022_06_29
+///  @file   DirectX12GPUInputAssemblyState.hpp
+///  @brief  頂点シェーダの入力がどのようなデータ構成であるかを設定します. 
+///  @author Toide Yutaro
+///  @date   2024_04_28
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_GPU_INPUT_ASSEMBLY_STATE_HPP
@@ -24,46 +24,53 @@ namespace rhi::directX12
 {
 
 	/****************************************************************************
-	*				  			GPUBlendState
+	*				  			GPUInputAssemblyState
 	*************************************************************************//**
-	*  @class     GPUBlendState
-	*  @brief     BlendState
+	/* @brief  頂点シェーダの入力がどのようなデータ構成であるかを設定します. 
 	*****************************************************************************/
 	class GPUInputAssemblyState : public rhi::core::GPUInputAssemblyState
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion 
 
-		/****************************************************************************
-		**                Public Member Variables
-		*****************************************************************************/
-		const D3D12_INPUT_LAYOUT_DESC& GetLayout() const noexcept { return _inputLayout; }
+		#pragma region Public Member Variables
+		/*!**********************************************************************
+		*  @brief     入力レイアウト要素が個数と実データの参照先を指定するディスクリプタ
+		*  @return    const D3D12_INPUT_LAYOUT_DESC : 入力レイアウト要素の参照情報
+		*************************************************************************/
+		const D3D12_INPUT_LAYOUT_DESC& GetDxLayoutDesc() const noexcept { return _inputLayout; }
+		#pragma endregion
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
+
+		/*! @brief デフォルトコンストラクタ*/
 		GPUInputAssemblyState() = default;
 		
+		/*! @brief デフォルトデストラクタ*/
 		~GPUInputAssemblyState() = default;
 		
+		/*! @brief 論理デバイスと各入力レイアウト情報とPrimitiveTopologyを使って作成します. */
 		explicit GPUInputAssemblyState(
 			const gu::SharedPointer<rhi::core::RHIDevice>& device, 
 			const gu::DynamicArray<core::InputLayoutElement>& elements, 
 			const core::PrimitiveTopology primitiveTopology = core::PrimitiveTopology::TriangleList);
 
+		#pragma endregion
+
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion 
 
-		/****************************************************************************
-		**                Protected Member Variables
-		*****************************************************************************/
-		D3D12_INPUT_LAYOUT_DESC _inputLayout = {nullptr, 0};
+		#pragma region Protected Function
 
+		/*! @brief D3D12_INPUT_LAYOUT_DESCの実データ. */
 		gu::DynamicArray<D3D12_INPUT_ELEMENT_DESC> _inputLayoutElements = {};
+
+		/*! @brief 入力レイアウト要素が個数と実データの参照先を指定するディスクリプタ*/
+		D3D12_INPUT_LAYOUT_DESC _inputLayout = {nullptr, 0};
+		
+#pragma endregion
 	};
 }
 #endif
