@@ -448,12 +448,12 @@ void RHICommandList::SetStereoViewport(const core::Viewport& leftView, const cor
 	viewports[0].MinDepth = leftView.MinDepth;
 	viewports[0].MaxDepth = leftView.MaxDepth;
 
-	viewports[1].TopLeftX = leftView.TopLeftX;
-	viewports[1].TopLeftY = leftView.TopLeftY;
-	viewports[1].Width    = leftView.Width;
-	viewports[1].Height   = leftView.Height;
-	viewports[1].MinDepth = leftView.MinDepth;
-	viewports[1].MaxDepth = leftView.MaxDepth;
+	viewports[1].TopLeftX = rightView.TopLeftX;
+	viewports[1].TopLeftY = rightView.TopLeftY;
+	viewports[1].Width    = rightView.Width;
+	viewports[1].Height   = rightView.Height;
+	viewports[1].MinDepth = rightView.MinDepth;
+	viewports[1].MaxDepth = rightView.MaxDepth;
 
 	D3D12_RECT scissorRects[2] =
 	{
@@ -994,7 +994,7 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 		D3D12_RENDER_PASS_BEGINNING_ACCESS stencilBegin = { EnumConverter::Convert(renderPass->GetDepthAttachment()->StencilLoad), {} };
 		D3D12_RENDER_PASS_ENDING_ACCESS    stencilEnd   = { EnumConverter::Convert(renderPass->GetDepthAttachment()->StencilStore), {} };
 		depthBegin.Clear.ClearValue.DepthStencil.Depth     = renderPass->GetDepthClear()->Type.DSV.Depth;
-		stencilBegin.Clear.ClearValue.DepthStencil.Stencil = renderPass->GetDepthClear()->Type.DSV.Stencil;
+		stencilBegin.Clear.ClearValue.DepthStencil.Stencil = (gu::uint8)renderPass->GetDepthClear()->Type.DSV.Stencil;
 		
 		// set depth stencil descriptor
 		dsvDesc.DepthBeginningAccess   = depthBegin;
@@ -1071,7 +1071,7 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 		// clear depth stencil
 		if (clearFlags)
 		{
-			_commandList->ClearDepthStencilView(dsvHandle, clearFlags, renderPass->GetDepthClear()->Type.DSV.Depth, renderPass->GetDepthClear()->Type.DSV.Stencil, 0, nullptr);
+			_commandList->ClearDepthStencilView(dsvHandle, clearFlags, renderPass->GetDepthClear()->Type.DSV.Depth, (gu::uint8)renderPass->GetDepthClear()->Type.DSV.Stencil, 0, nullptr);
 		}
 	}
 	/*-------------------------------------------------------------------
