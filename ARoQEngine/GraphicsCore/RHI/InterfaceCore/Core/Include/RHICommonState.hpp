@@ -644,7 +644,7 @@ namespace rhi::core
 	};
 
 #pragma endregion       Blend   State
-#pragma region Rasterizer State
+	#pragma region Rasterizer State
 	/****************************************************************************
 	*				  			MultiSample
 	*************************************************************************//**
@@ -664,66 +664,86 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			CullingMode
 	*************************************************************************//**
-	*  @enum      CullingMode
-	*  @brief     Sets the triangle facing the specified direction 
-	              not to be drawn in the left hand coordinate
+	/*  @brief    指定された面(表面, 裏面)に対する三角形ポリゴンを描画しないように設定します. @n
+	*             指定した面を描画しないようにするため, 描画負荷の軽減に寄与します.
 	*****************************************************************************/
 	enum class CullingMode : gu::uint8
 	{
-		None,  // all face render
-		Front, // front culling
-		Back   // back  culling
+		None,  //!< 表面・裏面両方とも描画します. 
+		Front, //!< 裏面のみ描画し, 表面は描画しません.
+		Back   //!< 表面のみ描画し, 裏面は描画しません. 
 	};
 
 	/****************************************************************************
 	*				  			FrontFace
 	*************************************************************************//**
-	*  @class     FrontFace
-	*  @brief     Determine if all sides are counterclockwise
+	/*  @brief   前面が反時計回りか時計回りかを決定します.
 	*****************************************************************************/
 	enum class FrontFace : gu::uint8
 	{
-		CounterClockwise, // for right hand coordinate
-		Clockwise,        // for left  hand coordinate
+		CounterClockwise, //!< 前面を反時計回りに設定します. 主に右手系に対して使用します.
+		Clockwise,        //!< 前面を時計回りに設定します.  主に左手系に対して使用します. 
 	};
 
 	/****************************************************************************
 	*				  			FillMode
 	*************************************************************************//**
-	*  @class     FillMode
-	*  @brief     Polygon fill mode
+	/*  @brief  描画の際に, ポリゴンの三角形内部をどのように満たすかを設定します.
 	*****************************************************************************/
 	enum class FillMode
 	{
-		WireFrame, // wire frame polygon 
-		Solid,     // fill polygon face
-		Point,     // point cloud. (only vulkan API)
+		WireFrame, //!< 頂点間をワイヤーフレームで満たし, 内部は満たしません.
+		Solid,     //!< ポリゴン内部も描画します. 
+		Point,     //!< 点群として描画するため, 内部は満たしません.  (only vulkan API)
 	};
 
 	/****************************************************************************
 	*				  			RasterizerProperty
 	*************************************************************************//**
-	*  @class     RasterizerProperty
-	*  @brief     RasterizerProperty
+	/*  @brief     シェーダパイプラインにおける, ラスタライザステートに関する設定項目です.
 	*****************************************************************************/
 	struct RasterizerProperty
 	{
-		FrontFace   FaceType              = FrontFace::Clockwise; //  Determine if all sides are counterclockwise
-		CullingMode CullingType           = CullingMode::None;    // Sets the triangle facing the specified direction not to be drawn in the left hand coordinate
-		FillMode    FillType              = FillMode::Solid;      // Polygon fill mode
-		bool        UseDepthClamp         = true;                 // use clipping base on the depth length.
-		bool        UseMultiSample        = true;
-		bool        UseAntiAliasLine      = false;                // DirectX12 only use
-		bool        UseConservativeRaster = false;                // Perform rasterization if it hangs on a pixel for even a second.
+		/*! @brief 描画の際に, ポリゴンの三角形内部をどのように満たすかを設定します. */
+		FillMode FillType = FillMode::Solid;
 
-		// How to calculate : https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias?redirectedfrom=MSDN
-		// Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope;
-		float  DepthBias           = 0.0f;  // Depth value added to a given pixel.
-		float  SlopeScaleDepthBias = 0.0f;  // Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope;
-		float  ClampMaxDepthBias   = 0.0f;  // Clamp MaxDepth
+		/*! @brief  前面が反時計回りか時計回りかを決定します. 基本は左手系のためClockWiseを指定します. */
+		FrontFace FaceType = FrontFace::Clockwise;
 
+		/*! @brief 指定された面(表面, 裏面)に対する三角形ポリゴンを描画しないように設定します*/
+		CullingMode CullingType = CullingMode::None;
+
+		/*! @brief 深度の大きさに応じてClamp処理(ピクセルの描画を行わない)を実行するかを決定します. */
+		bool UseDepthClamp = true;
+
+		/*! @brief マルチサンプリングによる描画を行うかを設定します. */
+		bool UseMultiSample = true;
+
+		/*! @brief DirectX12のみで設定可能です. 線のアンチエイリアスを有効にするかを設定します. @n
+		           有効化出来る組み合わせは以下を参照してください https://learn.microsoft.com/ja-jp/windows/win32/api/d3d12/ns-d3d12-d3d12_rasterizer_desc*/
+		bool UseAntiAliasLine = false;
+
+		/*! @brief 少しでもピクセルの描画範囲に入ったらラスタライズを実行するようにします.*/
+		bool UseConservativeRaster = false;
+
+		// 計算方法 : https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage-depth-bias?redirectedfrom=MSDN
+		// Bias = (float)DepthBias * r + SlopeScaledDepthBias * MaxDepthSlope [unorm];
+		// Bias = (float)DepthBias * 2 **(exponent(max z in primitive) - r) + SlopeScaledDepthBias * MaxDepthSlope; [float]
+		// rは浮動小数点表現の仮数ビットの数 (float32の場合は23を示します.)
+		
+		/*! @brief 与えられたピクセルに加えられるDepth値*/
+		float DepthBias = 0.0f; 
+
+		/*! @brief MaxDepthSlopeに対する補正項*/
+		float  SlopeScaleDepthBias = 0.0f;
+
+		/*! @brief 最終的なBiasに対してClampされるBias値*/
+		float  ClampMaxDepthBias = 0.0f;
+
+		/*! @brief デフォルトコンストラクタ*/
 		RasterizerProperty() = default;
 
+		/*! @brief 基本設定*/
 		RasterizerProperty
 		(
 			const FrontFace   frontFace,
@@ -742,9 +762,9 @@ namespace rhi::core
 		{
 		};
 
-		/*----------------------------------------------------------------------
-		*  @brief : fill polygon face rasterize mode
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief  3Dの三角形ポリゴン内部を埋める基本設定です.
+		*************************************************************************/
 		static RasterizerProperty Solid
 		(
 			const bool        useMultiSample      = false, 
@@ -755,9 +775,9 @@ namespace rhi::core
 			const float       clampMaxDepthBias   = 0.0f
 		);
 		
-		/*----------------------------------------------------------------------
-		*  @brief : wire frame polygon rasterize mode
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief  3Dの三角形ポリゴン内部を埋めず, 線だけを表示する基本設定です. 
+		*************************************************************************/
 		static RasterizerProperty WireFrame
 		(
 			const bool        useMultiSample      = false, 
@@ -768,7 +788,7 @@ namespace rhi::core
 			const float       clampMaxDepthBias   = 0.0f
 		);
 	};
-#pragma endregion   Rasterizer State
+	#pragma endregion   Rasterizer State
 #pragma region DepthStencilState
 	/****************************************************************************
 	*				  			CompareOperator
@@ -873,6 +893,7 @@ namespace rhi::core
 	};
 
 	#pragma endregion InputAssemblyState
+
 	#pragma region GPUResource
 	enum class RootSignatureType : gu::uint8
 	{
