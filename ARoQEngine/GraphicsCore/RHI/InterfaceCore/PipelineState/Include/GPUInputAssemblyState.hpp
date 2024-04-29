@@ -97,7 +97,7 @@ namespace rhi::core
 		{
 			for (const auto& element : _elements)
 			{
-				const auto nextSlot = element.Slot + 1;
+				const gu::uint8 nextSlot = element.Slot + 1;
 				_slotCount = nextSlot >= _slotCount ? nextSlot : _slotCount;
 			}
 		}
@@ -108,6 +108,7 @@ namespace rhi::core
 		#pragma endregion
 
 		#pragma region Protected Member Variables
+
 		/*! @brief 入力レイアウトの設定データです.*/
 		gu::DynamicArray<InputLayoutElement> _elements = {};
 

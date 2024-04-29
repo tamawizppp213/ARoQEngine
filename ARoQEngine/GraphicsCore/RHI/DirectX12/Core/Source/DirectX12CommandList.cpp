@@ -679,7 +679,7 @@ void RHICommandList::FlushResourceBarriers()
 *                     CopyResource
 *************************************************************************//**
 /* @brief   あるリソースの領域をまとめて別のリソースにコピーする.
-*           組み合わせに応じて自動でバッファかテクスチャかを判定します
+*           組み合わせに応じて自動でバッファかテクスチャかを判定します.
 *
 *  @param[in] const gu::SharedPointer<core::GPUTexture>& コピー先のバッファ
 *  @param[in] const gu::SharedPointer<core::GPUTexture>& コピー元のバッファ
@@ -806,10 +806,12 @@ void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& 
 *****************************************************************************/
 void RHICommandList::CopyTextureRegion(const gu::SharedPointer<core::GPUTexture>& destination, const gu::SharedPointer<core::GPUTexture>& source, const core::GPUTextureCopyInfo& copyInfo)
 {
-	const auto  dxDestinationTexture  = static_cast<directX12::GPUTexture*>(destination.Get());
-	const auto  dxSourceTexture       = static_cast<directX12::GPUTexture*>(source.Get());
-	const auto& dxDestinationDesc     = dxDestinationTexture->GetMetaData();
-	const auto& dxSourceDesc          = dxSourceTexture->GetMetaData();
+	const auto  dxDestinationTexture     = static_cast<directX12::GPUTexture*>(destination.Get());
+	const auto  dxSourceTexture          = static_cast<directX12::GPUTexture*>(source.Get());
+	const auto& dxDestinationDesc        = dxDestinationTexture->GetMetaData();
+	const auto& dxSourceDesc             = dxSourceTexture->GetMetaData();
+	const auto& dxDestinationPixelFormat = core::PixelFormatInfo::GetConst(dxDestinationDesc.PixelFormat);
+	const auto& dxSourcePixelFormat      = core::PixelFormatInfo::GetConst(dxSourceDesc.PixelFormat);
 
 	/*-------------------------------------------------------------------
 	-         コピーの仕方を確認する
@@ -851,6 +853,19 @@ void RHICommandList::CopyTextureRegion(const gu::SharedPointer<core::GPUTexture>
 	{
 		const auto copyTexelSize = copyInfo.TexelSize.IsZero() ? source->GetTexelSize() >> copyInfo.SourceInitMipMap : copyInfo.TexelSize;
 
+		// ResourceDesc
+		D3D12_RESOURCE_DESC resourceDesc = 
+		{
+			.Dimension        = EnumConverter::Convert(destination->GetDimension()),
+			.Alignment        = 0,
+			.Width            = destination->GetWidth(),
+			.Height           = destination->GetHeight(),
+			.DepthOrArraySize = destination->GetDepth(),
+			.MipLevels        = destination->GetMipMapCount(),
+			.Format           = (DXGI_FORMAT)dxDestinationPixelFormat.PlatformFormat,
+			.SampleDesc       = {.Count = gu::uint32(destination->GetMultiSample()), .Quality = 0}
+		};
+
 		// テクスチャ配列の種類に応じてコピー
 		for (gu::uint16 sliceIndex = 0; sliceIndex < copyInfo.ArraySliceCount; ++sliceIndex)
 		{
@@ -870,10 +885,16 @@ void RHICommandList::CopyTextureRegion(const gu::SharedPointer<core::GPUTexture>
 					.left   = copyInfo.SourceInitTexelPosition.x >> mipmapIndex,
 					.top    = copyInfo.SourceInitTexelPosition.y >> mipmapIndex,
 					.front  = copyInfo.SourceInitTexelPosition.z >> mipmapIndex, 
-					.right  = 0, //gu::Alignment::AlignUpArbitary(endCopyPosition.x > 1u << mipmapIndex ? 1u : endCopyPosition.x >> mipmapIndex),
-					.bottom = 0,
-					.back   = 0
+					.right  = gu::Alignment::AlignUpArbitary(endCopyPosition.x > 1u << mipmapIndex ? 1u : endCopyPosition.x >> mipmapIndex, dxSourcePixelFormat.BlockSizeX),
+					.bottom = gu::Alignment::AlignUpArbitary(endCopyPosition.y > 1u << mipmapIndex ? 1u : endCopyPosition.y >> mipmapIndex, dxSourcePixelFormat.BlockSizeY),
+					.back   = gu::Alignment::AlignUpArbitary(endCopyPosition.z > 1u << mipmapIndex ? 1u : endCopyPosition.z >> mipmapIndex, dxSourcePixelFormat.BlockSizeZ)
 				};
+
+				const auto destInitTexel = copyInfo.DestinationInitTexelPosition >> mipmapIndex;
+
+				// RHICopyTexture は、予期しない/一貫性のない結果を防ぐために、ブロックサイズにアライメントされている場合にのみ、mip 領域のコピーを許可する
+				Ensure((sourceBox.left % dxSourcePixelFormat.BlockSizeX == 0) && (sourceBox.top % dxSourcePixelFormat.BlockSizeY == 0) && (sourceBox.front % dxSourcePixelFormat.BlockSizeZ == 0));
+				Ensure((destInitTexel.x % dxDestinationPixelFormat.BlockSizeX == 0) && (destInitTexel.y % dxDestinationPixelFormat.BlockSizeY == 0) && (destInitTexel.z % dxDestinationPixelFormat.BlockSizeZ == 0))
 
 				// コピー元のCopyLocation
 				D3D12_TEXTURE_COPY_LOCATION sourceCopyLocation{};
@@ -886,15 +907,24 @@ void RHICommandList::CopyTextureRegion(const gu::SharedPointer<core::GPUTexture>
 				destinationCopyLocation.pResource = dxDestinationTexture->GetResourcePtr();
 				destinationCopyLocation.Type      = useReadback ? D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT : D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
 				destinationCopyLocation.SubresourceIndex = dxDestinationTexture->GetSubresourceIndex(destinationMipmapIndex, destinationSliceIndex, 0);
-
-				// readbackが指定される場合, footprintを行う
+				
+				// readbackが指定される場合, footprintを使って中間バッファにデータを入れておく
 				if (useReadback)
 				{
-					// Todo
+					const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device)->GetDevice();
+					
+					gu::uint64 offset = 0;
+					if (destinationCopyLocation.SubresourceIndex > 0)
+					{
+						dxDevice->GetCopyableFootprints(&resourceDesc, 0, destinationCopyLocation.SubresourceIndex, 0, nullptr, nullptr, nullptr, &offset);
+						offset = Alignment::AlignUp(offset, D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT);
+					}
+					dxDevice->GetCopyableFootprints(&resourceDesc, destinationCopyLocation.SubresourceIndex, 1, offset, &destinationCopyLocation.PlacedFootprint, nullptr, nullptr, nullptr);
+					Check(destinationCopyLocation.PlacedFootprint.Footprint.Width > 0 && destinationCopyLocation.PlacedFootprint.Footprint.Height > 0);
 				}
 
 				// コピーの実行
-				_commandList->CopyTextureRegion(&destinationCopyLocation, 0, 0, 0, &sourceCopyLocation, &sourceBox);
+				_commandList->CopyTextureRegion(&destinationCopyLocation, destInitTexel.x, destInitTexel.y, destInitTexel.z, &sourceCopyLocation, &sourceBox);
 			}
 		}
 	}

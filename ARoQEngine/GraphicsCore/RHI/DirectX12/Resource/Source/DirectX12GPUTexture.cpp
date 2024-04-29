@@ -42,27 +42,6 @@ using namespace DirectX;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-namespace
-{
-	rhi::core::PixelFormat ConvertDXGIIntoRHICoreFormat(DXGI_FORMAT format)
-	{
-		switch (format)
-		{
-			case DXGI_FORMAT_R8G8B8A8_UNORM     : return core::PixelFormat::R8G8B8A8_UNORM;
-			case DXGI_FORMAT_B8G8R8A8_UNORM     : return core::PixelFormat::B8G8R8A8_UNORM;
-			case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB: return core::PixelFormat::B8G8R8A8_UNORM_SRGB;
-			case DXGI_FORMAT_R16G16B16A16_FLOAT : return core::PixelFormat::R16G16B16A16_FLOAT;
-			case DXGI_FORMAT_R32G32B32A32_FLOAT : return core::PixelFormat::R32G32B32A32_FLOAT;
-			case DXGI_FORMAT_R32G32B32_FLOAT    : return core::PixelFormat::R32G32B32_FLOAT;
-			case DXGI_FORMAT_D24_UNORM_S8_UINT  : return core::PixelFormat::D24_UNORM_S8_UINT;
-			case DXGI_FORMAT_R10G10B10A2_UNORM  : return core::PixelFormat::R10G10B10A2_UNORM;
-			case DXGI_FORMAT_D32_FLOAT          : return core::PixelFormat::D32_FLOAT;
-			case DXGI_FORMAT_BC1_UNORM          : return core::PixelFormat::BC1_UNORM;
-			default:
-				throw std::runtime_error("not supported Format type");
-		}
-	}
-}
 
 #pragma region Constructor and Destructor 
 GPUTexture::GPUTexture(const gu::SharedPointer<core::RHIDevice>& device, const gu::tstring& name) : core::GPUTexture(device, name)
@@ -172,16 +151,16 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 	---------------------------------------------------------------------*/
 	if (dxMetaData.IsCubemap())
 	{
-		_metaData = core::GPUTextureMetaData::CubeMap(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
+		_metaData = core::GPUTextureMetaData::CubeMap(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), core::PixelFormatInfo::FindByPlatformFormat((gu::uint32)dxMetaData.format).Format, static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	else if (dxMetaData.IsVolumemap())
 	{
-		_metaData = core::GPUTextureMetaData::Texture3D(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.depth), ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
+		_metaData = core::GPUTextureMetaData::Texture3D(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.depth), core::PixelFormatInfo::FindByPlatformFormat((gu::uint32)dxMetaData.format).Format), static_cast<gu::uint8>(dxMetaData.mipLevels);
 	}
 	else
 	{
 		_metaData = core::GPUTextureMetaData::Texture2DArray(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.arraySize),
-			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
+			core::PixelFormatInfo::FindByPlatformFormat((gu::uint32)dxMetaData.format).Format), static_cast<gu::uint8>(dxMetaData.mipLevels);
 	}
 
 	/*-------------------------------------------------------------------
