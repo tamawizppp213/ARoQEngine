@@ -55,7 +55,7 @@ namespace platform::core
 		/*----------------------------------------------------------------------*/
 		virtual bool OnSizeChanged(const CoreWindowPtr& window, const gu::uint32 width, const gu::uint32 height) = 0;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		
 
@@ -71,7 +71,7 @@ namespace platform::core
 		CoreWindowMessageHandler();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		
 	};

@@ -66,7 +66,7 @@ namespace gm
 		static void QuickSortAscend     (std::vector<T>& vector, int left, int right);
 		static void QuickSortDescend    (std::vector<T>& vector, int left, int right);
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -86,7 +86,7 @@ namespace gm
 		
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		
 	};

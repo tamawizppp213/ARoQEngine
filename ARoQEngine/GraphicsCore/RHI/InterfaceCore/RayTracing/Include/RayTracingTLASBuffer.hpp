@@ -46,7 +46,7 @@ namespace rhi::core
 		*****************************************************************************/
 		virtual void Build(const gu::SharedPointer<RHICommandList>& commandList) = 0;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		gu::SharedPointer<GPUBuffer> GetDest() const noexcept { return _destination; }
 		gu::SharedPointer<GPUBuffer> GetScratch() const noexcept { return _scratch; }
@@ -68,7 +68,7 @@ namespace rhi::core
 		{
 		};
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<GPUBuffer> _destination           = nullptr;
 		gu::SharedPointer<GPUBuffer> _scratch               = nullptr;

@@ -68,7 +68,7 @@ namespace platform::core
 		// @brief : enable / disable the window 
 		virtual void Enable(const bool enable) = 0;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : return true if the window is in the foreground*/
 		virtual bool IsFullscreenSupported() const = 0;
@@ -157,7 +157,7 @@ namespace platform::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		CoreWindowDesc _windowDesc = {};
 

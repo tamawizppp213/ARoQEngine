@@ -34,7 +34,7 @@ namespace rhi::core
 		#pragma region Public Function
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief   ラスタライザの設定項目を全て返します.
 		*************************************************************************/
@@ -120,7 +120,7 @@ namespace rhi::core
 		#pragma region Protected Function
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		/*! @brief シェーダパイプラインにおける, ラスタライザステートに関する設定項目です.*/
 		RasterizerProperty _property = RasterizerProperty();

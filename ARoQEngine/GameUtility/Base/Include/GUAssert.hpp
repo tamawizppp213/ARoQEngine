@@ -62,7 +62,7 @@ namespace gu
 		// @brief : ë¶éûèIóπÇ∑ÇÈèÍçáÇ…égÇ¢Ç‹Ç∑
 		static void ExecuteCrash();
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -76,7 +76,7 @@ namespace gu
 		static void OutputErrorLog(const char* expression, const char* fileName, const int lineNumber, const char* descriptionFormat);
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 	};
 }

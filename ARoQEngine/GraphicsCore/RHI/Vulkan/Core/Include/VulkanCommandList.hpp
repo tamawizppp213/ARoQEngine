@@ -202,7 +202,7 @@ namespace rhi::vulkan
 		
 		#pragma endregion Resource Barrier
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkCommandBuffer GetCommandList() { return _commandBuffer; }
 		
@@ -224,7 +224,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkCommandBuffer _commandBuffer = nullptr;
 		

@@ -44,7 +44,7 @@ namespace rhi::core
 		//static void DestroyAll(){};
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		inline gu::SharedPointer<RHIResourceLayout>   GetLayout() const noexcept { return _resourceLayout; }
 		
@@ -66,7 +66,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<rhi::core::RHIDevice> _device = nullptr;
 
@@ -88,7 +88,7 @@ namespace rhi::core
 		virtual void CompleteSetting() = 0;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		gu::SharedPointer<RHIRenderPass>                GetRenderPass() const noexcept { return _renderPass; }
 		
@@ -155,7 +155,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<GPUInputAssemblyState> _inputAssemblyState  = nullptr;
 		gu::SharedPointer<GPURasterizerState>    _rasterizerState     = nullptr;
@@ -184,7 +184,7 @@ namespace rhi::core
 		virtual void CompleteSetting() = 0;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetComputeShader(const gu::SharedPointer<GPUShaderState>& shaderState) { _computeShaderState = shaderState; };
 		
@@ -206,7 +206,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<GPUShaderState> _computeShaderState = nullptr;
 	};
@@ -226,7 +226,7 @@ namespace rhi::core
 		virtual void CompleteSetting() = 0;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetShader(const gu::SharedPointer<GPUShaderState>& shaderState) { _rayTracingShaderState = shaderState; };
 		
@@ -247,7 +247,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<GPUShaderState> _rayTracingShaderState = nullptr;
 	};

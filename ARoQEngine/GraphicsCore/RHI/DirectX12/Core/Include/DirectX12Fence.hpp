@@ -45,7 +45,7 @@ namespace rhi::directX12
 		std::uint64_t GetCompletedValue() override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		FenceComPtr GetFence() const noexcept { return _fence;}
 		
@@ -64,7 +64,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		FenceComPtr _fence = nullptr;
 	};

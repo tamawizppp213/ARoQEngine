@@ -146,7 +146,7 @@ namespace rhi::directX12
 
 		#pragma endregion
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		/*! @brief コマンドラインで指定されている場合, WARPデバイスで作るようにする
 		*   @note  コマンドラインでは"warp"コマンドを打ってください*/
 		static bool SHOULD_CREATE_WITH_WARP;

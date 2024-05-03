@@ -541,7 +541,7 @@ namespace pmx
 		*****************************************************************************/
 		bool Load(const gu::tstring& filePath);
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		PMXSetting                   Setting;
 		PMXInfo                      Infomation;
@@ -567,7 +567,7 @@ namespace pmx
 		PMXFile& operator=(PMXFile&&)      = default;
 	private:
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		void ReadVertices     (FILE* filePtr);
 		void ReadIndices      (FILE* filePtr);

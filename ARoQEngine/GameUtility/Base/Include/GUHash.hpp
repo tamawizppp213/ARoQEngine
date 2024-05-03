@@ -91,7 +91,7 @@ namespace gu
 		static uint64 XX_64(const void* key, const uint64 byteLength, const uint64 seed = 0);
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 
 		#pragma endregion 
 
@@ -112,7 +112,7 @@ namespace gu
 
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		#pragma endregion
 
@@ -125,7 +125,7 @@ namespace gu
 
 		#pragma endregion 
 
-		#pragma region Private Member Variables
+		#pragma region Private Property
 		// FNV Const
 		static constexpr uint32 FNV_OFFSET_BASIS_32 = 2166136261U;
 		static constexpr uint64 FNV_OFFSET_BASIS_64 = 14695981039346656037U;

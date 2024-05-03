@@ -90,7 +90,7 @@ namespace rhi::vulkan
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		inline void SetResourceAllocator(const std::uint32_t maxDescriptorCount, const VkDescriptorPool pool)
 		{
@@ -125,7 +125,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkDescriptorPool             _descriptorPool = VK_NULL_HANDLE;
 		

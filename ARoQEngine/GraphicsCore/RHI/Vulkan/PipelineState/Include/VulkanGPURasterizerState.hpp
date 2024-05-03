@@ -37,7 +37,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const VkPipelineRasterizationStateCreateInfo& GetRasterizerState() const noexcept { return _rasterizerState; }
 		/****************************************************************************
@@ -57,7 +57,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkPipelineRasterizationStateCreateInfo _rasterizerState = {};
 	};

@@ -38,7 +38,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Return render target view descriptor directX12 heap*/
 		DescriptorHeapComPtr GetRTVHeap() const noexcept;
@@ -69,7 +69,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<directX12::RHIDescriptorHeap> _renderTargetHeap = nullptr;
 		gu::SharedPointer<directX12::RHIDescriptorHeap> _depthStencilHeap = nullptr;

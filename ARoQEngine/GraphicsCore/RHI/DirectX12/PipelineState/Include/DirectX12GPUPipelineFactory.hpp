@@ -63,7 +63,7 @@ namespace rhi::directX12
 		/* @brief : Create and return input assembly state pointer*/
 		gu::SharedPointer<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets, const bool alphaToCoverageEnable = false)override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -84,7 +84,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 
 	};

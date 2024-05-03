@@ -126,7 +126,7 @@ namespace rhi::core
 
 		#pragma endregion
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		/* @ Debuggerを指定するコンストラクタ*/
 		core::RHIDebugCreateInfo _debugInfo;

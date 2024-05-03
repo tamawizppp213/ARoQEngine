@@ -41,7 +41,7 @@ namespace gc::audio
 		bool Load(const std::wstring& filePath);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const std::wstring& GetFilePath()      const;
 		const size_t        GetSoundSize()     const;
@@ -61,7 +61,7 @@ namespace gc::audio
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		std::wstring            _filePath = L"";
 		size_t                  _soundSize = 0;

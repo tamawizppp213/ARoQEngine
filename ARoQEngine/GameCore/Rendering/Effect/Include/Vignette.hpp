@@ -49,7 +49,7 @@ namespace gc
 		void Draw() override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		gm::Float4 GetColor() const { return _settings.Color; }
 
@@ -87,7 +87,7 @@ namespace gc
 		void PrepareResourceView() override;
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VignetteSettings _settings = {};
 

@@ -146,7 +146,7 @@ namespace platform::windows
 		virtual ULONG STDMETHODCALLTYPE Release() override;
 #pragma endregion IUnknown Interface
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/*---------------------------------------------------------------
 		　　　　　@brief : Windows専用じゃない場合のWindow Handlerの受け渡しです.
@@ -280,7 +280,7 @@ namespace platform::windows
 		void AdjustWindowRegion(const gu::int32 width, const gu::int32 height);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief : Window handle*/
 		HWND _hwnd = NULL;

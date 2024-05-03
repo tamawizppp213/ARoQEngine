@@ -41,7 +41,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		// @brief : クエリを格納するヒープ
 		gu::SharedPointer<RHIQuery> Heap = nullptr;
@@ -102,7 +102,7 @@ namespace rhi::core
 		virtual void Free(QueryResultLocation& location) = 0;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief :  全てのクエリヒープは64kBの領域を確保するようにする.
@@ -134,7 +134,7 @@ namespace rhi::core
 		explicit RHIQuery(const gu::SharedPointer<RHIDevice>& device, core::QueryHeapType heapType) : _device(device), _queryHeapType(heapType) {};
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 

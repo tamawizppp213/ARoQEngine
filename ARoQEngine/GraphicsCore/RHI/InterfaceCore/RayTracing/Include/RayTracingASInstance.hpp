@@ -41,7 +41,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		gu::SharedPointer<BLASBuffer> GetBLASBuffer() const noexcept { return _blasBuffer; }
 		/****************************************************************************
@@ -64,7 +64,7 @@ namespace rhi::core
 		{
 		};
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<BLASBuffer> _blasBuffer = nullptr;
 		gu::SharedPointer<RHIDevice> _device      = nullptr;

@@ -68,7 +68,7 @@ namespace rhi::vulkan
 
 		#pragma endregion Public Function
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief  アダプタに直接接続されている出力の数 (モニターなど)を返します.
 		*************************************************************************/
@@ -104,7 +104,7 @@ namespace rhi::vulkan
 		
 		bool IsPresentSupported(VkSurfaceKHR surface, std::uint32_t queueFamilyIndex) const;
 
-		#pragma endregion Public Member Variables
+		#pragma endregion Public Property
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
@@ -120,7 +120,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkPhysicalDevice _physicalDevice = nullptr;
 

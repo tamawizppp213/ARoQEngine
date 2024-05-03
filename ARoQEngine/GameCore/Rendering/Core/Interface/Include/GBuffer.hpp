@@ -74,7 +74,7 @@ namespace gc::rendering
 		virtual void Clear(const GameModelPtr& model);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		TexturePtr GetRenderedTexture(const std::uint32_t index) const noexcept;
 
@@ -99,7 +99,7 @@ namespace gc::rendering
 		virtual void PrepareFrameBuffers(const gu::tstring& name) = 0;
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

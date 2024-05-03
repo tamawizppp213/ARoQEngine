@@ -56,7 +56,7 @@ namespace
 			return GetRemoteDocument({ uri, length });
 		}
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const std::unique_ptr<const ISchemaLocator> SchemaLocatorPtr;
 		/****************************************************************************
@@ -72,7 +72,7 @@ namespace
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::unordered_map<std::string, rapidjson::SchemaDocument> _schemaDocuments;
 	};

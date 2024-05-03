@@ -51,7 +51,7 @@ public:
 	void PopScene();
 	void ShutDown();
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 
 	/****************************************************************************
@@ -78,7 +78,7 @@ private:
 	SceneManager () = default;
 	~SceneManager() = default;
 	/****************************************************************************
-	**                Private Member Variables
+	**                Private Property
 	*****************************************************************************/
 	std::stack<SceneUniquePtr> _currentScene;
 	GameTimerPtr _gameTimer = nullptr;

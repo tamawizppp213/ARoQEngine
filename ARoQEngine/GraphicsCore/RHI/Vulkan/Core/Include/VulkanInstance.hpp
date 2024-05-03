@@ -62,9 +62,9 @@ namespace rhi::vulkan
 		#pragma endregion Public Function
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
-		#pragma region Public Member Variables
+		#pragma region Public Property
 
 		/*!**********************************************************************
 		*  @brief   VulkanのInstanceを返します/
@@ -124,9 +124,9 @@ namespace rhi::vulkan
 		gu::SharedPointer<core::RHIDisplayAdapter> SearchAdapter(const VkPhysicalDeviceType deviceType);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		
 		VkInstance               _instance         = nullptr;
 		VkDebugUtilsMessengerEXT _debugMessenger   = nullptr;
@@ -142,7 +142,7 @@ namespace rhi::vulkan
 		/*! @brief Vulkan APIのパッチバージョンです.*/
 		gu::uint32 _patchVersion = 0;
 
-		#pragma endregion Protected Member Variables
+		#pragma endregion Protected Property
 	
 	private:
 		#pragma region Private Function

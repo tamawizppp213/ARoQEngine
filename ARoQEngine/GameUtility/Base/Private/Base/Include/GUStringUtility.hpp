@@ -344,7 +344,7 @@ namespace gu::details::string
 		#pragma endregion Convert number
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		static constexpr uint64 NPOS = static_cast<uint64>(-1);
 
@@ -410,7 +410,7 @@ namespace gu::details::string
 		}
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 	};
 

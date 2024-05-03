@@ -46,7 +46,7 @@ namespace gc::basepass
 		void Draw(const GPUResourceViewPtr& scene) override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -69,7 +69,7 @@ namespace gc::basepass
 		void PrepareFrameBuffers(const gu::tstring& name) override;
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		
 	};

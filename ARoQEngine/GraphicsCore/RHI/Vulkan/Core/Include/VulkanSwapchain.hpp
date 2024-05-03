@@ -64,7 +64,7 @@ namespace rhi::vulkan
 		void SwitchHDRMode([[maybe_unused]]const bool enableHDR) override {};
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkSwapchainKHR GetSwapchain() { return _swapchain; }
 
@@ -90,7 +90,7 @@ namespace rhi::vulkan
 		void SetUp();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkSwapchainKHR _swapchain = VK_NULL_HANDLE;
 

@@ -69,7 +69,7 @@ namespace gltf
 			template<typename T>
 			void RemoveExtension() { return _registeredExtensions.erase(typeid(T)); }
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 			std::unordered_map<std::string, std::string> Extensions;
 			std::string                                  Extras;
@@ -84,7 +84,7 @@ namespace gltf
 			*****************************************************************************/
 			static bool Equals(const GLTFProperty& lhs, const GLTFProperty& rhs);
 			/****************************************************************************
-			**                Protected Member Variables
+			**                Protected Property
 			*****************************************************************************/
 
 			/****************************************************************************
@@ -111,7 +111,7 @@ namespace gltf
 			*****************************************************************************/
 
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 			std::string ID;
 			std::string Name;
@@ -129,7 +129,7 @@ namespace gltf
 			GLTFChildOfRootProperty() = default;
 			GLTFChildOfRootProperty(std::string id, std::string name) : ID(std::move(id)), Name(std::move(name)){}
 			/****************************************************************************
-			**                Protected Member Variables
+			**                Protected Property
 			*****************************************************************************/
 		};
 #pragma region Inline Function

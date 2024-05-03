@@ -38,7 +38,7 @@ public:
 	const size_t                   GetWaveSize()  const;
 
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 
 	/****************************************************************************
@@ -56,7 +56,7 @@ private:
 	bool CheckChunk(MMCKINFO * chunkNext, MMCKINFO * chunkPrev, char c0, char c1, char c2, char c3, UINT flag);
 	bool Close();
 	/****************************************************************************
-	**                Private Member Variables
+	**                Private Property
 	*****************************************************************************/
 	HMMIO        _handle   = nullptr;
 	ByteArrayPtr _waveData = nullptr;

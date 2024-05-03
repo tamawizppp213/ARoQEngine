@@ -47,7 +47,7 @@ namespace gu::details::tree
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		NodeType* GetNode() const { return _currentNode; }
 
@@ -193,7 +193,7 @@ namespace gu::details::tree
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		NodeType* _currentNode = nullptr;
 		Direction _previousDirection   = Direction::LeftLower;
@@ -290,7 +290,7 @@ namespace gu::details::tree
 		void SetupNilNodes();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		// @brief : 回転してない状態で, 親より小さい値の方
 		RedBlackTreeNode* Left  = nullptr;
@@ -356,7 +356,7 @@ namespace gu::details::tree
 		}
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		// 未使用ノードであるか
 		bool _isNil = true;

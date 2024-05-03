@@ -101,7 +101,7 @@ namespace rhi::core
 		virtual void SwitchHDRMode(const bool enableHDR) = 0;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief: Return swapchain's render pixel width*/
 		size_t      GetWidth      () const noexcept { return _desc.WindowInfo.Width; }
@@ -150,7 +150,7 @@ namespace rhi::core
 		}
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<RHIDevice>       _device = nullptr;
 		

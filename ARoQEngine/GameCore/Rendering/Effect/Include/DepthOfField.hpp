@@ -78,7 +78,7 @@ namespace gc
 		void Draw(const ResourceViewPtr& zPrepass);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetUpBlurParameter(float width, float height, float radius = 20.0f);
 
@@ -105,7 +105,7 @@ namespace gc
 		void PreparePipelineState(const gu::tstring& name);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		enum {ViewCount = 6};
 		

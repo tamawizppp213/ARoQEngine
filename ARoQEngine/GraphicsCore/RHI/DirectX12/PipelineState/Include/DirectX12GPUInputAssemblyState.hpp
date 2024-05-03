@@ -34,7 +34,7 @@ namespace rhi::directX12
 		#pragma region Public Function
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief     入力レイアウト要素が個数と実データの参照先を指定するディスクリプタ
 		*  @return    const D3D12_INPUT_LAYOUT_DESC : 入力レイアウト要素の参照情報

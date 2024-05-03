@@ -89,7 +89,7 @@ namespace gc::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		inline void SetActive(bool isActive) { _isActive = isActive; }
@@ -168,7 +168,7 @@ namespace gc::core
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/*-------------------------------------------------------------------
 		-           gameObject default info
@@ -207,7 +207,7 @@ namespace gc::core
 		int GetLayerBit(const gu::tstring& layer);
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		static gu::DynamicArray<GameObjectPtr> GameObjects;
 		static gu::DynamicArray<gu::tstring>  LayerList;

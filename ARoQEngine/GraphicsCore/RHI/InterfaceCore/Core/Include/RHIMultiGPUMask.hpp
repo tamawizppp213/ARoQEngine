@@ -63,7 +63,7 @@ namespace rhi::core
 
 		#pragma endregion
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 	#if PLATFORM_DESKTOP 
 		/*! @brief : 使用可能な最大のGPU数です. (これは描画用などを考慮していません.)*/
 		static constexpr gu::uint32 MAX_GPU_COUNT = 8;
@@ -144,7 +144,7 @@ namespace rhi::core
 
 		#pragma endregion
 		
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		/*! @brief GPUマスク*/
 		gu::uint32 _mask = 0;
 		#pragma endregion

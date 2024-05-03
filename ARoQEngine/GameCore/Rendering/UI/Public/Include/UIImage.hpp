@@ -59,7 +59,7 @@ namespace gc::ui
 			float radian = 0);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const gm::Vertex* GetVertices() const { return _vertices; }
 		
@@ -88,7 +88,7 @@ namespace gc::ui
 		/* Create rect */
 		void CreateRect(const gm::Float3& position, const gm::Float2& rectSize, const gm::Float4& color, const gm::Float2& u, const gm::Float2& v, float radian);
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gm::Vertex _vertices[4] = {};
 		gm::Float3 _positionNDC = gm::Float3(0, 0, 0);

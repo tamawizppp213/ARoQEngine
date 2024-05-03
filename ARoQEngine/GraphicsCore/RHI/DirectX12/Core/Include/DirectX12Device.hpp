@@ -190,7 +190,7 @@ namespace rhi::directX12
 
 		#pragma endregion Public Function
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief  DirectX12で使用する論理デバイスのComポインタ
 		*  @return DeviceComPtr : 論理デバイスのCOMポインタ. (GPUResourceの作成等に使用する)
@@ -312,10 +312,10 @@ namespace rhi::directX12
 
 		#pragma endregion Protected Function
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/*! @brief : DirectX12の論理デバイス*/
 		DeviceComPtr  _device = nullptr;
@@ -571,14 +571,14 @@ namespace rhi::directX12
 
 		#pragma endregion Private Function
 
-		#pragma region Private Member Variables
+		#pragma region Private Property
 
 		/*----------------------------------------------------------------------
 		*  @brief : Defaultのディスクリプタヒープ
 		*----------------------------------------------------------------------*/
 		gu::SortedMap<DefaultHeapType, gu::SharedPointer<core::RHIDescriptorHeap>> _defaultHeap;
 
-		#pragma endregion Private Member Variables
+		#pragma endregion Private Property
 	};
 }
 #endif

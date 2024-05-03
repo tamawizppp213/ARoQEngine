@@ -128,7 +128,7 @@ namespace gu
 		
 		#pragma endregion Public Function
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!***********************************************************************
 		*  @brief      “ú‚É‚¿‚Ì‚İ‚ğæ“¾‚·‚é. ‚Ì•”•ª‚Í00:00:00.000‚ÉØ‚èÌ‚Ä‚ç‚ê‚é
 		*  @return     DateTime : Œ»İ‚ğ¦‚·_ticks‚ğ‚Á‚½\‘¢‘Ì
@@ -290,7 +290,7 @@ namespace gu
 
 		__forceinline DateTime& operator -=(const TimeSpan& right) { _ticks -= right.GetTicks(); return *this; }
 
-		#pragma endregion Public Member Variables
+		#pragma endregion Public Property
 
 		#pragma region Public Operator 
 		/*----------------------------------------------------------------------
@@ -327,25 +327,25 @@ namespace gu
 
 		#pragma endregion Protected Function
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		static constexpr int32  DAY_COUNT_PER_MONTH[] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 		static constexpr int32  DAY_COUNT_TO_MONTH [] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
 		static constexpr char8* SHORT_DAY_NAMES[]     = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 		static constexpr char8* LONG_DAY_NAMES[]      = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 		static constexpr char8* SHORT_MONTH_NAMES[]   = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 		static constexpr char8* LONG_MONTH_NAMES[]    = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-		#pragma endregion Protected Member Variables
+		#pragma endregion Protected Property
 
 	private:
 		#pragma region Private Function
 
 		#pragma endregion Private Function
 
-		#pragma region Private Member Variables
+		#pragma region Private Property
 
 		int64 _ticks = 0;
 
-		#pragma endregion Private Member Variables
+		#pragma endregion Private Property
 	};
 
 }

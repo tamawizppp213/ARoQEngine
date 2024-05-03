@@ -38,7 +38,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const D3D12_RAYTRACING_INSTANCE_DESC& GetDesc() { return _instanceDesc; }
 		const gu::SharedPointer<directX12::BLASBuffer> GetDxBLASBuffer() const noexcept { return gu::StaticPointerCast<directX12::BLASBuffer>(_blasBuffer); }
@@ -62,7 +62,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		D3D12_RAYTRACING_INSTANCE_DESC _instanceDesc = {};
 	};

@@ -39,7 +39,7 @@ public:
 	void GameEnd();
 
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 	gu::SharedPointer<PPPEngine> GetEngine() const { return _engine; }
 	gu::SharedPointer<LowLevelGraphicsEngine> GetGraphicsEngine() { return _engine->GetLowLevelGraphics(); }
@@ -69,7 +69,7 @@ private:
 	~GameManager() = default;
 
 	/****************************************************************************
-	**                Private Member Variables
+	**                Private Property
 	*****************************************************************************/
 	SceneManager& _sceneManager = SceneManager::Instance();
 	gu::SharedPointer<PPPEngine> _engine = nullptr;

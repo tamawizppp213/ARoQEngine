@@ -67,7 +67,7 @@ public:
 
 	void ShutDown();
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 	LowLevelGraphicsEnginePtr GetLowLevelGraphics() const noexcept { return _graphicsEngine; }
 	
@@ -96,7 +96,7 @@ protected:
 	*****************************************************************************/
 
 	/****************************************************************************
-	**                Protected Member Variables
+	**                Protected Property
 	*****************************************************************************/
 #pragma region Variables
 #pragma region Common 

@@ -68,7 +68,7 @@ namespace gu
 		void Clear();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		__forceinline bool IsEmpty() const { return _queueSize == 0; }
 
@@ -176,7 +176,7 @@ namespace gu
 		}
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		// @brief : åªç›ÇÃóeó 
 		uint64 _capacity = 0;

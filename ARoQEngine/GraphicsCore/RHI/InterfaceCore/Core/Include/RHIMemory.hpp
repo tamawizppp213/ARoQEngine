@@ -38,7 +38,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		MemoryHeap GetMemoryType() const noexcept { return _memoryType; }
 
@@ -60,7 +60,7 @@ namespace rhi::core
 			: _device(device), _memoryType(memoryHeapType), _memorySize(memorySize) {};
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		MemoryHeap _memoryType = MemoryHeap::Default; 
 

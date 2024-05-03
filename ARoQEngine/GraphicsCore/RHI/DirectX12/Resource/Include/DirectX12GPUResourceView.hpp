@@ -43,7 +43,7 @@ namespace rhi::directX12
 		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, [[maybe_unused]]const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : CPUのポインタを返すハンドラを取得します
@@ -86,7 +86,7 @@ namespace rhi::directX12
 		const gu::SharedPointer<directX12::RHIDescriptorHeap> SelectDescriptorHeap(const core::ResourceViewType type);
 		
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::pair<core::DescriptorHeapType, gu::uint32> _heapOffset = {};
 		bool _hasCreated = false;

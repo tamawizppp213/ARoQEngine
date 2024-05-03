@@ -55,7 +55,7 @@ namespace gc
 		virtual bool Draw() = 0;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		virtual ResourceViewPtr GetSceneView() const noexcept = 0;
 		virtual void SetSceneView(const ResourceViewPtr& scene) = 0;
@@ -72,7 +72,7 @@ namespace gc
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		// äeÉÇÉfÉãÇë„ì¸èoóàÇÈÇÊÇ§Ç…Ç∑ÇÈ. 
 		LowLevelGraphicsEnginePtr _engine = nullptr;

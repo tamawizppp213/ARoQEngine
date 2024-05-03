@@ -309,7 +309,7 @@ namespace gu::details::string
 
 		#pragma endregion 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		static constexpr uint64 NPOS = static_cast<uint64>(-1);
 
@@ -424,6 +424,7 @@ namespace gu::details::string
 		**                Constructor and Destructor
 		*****************************************************************************/
 		#pragma region Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		StringBase() { Initialize(); }
 
 		StringBase(const Char* string) : StringBase<Char, CharByte>() { Assign(string); }
@@ -504,11 +505,11 @@ namespace gu::details::string
 		/****************************************************************************
 		**                Private Function
 		*****************************************************************************/
-#pragma region Utility
+		#pragma region Utility
 
-#pragma endregion Utility
+		#pragma endregion Utility
 
-#pragma region Memory
+		#pragma region Memory
 		/*----------------------------------------------------------------------
 		*  @brief :  空の配列による初期状態の作成
 		/*----------------------------------------------------------------------*/
@@ -596,7 +597,7 @@ namespace gu::details::string
 #pragma endregion SSO operation
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		union StringData _data;
 	};

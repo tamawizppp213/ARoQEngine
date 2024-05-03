@@ -75,7 +75,7 @@ namespace gc
 		
 		void DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex = 0);
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ResourceViewPtr GetHalfDownSampledSRV() const noexcept { return _shaderResourceViews[1]; }
 
@@ -107,7 +107,7 @@ namespace gc
 		void PrepareVertexAndIndexBuffer(const gu::tstring& addName);
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		enum { ViewCount = 3 };
 

@@ -61,7 +61,7 @@ namespace gc::core
 		void Bind(const GraphicsCommandListPtr& commandList, const std::uint32_t index);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Return max instance count for instance drawing. */
 		std::uint64_t GetMaxInsntanceCount() const { return _maxInstanceCount; }
@@ -84,7 +84,7 @@ namespace gc::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

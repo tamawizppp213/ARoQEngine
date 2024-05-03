@@ -58,7 +58,7 @@ namespace gc
 		void Draw(const ResourceViewPtr& scene);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		int GetMaxRayMarchIteration() const { return _settings.MaxRayMarchIteraction; }
 		
@@ -102,7 +102,7 @@ namespace gc
 		void PrepareResourceView();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		SSRSettings _settings = {};
 

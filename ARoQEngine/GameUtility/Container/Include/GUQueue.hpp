@@ -82,7 +82,7 @@ namespace gu
 		inline const ElementType& Back() const { return _head->Element; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		inline bool IsEmpty() const { return _queueSize <= 0; }
 
@@ -106,7 +106,7 @@ namespace gu
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		Node* _head = nullptr; // 入れる場所の先頭ノード
 		Node* _tail = nullptr; // 押し出す場所の先頭ノード

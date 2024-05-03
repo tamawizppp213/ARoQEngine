@@ -87,7 +87,7 @@ namespace gu
 
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 
 		#pragma endregion 
 
@@ -98,7 +98,7 @@ namespace gu
 		#pragma region Private Function
 		#pragma endregion
 
-		#pragma region Private Member Variables
+		#pragma region Private Property
 
 		#pragma endregion 
 	};

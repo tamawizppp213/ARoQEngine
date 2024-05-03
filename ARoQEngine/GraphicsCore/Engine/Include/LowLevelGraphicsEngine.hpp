@@ -89,7 +89,7 @@ public:
 	/* @brief Wait command queue (in GPU), but if the stopCPU is set true, gpu and cpu wait.*/
 	void WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU);
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 	/* @brief : Device (Create GPU Resource Function List)*/
 	DevicePtr GetDevice() const noexcept { return _device; }
@@ -148,7 +148,7 @@ protected:
 
 #pragma endregion SetUp
 	/****************************************************************************
-	**                Private Member Variables
+	**                Private Property
 	*****************************************************************************/
 	/* @brief : Graphics API version. (DirectX12 or Vulkan)*/
 	rhi::core::GraphicsAPI _apiVersion = rhi::core::GraphicsAPI::Unknown;

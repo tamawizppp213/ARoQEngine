@@ -39,7 +39,7 @@ namespace gc::audio
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		IXAudio2Ptr               GetAudioInterface() const noexcept;
 		IXAudio2MasteringVoicePtr GetMasteringVoice() const noexcept;
@@ -67,7 +67,7 @@ namespace gc::audio
 		bool CreateVolumeMeter();
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		/* @brief: XAudio interface*/
 		IXAudio2Ptr _xAudio = nullptr;

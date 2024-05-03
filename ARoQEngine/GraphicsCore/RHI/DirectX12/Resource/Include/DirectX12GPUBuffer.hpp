@@ -127,7 +127,7 @@ namespace rhi::directX12
 		
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		/*! @brief DirectX12で使用するGPUリソース*/
 		ResourceComPtr _resource = nullptr;
 
@@ -139,7 +139,7 @@ namespace rhi::directX12
 
 		/*! @brief CPUからGPUにUploadが実行中かどうか(Mapが既に呼ばれているかどうか)*/
 		bool _useCPUMapped = false;
-		#pragma endregion Protected Member Variables
+		#pragma endregion Protected Property
 	};
 }
 #endif

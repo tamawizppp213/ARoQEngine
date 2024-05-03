@@ -73,7 +73,7 @@ namespace rhi::core
 		/* @brief : Create and return input assembly state pointer*/
 		virtual gu::SharedPointer<GPUBlendState> CreateBlendState(const size_t numRenderTargets, const bool alphaToCoverageEnable) = 0;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -93,7 +93,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 

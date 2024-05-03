@@ -44,7 +44,7 @@ namespace rhi::core
 		virtual void LoadBinary(const core::ShaderType type, const gu::tstring& fileName) = 0;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		// @brief : Return Buffer pointer and Buffer byte size
 		BlobData           GetBlobData      () const noexcept { return _blobData; }
@@ -80,7 +80,7 @@ namespace rhi::core
 		gu::tstring Format(float version);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		ShaderType  _shaderType = ShaderType::Vertex;
 

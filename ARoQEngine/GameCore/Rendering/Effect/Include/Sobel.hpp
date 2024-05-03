@@ -61,7 +61,7 @@ namespace gc
 		void Draw(const ResourceViewPtr& sourceSRV); 
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ResourceViewPtr GetRenderedSRV() const noexcept { return _srv; }
 
@@ -87,7 +87,7 @@ namespace gc
 		void PreparePipelineState(const gu::tstring& name);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		OutlineInfo _outlineInfo = {};
 

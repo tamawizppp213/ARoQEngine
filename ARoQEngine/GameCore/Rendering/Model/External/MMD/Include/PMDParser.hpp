@@ -209,7 +209,7 @@ namespace pmd
 		*****************************************************************************/
 		bool Load(const gu::tstring& filePath);
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		PMDHeader   Header;
 		gu::DynamicArray<PMDVertex>          Vertices;
@@ -252,7 +252,7 @@ namespace pmd
 		void ReadPhysics            (FILE* filePtr);
 		
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 	};
 

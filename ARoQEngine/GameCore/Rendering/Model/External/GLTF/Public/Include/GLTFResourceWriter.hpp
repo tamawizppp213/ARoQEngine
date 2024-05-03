@@ -44,7 +44,7 @@ namespace gltf
 		std::string GenerateBufferURI(const std::string& bufferID) const override;
 		void SetURIPrefix(std::string uriPrefix);
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -67,7 +67,7 @@ namespace gltf
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::string _uriPrefix;
 		std::unordered_map<std::string, std::streamoff> _streamOffsets;
@@ -89,7 +89,7 @@ namespace gltf
 		std::string   GenerateBufferURI(const std::string& bufferID) const override;
 		std::ostream* GetBufferStream  (const std::string& bufferID) override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -105,7 +105,7 @@ namespace gltf
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::shared_ptr<std::iostream> _stream;
 		

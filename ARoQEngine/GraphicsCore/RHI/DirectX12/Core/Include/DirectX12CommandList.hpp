@@ -262,7 +262,7 @@ namespace rhi::directX12
 
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief     コマンドリストのComptrを返します
 		*  @return CommandListComPtr コマンドリスト
@@ -294,7 +294,7 @@ namespace rhi::directX12
 		#pragma region Protected Function
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		/*! @brief DirectX12で使用するバリアを管理*/
 		gu::SharedPointer<GPUBarrierBatcher> _barrierBatcher = nullptr;

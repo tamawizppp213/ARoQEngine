@@ -70,7 +70,7 @@ namespace gu
 		inline const ElementType& Top() const { return _head->Element; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		inline bool IsEmpty() const { return _stackSize <= 0; }
 
@@ -94,7 +94,7 @@ namespace gu
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		Node* _head = nullptr; // “ü‚ê‚éêŠ‚Ìæ“ªƒm[ƒh
 		int _stackSize = 0;

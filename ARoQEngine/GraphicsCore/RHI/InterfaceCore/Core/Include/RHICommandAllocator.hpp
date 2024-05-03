@@ -48,7 +48,7 @@ namespace rhi::core
 
 		#pragma endregion
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		
 		/*!**********************************************************************
 		*  @brief   コマンドリストの種類を返します (Graphics, compute, copy)
@@ -85,7 +85,7 @@ namespace rhi::core
 
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		/*! @brief 論理デバイス*/
 		gu::SharedPointer<RHIDevice> _device = nullptr;

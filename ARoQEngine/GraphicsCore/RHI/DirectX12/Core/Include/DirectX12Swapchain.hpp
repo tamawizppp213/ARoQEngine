@@ -76,7 +76,7 @@ namespace rhi::directX12
 		void LogHDROutput();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		SwapchainComPtr GetSwapchain() const noexcept { return _swapchain; }
 		
@@ -105,7 +105,7 @@ namespace rhi::directX12
 		void SetUp();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		// @brief : swapchain
 		SwapchainComPtr      _swapchain = nullptr;

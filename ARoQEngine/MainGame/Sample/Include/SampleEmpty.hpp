@@ -39,7 +39,7 @@ namespace sample
 		void Draw() override;
 		void Terminate() override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -57,7 +57,7 @@ namespace sample
 		void OnGamePadInput() override;
 		void ExecuteSceneTransition() override;
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 	};
 }

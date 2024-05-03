@@ -63,7 +63,7 @@ namespace rhi::core
 		/* @brief : Reset view offset*/
 		virtual void Reset(const ResetFlag flag = ResetFlag::OnlyOffset) = 0;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		size_t GetMaxCount (const DescriptorHeapType type) const noexcept { return _heapInfo.Contains(type) ? _heapInfo.At(type) : 0; }
 		
@@ -87,7 +87,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief : max descriptor count in each descriptor heap type*/
 		gu::SortedMap<DescriptorHeapType, MaxDescriptorSize> _heapInfo;

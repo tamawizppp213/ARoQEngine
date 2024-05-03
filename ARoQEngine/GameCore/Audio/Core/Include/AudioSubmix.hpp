@@ -46,7 +46,7 @@ namespace gc::audio
 		void Reverb(bool isOn);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		SubmixVoicePtr GetSubmixVoice() { return _submixVoice; }
 
@@ -69,7 +69,7 @@ namespace gc::audio
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		SubmixVoicePtr _submixVoice  = nullptr;
 		AudioMasterPtr _audioMaster  = nullptr;

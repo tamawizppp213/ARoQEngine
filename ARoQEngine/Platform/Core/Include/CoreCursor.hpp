@@ -67,7 +67,7 @@ namespace platform::core
 		-----------------------------------------------------------------*/
 		virtual void* CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int32 width, const gu::int32 height) = 0;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/*---------------------------------------------------------------
 			@brief : Return the cursor position in (x, y) pixel
@@ -105,7 +105,7 @@ namespace platform::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		CursorType _type = CursorType::Default;
 	};

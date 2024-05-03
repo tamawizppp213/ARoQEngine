@@ -85,7 +85,7 @@ namespace gc
 		void Draw(const ResourceViewPtr& scene);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Return rendered texture view pointer*/
 		ResourceViewPtr GetRenderedTextureView() const noexcept { return _ambientMap; }
@@ -120,7 +120,7 @@ namespace gc
 
 		void PrepareVertexAndIndexBuffer(const gu::tstring& name);
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* ssao setting : resource view and struct.*/
 		SSAOSetting     _setting = {};

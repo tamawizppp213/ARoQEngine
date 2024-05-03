@@ -52,7 +52,7 @@ namespace gc::ui
 		void Reset();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/*@brief: Return shared_ptr<GPUResourceView> font image and font resource view*/
 		ResourceViewPtr GetFontResourceView() const noexcept;
@@ -84,7 +84,7 @@ namespace gc::ui
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

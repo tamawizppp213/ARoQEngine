@@ -150,7 +150,7 @@ namespace gu
 
 		#pragma endregion Protected Function
 	
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		/*! @brief : ÀÛ‚Ì’l */
 		ElementType _value = ElementType();
@@ -158,7 +158,7 @@ namespace gu
 		/*! @brief : ’l‚ª‘ã“ü‚³‚ê‚Ä‚¢‚é‚© */
 		bool _hasValue = false;
 
-		#pragma endregion Private Member Variables
+		#pragma endregion Private Property
 	};
 
 }

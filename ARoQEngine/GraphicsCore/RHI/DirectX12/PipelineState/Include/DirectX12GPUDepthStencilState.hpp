@@ -37,7 +37,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const D3D12_DEPTH_STENCIL_DESC& GetDepthStencilState() const noexcept { return _depthStencilDesc; }
 		
@@ -59,7 +59,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		D3D12_DEPTH_STENCIL_DESC  _depthStencilDesc  = {};
 		D3D12_DEPTH_STENCIL_DESC1 _depthStencilDesc1 = {};

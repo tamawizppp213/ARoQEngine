@@ -69,7 +69,7 @@ namespace gc::core
 		static PrimitiveMesh Torus(float majorRadius, float minorRadius, std::uint32_t numMajor, std::uint32_t numMinor, const gm::Float4& color = gm::Float4(1,1,1,1));
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -89,7 +89,7 @@ namespace gc::core
 		static void IsInvertNormal(PrimitiveMesh& meshData);
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 	};
 }

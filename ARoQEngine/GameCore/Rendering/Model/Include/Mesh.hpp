@@ -50,7 +50,7 @@ namespace gc::core
 			const std::uint32_t frameIndex);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const gu::DynamicArray<VertexBufferPtr>& GetVertexBuffers() const noexcept { return _vertexBuffers; }
 
@@ -94,7 +94,7 @@ namespace gc::core
 
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

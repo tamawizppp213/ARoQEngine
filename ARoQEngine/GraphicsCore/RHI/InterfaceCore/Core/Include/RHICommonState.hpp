@@ -481,7 +481,7 @@ namespace rhi::core
 	{
 	public:
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		FilterOption        Filter        = FilterOption::MinPointMagPointMipPoint; // Specify sampling method for image enlargement/shirinkage*
 		SamplerAddressMode  AddressModeU  = SamplerAddressMode::Wrap;               // Texture addressing mode in the U direction
@@ -1172,7 +1172,7 @@ namespace rhi::core
 	struct GPUBufferMetaData
 	{
 	public:
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*! @brief 1要素に必要なバイトサイズ*/
 		gu::uint32 Stride = 0;
 		
@@ -1355,7 +1355,7 @@ namespace rhi::core
 	struct GPUTextureMetaData
 	{
 	public:
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*! @brief 画面クリア時の初期化で塗りつぶされる色 (RenderTarget, DepthStencilなどに使用します.)*/
 		ClearValue ClearColor = ClearValue();
 
@@ -1809,7 +1809,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ResourceState   InitialLayout = ResourceState::Common;        // initial resource layout  
 		ResourceState   FinalLayout   = ResourceState::Present;       // final desired resource layout

@@ -37,7 +37,7 @@ namespace physics::geometry
 		bool IsValid() const override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		// @brief: half of the width, height, and depth of the box.
 		gm::Float3 HalfExtents = { 0.0f, 0.0f, 0.0f };
@@ -63,7 +63,7 @@ namespace physics::geometry
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 	};
 
@@ -82,7 +82,7 @@ namespace physics::geometry
 		bool IsValid() const override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		// @brief: half of the width, height, and depth of the box.
 		gm::Float3 HalfExtents = { 0.0f, 0.0f, 0.0f };
@@ -108,7 +108,7 @@ namespace physics::geometry
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 	};
 }

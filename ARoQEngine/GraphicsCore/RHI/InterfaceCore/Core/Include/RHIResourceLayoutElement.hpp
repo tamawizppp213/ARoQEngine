@@ -60,7 +60,7 @@ namespace rhi::core
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ShaderVisibleFlag  Visibility     = ShaderVisibleFlag::All;    // Specify the shaders that can access the contents of the root signature slot.
 		DescriptorHeapType DescriptorType = DescriptorHeapType::CBV;  // Descriptor type
@@ -93,7 +93,7 @@ namespace rhi::core
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ShaderVisibleFlag Visibility     = ShaderVisibleFlag::All;
 		size_t           Binding        = 0;
@@ -123,7 +123,7 @@ namespace rhi::core
 		#pragma region Public Function
 		#pragma endregion
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*! @brief シェーダーパイプラインに対してパラメータの使用目的に関する情報を伝達するための文字列です. 
 		           Semantic名は以下の参考資料をご覧ください. https://learn.microsoft.com/ja-jp/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics*/
 		gu::string SemanticName = "";
@@ -186,7 +186,7 @@ namespace rhi::core
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ShaderVisibleFlag Visibility     = ShaderVisibleFlag::All;
 		size_t           Binding        = 0; // リソースレイアウト上でバインドするIndex

@@ -44,7 +44,7 @@ namespace gm
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetRange(T min, T max)
 		{
@@ -75,7 +75,7 @@ namespace gm
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::random_device _seed;
 		std::mt19937       _engine;
@@ -100,7 +100,7 @@ namespace gm
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetRange(int min, int max)
 		{
@@ -130,7 +130,7 @@ namespace gm
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::random_device _seed;
 		std::mt19937       _engine;
@@ -178,7 +178,7 @@ namespace gm
 		bool GetSampling() { return _distribution(this->_engine); }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(double probability)
 		{
@@ -222,7 +222,7 @@ namespace gm
 		int GetSampling() { return _distribution(this->_engine); }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(int count, double probability)
 		{
@@ -267,7 +267,7 @@ namespace gm
 		int GetSampling() { return _distribution(this->_engine); }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(int successCount, double probability)
 		{
@@ -314,7 +314,7 @@ namespace gm
 		double GetSampling() { return _distribution(this->_engine); }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(double probability)
 		{
@@ -357,7 +357,7 @@ namespace gm
 		double GetSampling() { return _distribution(this->_engine); }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(double mean)
 		{
@@ -400,7 +400,7 @@ namespace gm
 		T Lambda(){ return _distribution.lambda; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T lambda)
 		{
@@ -445,7 +445,7 @@ namespace gm
 		T Beta()  { return _distribution.beta; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T alpha, T beta)
 		{
@@ -490,7 +490,7 @@ namespace gm
 		T Param_B()     { return _distribution.b; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T a, T b)
 		{
@@ -536,7 +536,7 @@ namespace gm
 
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T a, T b)
 		{
@@ -582,7 +582,7 @@ namespace gm
 		T Sigma() { return _distribution.sigma; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T mean, T stdev)
 		{
@@ -627,7 +627,7 @@ namespace gm
 		T Stdev() { return _distribution.s; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T mean, T stdev)
 		{
@@ -669,7 +669,7 @@ namespace gm
 		T Max() { return _distribution.max; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T degree_of_freedom)
 		{
@@ -714,7 +714,7 @@ namespace gm
 		T Param_B() { return _distribution.b; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T a, T b)
 		{
@@ -759,7 +759,7 @@ namespace gm
 		T Param_N() { return _distribution.n; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T m, T n)
 		{
@@ -803,7 +803,7 @@ namespace gm
 		T Param_N() { return _distribution.n; }
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetDistribution(T n)
 		{

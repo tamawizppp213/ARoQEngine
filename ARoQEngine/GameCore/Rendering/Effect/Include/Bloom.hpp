@@ -55,7 +55,7 @@ namespace gc
 		void Draw();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void UpdateBloomPower(const float power);
 
@@ -83,7 +83,7 @@ namespace gc
 		void PrepareResourceView(const gu::tstring& name);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		enum { ViewCount = 3 };
 

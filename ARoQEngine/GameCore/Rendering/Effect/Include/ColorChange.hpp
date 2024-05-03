@@ -51,7 +51,7 @@ namespace gc
 		/*@brief : Render to back buffer*/
 		void Draw() override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -72,7 +72,7 @@ namespace gc
 		void PrepareResourceView() override;
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		ColorChangeType _colorType = ColorChangeType::None;
 	};

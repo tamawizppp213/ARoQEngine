@@ -163,7 +163,7 @@ namespace rhi::core
 		virtual gu::SharedPointer<RHIQuery> CreateQuery(const core::QueryHeapType heapType) = 0;
 		#pragma endregion Create Resource
 		#pragma endregion 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief      論理デバイス側でデフォルト(SetupDefaultHeap)で用意したディスクリプタヒープを取得します.
 		*  @param[in]  const core::DescriptorHeapType DescriptorHeapの種類
@@ -251,7 +251,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief : Use Display Apapter (GPU)*/
 		gu::SharedPointer<RHIDisplayAdapter> _adapter = nullptr;

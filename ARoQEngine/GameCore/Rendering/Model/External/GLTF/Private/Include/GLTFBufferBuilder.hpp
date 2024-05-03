@@ -41,7 +41,7 @@ namespace gltf
 			*****************************************************************************/
 			bool IsValid() const { return AccessorDataType != asset::AccessorType::Type_Unknown && ComponentDataType != asset::ComponentType::Component_Unknown; }
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 			asset::AccessorType AccessorDataType;
 			asset::ComponentType ComponentDataType;
@@ -65,7 +65,7 @@ namespace gltf
 			*****************************************************************************/
 
 			/****************************************************************************
-			**                Private Member Variables
+			**                Private Property
 			*****************************************************************************/
 
 		};
@@ -109,7 +109,7 @@ namespace gltf
 
 			void Output(GLTFDocument& document);
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 			const asset::GLTFBuffer    & GetCurrentBuffer    () const;
 			const asset::GLTFBufferView& GetCurrentBufferView() const;
@@ -136,7 +136,7 @@ namespace gltf
 			*****************************************************************************/
 
 			/****************************************************************************
-			**                Private Member Variables
+			**                Private Property
 			*****************************************************************************/
 			const asset::GLTFAccessor& AddAccessor(size_t count, AccessorDesc desc);
 

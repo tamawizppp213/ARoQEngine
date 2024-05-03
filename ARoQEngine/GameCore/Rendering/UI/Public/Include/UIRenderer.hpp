@@ -68,7 +68,7 @@ namespace gc::ui
 		void Draw();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -94,7 +94,7 @@ namespace gc::ui
 		void ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
@@ -126,7 +126,7 @@ namespace gc::ui
 		void CountUpDrawImageAndView(const std::uint64_t arrayLength, const ResourceViewPtr& view);
 		
 		/****************************************************************************
-		**             Private Member Variables
+		**             Private Property
 		*****************************************************************************/
 		std::uint32_t _maxWritableUICount = 1024;
 	};

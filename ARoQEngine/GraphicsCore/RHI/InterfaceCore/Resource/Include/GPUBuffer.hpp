@@ -73,7 +73,7 @@ namespace rhi::core
 		*************************************************************************/
 		virtual void Unmap() = 0;
 		#pragma endregion 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief     バッファとしてのGPUリソースかどうかを判定します.
 		*************************************************************************/
@@ -172,7 +172,7 @@ namespace rhi::core
 		
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		/*! @brief バッファの情報を格納している構造体*/
 		GPUBufferMetaData _metaData = {};

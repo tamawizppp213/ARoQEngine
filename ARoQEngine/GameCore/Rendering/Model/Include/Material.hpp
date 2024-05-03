@@ -73,7 +73,7 @@ namespace gc::core
 		GPUResourceViewPtr LoadTexture(const gu::tstring& filePath, const UsageTexture textureType);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		GPUResourceViewPtr GetMaterialView() const noexcept { return _materialBufferView; }
 
@@ -100,7 +100,7 @@ namespace gc::core
 		void SetUpBuffer(const rhi::core::GPUBufferMetaData& bufferInfo, const gu::tstring& name);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

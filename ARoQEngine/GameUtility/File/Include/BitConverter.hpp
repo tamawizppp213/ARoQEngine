@@ -42,7 +42,7 @@ public:
 	template<typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
 	static T GetValue(const std::vector<std::uint8_t>& inputs, const std::uint32_t startIndex = 0);
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 	static bool IsLittleEndian() { return _isLittleEndian; }
 	/****************************************************************************
@@ -57,7 +57,7 @@ protected:
 	*****************************************************************************/
 
 	/****************************************************************************
-	**                Protected Member Variables
+	**                Protected Property
 	*****************************************************************************/
 	static bool _isLittleEndian;
 };

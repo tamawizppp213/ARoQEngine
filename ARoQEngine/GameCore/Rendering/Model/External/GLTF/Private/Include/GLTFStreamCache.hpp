@@ -51,7 +51,7 @@ namespace gltf
 			}
 			size_t Size() const { return _cacheMap.size(); }
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 			TStream Get(const std::string& uri) override
 			{
@@ -76,7 +76,7 @@ namespace gltf
 			*****************************************************************************/
 
 			/****************************************************************************
-			**                Protected Member Variables
+			**                Protected Property
 			*****************************************************************************/
 			std::unordered_map<std::string, TStream> _cacheMap;
 		private:
@@ -85,7 +85,7 @@ namespace gltf
 			*****************************************************************************/
 
 			/****************************************************************************
-			**                Private Member Variables
+			**                Private Property
 			*****************************************************************************/
 			std::function<TStream(const std::string&)> _cacheFunction;
 		};

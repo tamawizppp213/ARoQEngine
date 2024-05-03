@@ -45,7 +45,7 @@ namespace gc::core
 		virtual void Update(const float deltaTime, const bool enableUpdateChild = false);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -64,7 +64,7 @@ namespace gc::core
 		void UpdateComponents(const float deltaTime);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 	};
 }

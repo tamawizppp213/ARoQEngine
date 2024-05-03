@@ -112,7 +112,7 @@ namespace rhi::vulkan
 		size_t GetQueueFamilyIndex(const core::CommandListType type) { return _commandQueueInfo[type].QueueFamilyIndex; }
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		inline VkDevice GetDevice() const { return _logicalDevice; }
 		
@@ -164,7 +164,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/** @ brief: Logical device representation (application's view of the device)  */
 		VkDevice      _logicalDevice    = nullptr;

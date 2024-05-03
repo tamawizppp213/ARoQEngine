@@ -64,7 +64,7 @@
 //		void ClearForceAndTorque() { _accumulateForce = gm::Vector3(); _accumulateTorque = gm::Vector3(); };
 //
 //		/****************************************************************************
-//		**                Public Member Variables
+//		**                Public Property
 //		*****************************************************************************/
 //		/*-------------------------------------------------------------------
 //		-                    Mass
@@ -112,7 +112,7 @@
 //		void AddSpatialForce(const gm::Vector3* force, const gm::Vector3* torque, const ForceMode mode);
 //
 //		/****************************************************************************
-//		**                Protected Member Variables
+//		**                Protected Property
 //		*****************************************************************************/
 //		gm::Vector3 _accumulateForce = {};
 //		gm::Vector3 _accumulateTorque = {};

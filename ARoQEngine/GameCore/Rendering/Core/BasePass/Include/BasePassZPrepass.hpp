@@ -73,7 +73,7 @@ namespace gc::basepass
 		void Clear(const GameModelPtr& actor);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		TexturePtr GetRenderedTexture() const noexcept;
 
@@ -97,7 +97,7 @@ namespace gc::basepass
 		void PrepareFrameBuffers(const gu::tstring& name);
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

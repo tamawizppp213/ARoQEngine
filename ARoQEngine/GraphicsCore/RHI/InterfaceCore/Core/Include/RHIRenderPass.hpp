@@ -41,7 +41,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetClearValue(const gu::Optional<ClearValue>& color, const gu::Optional<ClearValue>& depth = {}, const std::uint32_t index = 0)
 		{
@@ -103,7 +103,7 @@ namespace rhi::core
 		
 		explicit RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const Attachment& color, const gu::Optional<Attachment>& depth = {});
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 

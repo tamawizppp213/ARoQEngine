@@ -50,7 +50,7 @@ namespace rhi::core
 		virtual void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const gu::uint32 index, const gu::SharedPointer<RHIResourceLayout>& layout = nullptr) = 0;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : Return the descriptor heap pointer.
@@ -121,7 +121,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		// @brief : GPU logical device
 		gu::SharedPointer<RHIDevice>  _device = nullptr;

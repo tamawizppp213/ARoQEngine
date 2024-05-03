@@ -43,7 +43,7 @@ namespace rhi::directX12
 		void LoadBinary(const core::ShaderType type, const gu::tstring& fileName) override ;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		BlobComPtr GetDxBlob() const noexcept { return _dxBlob; }
 
@@ -68,7 +68,7 @@ namespace rhi::directX12
 		BlobComPtr DxCompile(const gu::tstring& fileName, const D3D_SHADER_MACRO* defines, const gu::tstring& entryPoint, const gu::tstring& target);
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		BlobComPtr _dxBlob = nullptr;
 	};

@@ -34,7 +34,7 @@ namespace rhi::directX12
 		#pragma region Public Function
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief   DirectX12ê—p‚Ìİ’è€–Ú‚ğ•Ô‚µ‚Ü‚·
 		*************************************************************************/
@@ -61,7 +61,7 @@ namespace rhi::directX12
 		#pragma region Protected Function
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		/*! @brief DirectX12ê—p‚Ìİ’è€–Ú */
 		D3D12_RASTERIZER_DESC _rasterizerState = {};

@@ -57,7 +57,7 @@ namespace gc::core
 		virtual void Draw(const bool isDrawingEachMaterial = true, const std::uint32_t materialOffsetID = 2);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		MeshPtr GetTotalMesh() const noexcept { return _totalMesh; }
 
@@ -89,7 +89,7 @@ namespace gc::core
 		virtual void DrawWithoutMaterial();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief : world position matrix. When you use the instancing drawing,  you should set the custom game world information.  */
 		GameWorldInfoPtr _gameWorld = nullptr;

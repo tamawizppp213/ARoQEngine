@@ -209,7 +209,7 @@ namespace gltf
 
 				size_t GetByteLength() const { return Count * GetComponentTypeSize(ComponentDataType) * GetTypeCount(AccessorDataType); }
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string   BufferViewID      = ""; // The index of the buffer view
 				size_t        ByteOffset        = 0U; // The offset relative to the start of the buffer view in bytes
@@ -233,7 +233,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Private Member Variables
+				**                Private Property
 				*****************************************************************************/
 			};
 
@@ -247,7 +247,7 @@ namespace gltf
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string CopyRight; // A copyright message suitable for display to credit the content creator
 				std::string Generator; // Tool that generated this GLTF model. Useful for debugging.
@@ -273,7 +273,7 @@ namespace gltf
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string                BufferID;         // The index of buffer
 				size_t                     ByteOffset = 0U;  // The offset into the buffer in bytes
@@ -305,7 +305,7 @@ namespace gltf
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string URI;        // The URI of the buffer. Relative oath are relatiave to the current glTF asset.
 				size_t ByteLength = 0U; // The length of the buffer in bytes.
@@ -333,7 +333,7 @@ namespace gltf
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				virtual ProjectionType      GetProjectionType() const = 0;
 				virtual std::unique_ptr<GLTFProjection> Clone() const = 0;
@@ -370,7 +370,7 @@ namespace gltf
 				std::unique_ptr<GLTFProjection> Clone() const override { return std::make_unique<GLTFOrthographic>(*this); }
 				bool IsEqual(const GLTFProjection& rhs) const override;
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				float XMagnification; // The floating-point horizontal magnification of the view. 
 				float YMagnification; // The floating-point vertical magnification of the view.
@@ -408,7 +408,7 @@ namespace gltf
 				bool IsEqual(const GLTFProjection& rhs) const override;
 				
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				Optional<float> AspectRatio;
 				float YFov;
@@ -442,7 +442,7 @@ namespace gltf
 				const GLTFOrthographic& GetOrthographic() const;
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::unique_ptr<GLTFProjection> Projection;
 				/****************************************************************************
@@ -476,7 +476,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string URI;           // The uri of the image
 				std::string MimeType;      // The image's media type. image/png
@@ -508,7 +508,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string TextureID = ""; // idÇÕñ{óàintÇæÇ™, ñºëOÇ≈ä«óù
 				size_t      TexCoord = 0;
@@ -546,7 +546,7 @@ namespace gltf
 				static WrapMode      GetAddressingMode(size_t readValue);
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				Optional<MagFilterMode> MagFilter;
 				Optional<MinFilterMode> MinFilter;
@@ -578,7 +578,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string SamplerID; // The index of the sampler used by this texture
 				std::string ImageID;   // The index of the image by this textyre
@@ -667,7 +667,7 @@ namespace gltf
 					};
 				}
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				PBRMetallicRoughness  MetallicRoughness;
 				NormalTextureInfo     NormalTexture;
@@ -711,7 +711,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::vector<std::string> Nodes;
 				/****************************************************************************
@@ -740,7 +740,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string PositionsAccessorID;
 				std::string NormalsAccessorID;
@@ -773,7 +773,7 @@ namespace gltf
 				const std::string& GetAttributeAccessorID(const std::string& name) const;
 				bool TryGetAttributeAccessorID(const std::string& name, std::string& accessorID) const;
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::unordered_map<std::string, std::string> Attributes; // A plain JSON objects where each key corresponds to a mesh attribute semantic
 				std::string                  IndicesAccessorID;
@@ -809,7 +809,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::vector<GLTFMeshPrimitive> Primitives;
 				std::vector<float> Weights;
@@ -857,7 +857,7 @@ namespace gltf
 						&& Scale       == gm::Float3(1, 1, 1);
 				}
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string              CameraID; // The index of the camera referenced by this node
 				std::vector<std::string> Children; // The indices of this node's children
@@ -909,7 +909,7 @@ namespace gltf
 				*****************************************************************************/
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string InverseBindMatricesAccessorID; // The index of the accessor containing the floating-point 4x4 inverse bind matrices
 				std::string SkeletonID;            // The index of the node used as a skeleton root.
@@ -939,7 +939,7 @@ namespace gltf
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string NodeID;
 				TargetPath  Path = Target_Unknown;
@@ -964,7 +964,7 @@ namespace gltf
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string ID;
 				std::string SampleID;
@@ -991,7 +991,7 @@ namespace gltf
 			{
 			public:
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string ID;
 				std::string InputAccessorID;
@@ -1022,7 +1022,7 @@ namespace gltf
 			public:
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				IndexedContainer<const GLTFAnimationChannel> Channels;
 				IndexedContainer<const GLTFAnimationSampler> Samplers;

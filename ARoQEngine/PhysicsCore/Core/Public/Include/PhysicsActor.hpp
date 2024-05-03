@@ -60,7 +60,7 @@
 //		*****************************************************************************/
 //
 //		/****************************************************************************
-//		**                Public Member Variables
+//		**                Public Property
 //		*****************************************************************************/
 //		/* @brief : Retrieves the actors world space transform*/
 //		gm::Transform GetGlobalPose() const { return gm::Transform(_orientation, _position); }
@@ -111,7 +111,7 @@
 //		*****************************************************************************/
 //
 //		/****************************************************************************
-//		**                Protected Member Variables
+//		**                Protected Property
 //		*****************************************************************************/
 //		// Holds the linear position of the rigid body in world space.
 //		gm::Vector3 _position = {};

@@ -34,7 +34,7 @@ namespace rhi::core
 		#pragma region Public Function
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor
@@ -57,7 +57,7 @@ namespace rhi::core
 		#pragma region Protected Function
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		/*! @brief 論理デバイス*/
 		gu::SharedPointer<RHIDevice>  _device = nullptr;
 		#pragma endregion	

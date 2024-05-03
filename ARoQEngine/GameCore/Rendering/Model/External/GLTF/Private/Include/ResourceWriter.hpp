@@ -52,7 +52,7 @@ namespace gltf
 			template<typename T>
 			void WriteExternal(const std::string& uri, const std::vector<T>& data) const { WriteExternal(uri, data.data(), data.size() * sizeof(T)); }
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 
 			/****************************************************************************
@@ -71,7 +71,7 @@ namespace gltf
 			virtual void SetBufferOffset(const std::string& bufferID, const std::streamoff offset) = 0;
 
 			/****************************************************************************
-			**                Protected Member Variables
+			**                Protected Property
 			*****************************************************************************/
 			std::unique_ptr<IStreamWriterCache> _streamWriterCache = nullptr;
 

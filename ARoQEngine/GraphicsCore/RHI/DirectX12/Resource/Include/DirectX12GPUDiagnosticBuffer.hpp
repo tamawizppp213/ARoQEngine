@@ -35,7 +35,7 @@ namespace rhi::directX12
 
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief  コンテキストのバイトサイズを取得します
 		*************************************************************************/
@@ -111,7 +111,7 @@ namespace rhi::directX12
 
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		/*! @brief コンテキストのバイトサイズ*/
 		gu::uint32 _breadCrumbsContextByteSize = 0;
 
@@ -137,7 +137,7 @@ namespace rhi::directX12
 
 		#pragma endregion 
 
-		#pragma region Private Member Variables
+		#pragma region Private Property
 
 		#pragma endregion 
 

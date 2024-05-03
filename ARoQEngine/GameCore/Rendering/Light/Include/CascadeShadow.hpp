@@ -80,7 +80,7 @@ namespace gc::rendering
 
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		ResourceViewPtr GetShadowInfoView() const noexcept { return _shadowInfoView; }
 
@@ -102,7 +102,7 @@ namespace gc::rendering
 		void Update(const gu::SharedPointer<GameTimer>& gameTimer, const gm::Float3& direction);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

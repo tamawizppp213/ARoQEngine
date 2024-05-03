@@ -93,7 +93,7 @@ namespace gu
 		static TimeSpan CreateFromDays   (const double days);
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		static constexpr int64 MAX_TICKS             =  9223372036854775807;      //!< TimeSpanで計測可能な最大(未来)のtick = 0.1μs単位 
 		static constexpr int64 MIN_TICKS             = -9223372036854775807 - 1;  //!< TimeSpanで計測可能な最小(過去)のtick
 		static constexpr int64 NANOSECONDS_PER_TICK  = 100;                       //!< 1 tick = 0.1μs単位で計測
@@ -283,7 +283,7 @@ namespace gu
 		#pragma region Private Function
 		#pragma endregion
 
-		#pragma region Private Member Variables
+		#pragma region Private Property
 		/*! @brief 0.1μs単位で指定する時間です. 1 tick = 0.1 μs*/
 		int64 _ticks = 0;
 		#pragma endregion

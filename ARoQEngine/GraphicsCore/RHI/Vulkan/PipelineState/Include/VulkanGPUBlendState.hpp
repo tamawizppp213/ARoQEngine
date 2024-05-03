@@ -38,7 +38,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const VkPipelineColorBlendStateCreateInfo& GetBlendState() const { return _blendDesc; }
 
@@ -59,7 +59,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::DynamicArray<VkPipelineColorBlendAttachmentState> _attachments = {};
 		

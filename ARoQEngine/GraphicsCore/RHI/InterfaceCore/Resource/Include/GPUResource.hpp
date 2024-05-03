@@ -39,7 +39,7 @@ namespace rhi::core
 
 		#pragma endregion
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief     デバッグ名を設定します
 		*  @param[in] const gu::tstring& デバッグ名
@@ -96,7 +96,7 @@ namespace rhi::core
 		#pragma region Protected Function
 		#pragma endregion
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		/*! @brief 論理デバイス*/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 

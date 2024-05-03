@@ -71,7 +71,7 @@ namespace gc::rendering
 		void Clear(const GameModelPtr& gameModel);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -89,7 +89,7 @@ namespace gc::rendering
 		void PreparePipelineState(const gu::tstring& name);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

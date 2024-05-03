@@ -44,7 +44,7 @@ public:
 	MousePtr    GetMouse()    { return this->_mouse; }
 	GamePadPtr  GetGamePad()  { return this->_gamePad; }
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 	
 	/****************************************************************************
@@ -71,7 +71,7 @@ private:
 	void DInputFinalize();
 
 	/****************************************************************************
-	**                Private Member Variables
+	**                Private Property
 	*****************************************************************************/
 	KeyboardPtr _keyboard = nullptr;
 	MousePtr    _mouse    = nullptr;

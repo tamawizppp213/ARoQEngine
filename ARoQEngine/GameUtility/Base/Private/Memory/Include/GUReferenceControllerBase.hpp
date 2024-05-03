@@ -69,7 +69,7 @@ namespace gu::details::smart_pointer
 		__forceinline void ReleaseObserverReference();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : Return the reference count in the shared pointer.
@@ -136,7 +136,7 @@ namespace gu::details::smart_pointer
 		virtual void DeleteThis() = 0;
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		// Threadsafe‚È‚çAtomic<int32>, ‚»‚êˆÈŠO‚Íint32
 		ReferenceCountType _sharedReferenceCount   = 1;    // shared pointer count

@@ -46,7 +46,7 @@
 //	~Implementation();
 //private:
 //	/****************************************************************************
-//	**                Private Member Variables
+//	**                Private Property
 //	*****************************************************************************/
 //	std::unordered_map<std::wstring, AudioClip> AudioTable;
 //

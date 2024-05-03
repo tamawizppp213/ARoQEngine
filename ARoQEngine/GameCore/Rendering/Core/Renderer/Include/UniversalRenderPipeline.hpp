@@ -76,7 +76,7 @@ namespace gc
 		void Add(const URPDrawType type, const GameModelPtr& gameModel);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		UIRendererPtr GetUIRenderer() const noexcept { return _uiRenderer; }
 
@@ -100,7 +100,7 @@ namespace gc
 		void PrepareModelPipeline();
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		UIRendererPtr _uiRenderer = nullptr;
 

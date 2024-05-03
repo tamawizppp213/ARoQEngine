@@ -83,7 +83,7 @@ namespace gc::ui
 		void RemoveListener(FunctionPtr function) { std::erase(_functionList, function); }; // C++20
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const UIResource& GetRenderResource(const RenderType type) { return _resourceList[type]; };
 
@@ -125,7 +125,7 @@ namespace gc::ui
 
 		void RecreateSliderUI();
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		bool _isInteractive = true;
 

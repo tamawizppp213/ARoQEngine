@@ -38,7 +38,7 @@ namespace rhi::vulkan
 		void Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index, const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkImageView  GetImageView () const noexcept{ return _imageView; }
 		
@@ -66,7 +66,7 @@ namespace rhi::vulkan
 
 		VkImageAspectFlags GetImageAspectFlags(const VkFormat format);
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		VkImageView _imageView   = VK_NULL_HANDLE;
 

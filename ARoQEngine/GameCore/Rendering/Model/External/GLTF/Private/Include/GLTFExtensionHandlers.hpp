@@ -145,7 +145,7 @@ namespace gltf
             return _nameToType.find(detail::MakeNameKey(name, property)) != _nameToType.end();
         }
         /****************************************************************************
-        **                Public Member Variables
+        **                Public Property
         *****************************************************************************/
 
         /****************************************************************************
@@ -201,7 +201,7 @@ namespace gltf
             return arg;
         }
         /****************************************************************************
-        **                Protected Member Variables
+        **                Protected Property
         *****************************************************************************/
         std::unordered_map<detail::TypeKey, Func, GLTFHash> _handlers;
         std::unordered_map<detail::TypeKey, std::string, GLTFHash>     _typeToName;

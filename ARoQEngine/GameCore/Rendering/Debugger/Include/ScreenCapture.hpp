@@ -58,7 +58,7 @@ namespace gc::rendering
 		bool Capture([[maybe_unused]]const FrameBufferPtr& frameBuffer);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -79,7 +79,7 @@ namespace gc::rendering
 		bool IsTriggerPrintScreenKey();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 		

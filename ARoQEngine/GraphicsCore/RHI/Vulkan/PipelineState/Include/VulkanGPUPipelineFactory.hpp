@@ -57,7 +57,7 @@ namespace rhi::vulkan
 
 		virtual gu::SharedPointer<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets, const bool alphaToCoverageEnables = false)override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -78,7 +78,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 
 	};

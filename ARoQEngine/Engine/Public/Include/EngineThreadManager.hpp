@@ -58,7 +58,7 @@ namespace engine::core
 		void ShutDown();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const ThreadPoolPtr GetThreadPool(const ThreadPoolType type) { return _threadPools[(int)type]; }
 		const ThreadPoolPtr GetUpdateMainThread() { return _threadPools[(int)ThreadPoolType::UpdateMain]; }
@@ -76,7 +76,7 @@ namespace engine::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::DynamicArray<ThreadPoolPtr> _threadPools = {};
 

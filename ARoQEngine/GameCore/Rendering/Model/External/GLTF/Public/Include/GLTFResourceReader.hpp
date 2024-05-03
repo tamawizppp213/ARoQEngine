@@ -77,7 +77,7 @@ namespace gltf
 
 		std::vector<float>   ReadFloatData(const GLTFDocument& document, const detail::asset::GLTFAccessor& accessor) const;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		
 		/****************************************************************************
@@ -178,7 +178,7 @@ namespace gltf
 		void ReadSparseBinaryData(const GLTFDocument& gltfDocument, std::vector<T>& baseData, const detail::asset::GLTFAccessor& accessor) const;
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::unique_ptr < detail::IStreamReaderCache > _streamReaderCache;
 	};
@@ -197,7 +197,7 @@ namespace gltf
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		std::shared_ptr<std::istream> GetBinaryStream(const detail::asset::GLTFBuffer& buffer) const override;
 		std::streampos                GetBinaryStreamPos(const detail::asset::GLTFBuffer& buffer) const override;
@@ -215,7 +215,7 @@ namespace gltf
 		void Initialize();
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::string _json;
 		std::shared_ptr<std::istream> _buffer;

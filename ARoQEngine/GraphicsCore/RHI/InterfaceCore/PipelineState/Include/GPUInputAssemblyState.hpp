@@ -50,7 +50,7 @@ namespace rhi::core
 		static gu::DynamicArray<InputLayoutElement> GetDefaultSkinVertexElement() { return DEFAULT_SKINVERTEX_ELEMENTS; }
 		#pragma endregion 
 		
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief     入力レイアウトにおいて, 異なる値を持つスロットが何個あるかを示します
 		*  @return    gu::uint8 入力レイアウトの個数です (0～15までしかないため, gu::uint8です)
@@ -107,7 +107,7 @@ namespace rhi::core
 		#pragma region Protected Function
 		#pragma endregion
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		/*! @brief 入力レイアウトの設定データです.*/
 		gu::DynamicArray<InputLayoutElement> _elements = {};

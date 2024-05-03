@@ -99,7 +99,7 @@ namespace gu
 		const ElementType& Max() const;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : ルートノードを取得します. 
@@ -198,7 +198,7 @@ namespace gu
 		details::tree::RedBlackTreeNode<ElementType>* SearchImplement(const ElementType& element) const;
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		// @brief : 根となるノード
 		details::tree::RedBlackTreeNode<ElementType>* _rootNode = nullptr;

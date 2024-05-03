@@ -38,7 +38,7 @@ namespace rhi::core
 		#pragma region Public Function
 		#pragma endregion
 		
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief  　　描画時の基本設定を返します.
 		*  @param[in] const gu::uint32 配列のインデックス (基本は0で, 最大は8でお願いします.)
@@ -128,7 +128,7 @@ namespace rhi::core
 		#pragma region Protected Function
 		#pragma endregion
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		/* @brief : 描画時の設定です. Source : これからレンダリングする色 (ピクセルシェーダー), Destination : レンダリング先 (レンダーターゲット)*/
 		gu::DynamicArray<core::BlendProperty> _blendProperties;
 		

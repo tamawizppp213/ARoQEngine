@@ -49,7 +49,7 @@ namespace rhi::vulkan
 		void Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists) override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Return VkQueue.*/
 		VkQueue GetQueue() const noexcept { return _queue; }
@@ -88,7 +88,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkQueue       _queue            = nullptr;
 		std::uint32_t _queueFamilyIndex = 0; // CommandQueueÇÃéÌóﬁÇ≤Ç∆Ç…êUÇÁÇÍÇÈGroupID

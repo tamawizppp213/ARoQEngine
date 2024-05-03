@@ -39,7 +39,7 @@ namespace gc::rendering
 		void Load(const std::wstring& filePath);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Return lamp structure*/
 		const Lamp& GetLamp() const { return _lamp; }
@@ -60,7 +60,7 @@ namespace gc::rendering
 		void SetUpTexture();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		Lamp _lamp = {};
 

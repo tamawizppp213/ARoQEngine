@@ -50,7 +50,7 @@ namespace gu
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		[[nodiscard]] __forceinline ElementType* Get() noexcept { return _elementPointer; }
 
@@ -124,7 +124,7 @@ namespace gu
 		friend class UniquePointer;
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		ElementType* _elementPointer = nullptr;
 	};

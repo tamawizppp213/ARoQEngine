@@ -254,7 +254,7 @@ namespace rhi::core
 
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*! @brief ブロック圧縮データに主に使用します. 圧縮のピクセル個数です(幅方向)*/
 		gu::int32 BlockSizeX = 0;
 
@@ -309,7 +309,7 @@ namespace rhi::core
 
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		#pragma endregion
 
@@ -322,7 +322,7 @@ namespace rhi::core
 
 		#pragma endregion 
 
-		#pragma region Private Member Variables
+		#pragma region Private Property
 
 		#pragma endregion 
 

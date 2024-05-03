@@ -47,7 +47,7 @@ namespace rhi::core
 		virtual std::uint64_t GetCompletedValue() = 0;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		virtual void SetName(const gu::tstring& name) = 0;
 
@@ -61,7 +61,7 @@ namespace rhi::core
 		
 		virtual ~RHIFence() { if (_device) { _device.Reset(); } }
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 	};

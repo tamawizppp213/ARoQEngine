@@ -55,7 +55,7 @@ namespace gc
 		*****************************************************************************/
 		void Draw(const GPUResourceViewPtr& cameraResourceView);
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -78,7 +78,7 @@ namespace gc
 		
 		void PrepareSkyObject(const gu::tstring& addName);
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		ObjectConstantPtr            _skyObject = nullptr;
 		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};

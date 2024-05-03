@@ -67,7 +67,7 @@ namespace platform::windows
 		bool IsQuit() const override { return _isApplicationQuited; };
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		HINSTANCE GetWindowsInstanceHandle() const noexcept { return _instanceHandle; }
 
@@ -120,7 +120,7 @@ namespace platform::windows
 		-----------------------------------------------------------------*/
 		virtual bool SetHighDPIMode() override;
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		HINSTANCE _instanceHandle = NULL;
 
@@ -136,7 +136,7 @@ namespace platform::windows
 		
 		void ProcessDeferredEvents();
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		gu::DynamicArray<gu::SharedPointer<windows::CoreWindow>> _windows = {};
 

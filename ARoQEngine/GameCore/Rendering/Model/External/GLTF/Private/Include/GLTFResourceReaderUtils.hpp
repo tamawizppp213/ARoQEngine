@@ -54,7 +54,7 @@ namespace gltf
 				std::string::const_iterator end  () const { return ItEnd; }
 
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				std::string::const_iterator ItBegin;
 				std::string::const_iterator ItEnd;
@@ -83,7 +83,7 @@ namespace gltf
 				*****************************************************************************/
 				
 				/****************************************************************************
-				**                Public Member Variables
+				**                Public Property
 				*****************************************************************************/
 				void* const Buffer;
 				const size_t BufferByteLength;

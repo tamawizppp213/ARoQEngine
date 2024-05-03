@@ -41,7 +41,7 @@ public:
 	bool IsTrigger(int keyCode);
 	bool IsRelease(int keyCode);
 	/****************************************************************************
-	**                Public Member Variables
+	**                Public Property
 	*****************************************************************************/
 	
 	/****************************************************************************
@@ -66,7 +66,7 @@ private:
 
 
 	/****************************************************************************
-	**                Private Member Variables
+	**                Private Property
 	*****************************************************************************/
 	LPDIRECTINPUT8       _dInput    = nullptr;
 	LPDIRECTINPUTDEVICE8 _keyboard  = nullptr;

@@ -58,7 +58,7 @@ namespace gc
 		/*@brief : Render to back buffer*/
 		virtual void Draw() = 0;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 
@@ -88,7 +88,7 @@ namespace gc
 		}
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/* @brief : frame resources*/
 		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};

@@ -56,7 +56,7 @@ namespace gu
 
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		__forceinline bool IsEmpty() const { return _heapSize == 0; }
 
@@ -86,7 +86,7 @@ namespace gu
 		void ResetInternal();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		// @brief : priorities
 		PriorityKey* _keys = nullptr;

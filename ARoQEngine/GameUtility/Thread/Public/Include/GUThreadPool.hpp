@@ -61,7 +61,7 @@ namespace gu
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		std::uint32_t GetThreadCount() const { return _threadCount; }
 
@@ -81,7 +81,7 @@ namespace gu
 		void ExecuteWork();
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		std::unique_ptr<std::thread[]> _threads;
 

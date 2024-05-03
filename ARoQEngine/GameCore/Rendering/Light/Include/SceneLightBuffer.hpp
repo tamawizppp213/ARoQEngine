@@ -65,7 +65,7 @@ namespace gc::rendering
 		);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : return settable light data count. */
 		std::uint64_t GetMaxCount() const { return _lights.size(); }
@@ -99,7 +99,7 @@ namespace gc::rendering
 		void UpdateLightData();
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 

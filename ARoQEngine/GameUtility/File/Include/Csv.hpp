@@ -384,7 +384,7 @@ namespace csv
 			}
 			int  FinishRead() { return _byteSource->Read(_buffer, _desiredByteCount); }
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 
 			/****************************************************************************
@@ -396,7 +396,7 @@ namespace csv
 			*****************************************************************************/
 
 			/****************************************************************************
-			**                Private Member Variables
+			**                Private Property
 			*****************************************************************************/
 			ByteSourcePtr _byteSource;
 			char* _buffer;
@@ -422,7 +422,7 @@ namespace csv
 			int  FinishRead();
 
 			/****************************************************************************
-			**                Public Member Variables
+			**                Public Property
 			*****************************************************************************/
 
 			/****************************************************************************
@@ -436,7 +436,7 @@ namespace csv
 			*****************************************************************************/
 
 			/****************************************************************************
-			**                Private Member Variables
+			**                Private Property
 			*****************************************************************************/
 			/*-------------------------------------------------------------------
 			-                        Buffer
@@ -475,7 +475,7 @@ namespace csv
 		void  Initialize(ByteSourcePtr byteSource);
 		char* ProceedNextLine();
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		inline void         SetFileName(const char* fileName)
 		{
@@ -508,7 +508,7 @@ namespace csv
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		std::string  _fileName;
 		unsigned int _fileLine;
@@ -564,7 +564,7 @@ namespace csv
 		template<class... ColumnNameList> void SetHeader (ColumnNameList... columnNameList);
 		template<class... ColumnType>     bool ReadRow(ColumnType&... columns);
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		bool HasColumn(const std::string& columnName) const;
 		inline const char* GetTruncatedFileName() const { return _reader.GetTruncatedFileName(); }
@@ -593,7 +593,7 @@ namespace csv
 		template<class T, class... ColumnType >
 		void ParseHelper(std::size_t row, T& t, ColumnType&... column);
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 		LineReader _reader;
 		char* _row[columnCount];

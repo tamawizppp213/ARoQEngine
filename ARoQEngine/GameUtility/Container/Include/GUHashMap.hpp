@@ -12,9 +12,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include <cstdlib>
-#include <iterator>
-#include <utility>
+#include "GUPair.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -27,8 +26,8 @@ namespace gu
 	/****************************************************************************
 	*				  			   GUHashMap
 	*************************************************************************//**
-	/*  @class     GUHashMap
-	*   @brief     temp
+	/*!  @brief   オープンアドレス法と線形探査, と2のべき乗でのテーブルサイズの制約を行うHashMapクラスです. @n 
+	*             Valueの探索はO(1)で指定されます. (衝突が起こった場合はO(1)の類ではありません)
 	*****************************************************************************/
 	template<typename Key, typename Value>
 	class HashMap 
@@ -38,7 +37,7 @@ namespace gu
 
 		#pragma endregion 
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 
 		#pragma endregion 
 
@@ -47,7 +46,10 @@ namespace gu
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor
-		
+		/*! @brief デフォルトコンストラクタ*/
+		HashMap() = default;
+
+
 		#pragma endregion 
 
 	protected:
@@ -59,7 +61,7 @@ namespace gu
 
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		#pragma endregion
 
@@ -72,7 +74,7 @@ namespace gu
 
 		#pragma endregion 
 
-		#pragma region Private Member Variables
+		#pragma region Private Property
 		
 		#pragma endregion 
 

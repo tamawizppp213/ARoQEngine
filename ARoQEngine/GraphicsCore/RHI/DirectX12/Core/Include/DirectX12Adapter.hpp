@@ -51,7 +51,7 @@ namespace rhi::directX12
 
 		#pragma endregion Public Function
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief     アダプタに直接接続されている出力の数 (モニターなど)を返します.
 		*  @param[in] void
@@ -83,10 +83,10 @@ namespace rhi::directX12
 
 		#pragma endregion
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		/* @brief : DirectX12で使用するAdapterのポインタ*/
 		AdapterComPtr _adapter = nullptr;		
-		#pragma endregion Protected Member Variables
+		#pragma endregion Protected Property
 	};
 }
 

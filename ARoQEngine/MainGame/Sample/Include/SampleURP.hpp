@@ -57,7 +57,7 @@ namespace sample
 		void Terminate() override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -79,7 +79,7 @@ namespace sample
 		void OnGamePadInput() override;
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		SkyDomePtr _skybox = nullptr;
 		CameraPtr  _camera = nullptr;

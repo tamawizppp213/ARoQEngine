@@ -60,7 +60,7 @@ namespace platform::core
 		virtual bool IsQuit() const = 0;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		static constexpr wchar_t* APPLICATION_NAME = L"PPP Game Window";
 
@@ -114,7 +114,7 @@ namespace platform::core
 		virtual bool SetHighDPIMode() = 0;
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<CoreWindowMessageHandler> _messageHandler = nullptr;
 	};

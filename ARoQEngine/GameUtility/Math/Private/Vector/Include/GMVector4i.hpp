@@ -39,7 +39,7 @@ namespace gm
 	struct Vector4i
 	{
 	public:
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		IntType x;  //!< ‘æ1—v‘f
 		IntType y;  //!< ‘æ2—v‘f
 		IntType z;  //!< ‘æ3—v‘f
@@ -213,7 +213,7 @@ namespace gm
 
 		#pragma endregion 
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		#pragma endregion
 
@@ -226,7 +226,7 @@ namespace gm
 
 		#pragma endregion 
 
-		#pragma region Private Member Variables
+		#pragma region Private Property
 
 		#pragma endregion 
 

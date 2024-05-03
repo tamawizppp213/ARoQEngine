@@ -58,7 +58,7 @@ namespace rhi::vulkan
 		virtual void UploadIndex([[maybe_unused]] const void* data, [[maybe_unused]] const gu::uint64 elementCount, [[maybe_unused]] const gu::uint64 offsetIndex, [[maybe_unused]] const gu::SharedPointer<core::RHICommandList>& commandList, [[maybe_unused]] const bool useMapManually) override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkBuffer GetBuffer() const noexcept { return _buffer; }
 
@@ -124,7 +124,7 @@ namespace rhi::vulkan
 		virtual void Unmap() override;
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		// –{‘Ì
 		VkDeviceMemory _memory = nullptr;

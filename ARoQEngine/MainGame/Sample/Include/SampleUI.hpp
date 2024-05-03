@@ -61,7 +61,7 @@ namespace sample
 		void Draw() override;
 		void Terminate() override;
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -80,7 +80,7 @@ namespace sample
 		void ExecuteSceneTransition() override;
 		void DebugSliderValue(const float value);
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		UIRendererPtr       _renderer      = nullptr;
 		GPUResourceCachePtr _resourceCache = nullptr;

@@ -38,7 +38,7 @@ namespace rhi::vulkan
 		void CompleteSetting() override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkPipeline GetPipeline() const noexcept { return _pipeline; }
 
@@ -62,7 +62,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::DynamicArray<VkDynamicState> _dynamicStates = {};
 
@@ -85,7 +85,7 @@ namespace rhi::vulkan
 		void CompleteSetting() override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		void SetName(const gu::tstring& name) override;
 		
@@ -106,7 +106,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkPipeline _pipeline = nullptr;
 	

@@ -35,7 +35,7 @@ namespace rhi::directX12
 		#pragma region Public Function
 		#pragma endregion
 
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		
 		/*!**********************************************************************
 		*  @brief  　　DirectX12のブレンドステート設定
@@ -72,7 +72,7 @@ namespace rhi::directX12
 		#pragma region Protected Function
 		#pragma endregion
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 
 		/*! @brief DirectX12用のブレンドステート*/
 		D3D12_BLEND_DESC _blendState = {};

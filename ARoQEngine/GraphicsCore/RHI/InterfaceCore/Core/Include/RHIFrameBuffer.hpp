@@ -46,7 +46,7 @@ namespace rhi::core
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		/* @brief : Render Target Size (basically one) */
 		size_t      GetRenderTargetSize() { return _renderTargets.Size(); };
@@ -106,7 +106,7 @@ namespace rhi::core
 		explicit RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr);
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		gu::SharedPointer<RHIDevice>     _device     = nullptr;
 		gu::SharedPointer<RHIRenderPass> _renderPass = nullptr;

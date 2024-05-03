@@ -39,7 +39,7 @@ namespace rhi::directX12
 		void CompleteSetting() override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		PipelineStateComPtr GetPipeline() const noexcept { return _graphicsPipeline; }
 		
@@ -64,7 +64,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		PipelineStateComPtr _graphicsPipeline = nullptr;
 
@@ -85,7 +85,7 @@ namespace rhi::directX12
 		void CompleteSetting() override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		PipelineStateComPtr GetPipeline() const noexcept { return _computePipeline; }
 		
@@ -107,7 +107,7 @@ namespace rhi::directX12
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		PipelineStateComPtr _computePipeline = nullptr;
 

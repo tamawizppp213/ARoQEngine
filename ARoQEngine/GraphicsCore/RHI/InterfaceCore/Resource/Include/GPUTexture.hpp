@@ -47,7 +47,7 @@ namespace rhi::core
 
 		virtual void Write(const gu::SharedPointer<RHICommandList>& commandList, const gm::RGBA* pixel) = 0;
 		#pragma endregion
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief     テクスチャの幅をpixel単位で指定します. その際, ミップマップレベルを指定すればその値だけサイズを半分にします.
 		*  @param[in] const gu::uint8 テクスチャのミップマップレベル
@@ -230,7 +230,7 @@ namespace rhi::core
 
 		#pragma endregion Protected Function
 
-		#pragma region Protected Member Variables
+		#pragma region Protected Property
 		/*! @brief テクスチャの作成情報を一通り管理している構造体*/
 		GPUTextureMetaData _metaData;
 

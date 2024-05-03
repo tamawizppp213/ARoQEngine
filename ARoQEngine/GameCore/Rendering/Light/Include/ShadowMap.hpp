@@ -54,7 +54,7 @@ namespace gc::rendering
 		void Add(const GameModelPtr& gameModel);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		FrameBufferPtr GetFrameBuffer() const noexcept { return _frameBuffer; }
 
@@ -81,7 +81,7 @@ namespace gc::rendering
 		void PreparePipelineState(const gu::tstring& name);
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 		

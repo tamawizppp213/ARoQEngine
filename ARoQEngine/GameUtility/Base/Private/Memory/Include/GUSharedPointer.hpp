@@ -48,7 +48,7 @@ namespace gu
 		}
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 
 		/****************************************************************************
@@ -182,7 +182,7 @@ namespace gu
 		template<class OtherType, SharedPointerThreadMode OtherMode>
 		friend class SharedPointer;
 		/****************************************************************************
-		**                Private Member Variables
+		**                Private Property
 		*****************************************************************************/
 	};
 
@@ -246,7 +246,7 @@ namespace gu
 		EnableSharedFromThis& operator=(EnableSharedFromThis const&) { return *this; }
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		WeakPointer<ElementType, Mode> _weakPointer = nullptr;
 	};

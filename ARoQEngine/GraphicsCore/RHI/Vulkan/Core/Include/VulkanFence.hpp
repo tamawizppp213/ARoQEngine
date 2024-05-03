@@ -44,7 +44,7 @@ namespace rhi::vulkan
 		std::uint64_t GetCompletedValue() override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const VkSemaphore& GetFence() const noexcept { return _timelineSemaphore; }
 		
@@ -63,7 +63,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkSemaphore _timelineSemaphore = nullptr; // vulkan api 1.2‚©‚çŽg—p‰Â”\. Fence + Binary Semaphore
 	};

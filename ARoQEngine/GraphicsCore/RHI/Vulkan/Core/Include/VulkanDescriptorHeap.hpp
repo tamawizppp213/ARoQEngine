@@ -54,7 +54,7 @@ namespace rhi::vulkan
 		void Reset(const ResetFlag flag = ResetFlag::OnlyOffset) override;
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		VkDescriptorSet GetDescriptorSet(DescriptorID id = 0) 
 		{ 
@@ -82,7 +82,7 @@ namespace rhi::vulkan
 		*****************************************************************************/
 		
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		VkDescriptorPool   _descriptorPool = nullptr;
 		ResourceAllocator _resourceAllocator;

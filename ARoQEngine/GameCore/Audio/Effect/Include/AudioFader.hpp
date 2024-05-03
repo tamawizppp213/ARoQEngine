@@ -45,7 +45,7 @@ namespace gc::audio
 		void Update(const float deltaTime);
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		float GetVolume() const { return _currentVolume; }
 		
@@ -66,7 +66,7 @@ namespace gc::audio
 		*****************************************************************************/
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		float _startVolume   = 0.0f;
 		float _targetVolume  = 0.0f;

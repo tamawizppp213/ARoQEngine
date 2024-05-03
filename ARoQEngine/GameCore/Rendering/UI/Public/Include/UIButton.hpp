@@ -48,7 +48,7 @@ namespace gc::ui
 
 		
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		bool GetIsInteractive() const { return _isInteractive; };
 
@@ -70,7 +70,7 @@ namespace gc::ui
 
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		bool _isInteractive = true;
 		

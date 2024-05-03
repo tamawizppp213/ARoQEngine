@@ -69,7 +69,7 @@ namespace rhi::core
 
 	    #pragma endregion 
 		
-		#pragma region Public Member Variables
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief    コマンドリストの種類
 		*************************************************************************/
@@ -105,7 +105,7 @@ namespace rhi::core
 		explicit RHICommandQueue(const gu::SharedPointer<RHIDevice>& device, const CommandListType type) :  _device(device), _commandListType(type) {};
 		#pragma endregion 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		/*! @brief 論理デバイス*/
 		gu::SharedPointer<RHIDevice> _device = nullptr;

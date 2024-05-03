@@ -47,7 +47,7 @@ namespace gc
 		void Draw() override;
 
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		float GetTemperature() const { return _settings.Temperature; }
 
@@ -79,7 +79,7 @@ namespace gc
 		void PrepareResourceView() override;
 
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		WhiteBalanceSettings _settings = {};
 

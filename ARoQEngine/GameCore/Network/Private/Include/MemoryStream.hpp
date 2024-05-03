@@ -75,7 +75,7 @@ namespace gc
 		/* Clear buffer*/
 		void Clear();
 		/****************************************************************************
-		**                Public Member Variables
+		**                Public Property
 		*****************************************************************************/
 		const std::vector<std::uint8_t>& Get() const { return _stream; }
 		
@@ -98,7 +98,7 @@ namespace gc
 		*****************************************************************************/
 	
 		/****************************************************************************
-		**                Protected Member Variables
+		**                Protected Property
 		*****************************************************************************/
 		std::vector<std::uint8_t> _stream = {}; // actual stream buffer to store buffer
 
