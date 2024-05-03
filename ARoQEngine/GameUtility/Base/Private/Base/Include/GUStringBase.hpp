@@ -134,63 +134,92 @@ namespace gu::details::string
 		*************************************************************************/
 		StringBase<Char, CharByte> Replace(const StringBase<Char, CharByte>& from, const StringBase<Char, CharByte>& to, const bool useCaseSensitivity);
 
-		/*----------------------------------------------------------------------
-		*  @brief :  指定した文字列がこの文字列内に存在するかを判断します.
-		*  
-		*  @param[in] : const Char* string              検索文字列
-		*  @param[in] : const bool  useCaseSensitivity  大文字と小文字の区別 
-		* 
-		*  @return    : 文字列が存在すればtrue, stringが空文字列である場合はtrueとなる
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     指定した文字列がこの文字列内に存在するかを判断します.
+		*  @param[in] const Char* 検索する生の文字列
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    文字列が存在すればtrue, stringが空文字列である場合もtrueとなる
+		*************************************************************************/
 		__forceinline bool Contains(const Char* string, const bool useCaseSensitivity) const
 		{
 			return Find(string, 0, useCaseSensitivity) != NPOS;
 		}
+
+		/*!**********************************************************************
+		*  @brief     指定した文字列がこの文字列内に存在するかを判断します.
+		*  @param[in] const StringBase<Char, CharByte>& 検索文字列
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    文字列が存在すればtrue, stringが空文字列である場合もtrueとなる
+		*************************************************************************/
 		__forceinline bool Contains(const StringBase<Char, CharByte>& string, const bool useCaseSensitivity) const
 		{
 			return Find(string, 0, useCaseSensitivity) != NPOS;
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列を検索し, 見つかった最初の文字のインデックスを返します.
-		*            見つからなかった場合は-1, stringが空文字列である場合は0
-		*  
-		*  @param[in] : const Char* 検索文字列
-		*  @param[in] : const uint64 検索を開始するインデックス (省略した場合は先頭から検索します)
-		*  @param[in] : const bool 大文字と小文字の区別
-		* 
-		*  @return 見つからなかったらNPOS, stringが空文字列である場合は0
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列を左から検索し, 見つかった最初の文字のインデックスを返します. 見つからなかった場合は-1, stringが空文字列である場合は0
+		*  @param[in] const Char* 検索する生の文字列
+		*  @param[in] const uint64 検索を開始するインデックス (省略した場合は先頭から検索します)
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    見つからなかったらNPOS, stringが空文字列である場合は0
+		*************************************************************************/
 		uint64 Find(const Char* string, const uint64 startIndex = 0, const bool useCaseSensitivity = true) const;
+
+		/*!**********************************************************************
+		*  @brief     文字列を左から検索し, 見つかった最初の文字のインデックスを返します. 見つからなかった場合は-1, stringが空文字列である場合は0
+		*  @param[in] const Char* 検索する文字列
+		*  @param[in] const uint64 検索を開始するインデックス (省略した場合は先頭から検索します)
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    見つからなかったらNPOS, stringが空文字列である場合は0
+		*************************************************************************/
 		uint64 Find(const StringBase<Char, CharByte>& string, const uint64 startIndex = 0, const bool useCaseSensititivity = true) const;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列を検索し, 最後に見つかったの文字のインデックスを返します.
-		*            見つからなかった場合は-1, stringが空文字列である場合は0
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列を右から検索し, 最後に見つかったの文字のインデックスを返します. 見つからなかった場合は-1, stringが空文字列である場合は0
+		*  @param[in] const Char* 検索する生の文字列
+		*  @param[in] const uint64 検索を開始するインデックス (省略した場合は右から検索します)
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    見つからなかったらNPOS, stringが空文字列である場合は0
+		*************************************************************************/
 		uint64 ReverseFind(const Char* string, const uint64 startIndex = NPOS, const uint64 count = NPOS, const bool useCaseSensitivity = true) const;
+		
+		/*!**********************************************************************
+		*  @brief     文字列を右から検索し, 最後に見つかったの文字のインデックスを返します. 見つからなかった場合は-1, stringが空文字列である場合は0
+		*  @param[in] const StringBase<Char, CharByte> 検索する生の文字列
+		*  @param[in] const uint64                     検索を開始するインデックス (省略した場合は右から検索します)
+		*  @param[in] const bool                       大文字と小文字の区別を実行する場合はtrueです
+		*  @return    見つからなかったらNPOS, stringが空文字列である場合は0
+		*************************************************************************/
 		uint64 ReverseFind(const StringBase<Char, CharByte>& string, const uint64 startIndex = NPOS, const uint64 count = NPOS, const bool useCaseSensitivity = true) const;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の先頭が指定した文字列と一致するかを判断します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の先頭が指定した文字列と一致するかを判断します
+		*  @param[in] const Char* 生の文字列
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    bool
+		*************************************************************************/
 		__forceinline bool IsFirstMatch(const Char* string, const bool useCaseSensitivity = true)
 		{
 			return StringUtility::IsFirstMatch(CString(), Size(), string, StringUtility::Length(string), useCaseSensitivity);
 		}
+
+		/*!**********************************************************************
+		*  @brief     文字列の先頭が指定した文字列と一致するかを判断します
+		*  @param[in] const Char* 文字列
+		*  @param[in] const bool  大文字と小文字の区別を実行する場合はtrueです
+		*  @return    bool
+		*************************************************************************/
 		__forceinline bool IsFirstMatch(const StringBase<Char, CharByte>& string, const bool useCaseSensitivity = true)
 		{
 			return StringUtility::IsFirstMatch(CString(), Size(), string.CString(), string.Size(), useCaseSensitivity);
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の部分文字列を抽出します
-		* 
-		*  @param[in] const uint64 startIndex 検索を開始するインデックス
-		*  @param[in] const uint64 count      文字数(NPOSの場合, 末尾まで抽出する)
-		* 
-		*  @param[in] 抽出された文字列
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の部分文字列を抽出します
+		*  @param[in] const uint64 検索を開始するインデックス
+		*  @param[in] const uint64 文字数(NPOSの場合, 末尾まで抽出する)
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		__forceinline StringBase<Char, CharByte> SubString(const uint64 startIndex, const uint64 count = NPOS) const
 		{
 			const Char* begin = nullptr;
@@ -199,9 +228,11 @@ namespace gu::details::string
 			return StringBase<Char, CharByte>(begin, end);
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の先頭から指定した文字数を抽出します. 
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の先頭から指定した文字数を抽出します. 
+		*  @param[in] const uint64 文字数
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		__forceinline StringBase<Char, CharByte> Left(const uint64 count) const
 		{
 			const Char* begin = nullptr;
@@ -210,9 +241,11 @@ namespace gu::details::string
 			return StringBase<Char, CharByte>(begin, end);
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の末尾から指定した文字数を抽出します.
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の末尾から指定した文字数を抽出します.
+		*  @param[in] const uint64 文字数
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		StringBase<Char, CharByte> Right(const uint64 count) const
 		{
 			const Char* begin = nullptr;
@@ -221,19 +254,22 @@ namespace gu::details::string
 			return StringBase<Char, CharByte>(begin, end);
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  小文字を全て大文字に変換した文字列を返します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     小文字を全て大文字に変換した文字列を返します
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		StringBase<Char, CharByte> ToUpper() const;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  大文字を全て小文字に変換した文字列を返します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     大文字を全て小文字に変換した文字列を返します
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		StringBase<Char, CharByte> ToLower() const;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の先頭と末尾の空白を全て削除した文字列を返します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の先頭と末尾の空白を全て削除した文字列を返します
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
 		StringBase<Char, CharByte> Trim() const
 		{
 			Char*  begin  = nullptr;
@@ -277,43 +313,54 @@ namespace gu::details::string
 		*****************************************************************************/
 		static constexpr uint64 NPOS = static_cast<uint64>(-1);
 
-#pragma region Property
-		/*----------------------------------------------------------------------
-		*  @brief :  範囲チェック付きの要素アクセス
-		/*----------------------------------------------------------------------*/
+		#pragma region Property
+		/*!**********************************************************************
+		*  @brief     範囲チェック付きの要素アクセス
+		*  @param[in] 要素のインデックス
+		*  @return    文字の参照
+		*************************************************************************/
 		__forceinline Char& At(const uint64 index)
 		{
 			Check(0 <= index && index <= Size());
 			return GetBuffer()[index];
 		}
+		/*!**********************************************************************
+		*  @brief     範囲チェック付きの要素アクセス
+		*  @param[in] 要素のインデックス
+		*  @return    文字の参照
+		*************************************************************************/
 		__forceinline const Char& At(const uint64 index) const noexcept
 		{
 			Check(0 <= index && index <= Size());
 			return GetBuffer()[index];
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列が空かどうかを判定します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列が空かどうかを判定します
+		*  @return    空であればtrueを返します
+		*************************************************************************/
 		bool IsEmpty() const;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  C言語としての生の文字列表現を取得します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     C言語としての生の文字列表現を取得します
+		*  @return    文字列ポインタ
+		*************************************************************************/
 		const Char* CString() const noexcept;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  文字列の長さを取得します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     文字列の長さを取得します
+		*  @return    gu::uint64 : 文字列の長さ
+		*************************************************************************/
 		uint64 Size() const noexcept { return IsSSOMode() ? _data.SSO.Size >> 1 : _data.NonSSO.Size >> 1; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  メモリを再確保せずに格納できる最大の要素数を取得します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     メモリを再確保せずに格納できる最大の要素数を取得します
+		*  @return    gu::uint64 : 要素数
+		*************************************************************************/
 		uint64 Capacity() const noexcept { return IsSSOMode() ? SSO_CAPACITY : _data.NonSSO.Capacity; }
-#pragma endregion Property
+		#pragma endregion Property
 
-#pragma region Operator Function
+		#pragma region Operator Function
 		StringBase<Char, CharByte>& operator=(const StringBase<Char, CharByte>& right) { Assign(right); return *this; }
 		StringBase<Char, CharByte>& operator=(const Char* right) { Assign(right); return *this; }
 		StringBase<Char, CharByte>& operator=(const Char  right) { Assign(&right, 1); return *this; }
@@ -371,12 +418,12 @@ namespace gu::details::string
 		{
 			return Concat(this->CString(), right);
 		}
-#pragma endregion Operator Function
+		#pragma endregion Operator Function
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-#pragma region Constructor and Destructor
+		#pragma region Constructor and Destructor
 		StringBase() { Initialize(); }
 
 		StringBase(const Char* string) : StringBase<Char, CharByte>() { Assign(string); }
@@ -408,7 +455,7 @@ namespace gu::details::string
 			Release(); 
 		}
 
-#pragma endregion Constructor and Destructor
+		#pragma endregion Constructor and Destructor
 
 
 	private:

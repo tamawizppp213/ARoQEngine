@@ -243,6 +243,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Base\Include\GUHash.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUOptional.hpp">
       <SubType>
       </SubType>
@@ -321,6 +325,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\Container\Include\GUDeque.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\Container\Include\GUHashMap.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -936,6 +944,10 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUAssert.cpp" />
+    <ClCompile Include="GameUtility\Base\Source\GUHash.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUTimeSpan.cpp">
       <SubType>
       </SubType>
