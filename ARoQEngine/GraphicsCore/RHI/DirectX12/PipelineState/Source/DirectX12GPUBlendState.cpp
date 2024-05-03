@@ -81,7 +81,7 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 	_blendState.AlphaToCoverageEnable  = _alphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
 
-	for (size_t index = 0; index < _blendProperties.Size(); index++)
+	for (uint64 index = 0; index < _blendProperties.Size(); index++)
 	{
 		const auto& prop = _blendProperties[index];
 
