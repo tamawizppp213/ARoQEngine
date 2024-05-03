@@ -57,18 +57,18 @@ gu::SharedPointer<core::GPUShaderState> GPUPipelineFactory::CreateShaderState()
 }
 
 gu::SharedPointer<core::GPUBlendState> GPUPipelineFactory::CreateBlendState(
-	const gu::DynamicArray<core::BlendProperty>& properties)
+	const gu::DynamicArray<core::BlendProperty>& properties, const bool alphaToCoverageEnable)
 {
-	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, properties));
+	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, properties, alphaToCoverageEnable));
 }
 
 gu::SharedPointer<core::GPUBlendState> GPUPipelineFactory::CreateSingleBlendState(
-	const core::BlendProperty& blendProperty)
+	const core::BlendProperty& blendProperty, const bool alphaToCoverageEnable)
 {
-	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, blendProperty));
+	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, blendProperty, alphaToCoverageEnable));
 }
 
-gu::SharedPointer<core::GPUBlendState> GPUPipelineFactory::CreateBlendState(const size_t numRenderTargets)
+gu::SharedPointer<core::GPUBlendState> GPUPipelineFactory::CreateBlendState(const size_t numRenderTargets, const bool alphaToCoverageEnable)
 {
-	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, gu::DynamicArray<rhi::core::BlendProperty>(numRenderTargets)));
+	return gu::StaticPointerCast<core::GPUBlendState>(gu::MakeShared<GPUBlendState>(_device, gu::DynamicArray<rhi::core::BlendProperty>(numRenderTargets), alphaToCoverageEnable));
 }

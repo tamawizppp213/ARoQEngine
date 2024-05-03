@@ -45,7 +45,7 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	desc.DS                    = _domainShaderState   ? static_cast<GPUShaderState*>      (_domainShaderState  .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
 	desc.GS                    = _geometryShaderState ? static_cast<GPUShaderState*>      (_geometryShaderState.Get())->GetShader()            : D3D12_SHADER_BYTECODE();
 	desc.DepthStencilState     = _depthStencilState   ? static_cast<GPUDepthStencilState*>(_depthStencilState  .Get())->GetDepthStencilState() : D3D12_DEPTH_STENCIL_DESC();
-	desc.BlendState            = _blendState          ? static_cast<GPUBlendState*>       (_blendState         .Get())->GetBlendState()        : D3D12_BLEND_DESC();
+	desc.BlendState            = _blendState          ? static_cast<GPUBlendState*>       (_blendState         .Get())->GetDxBlendState()      : D3D12_BLEND_DESC();
 	desc.RasterizerState       = _rasterizerState     ? static_cast<GPURasterizerState*>  (_rasterizerState    .Get())->GetDxRasterizerDesc()  : D3D12_RASTERIZER_DESC();
 	desc.Flags                 = D3D12_PIPELINE_STATE_FLAG_NONE;
 	desc.DSVFormat             = _renderPass->GetDepthAttachment().HasValue() ?

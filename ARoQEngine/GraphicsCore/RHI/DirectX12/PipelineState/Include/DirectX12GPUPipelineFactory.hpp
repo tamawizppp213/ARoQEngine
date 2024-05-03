@@ -51,15 +51,17 @@ namespace rhi::directX12
 
 		/* @brief : Create and return multiple blend states pointer. */
 		gu::SharedPointer<core::GPUBlendState> CreateBlendState(
-			const gu::DynamicArray<core::BlendProperty>& properties) override;
+			const gu::DynamicArray<core::BlendProperty>& properties,
+			const bool alphaToCoverageEnable = false) override;
 
 		/* @brief : Create and return blend state pointer*/
 		gu::SharedPointer<core::GPUBlendState> CreateSingleBlendState(
-			const core::BlendProperty& blendProperty
+			const core::BlendProperty& blendProperty,
+			const bool alphaToCoverageEnable
 		) override ;
 
 		/* @brief : Create and return input assembly state pointer*/
-		gu::SharedPointer<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets)override;
+		gu::SharedPointer<core::GPUBlendState> CreateBlendState(const size_t numRenderTargets, const bool alphaToCoverageEnable = false)override;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

@@ -411,15 +411,13 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const gu::uint32 
 /****************************************************************************
 *                     NoColorWrite
 *************************************************************************//**
-*  @fn        BlendProperty BlendProperty::NoColorWrite(const bool useAlphaToCoverage)
-*
-*  @brief     そのままレンダーターゲットの出力を表示します
+/* @brief     そのままレンダーターゲットの出力を表示します
 *
 *  @param[in] bool useAlphaToCoverage
 *
 *  @return    BlendProperty
 *****************************************************************************/
-BlendProperty BlendProperty::NoColorWrite(const bool useAlphaToCoverage)
+BlendProperty BlendProperty::NoColorWrite(const bool enableBlend)
 {
 	return BlendProperty
 	(
@@ -429,22 +427,21 @@ BlendProperty BlendProperty::NoColorWrite(const bool useAlphaToCoverage)
 		BlendFactor::One,    // Render Target color(rgb) element blend mode    
 		BlendFactor::Zero,   // pixel shader alpha 
 		BlendFactor::Zero,   // pixel shader color
-		ColorMask::None, useAlphaToCoverage, false
+		ColorMask::None,
+		enableBlend
 	);
 }
 
 /****************************************************************************
 *                     OverWrite
 *************************************************************************//**
-*  @fn        BlendProperty BlendProperty::OverWrite(const bool useAlphaToCoverage)
-*
-*  @brief     そのままピクセルシェーダーの出力を上書きします
+/* @brief     そのままピクセルシェーダーの出力を上書きします
 *
 *  @param[in] bool useAlphaToCoverage
 *
 *  @return    BlendProperty
 *****************************************************************************/
-BlendProperty BlendProperty::OverWrite(const bool useAlphaToCoverage)
+BlendProperty BlendProperty::OverWrite(const bool enableBlend)
 {
 	return BlendProperty(
 		BlendOperator::Add, // color operator
@@ -454,22 +451,19 @@ BlendProperty BlendProperty::OverWrite(const bool useAlphaToCoverage)
 		BlendFactor::One,   // pixel shader alpha 
 		BlendFactor::One,   // pixel shader color
 		ColorMask::All,
-		useAlphaToCoverage, false);
+		enableBlend);
 }
 
 /****************************************************************************
 *                     AlphaBlend
 *************************************************************************//**
-*  @fn        BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
-*
-*  @brief     Alpha blending 
-*             Destination * (1 - source.Alpha) + source * 1
+/*  @brief    アルファブレンドを実行します destination * (1 - source.Alpha) + source * 1
 *
 *  @param[in] bool useAlphaToCoverage
 *
 *  @return    BlendProperty
 *****************************************************************************/
-BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
+BlendProperty BlendProperty::AlphaBlend(const bool enableBlend)
 {
 	return BlendProperty
 	(
@@ -480,8 +474,7 @@ BlendProperty BlendProperty::AlphaBlend(const bool useAlphaToCoverage)
 		BlendFactor::One,                   // source alpha 
 		BlendFactor::Source_Alpha,          // source
 		ColorMask::All,                     // color mask
-		useAlphaToCoverage, 
-		true
+		enableBlend
 	);
 }
 #pragma endregion      BlendProperty

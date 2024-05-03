@@ -61,15 +61,17 @@ namespace rhi::core
 
 		/* @brief : Create and return multiple blend states pointer. */
 		virtual gu::SharedPointer<GPUBlendState> CreateBlendState(
-			const gu::DynamicArray<BlendProperty>& properties = { BlendProperty() }) = 0;
+			const gu::DynamicArray<BlendProperty>& properties = { BlendProperty() }, 
+			const bool alphaToCoverageEnable = false) = 0;
 
 		/* @brief : Create and return blend state pointer*/
 		virtual gu::SharedPointer<GPUBlendState> CreateSingleBlendState(
-			const BlendProperty& blendProperty = BlendProperty()
+			const BlendProperty& blendProperty = BlendProperty(),
+			const bool alphaToCoverageEnable = false
 		) = 0;
 
 		/* @brief : Create and return input assembly state pointer*/
-		virtual gu::SharedPointer<GPUBlendState> CreateBlendState(const size_t numRenderTargets) = 0;
+		virtual gu::SharedPointer<GPUBlendState> CreateBlendState(const size_t numRenderTargets, const bool alphaToCoverageEnable) = 0;
 		/****************************************************************************
 		**                Public Member Variables
 		*****************************************************************************/

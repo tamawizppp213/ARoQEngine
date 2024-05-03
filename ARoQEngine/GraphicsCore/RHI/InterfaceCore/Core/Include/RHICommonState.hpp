@@ -394,7 +394,7 @@ namespace rhi::core
 		BlobData(void* bufferPointer, gu::uint64 bufferSize) : BufferPointer(bufferPointer), BufferSize(bufferSize) {};
 	};
 #pragma endregion        Shader Type
-#pragma region Sampler State
+	#pragma region Sampler State
 	/****************************************************************************
 	*				  			SamplerAddressMode
 	*************************************************************************//**
@@ -536,111 +536,124 @@ namespace rhi::core
 	};
 
 #pragma endregion Sampler State
-#pragma region Blend State
+	#pragma region Blend State
 	/****************************************************************************
 	*				  			BlendFactor
 	*************************************************************************//**
-	*  @class     BlendFactor
-	*  @brief     Color blend factor (directX12 based)
-	*             Source : Color to be rendered from now on
-	*             Dest   : Color of rendering destination
+	/*  @brief    レンダーターゲットにおいて, 書き込む前と後の色のブレンド方法を設定します @n
+	*             Source : これからレンダーターゲットに書き込みたい色です (ピクセルシェーダーからの色) @n
+	*             Dest   : 現時点でレンダーターゲットに書き込まれている色です
 	*****************************************************************************/
 	enum class BlendFactor : gu::uint8
 	{
-		Zero = 1,             // * 0
-		One,                  // * 1
-		Source_Color,         // * Rs, *Gs, *Bs, *As
-		Inverse_Source_Color, // * (1 - Rs), *(1 - Gs), *(1 - Bs), *(1 - As)
-		Source_Alpha,         // * As
-		Inverse_Source_Alpha, // * (1 - As)
-		Dest_Alpha,           // * Ad
-		Inverse_Dest_Alpha,   // * (1 - Ad)
-		Dest_Color,           // * Rd, *Gd, *Bd, *Ad
-		Inverse_Dest_Color,   // * (1 - Rd), *(1 - Gd), *(1 - Bd), *(1 - Ad)
-		Source_Alpha_Saturate,// * mih(1 - Ad, As)
+		Zero                  = 1, //!< ブレンド係数 * (0, 0, 0, 0)
+		One                   = 2, //!< ブレンド係数 * (1, 1, 1, 1)
+		Source_Color          = 3, //!< ブレンド係数 * (Rs, Gs, Bs, As)です.                 色はピクセルシェーダからの色です
+		Inverse_Source_Color  = 4, //!< ブレンド係数 * (1 - Rs, 1 - Gs, 1 - Bs, 1 - As)です. 色はピクセルシェーダからの色です.
+		Source_Alpha          = 5, //!< ブレンド係数 * (As, As, As, As)です.                 アルファ値はピクセルシェーダからのものです
+		Inverse_Source_Alpha  = 6, //!< ブレンド係数 * (1 - As, 1 - As, 1 - As, 1 - As)です. アルファ値はピクセルシェーダからのものです
+		Dest_Alpha            = 7, //!< ブレンド係数 * (Ad, Ad, Ad, Ad)です.                 アルファ値はレンダーターゲットからのものです.
+		Inverse_Dest_Alpha    = 8, //!< ブレンド係数 * (1 - Ad, 1 - Ad, 1 - Ad, 1 - Ad)です. アルファ値はレンダーターゲットからのものです.
+		Dest_Color            = 9, //!< ブレンド係数 * (Rd, Gd, Bd, Ad)です.                 色はレンダーターゲットからの色です.
+		Inverse_Dest_Color    = 10,//!< ブレンド係数 * (1 - Rd, 1 - Gd, 1 - Bd, 1 - Ad)です. 色はレンダーターゲットからの色です.
+		Source_Alpha_Saturate = 11,//!< ブレンド係数 * (f, f, f, 1)です. f = min(1 - Ad, As)で, AdはDestAlpha, AsはSourceAlphaです.
 	};
 
 	/****************************************************************************
 	*				  			BlendOperator
 	*************************************************************************//**
-	*  @class     BlendOperator
-	*  @brief     Color blend calculate opration (directX12 based)
+	/*  @brief   書き込み先のレンダーターゲットと書き込み元のピクセルシェーダの色やアルファ値をブレンドする際の演算方法を指定します.
 	*****************************************************************************/
 	enum class BlendOperator : gu::uint8
 	{
-		Add              = 1, // Default color blend operator : destination + source
-		Subtract         = 2, // source - destination
-		Reverse_Subtract = 3, // destination - source
-		Min              = 4, // min(destination, source)
-		Max              = 5  // max(destination, source)
+		Add              = 1, //!< destination + source, もしくは renderTarget + pixelShader (基本となる演算子です)
+		Subtract         = 2, //!< source - destination, もしくは pixelShader - renderTarget
+		Reverse_Subtract = 3, //!< destination - source, もしくは renderTarget - pixelShader
+		Min              = 4, //!< min(destination, source), もしくは min(renderTarget, pixelShader)
+		Max              = 5  //!< max(destination, source), もしくは max(renderTarget, pixelShader)
 	};
 
 	/****************************************************************************
 	*				  			ColorMask
 	*************************************************************************//**
-	*  @class     ColorMask 
-	*  @brief     Color mask bit flag
+	/*  @brief  Enumで指定したビットフラグのチャンネルのみ, 描画時に新たにレンダーターゲットに書き込むことが出来ます. 
 	*****************************************************************************/
 	enum class ColorMask : gu::uint8
 	{
-		None  = 0,   // All Disable 
-		Red   = 0x1, // Red WriteEnable
-		Green = 0x2, // Green WriteEnable
-		Blue  = 0x4, // Blue WriteEnable
-		Alpha = 0x8, // Alpha WriteEnable
-		RGB   = Red | Green | Blue,
-		RG    = Red | Green,
-		BA    = Blue | Green,
-		All   = Red | Green | Blue | Alpha // AllEnable
+		None  = 0,                         //!< 全ての成分が新たにレンダーターゲットに書き込むことが出来ません 
+		Red   = 0x1,                       //!< 赤色のチャンネルのみ新たにレンダーターゲットに書き込むことが出来ます
+		Green = 0x2,                       //!< 緑色のチャンネルのみ新たにレンダーターゲットに書き込むことが出来ます
+		Blue  = 0x4,                       //!< 青色のチャンネルのみ新たにレンダーターゲットに書き込むことが出来ます
+		Alpha = 0x8,                       //!< α値のチャンネルのみ新たにレンダーターゲットに書き込むことが出来ます
+		RGB   = Red | Green | Blue,        //!< RGBのチャンネルが新たにレンダーターゲットに書き込むことが出来ます
+		RG    = Red | Green,               //!< RGのチャンネルが新たにレンダーターゲットに書き込むことが出来ます
+		BA    = Blue | Green,              //!< BAのチャンネルが新たにレンダーターゲットに書き込むことが出来ます
+		All   = Red | Green | Blue | Alpha //!< RGBA全てのチャンネルがレンダーターゲットに書き込むことが出来ます
 	};
 
-	inline ColorMask operator | (const ColorMask& left, const ColorMask& right)
-	{
-		return static_cast<ColorMask>( static_cast<gu::uint8>(left) | static_cast<gu::uint8>(right));
-	}
+	ENUM_CLASS_FLAGS(ColorMask);
 
 	/****************************************************************************
 	*				  			BlendProperty
 	*************************************************************************//**
-	*  @class     BlendProperty
-	*  @brief     Property
-	*             Source      : これからレンダリングする色 (ピクセルシェーダー)
+	/*  @brief    描画時の設定です \n
+	*             Source      : これからレンダリングする色 (ピクセルシェーダー) @n
 	*             Destination : レンダリング先 (レンダーターゲット)
 	*****************************************************************************/
 	struct BlendProperty
 	{
-		BlendOperator ColorOperator    = BlendOperator::Add;   // RGB Color Blend Type 
-		BlendOperator AlphaOperator    = BlendOperator::Add;   // Alpha Blend Type
-		BlendFactor   DestinationAlpha = BlendFactor::Zero;    // Multiply to Render Target alpha(a) element blend mode
-		BlendFactor   DestinationRGB   = BlendFactor::Zero;    // Multiply to Render Target color(rgb) element blend mode
-		BlendFactor   SourceAlpha      = BlendFactor::One;     // Multiply to Pixel Shader alpha element(a) blend mode
-		BlendFactor   SourceRGB        = BlendFactor::One;     // Multiply to Pixel Shader color element(rgb) blend mode
-		ColorMask     ColorMask        = ColorMask::All;       // color mask
-		bool AlphaToConverageEnable    = false;                // Multi sample時に使用する. ピクセルシェーダーから出力されたあrぷふぁを取得し, Multi sanling aliasingを適用する
+		/*! @brief RGB値に対して, RenderTargetとPixelShaderの色を混合する際の演算方法を決定します (デフォルトは加算)*/
+		BlendOperator ColorOperator = BlendOperator::Add;
 
-		bool Enable = false; // レンダーターゲットの独立したブレンドを使用するかを設定する
+		/*! @brief α値に対して, RenderTargetとPixelShaderの値を混合する際の演算方法を決定します. (デフォルトは加算)*/
+		BlendOperator AlphaOperator = BlendOperator::Add;   // Alpha Blend Type
 
+		/*! @brief 現時点でレンダーターゲットに書き込まれているRGB値に対する乗算係数*/
+		BlendFactor DestinationRGB = BlendFactor::Zero;
+
+		/*! @brief 現時点でレンダーターゲットに書き込まれているα値に対する乗算係数*/
+		BlendFactor DestinationAlpha = BlendFactor::Zero;
+
+		/*! @brief ピクセルシェーダーに送られたRGB値に対する乗算係数*/
+		BlendFactor SourceRGB = BlendFactor::One;
+
+		/*! @brief ピクセルシェーダーに送られたα値に対する乗算係数*/
+		BlendFactor SourceAlpha = BlendFactor::One;
+
+		/*! @brief Enumで指定したビットフラグのチャンネルのみ, 描画時に新たにレンダーターゲットに書き込むことが出来ます*/
+		ColorMask ColorMask = ColorMask::All; 
+
+		/*! @brief ブレンディングを有効化するか*/
+		bool EnableBlend = false;
+
+		/*! @brief デフォルトコンストラクタ*/
 		BlendProperty() = default;
 
-		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, BlendFactor destAlpha, BlendFactor dest,
-			BlendFactor srcAlpha, BlendFactor src, core::ColorMask colorMask = ColorMask::All, bool alphaToConverageEnable = false, bool enable = false) :
+		/*! @brief 基本設定を使った初期化*/
+		BlendProperty(BlendOperator colorOperator, BlendOperator alphaOperator, 
+			BlendFactor destAlpha, BlendFactor dest,
+			BlendFactor srcAlpha , BlendFactor src,
+			core::ColorMask colorMask = ColorMask::All, const bool enableBlend = false) :
 			ColorOperator(colorOperator), AlphaOperator(alphaOperator), DestinationAlpha(destAlpha), DestinationRGB(dest), SourceAlpha(srcAlpha),
-			SourceRGB(src), ColorMask(colorMask), Enable(enable), AlphaToConverageEnable(alphaToConverageEnable) { };
+			SourceRGB(src), ColorMask(colorMask), EnableBlend(enableBlend) { };
 		
-		/*----------------------------------------------------------------------
-		*  @brief : NoColorWrite (Display the render target as it is)
-		/*----------------------------------------------------------------------*/
-		static BlendProperty NoColorWrite(const bool useAlphaToCoverage = false);
+		/*!**********************************************************************
+		*  @brief  　　RenderTargetに既に描画されているものをそのまま出力します. 
+		*  @param[in] bool : 指定のBlendStateを有効化する
+		*************************************************************************/
+		static BlendProperty NoColorWrite(const bool enableBlend = true);
 
-		/*----------------------------------------------------------------------
-		*  @brief : OverWrite (Displays the source as it is.)
-		/*----------------------------------------------------------------------*/
-		static BlendProperty OverWrite (const bool useAlphaToCoverage = false);
+		/*!**********************************************************************
+		*  @brief  　　ピクセルシェーダで出力されているものをそのまま出力します
+		*  @param[in] bool : 指定のBlendStateを有効化する
+		*************************************************************************/
+		static BlendProperty OverWrite (const bool enableBlend = true);
 
-		/*----------------------------------------------------------------------
-		*  @brief : Alpha blending : destination * (1 - source.Alpha) + source * 1
-		/*----------------------------------------------------------------------*/
-		static BlendProperty AlphaBlend(const bool useAlphaToCoverage = false);
+		/*!**********************************************************************
+		*  @brief  　　アルファブレンドを実行します destination * (1 - source.Alpha) + source * 1
+		*  @param[in] bool : 指定のBlendStateを有効化する
+		*************************************************************************/
+		static BlendProperty AlphaBlend(const bool enableBlend = true);
 	};
 
 #pragma endregion       Blend   State

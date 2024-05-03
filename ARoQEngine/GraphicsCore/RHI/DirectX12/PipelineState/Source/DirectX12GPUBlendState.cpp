@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/DirectX12GPUBlendState.hpp"
-#include "../../Core/Include/DirectX12EnumConverter.hpp"
+#include "GraphicsCore/RHI/DirectX12/PipelineState/Include/DirectX12GPUBlendState.hpp"
+#include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -21,8 +21,14 @@ using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::DynamicArray<rhi::core::BlendProperty>& blendProperties)
-: rhi::core::GPUBlendState(device, blendProperties)
+/*!**********************************************************************
+*  @brief     個別に設定する方式のブレンドステート
+*  @param[in] const gu::SharedPointer<rhi::core::RHIDevice>& 論理デバイス
+*  @param[in] const gu::DynamicArray<rhi::core::BlendProperty>& 個別のブレンド設定
+*  @param[in] const bool ピクセルシェーダーから出力されたα成分を取得し, マルチサンプリングアンチエイリアス処理を適用する機能を有効化
+*************************************************************************/
+GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const gu::DynamicArray<rhi::core::BlendProperty>& blendProperties, const bool alphaToCoverageEnable)
+: rhi::core::GPUBlendState(device, blendProperties, alphaToCoverageEnable)
 {
 	/*-------------------------------------------------------------------
 	-        無効入力チェック
@@ -35,14 +41,14 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 	-        Blendingの設定
 	---------------------------------------------------------------------*/
 	// Explain https://bgolus.medium.com/anti-aliased-alpha-test-the-esoteric-alpha-to-coverage-8b177335ae4f
-	_blendState.AlphaToCoverageEnable  = blendProperties[0].AlphaToConverageEnable;
+	_blendState.AlphaToCoverageEnable  = _alphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
 
-	for (size_t index = 0; index < _blendProperties.Size(); index++)
+	for (uint64 index = 0; index < _blendProperties.Size(); index++)
 	{
 		const auto& blendProperty = _blendProperties[index];
 
-		_blendState.RenderTarget[index].BlendEnable    = blendProperty.Enable;
+		_blendState.RenderTarget[index].BlendEnable    = blendProperty.EnableBlend;
 		_blendState.RenderTarget[index].LogicOpEnable  = false;
 		_blendState.RenderTarget[index].SrcBlend       = EnumConverter::Convert(blendProperty.SourceRGB);
 		_blendState.RenderTarget[index].DestBlend      = EnumConverter::Convert(blendProperty.DestinationRGB);
@@ -55,8 +61,14 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 	}
 }
 
-GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty)
-	: rhi::core::GPUBlendState(device, blendProperty)
+/*!**********************************************************************
+*  @brief     全てのBlendStateで共通のプロパティを使用する方式
+*  @param[in] const gu::SharedPointer<rhi::core::RHIDevice>& 論理デバイス
+*  @param[in] const rhi::core::BlendProperty 共通のブレンド設定
+*  @param[in] const bool ピクセルシェーダーから出力されたα成分を取得し, マルチサンプリングアンチエイリアス処理を適用する機能を有効化
+*************************************************************************/
+GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& device, const rhi::core::BlendProperty& blendProperty, const bool alphaToCoverageEnable)
+	: rhi::core::GPUBlendState(device, blendProperty, alphaToCoverageEnable)
 {
 	/*-------------------------------------------------------------------
 	-        無効入力チェック
@@ -66,14 +78,14 @@ GPUBlendState::GPUBlendState(const gu::SharedPointer<rhi::core::RHIDevice>& devi
 	/*-------------------------------------------------------------------
 	-        Blendingの設定
 	---------------------------------------------------------------------*/
-	_blendState.AlphaToCoverageEnable  = blendProperty.AlphaToConverageEnable;
+	_blendState.AlphaToCoverageEnable  = _alphaToConverageEnable;
 	_blendState.IndependentBlendEnable = _isIndependentBlendEnable;
 
 	for (size_t index = 0; index < _blendProperties.Size(); index++)
 	{
 		const auto& prop = _blendProperties[index];
 
-		_blendState.RenderTarget[index].BlendEnable    = prop.Enable;
+		_blendState.RenderTarget[index].BlendEnable    = prop.EnableBlend;
 		_blendState.RenderTarget[index].LogicOpEnable  = false;
 		_blendState.RenderTarget[index].SrcBlend       = EnumConverter::Convert(prop.SourceRGB);
 		_blendState.RenderTarget[index].DestBlend      = EnumConverter::Convert(prop.DestinationRGB);
