@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Private/Base/Include/GUStringUtility.hpp"
 #include "GameUtility/Memory/Include/GUMemory.hpp"
+#include "GameUtility/Base/Include/GUHash.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -276,6 +277,15 @@ namespace gu::details::string
 			uint64 length = 0;
 			StringUtility::Trim(CString(), Size(), &begin, &length);
 			return StringBase<Char, CharByte>(begin, length);
+		}
+
+		/*!**********************************************************************
+		*  @brief     HashMap用にハッシュ値を取得して渡します
+		*  @return    gu::uint64
+		*************************************************************************/
+		gu::uint64 GetTypedHash() const 
+		{
+			return gu::Hash::XX_64(CString(), CharByte * Size());
 		}
 
 		#pragma region Convert number

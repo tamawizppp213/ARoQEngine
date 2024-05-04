@@ -1,7 +1,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///  @file   GUHashMap.hpp
-///  @brief  オープンアドレス法と線形探査, と2のべき乗でのテーブルサイズの制約を行うHashMapクラスです. @n 
-///          Valueの探索はO(1)で指定されます. (衝突が起こった場合はO(1)の類ではありません)
+///  @brief  ロビンフッドハッシュ法によるハッシュテーブルです. スロット数は2のべき乗の制約があります. @n 
+///          Valueの探索はO(1)で指定されます. (衝突が起こった場合はO(1)の類ではありません) @n
+///          リハッシュは約80％ほどたまったタイミングで行われます. @n
+///          キーに対するハッシュ化はプリミティブ型は勿論, 任意の構造体やクラスに対しても適切な準備を行えば可能です@n
+///          任意の構造体やクラスに適用するハッシュ化は, まず, 対象のクラス内にpublicな[gu::uint64 GetTypedHash() const]を作成してください. @n
+///          その中に, ハッシュ化を施すための64bitの非暗号化ハッシュ関数, gu::XX_64などを呼び出し, 比較を行いたいメンバ変数を全てハッシュ化すれば大丈夫です.
+///  @note   参考コード : https://github.com/skarupke/flat_hash_map/blob/master/flat_hash_map.hpp#L558  @n
+///                     https://postd.cc/i-wrote-the-fastest-hashtable-1/ @n
+///                     https://postd.cc/i-wrote-the-fastest-hashtable/
 ///  @author toide
 ///  @date   2024/04/29 9:25:41
 //////////////////////////////////////////////////////////////////////////////////
@@ -14,6 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Container/Private/HashMap/Include/GUHashMapElement.hpp"
 #include "GameUtility/Container/Private/HashMap/Include/GUHashMapIterator.hpp"
+#include "GameUtility/Base/Include/GUTypeTraits.hpp"
 #include "GameUtility/Base/Include/GUHash.hpp"
 #include "GameUtility/Memory/Include/GUMemory.hpp"
 #include "GameUtility/Base/Include/GUTypeCast.hpp"
@@ -30,8 +38,12 @@ namespace gu
 	/****************************************************************************
 	*				  			   GUHashMap
 	*************************************************************************//**
-	/*!  @brief   オープンアドレス法と線形探査, と2のべき乗でのテーブルサイズの制約を行うHashMapクラスです. @n 
-	*             Valueの探索はO(1)で指定されます. (衝突が起こった場合はO(1)の類ではありません)
+	/*!  @brief   ロビンフッドハッシュ法によるハッシュテーブルです. スロット数は2のべき乗の制約があります. @n 
+	              Valueの探索はO(1)で指定されます. (衝突が起こった場合はO(1)の類ではありません) @n
+				  リハッシュは約80％ほどたまったタイミングで行われます. @n
+				  キーに対するハッシュ化はプリミティブ型は勿論, 任意の構造体やクラスに対しても適切な準備を行えば可能です@n
+				  任意の構造体やクラスに適用するハッシュ化は, まず, 対象のクラス内にpublicな[gu::uint64 GetTypedHash() const]を作成してください. @n
+				  その中に, ハッシュ化を施すための64bitの非暗号化ハッシュ関数, gu::XX_64などを呼び出し, 比較を行いたいメンバ変数を全てハッシュ化すれば大丈夫です.
 	*****************************************************************************/
 	template<typename Key, typename Value>
 	class HashMap 
@@ -239,7 +251,7 @@ namespace gu
 		~HashMap()
 		{
 			Clear();
-			Deallocate(_elements, _slotsCountMinusOne, _maxSearchCount);
+			Deallocate(_elements);
 		}
 		#pragma endregion 
 
@@ -288,7 +300,7 @@ namespace gu
 		*  @brief     メモリを解放します
 		*  @return    void
 		*************************************************************************/
-		void Deallocate(Element* begin, const gu::uint64 bucketCount, const gu::int8 maxSearchCount);
+		void Deallocate(Element* begin);
 
 		/*!**********************************************************************
 		*  @brief     ハッシュ値をもとに, バケットの理想的なIndexを取得します.
@@ -364,7 +376,6 @@ namespace gu
 		bucketCount = CalculateNextPowerOfTwo(bucketCount);
 
 		// バケットサイズが変わらなかった場合はRehashの必要性がないため, そのまま終了します. 
-		const auto test = BucketSize();
 		if (bucketCount == BucketSize())
 		{
 			return;
@@ -413,13 +424,13 @@ namespace gu
 			}
 		}
 
-		Deallocate(newBuckets, bucketCount, oldSearchCount);
+		Deallocate(newBuckets);
 	}
 
 	template<typename Key, typename Value>
 	void HashMap<Key, Value>::Initialize()
 	{
-		Deallocate(_elements, _slotsCountMinusOne, _maxSearchCount);
+		Deallocate(_elements);
 		_elements       = Element::EmptyDefaultTable();
 		_slotsCountMinusOne    = 0;
 		_elementCount   = 0;
@@ -504,7 +515,16 @@ namespace gu
 		/*-------------------------------------------------------------------
 		-       エントリを配置するための理想的なインデックスを取得します.
 		---------------------------------------------------------------------*/
-		const auto keyHash      = Hash::XX_64(&key, sizeof(Key), 0);
+		gu::uint64 keyHash = 0;
+		if constexpr (gu::type::IS_ARITHMETIC<Key> || gu::type::IS_POINTER<Key>)
+		{
+			keyHash = Hash::XX_64(&key, sizeof(Key), 0);
+		}
+		else
+		{
+			keyHash = key.GetTypedHash();
+		}
+
 		const auto desiredIndex = CalculateIndexForHash(keyHash, _slotsCountMinusOne);
 
 		/*-------------------------------------------------------------------
@@ -578,8 +598,6 @@ namespace gu
 				}
 			}
 		}
-		
-		throw "could not pass the process";
 	}
 
 	namespace details
@@ -644,7 +662,7 @@ namespace gu
 	*  @return    void
 	*************************************************************************/
 	template<typename Key, typename Value>
-	void HashMap<Key, Value>::Deallocate(Element* begin, const gu::uint64 bucketCount, const gu::int8 maxSearchCount)
+	void HashMap<Key, Value>::Deallocate(Element* begin)
 	{
 		if (begin != nullptr && begin != details::hashmap::HashMapElement<Key, Value>::EmptyDefaultTable())
 		{
