@@ -1,8 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12BlendState.hpp
-///             @brief  DirectX12BlendState.hpp
-///             @author Toide Yutaro
-///             @date   2022_06_29
+///  @file   DirectX12BlendState.hpp
+///  @brief  描画時に, どのように書き込む前のレンダーターゲットと書き込む先のレンダーターゲットの色を混合するかを定義するStateです@n
+///          マルチレンダーターゲットにも対応可能です(最大数は8)
+///  @author Toide Yutaro
+///  @date   2024_05_04
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_GPU_BLEND_STATE_HPP

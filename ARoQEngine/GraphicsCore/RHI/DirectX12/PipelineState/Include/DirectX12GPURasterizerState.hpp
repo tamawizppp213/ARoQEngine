@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12GPURasterizerState.hpp
-///             @brief  DirectX12GPURasterizerState.hpp
-///             @author Toide Yutaro
-///             @date   2022_06_29
+///  @file   DirectX12GPURasterizerState.hpp
+///  @brief  ピクセルを描画するラスタライザステートにおける設定項目を記述するクラスです. 
+///  @author Toide Yutaro
+///  @date   2024_05_04
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_GPU_RASTERIZER_STATE_HPP
@@ -35,6 +35,7 @@ namespace rhi::directX12
 		#pragma endregion 
 
 		#pragma region Public Property
+
 		/*!**********************************************************************
 		*  @brief   DirectX12専用の設定項目を返します
 		*************************************************************************/
