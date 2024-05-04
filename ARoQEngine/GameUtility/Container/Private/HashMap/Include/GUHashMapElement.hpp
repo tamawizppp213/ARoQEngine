@@ -81,7 +81,7 @@ namespace gu::details::hashmap
 		*  @param[in] void
 		*  @return    bool : true‚Å‚»‚ÌêŠ‚É‚¢‚é
 		*************************************************************************/
-		__forceinline bool IsDesiredPosition() const { return ProbeDistance == 0; }
+		__forceinline bool IsDesiredPosition() const { return ProbeDistance <= 0; }
 
 		/*!**********************************************************************
 		*  @brief     ’l‚ğ”jŠü‚·‚é
