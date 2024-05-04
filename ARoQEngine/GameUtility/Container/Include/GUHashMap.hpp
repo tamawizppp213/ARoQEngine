@@ -71,8 +71,15 @@ namespace gu
 		void Clear();
 
 		/*!**********************************************************************
+		*  @brief     指定のキーを持っている値を削除します
+		*  @param[in] const Key& キーの値
+		*  @return    bool trueで削除に成功, falseで対象が見つからなかったことを示します.
+		*************************************************************************/
+		bool Remove(const Key& key);
+
+		/*!**********************************************************************
 		*  @brief     HashMapに指定のキーが含まれているかを調べます
-		*  @param[in] const Key キーの値
+		*  @param[in] const Key& キーの値
 		*  @return    bool
 		*************************************************************************/
 		__forceinline bool Contains(const Key& key) const { return Find(key) != end(); }
@@ -485,7 +492,15 @@ namespace gu
 		/*-------------------------------------------------------------------
 		-       エントリを配置するための理想的なインデックスを取得します.
 		---------------------------------------------------------------------*/
-		const auto keyHash = Hash::XX_64(&key, sizeof(Key), 0);
+		gu::uint64 keyHash = 0;
+		if constexpr (gu::type::IS_ARITHMETIC<Key> || gu::type::IS_POINTER<Key>)
+		{
+			keyHash = Hash::XX_64(&key, sizeof(Key), 0);
+		}
+		else
+		{
+			keyHash = key.GetTypedHash();
+		}
 		const auto desiredIndex = CalculateIndexForHash(keyHash, _slotsCountMinusOne);
 
 		/*-------------------------------------------------------------------
@@ -502,6 +517,31 @@ namespace gu
 		}
 
 		return end();
+	}
+
+	/*!**********************************************************************
+	*  @brief     指定のキーを持っている値を削除します
+	*  @param[in] const Key& キーの値
+	*  @return    bool trueで削除に成功, falseで対象が見つからなかったことを示します.
+	*************************************************************************/
+	template<typename Key, typename Value>
+	bool HashMap<Key, Value>::Remove(const Key& key)
+	{
+		Iterator found = Find(key);
+
+		if (found == end()) { return false; }
+
+		Element* current = found.Current;
+		current->DestroyValue();
+		--_elementCount;
+
+		for (Element* next = current + 1; !next->IsDesiredPosition(); ++current, ++next)
+		{
+			current->ProbeDistance = next->ProbeDistance - 1;
+			current->Data.Key      = gu::type::Forward<Key>  (next->Data.Key);
+			current->Data.Value    = gu::type::Forward<Value>(next->Data.Value);
+			next->DestroyValue();
+		}
 	}
 
 	/*!**********************************************************************

@@ -88,9 +88,7 @@ namespace gu::details::hashmap
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor
-		TemplatedIterator() = default;
 
-		explicit TemplatedIterator(Element* element) : Current(element) {};
 		#pragma endregion 
 
 	protected:
