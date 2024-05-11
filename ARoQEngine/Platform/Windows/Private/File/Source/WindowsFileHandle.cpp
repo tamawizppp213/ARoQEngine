@@ -95,16 +95,17 @@ bool IFileHandle::SeekFromEnd(const gu::int64 relativePositionFromEnd)
 
 /*!**********************************************************************
 *  @brief        ファイルから指定のバイト数分だけdestinationのバッファに書き込みます.
-*  @param[inout] gu::uint8* 結果を格納するバッファです. ただし, readByte以上のバイト数は確保する必要があります.
+*  @param[inout] void* 結果を格納するバッファです. ただし, readByte以上のバイト数は確保する必要があります.
 *  @param[in]    const gu::int64 読み込みバイト数
 *  @return       bool 読み込み成功したらtrue
 *************************************************************************/
-bool IFileHandle::Read(gu::uint8* destination, const gu::int64 initTotalByte)
+bool IFileHandle::Read(void* destination, const gu::int64 initTotalByte)
 {
 	Check(IsValid());
 
 	int64 totalNumRead = 0;
 	int64 readByte     = initTotalByte;
+	uint8* byteDestination = static_cast<uint8*>(destination);
 
 	do
 	{
@@ -114,7 +115,7 @@ bool IFileHandle::Read(gu::uint8* destination, const gu::int64 initTotalByte)
 		/*-------------------------------------------------------------------
 		-              ファイルの読み込み
 		---------------------------------------------------------------------*/
-		if (!ReadFile(_handle, destination, bytesToRead32, (::DWORD*)&numRead, &_overlappedIO))
+		if (!ReadFile(_handle, byteDestination, bytesToRead32, (::DWORD*)&numRead, &_overlappedIO))
 		{
 			const auto errorCode = GetLastError();
 			if (errorCode != ERROR_IO_PENDING)
@@ -130,7 +131,7 @@ bool IFileHandle::Read(gu::uint8* destination, const gu::int64 initTotalByte)
 			}
 
 			readByte    -= bytesToRead32;
-			destination += bytesToRead32;
+			byteDestination += bytesToRead32;
 			totalNumRead += numRead;
 
 			_position += numRead;
@@ -148,17 +149,17 @@ bool IFileHandle::Read(gu::uint8* destination, const gu::int64 initTotalByte)
 
 /*!**********************************************************************
 *  @brief     ファイルに指定のバイト数分だけ書き込みを行います.
-*  @param[in] const gu::uint8* 結果を格納するバッファです. ただし, readByte以上のバイト数は確保する必要があります.
+*  @param[in] const void* 結果を格納するバッファです. ただし, readByte以上のバイト数は確保する必要があります.
 *  @param[in] const gu::int64  書き込みバイト数
 *  @return    bool ファイルに書き込みが成功したらtrue
 *************************************************************************/
-bool IFileHandle::Write(const gu::uint8* source, const gu::int64 initTotalByte)
+bool IFileHandle::Write(const void* source, const gu::int64 initTotalByte)
 {
 	Check(IsValid());
 
 	int64 totalNumWrite = 0;
 	int64 writeByte     = initTotalByte;
-
+	const uint8* byteSource = static_cast<const uint8*>(source);
 	do
 	{
 		uint32 bytesToWrite32 = (uint32)(writeByte > (int64)MAX_UINT32 ? (int64)(MAX_UINT32) : writeByte); // min
@@ -167,7 +168,7 @@ bool IFileHandle::Write(const gu::uint8* source, const gu::int64 initTotalByte)
 		/*-------------------------------------------------------------------
 		-              ファイルの書き込み
 		---------------------------------------------------------------------*/
-		if (!WriteFile(_handle, source, bytesToWrite32, (::DWORD*)&numWrite, &_overlappedIO))
+		if (!WriteFile(_handle, byteSource, bytesToWrite32, (::DWORD*)&numWrite, &_overlappedIO))
 		{
 			const auto errorCode = GetLastError();
 			if (errorCode != ERROR_IO_PENDING)
@@ -183,7 +184,7 @@ bool IFileHandle::Write(const gu::uint8* source, const gu::int64 initTotalByte)
 			}
 
 			writeByte    -= bytesToWrite32;
-			source       += bytesToWrite32;
+			byteSource   += bytesToWrite32;
 			totalNumWrite += numWrite;
 
 			_position += numWrite;

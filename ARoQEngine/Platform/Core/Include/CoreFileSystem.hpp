@@ -15,14 +15,11 @@
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
 #include "Platform/Core/Private/File/Include/CoreFileCommonState.hpp"
+#include "Platform/Core/Private/File/Include/CoreFileHandle.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace platform::core::file
-{
-	class IFileHandle;
-}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Undifined

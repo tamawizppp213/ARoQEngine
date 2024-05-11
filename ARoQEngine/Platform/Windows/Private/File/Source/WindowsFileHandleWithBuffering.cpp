@@ -120,11 +120,11 @@ bool IFileHandleWithBuffering::SeekFromEnd(const gu::int64 relativePositionFromE
 
 /*!**********************************************************************
 *  @brief        ファイルから指定のバイト数分だけdestinationのバッファに書き込みます.
-*  @param[inout] gu::uint8* 結果を格納するバッファです. ただし, readByte以上のバイト数は確保する必要があります.
+*  @param[inout] void* 結果を格納するバッファです. ただし, readByte以上のバイト数は確保する必要があります.
 *  @param[in]    const gu::int64 読み込みバイト数
 *  @return       bool 読み込み成功したらtrue
 *************************************************************************/
-bool IFileHandleWithBuffering::Read(gu::uint8* destination, const gu::int64 initReadByte)
+bool IFileHandleWithBuffering::Read(void* destination, const gu::int64 initReadByte)
 {
 	Check(IsValid());
 

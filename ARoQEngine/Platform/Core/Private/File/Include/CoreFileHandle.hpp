@@ -55,19 +55,19 @@ namespace platform::core::file
 
 		/*!**********************************************************************
 		*  @brief        ファイルから指定のバイト数分だけdestinationのバッファに書き込みます. 
-		*  @param[inout] gu::uint8* 結果を格納するバッファです. ただし, readByte以上のバイト数は確保する必要があります.  
+		*  @param[inout] void* 結果を格納するバッファです. ただし, readByte以上のバイト数は確保する必要があります.  
 		*  @param[in]    const gu::int64 読み込みバイト数
 		*  @return       bool 読み込み成功したらtrue
 		*************************************************************************/
-		virtual bool Read(gu::uint8* destination, const gu::int64 readByte) = 0;
+		virtual bool Read(void* destination, const gu::int64 readByte) = 0;
 
 		/*!**********************************************************************
 		*  @brief     ファイルに指定のバイト数分だけ書き込みを行います. 
-		*  @param[in] const gu::uint8* 結果を格納するバッファです. ただし, readByte以上のバイト数は確保する必要があります.
+		*  @param[in] const void* 結果を格納するバッファです. ただし, readByte以上のバイト数は確保する必要があります.
 		*  @param[in] const gu::int64  書き込みバイト数
 		*  @return    bool ファイルに書き込みが成功したらtrue
 		*************************************************************************/
-		virtual bool Write(const gu::uint8* source, const gu::int64 writeByte) = 0;
+		virtual bool Write(const void* source, const gu::int64 writeByte) = 0;
 
 		/*!**********************************************************************
 		*  @brief     指定バイトサイズになるようにファイルを切り詰めます.
