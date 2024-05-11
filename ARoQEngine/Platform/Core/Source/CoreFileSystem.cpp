@@ -27,7 +27,7 @@
 *  @param[in] const bool 強制的に初期化を行います. (Default: false)
 *  @return    gu::SharedPointer<IFileSystem> ファイルシステムのインスタンス
 *************************************************************************/
-gu::SharedPointer<platform::core::IFileSystem> platform::core::IFileSystem::Get(const bool forceInitialize = false)
+gu::SharedPointer<platform::core::IFileSystem> platform::core::IFileSystem::Get(const bool forceInitialize)
 {
 	static gu::SharedPointer<platform::core::IFileSystem> instance = nullptr;
 	
