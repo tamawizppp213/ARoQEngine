@@ -49,6 +49,13 @@ namespace platform::core
 	class IFileSystem : public gu::NonCopyable
 	{
 	public:
+		/*!**********************************************************************
+		*  @brief     シングルトンインスタンスを取得します. (基本的にメンバ変数を使わないため, 特に悪影響はありません)
+		*  @param[in] const bool 強制的に初期化を行います. (Default: false)
+		*  @return    gu::SharedPointer<IFileSystem> ファイルシステムのインスタンス
+		*************************************************************************/
+		static gu::SharedPointer<IFileSystem> Get(const bool forceInitialize = false);
+
 		#pragma region Public Function
 		/*!**********************************************************************
 		*  @brief     ファイルを開いて読み込みます. この時, 実行時の状況に応じて同期/非同期を自動で切り替えます.  
