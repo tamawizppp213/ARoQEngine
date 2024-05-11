@@ -27,8 +27,7 @@ namespace gu::details::string
 	/****************************************************************************
 	*				  			   string
 	*************************************************************************//**
-	*  @class     string
-	*  @brief     プリミティブな型であるという判断の下, 特例でgu::uint32のように小文字スタートで行うことにいたしました.
+	/*!  @brief     プリミティブな型であるという判断の下, 特例でgu::uint32のように小文字スタートで行うことにいたしました.
 	*****************************************************************************/
 	template<class Char, int CharByte = 1>
 	class StringBase : public Copyable
@@ -286,6 +285,27 @@ namespace gu::details::string
 		gu::uint64 GetTypedHash() const 
 		{
 			return gu::Hash::XX_64(CString(), CharByte * Size());
+		}
+
+		/*!**********************************************************************
+		*  @brief     異なる形式の文字列に変換します. 
+		*  @param[in] const gu::StringBase<Char, CharByte> : 変換する文字列
+		*  @return    StringBase<Char, CharByte>
+		*************************************************************************/
+		template<typename OtherChar, typename OtherCharByte>
+		StringBase<OtherChar, OtherCharByte> Convert() const
+		{
+			StringBase<OtherChar, OtherCharByte> result;
+			result.Reserve(Size());
+			
+			const auto sourceBuffer = GetBuffer();
+			
+			for(uint64 i = 0; i < Size(); ++i)
+			{
+				result[i] = static_cast<OtherChar>(sourceBuffer[i]);
+			}
+
+			return result.Move();
 		}
 
 		#pragma region Convert number
