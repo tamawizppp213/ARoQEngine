@@ -40,7 +40,7 @@ namespace
 
 }
 
-GaussianBlur::GaussianBlur()
+GaussianBlur::GaussianBlur() : _textureSize({})
 {
 
 }
@@ -479,10 +479,10 @@ void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 		/*-------------------------------------------------------------------
 		-            Set up
 		---------------------------------------------------------------------*/
-		auto vertexByteSize = sizeof(gm::Vertex);
-		auto indexByteSize  = sizeof(std::uint32_t);
-		auto vertexCount    = rectMesh.Vertices.size();
-		auto indexCount     = rectMesh.Indices.size();
+		auto vertexByteSize = static_cast<gu::uint32>(sizeof(gm::Vertex));
+		auto indexByteSize  = static_cast<gu::uint32>(sizeof(std::uint32_t));
+		auto vertexCount    = static_cast<gu::uint32>(rectMesh.Vertices.size());
+		auto indexCount     = static_cast<gu::uint32>(rectMesh.Indices.size());
 
 		/*-------------------------------------------------------------------
 		-            Set Vertex Buffer 

@@ -96,7 +96,7 @@ namespace gc
 		/****************************************************************************
 		**                Protected Function
 		*****************************************************************************/
-		void PrepareRenderBuffer(const size_t width , const size_t height);
+		void PrepareRenderBuffer(const gu::uint32 width, const gu::uint32 height);
 
 		void PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::tstring& name);
 

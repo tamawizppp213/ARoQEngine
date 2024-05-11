@@ -178,7 +178,7 @@ void Dof::SetUpClipSize(float nearClip, float farClip)
 }
 #pragma endregion Public Function
 #pragma region Protected Function
-void Dof::PrepareRenderBuffer(const size_t width, const size_t height)
+void Dof::PrepareRenderBuffer(const gu::uint32 width, const gu::uint32 height)
 {
 	const auto device = _engine->GetDevice();
 	const auto format = _engine->GetBackBufferFormat();
