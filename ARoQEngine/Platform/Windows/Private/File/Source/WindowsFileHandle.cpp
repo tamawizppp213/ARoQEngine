@@ -101,7 +101,7 @@ bool IFileHandle::SeekFromEnd(const gu::int64 relativePositionFromEnd)
 *************************************************************************/
 bool IFileHandle::Read(void* destination, const gu::int64 initTotalByte)
 {
-	Check(IsValid());
+	if (!IsValid()) { return false; }
 
 	int64 totalNumRead = 0;
 	int64 readByte     = initTotalByte;
@@ -129,18 +129,18 @@ bool IFileHandle::Read(void* destination, const gu::int64 initTotalByte)
 			{
 				return false;
 			}
+		}
 
-			readByte    -= bytesToRead32;
-			byteDestination += bytesToRead32;
-			totalNumRead += numRead;
+		readByte        -= bytesToRead32;
+		byteDestination += bytesToRead32;
+		totalNumRead    += numRead;
 
-			_position += numRead;
-			UpdateOverlappedPosition();
+		_position += numRead;
+		UpdateOverlappedPosition();
 
-			if (bytesToRead32 != numRead)
-			{
-				return false;
-			}
+		if (bytesToRead32 != numRead)
+		{
+			return false;
 		}
 	} while (readByte > 0);
 
@@ -155,7 +155,7 @@ bool IFileHandle::Read(void* destination, const gu::int64 initTotalByte)
 *************************************************************************/
 bool IFileHandle::Write(const void* source, const gu::int64 initTotalByte)
 {
-	Check(IsValid());
+	if (!IsValid()) { return false; }
 
 	int64 totalNumWrite = 0;
 	int64 writeByte     = initTotalByte;
@@ -182,20 +182,23 @@ bool IFileHandle::Write(const void* source, const gu::int64 initTotalByte)
 			{
 				return false;
 			}
-
-			writeByte    -= bytesToWrite32;
-			byteSource   += bytesToWrite32;
-			totalNumWrite += numWrite;
-
-			_position += numWrite;
-			UpdateOverlappedPosition();
-			_size = _position > _size ? _position : _size;
-
-			if (bytesToWrite32 != numWrite)
-			{
-				return false;
-			}
 		}
+
+		writeByte     -= bytesToWrite32;
+		byteSource    += bytesToWrite32;
+		totalNumWrite += numWrite;
+
+		_position += numWrite;
+
+		UpdateOverlappedPosition();
+		
+		_size = _position > _size ? _position : _size;
+
+		if (bytesToWrite32 != numWrite)
+		{
+			return false;
+		}
+
 	} while (writeByte > 0);
 
 	return true;
