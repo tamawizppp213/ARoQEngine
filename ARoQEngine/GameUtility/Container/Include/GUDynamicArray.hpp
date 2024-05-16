@@ -273,17 +273,30 @@ namespace gu
 		// 波括弧を使って代入が行えるようにする
 		DynamicArray& operator=(std::initializer_list<ElementType> list)
 		{
-			Clear();
-			CreateFromOtherArray(list.begin(), list.size());
+			if (list.size() == 0)
+			{
+				_data     = nullptr;
+				_size     = 0;
+				_capacity = 0;
+			}
+			else
+			{
+				CreateFromOtherArray(list.begin(), list.size());
+			}
 			return *this;
 		}
 
 		// ほかのArray(型が同じ)から代入
 		DynamicArray& operator=(const DynamicArray& other)
 		{
-			if (this != &other)
+			if (other.IsEmpty())
 			{
-				Clear();
+				_data     = nullptr;
+				_size     = 0;
+				_capacity = 0;
+			}
+			else
+			{
 				CreateFromOtherArray(other.Data(), other.Size());
 			}
 			return *this;
@@ -324,7 +337,19 @@ namespace gu
 		}
 
 		// コピーコンストラクタ
-		DynamicArray(const DynamicArray& other) { CreateFromOtherArray(other.Data(), other.Size()); }
+		DynamicArray(const DynamicArray& other) 
+		{
+			if (other.IsEmpty()) // 初期化と同等
+			{
+				_data = nullptr;
+				_size = 0;
+				_capacity = 0;
+			}
+			else
+			{
+				CreateFromOtherArray(other.Data(), other.Size());
+			}
+		}
 
 		// ムーブコンストラクタ
 		DynamicArray(DynamicArray&& other) noexcept
