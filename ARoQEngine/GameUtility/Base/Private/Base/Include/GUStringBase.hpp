@@ -110,6 +110,14 @@ namespace gu::details::string
 		}
 
 		/*!**********************************************************************
+		*  @brief     CapacityをコンテナのSizeまで切り詰める @n
+		*             capacityが0のとき, capacity以上にsizeがある時は処理を行いません.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
+		void ShrinkToFit();
+
+		/*!**********************************************************************
 		*  @brief     メモリを事前に確保します. (NonSSOのときかつcapacity以上であれば確保します)
 		*  @param[in] const uint64 メモリを確保する文字列長
 		*  @return    void
@@ -289,13 +297,13 @@ namespace gu::details::string
 
 		/*!**********************************************************************
 		*  @brief     異なる形式の文字列に変換します. 
-		*  @param[in] const gu::StringBase<Char, CharByte> : 変換する文字列
+		*  @param[in] void
 		*  @return    StringBase<Char, CharByte>
 		*************************************************************************/
-		template<typename OtherChar, typename OtherCharByte>
-		StringBase<OtherChar, OtherCharByte> Convert() const
+		template<typename OtherChar>
+		StringBase<OtherChar, sizeof(OtherChar)> Convert() const
 		{
-			StringBase<OtherChar, OtherCharByte> result;
+			StringBase<OtherChar, sizeof(OtherChar)> result;
 			result.Reserve(Size());
 			
 			const auto sourceBuffer = GetBuffer();
@@ -305,7 +313,7 @@ namespace gu::details::string
 				result[i] = static_cast<OtherChar>(sourceBuffer[i]);
 			}
 
-			return result.Move();
+			return result;
 		}
 
 		#pragma region Convert number
@@ -343,7 +351,7 @@ namespace gu::details::string
 		*****************************************************************************/
 		static constexpr uint64 NPOS = static_cast<uint64>(-1);
 
-		#pragma region Property
+		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief     範囲チェック付きの要素アクセス
 		*  @param[in] 要素のインデックス
@@ -394,9 +402,9 @@ namespace gu::details::string
 		*  @return    gu::uint64 : 要素数
 		*************************************************************************/
 		uint64 Capacity() const noexcept { return IsSSOMode() ? SSO_CAPACITY : _data.NonSSO.Capacity; }
-		#pragma endregion Property
+		#pragma endregion Public Property
 
-		#pragma region Operator Function
+		#pragma region Public Operator Function
 		StringBase<Char, CharByte>& operator=(const StringBase<Char, CharByte>& right) { Assign(right); return *this; }
 		StringBase<Char, CharByte>& operator=(const Char* right) { Assign(right); return *this; }
 		StringBase<Char, CharByte>& operator=(const Char  right) { Assign(&right, 1); return *this; }
@@ -456,37 +464,49 @@ namespace gu::details::string
 		}
 		#pragma endregion Operator Function
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
 		#pragma region Constructor and Destructor
 		/*! @brief デフォルトコンストラクタ*/
 		StringBase() { Initialize(); }
 
-		StringBase(const Char* string) : StringBase<Char, CharByte>() { Assign(string); }
-
-		StringBase(const Char* string, const gu::uint64 length) : StringBase<Char, CharByte>() { Assign(string, length); }
-
-		StringBase(const StringBase<Char, CharByte>& string, const uint64 beginIndex) : StringBase<Char, CharByte>()
+		/*! @brief 文字列長だけのメモリを事前確保だけ行うコンストラクタ.
+		           CString()を使って無理やりコピーする用に強制的に実サイズも更新するフラグも用意しました.(trueは危険)*/
+		StringBase(const gu::uint64 size, const bool forceChangeSize = false) : StringBase<Char, CharByte>() 
 		{
-			Assign(string.CString() + beginIndex, string.Size());
+			Reserve(size); 
+			SetNonSSOLength(size);
 		}
 
+		/*! @brief 生の文字列を使って初期化するコンストラクタ*/
+		StringBase(const Char* string) : StringBase<Char, CharByte>() { Assign(string); }
+
+		/*! @brief 生の文字配列と長さで初期化*/
+		StringBase(const Char* string, const gu::uint64 length) : StringBase<Char, CharByte>() { Assign(string, length); }
+
+		/*! @brief 文字列とコピーを開始する初期インデックスで初期化*/
+		StringBase(const StringBase<Char, CharByte>& string, const uint64 beginIndex) : StringBase<Char, CharByte>()
+		{
+			Assign(string.CString() + beginIndex, string.Size() - beginIndex);
+		}
+
+		/*! @brief 文字配列の初期文字と終端文字で初期化*/
 		StringBase(const Char* begin, const Char* end) : StringBase<Char, CharByte>()
 		{
 			Assign(begin, static_cast<uint64>(end - begin));
 		}
 
+		/*! @brief 文字列のコピーコンストラクタ*/
 		StringBase(const StringBase<Char, CharByte>& string) : StringBase<Char, CharByte>()
 		{
 			CopyFrom(string);
 		}
 
+		/*! @brief 文字列のムーブコンストラクタ*/
 		explicit StringBase(StringBase<Char, CharByte>&& string) noexcept : StringBase<Char, CharByte>()
 		{
 			Move(std::move(string));
 		}
 
+		/*! @brief デストラクタ*/
 		~StringBase() 
 		{
 			Release(); 
@@ -768,12 +788,52 @@ namespace gu::details::string
 		}
 	}
 
+	/*!**********************************************************************
+	*  @brief     CapacityをコンテナのSizeまで切り詰める @n
+	*             capacityが0のとき, capacity以上にsizeがある時は処理を行いません.
+	*  @param[in] void
+	*  @return    void
+	*************************************************************************/
+	template<class Char, int CharByte>
+	void StringBase<Char, CharByte>::ShrinkToFit()
+	{
+		/*-------------------------------------------------------------------
+		-       SSOモードの場合は, 事前に静的な配列として確保していることから何もしない
+		---------------------------------------------------------------------*/
+		if (IsSSOMode()) { return; }
+
+		/*-------------------------------------------------------------------
+		-       文字列が空の場合, メモリを解放して終了
+		---------------------------------------------------------------------*/
+		if (Size() == 0)
+		{
+			Release();
+			_data.NonSSO.Pointer = nullptr;
+			_data.NonSSO.Capacity = 0;
+			return;
+		}
+
+		/*-------------------------------------------------------------------
+		-       文字列がCapacityよりも小さい場合, CapacityをSizeに合わせる
+		---------------------------------------------------------------------*/
+		if (Size() < _data.NonSSO.Capacity)
+		{
+			auto temp = new Char[Size() + 1];
+			Memory::Copy(temp, this->_data.NonSSO.Pointer, CharByte * Size());
+			Release();
+			_data.NonSSO.Pointer = temp;
+			_data.NonSSO.Capacity = Size();
+		}
+	
+	}
+
 	/*----------------------------------------------------------------------
 	*  @brief :  メモリを事前に確保します. (capacity以上であればメモリ確保します. 暗にNonSSOモードに使用します)
 	/*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::Reserve(const uint64 length)
 	{
+		// ここでSSOModeのチェックも入っています.
 		if (length <= Capacity()) { return; }
 
 		auto temp = new Char[length + 1];
@@ -1221,7 +1281,7 @@ namespace gu::details::string
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::Release() noexcept
 	{
-		if (!IsNonSSOMode()) { return; }
+		if (IsSSOMode()) { return; }
 		if (_data.NonSSO.Pointer)
 		{
 			delete[] (_data.NonSSO.Pointer); // もしかしたらdeleteでOKかも
