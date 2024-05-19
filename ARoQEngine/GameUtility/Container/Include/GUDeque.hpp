@@ -326,9 +326,6 @@ namespace gu
 		_frontIndex = 0;
 	}
 
-	/*-------------------------------------------------------------------
-	-           @brief : キューの先頭に要素を追加します.
-	---------------------------------------------------------------------*/
 	template<class ElementType>
 	void Deque<ElementType>::PushFront(const ElementType& element)
 	{
@@ -344,9 +341,6 @@ namespace gu
 		_queueSize++;
 	}
 
-	/*-------------------------------------------------------------------
-	-           @brief : キューの後ろに要素を追加します.
-	---------------------------------------------------------------------*/
 	template<class ElementType>
 	void Deque<ElementType>::PushBack(const ElementType& element)
 	{
