@@ -29,7 +29,7 @@ namespace gu
 	using uint16 = unsigned short int;
 	using uint32 = unsigned int;
 	using uint64 = unsigned long long;
-	using char8    = char;
+	using char8    = char8_t;  // literal "u8"
 	using char16   = char16_t; // literal "u"
 	using char32   = char32_t; // literal "U"
 	using wchar    = wchar_t;  // literal "L"

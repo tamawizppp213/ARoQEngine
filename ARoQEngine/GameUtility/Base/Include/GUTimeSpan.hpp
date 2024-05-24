@@ -169,7 +169,7 @@ namespace gu
 		/*!**********************************************************************
 		*  @brief  p[d.]hh:mm:ss.fff　このタイムスパンの文字列表現をデフォルトのフォーマットで返す
 		*************************************************************************/
-		gu::string ToString(const gu::char8* format) const;
+		gu::string ToString(const char* format) const;
 
 		#pragma endregion
 

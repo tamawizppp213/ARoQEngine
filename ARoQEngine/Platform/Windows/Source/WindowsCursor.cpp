@@ -29,7 +29,7 @@ ICursor::ICursor(const core::CursorType type) : core::ICursor(type)
 	SetType(type);
 }
 
-ICursor::ICursor(const gu::char8* filePath) : core::ICursor(core::CursorType::Original)
+ICursor::ICursor(const char* filePath) : core::ICursor(core::CursorType::Original)
 {
 	const auto handle = (HCURSOR)CreateCursorFromFile(filePath);
 
@@ -110,7 +110,7 @@ bool ICursor::Lock(core::Rectangle* rectangle)
 *
 *  @return    bool
 *****************************************************************************/
-void* ICursor::CreateCursorFromFile(const gu::char8* filePath)
+void* ICursor::CreateCursorFromFile(const char* filePath)
 {
 	// pixelが0担っているのは実際のリソースの高さを使用するためです. 
 	return (HCURSOR)LoadImageA(nullptr, filePath, IMAGE_CURSOR, 0, 0, LR_LOADFROMFILE);

@@ -57,7 +57,7 @@ namespace platform::windows
 			@brief : .curのみ現在使用可能ですが, オリジナルのカーソルを作成します. 
 			          コンストラクタでも設定可能なのでお好みで使用してください. 
 		-----------------------------------------------------------------*/
-		virtual void* CreateCursorFromFile(const gu::char8* filePath) override;
+		virtual void* CreateCursorFromFile(const char* filePath) override;
 
 		/*---------------------------------------------------------------
 			@brief : RGBAの構造体から直接アイコンを作成します. 
@@ -96,7 +96,7 @@ namespace platform::windows
 		*****************************************************************************/
 		explicit ICursor(const core::CursorType type);
 
-		explicit ICursor(const gu::char8* filePath);
+		explicit ICursor(const char* filePath);
 
 		~ICursor();
 	protected:

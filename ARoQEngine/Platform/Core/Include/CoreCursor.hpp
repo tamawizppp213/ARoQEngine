@@ -60,7 +60,7 @@ namespace platform::core
 			@brief : Return the suport to create cursor from the file
 			         currently .cur only usable.
 		-----------------------------------------------------------------*/
-		virtual void* CreateCursorFromFile([[maybe_unused]]const gu::char8* filePath) { return nullptr; }
+		virtual void* CreateCursorFromFile([[maybe_unused]]const char* filePath) { return nullptr; }
 
 		/*---------------------------------------------------------------
 			@brief : Create new cursor icon from rgba buffer

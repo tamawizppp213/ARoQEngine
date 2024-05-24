@@ -52,7 +52,7 @@ namespace gu
 		*  @param[in]  const wchar** : コマンドラインの文字配列 (argumentCount分だけ用意. 一般的にargvと定義される)
 		*  @return     tstring : コマンドラインを一行にまとめた文字列 
 		**************************************************************************/
-		static tstring BuildFromArgumentVector(const int32 argumentCount, const char8** argumentVector);
+		static tstring BuildFromArgumentVector(const int32 argumentCount, const char** argumentVector);
 
 		/*!***********************************************************************
 		*  @brief      通常のtchar文字列を使ってコマンドラインを設定します
