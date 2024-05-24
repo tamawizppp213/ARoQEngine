@@ -78,7 +78,7 @@ gu::string TimeSpan::ToString() const
 	return GetDays() == 0 ? ToString("%h:%m:%s.%f") : ToString("%d.%h:%m:%s.%f");
 }
 
-gu::string TimeSpan::ToString(const gu::char8* format) const
+gu::string TimeSpan::ToString(const char* format) const
 {
 	gu::string result;
 	

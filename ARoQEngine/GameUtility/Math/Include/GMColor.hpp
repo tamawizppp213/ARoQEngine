@@ -70,11 +70,15 @@ namespace gm
         float A;
 
         BGRA() = default;
+
         BGRA(const float b, const float g, const float r, const float a)
             : R(r), G(g), B(b), A(a)
         {
 
         }
+
+        BGRA(const BGRA& ) = default;
+
     };
 
 //	struct Color

@@ -315,7 +315,7 @@ gu::string DateTime::ToString() const
 	return ToString("%Y.%m.%d-%H.%M.%S");
 }
 
-gu::string DateTime::ToString(const gu::char8* format) const
+gu::string DateTime::ToString(const char* format) const
 {
 	gu::string result;
 
