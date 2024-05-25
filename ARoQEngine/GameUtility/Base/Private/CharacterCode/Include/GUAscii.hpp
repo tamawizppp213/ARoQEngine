@@ -63,7 +63,7 @@ namespace gu::details::string
 		*  @param[in] CharacterDecodeResult* result 変換結果
 		*  @return    const tchar* 文字コード名
 		*************************************************************************/
-		virtual bool ToUTF16(const uint8* input, const uint64 inputByteSize, uint32* output, const uint64 outputElementSize, CharacterDecodeResult* result) const override;
+		virtual bool ToUTF16(const uint8* input, const uint64 inputByteSize, uint16* output, const uint64 outputElementSize, CharacterDecodeResult* result) const override;
 
 		/*!**********************************************************************
 		*  @brief     指定した文字コードからUTF32に変換します
