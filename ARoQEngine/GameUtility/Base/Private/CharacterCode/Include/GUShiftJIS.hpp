@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   GUAscii.hpp
-///  @brief  Asciiコードを扱うクラスのヘッダファイル
+///  @file   ShiftJIS.hpp
+///  @brief  Shift JIS文字コードを扱うクラス
 ///  @author toide
-///  @date   2024/05/24 0:01:23
+///  @date   2024/05/25 12:31:31
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef GU_ASCII_HPP
-#define GU_ASCII_HPP
+#ifndef GU_SHIFT_JIS_HPP
+#define GU_SHIFT_JIS_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -16,19 +16,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+// 
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 namespace gu::details::string
 {
 	/****************************************************************************
-	*				  			   GUAsciiEncoder
+	*				  			   ShiftJIS
 	*************************************************************************//**
-	/*  @class     GUAsciiEncoder
-	*   @brief     temp
+	/*  @class     ShiftJIS
+	*   @brief     Shift JIS文字コードを扱うクラス
 	*****************************************************************************/
-	class Ascii : public CharacterCode
+	class ShiftJIS : public CharacterCode
 	{
 	public:
 		#pragma region Public Function
@@ -83,7 +83,7 @@ namespace gu::details::string
 		*  @param[in] void
 		*  @return    const tchar* 文字コード名
 		*************************************************************************/
-		__forceinline virtual const tchar* GetName() const override { return SP("ASCII"); }
+		__forceinline virtual const tchar* GetName() const override { return SP("ShiftJis"); }
 
 		/*!**********************************************************************
 		*  @brief     可変長なバイト数の文字コードが存在するため, 最小のバイト数を取得します
@@ -97,18 +97,15 @@ namespace gu::details::string
 		*  @param[in] void
 		*  @return    const uint8 可変長文字コードの最大バイト数
 		*************************************************************************/
-		__forceinline virtual uint8 GetMaxByte() const override { return 1; }
+		__forceinline virtual uint8 GetMaxByte() const override { return 2; }
 
 		/*!**********************************************************************
 		*  @brief     文字列長を取得します
 		*  @param[in] void
 		*  @return    const uint64 文字数
 		*************************************************************************/
-		__forceinline virtual uint64 GetCharacterLength(const void* buffer, const uint64 bufferSize) const override 
-		{
-			return buffer ? (uint64)bufferSize : 0;
-		};
-		
+		__forceinline virtual uint64 GetCharacterLength(const void* buffer, const uint64 bufferSize) const override;
+
 		/*!**********************************************************************
 		*  @brief     エンコードを識別するためのBOM(Byte order mark)を取得します
 		*  @param[in] void
