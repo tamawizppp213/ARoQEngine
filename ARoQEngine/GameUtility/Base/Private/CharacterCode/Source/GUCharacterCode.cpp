@@ -10,6 +10,9 @@
 #include "GameUtility/Base/Private/CharacterCode/Include/GUCharacterCode.hpp"
 #include "GameUtility/Base/Private/CharacterCode/Include/GUAscii.hpp"
 #include "GameUtility/Base/Private/CharacterCode/Include/GUShiftJIS.hpp"
+#include "GameUtility/Base/Private/CharacterCode/Include/GUUTF8.hpp"
+#include "GameUtility/Base/Private/CharacterCode/Include/GUUTF16.hpp"
+#include "GameUtility/Base/Private/CharacterCode/Include/GUUTF32.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -49,7 +52,7 @@ SharedPointer<CharacterCode> CharacterCode::TStringCharacterCode()
 *  @param[in] const CharacterCodeType 文字コードの種類
 *  @return    SharedPointer<CharacterCode> 文字コード
 *************************************************************************/
-SharedPointer<CharacterCode> CharacterCode::GetCharacterCode(const CharacterCodeType codeType)
+SharedPointer<CharacterCode> CharacterCode::GetCharacterCode(const CharacterCodeType codeType, const bool useBOM, const bool isBigEndian)
 {
 	switch (codeType)
 	{
@@ -60,6 +63,22 @@ SharedPointer<CharacterCode> CharacterCode::GetCharacterCode(const CharacterCode
 		case CharacterCodeType::ShiftJIS:
 		{
 			return MakeShared<ShiftJIS>();
+		}
+		case CharacterCodeType::UTF8:
+		{
+			return MakeShared<UTF8>(useBOM);
+		}
+		case CharacterCodeType::UTF16:
+		{
+			return MakeShared<UTF16>(useBOM, isBigEndian);
+		}
+		case CharacterCodeType::UTF32:
+		{
+			return MakeShared<UTF32>(useBOM, isBigEndian);
+		}
+		default:
+		{
+			return nullptr;
 		}
 	}
 }

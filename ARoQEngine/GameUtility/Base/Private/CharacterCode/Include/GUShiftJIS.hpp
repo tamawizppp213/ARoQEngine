@@ -101,7 +101,8 @@ namespace gu::details::string
 
 		/*!**********************************************************************
 		*  @brief     文字列長を取得します
-		*  @param[in] void
+		*  @param[in] const void* buffer 文字列
+		*  @param[in] const uint64 bufferSize 文字列のバイト数
 		*  @return    const uint64 文字数
 		*************************************************************************/
 		virtual uint64 GetCharacterLength(const void* buffer, const uint64 bufferSize) const override;
@@ -112,6 +113,17 @@ namespace gu::details::string
 		*  @return    const uint8* BOM
 		*************************************************************************/
 		virtual const uint8* GetBOM() const override { return nullptr; };
+
+		/*!**********************************************************************
+		*  @brief     指定されたバッファの先頭がマルチバイトコードやサロゲートペアの先行文字である場合、追加で読むべき文字列長さを返します。
+		*  @param[in] const void* buffer 文字列
+		*  @param[in] const uint64 bufferSize 文字列のバイト数
+		*  @return    const tchar* 文字コード名
+		*************************************************************************/
+		__forceinline virtual uint64 GetReadExtraLength([[maybe_unused]]const void* buffer, [[maybe_unused]]const uint64 bufferSize) const override
+		{
+			return 0;
+		}
 		#pragma endregion 
 
 		#pragma region Public Operator 

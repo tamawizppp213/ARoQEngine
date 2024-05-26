@@ -31,7 +31,7 @@ using namespace gu::details::string;
 *  @param[in] CharacterDecodeResult* result 変換結果
 *  @return    const tchar* 文字コード名
 *************************************************************************/
-bool Ascii::FromUTF16(const uint16* input, const uint64 inputElementSize, uint8* output, const uint64 outputByteSize, CharacterEncodeResult* result) const
+bool Ascii::FromUTF16(const uint16* input, const uint64 inputElementSize, uint8* output, [[maybe_unused]] const uint64 outputByteSize, CharacterEncodeResult* result) const
 {
 	/*-------------------------------------------------------------------
 	-              引数チェック
@@ -72,7 +72,7 @@ bool Ascii::FromUTF16(const uint16* input, const uint64 inputElementSize, uint8*
 *  @param[in] CharacterDecodeResult* result 変換結果
 *  @return    const tchar* 文字コード名
 *************************************************************************/
-bool Ascii::FromUTF32(const uint32* input, const uint64 inputElementSize, uint8* output, const uint64 outputElementSize, CharacterEncodeResult* result) const
+bool Ascii::FromUTF32(const uint32* input, const uint64 inputElementSize, uint8* output, [[maybe_unused]] const uint64 outputElementSize, CharacterEncodeResult* result) const
 {
 	/*-------------------------------------------------------------------
 	-              引数チェック
@@ -113,7 +113,7 @@ bool Ascii::FromUTF32(const uint32* input, const uint64 inputElementSize, uint8*
 *  @param[in] CharacterDecodeResult* result 変換結果
 *  @return    const tchar* 文字コード名
 *************************************************************************/
-bool Ascii::ToUTF16(const uint8* input, const uint64 inputByteSize, uint16* output, const uint64 outputElementSize, CharacterDecodeResult* result) const
+bool Ascii::ToUTF16(const uint8* input, const uint64 inputByteSize, uint16* output, [[maybe_unused]] const uint64 outputElementSize, CharacterDecodeResult* result) const
 {
 	/*-------------------------------------------------------------------
 	-              引数チェック
@@ -154,7 +154,7 @@ bool Ascii::ToUTF16(const uint8* input, const uint64 inputByteSize, uint16* outp
 *  @param[in] CharacterDecodeResult* result 変換結果
 *  @return    const tchar* 文字コード名
 *************************************************************************/
-bool Ascii::ToUTF32(const uint8* input, const uint64 inputByteSize, uint32* output, const uint64 outputElementSize, CharacterDecodeResult* result) const
+bool Ascii::ToUTF32(const uint8* input, const uint64 inputByteSize, uint32* output, [[maybe_unused]] const uint64 outputElementSize, CharacterDecodeResult* result) const
 {
 	/*-------------------------------------------------------------------
 	-              引数チェック

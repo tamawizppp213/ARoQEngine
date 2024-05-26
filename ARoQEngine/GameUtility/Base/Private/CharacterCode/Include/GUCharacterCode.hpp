@@ -32,7 +32,7 @@ namespace gu::details::string
 	enum class CharacterCodeType
 	{
 		Unknown,
-		UTF8,
+		UTF8, 
 		UTF16,
 		UTF32,
 		ShiftJIS,
@@ -94,7 +94,7 @@ namespace gu::details::string
 		*  @param[in] const CharacterCodeType 文字コードの種類
 		*  @return    SharedPointer<CharacterCode> 文字コード
 		*************************************************************************/
-		static SharedPointer<CharacterCode> GetCharacterCode(const CharacterCodeType codeType);
+		static SharedPointer<CharacterCode> GetCharacterCode(const CharacterCodeType codeType, const bool useBOM = false, const bool isBigEndian = true);
 
 		/*!**********************************************************************
 		*  @brief     UTF16から指定した文字コードに変換します
@@ -166,7 +166,8 @@ namespace gu::details::string
 
 		/*!**********************************************************************
 		*  @brief     文字列長を取得します
-		*  @param[in] void
+		*  @param[in] const void* buffer 文字列
+		*  @param[in] const uint64 bufferSize 文字列のバイト数
 		*  @return    const uint64 文字数
 		*************************************************************************/
 		virtual uint64 GetCharacterLength(const void* buffer, const uint64 bufferSize) const = 0;
@@ -177,6 +178,14 @@ namespace gu::details::string
 		*  @return    const uint8* BOM
 		*************************************************************************/
 		virtual const uint8* GetBOM() const = 0;
+
+		/*!**********************************************************************
+		*  @brief     指定されたバッファの先頭がマルチバイトコードやサロゲートペアの先行文字である場合、追加で読むべき文字列長さを返します。
+		*  @param[in] const void* buffer 文字列
+		*  @param[in] const uint64 bufferSize 文字列のバイト数
+		*  @return    const tchar* 文字コード名
+		*************************************************************************/
+		virtual uint64 GetReadExtraLength(const void* buffer, const uint64 bufferSize) const = 0;
 
 		#pragma endregion 
 
@@ -193,13 +202,13 @@ namespace gu::details::string
 
 		#pragma endregion 
 
-		#pragma region Protected Function
-
-		#pragma endregion 
-
 		#pragma region Protected Property
 
 		#pragma endregion
+
+		#pragma region Protected Function
+
+		#pragma endregion 
 
 	private:
 		#pragma region Private Constructor and Destructor
