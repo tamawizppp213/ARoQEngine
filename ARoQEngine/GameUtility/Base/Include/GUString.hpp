@@ -25,7 +25,7 @@
 namespace gu
 {
 	/*! @brief char8Œ^‚Ì•¶Žš—ñ*/
-	using string    = gu::details::string::StringBase<char8, 1>;
+	using string    = gu::details::string::StringBase<char, 1>;
 
 	/*! @brief wcharŒ^‚Ì•¶Žš—ñ*/
 	using wstring   = gu::details::string::StringBase<wchar, 2>;
