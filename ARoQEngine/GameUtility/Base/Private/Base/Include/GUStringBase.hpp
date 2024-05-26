@@ -295,27 +295,6 @@ namespace gu::details::string
 			return gu::Hash::XX_64(CString(), CharByte * Size());
 		}
 
-		/*!**********************************************************************
-		*  @brief     異なる形式の文字列に変換します. 
-		*  @param[in] void
-		*  @return    StringBase<Char, CharByte>
-		*************************************************************************/
-		template<typename OtherChar>
-		StringBase<OtherChar, sizeof(OtherChar)> Convert() const
-		{
-			StringBase<OtherChar, sizeof(OtherChar)> result;
-			result.Reserve(Size());
-			
-			const auto sourceBuffer = GetBuffer();
-			
-			for(uint64 i = 0; i < Size(); ++i)
-			{
-				result[i] = static_cast<OtherChar>(sourceBuffer[i]);
-			}
-
-			return result;
-		}
-
 		#pragma region Convert number
 		int8   ToInt8(const uint64 radix = 0) const;
 		int16  ToInt16(const uint64 radix = 0) const;
@@ -473,14 +452,25 @@ namespace gu::details::string
 		StringBase(const gu::uint64 size, const bool forceChangeSize = false) : StringBase<Char, CharByte>() 
 		{
 			Reserve(size); 
-			SetNonSSOLength(size);
+
+			if (forceChangeSize && size > SSO_CAPACITY)
+			{
+				SetNonSSOLength(size);
+			}
+			if (size > SSO_CAPACITY)
+			{
+				SetNonSSOMode();
+			}
 		}
 
 		/*! @brief 生の文字列を使って初期化するコンストラクタ*/
 		StringBase(const Char* string) : StringBase<Char, CharByte>() { Assign(string); }
 
 		/*! @brief 生の文字配列と長さで初期化*/
-		StringBase(const Char* string, const gu::uint64 length) : StringBase<Char, CharByte>() { Assign(string, length); }
+		StringBase(const Char* string, const gu::uint64 length) : StringBase<Char, CharByte>()
+		{ 
+			Assign(string, length); 
+		}
 
 		/*! @brief 文字列とコピーを開始する初期インデックスで初期化*/
 		StringBase(const StringBase<Char, CharByte>& string, const uint64 beginIndex) : StringBase<Char, CharByte>()

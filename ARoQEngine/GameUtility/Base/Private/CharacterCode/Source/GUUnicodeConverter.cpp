@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Private/Base/Include/GUStringConverterBase.hpp"
+#include "GameUtility/Base/Private/CharacterCode/Include/GUUnicodeConverter.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -67,25 +67,25 @@ namespace
 *  @param[in] gu::char16*      変換先の文字列
 *  @param[in] gu::uint64       変換先の文字列の長さ
 *  @param[inout] Options&      オプション
-*  @return    StringConvertResult 変換結果
+*  @return    UnicodeConvertResult 変換結果
 *************************************************************************/
-StringConvertResult StringConverterBase::ConvertUTF8ToUTF16(const UTF8* sourceStart, gu::uint64 sourceLength, UTF16* targetStart, gu::uint64 targetLength, Options& options)
+UnicodeConvertResult UnicodeConverter::ConvertUTF8ToUTF16(const uint8* sourceStart, gu::uint64 sourceLength, uint16* targetStart, gu::uint64 targetLength, Options& options)
 {
-	const UTF8*  sourceIt  = sourceStart;
-	      UTF16* targetIt  = targetStart;
-	const UTF8*  sourceEnd = sourceStart + sourceLength;
-	const UTF16* targetEnd = targetStart + targetLength;
-	StringConvertResult result = StringConvertResult::Success;
+	const uint8*  sourceIt  = sourceStart;
+	      uint16* targetIt  = targetStart;
+	const uint8*  sourceEnd = sourceStart + sourceLength;
+	const uint16* targetEnd = targetStart + targetLength;
+	UnicodeConvertResult result = UnicodeConvertResult::Success;
 
 	while (sourceIt < sourceEnd)
 	{
 		/*-------------------------------------------------------------------
 		-       UTF8が可変長エンコードであるため, 固定長のUTF32に変換します. 
 		---------------------------------------------------------------------*/
-		UTF32 codePoint = 0;
+		uint32 codePoint = 0;
 		result = CodePointUTF8ToUTF32(&sourceIt, sourceEnd, codePoint, options);
 
-		if (result != StringConvertResult::Success)
+		if (result != UnicodeConvertResult::Success)
 		{
 			break;
 		}
@@ -95,7 +95,7 @@ StringConvertResult StringConverterBase::ConvertUTF8ToUTF16(const UTF8* sourceSt
 		---------------------------------------------------------------------*/
 		result = CodePointUTF32ToUTF16(codePoint, &targetIt, targetEnd, options);
 
-		if (result != StringConvertResult::Success)
+		if (result != UnicodeConvertResult::Success)
 		{
 			break;
 		}
@@ -111,32 +111,32 @@ StringConvertResult StringConverterBase::ConvertUTF8ToUTF16(const UTF8* sourceSt
 
 /*!**********************************************************************
 *  @brief     UTF-8文字列をUTF-32文字列に変換します.
-*  @param[in] const UTF8*      変換元の文字列
+*  @param[in] const uint8*      変換元の文字列
 *  @param[in] const gu::uint64 変換元の文字列のサイズ
-*  @param[in] UTF32*           変換先の文字列
+*  @param[in] uint32*           変換先の文字列
 *  @param[in] gu::uint64       変換先の文字列の長さ
 *  @param[inout] Options&      オプション
-*  @return    StringConvertResult 変換結果
+*  @return    UnicodeConvertResult 変換結果
 *************************************************************************/
-StringConvertResult StringConverterBase::ConvertUTF8ToUTF32(const UTF8* sourceStart, uint64 sourceLength, UTF32* targetStart, gu::uint64 targetLength, Options& options)
+UnicodeConvertResult UnicodeConverter::ConvertUTF8ToUTF32(const uint8* sourceStart, uint64 sourceLength, uint32* targetStart, gu::uint64 targetLength, Options& options)
 {
-	const UTF8*  sourceIt  = sourceStart;
-	      UTF32* targetIt  = targetStart;
-	const UTF8*  sourceEnd = sourceStart + sourceLength;
-	const UTF32* targetEnd = targetStart + targetLength;
-	StringConvertResult result = StringConvertResult::Success;
+	const uint8*  sourceIt  = sourceStart;
+	      uint32* targetIt  = targetStart;
+	const uint8*  sourceEnd = sourceStart + sourceLength;
+	const uint32* targetEnd = targetStart + targetLength;
+	UnicodeConvertResult result = UnicodeConvertResult::Success;
 
 	while (sourceIt < sourceEnd)
 	{
-		const UTF8* oldSourceIt = sourceIt;
+		const uint8* oldSourceIt = sourceIt;
 
 		/*-------------------------------------------------------------------
 		-       UTF8が可変長エンコードであるため, 固定長のUTF32に変換します.
 		---------------------------------------------------------------------*/
-		UTF32 codePoint = 0;
+		uint32 codePoint = 0;
 		result = CodePointUTF8ToUTF32(&sourceIt, sourceEnd, codePoint, options);
 
-		if (result != StringConvertResult::Success)
+		if (result != UnicodeConvertResult::Success)
 		{
 			break;
 		}
@@ -147,7 +147,7 @@ StringConvertResult StringConverterBase::ConvertUTF8ToUTF32(const UTF8* sourceSt
 		if (targetIt >= targetEnd)
 		{
 			sourceIt = oldSourceIt;
-			result   = StringConvertResult::TargetExhausted;
+			result   = UnicodeConvertResult::TargetExhausted;
 			break;
 		}
 
@@ -161,7 +161,7 @@ StringConvertResult StringConverterBase::ConvertUTF8ToUTF32(const UTF8* sourceSt
 		    if(IsStrictConversion(options))
 			{
 				sourceIt = oldSourceIt;
-				result   = StringConvertResult::SourceIllegal;
+				result   = UnicodeConvertResult::SourceIllegal;
 				break;
 			}
 			else
@@ -186,33 +186,33 @@ StringConvertResult StringConverterBase::ConvertUTF8ToUTF32(const UTF8* sourceSt
 
 /*!**********************************************************************
 *  @brief     UTF-16文字列をUTF-8文字列に変換します.
-*  @param[in] const UTF16*      変換元の文字列
+*  @param[in] const uint16*      変換元の文字列
 *  @param[in] const gu::uint64 変換元の文字列のサイズ
-*  @param[in] UTF8*           変換先の文字列
+*  @param[in] uint8*           変換先の文字列
 *  @param[in] gu::uint64       変換先の文字列の長さ
 *  @param[inout] Options&      オプション
-*  @return    StringConvertResult 変換結果
+*  @return    UnicodeConvertResult 変換結果
 *************************************************************************/
-StringConvertResult StringConverterBase::ConvertUTF16ToUTF8(const UTF16* sourceStart, uint64 sourceLength, UTF8* targetStart, gu::uint64 targetLength, Options& options)
+UnicodeConvertResult UnicodeConverter::ConvertUTF16ToUTF8(const uint16* sourceStart, uint64 sourceLength, uint8* targetStart, gu::uint64 targetLength, Options& options)
 {
-	const UTF16* sourceIt = sourceStart;
-	      UTF8*  targetIt = targetStart;
-	const UTF16* sourceEnd = sourceStart + sourceLength;
-	      UTF8*  targetEnd = targetStart + targetLength;
+	const uint16* sourceIt = sourceStart;
+	      uint8*  targetIt = targetStart;
+	const uint16* sourceEnd = sourceStart + sourceLength;
+	      uint8*  targetEnd = targetStart + targetLength;
 
-	StringConvertResult result = StringConvertResult::Success;
+	UnicodeConvertResult result = UnicodeConvertResult::Success;
 
 	while (sourceIt < sourceEnd)
 	{
-		const UTF16* oldSourceIt = sourceIt;
+		const uint16* oldSourceIt = sourceIt;
 
 		/*-------------------------------------------------------------------
 		-       UTF16が可変長エンコードであるため, 固定長のUTF32に変換します.
 		---------------------------------------------------------------------*/
-		UTF32 codePoint = 0;
+		uint32 codePoint = 0;
 		result = CodePointUTF16ToUTF32(&sourceIt, sourceEnd, codePoint, options);
 
-		if (result != StringConvertResult::Success)
+		if (result != UnicodeConvertResult::Success)
 		{
 			break;
 		}
@@ -222,7 +222,7 @@ StringConvertResult StringConverterBase::ConvertUTF16ToUTF8(const UTF16* sourceS
 		---------------------------------------------------------------------*/
 		result = CodePointUTF32ToUTF8(codePoint, &targetIt, targetEnd, options);
 
-		if (result != StringConvertResult::Success)
+		if (result != UnicodeConvertResult::Success)
 		{
 			sourceIt = oldSourceIt;
 			break;
@@ -233,37 +233,38 @@ StringConvertResult StringConverterBase::ConvertUTF16ToUTF8(const UTF16* sourceS
 
 	options.ConvertedSourceLength = static_cast<int32>(sourceIt - sourceStart);
 	options.ConvertedTargetLength = static_cast<int32>(targetIt - targetStart);
+	return result;
 }
 
 /*!**********************************************************************
 *  @brief     UTF-16文字列をUTF-32文字列に変換します.
-*  @param[in] const UTF16*      変換元の文字列
+*  @param[in] const uint16*      変換元の文字列
 *  @param[in] const gu::uint64 変換元の文字列のサイズ
-*  @param[in] UTF32*           変換先の文字列
+*  @param[in] uint32*           変換先の文字列
 *  @param[in] gu::uint64       変換先の文字列の長さ
 *  @param[inout] Options&      オプション
-*  @return    StringConvertResult 変換結果
+*  @return    UnicodeConvertResult 変換結果
 *************************************************************************/
-StringConvertResult StringConverterBase::ConvertUTF16ToUTF32(const UTF16* sourceStart, uint64 sourceLength, UTF32* targetStart, gu::uint64 targetLength, Options& options)
+UnicodeConvertResult UnicodeConverter::ConvertUTF16ToUTF32(const uint16* sourceStart, uint64 sourceLength, uint32* targetStart, gu::uint64 targetLength, Options& options)
 {
-	const UTF16* sourceIt = sourceStart;
-	      UTF32* targetIt = targetStart;
-	const UTF16* sourceEnd = sourceStart + sourceLength;
-	const UTF32* targetEnd = targetStart + targetLength;
+	const uint16* sourceIt = sourceStart;
+	      uint32* targetIt = targetStart;
+	const uint16* sourceEnd = sourceStart + sourceLength;
+	const uint32* targetEnd = targetStart + targetLength;
 
-	StringConvertResult result = StringConvertResult::Success;
+	UnicodeConvertResult result = UnicodeConvertResult::Success;
 
 	while (sourceIt < sourceEnd)
 	{
-		const UTF16* oldSourceIt = sourceIt;
+		const uint16* oldSourceIt = sourceIt;
 
 		/*-------------------------------------------------------------------
 		-       UTF16が可変長エンコードであるため, 固定長のUTF32に変換します.
 		---------------------------------------------------------------------*/
-		UTF32 codePoint = 0;
+		uint32 codePoint = 0;
 		result = CodePointUTF16ToUTF32(&sourceIt, sourceEnd, codePoint, options);
 
-		if (result != StringConvertResult::Success)
+		if (result != UnicodeConvertResult::Success)
 		{
 			break;
 		}
@@ -274,7 +275,7 @@ StringConvertResult StringConverterBase::ConvertUTF16ToUTF32(const UTF16* source
 		if (targetIt >= targetEnd)
 		{
 			sourceIt = oldSourceIt;
-			result = StringConvertResult::TargetExhausted;
+			result = UnicodeConvertResult::TargetExhausted;
 			break;
 		}
 
@@ -292,26 +293,26 @@ StringConvertResult StringConverterBase::ConvertUTF16ToUTF32(const UTF16* source
 
 /*!**********************************************************************
 *  @brief     UTF-32文字列をUTF-8文字列に変換します.
-*  @param[in] const UTF32*      変換元の文字列
+*  @param[in] const uint32*      変換元の文字列
 *  @param[in] const gu::uint64 変換元の文字列のサイズ
-*  @param[in] UTF8*           変換先の文字列
+*  @param[in] uint8*           変換先の文字列
 *  @param[in] gu::uint64       変換先の文字列の長さ
 *  @param[inout] Options&      オプション
-*  @return    StringConvertResult 変換結果
+*  @return    UnicodeConvertResult 変換結果
 *************************************************************************/
-StringConvertResult StringConverterBase::ConvertUTF32ToUTF8(const UTF32* sourceStart, uint64 sourceLength, UTF8* targetStart, gu::uint64 targetLength, Options& options)
+UnicodeConvertResult UnicodeConverter::ConvertUTF32ToUTF8(const uint32* sourceStart, uint64 sourceLength, uint8* targetStart, gu::uint64 targetLength, Options& options)
 {
-	const UTF32* sourceIt = sourceStart;
-	      UTF8*  targetIt = targetStart;
-	const UTF32* sourceEnd = sourceStart + sourceLength;
-	      UTF8*  targetEnd = targetStart + targetLength;
+	const uint32* sourceIt = sourceStart;
+	      uint8*  targetIt = targetStart;
+	const uint32* sourceEnd = sourceStart + sourceLength;
+	      uint8*  targetEnd = targetStart + targetLength;
 
-	StringConvertResult result = StringConvertResult::Success;
+	UnicodeConvertResult result = UnicodeConvertResult::Success;
 
 	while (sourceIt < sourceEnd)
 	{
-		const UTF32* oldSourceIt = sourceIt;
-		UTF32 codePoint = *sourceIt;
+		const uint32* oldSourceIt = sourceIt;
+		uint32 codePoint = *sourceIt;
 		sourceIt++;
 
 		/*-------------------------------------------------------------------
@@ -322,7 +323,7 @@ StringConvertResult StringConverterBase::ConvertUTF32ToUTF8(const UTF32* sourceS
 			if(IsStrictConversion(options))
 			{
 				sourceIt = oldSourceIt;
-				result = StringConvertResult::SourceIllegal;
+				result = UnicodeConvertResult::SourceIllegal;
 				break;
 			}
 			else
@@ -337,7 +338,7 @@ StringConvertResult StringConverterBase::ConvertUTF32ToUTF8(const UTF32* sourceS
 		---------------------------------------------------------------------*/
 		result = CodePointUTF32ToUTF8(codePoint, &targetIt, targetEnd, options);
 
-		if (result != StringConvertResult::Success)
+		if (result != UnicodeConvertResult::Success)
 		{
 			break;
 		}
@@ -351,22 +352,22 @@ StringConvertResult StringConverterBase::ConvertUTF32ToUTF8(const UTF32* sourceS
 }
 /*!**********************************************************************
 *  @brief     UTF-32文字列をUTF-8文字列に変換します.
-*  @param[in] const UTF32*     変換元の文字列
+*  @param[in] const uint32*     変換元の文字列
 *  @param[in] const gu::uint64 変換元の文字列のサイズ
-*  @param[in] UTF16*           変換先の文字列
+*  @param[in] uint16*           変換先の文字列
 *  @param[in] gu::uint64       変換先の文字列の長さ
 *  @param[inout] Options&      オプション
-*  @return    StringConvertResult 変換結果
+*  @return    UnicodeConvertResult 変換結果
 *************************************************************************/
-StringConvertResult StringConverterBase::ConvertUTF32ToUTF16(const UTF32* sourceStart, uint64 sourceLength, UTF16* targetStart, gu::uint64 targetLength, Options& options)
+UnicodeConvertResult UnicodeConverter::ConvertUTF32ToUTF16(const uint32* sourceStart, uint64 sourceLength, uint16* targetStart, gu::uint64 targetLength, Options& options)
 {
-	const UTF32* sourceIt = sourceStart;
-	      UTF16* targetIt = targetStart;
-	const UTF32* sourceEnd = sourceStart + sourceLength;
-	const UTF16* targetEnd = targetStart + targetLength;
+	const uint32* sourceIt = sourceStart;
+	      uint16* targetIt = targetStart;
+	const uint32* sourceEnd = sourceStart + sourceLength;
+	const uint16* targetEnd = targetStart + targetLength;
 	options.CharacterCount = 0;
 
-	StringConvertResult result = StringConvertResult::Success;
+	UnicodeConvertResult result = UnicodeConvertResult::Success;
 
 	while (sourceIt < sourceEnd)
 	{
@@ -375,11 +376,11 @@ StringConvertResult StringConverterBase::ConvertUTF32ToUTF16(const UTF32* source
 		---------------------------------------------------------------------*/
 		if(targetIt >= targetEnd)
 		{
-			result = StringConvertResult::TargetExhausted;
+			result = UnicodeConvertResult::TargetExhausted;
 			break;
 		}
 
-		UTF32 codePoint = *sourceIt;
+		uint32 codePoint = *sourceIt;
 		sourceIt++;
 
 		/*-------------------------------------------------------------------
@@ -387,7 +388,7 @@ StringConvertResult StringConverterBase::ConvertUTF32ToUTF16(const UTF32* source
 		---------------------------------------------------------------------*/
 		result = CodePointUTF32ToUTF16(codePoint, &targetIt, targetEnd, options);
 
-		if (result != StringConvertResult::Success)
+		if (result != UnicodeConvertResult::Success)
 		{
 			break;
 		}
@@ -403,13 +404,13 @@ StringConvertResult StringConverterBase::ConvertUTF32ToUTF16(const UTF32* source
 
 /*!**********************************************************************
 *  @brief        UTF-8文字をUTF-32に変換します. (1文字分). CodePointは, U+0000～U+10FFFFまでの範囲の値です.
-*  @param[in]    const UTF8**    変換元の文字列
-*  @param[in]    const UTF8*     変換元の終端文字
-*  @param[out]   UTF32&          変換先の文字
+*  @param[in]    const uint8**    変換元の文字列
+*  @param[in]    const uint8*     変換元の終端文字
+*  @param[out]   uint32&          変換先の文字
 *  @param[inout] Options&        オプション
-*  @return       StringConvertResult 変換結果
+*  @return       UnicodeConvertResult 変換結果
 *************************************************************************/
-StringConvertResult StringConverterBase::CodePointUTF8ToUTF32(const UTF8** sourceStart, const UTF8* sourceEnd, UTF32& target, Options& options)
+UnicodeConvertResult UnicodeConverter::CodePointUTF8ToUTF32(const uint8** sourceStart, const uint8* sourceEnd, uint32& target,[[maybe_unused]] Options& options)
 {
 	auto source = *sourceStart;
 	
@@ -420,21 +421,21 @@ StringConvertResult StringConverterBase::CodePointUTF8ToUTF32(const UTF8** sourc
 	
 	if(source + bytes >= sourceEnd)
 	{
-		return StringConvertResult::SourceExhausted;
+		return UnicodeConvertResult::SourceExhausted;
 	}
 
 	/*-------------------------------------------------------------------
 	-       UTF8のバイトシーケンスであるかを確認
 	---------------------------------------------------------------------*/
-	if (!IsLegalUTF8(source, bytes + 1))
+	if (!IsLegalUTF8(source, static_cast<uint64>(bytes) + 1))
 	{
-		return StringConvertResult::SourceIllegal;
+		return UnicodeConvertResult::SourceIllegal;
 	}
 
 	/*-------------------------------------------------------------------
 	-       UTF32文字の取得
 	---------------------------------------------------------------------*/
-	UTF32 result = 0;
+	uint32 result = 0;
 
 	switch (bytes)
 	{
@@ -474,22 +475,22 @@ StringConvertResult StringConverterBase::CodePointUTF8ToUTF32(const UTF8** sourc
 	*sourceStart = source;
 	target       = result;
 
-	return StringConvertResult::Success;
+	return UnicodeConvertResult::Success;
 }
 
 /*!**********************************************************************
 *  @brief        UTF-16文字をUTF-32に変換します.
-*  @param[in]    const UTF16**    変換元の文字列
-*  @param[in]    const UTF16*     変換元の終端文字
+*  @param[in]    const uint16**    変換元の文字列
+*  @param[in]    const uint16*     変換元の終端文字
 *  @param[out]   gu::char32*      変換先の文字列
 *  @param[inout] Options&         オプション
-*  @return       StringConvertResult 変換結果
+*  @return       UnicodeConvertResult 変換結果
 *************************************************************************/
-StringConvertResult StringConverterBase::CodePointUTF16ToUTF32(const UTF16** sourceStart, const UTF16* sourceEnd, UTF32& target, Options& options)
+UnicodeConvertResult UnicodeConverter::CodePointUTF16ToUTF32(const uint16** sourceStart, const uint16* sourceEnd, uint32& target, Options& options)
 {
 	auto source = *sourceStart;
 	
-	UTF32 char1 = *source;
+	uint32 char1 = *source;
 	source++;
 
 	/*-------------------------------------------------------------------
@@ -500,7 +501,7 @@ StringConvertResult StringConverterBase::CodePointUTF16ToUTF32(const UTF16** sou
 		// バッファの終端を調べる
 		if(source < sourceEnd)
 		{
-			UTF32 char2 = *source; // 2文字目を取得
+			uint32 char2 = *source; // 2文字目を取得
 
 			if(SURROGATE_LOW_START <= char2 && char2 <= SURROGATE_LOW_END)
 			{
@@ -511,39 +512,39 @@ StringConvertResult StringConverterBase::CodePointUTF16ToUTF32(const UTF16** sou
 			else if(IsStrictConversion(options))
 			{
 				// 上位サロゲートがあるのに, 下位サロゲートがない場合はエラー
-				return StringConvertResult::SourceIllegal;
+				return UnicodeConvertResult::SourceIllegal;
 			}
 		}
 		else
 		{
 			// 下位サロゲートを探している途中にバッファ終端に到達する場合はエラー
-			return StringConvertResult::SourceExhausted;
+			return UnicodeConvertResult::SourceExhausted;
 		}
-		return StringConvertResult::SourceIllegal;
+		return UnicodeConvertResult::SourceIllegal;
 	}
 	else
 	{
 		if (SURROGATE_LOW_START <= char1 && char1 <= SURROGATE_LOW_END)
 		{
-			return StringConvertResult::SourceIllegal;
+			return UnicodeConvertResult::SourceIllegal;
 		}
 	}
 
 	*sourceStart = source;
 	target       = char1;
 
-	return StringConvertResult::Success;
+	return UnicodeConvertResult::Success;
 }
 
 /*!**********************************************************************
 *  @brief        UTF-32文字をUTF-8に変換します.
-*  @param[in]    const UTF32     変換元の文字
-*  @param[in]    UTF8**          変換先の文字列ポインタ (成否に関わらず一つ前まで文字が書かれている.)
-*  @param[out]   const UTF8*     変換先の終端文字
+*  @param[in]    const uint32     変換元の文字
+*  @param[in]    uint8**          変換先の文字列ポインタ (成否に関わらず一つ前まで文字が書かれている.)
+*  @param[out]   const uint8*     変換先の終端文字
 *  @param[inout] Options&        オプション
-*  @return       StringConvertResult 変換結果
+*  @return       UnicodeConvertResult 変換結果
 *************************************************************************/
-StringConvertResult StringConverterBase::CodePointUTF32ToUTF8(UTF32 source, UTF8** targetStart, const UTF8* targetEnd, Options& options)
+UnicodeConvertResult UnicodeConverter::CodePointUTF32ToUTF8(uint32 source, uint8** targetStart, const uint8* targetEnd, Options& options)
 {
 	auto target = *targetStart;
 
@@ -572,14 +573,14 @@ StringConvertResult StringConverterBase::CodePointUTF32ToUTF8(UTF32 source, UTF8
 		bytes = 3;
 		if (IsStrictConversion(options))
 		{
-			return StringConvertResult::SourceIllegal;
+			return UnicodeConvertResult::SourceIllegal;
 		}
 		else
 		{
 			source = options.ReplacementChar;
 			options.InvalidCharacterCount++;
 		}
-		return StringConvertResult::SourceIllegal;
+		return UnicodeConvertResult::SourceIllegal;
 	}
 
 	/*-------------------------------------------------------------------
@@ -587,7 +588,7 @@ StringConvertResult StringConverterBase::CodePointUTF32ToUTF8(UTF32 source, UTF8
 	---------------------------------------------------------------------*/
 	if(target + bytes > targetEnd)
 	{
-		return StringConvertResult::TargetExhausted;
+		return UnicodeConvertResult::TargetExhausted;
 	}
 
 	/*-------------------------------------------------------------------
@@ -602,39 +603,39 @@ StringConvertResult StringConverterBase::CodePointUTF32ToUTF8(UTF32 source, UTF8
 	{
 		case 4: 
 		{
-			*(--target) = static_cast<UTF8>((source | BYTE_MARK) & BYTE_MASK);
+			*(--target) = static_cast<uint8>((source | BYTE_MARK) & BYTE_MASK);
 			source >>= 6;
 		}
 		case 3: 
 		{
-			*(--target) = static_cast<UTF8>((source | BYTE_MARK) & BYTE_MASK);
+			*(--target) = static_cast<uint8>((source | BYTE_MARK) & BYTE_MASK);
 			source >>= 6;
 		}
 		case 2: 
 		{
-			*(--target) = static_cast<UTF8>((source | BYTE_MARK) & BYTE_MASK);
+			*(--target) = static_cast<uint8>((source | BYTE_MARK) & BYTE_MASK);
 			source >>= 6;
 		}
 		case 1: 
 		{
-			*(--target) = static_cast<UTF8>(source | UTF8_FIRST_BYTE_MARK[bytes]);
+			*(--target) = static_cast<uint8>(source | UTF8_FIRST_BYTE_MARK[bytes]);
 		}
 	}
 
 	target      += bytes;
 	*targetStart = target;
-	return StringConvertResult::Success;
+	return UnicodeConvertResult::Success;
 }
 
 /*!**********************************************************************
 *  @brief        UTF-32文字をUTF-16に変換します.
-*  @param[in]    const UTF32     変換元の文字
-*  @param[in]    const UTF16**   変換先の文字列ポインタ
-*  @param[out]   const UTF16*    変換先の終端文字
+*  @param[in]    const uint32     変換元の文字
+*  @param[in]    const uint16**   変換先の文字列ポインタ
+*  @param[out]   const uint16*    変換先の終端文字
 *  @param[inout] Options&        オプション
-*  @return       StringConvertResult 変換結果
+*  @return       UnicodeConvertResult 変換結果
 *************************************************************************/
-StringConvertResult StringConverterBase::CodePointUTF32ToUTF16(UTF32 source, UTF16** targetStart, const UTF16* targetEnd, Options& options)
+UnicodeConvertResult UnicodeConverter::CodePointUTF32ToUTF16(uint32 source, uint16** targetStart, const uint16* targetEnd, Options& options)
 {
 	auto target = *targetStart;
 
@@ -648,18 +649,18 @@ StringConvertResult StringConverterBase::CodePointUTF32ToUTF16(UTF32 source, UTF
 		{
 			if (IsStrictConversion(options))
 			{
-				return StringConvertResult::SourceExhausted;
+				return UnicodeConvertResult::SourceExhausted;
 			}
 			else
 			{
-				*target = (UTF16)options.ReplacementChar;
+				*target = (uint16)options.ReplacementChar;
 				target++;
 				options.InvalidCharacterCount++;
 			}
 		}
 		else
 		{
-			*target = (UTF16)source;
+			*target = (uint16)source;
 			target++;
 		}
 	}
@@ -670,11 +671,11 @@ StringConvertResult StringConverterBase::CodePointUTF32ToUTF16(UTF32 source, UTF
 	{
 		if (IsStrictConversion(options))
 		{
-			return StringConvertResult::SourceExhausted;
+			return UnicodeConvertResult::SourceExhausted;
 		}
 		else
 		{
-			*target = (UTF16)options.ReplacementChar;
+			*target = (uint16)options.ReplacementChar;
 			target++;
 			options.InvalidCharacterCount++;
 		}
@@ -686,37 +687,226 @@ StringConvertResult StringConverterBase::CodePointUTF32ToUTF16(UTF32 source, UTF
 	{
 		if(target + 1 >= targetEnd)
 		{
-			return StringConvertResult::TargetExhausted;
+			return UnicodeConvertResult::TargetExhausted;
 		}
 
 		source -= SURROGATE_LOW_BASE;
-		*target = (UTF16)((source >> SURROGATE_HIGH_SHIFT) + SURROGATE_HIGH_START);
+		*target = (uint16)((source >> SURROGATE_HIGH_SHIFT) + SURROGATE_HIGH_START);
 		target++;
-		*target = (UTF16)((source & SURROGATE_LOW_MASK) + SURROGATE_LOW_START);
+		*target = (uint16)((source & SURROGATE_LOW_MASK) + SURROGATE_LOW_START);
 		target++;
 	}
 
 	*targetStart = target;
-	return StringConvertResult::Success;
+	return UnicodeConvertResult::Success;
 }
+
+/*!**********************************************************************
+*  @brief        UTF8における先行バイトを考慮した文字列長を取得します
+*  @param[in]    const uint8* 対象文字列
+*  @param[in]    const uint64 文字列長さ
+*  @param[in]    const bool 失敗したときにエラーを出すかどうか
+*  @param[out]   uint64& 文字列長
+*  @return       bool
+*************************************************************************/
+UnicodeConvertResult UnicodeConverter::GetUTF8CharacterLength(const uint8* sourceStart, const uint64 sourceLength, uint64& outLength, const bool strict)
+{
+	/*-------------------------------------------------------------------
+	-        後続バイトの取得
+	---------------------------------------------------------------------*/
+	const uint8* source    = sourceStart;
+	const uint8* sourceEnd = sourceStart + sourceLength;
+	UnicodeConvertResult result = UnicodeConvertResult::Success;
+	uint64 count = 0;
+
+	/*-------------------------------------------------------------------
+	-        文字列のカウント
+	---------------------------------------------------------------------*/
+	while (source < sourceEnd)
+	{
+		uint64 extraByteCount = 0;
+
+		result = GetUTF8TrailingBytes(source, sourceEnd, extraByteCount, strict);
+		if (result != UnicodeConvertResult::Success)
+		{
+			return result;
+		}
+
+		source += extraByteCount + 1;
+		count++;
+	}
+
+	outLength = count;
+	return result;
+}
+
+/*!**********************************************************************
+*  @brief        UTF16における先行バイトを考慮した文字列長を取得します
+*  @param[in]    const uint16* 対象文字列
+*  @param[in]    const uint64 文字列長さ
+*  @param[in]    const bool 失敗したときにエラーを出すかどうか
+*  @param[out]   uint64& 文字列長
+*  @return       UnicodeConvertResult 変換結果
+*************************************************************************/
+UnicodeConvertResult UnicodeConverter::GetUTF16CharacterLength(const uint16* sourceStart, const uint64 sourceLength, uint64& outLength, const bool strict)
+{
+	const uint16* source    = sourceStart;
+	const uint16* sourceEnd = sourceStart + sourceLength;
+	outLength = 0;
+
+	while (source < sourceEnd)
+	{
+		const uint16 char1 = *source;
+		source++;
+
+		// サロゲートペアの場合
+		if (SURROGATE_HIGH_START <= char1 && char1 <= SURROGATE_HIGH_END)
+		{
+			// バッファの終端を調べる
+			if (source < sourceEnd)
+			{
+				const uint16 char2 = *source; // 2文字目を取得
+
+				if (SURROGATE_LOW_START <= char2 && char2 <= SURROGATE_LOW_END)
+				{
+					source++;
+				}
+				else if (strict)
+				{
+					// 上位サロゲートがあるのに, 下位サロゲートがない場合はエラー
+					return UnicodeConvertResult::SourceIllegal;
+				}
+			}
+			else
+			{
+				// 下位サロゲートを探している途中にバッファ終端に到達する場合はエラー
+				return UnicodeConvertResult::SourceExhausted;
+			}
+		}
+		else if (SURROGATE_LOW_START <= char1 && char1 <= SURROGATE_LOW_END)
+		{
+			return UnicodeConvertResult::SourceIllegal;
+		}
+
+		outLength++;
+	}
+
+	return UnicodeConvertResult::Success;
+}
+
+
+/*!**********************************************************************
+*  @brief        UTF8文字の後続バイト数を取得します
+*  @param[in]    const uint8* 文字の先頭文字のポインタ
+*  @param[in]    const uint8* バッファの終端文字のポインタ
+*  @param[out]   uint64& 後続バイト数 (ASCII文字等, 後続が無い場合は0が格納される)
+*  @param[in]    const bool trueの場合, 不正文字のチェックを行います (不正文字が見つかった場合はSourceIllegalを返す)
+*  @return       UnicodeConvertResult 変換結果
+*************************************************************************/
+UnicodeConvertResult UnicodeConverter::GetUTF8TrailingBytes(const uint8* sourceStart, const uint8* sourceEnd, uint64& outExtraByteCount, const bool strict)
+{
+	/*-------------------------------------------------------------------
+	-        後続バイトの取得
+	---------------------------------------------------------------------*/
+	outExtraByteCount = 0;
+
+	const uint64 extraBytes = static_cast<uint64>(UTF8_BYTE_MAP[*sourceStart]);
+	outExtraByteCount = extraBytes;
+
+	/*-------------------------------------------------------------------
+	-        範囲チェック
+	---------------------------------------------------------------------*/
+	if (sourceStart + extraBytes >= sourceEnd)
+	{
+		return UnicodeConvertResult::SourceExhausted;
+	}
+
+	/*-------------------------------------------------------------------
+	-        正常なUTF8文字であるか
+	---------------------------------------------------------------------*/
+	if (strict && IsLegalUTF8(sourceStart, extraBytes + 1))
+	{
+		return UnicodeConvertResult::SourceIllegal;
+	}
+
+	return UnicodeConvertResult::Success;
+}
+
+/*!**********************************************************************
+*  @brief     UTF16 のサロゲートペアであるかを確認する
+*  @param[in] const void* チェック対象の先頭文字のポインタ
+*  @param[in] const void* チェック対象の終端文字のポインタ
+*  @param[in] const bool trueの場合, 不正文字のチェックを行います (不正文字が見つかった場合はSourceIllegalを返す)
+*  @param[out] bool* サロゲートペアであるかどうか
+*  @return    UnicodeConvertResult 変換結果
+*************************************************************************/
+UnicodeConvertResult UnicodeConverter::CheckUTF16Surrogate(const uint16* sourceStart, const uint16* sourceEnd, const bool strict, bool* outSurrogate)
+{
+	*outSurrogate = false;
+
+	const uint16* source = sourceStart;
+	while (source < sourceEnd)
+	{
+		const uint16 char1 = *source;
+		source++;
+
+		// サロゲートペアの場合
+		if (SURROGATE_HIGH_START <= char1 && char1 <= SURROGATE_HIGH_END)
+		{
+			// バッファの終端を調べる
+			if (source < sourceEnd)
+			{
+				const uint16 char2 = *source; // 2文字目を取得
+
+				if (SURROGATE_LOW_START <= char2 && char2 <= SURROGATE_LOW_END)
+				{
+					*outSurrogate = true;
+					source++;
+				}
+				else if (strict)
+				{
+					// 上位サロゲートがあるのに, 下位サロゲートがない場合はエラー
+					return UnicodeConvertResult::SourceIllegal;
+				}
+			}
+			else
+			{
+				// 下位サロゲートを探している途中にバッファ終端に到達する場合はエラー
+				return UnicodeConvertResult::SourceExhausted;
+			}
+		}
+		else if (strict && SURROGATE_LOW_START <= char1 && char1 <= SURROGATE_LOW_END)
+		{
+			return UnicodeConvertResult::SourceIllegal;
+		}
+	}
+
+	return UnicodeConvertResult::Success;
+
+}
+
 #pragma endregion Public Function
 
 #pragma region Private Function
 /*!**********************************************************************
 *  @brief        適切なUTF8コーデックかどうか
-*  @param[in]    const UTF8* 変換元
+*  @param[in]    const uint8* 変換元
 *  @param[in]    const uint64 文字列長さ
 *  @return       bool
 *************************************************************************/
-bool StringConverterBase::IsLegalUTF8(const UTF8* sourceStart, const uint64 length)
+bool UnicodeConverter::IsLegalUTF8(const uint8* sourceStart, const uint64 length)
 {
-	UTF8 result = 0;
+	uint8 result = 0;
 
 	// 最初に一番後ろを指し、フォールスルーでひとつずつ前へ見ていく
-	const UTF8* source = sourceStart + length;
+	const uint8* source = sourceStart + length;
 
 	switch(length)
 	{
+		default:
+		{
+			return false;
+		}
 		case 4:
 		{
 			if ((result = (*--source)) < 0x80 || result > 0xBF)
@@ -785,10 +975,6 @@ bool StringConverterBase::IsLegalUTF8(const UTF8* sourceStart, const uint64 leng
 			{
 				return false;
 			}
-		}
-		default:
-		{
-			return false;
 		}
 	}
 
