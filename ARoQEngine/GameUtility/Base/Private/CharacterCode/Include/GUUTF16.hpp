@@ -172,8 +172,8 @@ namespace gu::details::string
 		/*! @brief Byte Order Mark (文字コード判定)を使用するか*/
 		bool _isBOM = false;
 
-		/*! @brief ビックエンディアンかどうか (デフォルトはtrue)*/
-		bool _isBigEndian = true;
+		/*! @brief ビックエンディアンかどうか (デフォルトはfalse)*/
+		bool _isBigEndian = false;
 
 		static constexpr uint8 BOM[] = { 0xFE, 0xFF };
 		#pragma endregion 

@@ -13,6 +13,7 @@
 #include "GameUtility/Base/Private/CharacterCode/Include/GUUTF8.hpp"
 #include "GameUtility/Base/Private/CharacterCode/Include/GUUTF16.hpp"
 #include "GameUtility/Base/Private/CharacterCode/Include/GUUTF32.hpp"
+#include "GameUtility/Base/Include/GUTypeTraits.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -34,7 +35,18 @@ using namespace gu::details::string;
 *************************************************************************/
 SharedPointer<CharacterCode> CharacterCode::WideStringCharacterCode()
 {
-	return nullptr;
+	if constexpr(sizeof(wchar) == 2)
+	{
+		return MakeShared<UTF16>(false , false);
+	}
+	else if constexpr(sizeof(wchar) == 4)
+	{
+		return MakeShared<UTF32>(false , false);
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 /*!**********************************************************************
@@ -44,7 +56,18 @@ SharedPointer<CharacterCode> CharacterCode::WideStringCharacterCode()
 *************************************************************************/
 SharedPointer<CharacterCode> CharacterCode::TStringCharacterCode()
 {
-	return nullptr;
+	if constexpr (gu::type::IS_SAME<tchar, wchar>)
+	{
+		return WideStringCharacterCode();
+	}
+	else if constexpr (gu::type::IS_SAME<tchar, char16>)
+	{
+		return MakeShared<UTF16>(false , false);
+	}
+	else
+	{
+		return MakeShared<UTF8>(false);
+	}
 }
 
 /*!**********************************************************************

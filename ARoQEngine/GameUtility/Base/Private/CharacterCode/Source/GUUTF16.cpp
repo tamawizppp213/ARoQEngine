@@ -64,7 +64,7 @@ bool UTF16::FromUTF16(const uint16* input, const uint64 inputElementSize, uint8*
 	/*-------------------------------------------------------------------
 	-              ビッグエンディアンかリトルエンディアンかを判定
 	---------------------------------------------------------------------*/
-	bool isBigEndian = true;
+	bool isBigEndian = false;
 	if (inputElementSize >= 1)
 	{
 		if (input[0] == 0xFEFF)
@@ -116,7 +116,7 @@ bool UTF16::FromUTF32(const uint32* input, const uint64 inputElementSize, uint8*
 	---------------------------------------------------------------------*/
 	uint32* utf32String = const_cast<uint32*>(reinterpret_cast<const uint32*>(input));
 
-	bool isBigEndian = true;
+	bool isBigEndian = false;
 	bool isBOM       = false;
 	if (inputElementSize >= 1)
 	{
@@ -192,7 +192,7 @@ bool UTF16::ToUTF16(const uint8* input, const uint64 inputByteSize, uint16* outp
 	/*-------------------------------------------------------------------
 	-              ビッグエンディアンかリトルエンディアンかを判定
 	---------------------------------------------------------------------*/
-	bool isBigEndian = true;
+	bool isBigEndian = false;
 	if (inputByteSize >= 2)
 	{
 		const uint16* utf16String = reinterpret_cast<const uint16*>(input);
@@ -244,7 +244,7 @@ bool UTF16::ToUTF32(const uint8* input, const uint64 inputByteSize, uint32* outp
 	---------------------------------------------------------------------*/
 	uint16* utf16String = const_cast<uint16*>(reinterpret_cast<const uint16*>(input));
 
-	bool isBigEndian = true;
+	bool isBigEndian = false;
 	bool isBOM       = false;
 	if (inputByteSize >= 2)
 	{

@@ -94,7 +94,7 @@ namespace gu::details::string
 		*  @param[in] const CharacterCodeType 文字コードの種類
 		*  @return    SharedPointer<CharacterCode> 文字コード
 		*************************************************************************/
-		static SharedPointer<CharacterCode> GetCharacterCode(const CharacterCodeType codeType, const bool useBOM = false, const bool isBigEndian = true);
+		static SharedPointer<CharacterCode> GetCharacterCode(const CharacterCodeType codeType, const bool useBOM = false, const bool isBigEndian = false);
 
 		/*!**********************************************************************
 		*  @brief     UTF16から指定した文字コードに変換します
