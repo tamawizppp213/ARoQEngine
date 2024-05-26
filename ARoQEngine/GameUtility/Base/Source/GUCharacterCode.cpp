@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Private/CharacterCode/Include/GUCharacterCode.hpp"
+#include "GameUtility/Base/Include/GUCharacterCode.hpp"
 #include "GameUtility/Base/Private/CharacterCode/Include/GUAscii.hpp"
 #include "GameUtility/Base/Private/CharacterCode/Include/GUShiftJIS.hpp"
 #include "GameUtility/Base/Private/CharacterCode/Include/GUUTF8.hpp"
