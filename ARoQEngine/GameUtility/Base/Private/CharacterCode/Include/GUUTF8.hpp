@@ -121,7 +121,7 @@ namespace gu::details::string
 		*  @param[in] const uint64 bufferSize 文字列のバイト数
 		*  @return    const tchar* 文字コード名
 		*************************************************************************/
-		virtual uint64 GetReadExtraLength(const void* buffer, const uint64 bufferSize) const override;
+		virtual uint64 GetLeadExtraLength(const void* buffer, const uint64 bufferSize) const override;
 
 		#pragma endregion 
 

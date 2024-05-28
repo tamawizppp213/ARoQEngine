@@ -52,7 +52,7 @@ namespace gu::details::string
 		*  @param[in] CharacterDecodeResult* result 変換結果
 		*  @return    const tchar* 文字コード名
 		*************************************************************************/
-		virtual bool FromUTF32(const uint32* input, const uint64 inputByteSize, uint8* output, [[maybe_unused]]const uint64 outputElementSize, CharacterEncodeResult* result) const override;
+		virtual bool FromUTF32(const uint32* input, const uint64 inputElementSize, uint8* output, [[maybe_unused]]const uint64 outputByteSize, CharacterEncodeResult* result) const override;
 
 		/*!**********************************************************************
 		*  @brief     指定した文字コードからUTF16に変換します
@@ -123,7 +123,7 @@ namespace gu::details::string
 		*  @param[in] const uint64 bufferSize 文字列のバイト数
 		*  @return    const tchar* 文字コード名
 		*************************************************************************/
-		virtual uint64 GetReadExtraLength([[maybe_unused]]const void* buffer, [[maybe_unused]]const uint64 bufferSize) const override
+		virtual uint64 GetLeadExtraLength([[maybe_unused]]const void* buffer, [[maybe_unused]]const uint64 bufferSize) const override
 		{
 			return 0;
 		}

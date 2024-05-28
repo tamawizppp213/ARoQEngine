@@ -84,6 +84,7 @@ bool UTF32::FromUTF16(const uint16* input, const uint64 inputElementSize, uint8*
 	-              UTF16‚É•ÏŠ·
 	---------------------------------------------------------------------*/
 	UnicodeConverter::Options option = {};
+	option.ReplacementChar = '?';
 	uint32* utf32String = reinterpret_cast<uint32*>(output);
 
 	// output‚ÉBOM‚ð’Ç‰Á
@@ -218,6 +219,8 @@ bool UTF32::ToUTF16(const uint8* input, const uint64 inputByteSize, uint16* outp
 	}
 
 	UnicodeConverter::Options option = {};
+	option.ReplacementChar = '?';
+
 	const auto convertResult = UnicodeConverter::ConvertUTF32ToUTF16
 	(
 		utf32String, (inputByteSize / sizeof(uint32)) - bomOffset , 

@@ -50,6 +50,7 @@ bool UTF8::FromUTF16(const uint16* input, const uint64 inputElementSize, uint8* 
 	-              UTF8に変換します
 	---------------------------------------------------------------------*/
 	UnicodeConverter::Options option = {};
+	option.ReplacementChar = '?';
 
 	const auto convertResult = UnicodeConverter::ConvertUTF16ToUTF8(input, inputElementSize, output + (_isBOM ? 3 : 0), outputByteSize, option);
 	if (convertResult != UnicodeConvertResult::Success)
@@ -86,6 +87,7 @@ bool UTF8::FromUTF32(const uint32* input, const uint64 inputElementSize, uint8* 
 	-              UTF8に変換します
 	---------------------------------------------------------------------*/
 	UnicodeConverter::Options option = {};
+	option.ReplacementChar = '?';
 
 	const auto convertResult = UnicodeConverter::ConvertUTF32ToUTF8(input, inputElementSize, output + (_isBOM ? 3 : 0), outputByteSize, option);
 	if (convertResult != UnicodeConvertResult::Success)
@@ -128,6 +130,7 @@ bool UTF8::ToUTF16(const uint8* input, const uint64 inputByteSize, uint16* outpu
 	-              UTF32に変換します
 	---------------------------------------------------------------------*/
 	UnicodeConverter::Options option = {};
+	option.ReplacementChar = '?';
 
 	const auto convertResult = UnicodeConverter::ConvertUTF8ToUTF16(input, remainByteSize, output, outputElementSize, option);
 	if (convertResult != UnicodeConvertResult::Success)
@@ -170,6 +173,7 @@ bool UTF8::ToUTF32(const uint8* input, const uint64 inputByteSize, uint32* outpu
 	-              UTF32に変換します
 	---------------------------------------------------------------------*/
 	UnicodeConverter::Options option = {};
+	option.ReplacementChar = '?';
 
 	const auto convertResult = UnicodeConverter::ConvertUTF8ToUTF32(input, remainByteSize, output, outputElementSize, option);
 	if (convertResult != UnicodeConvertResult::Success)
@@ -202,7 +206,7 @@ uint64 UTF8::GetCharacterLength(const void* buffer, const uint64 bufferSize) con
 *  @param[in] const uint64 bufferSize 文字列のバイト数
 *  @return    const tchar* 文字コード名
 *************************************************************************/
-uint64 UTF8::GetReadExtraLength(const void* buffer, const uint64 bufferSize) const
+uint64 UTF8::GetLeadExtraLength(const void* buffer, const uint64 bufferSize) const
 {
 	uint64 length = 0;
 	const auto result = UnicodeConverter::GetUTF8TrailingBytes((const uint8*)buffer, (const uint8*)buffer + bufferSize, length, true);

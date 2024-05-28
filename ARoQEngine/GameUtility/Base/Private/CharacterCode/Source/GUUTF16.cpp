@@ -138,6 +138,8 @@ bool UTF16::FromUTF32(const uint32* input, const uint64 inputElementSize, uint8*
 	-              UTF32に変換
 	---------------------------------------------------------------------*/
 	UnicodeConverter::Options option = {};
+	option.ReplacementChar = '?';
+
 	uint16* utf16String = reinterpret_cast<uint16*>(output);
 
 	// outputにBOMを追加
@@ -274,6 +276,7 @@ bool UTF16::ToUTF32(const uint8* input, const uint64 inputByteSize, uint32* outp
 	}
 
 	UnicodeConverter::Options option = {};
+	option.ReplacementChar = '?';
 	const auto covertResult = UnicodeConverter::ConvertUTF16ToUTF32
 	(
 		utf16String, inputByteSize / sizeof(uint16) - bomOffset,
@@ -323,7 +326,7 @@ uint64 UTF16::GetCharacterLength(const void* buffer, const uint64 bufferSize) co
 *  @param[in] const uint64 bufferSize 文字列のバイト数
 *  @return    const tchar* 文字コード名
 *************************************************************************/
-uint64 UTF16::GetReadExtraLength(const void* buffer, const uint64 bufferSize) const
+uint64 UTF16::GetLeadExtraLength(const void* buffer, const uint64 bufferSize) const
 {
 	bool surrogatePair = false;
 
