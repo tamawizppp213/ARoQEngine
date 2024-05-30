@@ -8,6 +8,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/GUStringConverter.hpp"
+#include "GameUtility/Base/Include/GUCharacterCodeConverter.hpp"
 #include "GameUtility/Base/Private/CharacterCode/Include/GUUnicodeConverter.hpp"
 #include "GameUtility/Base/Private/Base/Include/GUTypeTraitsStruct.hpp"
 #include "GameUtility/Base/Include/GUCharacterCode.hpp"
@@ -208,42 +209,25 @@ u16string StringConverter::ConvertUTF32ToUTF16(const u32string& utf32)
 *************************************************************************/
 wstring StringConverter::ConvertStringToWString(const string& utf8String)
 {
-	const auto codeType      = gu::details::string::CharacterCodeType::ShiftJIS;
-	const auto characterCode = gu::details::string::CharacterCode::GetCharacterCode(codeType);
+	/*-------------------------------------------------------------------
+	-              •ÏŠ·
+	---------------------------------------------------------------------*/
+	const auto source                 = CharacterCode::MultiByteCharacterCode();
+	const auto destination            = CharacterCode::WideStringCharacterCode();
+	const auto characterCodeConverter = MakeShared<CharacterCodeConverter>(source, destination);
+
+	Check(source);
+	Check(destination);
+
+	const auto& utf16ByteArray = characterCodeConverter->Convert(reinterpret_cast<const uint8*>(utf8String.CString()), utf8String.Size());
 
 	/*-------------------------------------------------------------------
-	-              wchar_t <=> char_16_t
+	-              •¶Žš—ñ‚É‘ã“ü
 	---------------------------------------------------------------------*/
-	if constexpr (sizeof(wchar) == sizeof(char16))
-	{
-		gu::u16string utf16String(utf8String.Size() * 2, true);
-		gu::details::string::CharacterDecodeResult result = {};
-
-		characterCode->ToUTF16(
-			reinterpret_cast<const uint8*>(utf8String.CString()), utf8String.Size(),
-			const_cast<uint16*>(reinterpret_cast<const uint16*>(utf16String.CString())), utf16String.Size(), &result);
-
-		gu::wstring test;
-		test.Assign(reinterpret_cast<const wchar_t*>(utf16String.CString()), result.OutputCharacterCount);
-		return gu::wstring(reinterpret_cast<const wchar_t*>(utf16String.CString(), result.OutputCharacterCount));
-	}
-	/*-------------------------------------------------------------------
-	-              wchar_t <=> char_32_t
-	---------------------------------------------------------------------*/
-	else if constexpr (sizeof(wchar) == sizeof(char32))
-	{
-		gu::u8string  utf8String(reinterpret_cast<const char8*>(utf8String.CString()));
-		gu::u32string utf32String = ConvertUTF8ToUTF32(utf8String.CString());
-
-		return gu::wstring(reinterpret_cast<const wchar_t*>(utf32String.CString()));
-	}
-	/*-------------------------------------------------------------------
-	-              Error check
-	---------------------------------------------------------------------*/
-	else
-	{
-		throw "Error: wchar_t size is not supported.";
-	}
+	wstring result = L"";
+	result.Assign(reinterpret_cast<const wchar*>(utf16ByteArray.Data()), utf16ByteArray.Size() / sizeof(wchar));
+	
+	return result;
 }
 
 /*!**********************************************************************
@@ -254,30 +238,24 @@ wstring StringConverter::ConvertStringToWString(const string& utf8String)
 string StringConverter::ConvertWStringToString(const wstring& wideString)
 {
 	/*-------------------------------------------------------------------
-	-              wchar_t <=> char_16_t
-	---------------------------------------------------------------------*/ 
-	if constexpr (sizeof(wchar) == sizeof(char16))
-	{
-		const u16string utf16String = u16string(wideString.Size(), true);
-
-		return string(reinterpret_cast<const char*>(ConvertUTF16ToUTF8(utf16String).CString()));
-	}
-	/*-------------------------------------------------------------------
-	-              wchar_t <=> char_32_t
+	-              •ÏŠ·
 	---------------------------------------------------------------------*/
-	else if constexpr (sizeof(wchar) == sizeof(char32))
-	{
-		const u32string utf32String = u32string(reinterpret_cast<const char32*>(wideString.CString()));
+	const auto source                 = CharacterCode::WideStringCharacterCode();
+	const auto destination            = CharacterCode::MultiByteCharacterCode();
+	const auto characterCodeConverter = MakeShared<CharacterCodeConverter>(source, destination);
 
-		return ConvertUTF32ToUTF8(utf32String);
-	}
+	Check(source);
+	Check(destination);
+
+	const auto& byteArray = characterCodeConverter->Convert(reinterpret_cast<const uint8*>(wideString.CString()), wideString.Size() * sizeof(wchar));
+
 	/*-------------------------------------------------------------------
-	-              Error check
+	-              •¶Žš—ñ‚É‘ã“ü
 	---------------------------------------------------------------------*/
-	else
-	{
-		throw "Error: wchar_t size is not supported.";
-	}
+	string result = "";
+	result.Assign(reinterpret_cast<const char*>(byteArray.Data()), byteArray.Size() / sizeof(wchar));
+
+	return result;
 }
 
 /*!**********************************************************************
@@ -285,26 +263,27 @@ string StringConverter::ConvertWStringToString(const wstring& wideString)
 *  @param[in] const string& utf8
 *  @return    tstring
 *************************************************************************/
-tstring StringConverter::ConvertStringToTString(const string& utf8)
+tstring StringConverter::ConvertStringToTString(const string& utf8String)
 {
 	/*-------------------------------------------------------------------
-	-              wchar_t <=> char_16_t
+	-              •ÏŠ·
 	---------------------------------------------------------------------*/
-	if constexpr (gu::type::IS_SAME<tchar, wchar>)
-	{
-		return ConvertStringToWString(utf8);
-	}
-	else if constexpr (gu::type::IS_SAME<tchar, char16>)
-	{
-		gu::wstring wString = ConvertStringToWString(utf8);
+	const auto source                 = CharacterCode::MultiByteCharacterCode();
+	const auto destination            = CharacterCode::TStringCharacterCode();
+	const auto characterCodeConverter = MakeShared<CharacterCodeConverter>(source, destination);
 
-		return gu::tstring(reinterpret_cast<const tchar*>(wString.CString()));
-	}
-	else
-	{
-		return gu::tstring(reinterpret_cast<const tchar*>(utf8.CString()));
-	}
+	Check(source);
+	Check(destination);
 
+	const auto& byteArray = characterCodeConverter->Convert(reinterpret_cast<const uint8*>(utf8String.CString()), utf8String.Size());
+
+	/*-------------------------------------------------------------------
+	-              •¶Žš—ñ‚É‘ã“ü
+	---------------------------------------------------------------------*/
+	tstring result = SP("");
+	result.Assign(reinterpret_cast<const tchar*>(byteArray.Data()), byteArray.Size() / sizeof(tchar));
+
+	return result;
 }
 
 #pragma endregion Public Function

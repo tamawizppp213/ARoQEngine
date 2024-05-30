@@ -22,7 +22,7 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gu::details::string
+namespace gu
 {
 	/****************************************************************************
 	*				  			 CharacterCodeType
@@ -36,8 +36,8 @@ namespace gu::details::string
 		UTF16,
 		UTF32,
 		ShiftJIS,
-		ASCII,
-		ANSI,
+		ASCII, 
+		ANSI,     //!< Windows API専用の文字コード
 	};
 
 	struct CharacterEncodeResult
@@ -76,18 +76,27 @@ namespace gu::details::string
 	public:
 		#pragma region Public Function
 		/*!**********************************************************************
-		*  @brief     環境依存のワイド文字列で使用される文字コードを取得します
-		*  @param[in] void
+		*  @brief     環境依存のマルチバイト文字列で使用される文字コードを取得します @n
+		*             Windows 環境では CP_THREAD_ACP が示すコードページエンコーディングです。それ以外の環境では UTF-8 となります
 		*  @return    SharedPointer<CharacterCode> 文字コード
 		*************************************************************************/
-		static SharedPointer<CharacterCode> WideStringCharacterCode();
+		static SharedPointer<CharacterCode> MultiByteCharacterCode();
+
+		/*!**********************************************************************
+		*  @brief     環境依存のワイド文字列で使用される文字コードを取得します
+		*  @param[in] const bool BOM付きの文字コードを使用するか (デフォルトはfalseです)
+		*  @param[in] const bool ビックエンディアンか (デフォルトはfalseです)
+		*  @return    SharedPointer<CharacterCode> 文字コード
+		*************************************************************************/
+		static SharedPointer<CharacterCode> WideStringCharacterCode(const bool useBOM = false, const bool isBigEndian = false);
 
 		/*!**********************************************************************
 		*  @brief     TStringで使用される文字コードを取得します
-		*  @param[in] void
+		*  @param[in] const bool BOM付きの文字コードを使用するか (デフォルトはfalseです)
+		*  @param[in] const bool ビックエンディアンか (デフォルトはfalseです)
 		*  @return    SharedPointer<CharacterCode> 文字コード
 		*************************************************************************/
-		static SharedPointer<CharacterCode> TStringCharacterCode();
+		static SharedPointer<CharacterCode> TStringCharacterCode(const bool useBOM = false, const bool isBigEndian = false);
 
 		/*!**********************************************************************
 		*  @brief     指定した文字コードを取得します
@@ -116,7 +125,7 @@ namespace gu::details::string
 		*  @param[in] CharacterDecodeResult* result 変換結果
 		*  @return    const tchar* 文字コード名
 		*************************************************************************/
-		virtual bool FromUTF32(const uint32* input, const uint64 inputByteSize, uint8* output, const uint64 outputElementSize, CharacterEncodeResult* result) const = 0;
+		virtual bool FromUTF32(const uint32* input, const uint64 inputByteSize, uint8* output, const uint64 outputByteSize, CharacterEncodeResult* result) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     指定した文字コードからUTF16に変換します
@@ -185,7 +194,7 @@ namespace gu::details::string
 		*  @param[in] const uint64 bufferSize 文字列のバイト数
 		*  @return    const tchar* 文字コード名
 		*************************************************************************/
-		virtual uint64 GetReadExtraLength(const void* buffer, const uint64 bufferSize) const = 0;
+		virtual uint64 GetLeadExtraLength(const void* buffer, const uint64 bufferSize) const = 0;
 
 		#pragma endregion 
 
