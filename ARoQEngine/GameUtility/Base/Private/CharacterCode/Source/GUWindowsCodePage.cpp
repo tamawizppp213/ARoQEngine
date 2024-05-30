@@ -312,7 +312,7 @@ bool WindowsCodePage::ToUTF32(const uint8* input, const uint64 inputByteSize, ui
 	const auto convertedWideCount = ::MultiByteToWideChar
 	(
 		_codePageInfo.CodePage,                // コードページ
-		MB_ERR_INVALID_CHARS,                  // フラグ
+		0,                                     // フラグ
 		reinterpret_cast<const char*>(input),  // 変換元の文字列
 		static_cast<int32>(inputByteSize),     // 変換元の文字列のバイト数
 		utf16Buffer.Data(),                    // 変換後の文字列
