@@ -67,8 +67,8 @@ bool PMDConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 	/*-------------------------------------------------------------------
 	-            PMXFile Load
 	---------------------------------------------------------------------*/
-	pmd::PMDFile file;
-	if (!file.Load(filePath)) { return false; }
+	gc::file::pmd::PMDFile file;
+	if (!file.Read(filePath)) { return false; }
 
 
 	return true;
@@ -110,8 +110,8 @@ void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file
 	/*-------------------------------------------------------------------
 	-            Total mesh
 	---------------------------------------------------------------------*/
-	const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.Size(), MemoryHeap::Upload , ResourceState::Common, vertices.get());
-	const auto ibData = GPUBufferMetaData::IndexBuffer (sizeof(UINT32)            , file.Indices .Size(), MemoryHeap::Default, ResourceState::Common, file.Indices.Data());
+	const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), (gu::uint32)file.Vertices.Size(), MemoryHeap::Upload , ResourceState::Common, vertices.get());
+	const auto ibData = GPUBufferMetaData::IndexBuffer (sizeof(UINT32)            , (gu::uint32)file.Indices .Size(), MemoryHeap::Default, ResourceState::Common, file.Indices.Data());
 	model->_totalMesh = gu::MakeShared<Mesh>(model->_engine, vbData, ibData);	
 }
 
