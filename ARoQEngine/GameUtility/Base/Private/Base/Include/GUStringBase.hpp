@@ -384,13 +384,22 @@ namespace gu::details::string
 		#pragma endregion Public Property
 
 		#pragma region Public Operator Function
-		StringBase<Char, CharByte>& operator=(const StringBase<Char, CharByte>& right) { Assign(right); return *this; }
-		StringBase<Char, CharByte>& operator=(const Char* right) { Assign(right); return *this; }
+		/*! @brief StringBaseクラスを用いてコピー*/
+		StringBase<Char, CharByte>& operator=(const StringBase<Char, CharByte>& right) 
+		{
+			Assign(right); 
+			return *this; 
+		}
+		StringBase<Char, CharByte>& operator=(const Char* right) 
+		{
+			Assign(right); 
+			return *this;
+		}
 		StringBase<Char, CharByte>& operator=(const Char  right) { Assign(&right, 1); return *this; }
 
 		StringBase<Char, CharByte>& operator+=(const StringBase<Char, CharByte>& right)
 		{
-			Append(right.CString(), right.Size());
+			Append(right);
 			return *this;
 		}
 		StringBase<Char, CharByte>& operator+=(const Char* right)
@@ -445,7 +454,10 @@ namespace gu::details::string
 
 		#pragma region Constructor and Destructor
 		/*! @brief デフォルトコンストラクタ*/
-		StringBase() { Initialize(); }
+		StringBase() 
+		{
+			Initialize(); 
+		}
 
 		/*! @brief 文字列長だけのメモリを事前確保だけ行うコンストラクタ.
 		           CString()を使って無理やりコピーする用に強制的に実サイズも更新するフラグも用意しました.(trueは危険)*/
@@ -556,19 +568,26 @@ namespace gu::details::string
 		#pragma endregion Utility
 
 		#pragma region Memory
-		/*----------------------------------------------------------------------
-		*  @brief :  空の配列による初期状態の作成
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     空の配列による初期状態を作成します. 
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		__forceinline void Initialize() noexcept
 		{
 			_data.SSO.Size = 0;
 			SetSSOMode();
+
+			// NonSSOの初期化も含んでいる.
 			Memory::Zero(_data.SSO.Buffer, (SSO_CAPACITY + 1) * sizeof(Char));
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  NonSSOの状態であるならメモリを破棄する
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     NonSSOの状態であるならメモリの破棄を行い, その後SSOの状態に戻します.　@n
+		              SSOの状態の場合は初期化だけ行われます
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		void Release() noexcept;
 
 		/*----------------------------------------------------------------------
@@ -576,9 +595,11 @@ namespace gu::details::string
 		/*----------------------------------------------------------------------*/
 		void CopyFrom(const StringBase<Char, CharByte>& source);
 
-		/*----------------------------------------------------------------------
-		*  @brief :  メモリを移動する
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     メモリを移動します. (ポインタの付け替えくらいです.)
+		*  @param[in] StringBase<Char, CharByte>&& source : 移動元の文字列
+		*  @return    void
+		*************************************************************************/
 		void Move(StringBase<Char, CharByte>&& source) noexcept;
 
 		/*----------------------------------------------------------------------
@@ -595,14 +616,18 @@ namespace gu::details::string
 		__forceinline const Char* GetBuffer() const noexcept { return IsSSOMode() ? _data.SSO.Buffer : _data.NonSSO.Pointer; }
 #pragma endregion Memory
 #pragma region SSO operation
-		/*----------------------------------------------------------------------
-		*  @brief :  SSOを使用する (既存の文字配列を使用する)モードに設定します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     SSOを使用する (16文字以内の静的な文字配列を使用する)モードに設定します. 2^0のフラグをoffにします.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		__forceinline void SetSSOMode() { _data.SSO.Size &= ~(0x1);}
 
-		/*----------------------------------------------------------------------
-		*  @brief :  SSOを使用しない (newで領域を確保する)モードに設定します
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     SSOを使用しない (newで領域を確保する)モードに設定します. 2^0のフラグをonにします.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		__forceinline void SetNonSSOMode() { _data.SSO.Size |= 0x1;}
 
 		/*----------------------------------------------------------------------
@@ -714,10 +739,10 @@ namespace gu::details::string
 			else 
 			{
 				auto temp = new Char[totalLength + 1];
-				_data.NonSSO.Capacity = totalLength;
 				Memory::Copy(&temp[0], this->_data.SSO.Buffer, firstLength * sizeof(Char));
 				Memory::Copy(&temp[firstLength], string, length * sizeof(Char));
-				_data.NonSSO.Pointer = temp;
+				_data.NonSSO.Pointer  = temp;
+				_data.NonSSO.Capacity = totalLength;
 			}
 		}
 		/*-------------------------------------------------------------------
@@ -1255,27 +1280,22 @@ namespace gu::details::string
 		}
 	}
 
-	/*----------------------------------------------------------------------
-	*  @brief :  メモリをコピーする
-	/*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::Move(StringBase<Char, CharByte>&& source) noexcept
 	{
-		Memory::Copy(this, &source, sizeof(source));
+		Memory::Copy(this->_data, source._data, sizeof(StringData));
 		source.Initialize();
 	}
 
-	/*----------------------------------------------------------------------
-	*  @brief :  NonSSOの状態であるならメモリを破棄する.
-	/*----------------------------------------------------------------------*/
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::Release() noexcept
 	{
-		if (IsSSOMode()) { return; }
-		if (_data.NonSSO.Pointer)
+		if (IsNonSSOMode() && _data.NonSSO.Pointer)
 		{
 			delete[] (_data.NonSSO.Pointer); // もしかしたらdeleteでOKかも
 		}
+
+		Initialize();
 	}
 
 #pragma endregion Memory
