@@ -40,7 +40,7 @@ namespace gc::file::pmd::details
 	struct PMDHeader
 	{
 		/*! @brief ファイル識別子 (Pmd)*/
-		gu::char8   Signature[3]    = {};
+		char       Signature[3]    = {};
 
 		/*! @brief バージョン番号 (1.00など)*/
 		gu::float32 Version         = 0;

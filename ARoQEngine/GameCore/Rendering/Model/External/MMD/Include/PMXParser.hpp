@@ -1,9 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   PMXParser.hpp
-///             @brief  PMXParser
-///             @author Toide Yutaro
-///             @date   2022_05_05
-//////////////////////////////////////////////////////////////////////////////////
+///  @file   PMXParser.hpp
+///  @brief  PMXファイルを読み込むクラス
+///  @author Toide Yutaro
+///  @date   2024_06_02
+/////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef PMX_PARSER_HPP
 #define PMX_PARSER_HPP
@@ -11,11 +11,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Math/Include/GMVector.hpp"
-#include "GameUtility/Base/Include/GUString.hpp"
-#include <Windows.h>
-#include <vector>
-#include "GameUtility/Container/Include/GUDynamicArray.hpp"
+#include "GameCore/Rendering/Model/External/MMD/Private/Include/PMXDefines.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,562 +20,82 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace pmx
+namespace gc::file::pmx
 {
-	using namespace gm;
-
-	enum class PMXEncode : UINT8
-	{
-		UTF16 = 0,
-		UTF8 = 1
-	};
-
-	/****************************************************************************
-	*				  			PMXHeader
-	*************************************************************************//**
-	*  @class     PMXHeader
-	*  @brief     Define Index Size
-	*****************************************************************************/
-	struct PMXSetting
-	{
-		char       Signature[4];
-		float      Version;            // ver 2.0 / 2.1
-		UINT8      DataSize;
-		PMXEncode  Encode;             // 0: UTF16, 1: UTF8
-		UINT8      AddUVCount;         // 0 ~ 4
-		UINT8      VertexIndexSize;    // 1, 2, or 4
-		UINT8      TextureIndexSize;   // 1, 2, or 4
-		UINT8      MaterialIndexSize;  // 1, 2, or 4
-		UINT8      BoneIndexSize;      // 1, 2, or 4
-		UINT8      FaceIndexSize;      // 1, 2, or 4
-		UINT8      RigidBodyIndexSize; // 1, 2, or 4
-
-		void Read(FILE* file);
-	};
-	/****************************************************************************
-	*				  			PMXInfo
-	*************************************************************************//**
-	*  @class     PMXInfo
-	*  @brief     Model name and comment
-	*****************************************************************************/
-	struct PMXInfo
-	{
-		gu::string ModelName;
-		gu::string EngliseModelName;
-		gu::string Comment;
-		gu::string EnglishComment;
-
-		bool Read(FILE* file, const PMXSetting* setting);
-	};
-
-	enum class PMXVertexWeight : UINT8
-	{
-		BDEF1, // boneIndices[0]
-		BDEF2, // boneIndices[0-1] + boneWeights[0]  (PMD Format weight(0.0-1.0))
-		BDEF4, // boneIndices[0-3] + boneWeights[0-3] (may not weight total = 1.0)
-		SDEF,  // boneIndices[0-1] + boneWeights[0] + SDefC + SDefR0 + SDefR1
-		QDEF   // boneIndices[0-3] + boneWeights[0-3]
-	};
-	/****************************************************************************
-	*				  			PMXVertex
-	*************************************************************************//**
-	*  @class     PMXVertex
-	*  @brief     Vertex
-	*****************************************************************************/
-	struct PMXVertex
-	{
-		Float3          Position;
-		Float3          Normal;
-		Float2          UV;
-		Float4          AddUV[4];      // mainly use for effect
-		PMXVertexWeight WeightType;
-		INT32           BoneIndices[4];
-		float           BoneWeights[4];
-		Float3          SDefC;
-		Float3          SDefR0;
-		Float3          SDefR1;
-
-		float EdgeMagnitude;
-
-		bool Read(FILE* file, const PMXSetting* setting);
-	};
-	/****************************************************************************
-	*				  			PMXMaterial
-	*************************************************************************//**
-	*  @class     PMXMaterial
-	*  @brief     Material
-	*****************************************************************************/
-	struct PMXMaterial
-	{
-		enum class PMXDrawModeFlags : UINT8
-		{
-			BothSurface = 0x01,
-			GroundShadow = 0x02,
-			CastSelfShadow = 0x04,
-			ReceiveSelfShadow = 0x08,
-			DrawEdge = 0x10,
-			VertexColor = 0x20, // ver2.1 only
-			DrawPoint = 0x40, // ver2.1 only
-			DrawLine = 0x80  // ver2.1 only
-		};
-		enum class PMXSphereMapMode : UINT8
-		{
-			None,
-			Multiply,
-			Addition,
-			SubTexture
-		};
-		enum class PMXToonTextureMode :UINT8
-		{
-			Separate,
-			Common
-		};
-
-		gu::string        MaterialName;
-		gu::string        EnglishName;
-		Float4             Diffuse;
-		float              SpecularPower;
-		Float3             Specular;
-		Float3             Ambient;
-		PMXDrawModeFlags   DrawMode;
-		Float4             EdgeColor;
-		float              EdgeSize;
-		INT32              TextureIndex;
-		INT32              SphereMapTextureIndex;
-		PMXSphereMapMode   SphereMapMode;
-		PMXToonTextureMode ToonTextureMode;
-		INT32              ToonTextureIndex;
-		gu::string        Memo;
-		INT32              FaceIndicesCount;
-
-		void Read(FILE* file, const PMXSetting* setting);
-	};
-	/****************************************************************************
-	*				  			PMXIKLink
-	*************************************************************************//**
-	*  @class     PMXIKLine
-	*  @brief     IK link bone index
-	*****************************************************************************/
-	struct PMXIKLink
-	{
-		INT32 LinkTarget;
-		unsigned char EnableLimit;
-		//When Enable Limit is 1, the variations is needed.
-		Float3   AngleMin; // radian 
-		Float3   AngleMax; // radian
-
-		void Read(FILE* filePtr, const PMXSetting* setting);
-	};
-	/****************************************************************************
-	*				  			PMXBone
-	*************************************************************************//**
-	*  @class     PMXBone
-	*  @brief     Bone
-	*****************************************************************************/
-	struct PMXBone
-	{
-		enum class PMXBoneFlag : UINT16
-		{
-			TargetShowMode     = 0x0001, // Connection destination PMD child bone specification) (0: coodinate offset specify, 1: bone specify)
-			AllowRotate        = 0x0002, // allow rotation
-			AllowTranslate     = 0x0004, // allow translation
-			Visible            = 0x0008, // display
-			AllowControl       = 0x0010, // allow control
-			IKBone             = 0x0020, // IK
-			AppendLocal        = 0x0080, // local axis(0: user deformation value / IK link / multiple assignment 1: parent's local deformation amount )
-			AppendRotate       = 0x0100, // append rotation
-			AppendTranslate    = 0x0200, // append translate
-			FixedAxis          = 0x0400, // fixed axis
-			LocalAxis          = 0x0800, // local axis
-			DeformAfterPhisics = 0x1000, // deform after phisics
-			DeformOuterParent  = 0x2000, // deform outer parent
-		};
-		gu::string BoneName;
-		gu::string EnglishName;
-		Float3      Position;
-		INT32       ParentBoneIndex;
-		INT32       DeformDepth;
-		PMXBoneFlag BoneFlag;
-		Float3      PositionOffset;
-		INT32       LinkBoneIndex;
-		INT32       AppendBoneIndex;
-		float       AppendWeight;
-		Float3      FixedAxis;         // PMXBoneFlag: FixedAxis is enabled
-		Float3      LocalAxis_X;       // PMXBoneFlag: LocalAxis is enabled 
-		Float3      LocalAxis_Z;       // PMXBoneFlag: LocalAxis is enabled
-		INT32       KeyValue;          // PMXBoneFlag: DeformAfterPhisics is enabled
-		INT32       IKTargetBoneIndex; // PMXBoneFlag: IKBone is enabled
-		INT32       IKIterationCount;  // PMXBoneFlag: IKBone is enabled
-		float       IKAngleLimit;      // PMXBoneFlag: IKBone is enabled (radian)
-		gu::DynamicArray<PMXIKLink> IKLinks;
-
-		void Read(FILE* filePtr, const PMXSetting* setting);
-		~PMXBone() { IKLinks.Clear(); IKLinks.ShrinkToFit(); }
-	};
-	/****************************************************************************
-	*				  			PMXMorph
-	*************************************************************************//**
-	*  @class     PMXMoroh 
-	*  @brief     increment　data for morphing
-	*****************************************************************************/
-	enum class PMXMorphType : UINT8
-	{
-		Group,
-		Position,
-		Bone,
-		UV,
-		AddUV1,
-		AddUV2,
-		AddUV3,
-		AddUV4,
-		Material,
-		Flip,     // ver 2,1 only
-		Impulse   // ver 2.1 only
-	};
-	enum class PMXFacePart : UINT8
-	{
-		Base,
-		Eyebrow,
-		Eye,
-		Mouth,
-		Other,
-	};
-	struct PMXMorph
-	{
-		struct PositionMorph
-		{
-			INT32    VertexIndex;
-			Float3   Position;
-		};
-		struct UVMorph
-		{
-			INT32    VertexIndex;
-			Float4   UV;
-		};
-		struct BoneMorph
-		{
-			INT32    BoneIndex;
-			Float3   Position;
-			Float4   Quaternion;
-		};
-		struct MaterialMorph
-		{
-			enum class OpType : UINT8
-			{
-				Mutiply,
-				Addition
-			};
-
-			INT32    MaterialIndex;
-			OpType   OpType;
-			Float4   Diffuse;
-			Float3   Specular;
-			float    SpecularPower;
-			Float3   Ambient;
-			Float4   EdgeColor;
-			float    EdgeSize;
-			Float4   TextureFactor;
-			Float4   SphereMapFactor;
-			Float4   ToonTextureFactor;
-		};
-		struct GroupMorph
-		{
-			INT32 MorphIndex;
-			float Weight;
-		};
-		struct FlipMorph
-		{
-			INT32 MorphIndex;
-			float Weight;
-		};
-		struct ImpulseMorph
-		{
-			INT32    RigidBodyIndex;
-			UINT8    LocalFlag;         // 0: off, 1: on
-			Float3   TranslateVelocity;
-			Float3   RotateTorque;
-		};
-
-		gu::string  Name;
-		gu::string  EnglishName;
-		PMXFacePart  FacePart;
-		PMXMorphType MorphType;
-		gu::DynamicArray<PositionMorph> PositionMorphs;
-		gu::DynamicArray<UVMorph>       UVMorphs;
-		gu::DynamicArray<BoneMorph>     BoneMorphs;
-		gu::DynamicArray<MaterialMorph> MaterialMorphs;
-		gu::DynamicArray<GroupMorph>    GroupMorphs;
-		gu::DynamicArray<FlipMorph>     FlipMorphs;
-		gu::DynamicArray<ImpulseMorph>  ImpulseMorphs;
-
-		void Read(FILE* filePtr, const PMXSetting* setting);
-		~PMXMorph()
-		{
-			PositionMorphs.Clear(); PositionMorphs.ShrinkToFit();
-			UVMorphs      .Clear(); UVMorphs      .ShrinkToFit();
-			BoneMorphs    .Clear(); BoneMorphs    .ShrinkToFit();
-			MaterialMorphs.Clear(); MaterialMorphs.ShrinkToFit();
-			GroupMorphs   .Clear(); GroupMorphs   .ShrinkToFit();
-			FlipMorphs    .Clear(); FlipMorphs    .ShrinkToFit();
-			ImpulseMorphs .Clear(); ImpulseMorphs .ShrinkToFit();
-		};
-	};
-	/****************************************************************************
-	*				  			PMXDisplayFrame
-	*************************************************************************//**
-	*  @class     PMXDisplayFrame
-	*  @brief     Display frame
-	*****************************************************************************/
-	struct PMXDisplayFrame
-	{
-
-		enum class TargetType : UINT8
-		{
-			BoneIndex,
-			MorphIndex
-		};
-		struct     Target
-		{
-			TargetType Type;
-			INT32      Index;
-		};
-		enum class FrameType : UINT8
-		{
-			DefaultFrame,
-			SpecialFrame
-		};
-
-		gu::string         Name;
-		gu::string         EnglishName;
-		FrameType           Flag;
-		gu::DynamicArray<Target> Targets;
-		void Read(FILE* file, const PMXSetting* setting);
-		~PMXDisplayFrame()
-		{
-			Targets.Clear(); Targets.ShrinkToFit();
-		}
-	};
-	/****************************************************************************
-	*				  			PMXRigidBody
-	*************************************************************************//**
-	*  @class     PMXRigidBody
-	*  @brief     RigidBody
-	*****************************************************************************/
-	struct PMXRigidBody
-	{
-		enum class PMXRigidBodyShape : UINT8
-		{
-			Sphere,
-			Box,
-			Capsule
-		};
-		enum class PMXPhysicsCalcType : UINT8
-		{
-			Static,
-			Dynamic,
-			DynamicAndBoneMerge
-		};
-		gu::string           Name;
-		gu::string           EnglishName;
-		INT32                 BoneIndex;
-		UINT8                 Group;
-		UINT16                CollisionGroup;
-		PMXRigidBodyShape     Shape;
-		Float3                ShapeSize;
-		Float3                Translation;
-		Float3                Rotation;            // radian
-		float                 Mass;
-		float                 DampingTranslation;
-		float                 DampingRotation;
-		float                 Repulsion;
-		float                 Friction;
-		PMXPhysicsCalcType    RigidBodyCalcType;
-
-		void Read(FILE* filePtr, const PMXSetting* setting);
-	};
-	/****************************************************************************
-	*				  			PMXJoint
-	*************************************************************************//**
-	*  @class     PMXJoint
-	*  @brief     Joint
-	*****************************************************************************/
-	enum class PMXJointType : UINT8
-	{
-		Generic6DOFSpring,
-		Generic6DOF,
-		Point2Point,
-		ConeTwist,
-		Slider,
-		Hinge
-	};
-	struct PMXJoint
-	{
-		gu::string  Name;
-		gu::string  EnglishName;
-		PMXJointType JointType;
-		INT32        RigidBodyIndex_A;
-		INT32        RigidBodyIndex_B;
-		Float3       Translation;
-		Float3       Rotation;
-		Float3       TranslationMin;
-		Float3       TranslationMax;
-		Float3       RotationMin;             // radian
-		Float3       RotationMax;             // radian
-		Float3       SpringTranslationFactor;
-		Float3       SpringRotationFactor;
-
-		void Read(FILE* filePtr, const PMXSetting* setting);
-	};
-
-	/****************************************************************************
-	*				  			PMXSoftBody
-	*************************************************************************//**
-	*  @class     PMXSoftBody
-	*  @brief     SoftBody
-	*****************************************************************************/
-	enum class PMXSoftBodyType : UINT8
-	{
-		TriangleMesh,
-		Rope
-	};
-	enum class PMXSoftBodyMask : UINT8
-	{
-		BLink = 0x01,
-		Cluster = 0x02,
-		HybridLink = 0x04
-	};
-	enum class PMXAeroModel : INT32
-	{
-		kAeroModelV_TwoSided,
-		kAeroModelV_OneSided,
-		kAeroModelF_TwoSided,
-		kAeroModelF_OneSided
-	};
-	struct PMXSoftBodyAnchorRigidBody
-	{
-		INT32 RigidBodyIndex;
-		INT32 VertexIndex;
-		UINT8 NearMode;
-		void Read(FILE* filePtr, const PMXSetting* setting);
-	};
-	struct PMXSoftBody
-	{
-		struct PMXSoftBodyCluster
-		{
-			float SRHR_CL;    // Soft vs rigid hardness      [0,1];
-			float SKHR_CL;    // Soft vs kinetic hardness    [0,1];
-			float SSHR_CL;    // Soft vs soft hardness       [0,1]
-			float SR_SPLT_CL; // Soft vs rigid impulse split [0,1];
-			float SK_SPLT_CL; // Soft vs rigid impulse split [0,1];
-			float SS_SPLT_CL; // Soft vs rigid impulse split [0,1];
-		};
-		struct PMXSoftBodyIteration
-		{
-			INT32 V_Iterations;
-			INT32 P_Iterations;
-			INT32 D_Iterations;
-			INT32 C_Iterations;
-		};
-		struct PMXSoftBodyMaterial
-		{
-			float LST;
-			float AST;
-			float VST;
-		};
-		struct PMXSoftBodyConfig
-		{
-			float VCF; // Velocities correction factor (default V_point);
-			float DP;  // Damping coefficient factor;
-			float DG;  // Drag coefficient;
-			float LF;  // Lift coefficent;
-			float PR;  // Pressure coefficient;
-			float VC;  // Volume conversation coefficient;
-			float DF;  // Dynamic friction coefficient;
-			float MT;  // Pose matching coefficient;
-			float CHR; // Rigid contacts hardness;
-			float KHR; // Kinetic contacts hardness;
-			float SHR; // Soft contacts hardness;
-			float AHR; // Anchors hardness;
-		};
-		gu::string          Name;
-		gu::string          EnglishName;
-		PMXSoftBodyType      SoftBodyType;
-		INT32                MaterialIndex;
-		UINT8                Group;
-		UINT16               CollisionGroup;
-		PMXSoftBodyMask      MaskFlag;
-		INT32                BoneLinkLength;
-		INT32                ClustersCount;
-		float                TotalMass;
-		float                CollisionMargin;
-		PMXAeroModel         AeroModel;
-		PMXSoftBodyConfig    Config;
-		PMXSoftBodyCluster   Cluster;
-		PMXSoftBodyIteration Iteration;
-		PMXSoftBodyMaterial  Material;
-		gu::DynamicArray<PMXSoftBodyAnchorRigidBody> Anchor;
-		gu::DynamicArray<INT32>   VertexIndices;
-
-		void Read(FILE* filePtr, const PMXSetting* setting);
-		~PMXSoftBody()
-		{
-			Anchor.Clear(); Anchor.ShrinkToFit();
-			VertexIndices.Clear(); VertexIndices.ShrinkToFit();
-		}
-	};
-
+	
 	/****************************************************************************
 	*				  			PMXFile
 	*************************************************************************//**
-	*  @class     PMXFile
-	*  @brief     temp
+	/*  @brief  PMXのファイルを読み込むクラスです.
 	*****************************************************************************/
-	class PMXFile
+	struct PMXFile : public gu::NonCopyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		bool Load(const gu::tstring& filePath);
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
-		PMXSetting                   Setting;
-		PMXInfo                      Infomation;
-		gu::DynamicArray<PMXVertex>       Vertices;
-		gu::DynamicArray<UINT32>          Indices;
-		gu::DynamicArray<gu::string>     TexturePathList;
-		gu::DynamicArray<PMXMaterial>     Materials;
-		gu::DynamicArray<PMXBone>         Bones;
-		gu::DynamicArray<PMXMorph>        Morphs;
-		gu::DynamicArray<PMXDisplayFrame> DisplayFrames;
-		gu::DynamicArray<PMXRigidBody>    RigidBodies;
-		gu::DynamicArray<PMXJoint>        Joints;
-		gu::DynamicArray<PMXSoftBody>     SoftBodies;
-		gu::string Directory;
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Function
+
+		/*!**********************************************************************
+		*  @brief     PMXファイルを読み込む関数
+		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
+		*  @return    void
+		*************************************************************************/
+		bool Read(const gu::tstring& filePath);
+
+		#pragma endregion
+
+		#pragma region Public Property
+		/*! @brief モデルデータのヘッダ情報, ファイルのバージョン情報を格納します.*/
+		PMXHeader Header = {};
+
+		/*! @brief モデルの頂点情報*/
+		gu::DynamicArray<PMXVertex> Vertices = {};
+
+		/*! @brief モデルのインデックス情報*/
+		gu::DynamicArray<gu::uint32> Indices = {};
+
+		/*! @brief モデルのマテリアル情報*/
+		gu::DynamicArray<PMXMaterial> Materials = {};
+
+		/*! @brief モデルのボーン情報*/
+		gu::DynamicArray<PMXBone> Bones = {};
+
+		/*! @brief モデルのモーフ情報*/
+		gu::DynamicArray<PMXMorph> Morphs = {};
+
+		/*! @brief モデルの表示枠情報*/
+		gu::DynamicArray<PMXDisplayFrame> DisplayFrames = {};
+
+		/*! @brief モデルの剛体情報*/
+		gu::DynamicArray<PMXRigidBody> RigidBodies = {};
+
+		/*! @brief モデルのジョイント情報*/
+		gu::DynamicArray<PMXJoint> Joints = {};
+
+		/*! @brief モデルのソフトボディ情報*/
+		gu::DynamicArray<PMXSoftBody> SoftBodies = {};
+
+		/*! @brief モデルのテクスチャリスト*/
+		gu::DynamicArray<gu::tstring> TexturePathList = {};
+
+		/*! @brief PMXファイルが格納されている親ディレクトリ*/
+		gu::tstring Directory = SP("");
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+		
+		/*! @brief デフォルトコンストラクタ*/
 		PMXFile() = default;
+
+		/*! @brief デストラクタ*/
 		~PMXFile();
-		PMXFile(const PMXFile&)            = delete;
-		PMXFile& operator=(const PMXFile&) = delete;
-		PMXFile(PMXFile&&)                 = default;
-		PMXFile& operator=(PMXFile&&)      = default;
+
+		#pragma endregion
+
 	private:
-		/****************************************************************************
-		**                Private Property
-		*****************************************************************************/
-		void ReadVertices     (FILE* filePtr);
-		void ReadIndices      (FILE* filePtr);
-		void ReadTextureList  (FILE* filePtr);
-		void ReadMaterials    (FILE* filePtr);
-		void ReadBones        (FILE* filePtr);
-		void ReadMorphs       (FILE* filePtr);
-		void ReadDisplayFrames(FILE* filePtr);
-		void ReadRigidBodies  (FILE* filePtr);
-		void ReadJoints(FILE* filePtr);
-		void ReadSoftBodies(FILE* filePtr);
+		#pragma region Private Function
+		#pragma endregion
+
+		#pragma region Private Property
+		#pragma endregion
 	};
 
 }
