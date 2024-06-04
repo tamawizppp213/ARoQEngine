@@ -159,7 +159,7 @@ bool WindowsCodePage::FromUTF32(const uint32* input, const uint64 inputElementSi
 
 	UnicodeConverter::Options options = {};
 
-	while (input < inputEnd)
+	while (inputPosition < inputEnd)
 	{
 		/*-------------------------------------------------------------------
 		-         UTF32‚©‚çUTF16‚É•ÏŠ· (WideCharToMultiByte‚ðŽÀs‚·‚é‚½‚ß)

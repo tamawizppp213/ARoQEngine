@@ -72,6 +72,7 @@ gu::DynamicArray<uint8>& CharacterCodeConverter::Convert(const uint8* input, con
 			throw "Failed to convert character code to UTF32 (intermediate).";
 		}
 
+
 		if (!_destinationCharacterCode->FromUTF16((const uint16*)tempBuffer1.Data(), decodeResult.OutputCharacterCount, tempBuffer2.Data(), tempBuffer2.Size(), &encodeResult))
 		{
 			throw "Failed to convert character code. (output)";
@@ -82,6 +83,8 @@ gu::DynamicArray<uint8>& CharacterCodeConverter::Convert(const uint8* input, con
 	_outputBuffer.Resize(encodeResult.OutputByteSize, false);
 	Memory::Copy(_outputBuffer.Data(), tempBuffer2.Data(), encodeResult.OutputByteSize);
 
+	tempBuffer1.Clear(); tempBuffer1.ShrinkToFit();
+	tempBuffer2.Clear(); tempBuffer2.ShrinkToFit();
 	return _outputBuffer;
 
 }

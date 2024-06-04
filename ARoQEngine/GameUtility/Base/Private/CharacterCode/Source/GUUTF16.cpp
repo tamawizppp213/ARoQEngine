@@ -77,7 +77,53 @@ bool UTF16::FromUTF16(const uint16* input, const uint64 inputElementSize, uint8*
 		}
 	}
 
-	Memory::Copy(output, input, inputElementSize * sizeof(uint16));
+	/*-------------------------------------------------------------------
+	-              UTF16の取得
+	---------------------------------------------------------------------*/
+	const uint16* iterator = input;
+	const uint16* end      = input + inputElementSize;
+	uint16* outputUTF16    = reinterpret_cast<uint16*>(output);
+	uint16  highSurrogate  = 0;
+
+	while(iterator < end)
+	{
+		if (highSurrogate == 0)
+		{
+			if (UnicodeConverter::CheckUTF16HighSurrogate(*iterator))
+			{
+				highSurrogate = *iterator;
+			}
+			else if (UnicodeConverter::CheckUTF16LowSurrogate(*iterator))
+			{
+				return false;
+			}
+			else
+			{
+				outputUTF16[result->OutputCharacterCount] = *iterator;
+				result->OutputCharacterCount++;
+				result->OutputByteSize += 2;
+			}
+		}
+		else
+		{
+			if(UnicodeConverter::CheckUTF16LowSurrogate(*iterator))
+			{
+				outputUTF16[result->OutputCharacterCount] = highSurrogate;
+				outputUTF16[result->OutputCharacterCount + 1] = *iterator;
+				result->OutputCharacterCount += 2;
+				result->OutputByteSize += 4;
+				highSurrogate = 0;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		iterator++;
+		result->ConsumedElementCount++;
+	}
+
 
 	/*-------------------------------------------------------------------
 	-              自身のエンディアンと異なる場合はエンディアンを変換
@@ -86,15 +132,6 @@ bool UTF16::FromUTF16(const uint16* input, const uint64 inputElementSize, uint8*
 	{
 		uint16* utf16String = reinterpret_cast<uint16*>(output);
 		::SwapEndian(utf16String, inputElementSize);
-	}
-
-	if (result != nullptr)
-	{
-		result->ConsumedElementCount = inputElementSize;
-		result->OutputByteSize       = inputElementSize * sizeof(uint16);
-		result->OutputCharacterCount = inputElementSize;
-
-		Check(result->OutputByteSize == outputByteSize);
 	}
 
 	return true;
@@ -208,23 +245,67 @@ bool UTF16::ToUTF16(const uint8* input, const uint64 inputByteSize, uint16* outp
 		}
 	}
 
-	Memory::Copy(output, input, inputByteSize);
+	/*-------------------------------------------------------------------
+	-				変換
+	---------------------------------------------------------------------*/
+	const uint64 maxUINT64 = (uint64) - 1;
+
+	uint64  inputWordPosition  = 0; // MBCS
+	uint64  outputWordPosition = 0; // UTF16
+	uint64  inputWordCount     = inputByteSize / 2;
+	uint16* inputWords         = (uint16*)(input);
+	uint16  lastLeadWord       = 0;
+
+	for (; inputWordPosition < inputWordCount && outputWordPosition < outputElementSize;)
+	{
+		uint16 character = inputWords[inputWordPosition];
+
+		// 上位サロゲート未発見状態の場合
+		if (lastLeadWord == 0x0000)
+		{
+			if (UnicodeConverter::CheckUTF16HighSurrogate(character))
+			{
+				lastLeadWord = character; // 上位サロゲートを記録
+			}
+			else
+			{
+				// 普通のUTF16文字
+				output[outputWordPosition++] = character;
+				result->OutputCharacterCount++;
+				result->OutputByteSize += 2;
+			}
+		}
+		// 直前の文字が先行バイトの場合
+		else
+		{
+			// 下位サロゲートが見つかった場合
+			if (UnicodeConverter::CheckUTF16LowSurrogate(character))
+			{
+				output[outputWordPosition++] = lastLeadWord;
+				output[outputWordPosition++] = character;
+				result->OutputCharacterCount++;
+				result->OutputByteSize += 4;
+				lastLeadWord = 0x0000;
+			}
+			else
+			{
+				// 下位サロゲート以外の文字が来た場合
+				return false;
+			}
+
+		}
+
+		// inputWordPositionを進める
+		inputWordPosition++;
+		result->ConsumedByteSize += 2;
+	}
 
 	/*-------------------------------------------------------------------
 	-              自身のエンディアンと異なる場合はエンディアンを変換
 	---------------------------------------------------------------------*/
 	if (isBigEndian != _isBigEndian)
 	{
-		::SwapEndian(output, inputByteSize / sizeof(uint16));
-	}
-
-	if (result != nullptr)
-	{
-		result->ConsumedByteSize       = inputByteSize;
-		result->OutputByteSize         = inputByteSize;
-		result->OutputCharacterCount   = inputByteSize / sizeof(uint16);
-
-		Check(result->OutputByteSize == outputElementSize * sizeof(uint16));
+		::SwapEndian(output, result->OutputCharacterCount);
 	}
 
 	return true;
@@ -275,17 +356,53 @@ bool UTF16::ToUTF32(const uint8* input, const uint64 inputByteSize, uint32* outp
 		output++;
 	}
 
-	UnicodeConverter::Options option = {};
-	option.ReplacementChar = '?';
-	const auto covertResult = UnicodeConverter::ConvertUTF16ToUTF32
-	(
-		utf16String, inputByteSize / sizeof(uint16) - bomOffset,
-		output, outputElementSize - bomOffset, option
-	);
+	uint64 inputWordPosition  = 0; // MBCS
+	uint64 outputWordPosition = 0; // UTF32
+	uint64 inputWordCount     = inputByteSize / 2 - bomOffset;
+	uint16 lastLeadWord       = 0;
 
-	if (covertResult != UnicodeConvertResult::Success)
+	for(; inputWordPosition < inputWordCount && outputWordPosition < outputElementSize - bomOffset;)
 	{
-		return false;
+		uint16 character = utf16String[inputWordPosition];
+
+		// 上位サロゲート未発見状態の場合
+		if (lastLeadWord == 0x0000)
+		{
+			if (UnicodeConverter::CheckUTF16HighSurrogate(character))
+			{
+				lastLeadWord = character; // 上位サロゲートを記録
+			}
+			else
+			{
+				// 普通のUTF16文字
+				output[outputWordPosition++] = character;
+				result->OutputCharacterCount++;
+				result->OutputByteSize += 4;
+			}
+		}
+		// 直前の文字が先行バイトの場合
+		else
+		{
+			// 下位サロゲートが見つかった場合
+			if (UnicodeConverter::CheckUTF16LowSurrogate(character))
+			{
+				uint32 utf32Char = ((lastLeadWord - 0xD800) << 10) + (character - 0xDC00) + 0x10000;
+				output[outputWordPosition++] = utf32Char;
+				result->OutputCharacterCount++;
+				result->OutputByteSize += 4;
+				lastLeadWord = 0x0000;
+			}
+			else
+			{
+				// 下位サロゲート以外の文字が来た場合
+				return false;
+			}
+
+		}
+
+		// inputWordPositionを進める
+		inputWordPosition++;
+		result->ConsumedByteSize += 2;
 	}
 
 	/*-------------------------------------------------------------------
@@ -293,14 +410,7 @@ bool UTF16::ToUTF32(const uint8* input, const uint64 inputByteSize, uint32* outp
 	---------------------------------------------------------------------*/
 	if (isBigEndian != _isBigEndian)
 	{
-		::SwapEndian(output, option.ConvertedTargetLength);
-	}
-
-	if (result != nullptr)
-	{
-		result->ConsumedByteSize       = inputByteSize;
-		result->OutputByteSize         = (option.ConvertedTargetLength + bomOffset) * sizeof(uint32);
-		result->OutputCharacterCount   = (option.ConvertedTargetLength + bomOffset);
+		::SwapEndian(output, result->OutputCharacterCount);
 	}
 
 	return true;

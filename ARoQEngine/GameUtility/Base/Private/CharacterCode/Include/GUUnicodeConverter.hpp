@@ -162,7 +162,9 @@ namespace gu::details::string
 		static UnicodeConvertResult GetUTF8TrailingBytes(const uint8* source, const uint8* sourceEnd, uint64& outExtraByteCount, const bool strict);
 
 		/*!**********************************************************************
-		*  @brief     UTF16 のサロゲートペアであるかを確認する
+		*  @brief     UTF16 のサロゲートペアであるかを確認する @n
+		*             サロゲートペアは, JIS第3, 4水準の漢字をすべてサポートするための拡張 (4バイト). @n
+		*             従来のUnicodeで未使用の0xD800～0xDBFFを上位サロゲート0xDC00～0xDFFFを下位サロゲートと規定して4バイト文字を表現する　https://codezine.jp/article/detail/1592
 		*  @param[in] const void* チェック対象の先頭文字のポインタ
 		*  @param[in] const void* チェック対象の終端文字のポインタ
 		*  @param[in] const bool trueの場合, 不正文字のチェックを行います (不正文字が見つかった場合はSourceIllegalを返す)
