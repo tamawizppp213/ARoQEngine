@@ -469,9 +469,18 @@ namespace gu::details::string
 			{
 				SetNonSSOLength(size);
 			}
+			else if(forceChangeSize && size <= SSO_CAPACITY)
+			{
+				SetSSOLength(size);
+			}
+
 			if (size > SSO_CAPACITY)
 			{
 				SetNonSSOMode();
+			}
+			else
+			{
+				SetSSOMode();
 			}
 		}
 
