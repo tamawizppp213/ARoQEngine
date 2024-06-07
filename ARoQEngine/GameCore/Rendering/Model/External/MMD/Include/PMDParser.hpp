@@ -38,8 +38,8 @@ namespace gc::file::pmd
 
 		/*!**********************************************************************
 		*  @brief     PMDファイルを読み込む関数
-		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
-		*  @return    void
+		*  @param[in] gu::tstring& ファイルパス
+		*  @return    bool
 		*************************************************************************/
 		bool Read(const gu::tstring& filePath);
 

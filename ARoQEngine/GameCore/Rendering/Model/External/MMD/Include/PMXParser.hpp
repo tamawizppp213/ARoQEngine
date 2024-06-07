@@ -35,8 +35,8 @@ namespace gc::file::pmx
 
 		/*!**********************************************************************
 		*  @brief     PMXファイルを読み込む関数
-		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
-		*  @return    void
+		*  @param[in] const gu::tstring& ファイルパス
+		*  @return    bool
 		*************************************************************************/
 		bool Read(const gu::tstring& filePath);
 
