@@ -573,7 +573,13 @@ namespace gu::details::string
 		**                Private Function
 		*****************************************************************************/
 		#pragma region Utility
-
+		/*!**********************************************************************
+		*  @brief     小数点以下の桁数の近似を算出 (小数点第6位まで)
+		*  @param[in] double
+		*  @return    int32
+		*************************************************************************/
+		static int32 CountDecimalPlace(const double value);
+		static int32 CountDecimalPlace(const float value);
 		#pragma endregion Utility
 
 		#pragma region Memory
@@ -623,8 +629,8 @@ namespace gu::details::string
 
 		__forceinline       Char* GetBuffer()                { return IsSSOMode() ? _data.SSO.Buffer : _data.NonSSO.Pointer; }
 		__forceinline const Char* GetBuffer() const noexcept { return IsSSOMode() ? _data.SSO.Buffer : _data.NonSSO.Pointer; }
-#pragma endregion Memory
-#pragma region SSO operation
+		#pragma endregion Memory
+		#pragma region SSO operation
 		/*!**********************************************************************
 		*  @brief     SSOを使用する (16文字以内の静的な文字配列を使用する)モードに設定します. 2^0のフラグをoffにします.
 		*  @param[in] void
@@ -674,7 +680,8 @@ namespace gu::details::string
 			_data.NonSSO.Size = length << 1;
 			_data.NonSSO.Pointer[length] = '\0';
 		}
-#pragma endregion SSO operation
+		#pragma endregion SSO operation
+
 
 		/****************************************************************************
 		**                Private Property
@@ -1202,8 +1209,13 @@ namespace gu::details::string
 	template<typename Char, int CharByte>
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const float value)
 	{
+		int32 decimalPlace = CountDecimalPlace(value);
+
+		char format[8] = {};
+		sprintf_s(format, "%%.%df", decimalPlace);
+
 		char source[64]   = {};
-		const auto length = sprintf_s(source, "%f", value);
+		const auto length = sprintf_s(source, format, value);
 		
 		Char destination[64] = {};
 		for (int32 i = 0; i < length; ++i)
@@ -1216,8 +1228,13 @@ namespace gu::details::string
 	template<typename Char, int CharByte>
 	StringBase<Char, CharByte> StringBase<Char, CharByte>::FromNumber(const double value)
 	{
+		int32 decimalPlace = CountDecimalPlace(value);
+
+		char format[16] = {};
+		sprintf_s(format, "%%.%df", decimalPlace);
+
 		char source[64] = {};
-		const auto length = sprintf_s(source, "%d", value);
+		const auto length = sprintf_s(source, format, value);
 
 		Char destination[64] = {};
 		for (uint32 i = 0; i < length; ++i)
@@ -1225,6 +1242,33 @@ namespace gu::details::string
 			destination[i] = (Char)source[i];
 		}
 		return StringBase<Char, CharByte>(destination, length);
+	}
+
+	template<class Char, int CharByte>
+	int32 StringBase<Char, CharByte>::CountDecimalPlace(const double value)
+	{
+		// 精度は15桁まで
+		const auto precision = 0.000000000000001;
+		int32 count = 0;
+		double temp = value;
+		while (temp - static_cast<uint64>(temp) > precision && count < 15) {
+			temp *= 10;
+			++count;
+		}
+		return count;
+	}
+
+	template<class Char, int CharByte>
+	int32 StringBase<Char, CharByte>::CountDecimalPlace(const float value)
+	{
+		const auto precision = 0.000001f;
+		int32 count = 0;
+		float temp = value;
+		while (temp - static_cast<uint32>(temp) > precision && count < 6) {
+			temp *= 10;
+			++count;
+		}
+		return count;
 	}
 
 #pragma endregion From Number
