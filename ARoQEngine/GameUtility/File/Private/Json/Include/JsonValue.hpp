@@ -67,6 +67,13 @@ namespace gu::file::json
 		virtual DynamicArray<SharedPointer<JsonValue>> GetArray() const { return {}; }
 
 		/*!**********************************************************************
+		*  @brief     bool‚Ì’l‚ðŽæ“¾‚µ‚Ü‚·
+		*  @param[in] void
+		*  @return    int8
+		*************************************************************************/
+		virtual bool GetBool() const;
+
+		/*!**********************************************************************
 		*  @brief     Int8‚Ì’l‚ðŽæ“¾‚µ‚Ü‚·
 		*  @param[in] void
 		*  @return    int8
