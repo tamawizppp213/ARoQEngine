@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   JsonBoolean.hpp
-///  @brief  Boolean型のJson値を扱うクラス
+///  @file   JsonString.hpp
+///  @brief  Jsonの文字列型の値を扱うクラス
 ///  @author toide
-///  @date   2024/06/09 0:47:13
+///  @date   2024/06/09 1:42:57
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef JSON_BOOLEAN_HPP
-#define JSON_BOOLEAN_HPP
+#ifndef JSON_STRING_HPP
+#define JSON_STRING_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -23,11 +23,11 @@
 namespace gu::file::json
 {
 	/****************************************************************************
-	*				  			   JsonBoolean
+	*				  			   JsonString
 	*************************************************************************//**
-	/*  @brief     temp
+	/*  @brief  Jsonの文字列型の値を扱うクラス
 	*****************************************************************************/
-	struct JsonBoolean : public JsonValue
+	struct JsonString : public JsonValue
 	{
 	public:
 		#pragma region Public Function
@@ -43,7 +43,7 @@ namespace gu::file::json
 		*  @param[in] void
 		*  @return    int8
 		*************************************************************************/
-		virtual bool GetBool() const override;
+		virtual bool GetBool() const;
 
 		/*!**********************************************************************
 		*  @brief     Int8の値を取得します
@@ -114,7 +114,6 @@ namespace gu::file::json
 		*  @return    double
 		*************************************************************************/
 		virtual double GetDouble() const;
-
 		#pragma endregion 
 
 		#pragma region Public Property
@@ -128,10 +127,10 @@ namespace gu::file::json
 		#pragma region Public Constructor and Destructor
 
 		/*! @brief デフォルトコンストラクタ*/
-		JsonBoolean() : JsonValue(JsonValueType::False) {}
+		JsonString() : JsonValue(JsonValueType::String) {}
 
-		/*! @brief bool値で初期化*/
-		JsonBoolean(const bool value) : JsonValue(value ? JsonValueType::True : JsonValueType::False), _value(value) {}
+		/*! @brief 文字列で取得*/
+		JsonString(const tstring& value) : JsonValue(JsonValueType::String), _value(value) {}
 
 		#pragma endregion 
 
@@ -159,10 +158,11 @@ namespace gu::file::json
 
 		#pragma region Private Property
 
-		/*! @brief 保存するbool値*/
-		bool _value = false;
+		/*! @brief 保存する文字列*/
+		tstring _value = SP("");
 
 		#pragma endregion 
 	};
-}
+};
+
 #endif
