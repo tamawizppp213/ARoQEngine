@@ -140,7 +140,7 @@ void PMXHeader::Read(const gu::SharedPointer<platform::core::file::IFileHandle>&
 	// 8バイト以降のデータを読み込む
 	if (SubsequentDataSize > 8)
 	{
-		OtherData.Resize(SubsequentDataSize - 8);
+		OtherData.Resize(static_cast<uint64>(SubsequentDataSize) - 8);
 		fileHandle->Read(OtherData.Data(), OtherData.Size());
 	}
 
@@ -687,10 +687,9 @@ void PMXAnchorRigidBody::Read(const gu::SharedPointer<platform::core::file::IFil
 /*!**********************************************************************
 *  @brief     pmxファイルをもとにデータ読み込み
 *  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
-*  @param[in] const PMXHeader ヘッダ情報
 *  @return    void
 *************************************************************************/
-void PMXSoftBodyConfig::Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle, const PMXHeader& header)
+void PMXSoftBodyConfig::Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
 {
 	fileHandle->Read(&VelocityCorrection      , sizeof(float32));
 	fileHandle->Read(&DampingCoefficient      , sizeof(float32));
@@ -712,7 +711,7 @@ void PMXSoftBodyConfig::Read(const gu::SharedPointer<platform::core::file::IFile
 *  @param[in] const PMXHeader ヘッダ情報
 *  @return    void
 *************************************************************************/
-void PMXSoftBodyCluster::Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle, const PMXHeader& header)
+void PMXSoftBodyCluster::Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
 {
 	fileHandle->Read(&SoftVsRigidBodyHardness       , sizeof(float32));
 	fileHandle->Read(&SoftVsKineticHardness         , sizeof(float32));
@@ -728,7 +727,7 @@ void PMXSoftBodyCluster::Read(const gu::SharedPointer<platform::core::file::IFil
 *  @param[in] const PMXHeader ヘッダ情報
 *  @return    void
 *************************************************************************/
-void PMXSoftBodyIteration::Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle, const PMXHeader& header)
+void PMXSoftBodyIteration::Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
 {
 	fileHandle->Read(&VelocitySolver, sizeof(int32));
 	fileHandle->Read(&PositionSolver, sizeof(int32));
@@ -739,10 +738,9 @@ void PMXSoftBodyIteration::Read(const gu::SharedPointer<platform::core::file::IF
 /*!**********************************************************************
 *  @brief     pmxファイルをもとにデータ読み込み
 *  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
-*  @param[in] const PMXHeader ヘッダ情報
 *  @return    void
 *************************************************************************/
-void PMXSoftBodyMaterial::Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle, const PMXHeader& header)
+void PMXSoftBodyMaterial::Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
 {
 	fileHandle->Read(&LinearStiffness , sizeof(float32));
 	fileHandle->Read(&AngularStiffness, sizeof(float32));
@@ -771,10 +769,10 @@ void PMXSoftBody::Read(const gu::SharedPointer<platform::core::file::IFileHandle
 	fileHandle->Read(&CollisionMargin    , sizeof(float32));
 	fileHandle->Read(&AeroModel          , sizeof(uint8));
 	
-	Config   .Read(fileHandle, header);
-	Cluster  .Read(fileHandle, header);
-	Iteration.Read(fileHandle, header);
-	Material .Read(fileHandle, header);
+	Config   .Read(fileHandle);
+	Cluster  .Read(fileHandle);
+	Iteration.Read(fileHandle);
+	Material .Read(fileHandle);
 
 	int32 anchorCount = 0;
 	fileHandle->Read(&anchorCount, sizeof(int32));

@@ -29,6 +29,7 @@
 #include "GameUtility/Base/Include/GUCommandLine.hpp"
 #include "GameUtility/Base/Include/GUParse.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -38,12 +39,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 #if PLATFORM_OS_WINDOWS
     #ifdef _DEBUG
-        int main(const gu::int32 argumentCount, const gu::char8** argumentVector)
+        int main(const gu::int32 argumentCount, const char** argumentVector)
     #else
         int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCommandLine, _In_ int nShowCommand)
     #endif
 #else
-        int main(const gu::int32 argumentCount, const gu::char8** argumentVector)
+        int main(const gu::int32 argumentCount, const char** argumentVector)
 #endif
 /*---------------------------------------------------------------
             Main Function‚ÌŽÀ‘•

@@ -32,19 +32,18 @@ namespace rhi::directX12
 	class GPUDepthStencilState : public rhi::core::GPUDepthStencilState
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
+		#pragma region Public Property
+
 		const D3D12_DEPTH_STENCIL_DESC& GetDepthStencilState() const noexcept { return _depthStencilDesc; }
 		
 		const D3D12_DEPTH_STENCIL_DESC1& GetDepthStencilState1() const noexcept { return _depthStencilDesc1; }
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
 		explicit GPUDepthStencilState(
 			const gu::SharedPointer<rhi::core::RHIDevice>& device,
 			const core::DepthStencilProperty& depthStencilProperty
@@ -53,16 +52,16 @@ namespace rhi::directX12
 		~GPUDepthStencilState() = default;
 		
 		GPUDepthStencilState() = default;
+		#pragma endregion
+	
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		#pragma region Protected Property
 		D3D12_DEPTH_STENCIL_DESC  _depthStencilDesc  = {};
 		D3D12_DEPTH_STENCIL_DESC1 _depthStencilDesc1 = {};
+		#pragma endregion
 	};
 }
 #endif

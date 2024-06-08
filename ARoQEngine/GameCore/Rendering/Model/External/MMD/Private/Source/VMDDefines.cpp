@@ -80,7 +80,7 @@ void VMDHeader::Read(const gu::SharedPointer<platform::core::file::IFileHandle>&
 *  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 *  @return    void
 *************************************************************************/
-void VMDHeader::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
+void VMDHeader::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const
 {
 	WriteString(fileHandle, Header,    30);
 	WriteString(fileHandle, ModelName, 20);
@@ -105,7 +105,7 @@ void VMDBoneKeyFrame::Read(const gu::SharedPointer<platform::core::file::IFileHa
 *  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 *  @return    void
 *************************************************************************/
-void VMDBoneKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
+void VMDBoneKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const
 {
 	WriteString(fileHandle, Name, 15);
 	fileHandle->Write(&Frame             , sizeof(uint32));
@@ -131,7 +131,7 @@ void VMDFaceKeyFrame::Read(const gu::SharedPointer<platform::core::file::IFileHa
 *  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 *  @return    void
 *************************************************************************/
-void VMDFaceKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
+void VMDFaceKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const
 {
 	WriteString(fileHandle, Name, 15);
 	fileHandle->Write(&Frame , sizeof(uint32));
@@ -162,7 +162,7 @@ void VMDCameraKeyFrame::Read(const gu::SharedPointer<platform::core::file::IFile
 *  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 *  @return    void
 *************************************************************************/
-void VMDCameraKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
+void VMDCameraKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const
 {
 	fileHandle->Write(&Frame, sizeof(uint32));
 	fileHandle->Write(&Distance     , sizeof(float32));
@@ -192,7 +192,7 @@ void VMDLightKeyFrame::Read(const gu::SharedPointer<platform::core::file::IFileH
 *  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 *  @return    void
 *************************************************************************/
-void VMDLightKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
+void VMDLightKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const
 {
 	fileHandle->Write(&Frame   , sizeof(uint32));
 	fileHandle->Write(&Color   , sizeof(gm::Float3));
@@ -216,7 +216,7 @@ void VMDSelfShadowKeyFrame::Read(const gu::SharedPointer<platform::core::file::I
 *  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 *  @return    void
 *************************************************************************/
-void VMDSelfShadowKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
+void VMDSelfShadowKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const
 {
 	fileHandle->Write(&Frame     , sizeof(uint32));
 	fileHandle->Write(&ShadowType, sizeof(uint8));
@@ -239,7 +239,7 @@ void VMDIKEnable::Read(const gu::SharedPointer<platform::core::file::IFileHandle
 *  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 *  @return    void
 *************************************************************************/
-void VMDIKEnable::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
+void VMDIKEnable::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const
 {
 	WriteString(fileHandle, Name, 20);
 	fileHandle->Write(&IsEnable, sizeof(bool));
@@ -269,7 +269,7 @@ void VMDIKKeyFrame::Read(const gu::SharedPointer<platform::core::file::IFileHand
 *  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 *  @return    void
 *************************************************************************/
-void VMDIKKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle)
+void VMDIKKeyFrame::Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const
 {
 	fileHandle->Write(&Frame, sizeof(uint32));
 	fileHandle->Write(&IsDisplay, sizeof(bool));

@@ -148,16 +148,16 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 	---------------------------------------------------------------------*/
 	if (dxMetaData.IsCubemap())
 	{
-		_metaData = core::GPUTextureMetaData::CubeMap(image->width, image->height, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::CubeMap(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	else if (dxMetaData.IsVolumemap())
 	{
-		_metaData = core::GPUTextureMetaData::Texture3D(image->width, image->height, dxMetaData.depth, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::Texture3D(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), dxMetaData.depth, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	else
 	{
-		_metaData = core::GPUTextureMetaData::Texture2DArray(image->width, image->height, dxMetaData.arraySize,
-			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), dxMetaData.mipLevels);
+		_metaData = core::GPUTextureMetaData::Texture2DArray(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), dxMetaData.arraySize,
+			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	// ïKÇ∏ç≈èâÇÕUndefinedÇ©ÇÁénÇﬂÇÈ.
 	_metaData.State = rhi::core::ResourceState::Common;

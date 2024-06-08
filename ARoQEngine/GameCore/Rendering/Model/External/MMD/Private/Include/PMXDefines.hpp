@@ -1048,10 +1048,9 @@ namespace gc::file::pmx
 		/*!**********************************************************************
 		*  @brief     pmxファイルをもとにデータ読み込み
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
-		*  @param[in] const PMXHeader ヘッダ情報
 		*  @return    void
 		*************************************************************************/
-		void Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle, const PMXHeader& header);
+		void Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
 
 	};
 
@@ -1083,10 +1082,9 @@ namespace gc::file::pmx
 		/*!**********************************************************************
 		*  @brief     pmxファイルをもとにデータ読み込み
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
-		*  @param[in] const PMXHeader ヘッダ情報
 		*  @return    void
 		*************************************************************************/
-		void Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle, const PMXHeader& header);
+		void Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
 	};
 
 	/****************************************************************************
@@ -1111,10 +1109,9 @@ namespace gc::file::pmx
 		/*!**********************************************************************
 		*  @brief     pmxファイルをもとにデータ読み込み
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
-		*  @param[in] const PMXHeader ヘッダ情報
 		*  @return    void
 		*************************************************************************/
-		void Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle, const PMXHeader& header);
+		void Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
 	};
 
 	/****************************************************************************
@@ -1136,10 +1133,9 @@ namespace gc::file::pmx
 		/*!**********************************************************************
 		*  @brief     pmxファイルをもとにデータ読み込み
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
-		*  @param[in] const PMXHeader ヘッダ情報
 		*  @return    void
 		*************************************************************************/
-		void Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle, const PMXHeader& header);
+		void Read(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
 	};
 
 	/****************************************************************************

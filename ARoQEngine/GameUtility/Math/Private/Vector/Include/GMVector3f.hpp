@@ -132,7 +132,7 @@ namespace gm
 		/*----------------------------------------------------------------------
 		*  @brief : Float3に変換する
 		/*----------------------------------------------------------------------*/
-		__forceinline Float3 ToFloat3()
+		__forceinline Float3 ToFloat3() const noexcept
 		{
 			Float3 value = {};
 			SIMD_NAME_SPACE::Vector128Utility::StoreFloat3((float*)&value, _vector);
@@ -214,7 +214,7 @@ namespace gm
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内にあるかどうか -bounds <= vector <= +bounds
 		/*----------------------------------------------------------------------*/
-		__forceinline bool InBounds(const Vector3f& bounds) noexcept { return SIMD_NAME_SPACE::Vector128Utility::InBoundsVector3(_vector, bounds._vector); }
+		__forceinline bool InBounds(const Vector3f& bounds) const noexcept { return SIMD_NAME_SPACE::Vector128Utility::InBoundsVector3(_vector, bounds._vector); }
 
 		__forceinline operator VECTOR128() const { return _vector; }
 
@@ -316,7 +316,7 @@ namespace gm
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素に対するsin成分とcos成分を取り出します
 		/*----------------------------------------------------------------------*/
-		__forceinline void SinCos(Vector3f& sin, Vector3f& cos) noexcept
+		__forceinline void SinCos(Vector3f& sin, Vector3f& cos) const noexcept
 		{
 			SIMD_NAME_SPACE::Vector128Utility::SinCos(_vector, &sin._vector, &cos._vector);
 		}

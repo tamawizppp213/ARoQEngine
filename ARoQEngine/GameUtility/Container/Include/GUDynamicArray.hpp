@@ -214,63 +214,76 @@ namespace gu
 		*************************************************************************/
 		__forceinline uint64 Size() const { return _size; }
 
-		/*----------------------------------------------------------------------
-		*  @brief : 配列に詰め込める最大要素数
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     配列に詰め込める最大要素数
+		*  @param[in] void
+		*  @return    uint64 配列に詰め込める最大要素数
+		*************************************************************************/
 		__forceinline uint64 Capacity() const { return _capacity; }
 
-		/*----------------------------------------------------------------------
-		*  @brief : 要素のバイト数を返す
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     要素のバイト数を返す
+		*  @param[in] void
+		*  @return    uint32 要素のバイト数
+		*************************************************************************/
 		__forceinline static constexpr uint32 ByteOfElement() { return sizeof(ElementType); }
 
-		/*----------------------------------------------------------------------
-		*  @brief : 配列に詰め込める残りの要素数を返す (capacity - size)
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     配列に詰め込める残りの要素数を返す (capacity - size)
+		*  @param[in] void
+		*  @return    uint64 配列に詰め込める残りの要素数
+		*************************************************************************/
 		__forceinline uint64 ResidueCount() const { return _capacity - _size; }
 
-		/*----------------------------------------------------------------------
-		*  @brief : 指定したIndexが領域内かどうか, 範囲外であっても途中で止めない
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     指定したIndexが領域内かどうか, 範囲外であっても途中で止めない
+		*  @param[in] const uint64 index
+		*  @return    bool 範囲内であればtrueを返します
+		*************************************************************************/
 		__forceinline bool InRange(const uint64 index) const { return 0 <= index && index <= _size; }
 
-		/*----------------------------------------------------------------------
-		*  @brief : 指定したIndexが領域内かどうか, 範囲外であったら途中で止める
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     指定したIndexが領域内かどうか, 範囲外であったら途中で止める. (Debugモードのみで使用可能です)
+		*  @param[in] const uint64 index
+		*  @return    void
+		*************************************************************************/
 		__forceinline void CheckRange(const uint64 index) const
 		{
 			Checkf(0 <= index && index <= _size, "index is out of range. \n");
 		}
 
-		/*----------------------------------------------------------------------
-		*  @brief : データを範囲確認を行った上で返す. 
-		*           範囲外に入った場合はブレークポイントが強制的にかかり, 処理が止まります. 
-		/*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     データを範囲確認を行った上で返す. @n
+		*             範囲外に入った場合はブレークポイントが強制的にかかり, 処理が止まります. 
+		*  @param[in] const uint64 index
+		*  @return    ElementType&
+		*************************************************************************/
 		__forceinline       ElementType& At(const uint64 index)       { CheckRange(index); return _data[index]; }
 		__forceinline const ElementType& At(const uint64 index) const { CheckRange(index); return _data[index]; }
 
 		#pragma endregion Public Property
-#pragma region Iterator Function
+		#pragma region Iterator Function
 		Iterator<ElementType>             begin       ()       { return Iterator<ElementType>            (_data); }
 		ConstIterator<ElementType>        begin       () const { return ConstIterator<ElementType>       (_data); }
 		Iterator<ElementType>             end         ()       { return Iterator<ElementType>            (_data + _size); }
 		ConstIterator<ElementType>        end         () const { return ConstIterator<ElementType>       (_data + _size); }
 		ReverseIterator<ElementType>      rbegin      ()       { return ReverseIterator<ElementType>     (_data + _size); }
 		ReverseConstIterator<ElementType> rbegin      () const { return ReverseConstIterator<ElementType>(_data + _size); }
-#pragma endregion Iterator Function
-#pragma region Operator Function
-		// 高速化のために範囲チェックを施していません. 範囲チェックを行いたい場合はAtを使用してください
+		#pragma endregion Iterator Function
+		#pragma region Operator Function
+		/*! @brief 高速化のために範囲チェックを施していません.範囲チェックを行いたい場合はAtを使用してください */
 		__forceinline ElementType& operator[](const uint64 index)
 		{
 			return _data[index];
 		}
-		// 高速化のために範囲チェックを施していません. 範囲チェックを行いたい場合はAtを使用してください
+
+		/*! @brief 高速化のために範囲チェックを施していません.範囲チェックを行いたい場合はAtを使用してください */
 		__forceinline const ElementType& operator[](const uint64 index) const
 		{
 			return _data[index];
 		}
 
-		// 波括弧を使って代入が行えるようにする
+		/*! @brief  波括弧を使って代入が行えるようにする*/
 		DynamicArray& operator=(std::initializer_list<ElementType> list)
 		{
 			if (list.size() == 0)
@@ -286,7 +299,7 @@ namespace gu
 			return *this;
 		}
 
-		// ほかのArray(型が同じ)から代入
+		/*! @brief ほかのArray(型が同じ)から代入 */
 		DynamicArray& operator=(const DynamicArray& other)
 		{
 			if (other.IsEmpty())
@@ -302,7 +315,7 @@ namespace gu
 			return *this;
 		}
 
-		// ムーブコンストラクタ
+		/*! @brief ムーブコンストラクタ */
 		DynamicArray& operator=(DynamicArray&& other)
 		{
 			if (this != &other)
@@ -314,29 +327,32 @@ namespace gu
 			}
 			return *this;
 		}
-#pragma endregion Operator Function
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+
+		#pragma endregion Operator Function
+		
+		#pragma region Public Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		DynamicArray() : _size(0), _capacity(0), _data(nullptr) {};
 
-		// 配列の要素から作成するコンストラクタ
+		/*! @brief 配列の要素から作成するコンストラクタ*/
 		DynamicArray(const ElementType* pointer, const uint64 count)
 		{
 			CreateFromOtherArray(pointer, count);
 		}
 
+		/*! @brief 配列のサイズ確保だけ行います*/
 		DynamicArray(const uint64 size) { Resize(size); }
 
+		/*! @brief 配列のサイズ確保時にコピーコンストラクタの指定を行います.*/
 		DynamicArray(const uint64 size, const ElementType& defaultElement) { Resize(size, true, defaultElement); }
 
-		// 波括弧で初期化が出来るコンストラクタ
+		/*! @brief 波括弧で初期化が出来るコンストラクタ*/
 		DynamicArray(std::initializer_list<ElementType> list)
 		{
 			CreateFromOtherArray(list.begin(), list.size());
 		}
 
-		// コピーコンストラクタ
+		/*! @brief コピーコンストラクタ*/
 		DynamicArray(const DynamicArray& other) 
 		{
 			if (other.IsEmpty()) // 初期化と同等
@@ -351,7 +367,7 @@ namespace gu
 			}
 		}
 
-		// ムーブコンストラクタ
+		/*! @brief ムーブコンストラクタ*/
 		DynamicArray(DynamicArray&& other) noexcept
 		{
 			// ヒープ領域の全体私は時間がかかるため, あくまでポインタの付け替えだけで対応しました.
@@ -360,6 +376,7 @@ namespace gu
 			_capacity = other._capacity; other._capacity = 0;
 		}
 
+		/*! @brief デストラクタ*/
 		~DynamicArray()
 		{
 			if (_data) 
@@ -368,14 +385,13 @@ namespace gu
 				Memory::Free(_data); 
 			} 
 		}
+		#pragma endregion
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion 
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		#pragma region Private Property
+
 		// @brief : 実際に数値が入力されているIndexの個数
 		uint64 _size     = 0;
 
@@ -385,17 +401,17 @@ namespace gu
 		// @brief : 要素を格納する配列の先頭ポインタ
 		ElementType* _data = nullptr;
 
+		#pragma endregion
+	
 	private:
-		/****************************************************************************
-		**                Private Function
-		*****************************************************************************/
+		#pragma region Private Function
 		void CreateFromOtherArray(const ElementType* pointer, const uint64 count);
 
 		void RemoveAtImplement(const uint64 index, const uint64 count, const bool allowShrinking);
+		#pragma endregion
 
-		/****************************************************************************
-		**                Private Property
-		*****************************************************************************/
+		#pragma region Private Property
+		#pragma endregion
 	};
 
 #pragma region Implement
@@ -419,19 +435,6 @@ namespace gu
 		}
 	}
 
-	/****************************************************************************
-	*                    Resize
-	*************************************************************************//**
-	*  @fn       　void DynamicArray<ElementType>::Reserve(const uint64 capacity)
-	*
-	*  @brief     サイズを変更します
-	*
-	*  @param[in] const uint64 配列のサイズ (capacityではありません)
-	*  @param[in] const bool   コピーコンストラクタを使用するか (falseにすると効率化のために未初期化状態で始まります.)
-	* 　@param[in] const ElementType& コピー元の要素 (基本デフォルトコンストラクタから作られたもの.)
-	*
-	*  @return 　　void
-	*****************************************************************************/
 	template<class ElementType>
 	void DynamicArray<ElementType>::Resize(const uint64 size, const bool useConstructor, const ElementType& defaultElement)
 	{
@@ -463,17 +466,7 @@ namespace gu
 		_size = size;
 	}
 
-	/****************************************************************************
-	*                    Reserve
-	*************************************************************************//**
-	*  @fn       　void DynamicArray<ElementType>::Reserve(const uint64 capacity)
-	*
-	*  @brief     メモリ領域を事前に確保します. (ただし, コンストラクタの呼び出しは全く行いません)
-	*
-	*  @param[in] const uint64 capacity (最大限入れられる容量(配列数), バイトサイズではないことに注意)
-	*
-	*  @return 　　void
-	*****************************************************************************/
+
 	template<class ElementType>
 	void DynamicArray<ElementType>::Reserve(const uint64 capacity)
 	{
@@ -500,17 +493,6 @@ namespace gu
 		_capacity = capacity;
 	}
 
-	/****************************************************************************
-	*                    Clear
-	*************************************************************************//**
-	*  @fn       　void DynamicArray<ElementType>::Clear()
-	*
-	*  @brief     サイズを0にしますが, Capacity領域自体はそのままにします
-	*
-	*  @param[in] void
-	*
-	*  @return 　　void
-	*****************************************************************************/
 	template<class ElementType>
 	void DynamicArray<ElementType>::Clear()
 	{
@@ -527,17 +509,6 @@ namespace gu
 		_size = 0;
 	}
 
-	/****************************************************************************
-	*                    ShrinkToFit
-	*************************************************************************//**
-	*  @fn       　void DynamicArray<ElementType>::ShrinkToFit()
-	*
-	*  @brief      CapacityをコンテナのSizeまで切り詰める 
-	*
-	*  @param[in] void
-	*
-	*  @return 　　void
-	*****************************************************************************/
 	template<class ElementType>
 	void DynamicArray<ElementType>::ShrinkToFit()
 	{
@@ -566,17 +537,6 @@ namespace gu
 		_capacity = _size;
 	}
 
-	/****************************************************************************
-	*                    Push
-	*************************************************************************//**
-	*  @fn       　void DynamicArray<ElementType>::ShrinkToFit()
-	*
-	*  @brief      配列を後ろに追加する. Capacityを超えた場合, 全体のメモリを2倍の大きさで再割り当てを行う.
-	*
-	*  @param[in] ElementType& element
-	*
-	*  @return 　　void
-	*****************************************************************************/
 	template<class ElementType>
 	void DynamicArray<ElementType>::Push(const ElementType& element)
 	{
@@ -599,17 +559,6 @@ namespace gu
 		++_size;
 	}
 
-	/****************************************************************************
-	*                    Pop
-	*************************************************************************//**
-	*  @fn       　void DynamicArray<ElementType>::Pop()
-	*
-	*  @brief     最後の要素を取り出してデストラクタを呼び出す. (メモリ自体の破棄は行われず, その後サイズだけ変更します)
-	*
-	*  @param[in] void
-	*
-	*  @return 　　void
-	*****************************************************************************/
 	template<class ElementType>
 	void DynamicArray<ElementType>::Pop()
 	{
@@ -619,17 +568,6 @@ namespace gu
 		_size--;
 	}
 
-	/****************************************************************************
-	*                    Contains
-	*************************************************************************//**
-	*  @fn       　bool DynamicArray<ElementType>::Contains(const ElementType& element) const
-	*
-	*  @brief     指定した要素が中に含まれている場合はtrueを返します.
-	*
-	*  @param[in] const ElementType& element
-	*
-	*  @return 　　bool 含まれている場合はtrue
-	*****************************************************************************/
 	template<class ElementType>
 	bool DynamicArray<ElementType>::Contains(const ElementType& element) const
 	{
@@ -643,19 +581,6 @@ namespace gu
 		return false;
 	}
 
-	/****************************************************************************
-	*                    RemoveAtImplement
-	*************************************************************************//**
-	*  @fn        void RemoveAtImplement(const uint64 index, const uint64 count, const bool allowShrinking)
-	*
-	*  @brief     Removeの実装
-	*
-	*  @param[in] const uint64 index
-	*  @param[in] const uint64 size
-	*  @param[in] const bool allowShrinking
-	*
-	*  @return 　　void
-	*****************************************************************************/
 	template<class ElementType>
 	void DynamicArray<ElementType>::RemoveAtImplement(const uint64 index, const uint64 removeCount, const bool allowShrinking)
 	{
@@ -688,17 +613,6 @@ namespace gu
 		}
 	}
 
-	/****************************************************************************
-	*                    FindFromBegin
-	*************************************************************************//**
-	*  @fn        uint64 DynamicArray<ElementType>::FindFromBegin(const ElementType& element) const
-	*
-	*  @brief     指定した配列インデックスを順方向に見つけます. 見つからなかった場合は-1を渡します
-	*
-	*  @param[in] const ElementType& element
-	*
-	*  @return 　　uint64
-	*****************************************************************************/
 	template<class ElementType>
 	uint64 DynamicArray<ElementType>::FindFromBegin(const ElementType& element) const
 	{
@@ -715,17 +629,6 @@ namespace gu
 		return INDEX_NONE;
 	}
 
-	/****************************************************************************
-	*                    FindFromEnd
-	*************************************************************************//**
-	*  @fn        uint64 DynamicArray<ElementType>::FindFromEnd(const ElementType& element) const
-	*
-	*  @brief     指定した配列インデックスを逆方向に見つけます. 見つからなかった場合は-1を渡します
-	*
-	*  @param[in] const ElementType& element
-	*
-	*  @return 　　uint64
-	*****************************************************************************/
 	template<class ElementType>
 	uint64 DynamicArray<ElementType>::FindFromEnd(const ElementType& element) const
 	{
@@ -744,18 +647,6 @@ namespace gu
 		return INDEX_NONE;
 	}
 
-	/****************************************************************************
-	*                    RemoveAll
-	*************************************************************************//**
-	*  @fn        gu::uint64 DynamicArray<ElementType>::RemoveAll(const ElementType& element)
-	*
-	*  @brief     指定した要素を全て削除します.
-	*
-	*  @param[in] const ElementType& element
-	*  @param[in] const bool allowShrinking (capacityを切り詰めるか)
-	*
-	*  @return 　　uint64
-	*****************************************************************************/
 	template<class ElementType>
 	gu::uint64 DynamicArray<ElementType>::RemoveAll(const ElementType& element, const bool allowShrinking)
 	{

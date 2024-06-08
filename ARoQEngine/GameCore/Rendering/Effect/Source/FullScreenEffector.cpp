@@ -88,7 +88,7 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 		/*-------------------------------------------------------------------
 		-            Set Vertex Buffer 
 		---------------------------------------------------------------------*/
-		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
+		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(static_cast<gu::uint32>(vertexByteSize), static_cast<gu::uint32>(vertexCount), MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
 		_vertexBuffers[i]->SetName(addName + SP("VB"));
 		_vertexBuffers[i]->UploadByte(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
@@ -96,7 +96,7 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(static_cast<gu::uint32>(indexByteSize), static_cast<gu::uint32>(indexCount), MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(addName + SP("IB"));
 		_indexBuffers[i]->UploadByte(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0,  commandList);

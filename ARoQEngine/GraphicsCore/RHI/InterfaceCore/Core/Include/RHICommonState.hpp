@@ -1664,10 +1664,10 @@ namespace rhi::core
 		/*! @brief コピー元のMipmapの初期値*/
 		gu::uint32 SourceInitMipMap      = 0;
 
-		//! @brief コピー先の, テクスチャ配列上のテクスチャ種類の初期値
+		/*! @brief コピー先の, テクスチャ配列上のテクスチャ種類の初期値 */
 		gu::uint16 DestinationInitArraySlice = 0;
 
-		//! @brief コピー元の, テクスチャ配列上のテクスチャ種類の初期値
+		/*! @brief コピー元の, テクスチャ配列上のテクスチャ種類の初期値 */
 		gu::uint16 SourceInitArraySlice = 0;
 
 		/*! @brief テクスチャ配列の場合におけるテクスチャの種類*/

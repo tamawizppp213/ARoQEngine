@@ -61,7 +61,7 @@ namespace gc::file::vmd
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 		*  @return    void
 		*************************************************************************/
-		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
+		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const;
 	};
 
 	/****************************************************************************
@@ -98,7 +98,7 @@ namespace gc::file::vmd
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 		*  @return    void
 		*************************************************************************/
-		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
+		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const;
 	};
 
 	/****************************************************************************
@@ -129,7 +129,7 @@ namespace gc::file::vmd
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 		*  @return    void
 		*************************************************************************/
-		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
+		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const;
 	};
 
 	/****************************************************************************
@@ -172,7 +172,7 @@ namespace gc::file::vmd
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 		*  @return    void
 		*************************************************************************/
-		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
+		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const;
 	};
 
 	/****************************************************************************
@@ -203,7 +203,7 @@ namespace gc::file::vmd
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 		*  @return    void
 		*************************************************************************/
-		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
+		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const;
 	};
 
 	/****************************************************************************
@@ -246,7 +246,7 @@ namespace gc::file::vmd
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 		*  @return    void
 		*************************************************************************/
-		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
+		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const;
 	};
 
 	/****************************************************************************
@@ -274,7 +274,7 @@ namespace gc::file::vmd
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 		*  @return    void
 		*************************************************************************/
-		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
+		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const;
 	};
 
 	/****************************************************************************
@@ -305,7 +305,7 @@ namespace gc::file::vmd
 		*  @param[in] gu::SharedPointer<platform::core::file::IFileHandle>& ファイル操作のハンドル
 		*  @return    void
 		*************************************************************************/
-		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle);
+		void Write(const gu::SharedPointer<platform::core::file::IFileHandle>& fileHandle) const;
 
 		~VMDIKKeyFrame()
 		{
