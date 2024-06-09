@@ -1,16 +1,14 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   JsonString.cpp
-///  @brief  String型のJson値を扱うクラス
+///  @file   JsonNumber.cpp
+///  @brief  temp
 ///  @author toide
-///  @date   2024/06/09 1:35:22
+///  @date   2024/06/08 22:50:24
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/File/Private/Json/Include/JsonString.hpp"
+#include "GameUtility/File/Private/Json/Include/JsonValueNumber.hpp"
 #include "GameUtility/Base/Include/GUAssert.hpp"
-#include "GameUtility/Base/Include/GUParse.hpp"
-
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,24 +27,9 @@ using namespace gu;
 *  @param[in] void
 *  @return    tstring : 文字列の結果
 *************************************************************************/
-tstring JsonString::GetString() const
+tstring JsonNumber::GetString() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	return _value;
-}
-
-/*!**********************************************************************
-*  @brief     boolの値を取得します
-*  @param[in] void
-*  @return    int8
-*************************************************************************/
-bool JsonString::GetBool() const
-{
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	
-	bool result = false;
-	Parse::Bool(_value, _value, result); 
-	return result;
+	return gu::tstring::FromNumber(_value);
 }
 
 /*!**********************************************************************
@@ -54,10 +37,11 @@ bool JsonString::GetBool() const
 *  @param[in] void
 *  @return    int8
 *************************************************************************/
-int8 JsonString::GetInt8() const
+int8 JsonNumber::GetInt8() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	return _value.ToInt8();
+	Checkf(_type == JsonValueType::Number, "Json type is not number");
+	Checkf(MIN_INT8 <= _value && _value <= MAX_INT8, "Json value is out of range");
+	return static_cast<int8>(_value);
 }
 
 /*!**********************************************************************
@@ -65,10 +49,11 @@ int8 JsonString::GetInt8() const
 *  @param[in] void
 *  @return    int16
 *************************************************************************/
-int16 JsonString::GetInt16() const
+int16 JsonNumber::GetInt16() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	return _value.ToInt16();
+	Checkf(_type == JsonValueType::Number, "Json type is not number");
+	Checkf(MIN_INT16 <= _value && _value <= MAX_INT16, "Json value is out of range");
+	return static_cast<int16>(_value);
 }
 
 /*!**********************************************************************
@@ -76,10 +61,11 @@ int16 JsonString::GetInt16() const
 *  @param[in] void
 *  @return    int32
 *************************************************************************/
-int32 JsonString::GetInt32() const
+int32 JsonNumber::GetInt32() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	return _value.ToInt32();
+	Checkf(_type == JsonValueType::Number, "Json type is not number");
+	Checkf(MIN_INT32 <= _value && _value <= MAX_INT32, "Json value is out of range");
+	return static_cast<int32>(_value);
 }
 
 /*!**********************************************************************
@@ -87,10 +73,11 @@ int32 JsonString::GetInt32() const
 *  @param[in] void
 *  @return    int64
 *************************************************************************/
-int64 JsonString::GetInt64() const
+int64 JsonNumber::GetInt64() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	return _value.ToInt64();
+	Checkf(_type == JsonValueType::Number, "Json type is not number");
+	Checkf(MIN_INT64 <= _value && _value <= MAX_INT64, "Json value is out of range");
+	return static_cast<int64>(_value);
 }
 
 /*!**********************************************************************
@@ -98,10 +85,11 @@ int64 JsonString::GetInt64() const
 *  @param[in] void
 *  @return    uint8
 *************************************************************************/
-uint8 JsonString::GetUInt8() const
+uint8 JsonNumber::GetUInt8() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	return _value.ToUInt8();
+	Checkf(_type == JsonValueType::Number, "Json type is not number");
+	Checkf(MIN_UINT8 <= _value && _value <= MAX_UINT8, "Json value is out of range");
+	return static_cast<uint8>(_value);
 }
 
 /*!**********************************************************************
@@ -109,10 +97,11 @@ uint8 JsonString::GetUInt8() const
 *  @param[in] void
 *  @return    uint16
 *************************************************************************/
-uint16 JsonString::GetUInt16() const
+uint16 JsonNumber::GetUInt16() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	return _value.ToUInt16();
+	Checkf(_type == JsonValueType::Number, "Json type is not number");
+	Checkf(MIN_UINT16 <= _value && _value <= MAX_UINT16, "Json value is out of range");
+	return static_cast<uint16>(_value);
 }
 
 /*!**********************************************************************
@@ -120,10 +109,11 @@ uint16 JsonString::GetUInt16() const
 *  @param[in] void
 *  @return    uint32
 *************************************************************************/
-uint32 JsonString::GetUInt32() const
+uint32 JsonNumber::GetUInt32() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	return _value.ToUInt32();
+	Checkf(_type == JsonValueType::Number, "Json type is not number");
+	Checkf(MIN_UINT32 <= _value && _value <= MAX_UINT32, "Json value is out of range");
+	return static_cast<uint32>(_value);
 }
 
 /*!**********************************************************************
@@ -131,10 +121,11 @@ uint32 JsonString::GetUInt32() const
 *  @param[in] void
 *  @return    uint64
 *************************************************************************/
-uint64 JsonString::GetUInt64() const
+uint64 JsonNumber::GetUInt64() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	return _value.ToUInt64();
+	Checkf(_type == JsonValueType::Number, "Json type is not number");
+	Checkf(MIN_UINT64 <= _value && _value <= MAX_UINT64, "Json value is out of range");
+	return static_cast<uint64>(_value);
 }
 
 /*!**********************************************************************
@@ -142,10 +133,12 @@ uint64 JsonString::GetUInt64() const
 *  @param[in] void
 *  @return    float
 *************************************************************************/
-float JsonString::GetFloat() const
+float JsonNumber::GetFloat() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	throw "Not implemented";
+	Checkf(_type == JsonValueType::Number, "Json type is not number");
+	Checkf(MIN_FLOAT32 <= _value && _value <= MAX_FLOAT32, "Json value is out of range");
+	return static_cast<float>(_value);
+
 }
 
 /*!**********************************************************************
@@ -153,9 +146,10 @@ float JsonString::GetFloat() const
 *  @param[in] void
 *  @return    double
 *************************************************************************/
-double JsonString::GetDouble() const
+double JsonNumber::GetDouble() const
 {
-	Checkf(_type == JsonValueType::String, "Json type is not String");
-	throw "Not implemented";
+	Checkf(_type == JsonValueType::Number, "Json type is not number");
+	Checkf(MIN_DOUBLE64 <= _value && _value <= MAX_DOUBLE64, "Json value is out of range");
+	return static_cast<double>(_value);
 }
 #pragma endregion GetValue

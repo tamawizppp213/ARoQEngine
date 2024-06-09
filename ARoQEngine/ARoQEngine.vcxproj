@@ -457,6 +457,38 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueArray.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueBoolean.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueNull.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueNumber.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonObject.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValueString.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonType.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValue.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Math\Include\GMVectorInt.hpp">
       <SubType>
       </SubType>
@@ -1086,6 +1118,26 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="GameUtility\Base\Source\GUParse.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueArray.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueBoolean.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueNumber.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueString.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValue.cpp">
       <SubType>
       </SubType>
     </ClCompile>

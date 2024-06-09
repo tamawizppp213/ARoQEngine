@@ -1637,7 +1637,7 @@ namespace rhi::core
 		#pragma endregion 
 
 	private:
-		inline gu::uint64 CalculateByteSize() { 
+		inline gu::uint64 CalculateByteSize() const { 
 			return  Width * Height * (Dimension == ResourceDimension::Texture3D ? DepthOrArraySize : 1) * PixelFormatInfo::GetConst(PixelFormat).BlockBytes * static_cast<gu::uint64>(Sample); 
 		}
 	};
