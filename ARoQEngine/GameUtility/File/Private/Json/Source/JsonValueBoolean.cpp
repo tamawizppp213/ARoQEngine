@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   JsonBoolean.cpp
+///  @file   JsonValueBoolean.cpp
 ///  @brief  BooleanŒ^‚ÌJson’l‚ðˆµ‚¤ƒNƒ‰ƒX
 ///  @author toide
 ///  @date   2024/06/09 1:35:22
