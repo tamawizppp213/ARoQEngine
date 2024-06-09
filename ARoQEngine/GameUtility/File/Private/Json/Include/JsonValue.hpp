@@ -62,16 +62,23 @@ namespace gu::file::json
 		/*!**********************************************************************
 		*  @brief     Array型の値を取得します.
 		*  @param[in] void
-		*  @return    Array
+		*  @return    DynamicArray<SharedPointer<JsonValue>>
 		*************************************************************************/
-		virtual DynamicArray<SharedPointer<JsonValue>> GetArray() const { return {}; }
+		virtual DynamicArray<SharedPointer<JsonValue>>& GetArray() { throw "failed to get array"; }
+
+		/*!**********************************************************************
+		*  @brief     Array型の値を取得します.
+		*  @param[in] void
+		*  @return    DynamicArray<SharedPointer<JsonValue>>
+		*************************************************************************/
+		virtual const DynamicArray<SharedPointer<JsonValue>>& GetArray() const { throw "failed to get array"; }
 
 		/*!**********************************************************************
 		*  @brief     boolの値を取得します
 		*  @param[in] void
 		*  @return    int8
 		*************************************************************************/
-		virtual bool GetBool() const;
+		virtual bool GetBool() const { throw "failed to get bool"; }
 
 		/*!**********************************************************************
 		*  @brief     Int8の値を取得します
