@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   JsonValueNull.hpp
-///  @brief  何もないJsonの値を扱うクラス
+///  @file   JsonValueObject.hpp
+///  @brief  Object型のJsonの値を扱うクラス
 ///  @author toide
 ///  @date   2024/06/09 0:47:13
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,14 +23,28 @@
 namespace gu::file::json
 {
 	/****************************************************************************
-	*				  			   JsonNull
+	*				  			   JsonValueObject
 	*************************************************************************//**
-	/*  @brief  何もないJsonの値を扱うクラス
+	/*  @brief  Object型のJsonの値を扱うクラス
 	*****************************************************************************/
-	struct JsonObject : public JsonValue
+	struct JsonValueObject : public JsonValue
 	{
 	public:
 		#pragma region Public Function
+
+		/*!**********************************************************************
+		*  @brief     JsonObject型の値を取得します.
+		*  @param[in] void
+		*  @return    JsonObject
+		*************************************************************************/
+		virtual SharedPointer<JsonObject> GetObject() override;
+
+		/*!**********************************************************************
+		*  @brief     JsonObject型の値を取得します.
+		*  @param[in] void
+		*  @return    JsonObject
+		*************************************************************************/
+		virtual const SharedPointer<JsonObject> GetObject() const override;
 
 		#pragma endregion 
 
@@ -45,7 +59,7 @@ namespace gu::file::json
 		#pragma region Public Constructor and Destructor
 
 		/*! @brief デフォルトコンストラクタ*/
-		JsonObject() : JsonValue(JsonValueType::Null) {}
+		JsonValueObject() : JsonValue(JsonValueType::Object) {}
 
 		#pragma endregion 
 
