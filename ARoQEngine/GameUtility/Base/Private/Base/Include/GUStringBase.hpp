@@ -1238,7 +1238,7 @@ namespace gu::details::string
 		const auto length = sprintf_s(source, format, value);
 
 		Char destination[64] = {};
-		for (uint32 i = 0; i < length; ++i)
+		for (int32 i = 0; i < length; ++i)
 		{
 			destination[i] = (Char)source[i];
 		}

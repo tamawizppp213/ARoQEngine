@@ -316,7 +316,7 @@ namespace gu
 		}
 
 		/*! @brief ムーブコンストラクタ */
-		DynamicArray& operator=(DynamicArray&& other)
+		DynamicArray& operator=(DynamicArray&& other) noexcept
 		{
 			if (this != &other)
 			{
