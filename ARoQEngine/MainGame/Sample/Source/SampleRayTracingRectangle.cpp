@@ -202,7 +202,7 @@ void SampleRayTracingRectangle::BuildBuffer()
 	{
 		GPUBufferMetaData metaData = GPUBufferMetaData::VertexBuffer(
 			sizeof(gm::Vertex),
-			rectangle.Vertices.size(),
+			static_cast<gu::uint32>(rectangle.Vertices.size()),
 			rhi::core::MemoryHeap::Upload);
 		_vertexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
 		_vertexBuffer->SetName(SP("VertexBuffer"));
@@ -214,7 +214,7 @@ void SampleRayTracingRectangle::BuildBuffer()
 	{
 		GPUBufferMetaData metaData = GPUBufferMetaData::IndexBuffer(
 			sizeof(std::uint32_t),
-			rectangle.Indices.size(),
+			static_cast<gu::uint32>(rectangle.Indices.size()),
 			rhi::core::MemoryHeap::Default,
 			rhi::core::ResourceState::Common);
 		_indexBuffer = _engine->GetDevice()->CreateBuffer(metaData);
