@@ -14,6 +14,7 @@
 #include "GameUtility/Base/Private/Base/Include/GUStringUtility.hpp"
 #include "GameUtility/Memory/Include/GUMemory.hpp"
 #include "GameUtility/Base/Include/GUHash.hpp"
+#include <stdio.h> // platformStringÇ…ïœçXÇ≈Ç´ÇÈÇÊÇ§Ç…Ç∑ÇÈ
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////

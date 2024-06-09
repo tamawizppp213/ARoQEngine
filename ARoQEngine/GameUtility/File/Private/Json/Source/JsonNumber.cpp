@@ -29,7 +29,7 @@ using namespace gu;
 *************************************************************************/
 tstring JsonNumber::GetString() const
 {
-	return tstring::FromNumber(_value);
+	return gu::tstring::FromNumber(_value);
 }
 
 /*!**********************************************************************
