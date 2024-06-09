@@ -61,6 +61,9 @@ namespace gu::file::json
 		/*! @brief デフォルトコンストラクタ*/
 		JsonValueObject() : JsonValue(JsonValueType::Object) {}
 
+		/*! @brief オブジェクト型を使って初期化*/
+		JsonValueObject(SharedPointer<JsonObject>& object) : JsonValue(JsonValueType::Object), _object(object) {}
+
 		#pragma endregion 
 
 	protected:
@@ -86,7 +89,8 @@ namespace gu::file::json
 		#pragma endregion 
 
 		#pragma region Private Property
-
+		/*! @brief 保存するオブジェクト*/
+		SharedPointer<JsonObject> _object = nullptr;
 
 		#pragma endregion 
 	};

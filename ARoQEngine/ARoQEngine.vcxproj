@@ -1137,6 +1137,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueObject.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueString.cpp">
       <SubType>
       </SubType>
