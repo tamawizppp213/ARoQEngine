@@ -28,7 +28,7 @@ using namespace gu;
 *  @param[in] void
 *  @return    tstring : •¶Žš—ñ‚ÌŒ‹‰Ê
 *************************************************************************/
-tstring JsonBoolean::GetString() const
+tstring JsonValueBoolean::GetString() const
 {
 	return _value ? SP("true") : SP("false");
 }
@@ -37,7 +37,7 @@ tstring JsonBoolean::GetString() const
 *  @param[in] void
 *  @return    int8
 *************************************************************************/
-bool JsonBoolean::GetBool() const
+bool JsonValueBoolean::GetBool() const
 {
 	Checkf(_type == JsonValueType::True || _type == JsonValueType::False, "Json type is not boolean");
 	return _value;
@@ -48,7 +48,7 @@ bool JsonBoolean::GetBool() const
 *  @param[in] void
 *  @return    int8
 *************************************************************************/
-int8 JsonBoolean::GetInt8() const
+int8 JsonValueBoolean::GetInt8() const
 {
 	Checkf(_type == JsonValueType::True || _type == JsonValueType::False, "Json type is not boolean");
 	return static_cast<int8>(_value);
@@ -59,7 +59,7 @@ int8 JsonBoolean::GetInt8() const
 *  @param[in] void
 *  @return    int16
 *************************************************************************/
-int16 JsonBoolean::GetInt16() const
+int16 JsonValueBoolean::GetInt16() const
 {
 	Checkf(_type == JsonValueType::True || _type == JsonValueType::False, "Json type is not boolean");
 	return static_cast<int16>(_value);
@@ -70,7 +70,7 @@ int16 JsonBoolean::GetInt16() const
 *  @param[in] void
 *  @return    int32
 *************************************************************************/
-int32 JsonBoolean::GetInt32() const
+int32 JsonValueBoolean::GetInt32() const
 {
 	Checkf(_type == JsonValueType::True || _type == JsonValueType::False, "Json type is not boolean");
 	return static_cast<int32>(_value);
@@ -81,7 +81,7 @@ int32 JsonBoolean::GetInt32() const
 *  @param[in] void
 *  @return    int64
 *************************************************************************/
-int64 JsonBoolean::GetInt64() const
+int64 JsonValueBoolean::GetInt64() const
 {
 	Checkf(_type == JsonValueType::True || _type == JsonValueType::False, "Json type is not boolean");
 	return static_cast<int64>(_value);
@@ -92,7 +92,7 @@ int64 JsonBoolean::GetInt64() const
 *  @param[in] void
 *  @return    uint8
 *************************************************************************/
-uint8 JsonBoolean::GetUInt8() const
+uint8 JsonValueBoolean::GetUInt8() const
 {
 	Checkf(_type == JsonValueType::True || _type == JsonValueType::False, "Json type is not boolean");
 	return static_cast<uint8>(_value);
@@ -103,7 +103,7 @@ uint8 JsonBoolean::GetUInt8() const
 *  @param[in] void
 *  @return    uint16
 *************************************************************************/
-uint16 JsonBoolean::GetUInt16() const
+uint16 JsonValueBoolean::GetUInt16() const
 {
 	Checkf(_type == JsonValueType::True || _type == JsonValueType::False, "Json type is not boolean");
 	return static_cast<uint16>(_value);
@@ -114,7 +114,7 @@ uint16 JsonBoolean::GetUInt16() const
 *  @param[in] void
 *  @return    uint32
 *************************************************************************/
-uint32 JsonBoolean::GetUInt32() const
+uint32 JsonValueBoolean::GetUInt32() const
 {
 	Checkf(_type == JsonValueType::True || _type == JsonValueType::False, "Json type is not boolean");
 	return static_cast<uint32>(_value);
@@ -125,7 +125,7 @@ uint32 JsonBoolean::GetUInt32() const
 *  @param[in] void
 *  @return    uint64
 *************************************************************************/
-uint64 JsonBoolean::GetUInt64() const
+uint64 JsonValueBoolean::GetUInt64() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	return static_cast<uint64>(_value);
@@ -136,7 +136,7 @@ uint64 JsonBoolean::GetUInt64() const
 *  @param[in] void
 *  @return    float
 *************************************************************************/
-float JsonBoolean::GetFloat() const
+float JsonValueBoolean::GetFloat() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	return static_cast<float>(_value);
@@ -148,7 +148,7 @@ float JsonBoolean::GetFloat() const
 *  @param[in] void
 *  @return    double
 *************************************************************************/
-double JsonBoolean::GetDouble() const
+double JsonValueBoolean::GetDouble() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	return static_cast<double>(_value);

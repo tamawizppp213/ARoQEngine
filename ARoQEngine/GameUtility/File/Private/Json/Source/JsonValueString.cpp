@@ -29,7 +29,7 @@ using namespace gu;
 *  @param[in] void
 *  @return    tstring : •¶Žš—ñ‚ÌŒ‹‰Ê
 *************************************************************************/
-tstring JsonString::GetString() const
+tstring JsonValueString::GetString() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	return _value;
@@ -40,7 +40,7 @@ tstring JsonString::GetString() const
 *  @param[in] void
 *  @return    int8
 *************************************************************************/
-bool JsonString::GetBool() const
+bool JsonValueString::GetBool() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	
@@ -54,7 +54,7 @@ bool JsonString::GetBool() const
 *  @param[in] void
 *  @return    int8
 *************************************************************************/
-int8 JsonString::GetInt8() const
+int8 JsonValueString::GetInt8() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	return _value.ToInt8();
@@ -65,7 +65,7 @@ int8 JsonString::GetInt8() const
 *  @param[in] void
 *  @return    int16
 *************************************************************************/
-int16 JsonString::GetInt16() const
+int16 JsonValueString::GetInt16() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	return _value.ToInt16();
@@ -76,7 +76,7 @@ int16 JsonString::GetInt16() const
 *  @param[in] void
 *  @return    int32
 *************************************************************************/
-int32 JsonString::GetInt32() const
+int32 JsonValueString::GetInt32() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	return _value.ToInt32();
@@ -87,7 +87,7 @@ int32 JsonString::GetInt32() const
 *  @param[in] void
 *  @return    int64
 *************************************************************************/
-int64 JsonString::GetInt64() const
+int64 JsonValueString::GetInt64() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	return _value.ToInt64();
@@ -98,7 +98,7 @@ int64 JsonString::GetInt64() const
 *  @param[in] void
 *  @return    uint8
 *************************************************************************/
-uint8 JsonString::GetUInt8() const
+uint8 JsonValueString::GetUInt8() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	return _value.ToUInt8();
@@ -109,7 +109,7 @@ uint8 JsonString::GetUInt8() const
 *  @param[in] void
 *  @return    uint16
 *************************************************************************/
-uint16 JsonString::GetUInt16() const
+uint16 JsonValueString::GetUInt16() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	return _value.ToUInt16();
@@ -120,7 +120,7 @@ uint16 JsonString::GetUInt16() const
 *  @param[in] void
 *  @return    uint32
 *************************************************************************/
-uint32 JsonString::GetUInt32() const
+uint32 JsonValueString::GetUInt32() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	return _value.ToUInt32();
@@ -131,7 +131,7 @@ uint32 JsonString::GetUInt32() const
 *  @param[in] void
 *  @return    uint64
 *************************************************************************/
-uint64 JsonString::GetUInt64() const
+uint64 JsonValueString::GetUInt64() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	return _value.ToUInt64();
@@ -142,7 +142,7 @@ uint64 JsonString::GetUInt64() const
 *  @param[in] void
 *  @return    float
 *************************************************************************/
-float JsonString::GetFloat() const
+float JsonValueString::GetFloat() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	throw "Not implemented";
@@ -153,7 +153,7 @@ float JsonString::GetFloat() const
 *  @param[in] void
 *  @return    double
 *************************************************************************/
-double JsonString::GetDouble() const
+double JsonValueString::GetDouble() const
 {
 	Checkf(_type == JsonValueType::String, "Json type is not String");
 	throw "Not implemented";

@@ -27,7 +27,7 @@ namespace gu::file::json
 	*************************************************************************//**
 	/*  @brief  Jsonの数値型の値を扱うクラス
 	*****************************************************************************/
-	struct JsonNumber : public JsonValue
+	struct JsonValueNumber : public JsonValue
 	{
 	public:
 		#pragma region Public Function
@@ -125,10 +125,10 @@ namespace gu::file::json
 		#pragma region Public Constructor and Destructor
 
 		/*! @brief デフォルトコンストラクタ*/
-		JsonNumber() : JsonValue(JsonValueType::Number) {}
+		JsonValueNumber() : JsonValue(JsonValueType::Number) {}
 
 		/*! @brief double値で取得*/
-		JsonNumber(const double value) : JsonValue(JsonValueType::Number), _value(value) {}
+		JsonValueNumber(const double value) : JsonValue(JsonValueType::Number), _value(value) {}
 		#pragma endregion 
 
 	protected:

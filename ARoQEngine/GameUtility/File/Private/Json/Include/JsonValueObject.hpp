@@ -1,16 +1,17 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   JsonValueObject.hpp
-///  @brief  temp
+///  @file   JsonValueNull.hpp
+///  @brief  何もないJsonの値を扱うクラス
 ///  @author toide
-///  @date   2024/06/10 0:15:13
+///  @date   2024/06/09 0:47:13
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef JsonValueObject_HPP
-#define JsonValueObject_HPP
+#ifndef JSON_NULL_HPP
+#define JSON_NULL_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "JsonValue.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -19,59 +20,61 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-
-/****************************************************************************
-*				  			   JsonValueObject
-*************************************************************************//**
-/*  @class     JsonValueObject
-*   @brief     temp
-*****************************************************************************/
-class JsonValueObject
+namespace gu::file::json
 {
-public:
-	#pragma region Public Function
+	/****************************************************************************
+	*				  			   JsonNull
+	*************************************************************************//**
+	/*  @brief  何もないJsonの値を扱うクラス
+	*****************************************************************************/
+	struct JsonObject : public JsonValue
+	{
+	public:
+		#pragma region Public Function
 
-	#pragma endregion 
+		#pragma endregion 
 
-	#pragma region Public Property
+		#pragma region Public Property
 
-	#pragma endregion 
+		#pragma endregion 
 
-	#pragma region Public Operator 
+		#pragma region Public Operator 
 
-	#pragma endregion 
+		#pragma endregion 
 
-	#pragma region Public Constructor and Destructor
+		#pragma region Public Constructor and Destructor
 
-	#pragma endregion 
+		/*! @brief デフォルトコンストラクタ*/
+		JsonObject() : JsonValue(JsonValueType::Null) {}
 
-protected:
-	#pragma region Protected Constructor and Destructor
+		#pragma endregion 
 
-	#pragma endregion 
+	protected:
+		#pragma region Protected Constructor and Destructor
 
-	#pragma region Protected Function
+		#pragma endregion 
 
-	#pragma endregion 
+		#pragma region Protected Function
 
-	#pragma region Protected Property
+		#pragma endregion 
 
-	#pragma endregion
+		#pragma region Protected Property
 
-private:
-	#pragma region Private Constructor and Destructor
+		#pragma endregion
 
-	#pragma endregion
+	private:
+		#pragma region Private Constructor and Destructor
 
-	#pragma region Private Function
+		#pragma endregion
 
-	#pragma endregion 
+		#pragma region Private Function
 
-	#pragma region Private Property
+		#pragma endregion 
 
-	#pragma endregion 
-
-};
+		#pragma region Private Property
 
 
+		#pragma endregion 
+	};
+}
 #endif

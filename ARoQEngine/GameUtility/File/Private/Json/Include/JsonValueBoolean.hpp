@@ -27,7 +27,7 @@ namespace gu::file::json
 	*************************************************************************//**
 	/*  @brief  true/falseのJsonの値を扱うクラス
 	*****************************************************************************/
-	struct JsonBoolean : public JsonValue
+	struct JsonValueBoolean : public JsonValue
 	{
 	public:
 		#pragma region Public Function
@@ -128,10 +128,10 @@ namespace gu::file::json
 		#pragma region Public Constructor and Destructor
 
 		/*! @brief デフォルトコンストラクタ*/
-		JsonBoolean() : JsonValue(JsonValueType::False) {}
+		JsonValueBoolean() : JsonValue(JsonValueType::False) {}
 
 		/*! @brief bool値で初期化*/
-		JsonBoolean(const bool value) : JsonValue(value ? JsonValueType::True : JsonValueType::False), _value(value) {}
+		JsonValueBoolean(const bool value) : JsonValue(value ? JsonValueType::True : JsonValueType::False), _value(value) {}
 
 		#pragma endregion 
 

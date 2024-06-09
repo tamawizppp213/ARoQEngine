@@ -27,7 +27,7 @@ using namespace gu;
 *  @param[in] void
 *  @return    tstring : •¶Žš—ñ‚ÌŒ‹‰Ê
 *************************************************************************/
-tstring JsonNumber::GetString() const
+tstring JsonValueNumber::GetString() const
 {
 	return gu::tstring::FromNumber(_value);
 }
@@ -37,7 +37,7 @@ tstring JsonNumber::GetString() const
 *  @param[in] void
 *  @return    int8
 *************************************************************************/
-int8 JsonNumber::GetInt8() const
+int8 JsonValueNumber::GetInt8() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	Checkf(MIN_INT8 <= _value && _value <= MAX_INT8, "Json value is out of range");
@@ -49,7 +49,7 @@ int8 JsonNumber::GetInt8() const
 *  @param[in] void
 *  @return    int16
 *************************************************************************/
-int16 JsonNumber::GetInt16() const
+int16 JsonValueNumber::GetInt16() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	Checkf(MIN_INT16 <= _value && _value <= MAX_INT16, "Json value is out of range");
@@ -61,7 +61,7 @@ int16 JsonNumber::GetInt16() const
 *  @param[in] void
 *  @return    int32
 *************************************************************************/
-int32 JsonNumber::GetInt32() const
+int32 JsonValueNumber::GetInt32() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	Checkf(MIN_INT32 <= _value && _value <= MAX_INT32, "Json value is out of range");
@@ -73,7 +73,7 @@ int32 JsonNumber::GetInt32() const
 *  @param[in] void
 *  @return    int64
 *************************************************************************/
-int64 JsonNumber::GetInt64() const
+int64 JsonValueNumber::GetInt64() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	Checkf(MIN_INT64 <= _value && _value <= MAX_INT64, "Json value is out of range");
@@ -85,7 +85,7 @@ int64 JsonNumber::GetInt64() const
 *  @param[in] void
 *  @return    uint8
 *************************************************************************/
-uint8 JsonNumber::GetUInt8() const
+uint8 JsonValueNumber::GetUInt8() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	Checkf(MIN_UINT8 <= _value && _value <= MAX_UINT8, "Json value is out of range");
@@ -97,7 +97,7 @@ uint8 JsonNumber::GetUInt8() const
 *  @param[in] void
 *  @return    uint16
 *************************************************************************/
-uint16 JsonNumber::GetUInt16() const
+uint16 JsonValueNumber::GetUInt16() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	Checkf(MIN_UINT16 <= _value && _value <= MAX_UINT16, "Json value is out of range");
@@ -109,7 +109,7 @@ uint16 JsonNumber::GetUInt16() const
 *  @param[in] void
 *  @return    uint32
 *************************************************************************/
-uint32 JsonNumber::GetUInt32() const
+uint32 JsonValueNumber::GetUInt32() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	Checkf(MIN_UINT32 <= _value && _value <= MAX_UINT32, "Json value is out of range");
@@ -121,7 +121,7 @@ uint32 JsonNumber::GetUInt32() const
 *  @param[in] void
 *  @return    uint64
 *************************************************************************/
-uint64 JsonNumber::GetUInt64() const
+uint64 JsonValueNumber::GetUInt64() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	Checkf(MIN_UINT64 <= _value && _value <= MAX_UINT64, "Json value is out of range");
@@ -133,7 +133,7 @@ uint64 JsonNumber::GetUInt64() const
 *  @param[in] void
 *  @return    float
 *************************************************************************/
-float JsonNumber::GetFloat() const
+float JsonValueNumber::GetFloat() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	Checkf(MIN_FLOAT32 <= _value && _value <= MAX_FLOAT32, "Json value is out of range");
@@ -146,7 +146,7 @@ float JsonNumber::GetFloat() const
 *  @param[in] void
 *  @return    double
 *************************************************************************/
-double JsonNumber::GetDouble() const
+double JsonValueNumber::GetDouble() const
 {
 	Checkf(_type == JsonValueType::Number, "Json type is not number");
 	Checkf(MIN_DOUBLE64 <= _value && _value <= MAX_DOUBLE64, "Json value is out of range");

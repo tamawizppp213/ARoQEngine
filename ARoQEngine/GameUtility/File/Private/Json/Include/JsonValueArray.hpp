@@ -27,7 +27,7 @@ namespace gu::file::json
 	*************************************************************************//**
 	/*  @brief  配列型のJsonの値を扱うクラス
 	*****************************************************************************/
-	struct JsonArray : public JsonValue
+	struct JsonValueArray : public JsonValue
 	{
 	public:
 		#pragma region Public Function
@@ -58,22 +58,22 @@ namespace gu::file::json
 		#pragma region Public Constructor and Destructor
 
 		/*! @brief デフォルトコンストラクタ*/
-		JsonArray() : JsonValue(JsonValueType::Array) {}
+		JsonValueArray() : JsonValue(JsonValueType::Array) {}
 
 		/*! @brief デストラクタ*/
-		virtual ~JsonArray()
+		virtual ~JsonValueArray()
 		{
 			_array.Clear(); _array.ShrinkToFit();
 		}
 
 		/*! @brief コピーコンストラクタ*/
-		JsonArray(const JsonArray& other) : JsonValue(JsonValueType::Array)
+		JsonValueArray(const JsonValueArray& other) : JsonValue(JsonValueType::Array)
 		{
 			_array = other._array;
 		}
 
 		/*! @brief ムーブコンストラクタ*/
-		JsonArray(JsonArray&& other) noexcept : JsonValue(JsonValueType::Array)
+		JsonValueArray(JsonValueArray&& other) noexcept : JsonValue(JsonValueType::Array)
 		{
 			_array = gu::type::Forward<DynamicArray<SharedPointer<JsonValue>>>(other._array);
 		}

@@ -28,7 +28,7 @@ using namespace gu;
 *  @param[in] void
 *  @return    DynamicArray<SharedPointer<JsonValue>>
 *************************************************************************/
-DynamicArray<SharedPointer<JsonValue>>& JsonArray::GetArray()
+DynamicArray<SharedPointer<JsonValue>>& JsonValueArray::GetArray()
 {
 	Checkf(_type == JsonValueType::Array, "Json type is not array type");
 
@@ -40,7 +40,7 @@ DynamicArray<SharedPointer<JsonValue>>& JsonArray::GetArray()
 *  @param[in] void
 *  @return    DynamicArray<SharedPointer<JsonValue>>
 *************************************************************************/
-const DynamicArray<SharedPointer<JsonValue>>& JsonArray::GetArray() const
+const DynamicArray<SharedPointer<JsonValue>>& JsonValueArray::GetArray() const
 {
 	Checkf(_type == JsonValueType::Array, "Json type is not array type");
 

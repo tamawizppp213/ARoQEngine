@@ -27,7 +27,7 @@ namespace gu::file::json
 	*************************************************************************//**
 	/*  @brief  Jsonの文字列型の値を扱うクラス
 	*****************************************************************************/
-	struct JsonString : public JsonValue
+	struct JsonValueString : public JsonValue
 	{
 	public:
 		#pragma region Public Function
@@ -127,10 +127,10 @@ namespace gu::file::json
 		#pragma region Public Constructor and Destructor
 
 		/*! @brief デフォルトコンストラクタ*/
-		JsonString() : JsonValue(JsonValueType::String) {}
+		JsonValueString() : JsonValue(JsonValueType::String) {}
 
 		/*! @brief 文字列で取得*/
-		JsonString(const tstring& value) : JsonValue(JsonValueType::String), _value(value) {}
+		JsonValueString(const tstring& value) : JsonValue(JsonValueType::String), _value(value) {}
 
 		#pragma endregion 
 

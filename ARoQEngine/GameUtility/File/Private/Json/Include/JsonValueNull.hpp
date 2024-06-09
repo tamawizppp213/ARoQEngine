@@ -27,7 +27,7 @@ namespace gu::file::json
 	*************************************************************************//**
 	/*  @brief  何もないJsonの値を扱うクラス
 	*****************************************************************************/
-	struct JsonNull : public JsonValue
+	struct JsonValueNull : public JsonValue
 	{
 	public:
 		#pragma region Public Function
@@ -45,7 +45,7 @@ namespace gu::file::json
 		#pragma region Public Constructor and Destructor
 
 		/*! @brief デフォルトコンストラクタ*/
-		JsonNull() : JsonValue(JsonValueType::Null) {}
+		JsonValueNull() : JsonValue(JsonValueType::Null) {}
 
 		#pragma endregion 
 
