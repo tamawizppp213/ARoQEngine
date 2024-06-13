@@ -31,8 +31,8 @@ namespace gu::file::json
 	/****************************************************************************
 	*				  			   JsonObject
 	*************************************************************************//**
-	/*  @class     JsonObject
-	*   @brief     temp
+	/*  @brief  Jsonのオブジェクトを扱うクラス
+	*           Jsonのオブジェクトとは, {"key":"value"}のような形式のデータです.@n
 	*****************************************************************************/
 	struct JsonObject
 	{
@@ -59,6 +59,63 @@ namespace gu::file::json
 		*************************************************************************/
 		const ObjectMap& Data() const { return _values; }
 
+		#pragma region Get Field
+		/*!**********************************************************************
+		*  @brief     自身のMemberを取得します.
+		*  @param[in] const tstring& key : 取得したいFieldの名前
+		*  @param[in] const JsonValueType type : 取得したいFieldのデータ型
+		*  @return    SharedPointer<JsonValue>
+		*************************************************************************/
+		SharedPointer<JsonValue> GetMember(const tstring& key, const JsonValueType type) const;
+
+		/*!**********************************************************************
+		*  @brief     既存のMemberに値を設定します.
+		*  @param[in] const tstring& key : 追加したいFieldの名前
+		*  @param[in] const JsonValueType type : 取得したいFieldのデータ型
+		*  @return    void
+		*************************************************************************/
+		void SetMember(const tstring& key, const SharedPointer<JsonValue>& value);
+
+		/*!**********************************************************************
+		*  @brief     新しくMemberを追加します.
+		*  @param[in] const tstring& key : 追加したいFieldの名前
+		*  @param[in] const JsonValueType type : 取得したいFieldのデータ型
+		*  @return    void
+		*************************************************************************/
+		void AddMember(const tstring& key, const SharedPointer<JsonValue>& value);
+
+		/*!**********************************************************************
+		*  @brief     新しくMemberを追加します.
+		*  @param[in] tstring&& key : 追加したいFieldの名前
+		*  @param[in] const JsonValueType type : 取得したいFieldのデータ型
+		*  @return    void
+		*************************************************************************/
+		void AddMember(tstring&& key, const SharedPointer<JsonValue>& value);
+
+		/*!**********************************************************************
+		*  @brief     自身のMemberを削除します.
+		*  @param[in] const tstring& key : 追加したいFieldの名前
+		*  @param[in] const JsonValueType type : 取得したいFieldのデータ型
+		*  @return    void
+		*************************************************************************/
+		void RemoveMember(const tstring& key);
+
+		/*!**********************************************************************
+		*  @brief     指定した名前のFieldを持っているかを確認します
+		*  @param[in] const tstring& fieldName : 確認したいFieldの名前
+		*  @return    bool
+		*************************************************************************/
+		bool HasMember(const tstring& fieldName) const;
+
+		/*!**********************************************************************
+		*  @brief     指定した名前のFieldと型を持っているかを確認します
+		*  @param[in] const tstring& fieldName : 確認したいFieldの名前
+		*  @return    bool
+		*************************************************************************/
+		bool HasTypedMember(const tstring& fieldName, const JsonValueType type) const;
+
+		#pragma endregion Get Field
+		
 		#pragma endregion 
 
 		#pragma region Public Operator 

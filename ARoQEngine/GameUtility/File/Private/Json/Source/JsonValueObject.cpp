@@ -47,4 +47,6 @@ const SharedPointer<JsonObject> JsonValueObject::GetObject() const
 
 	return _object;
 }
+
+
 #pragma endregion Public Function

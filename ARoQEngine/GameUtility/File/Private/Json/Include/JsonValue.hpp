@@ -39,6 +39,13 @@ namespace gu::file::json
 
 		#pragma region GetValue
 		/*!**********************************************************************
+		*  @brief     Json‚ÌŽí—Þ‚ðŽæ“¾‚µ‚Ü‚·.
+		*  @param[in] void
+		*  @return    JsonValueType
+		*************************************************************************/
+		JsonValueType GetValueType() const { return _type; }
+
+		/*!**********************************************************************
 		*  @brief     StringŒ^‚Ì’l‚ðŽæ“¾‚µ‚Ü‚·.
 		*  @param[in] void
 		*  @return    tstring : •¶Žš—ñ‚ÌŒ‹‰Ê

@@ -115,5 +115,24 @@ uint64 JsonValue::GetUInt64() const
 	throw "Json type is not number";
 }
 
+/*!**********************************************************************
+*  @brief     Float‚Ì’l‚ðŽæ“¾‚µ‚Ü‚·
+*  @param[in] void
+*  @return    float
+*************************************************************************/
+float JsonValue::GetFloat() const
+{
+	throw "Json type is not number";
+}
+
+/*!**********************************************************************
+*  @brief     Double‚Ì’l‚ðŽæ“¾‚µ‚Ü‚·
+*  @param[in] void
+*  @return    double
+*************************************************************************/
+double JsonValue::GetDouble() const
+{
+	throw "Json type is not number";
+}
 #pragma endregion TryGetValue
 #pragma endregion Public Function
