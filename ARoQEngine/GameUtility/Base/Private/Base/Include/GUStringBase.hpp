@@ -1337,7 +1337,18 @@ namespace gu::details::string
 	template<class Char, int CharByte>
 	void StringBase<Char, CharByte>::Move(StringBase<Char, CharByte>&& source) noexcept
 	{
-		Memory::Copy(this->_data, source._data, sizeof(StringData));
+		if (source.IsSSOMode())
+		{
+			this->_data.SSO.Size   = source._data.SSO.Size;
+			gu::Memory::Copy(this->_data.SSO.Buffer, source._data.SSO.Buffer, sizeof(Char) * Size());
+		}
+		else
+		{
+			this->_data.NonSSO.Size     = source._data.NonSSO.Size;
+			this->_data.NonSSO.Pointer  = source._data.NonSSO.Pointer;
+			this->_data.NonSSO.Capacity = source._data.NonSSO.Capacity;
+		}
+
 		source.Initialize();
 	}
 
