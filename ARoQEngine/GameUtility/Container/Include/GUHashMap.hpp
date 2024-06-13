@@ -123,8 +123,8 @@ namespace gu
 		__forceinline Value& At(const Key& key)
 		{
 			Iterator found = this->Find(key);
-			if(found == this->end()){throw "Argument passed to At() was not in the map." }
-			return found->Current->Data.Value;
+			if (found == this->end()) { throw "Argument passed to At() was not in the map."; }
+			return found->Value;
 		}
 
 		/*!**********************************************************************
@@ -135,8 +135,8 @@ namespace gu
 		__forceinline const Value& At(const Key& key) const 
 		{
 			Const_Iterator found = this->Find(key);
-			if (found == this->end()) { throw "Argument passed to At() was not in the map." }
-			return found->Current->Data.Value;
+			if (found == this->end()) { throw "Argument passed to At() was not in the map."; }
+			return found->Value;
 		}
 
 		/*!**********************************************************************
@@ -294,7 +294,7 @@ namespace gu
 		*  @param[in] Value&& 値
 		*  @return    void
 		*************************************************************************/
-		gu::Pair<Iterator, bool> Emplace(Key&& key, Value&& value);
+		gu::Pair<Iterator, bool> Emplace(const Key& key, Value&& value);
 
 		/*!**********************************************************************
 		*  @brief     ハッシュテーブルを2倍に拡大します
@@ -550,7 +550,7 @@ namespace gu
 	*  @return    void
 	*************************************************************************/
 	template<typename Key, typename Value>
-	gu::Pair<typename HashMap<Key, Value>::Iterator, bool> HashMap<Key, Value>::Emplace(Key&& key, Value&& value)
+	gu::Pair<typename HashMap<Key, Value>::Iterator, bool> HashMap<Key, Value>::Emplace(const Key& key, Value&& value)
 	{
 		/*-------------------------------------------------------------------
 		-       エントリを配置するための理想的なインデックスを取得します.
@@ -589,14 +589,14 @@ namespace gu
 		if (_slotsCountMinusOne == 0 || distanceFromDesired == _maxSearchCount || _elementCount + 1 > (_slotsCountMinusOne + 1) * (_expandTableThreshold))
 		{
 			Grow();
-			return Emplace(gu::type::Forward<Key>(key), gu::type::Forward<Value>(value)).Key;
+			return Emplace(key, gu::type::Forward<Value>(value)).Key;
 		}
 		/*-------------------------------------------------------------------
 		-     　指定したエントリが空だった場合はそのまま挿入します.
 		---------------------------------------------------------------------*/
 		else if (currentEntry->IsEmpty())
 		{
-			currentEntry->Data.Key      = gu::type::Forward<Key>(key);
+			currentEntry->Data.Key      = key;
 			currentEntry->Data.Value    = gu::type::Forward<Value>(value);
 			currentEntry->ProbeDistance = distanceFromDesired;
 			++_elementCount;
@@ -607,7 +607,7 @@ namespace gu
 		-     　ロビンフッド法に基づいて, 新しいエントリが適切な位置に挿入されるまでの間に,既に入っている要素の方が
 		       本来の場所からの距離が短いならば今入れようとしている要素と交換して, 取り出した要素を別の場所に入れるために衝突処理を続けます
 		---------------------------------------------------------------------*/
-		gu::Pair<Key, Value> insertPair(gu::type::Forward<Key>(key), gu::type::Forward<Value>(value));
+		gu::Pair<Key, Value> insertPair(key, gu::type::Forward<Value>(value));
 		gu::type::Swap(distanceFromDesired, currentEntry->ProbeDistance);
 		gu::type::Swap(insertPair, currentEntry->Data);
 
@@ -634,7 +634,7 @@ namespace gu
 				{
 					gu::type::Swap(insertPair, result.Current->Data);
 					Grow();
-					return Emplace(gu::type::Forward<Key>(insertPair.Key), gu::type::Forward<Value>(insertPair.Value)).Key;
+					return Emplace(insertPair.Key, gu::type::Forward<Value>(insertPair.Value)).Key;
 				}
 			}
 		}
