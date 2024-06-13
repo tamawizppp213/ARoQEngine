@@ -65,8 +65,8 @@ void Slider::CreateInNDCSpace(const gm::Float3& position, const gm::Float2& rect
 
 /****************************************************************************
 *					Add
-*************************************************************************//**
-*  @fn        void Slider::Add(const float difference)
+****************************************************************************/
+/* @fn        void Slider::Add(const float difference)
 *
 *  @brief     Add the difference to the current slider value
 		      value + difference > maxValue -> maxValue is set
@@ -98,8 +98,8 @@ void Slider::Add(const float difference)
 
 /****************************************************************************
 *					Step
-*************************************************************************//**
-*  @fn        void Slider::Step(const bool isPlus)
+****************************************************************************/
+/* @fn        void Slider::Step(const bool isPlus)
 *
 *  @brief     Add the stepsize to the current slider value
 *
@@ -116,8 +116,8 @@ void Slider::Step(const bool isPlus)
 
 /****************************************************************************
 *					OnValueChanged
-*************************************************************************//**
-*  @fn        bool Slider::OnValueChanged(const float newValue)
+****************************************************************************/
+/* @fn        bool Slider::OnValueChanged(const float newValue)
 *
 *  @brief     if slider value is changed, execute registered functions and recreate slider UI
 *
@@ -146,8 +146,8 @@ bool Slider::OnValueChanged(const float newValue)
 
 /****************************************************************************
 *					RecreateSliderUI
-*************************************************************************//**
-*  @fn        void Slider::RecreateSliderUI()
+****************************************************************************/
+/* @fn        void Slider::RecreateSliderUI()
 *
 *  @brief     Recreate slider ui in NDC space
 *
@@ -174,8 +174,8 @@ void Slider::RecreateSliderUI()
 #pragma region Property
 /****************************************************************************
 *					SetValue
-*************************************************************************//**
-*  @fn        void Slider::SetValue(float value)
+****************************************************************************/
+/* @fn        void Slider::SetValue(float value)
 *
 *  @brief     Set slider value determined by myself.
 *
@@ -193,8 +193,8 @@ void Slider::SetValue(float value)
 
 /****************************************************************************
 *					SetFillColor
-*************************************************************************//**
-*  @fn        void Slider::SetFillColor(const gm::Float4& fillColor)
+****************************************************************************/
+/* @fn        void Slider::SetFillColor(const gm::Float4& fillColor)
 *
 *  @brief     Set fill color 
 *
@@ -210,8 +210,8 @@ void Slider::SetFillColor(const gm::Float4& fillColor)
 
 /****************************************************************************
 *					InitializeSliderCanvas
-*************************************************************************//**
-*  @fn        bool Slider::InitializeSliderCanvas(const bool isNDC, const gm::Float3& position, const gm::Float2& rectSize, const gm::Float4 fillColor)
+****************************************************************************/
+/* @fn        bool Slider::InitializeSliderCanvas(const bool isNDC, const gm::Float3& position, const gm::Float2& rectSize, const gm::Float4 fillColor)
 *
 *  @brief     Set up the slider backGround image.
 *

@@ -60,8 +60,8 @@ bool ErrorLogger::EnsureFailed(const char* expression, const char* fileName, con
 
 /****************************************************************************
 *                       OutputErrorLog
-*************************************************************************//**
-*  @fn        void Debugger::OutputErrorLog(const char* expression, const char* fileName, const int lineNumber, bool isEnsure, const char* descriptionFormat, const va_list descriptionArguments)
+****************************************************************************/
+/* @fn        void Debugger::OutputErrorLog(const char* expression, const char* fileName, const int lineNumber, bool isEnsure, const char* descriptionFormat, const va_list descriptionArguments)
 *
 *  @brief     出力部分にエラー文を出力します
 *

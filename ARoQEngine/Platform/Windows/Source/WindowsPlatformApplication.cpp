@@ -134,8 +134,8 @@ LRESULT CALLBACK PlatformApplication::StaticWindowProcedure(HWND hwnd, UINT mess
 
 /****************************************************************************
 *                     RegisterWindowClass
-*************************************************************************//**
-*  @fn        bool PlatformApplication::RegisterWindowClass()
+****************************************************************************/
+/* @fn        bool PlatformApplication::RegisterWindowClass()
 *
 *  @brief     ウィンドウクラスを登録します
 * 
@@ -174,8 +174,8 @@ bool PlatformApplication::RegisterWindowClass() const
 
 /****************************************************************************
 *                     MakeWindow
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
+****************************************************************************/
+/* @fn        gu::SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
 *
 *  @brief     新規のウィンドウインスタンスを作成します. ここではセットアップは行いません
 *
@@ -190,8 +190,8 @@ SharedPointer<core::CoreWindow> PlatformApplication::MakeWindow()
 
 /****************************************************************************
 *                     MakeCommand
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
+****************************************************************************/
+/* @fn        gu::SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 *
 *  @brief     新規でコマンドをまとめたクラスのインスタンスを作成します.
 *
@@ -206,8 +206,8 @@ SharedPointer<core::PlatformCommand> PlatformApplication::MakeCommand()
 
 /****************************************************************************
 *                     SetUpWindow
-*************************************************************************//**
-*  @fn        void PlatformApplication::SetUpWindow(const gu::SharedPointer<core::CoreWindow>& window, const core::CoreWindowDesc& desc)
+****************************************************************************/
+/* @fn        void PlatformApplication::SetUpWindow(const gu::SharedPointer<core::CoreWindow>& window, const core::CoreWindowDesc& desc)
 *
 *  @brief     指定のウィンドウを実際に作成するまで行います. セットアップも行います
 *
@@ -229,8 +229,8 @@ void PlatformApplication::SetUpWindow(const SharedPointer<core::CoreWindow>& win
 
 /****************************************************************************
 *                     PumpMessage
-*************************************************************************//**
-*  @fn        bool PlatformApplication::PumpMessage()
+****************************************************************************/
+/* @fn        bool PlatformApplication::PumpMessage()
 *
 *  @brief     メッセージを出します. この関数は仮想キーメッセージが受け取られ, それをメッセージ形式に変換した時にtrueを返します
 *
@@ -265,8 +265,8 @@ bool PlatformApplication::PumpMessage()
 
 /****************************************************************************
 *                     ApplicationWindowMessageProcedure
-*************************************************************************//**
-*  @fn        LRESULT PlatformApplication::ApplicationWindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+****************************************************************************/
+/* @fn        LRESULT PlatformApplication::ApplicationWindowMessageProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 *
 *  @brief     メンバ関数で呼び出せるようにした (StaticWindowProcedureの代わり)
 *
@@ -403,8 +403,8 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 
 /****************************************************************************
 *                     ProcessDeferredEvents
-*************************************************************************//**
-*  @fn        void PlatformApplication::ProcessDeferredEvents()
+****************************************************************************/
+/* @fn        void PlatformApplication::ProcessDeferredEvents()
 *
 *  @brief     まとめて一括でためたイベントを発行する
 *
@@ -428,8 +428,8 @@ void PlatformApplication::ProcessDeferredEvents()
 #pragma region Monitor
 /****************************************************************************
 *                     GetMonitorDPI
-*************************************************************************//**
-*  @fn        gu::int32 PlatformApplication::GetMonitorDPI(const core::MonitorInfo& monitorInfo) const
+****************************************************************************/
+/* @fn        gu::int32 PlatformApplication::GetMonitorDPI(const core::MonitorInfo& monitorInfo) const
 *
 *  @brief     モニターのDPIを取得します
 *             https://zenn.dev/tenka/articles/windows_display_monitor_dpi
@@ -473,8 +473,8 @@ gu::int32 PlatformApplication::GetMonitorDPI(const core::MonitorInfo& monitorInf
 
 /****************************************************************************
 *                     SetHighDPIMode
-*************************************************************************//**
-*  @fn        void CoreApplication::SetHighDPIMode()
+****************************************************************************/
+/* @fn        void CoreApplication::SetHighDPIMode()
 *
 *  @brief     高DPIの設定に書き換えます.
 *             https://zenn.dev/tenka/articles/windows_display_monitor_dpi
@@ -562,8 +562,8 @@ bool PlatformApplication::SetHighDPIMode()
 
 /****************************************************************************
 *                     GetDPIScaleFactorAtPixelPoint
-*************************************************************************//**
-*  @fn        float CoreApplication::GetDPIScaleFactorAtPixelPoint(const float x, const float y) const
+****************************************************************************/
+/* @fn        float CoreApplication::GetDPIScaleFactorAtPixelPoint(const float x, const float y) const
 *
 *  @brief     あるピクセル位置でのDPIの拡大率を示します.
 *
@@ -600,8 +600,8 @@ float PlatformApplication::GetDPIScaleFactorAtPixelPoint(const float x, const fl
 
 /****************************************************************************
 *                     GetMonitorsInfo
-*************************************************************************//**
-*  @fn        void PlatformApplication::GetMonitorsInfo(gu::DynamicArray<core::MonitorInfo>& monitorInfo) const
+****************************************************************************/
+/* @fn        void PlatformApplication::GetMonitorsInfo(gu::DynamicArray<core::MonitorInfo>& monitorInfo) const
 *
 *  @brief     モニターの情報を取得する
 *
@@ -721,8 +721,8 @@ BOOL CALLBACK PlatformApplication::MonitorEnumProcedure(HMONITOR monitor, [[mayb
 
 /****************************************************************************
 *                     GetWorkArea
-*************************************************************************//**
-*  @fn        core::Rectangle PlatformApplication::GetWorkArea(const core::Rectangle& window)
+****************************************************************************/
+/* @fn        core::Rectangle PlatformApplication::GetWorkArea(const core::Rectangle& window)
 *
 *  @brief     タスクバーを含まない実際の作業領域を返す
 *

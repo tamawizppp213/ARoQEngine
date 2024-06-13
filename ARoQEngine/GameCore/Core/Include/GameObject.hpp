@@ -36,8 +36,8 @@ namespace gc::core
 	};
 	/****************************************************************************
 	*				  			GameObject
-	*************************************************************************//**
-	*  @class    GameObject
+	****************************************************************************/
+	/* @class    GameObject
 	*  @brief    GameObject (base class in the all object class)
 	*****************************************************************************/
 	class GameObject : public gu::NonCopyable, public gu::EnableSharedFromThis<GameObject>

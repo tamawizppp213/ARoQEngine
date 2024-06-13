@@ -29,8 +29,8 @@ using namespace gu;
 #pragma region Public Function
 /****************************************************************************
 *                     CreateInstance
-*************************************************************************//**
-*  @brief     手動でGraphics APIを選択します. @n
+****************************************************************************/
+/* @brief     手動でGraphics APIを選択します. @n
               そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
 *
 *  @param[in] const core::GraphicsAPI グラフィクスAPI
@@ -62,8 +62,8 @@ gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core
 
 /****************************************************************************
 *                     CreateInstance
-*************************************************************************//**
-*  @brief     プラットフォームに合わせて自動でGraphics APIを選択します. @n
+****************************************************************************/
+/* @brief     プラットフォームに合わせて自動でGraphics APIを選択します. @n
               そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
 *
 *  @param[in] const RHIInstanceCreateInfo デバッガの指定用構造体
@@ -77,8 +77,8 @@ gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core
 
 /****************************************************************************
 *                     GetPreferredAdapterVendor
-*************************************************************************//**
-*  @brief    物理デバイスの好みがある場合は, コマンドラインの結果に基づいてDisplayAdapterVenderTypeを返す @n
+****************************************************************************/
+/* @brief    物理デバイスの好みがある場合は, コマンドラインの結果に基づいてDisplayAdapterVenderTypeを返す @n
 *            コマンドラインの文字列は, prefer_(DisplayAdapterVenderTypeに指定されるベンダー名)で指定してください
 * 
 *  @return   DisplayAdapterVendorType

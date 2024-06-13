@@ -31,8 +31,8 @@ AudioClip::~AudioClip()
 
 /****************************************************************************
 *                          Load
-*************************************************************************//**
-*  @fn        bool AudioClip::Load(const std::wstring& filePath)
+****************************************************************************/
+/* @fn        bool AudioClip::Load(const std::wstring& filePath)
 * 
 *  @brief     Load wav file
 * 
@@ -65,8 +65,8 @@ bool AudioClip::Load(const std::wstring& filePath)
 }
 /****************************************************************************
 *                       GetFilePath
-*************************************************************************//**
-*  @fn        const std::wstring& AudioClip::GetFilePath() const
+****************************************************************************/
+/* @fn        const std::wstring& AudioClip::GetFilePath() const
 * 
 *  @brief     Return file path
 * 
@@ -81,8 +81,8 @@ const std::wstring& AudioClip::GetFilePath() const
 
 /****************************************************************************
 *                       GetSoundSize
-*************************************************************************//**
-*  @fn        const size_t AudioClip::GetSoundSize() const
+****************************************************************************/
+/* @fn        const size_t AudioClip::GetSoundSize() const
 * 
 *  @brief     Return sound size (only waveData Byte Size)
 * 
@@ -97,8 +97,8 @@ const size_t AudioClip::GetSoundSize() const
 
 /****************************************************************************
 *                       GetSoundSize
-*************************************************************************//**
-*  @fn        const size_t AudioClip::GetSoundSize() const
+****************************************************************************/
+/* @fn        const size_t AudioClip::GetSoundSize() const
 * 
 *  @brief     Return sound size (only waveData Byte Size)
 * 
@@ -112,8 +112,8 @@ const WAVEFORMATEX& AudioClip::GetFileFormatEx() const
 }
 /****************************************************************************
 *                       GetSoundData
-*************************************************************************//**
-*  @fn        const size_t AudioClip::GetSoundData() const noexcept
+****************************************************************************/
+/* @fn        const size_t AudioClip::GetSoundData() const noexcept
 *  @brief     Return file path
 *  @param[in] void
 *  @return    const std::shared_ptr<BYTE[]>&

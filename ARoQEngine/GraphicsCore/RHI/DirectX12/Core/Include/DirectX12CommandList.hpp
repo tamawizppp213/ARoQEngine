@@ -32,8 +32,8 @@ namespace rhi::directX12
 	class GPUBarrierBatcher;
 	/****************************************************************************
 	*				  			RHICommandList
-	*************************************************************************//**
-	*  @class     RHICommandList
+	****************************************************************************/
+	/* @class     RHICommandList
 	*  @brief     GPUの描画命令をまとめたクラス. BeginRecordingとEndRecordingは1フレームの開始と終了時に呼んでください.
 	*****************************************************************************/
 	class RHICommandList : public rhi::core::RHICommandList, public gu::EnableSharedFromThis<RHICommandList>

@@ -364,8 +364,8 @@ namespace csv
 #ifdef CSV_IO_NO_THREAD
 		/****************************************************************************
 		*				  			SynchronousReader
-		*************************************************************************//**
-		*  @class     SynchronousReader
+		****************************************************************************/
+		/* @class     SynchronousReader
 		*  @brief     Synchronous file read
 		*****************************************************************************/
 		class SynchronousReader
@@ -405,8 +405,8 @@ namespace csv
 #else
 		/****************************************************************************
 		*				  			AsynchronousReader
-		*************************************************************************//**
-		*  @class     AsynchronousReader
+		****************************************************************************/
+		/* @class     AsynchronousReader
 		*  @brief     Asynchronous csv read class
 		*****************************************************************************/
 		class AsynchronousReader
@@ -460,8 +460,8 @@ namespace csv
 	}
 	/****************************************************************************
 	*				  			LineReader
-	*************************************************************************//**
-	*  @class     LineReader
+	****************************************************************************/
+	/* @class     LineReader
 	*  @brief     Csv row data reader
 	*****************************************************************************/
 	class LineReader
@@ -544,8 +544,8 @@ namespace csv
 #pragma endregion Overflow
 	/****************************************************************************
 	*				  			CSVReader
-	*************************************************************************//**
-	*  @class     CSVReader
+	****************************************************************************/
+	/* @class    CSVReader
 	*  @brief     CSV reader
 	*****************************************************************************/
 	template <unsigned int columnCount,
@@ -604,8 +604,8 @@ namespace csv
 #pragma region DoubleQuoteEscape
 	/****************************************************************************
 	*                       FindNextColumnEnd
-	*************************************************************************//**
-	*  @fn        template<char Separate, char Quote>
+	****************************************************************************/
+	/* @fn        template<char Separate, char Quote>
 				  const char* DoubleQuoteEscape<Separate, Quote>::FindNextColumnEnd(const char* columnBegin)
 	*  @brief     FindNextColumnEnd
 	*  @param[in] const char* columnBegin
@@ -634,8 +634,8 @@ namespace csv
 	}
 	/****************************************************************************
 	*                       UnEscape
-	*************************************************************************//**
-	*  @fn        template<char Separate, char Quote>
+	****************************************************************************/
+	/* @fn        template<char Separate, char Quote>
 				  void DoubleQuoteEscape<Separate, Quote>::UnEscape(char*& columnBegin, char*& columnEnd)
 	*  @brief     UnEscape
 	*  @param[in] const char* columnBegin
@@ -664,8 +664,8 @@ namespace csv
 #pragma region Parse
 	/****************************************************************************
 	*                       ChopNextColumn
-	*************************************************************************//**
-	*  @fn        template <class QuotePolicy> void detail::ChopNextColumn(char*& line, char*& columnBegin, char*& columnEnd)
+	****************************************************************************/
+	/* @fn        template <class QuotePolicy> void detail::ChopNextColumn(char*& line, char*& columnBegin, char*& columnEnd)
 	*  @brief     Get current column string
 	*  @param[in,out] char*& line
 	*  @param[in,out] char*& columnBegin
@@ -689,8 +689,8 @@ namespace csv
 	}
 	/****************************************************************************
 	*                       ParseLine
-	*************************************************************************//**
-	*  @fn        template <class TrimPolicy, class QuotePolicy> void detail::ParseLine(char* line, char** sortedColumn, const std::vector<int>& columnOrder)
+	****************************************************************************/
+	/* @fn        template <class TrimPolicy, class QuotePolicy> void detail::ParseLine(char* line, char** sortedColumn, const std::vector<int>& columnOrder)
 	*  @brief     Parse line 
 	*  @param[in,out] char*& line
 	*  @param[in,out] char** sortedColumn
@@ -771,8 +771,8 @@ namespace csv
 	}
 	/****************************************************************************
 	*                       Parse (Char)
-	*************************************************************************//**
-	*  @fn        template<class OverflowPolicy> void detail::Parse(char* column, char& x)
+	****************************************************************************/
+	/* @fn        template<class OverflowPolicy> void detail::Parse(char* column, char& x)
 	*  @brief     Parse char 
 	*  @param[in,out] char* column
 	*  @param[out] char& x
@@ -786,8 +786,8 @@ namespace csv
 	}
 	/****************************************************************************
 	*                       Parse (Unsigned int )
-	*************************************************************************//**
-	*  @fn        template<class OverflowPolicy> void detail::Parse(char* column, char& x)
+	****************************************************************************/
+	/* @fn        template<class OverflowPolicy> void detail::Parse(char* column, char& x)
 	*  @brief     Parse unsigned int
 	*  @param[in] char* column
 	*  @param[out] T& x
@@ -933,8 +933,8 @@ namespace csv
 	}
 	/****************************************************************************
 	*                       ReadHeader
-	*************************************************************************//**
-	*  @fn        template<class... ColumnNameList> void CSVReader::ReadHeader()
+	****************************************************************************/
+	/* @fn        template<class... ColumnNameList> void CSVReader::ReadHeader()
 	*  @brief     ReadHeader
 	*  @param[in] void
 	*  @return Å@Å@void
@@ -971,8 +971,8 @@ namespace csv
 	}
 	/****************************************************************************
 	*                       SetHeader
-	*************************************************************************//**
-	*  @fn        template <unsigned int columnCount, class TrimPolicy, class QuotePolicy, class OverflowPolicy, class CommentPolicy>
+	****************************************************************************/
+	/* @fn        template <unsigned int columnCount, class TrimPolicy, class QuotePolicy, class OverflowPolicy, class CommentPolicy>
 				  template<class... ColumnNameList> void CSVReader<columnCount, TrimPolicy, QuotePolicy, OverflowPolicy, CommentPolicy>::SetHeader(ColumnNameList... columnNameList)
 	*  @brief     SetHeader
 	*  @param[in] ColumnNameList... columnNameList
@@ -990,8 +990,8 @@ namespace csv
 	}
 	/****************************************************************************
 	*                       HasColumn
-	*************************************************************************//**
-	*  @fn        template <unsigned int columnCount, class TrimPolicy, class QuotePolicy, class OverflowPolicy, class CommentPolicy>
+	****************************************************************************/
+	/* @fn        template <unsigned int columnCount, class TrimPolicy, class QuotePolicy, class OverflowPolicy, class CommentPolicy>
 				  bool CSVReader<columnCount, TrimPolicy, QuotePolicy, OverflowPolicy, CommentPolicy>::HasColumn(const std::string& columnName) const
 	*  @brief     Has column
 	*  @param[in] const std::string& columnName
@@ -1006,8 +1006,8 @@ namespace csv
 	}
 	/****************************************************************************
 	*                       ReadRow
-	*************************************************************************//**
-	*  @fn        template <unsigned int columnCount, class TrimPolicy, class QuotePolicy, class OverflowPolicy, class CommentPolicy>
+	****************************************************************************/
+	/* @fn        template <unsigned int columnCount, class TrimPolicy, class QuotePolicy, class OverflowPolicy, class CommentPolicy>
 				  template<class... ColumnType> bool CSVReader<columnCount, TrimPolicy, QuotePolicy, OverflowPolicy, CommentPolicy>::ReadRow(ColumnType&... columns)
 	*  @brief     Read row
 	*  @param[in] ColumnType&... columns

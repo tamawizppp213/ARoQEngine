@@ -28,8 +28,8 @@ namespace gm::simd::avx
 {
 	/****************************************************************************
 	*				  			   SimdVector128AVX
-	*************************************************************************//**
-	*  @class     SimdVector128AVX
+	****************************************************************************/
+	/* @class     SimdVector128AVX
 	*  @brief     AVX—p‚Ìsimd‰‰ŽZ
 	*****************************************************************************/
 	class Vector128Utility : public gm::simd::sse4::Vector128Utility
@@ -75,8 +75,8 @@ namespace gm::simd::avx
 #pragma region Implement
 	/****************************************************************************
 	*                       Swizzle
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Swizzle(ConstVector128 vector,
+	****************************************************************************/
+	/* @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Swizzle(ConstVector128 vector,
 				  const gu::uint32 xIndex, const gu::uint32 yIndex,
 				  const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept
 	*
@@ -96,8 +96,8 @@ namespace gm::simd::avx
 
 	/****************************************************************************
 	*                       Permute
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Permute(ConstVector128 a, ConstVector128 b,
+	****************************************************************************/
+	/* @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Permute(ConstVector128 a, ConstVector128 b,
 				  const gu::uint32 xIndex, const gu::uint32 yIndex,
 				  const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept
 	*

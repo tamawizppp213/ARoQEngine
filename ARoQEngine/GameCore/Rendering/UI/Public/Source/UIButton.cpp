@@ -37,8 +37,8 @@ Button::~Button()
 #pragma region Main Function
 /****************************************************************************
 *					OnClick
-*************************************************************************//**
-*  @fn        bool Button::OnClick(const MouseButton mouseButton) const 
+****************************************************************************/
+/* @fn        bool Button::OnClick(const MouseButton mouseButton) const 
 *
 *  @brief     Trigger click check in the ui button.
 *
@@ -66,8 +66,8 @@ bool Button::OnClick(const MouseButton mouseButton) const
 
 /****************************************************************************
 *					IsPress
-*************************************************************************//**
-*  @fn        bool Button::IsPress(const MouseButton mouseButton) const
+****************************************************************************/
+/* @fn        bool Button::IsPress(const MouseButton mouseButton) const
 *
 *  @brief     Press check in the ui button.
 *
@@ -94,8 +94,8 @@ bool Button::IsPress(const MouseButton mouseButton) const
 
 /****************************************************************************
 *					DetectClick
-*************************************************************************//**
-*  @fn        bool Button::DetectClick() const
+****************************************************************************/
+/* @fn        bool Button::DetectClick() const
 *
 *  @brief     Detect click (ndc space)
 *

@@ -25,8 +25,8 @@ namespace rhi::core
 	class RHIDevice;
 	/****************************************************************************
 	*				  			GPUDepthStencilState
-	*************************************************************************//**
-	*  @class     GPUDepthStencilState
+	****************************************************************************/
+	/* @class     GPUDepthStencilState
 	*  @brief     DepthStencilState
 	*****************************************************************************/
 	class GPUDepthStencilState : public GPUState

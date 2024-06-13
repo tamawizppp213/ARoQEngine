@@ -94,8 +94,8 @@ void GPUTexture::SetName(const gu::tstring& name)
 
 /****************************************************************************
 *                     Load
-*************************************************************************//**
-*  @brief     Load texture 
+****************************************************************************/
+/* @brief     Load texture 
 *
 *  @param[in] const gu::tstring& filePath
 *  @param[in] const gu::SharedPointer<core::RHICommandList> graphics type commandList
@@ -324,8 +324,8 @@ void GPUTexture::Write(const gu::SharedPointer<core::RHICommandList>& commandLis
 
 /****************************************************************************
 *                     Save
-*************************************************************************//**
-*  @fn        void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
+****************************************************************************/
+/* @fn        void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList, const gu::SharedPointer<core::RHICommandQueue>& commandQueue)
 *
 *  @brief     Save the texture already stored in the GPU and record it to the specified file.
 *
@@ -467,8 +467,8 @@ void GPUTexture::Save(const gu::tstring& filePath, const gu::SharedPointer<core:
 
 /****************************************************************************
 *                     AllocateGPUTextureBuffer
-*************************************************************************//**
-*  @fn        void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, bool isDiscreteGPU)
+****************************************************************************/
+/* @fn        void GPUTexture::AllocateGPUTextureBuffer(const D3D12_RESOURCE_DESC& resourceDesc, bool isDiscreteGPU)
 *
 *  @brief     Allocate texture buffer in GPU memory
 *

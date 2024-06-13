@@ -27,8 +27,8 @@ namespace rhi::vulkan
 {
 	/****************************************************************************
 	*				  			RHICommandQueue
-	*************************************************************************//**
-	*  @class     RHICommandQueue
+	****************************************************************************/
+	/* @class     RHICommandQueue
 	*  @brief     Send drawing commands to the GPU,
 				  provide methods for synchronous processing of drawing command execution
 				  There are three types : Graphics, Compute, Copy command queue.

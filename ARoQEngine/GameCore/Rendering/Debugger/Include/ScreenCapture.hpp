@@ -35,8 +35,8 @@ namespace gc::rendering
 {
 	/****************************************************************************
 	*				  			    ScreenCapture
-	*************************************************************************//**
-	*  @class     ScreenCapture
+	****************************************************************************/
+	/* @class     ScreenCapture
 	*  @brief     If you press the PrintScreen button, The texture is saved in the current time directory.
 	              This class is used when executing in the debug mode 
 	*****************************************************************************/

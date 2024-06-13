@@ -119,8 +119,8 @@ void Bloom::OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight
 }
 /****************************************************************************
 *                          UpdateBloomPower
-*************************************************************************//**
-*  @fn        void Bloom::UpdateBloomPower(float power)
+****************************************************************************/
+/* @fn        void Bloom::UpdateBloomPower(float power)
 *  @brief     Update bloom power (Default value is 10)
 *  @param[in] void
 *  @return Å@Å@bool

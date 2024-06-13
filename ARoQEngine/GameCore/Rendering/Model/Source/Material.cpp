@@ -85,8 +85,8 @@ Material::~Material()
 #pragma region Main Function
 /****************************************************************************
 *					Bind
-*************************************************************************//**
-*  @fn      void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandList,
+****************************************************************************/
+/* @fn      void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandList,
 			const std::uint32_t frameIndex,
 			const std::uint32_t bindID,
 			const gu::DynamicArray<std::uint32_t>& bindTextureIDs)
@@ -120,8 +120,8 @@ void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandL
 }
 /****************************************************************************
 *					PackMaterial
-*************************************************************************//**
-*  @fn        void Material::PackMaterial(const void* data)
+****************************************************************************/
+/* @fn        void Material::PackMaterial(const void* data)
 *
 *  @brief     Pack constant material buffer
 *
@@ -137,8 +137,8 @@ void Material::PackMaterial(const void* data)
 
 /****************************************************************************
 *					LoadTexture
-*************************************************************************//**
-*  @fn        Material::GPUResourceViewPtr Material::LoadTexture(const gu::tstring& filePath, const UsageTexture textureType)
+****************************************************************************/
+/* @fn        Material::GPUResourceViewPtr Material::LoadTexture(const gu::tstring& filePath, const UsageTexture textureType)
 *
 *  @brief     Load texture according to the usage texture.
 *
@@ -160,8 +160,8 @@ Material::GPUResourceViewPtr Material::LoadTexture(const gu::tstring& filePath, 
 #pragma region Set up function
 /****************************************************************************
 *					SetUpBuffer
-*************************************************************************//**
-*  @fn        void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Material::SetUpBuffer(const GPUBufferMetaData& bufferInfo, const gu::tstring& name)
 *
 *  @brief     Set up cbv buffer (for material)
 *

@@ -24,8 +24,8 @@ namespace gu::details::smart_pointer
 {
 	/****************************************************************************
 	*				  			 ReferenceController
-	*************************************************************************//**
-	*  @class     ReferenceController
+	****************************************************************************/
+	/* @class     ReferenceController
 	*  @brief     参照カウントを調整し, Resourceも破棄できるクラスです
 	*****************************************************************************/
 	template<class ElementType, class Deleter = DefaultDeleter<ElementType>, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>

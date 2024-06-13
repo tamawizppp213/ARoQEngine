@@ -48,8 +48,8 @@ RHIFrameBuffer::~RHIFrameBuffer()
 #pragma region Prepare
 /****************************************************************************
 *                       Prepare
-*************************************************************************//**
-*  @fn        void RHIFrameBuffer::Prepare()
+****************************************************************************/
+/* @fn        void RHIFrameBuffer::Prepare()
 * 
 *  @brief     Prepare Frame Buffer 
 * 

@@ -27,8 +27,8 @@ namespace gu
 	class SharedPointer;
 	/****************************************************************************
 	*				  			   GUWeakPointer
-	*************************************************************************//**
-	*  @class     GUWeakPointer
+	****************************************************************************/
+	/* @class     GUWeakPointer
 	*  @brief     参照カウントを増やさないポインタです
 	*****************************************************************************/
 	template<class ElementType, SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>

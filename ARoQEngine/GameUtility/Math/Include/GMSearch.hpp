@@ -26,8 +26,8 @@ namespace gm
 {
 	/****************************************************************************
 	*				  			Search
-	*************************************************************************//**
-	*  @class     Search
+	****************************************************************************/
+	/* @class     Search
 	*  @brief     Search
 	*****************************************************************************/
 	template<typename T>
@@ -67,7 +67,7 @@ namespace gm
 #pragma region Public Function
 	/****************************************************************************
 	*							LinearSearch
-	*************************************************************************//**
+	****************************************************************************/
 	*  @fn        int Search<T>::LinearSearch(T* array, int arraySize, T key)
 	*  @brief     Linear Search for array (O(N))
 	*  @param[in] T*  array
@@ -89,7 +89,7 @@ namespace gm
 
 	/****************************************************************************
 	*							LinearSearch
-	*************************************************************************//**
+	****************************************************************************/
 	*  @fn        int Search<T>::LinearSearch(const std::vector<T>& vector, T key)
 	*  @brief     Linear Search for vector (O(N))
 	*  @param[in] std::vector<T>& vector
@@ -110,7 +110,7 @@ namespace gm
 
 	/****************************************************************************
 	*							BinarySearch
-	*************************************************************************//**
+	****************************************************************************/
 	*  @fn        int Search<T>::BinarySearch(T* array, int arraySize, T key)
 	*  @brief     Linear Search for array (O(log_2(N))) This algorithm is needed well-ordered ascend data
 	*  @param[in] T*  array
@@ -149,7 +149,7 @@ namespace gm
 
 	/****************************************************************************
 	*							BinarySearch
-	*************************************************************************//**
+	****************************************************************************/
 	*  @fn        int Search<T>::BinarySearch(const std::vector<T>& vector, T key)
 	*  @brief     Binary Search for vector (O(log_2(N))) This algorithm is needed well-ordered ascend data
 	*  @param[in] std::vector<T>& vector

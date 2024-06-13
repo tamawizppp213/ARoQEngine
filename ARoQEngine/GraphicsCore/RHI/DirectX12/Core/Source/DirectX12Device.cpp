@@ -138,7 +138,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 
 /****************************************************************************
 *                     SetUpDefaultHeap
-*************************************************************************//**
+****************************************************************************/
 /* @brief     各ディスクリプタヒープをDefaultHeapCountに基づいて作成します
 *
 *  @param[in] const core::DefaultHeapCount ディスクリプタヒープのサイズを決定する構造体
@@ -175,10 +175,10 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 
 /****************************************************************************
 *                     Destoy
-*************************************************************************//**
-*  @fn        void RHIDevice::Destroy()
+****************************************************************************/
+/* @fn        void RHIDevice::Destroy()
 *
-*  @brief     Release command resource and device
+/* @brief     Release command resource and device
 *
 *  @param[in] void
 *
@@ -374,8 +374,8 @@ gu::SharedPointer<core::RHIQuery> RHIDevice::CreateQuery(const core::QueryHeapTy
 
 /****************************************************************************
 *                     CreateCommittedResource
-*************************************************************************//**
-* @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
+****************************************************************************/
+/* @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
 *             参考はD3D12Resources.cpp(UE5)
 *
 *  @param[out] const ResourceComPtr&        :これからメモリを確保したいGPUリソース
@@ -489,8 +489,8 @@ HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 
 /****************************************************************************
 *                     CreateReservedResource
-*************************************************************************//**
-*  @brief     既に存在しているHeap内にまだマップまでは行わない予約済みのリソースを作成
+****************************************************************************/
+/* @brief     既に存在しているHeap内にまだマップまでは行わない予約済みのリソースを作成
 *
 *  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
 *  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
@@ -562,8 +562,8 @@ HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12
 
 /****************************************************************************
 *                     CreatePlacedResource
-*************************************************************************//**
-*  @brief     既に作成済みのヒープに配置されるリソースを作成する.
+****************************************************************************/
+/* @brief     既に作成済みのヒープに配置されるリソースを作成する.
 *             Committed, Reserved, Placedの中では最も高速に動作する
 *
 *  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
@@ -649,10 +649,10 @@ HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_R
 
 /****************************************************************************
 *                     ReportLiveObjects
-*************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::ReportLiveObjects()
+****************************************************************************/
+/* @fn        void GraphicsDeviceDirectX12::ReportLiveObjects()
 * 
-*  @brief     ReportLiveObjects
+/* @brief     ReportLiveObjects
 * 
 *  @param[in] void
 * 
@@ -675,10 +675,10 @@ void RHIDevice::ReportLiveObjects()
 #pragma region Device Support Function
 /****************************************************************************
 *						CheckDXRSupport
-*************************************************************************//**
-*  @fn        void DirectX12::CheckDXRSupport()
+****************************************************************************/
+/* @fn        void DirectX12::CheckDXRSupport()
 * 
-*  @brief     Check DXRSupport
+/* @brief     Check DXRSupport
 * 
 *  @param[in] void
 * 
@@ -708,10 +708,10 @@ void RHIDevice::CheckDXRSupport()
 
 /****************************************************************************
 *						CheckRenderPassSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckRenderPassSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckRenderPassSupport()
 *
-*  @brief     Check render pass support
+/* @brief     Check render pass support
 *
 *  @param[in] void
 *
@@ -738,10 +738,10 @@ void RHIDevice::CheckRenderPassSupport()
 
 /****************************************************************************
 *						CheckSamplerFeedbackSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckSamplerFeedbackSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckSamplerFeedbackSupport()
 *
-*  @brief     Check sampelr feedback support
+/* @brief     Check sampelr feedback support
 *
 *  @param[in] void
 *
@@ -771,10 +771,10 @@ void RHIDevice::CheckSamplerFeedbackSupport()
 
 /****************************************************************************
 *						CheckBindlessSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckBindlessSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckBindlessSupport()
 *
-*  @brief     Check bindless support
+/* @brief     Check bindless support
 *
 *  @param[in] void
 *
@@ -794,10 +794,10 @@ void RHIDevice::CheckBindlessSupport()
 }
 /****************************************************************************
 *                     CheckVRSSupport
-*************************************************************************//**
-*  @fn        void GraphicsDeviceDirectX12::CheckVRSSupport()
+****************************************************************************/
+/* @fn        void GraphicsDeviceDirectX12::CheckVRSSupport()
 * 
-*  @brief     Variable Rate Shading support
+/* @brief     Variable Rate Shading support
 * 
 *  @param[in] void
 * 
@@ -855,10 +855,10 @@ void RHIDevice::CheckVRSSupport()
 
 /****************************************************************************
 *                     MultiSampleQualityLevels
-*************************************************************************//**
-*  @fn        void DirectX12::CheckMultiSampleQualityLevels(void)
+****************************************************************************/
+/* @fn        void DirectX12::CheckMultiSampleQualityLevels(void)
 * 
-*  @brief     Multi Sample Quality Levels for Msaa (Anti-Alias)
+/* @brief     Multi Sample Quality Levels for Msaa (Anti-Alias)
 * 
 *  @param[in] void
 * 
@@ -882,10 +882,10 @@ void RHIDevice::CheckMultiSampleQualityLevels()
 
 /****************************************************************************
 *                     CheckHDRDisplaySupport
-*************************************************************************//**
-*  @fn        void DirectX12::CheckHDRDisplaySupport()
+****************************************************************************/
+/* @fn        void DirectX12::CheckHDRDisplaySupport()
 * 
-*  @brief     CheckHDRDisplaySupport()　https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
+/* @brief     CheckHDRDisplaySupport()　https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
 * 
 *  @param[in] void
 * 
@@ -963,10 +963,10 @@ void RHIDevice::SetupDisplayHDRMetaData()
 
 /****************************************************************************
 *                     CheckMeshShadingSupport
-*************************************************************************//**
-*  @fn        void DirectX12::CheckMeshShadingSupport()
+****************************************************************************/
+/* @fn        void DirectX12::CheckMeshShadingSupport()
 * 
-*  @brief     Mesh Shading support check
+/* @brief     Mesh Shading support check
 * 
 *  @param[in] void
 * 
@@ -987,10 +987,10 @@ void RHIDevice::CheckMeshShadingSupport()
 
 /****************************************************************************
 *                     CheckAllowTearingSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckAllowTearingSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckAllowTearingSupport()
 *
-*  @brief     Allow tearing support
+/* @brief     Allow tearing support
 *            
 *  @param[in] void
 *
@@ -1020,8 +1020,8 @@ void RHIDevice::CheckAllowTearingSupport()
 
 /****************************************************************************
 *                     DepthBoundsTestSupport
-*************************************************************************//**
-*  @brief      深度値が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させ, 範囲外ならば該当ピクセルを早期棄却する方法
+****************************************************************************/
+/* @brief      深度値が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させ, 範囲外ならば該当ピクセルを早期棄却する方法
 		　　　　 Deferred Renderingにおけるライトのaccumulation, Deferred RenderingにおけるCascaded Shadow Map, 被写界深度エフェクト, 遠景描画等に使用可能 
 *              https://microsoft.github.io/DirectX-Specs/d3d/DepthBoundsTest.html
 *              https://shikihuiku.wordpress.com/tag/depthboundstest/
@@ -1047,7 +1047,7 @@ void RHIDevice::CheckDepthBoundsTestSupport()
 
 /****************************************************************************
 *                     CheckResourceTiers
-*************************************************************************//**
+****************************************************************************/
 /* @brief     パイプラインで使用可能なリソースの上限値を確認するために使用する
 * 
 *  @details   大きく異なるのは以下の点です
@@ -1073,10 +1073,10 @@ void RHIDevice::CheckResourceTiers()
 
 /****************************************************************************
 *                     CheckStencilReferenceFromPixelShaderSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckStencilReferenceFromPixelShaderSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckStencilReferenceFromPixelShaderSupport()
 *
-*  @brief     ステンシルバッファの参照値をピクセルシェーダーで出力出来るようにします. 
+/* @brief     ステンシルバッファの参照値をピクセルシェーダーで出力出来るようにします. 
 *             https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/shader-specified-stencil-reference-value
 *
 *  @param[in] void
@@ -1101,10 +1101,10 @@ void RHIDevice::CheckAdditionalUAVType()
 
 /****************************************************************************
 *                     CheckMaxHeapSize()
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckMaxHeapSize()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckMaxHeapSize()
 *
-*  @brief     最大のHeap Sizeをセットします.
+/* @brief     最大のHeap Sizeをセットします.
 * 
 *  @param[in] void
 *
@@ -1133,8 +1133,8 @@ void RHIDevice::CheckMaxHeapSize()
 }
 /****************************************************************************
 *                     FindHighestFeatureLevel
-*************************************************************************//**
-*  @brief     DirectXで使用可能な最大の機能レベルを自動で設定します
+****************************************************************************/
+/* @brief     DirectXで使用可能な最大の機能レベルを自動で設定します
 *
 *  @param[in] void
 *
@@ -1164,8 +1164,8 @@ void RHIDevice::FindHighestFeatureLevel()
 
 /****************************************************************************
 *                    SetupPlatformPixelFormats
-*************************************************************************//**
-*  @brief     DirectX12で使用可能なピクセルフォーマットを設定する
+****************************************************************************/
+/* @brief     DirectX12で使用可能なピクセルフォーマットを設定する
 *
 *  @param[in] void
 *
@@ -1243,8 +1243,8 @@ void RHIDevice::SetupPlatformPixelFormats()
 
 /****************************************************************************
 *                     FindHighestShaderModel
-*************************************************************************//**
-*  @brief      DirectXで使用可能な最大のシェーダーモデルを設定します@n
+****************************************************************************/
+/* @brief      DirectXで使用可能な最大のシェーダーモデルを設定します@n
                現在は6_9が指定可能なサポートレベルですが, 環境に応じてレベルは下がる場合があります
 *****************************************************************************/
 void RHIDevice::FindHighestShaderModel()
@@ -1283,10 +1283,10 @@ void RHIDevice::FindHighestShaderModel()
 
 /****************************************************************************
 *                     CheckWaveLaneSupport
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckWaveLaneSupport()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckWaveLaneSupport()
 *
-*  @brief      HLSLで明示的にGPU上で複数スレッドの使用が可能となります.
+/* @brief      HLSLで明示的にGPU上で複数スレッドの使用が可能となります.
 		       Wave : プロセッサ上の同時に実行されるスレッドの集合
 			   Lane : 個々のスレッド
 *
@@ -1306,10 +1306,10 @@ void RHIDevice::CheckWaveLaneSupport()
 
 /****************************************************************************
 *                     CheckNative16bitOperation
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckNative16bitOperation()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckNative16bitOperation()
 *
-*  @brief     16 bitのシェーダー操作が可能かどうかを調べます
+/* @brief     16 bitのシェーダー操作が可能かどうかを調べます
 * 
 *  @param[in] void
 *
@@ -1325,10 +1325,10 @@ void RHIDevice::CheckNative16bitOperation()
 
 /****************************************************************************
 *                     CheckAtomicOperation
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckAtomicOperation()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckAtomicOperation()
 *
-*  @brief     Wave用にAtomic操作が可能かどうかを調べます.
+/* @brief     Wave用にAtomic操作が可能かどうかを調べます.
 *
 *  @param[in] void
 *
@@ -1359,8 +1359,8 @@ void RHIDevice::CheckAtomicOperation()
 
 /****************************************************************************
 *                     CheckHighestRootSignatureVersion
-*************************************************************************//**
-*  @brief  現在の指定可能な最大のRootSignatureのバージョンを調べます. @n
+****************************************************************************/
+/* @brief  現在の指定可能な最大のRootSignatureのバージョンを調べます. @n
 *           GetHighestRootSignatureVersionを参照してください
 *
 *  @param[in] void
@@ -1387,10 +1387,10 @@ void RHIDevice::CheckHighestRootSignatureVersion()
 
 /****************************************************************************
 *                     CreateIntelExtensionContext
-*************************************************************************//**
-*  @fn        INTCExtensionContext* RHIDevice::CreateIntelExtensionContext(INTCExtensionInfo& intelExtensionInfo)
+****************************************************************************/
+/* @fn        INTCExtensionContext* RHIDevice::CreateIntelExtensionContext(INTCExtensionInfo& intelExtensionInfo)
 *
-*  @brief     INTCExtensionContextを生成します.
+/* @brief     INTCExtensionContextを生成します.
 *
 *  @param[out]void
 *
@@ -1506,10 +1506,10 @@ void RHIDevice::CreateIntelExtensionContext()
 
 /****************************************************************************
 *                     DestroyIntelExtensionContext
-*************************************************************************//**
-*  @fn        void RHIDevice::DestroyIntelExtensionContext()
+****************************************************************************/
+/* @fn        void RHIDevice::DestroyIntelExtensionContext()
 *
-*  @brief     INTCExtensionContextを破棄します. 
+/* @brief     INTCExtensionContextを破棄します. 
 *
 *  @param[in] INTCExtensionContext* 
 *
@@ -1539,8 +1539,8 @@ void RHIDevice::DestroyIntelExtensionContext()
 
 /****************************************************************************
 *                     IsSupportedIntelEmulatedAtomic64
-*************************************************************************//**
-*  @brief     Atomic 64 bitがサポートされているかを返します.
+****************************************************************************/
+/* @brief     Atomic 64 bitがサポートされているかを返します.
 *
 *  @param[in] void
 *
@@ -1569,10 +1569,10 @@ bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
 #pragma region Property
 /****************************************************************************
 *                     SetName
-*************************************************************************//**
-*  @fn        void RHIDevice::SetName(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void RHIDevice::SetName(const gu::tstring& name)
 *
-*  @brief     Set Logical device name
+/* @brief     Set Logical device name
 *
 *  @param[in] const gu::tstring& name
 *
@@ -1585,10 +1585,10 @@ void RHIDevice::SetName(const gu::tstring& name)
 
 /****************************************************************************
 *                     GetDefaultHeap
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
+****************************************************************************/
+/* @fn        gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
 *
-*  @brief     Return descriptor heap (CBV, SRV, UAV, RTV, DSV)
+/* @brief     Return descriptor heap (CBV, SRV, UAV, RTV, DSV)
 *
 *  @param[in] const core::DefaultHeapType
 *
@@ -1609,8 +1609,8 @@ gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core:
 
 /****************************************************************************
 *                     SetGPUDebugBreak
-*************************************************************************//**
-*  @brief     RHIInstanceで定義した深刻度の大きさにしたがってGPUのDebugBreakを行う
+****************************************************************************/
+/* @brief     RHIInstanceで定義した深刻度の大きさにしたがってGPUのDebugBreakを行う
 *
 *  @param[in] void
 *
@@ -1643,10 +1643,10 @@ void RHIDevice::SetGPUDebugBreak() const
 
 /****************************************************************************
 *                     SetupDefaultCommandSignatures
-*************************************************************************//**
-*  @fn        void RHIDevice::SetupDefaultCommandSignatures()
+****************************************************************************/
+/* @fn        void RHIDevice::SetupDefaultCommandSignatures()
 *
-*  @brief     Set up command signatures
+/* @brief     Set up command signatures
 *
 *  @param[in] void
 *

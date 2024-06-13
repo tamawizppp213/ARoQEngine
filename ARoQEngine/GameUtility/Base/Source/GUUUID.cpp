@@ -43,8 +43,8 @@ namespace
 #pragma region Main Function
 /****************************************************************************
 *                       Create
-*************************************************************************//**
-*  @fn        gu::UUID gu::UUID::Create()
+****************************************************************************/
+/* @fn        gu::UUID gu::UUID::Create()
 *
 *  @brief     GUIDを生成します
 *
@@ -67,8 +67,8 @@ gu::UUID gu::UUID::Create()
 
 /****************************************************************************
 *                       AppendString
-*************************************************************************//**
-*  @fn        void gu::UUID::AppendString(std::string& string, const UUIDFormat format)
+****************************************************************************/
+/* @fn        void gu::UUID::AppendString(std::string& string, const UUIDFormat format)
 *
 *  @brief     文字列を追加します
 *
@@ -96,8 +96,8 @@ void gu::UUID::AppendString(std::string& string, const UUIDFormat format)
 
 /****************************************************************************
 *                       ToString
-*************************************************************************//**
-*  @fn        std::string gu::UUID::ToString(const UUIDFormat format)
+****************************************************************************/
+/* @fn        std::string gu::UUID::ToString(const UUIDFormat format)
 *
 *  @brief     指定したフォーマットで文字列を追加します
 *

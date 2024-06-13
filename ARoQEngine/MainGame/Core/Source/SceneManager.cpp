@@ -42,8 +42,8 @@ void SceneManager::StartUp(PPPEnginePtr& engine, const gu::SharedPointer<GameTim
 }
 /****************************************************************************
 *                       TransitScene
-*************************************************************************//**
-*  @fn        void SceneManager::TransitScene(const ScenePtr scene, GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SceneManager::TransitScene(const ScenePtr scene, GameTimer* gameTimer)
 *  @brief     Transit scene
 *  @param[in] ScenePtr scene
 *  @param[in] GameTimer& gameTimer
@@ -87,8 +87,8 @@ void SceneManager::PopScene()
 }
 /****************************************************************************
 *                       ShutDown
-*************************************************************************//**
-*  @fn        void SceneManger::ShutDown()
+****************************************************************************/
+/* @fn        void SceneManger::ShutDown()
 *  @brief     Shut Down
 *  @param[in] void
 *  @return @@void

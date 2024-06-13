@@ -81,8 +81,8 @@ RHIInstance::~RHIInstance()
 #pragma region Public Function
 /****************************************************************************
 *                     SearchHighPerformanceAdapter
-*************************************************************************//**
-*  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの多いものから 
+****************************************************************************/
+/* @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの多いものから 
 *             (High) xGPU, dGPU iGPU (Low) selected
 * 
 *  @param[in] void
@@ -96,8 +96,8 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAda
 
 /****************************************************************************
 *                     SearchMinimumPowerAdapter
-*************************************************************************//**
-*  @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの少ないものから
+****************************************************************************/
+/* @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの少ないものから
 *             (Low) iGPU, dGPU xGPU (High)
 * 
 *  @param[in] void
@@ -111,8 +111,8 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapte
 
 /****************************************************************************
 *                     SearchAdapter
-*************************************************************************//**
-*  @brief     高性能または最小電力を示すAdapterを選択（（高）xGPU、dGPU iGPU（低）
+****************************************************************************/
+/* @brief     高性能または最小電力を示すAdapterを選択（（高）xGPU、dGPU iGPU（低）
 * 
 *  @param[in] const DXGI_GPU_PREFERENCE preference (high performance or minimum power)
 * 
@@ -254,8 +254,8 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const DXGI
 
 /****************************************************************************
 *                     EnumrateAdapters
-*************************************************************************//**
-*  @brief     全ての利用可能な物理デバイスを配列の形で返します.
+****************************************************************************/
+/* @brief     全ての利用可能な物理デバイスを配列の形で返します.
 * 
 *  @param[in] void
 * 
@@ -294,10 +294,10 @@ gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::Enumra
 
 /****************************************************************************
 *                     LogAdapters
-*************************************************************************//**
-*  @fn        void RHIInstance::LogAdapters()
+****************************************************************************/
+/* @fn        void RHIInstance::LogAdapters()
 * 
-*  @brief     Show all available adapter information using Output debug string
+/* @brief     Show all available adapter information using Output debug string
 * 
 *  @param[in] void
 * 
@@ -316,8 +316,8 @@ void RHIInstance::LogAdapters() const
 
 /****************************************************************************
 *                     HasLoadedDirectXAgilitySDK
-*************************************************************************//**
-*  @brief     DirectXのAgilitySDK (最新バージョンのDirectX12を使用するできるか)を返します
+****************************************************************************/
+/* @brief     DirectXのAgilitySDK (最新バージョンのDirectX12を使用するできるか)を返します
 *
 *  @param[in] void
 *
@@ -335,10 +335,10 @@ bool RHIInstance::HasLoadedDirectXAgilitySDK() const
 #pragma region Debugger
 /****************************************************************************
 *                     EnabledDebugLayer
-*************************************************************************//**
-*  @fn        void DirectX12::EnabledDebugLayer(void)
+****************************************************************************/
+/* @fn        void DirectX12::EnabledDebugLayer(void)
 * 
-*  @brief     Enabled CPU debug layer(debug mode only use)
+/* @brief     Enabled CPU debug layer(debug mode only use)
 * 
 *  @param[in] void
 * 
@@ -360,10 +360,10 @@ void RHIInstance::EnabledDebugLayer()
 
 /****************************************************************************
 *                   EnabledShaderBasedValiation
-*************************************************************************//**
-*  @fn        void DirectX12::EnabledShaderBasedValidation(void)
+****************************************************************************/
+/* @fn        void DirectX12::EnabledShaderBasedValidation(void)
 * 
-*  @brief     Enabled GPU debugger (fpsに大きな影響を与えます.)
+/* @brief     Enabled GPU debugger (fpsに大きな影響を与えます.)
 * 
 *  @param[in] void
 * 
@@ -395,10 +395,10 @@ void RHIInstance::EnabledShaderBasedValidation()
 
 /****************************************************************************
 *                     EnabledGPUClashDebuggingModes
-*************************************************************************//**
-*  @fn        void RHIInstance::EnabledGPUClashDebuggingModes()
+****************************************************************************/
+/* @fn        void RHIInstance::EnabledGPUClashDebuggingModes()
 *
-*  @brief     GPU Clashの解析を行うため,　予期しないデバイス削除エラーが検出された後にDREDデータにアクセスし, エラー原因を解析できるようにします.
+/* @brief     GPU Clashの解析を行うため,　予期しないデバイス削除エラーが検出された後にDREDデータにアクセスし, エラー原因を解析できるようにします.
 * 　　　　　　　　この関数はあくまで有効化するだけです.実際の検知は別で行います. 
 *
 *  @param[in] void

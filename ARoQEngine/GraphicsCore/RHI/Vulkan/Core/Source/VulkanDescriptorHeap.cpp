@@ -36,8 +36,8 @@ RHIDescriptorHeap::~RHIDescriptorHeap()
 #pragma region Public Function
 /****************************************************************************
 *                     Allocate
-*************************************************************************//**
-*  @fn        RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
+****************************************************************************/
+/* @fn        RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::DescriptorHeapType heapType, const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout)
 * 
 *  @brief     Allocate view. Return descriptor index
 * 
@@ -88,8 +88,8 @@ RHIDescriptorHeap::DescriptorID RHIDescriptorHeap::Allocate(const core::Descript
 
 /****************************************************************************
 *                     Free
-*************************************************************************//**
-*  @fn        void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex)
+****************************************************************************/
+/* @fn        void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const DescriptorID offsetIndex)
 *
 *  @brief     Free Resource allocator and heap
 *
@@ -121,8 +121,8 @@ void RHIDescriptorHeap::Free(const core::DescriptorHeapType heapType, const Desc
 
 /****************************************************************************
 *                     Resize
-*************************************************************************//**
-*  @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
+****************************************************************************/
+/* @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
 * 
 *  @brief     Resize max view count size heap
 * 
@@ -140,8 +140,8 @@ void RHIDescriptorHeap::Resize(const core::DescriptorHeapType heapType, const si
 }
 /****************************************************************************
 *                     Resize
-*************************************************************************//**
-*  @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
+****************************************************************************/
+/* @fn        void RHIDescriptorHeap::Resize(const core::DescriptorHeapType type, const size_t viewCount)
 * 
 *  @brief     Resize max view count size heap
 * 

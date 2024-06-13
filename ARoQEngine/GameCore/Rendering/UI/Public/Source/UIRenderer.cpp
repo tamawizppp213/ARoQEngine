@@ -63,8 +63,8 @@ void UIRenderer::Clear()
 
 /****************************************************************************
 *					AddFrameObject
-*************************************************************************//**
-*  @fn        void UIRenderer::AddFrameObject(const gu::DynamicArray<ui::Image>& images, const Texture& texture)
+****************************************************************************/
+/* @fn        void UIRenderer::AddFrameObject(const gu::DynamicArray<ui::Image>& images, const Texture& texture)
 * 
 *  @brief     Add Frame Object
 * 
@@ -148,8 +148,8 @@ void UIRenderer::AddFrameObjects(const gu::DynamicArray<ui::Image>& images, cons
 }
 /****************************************************************************
 *					Draw
-*************************************************************************//**
-*  @fn        void UIRenderer::Draw()
+****************************************************************************/
+/* @fn        void UIRenderer::Draw()
 * 
 *  @brief     Render all registered frame ui objects
 * 
@@ -201,8 +201,8 @@ void UIRenderer::Draw()
 #pragma region Protected Function
 /****************************************************************************
 *						ClearVertexBuffer
-*************************************************************************//**
-*  @fn        void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount)
+****************************************************************************/
+/* @fn        void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t vertexCount)
 *
 *  @brief     Clear gpu vertex buffer
 *
@@ -226,8 +226,8 @@ void UIRenderer::ClearVertexBuffer(const std::uint32_t frameIndex, const size_t 
 
 /****************************************************************************
 *						PrepareMaxImageBuffer
-*************************************************************************//**
-*  @fn        void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 *
 *  @brief     Prepare max writable ui count size buffer
 *
@@ -288,8 +288,8 @@ void UIRenderer::PrepareMaxImageBuffer(const gu::tstring& name)
 
 /****************************************************************************
 *							PreparePipelineState
-*************************************************************************//**
-*  @fn        void Skybox::PreparePipelineState(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Skybox::PreparePipelineState(const gu::tstring& name)
 * 
 *  @brief     Prepare pipelineState
 * 

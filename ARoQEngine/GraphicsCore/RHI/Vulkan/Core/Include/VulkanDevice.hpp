@@ -29,8 +29,8 @@ namespace rhi::vulkan
 	class RHISwapchain;
 	/****************************************************************************
 	*				  			Device class
-	*************************************************************************//**
-	*  @class     Device
+	****************************************************************************/
+	/* @class     Device
 	*  @brief     Logical device
 	*****************************************************************************/
 	class RHIDevice : public core::RHIDevice, public gu::EnableSharedFromThis<RHIDevice>
@@ -127,7 +127,7 @@ namespace rhi::vulkan
 		
 		gu::SharedPointer<core::RHIDescriptorHeap>   GetDefaultHeap(const core::DescriptorHeapType heapType) override;
 		
-		std::uint64_t GetDeviceAddress(VkBuffer buffer);
+		std::uint64_t GetDeviceAddress(VkBuffer buffer) const;
 
 		void SetName(const gu::tstring& name) override;
 

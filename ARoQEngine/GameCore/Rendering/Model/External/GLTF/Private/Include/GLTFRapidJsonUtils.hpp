@@ -62,8 +62,8 @@ namespace gltf
 
     /****************************************************************************
     *                          GetMemberValueAsString
-    *************************************************************************//**
-    *  @fn        template<typename T>
+    ****************************************************************************/
+    /* @fn        template<typename T>
                   std::string GetMemberValueAsString(const rapidjson::Value& v, const char* memberName)
     *  @brief     Get member value as string
     *  @param[in] const rapidjson::Value& v
@@ -79,8 +79,8 @@ namespace gltf
     }
     /****************************************************************************
     *                          GetMemberValueAsString
-    *************************************************************************//**
-    *  @fn        inline std::string GetMemberValueAsString<std::size_t>(const rapidjson::Value& v, const char* memberName)
+    ****************************************************************************/
+    /* @fn        inline std::string GetMemberValueAsString<std::size_t>(const rapidjson::Value& v, const char* memberName)
     *  @brief     Get member value as string
     *  @param[in] rapidjson::Value& v
     *  @param[in] cosnt char* memberName
@@ -95,8 +95,8 @@ namespace gltf
     }
     /****************************************************************************
     *                          TryFindMember
-    *************************************************************************//**
-    *  @fn        inline bool TryFindMember(const char* name, const rapidjson::Value& v, rapidjson::Value::ConstMemberIterator& value)
+    ****************************************************************************/
+    /* @fn        inline bool TryFindMember(const char* name, const rapidjson::Value& v, rapidjson::Value::ConstMemberIterator& value)
     *  @brief     Try Find Member
     *  @param[in] const char* name
     *  @param[in] rapidjson::Value& v
@@ -111,8 +111,8 @@ namespace gltf
     }
     /****************************************************************************
     *                          FindRequiredMember
-    *************************************************************************//**
-    *  @fn        inline rapidjson::Value::ConstMemberIterator FindRequiredMember(const char* name, const rapidjson::Value& v)
+    ****************************************************************************/
+    /* @fn        inline rapidjson::Value::ConstMemberIterator FindRequiredMember(const char* name, const rapidjson::Value& v)
     *  @brief     Find member. if the member is not found, return error
     *  @param[in] cosnt char* memberName
     *  @param[in] const rapidjson::Value& v
@@ -129,8 +129,8 @@ namespace gltf
     }
     /****************************************************************************
     *                          GetValueOrDefault
-    *************************************************************************//**
-    *  @fn        template<typename T>
+    ****************************************************************************/
+    /* @fn        template<typename T>
                   T GetValueOrDefault(const rapidjson::Value& v, T t = {})
     *  @brief     Return value or default 
     *  @param[in] rapidjson::Value& v
@@ -144,8 +144,8 @@ namespace gltf
     }
     /****************************************************************************
     *                          GetValueOrDefault
-    *************************************************************************//**
-    *  @fn        template<>
+    ****************************************************************************/
+    /* @fn        template<>
                   inline std::string GetValueOrDefault<std::string>(const rapidjson::Value& v, std::string str)
     *  @brief     Return value or default string
     *  @param[in] rapidjson::Value& v
@@ -159,8 +159,8 @@ namespace gltf
     }
     /****************************************************************************
     *                          GetValueOrDefault
-    *************************************************************************//**
-    *  @fn        template<>
+    ****************************************************************************/
+    /* @fn        template<>
                   inline float GetValueOrDefault<float>(const rapidjson::Value& v, float defaultValue)
     *  @brief     Return value or default float 
     *  @param[in] rapidjson::Value& v

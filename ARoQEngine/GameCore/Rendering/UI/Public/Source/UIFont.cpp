@@ -40,8 +40,8 @@ Font::~Font()
 #pragma region Main Function
 /****************************************************************************
 *					Load
-*************************************************************************//**
-*  @fn        bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth)
+****************************************************************************/
+/* @fn        bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& imagePath, const gm::Float2& pixelPerChar, const float imagePixelWidth)
 *  
 *  @brief     Load font texture
 * 
@@ -76,8 +76,8 @@ bool Font::Load(const LowLevelGraphicsEnginePtr& engine, const gu::tstring& imag
 
 /****************************************************************************
 *					Reset
-*************************************************************************//**
-*  @fn        void Font::Reset()
+****************************************************************************/
+/* @fn        void Font::Reset()
 *
 *  @brief     Reset font resource
 *

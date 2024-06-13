@@ -26,8 +26,8 @@ Keyboard::Keyboard()
 
 /****************************************************************************
 *							Initialize
-*************************************************************************//**
-*  @fn        bool Keyboard::Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd)
+****************************************************************************/
+/* @fn        bool Keyboard::Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd)
 *  @brief     Keyboard Initialize
 *  @param[in] LPDIRECTINPUT8 dInput
 *  @param[in] HINSTANCE hInstace
@@ -56,8 +56,8 @@ bool Keyboard::Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd)
 
 /****************************************************************************
 *							Update
-*************************************************************************//**
-*  @fn        bool Keyboard::Update()
+****************************************************************************/
+/* @fn        bool Keyboard::Update()
 *  @brief     Check Keyboard Input
 *  @param[in] void
 *  @return 　　void
@@ -84,8 +84,8 @@ void Keyboard::Update()
 
 /****************************************************************************
 *							Finalize
-*************************************************************************//**
-*  @fn        void Keyboard::Finalize()
+****************************************************************************/
+/* @fn        void Keyboard::Finalize()
 *  @brief     Finish Keyboard Device
 *  @param[in] void
 *  @return 　　void
@@ -102,8 +102,8 @@ void Keyboard::Finalize()
 
 /****************************************************************************
 *							IsPress
-*************************************************************************//**
-*  @fn        void Keyboard::IsPress()
+****************************************************************************/
+/* @fn        void Keyboard::IsPress()
 *  @brief     Detect pressing button
 *  @param[in] keyCode
 *  @return 　　bool
@@ -115,8 +115,8 @@ bool Keyboard::IsPress(int keyCode)
 
 /****************************************************************************
 *							IsTrigger
-*************************************************************************//**
-*  @fn        void Keyboard::IsTrigger()
+****************************************************************************/
+/* @fn        void Keyboard::IsTrigger()
 *  @brief     Detect trigger button
 *  @param[in] keyCode
 *  @return 　　bool
@@ -128,8 +128,8 @@ bool Keyboard::IsTrigger(int keyCode)
 
 /****************************************************************************
 *							IsRelease
-*************************************************************************//**
-*  @fn        void Keyboard::IsRelease()
+****************************************************************************/
+/* @fn        void Keyboard::IsRelease()
 *  @brief     Detect release button
 *  @param[in] keyCode
 *  @return 　　bool

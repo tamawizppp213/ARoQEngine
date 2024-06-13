@@ -27,8 +27,8 @@ namespace gm::simd::sse4
 {
 	/****************************************************************************
 	*				  			   GMSimdMatrix128SSE
-	*************************************************************************//**
-	*  @class     GMSimdMatrix128SSE
+	****************************************************************************/
+	/* @class     GMSimdMatrix128SSE
 	*  @brief     temp
 	*****************************************************************************/
 	class Matrix128Utility : public gm::simd::sse3::Matrix128Utility
@@ -66,8 +66,8 @@ namespace gm::simd::sse4
 	#pragma region Math
 	/****************************************************************************
 	*                       LookAtLH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookAtLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookAtLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept
 	*
 	*  @brief     FocusPositionに視点を向けるための変換行列を作成します(左手系)
 	*
@@ -84,8 +84,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                       LookAtRH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookAtRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookAtRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept
 	*
 	*  @brief     FocusPositionに視点を向けるための変換行列を作成します(右手系)
 	*
@@ -102,8 +102,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                       LookToLH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookToLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookToLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept
 	*
 	*  @brief     視点を対象方向に向けるための変換行列を作成します(左手系)
 	*
@@ -144,8 +144,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                       LookToRH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookToRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookToRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept
 	*
 	*  @brief     視点を対象方向に向けるための変換行列を作成します(右手系)
 	*

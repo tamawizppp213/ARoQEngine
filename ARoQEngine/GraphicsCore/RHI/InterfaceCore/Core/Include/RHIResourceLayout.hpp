@@ -28,8 +28,8 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			RHIResourceLayoutDesc
-	*************************************************************************//**
-	*  @class     RHIResourceLayoutDesc
+	****************************************************************************/
+	/* @class     RHIResourceLayoutDesc
 	*  @brief     Resource layout descriptor (set up how to bind gpu resource)
 	*****************************************************************************/
 	struct RHIResourceLayoutDesc
@@ -67,8 +67,8 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			RHIResourceLayout
-	*************************************************************************//**
-	*  @class     RHIResourceLayout
+	****************************************************************************/
+	/* @class     RHIResourceLayout
 	*  @brief     Resource layout (set up how to bind gpu resource)
 	*****************************************************************************/
 	class RHIResourceLayout : public gu::NonCopyable

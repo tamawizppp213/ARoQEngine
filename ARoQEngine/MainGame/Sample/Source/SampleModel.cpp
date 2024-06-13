@@ -42,8 +42,8 @@ SampleModel::~SampleModel()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleModel::Initialize(const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleModel::Initialize(const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in] GameTimer* gameTimer
 *  @return 　　void
@@ -54,8 +54,8 @@ void SampleModel::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gam
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleModel::Update()
+****************************************************************************/
+/* @fn        void SampleModel::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -68,8 +68,8 @@ void SampleModel::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleModel::Draw()
+****************************************************************************/
+/* @fn        void SampleModel::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -84,8 +84,8 @@ void SampleModel::Draw()
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleModel::Terminate()
+****************************************************************************/
+/* @fn        void SampleModel::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -100,8 +100,8 @@ void SampleModel::Terminate()
 
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleModel::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleModel::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
@@ -149,8 +149,8 @@ void SampleModel::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleModel::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleModel::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -188,8 +188,8 @@ void SampleModel::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleModel::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleModel::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -210,8 +210,8 @@ void SampleModel::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleModel::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleModel::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void

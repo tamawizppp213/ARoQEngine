@@ -161,8 +161,8 @@ void SSAO::SetSurfaceEpsilon(const float epsilonDepth)
 #pragma region SetUpFunction 
 /****************************************************************************
 *							PrepareSSAOSettings
-*************************************************************************//**
-*  @fn        void SSAO::PrepareSSAOSettings(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void SSAO::PrepareSSAOSettings(const gu::tstring& name)
 * 
 *  @brief     Prepare SSAO setting buffer and constant buffer view.
 * 
@@ -217,8 +217,8 @@ void SSAO::PrepareSSAOSettings(const gu::tstring& name)
 
 /****************************************************************************
 *							PrepareBlurMode
-*************************************************************************//**
-*  @fn        void SSAO::PrepareBlurMode(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void SSAO::PrepareBlurMode(const gu::tstring& name)
 *
 *  @brief     Prepare blur mode buffer and constant buffer view.
 *
@@ -349,8 +349,8 @@ void SSAO::PreparePipelineState(const gu::tstring& name)
 
 /****************************************************************************
 *							PrepareVertexAndIndexBuffer
-*************************************************************************//**
-*  @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
+****************************************************************************/
+/* @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
 *  @brief     Prepare Rect Vertex and Index Buffer
 *  @param[in] const gu::tstring& addName
 *  @return Å@Å@void

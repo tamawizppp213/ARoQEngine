@@ -82,8 +82,8 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const gu::DynamicArray<Verte
 
 /****************************************************************************
 *					Draw
-*************************************************************************//**
-*  @fn        void Mesh::Draw()
+****************************************************************************/
+/* @fn        void Mesh::Draw()
 * 
 *  @brief     Mesh Renderer must need. (Å’áŒÀ‚ÌDrawCall)
 * 
@@ -111,8 +111,8 @@ void Mesh::Draw(const gu::SharedPointer<RHICommandList>& commandList, const std:
 
 /****************************************************************************
 *					Prepare
-*************************************************************************//**
-*  @fn        void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const gu::tstring& name)
 *
 *  @brief     Prepare vertex and index buffer
 *
@@ -156,8 +156,8 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const gu::tstring& name)
 
 /****************************************************************************
 *					Prepare
-*************************************************************************//**
-*  @fn        void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Mesh::Prepare(const GPUBufferMetaData& vertexInfo, const GPUBufferMetaData& indexInfo, const gu::tstring& name)
 * 
 *  @brief     Prepare vertex and index buffer
 * 

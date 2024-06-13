@@ -63,8 +63,8 @@ bool GLTFConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 #pragma region PMX 
 /****************************************************************************
 *					PrepareTotalMesh
-*************************************************************************//**
-*  @fn        void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file)
+****************************************************************************/
+/* @fn        void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file)
 *
 *  @brief     Prepare total mesh buffer (all material index buffer and vertex buffer)(ignore material)
 *
@@ -75,7 +75,7 @@ bool GLTFConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 *****************************************************************************/
 void GLTFConverter::PrepareTotalMesh([[maybe_unused]]const GameModelPtr model, [[maybe_unused]] gltf::GLTFFile& file)
 {
-	///*-------------------------------------------------------------------
+	//*-------------------------------------------------------------------
 	//-            Copy PMXvertex -> skin vertex
 	//---------------------------------------------------------------------*/
 	//std::unique_ptr<gm::SkinMeshVertex[]> vertices = std::make_unique<gm::SkinMeshVertex[]>(file.Document.Meshes.Vertices.size());
@@ -90,7 +90,7 @@ void GLTFConverter::PrepareTotalMesh([[maybe_unused]]const GameModelPtr model, [
 	//	std::memcpy(vertices[i].BoneWeights, pmxVertex.BoneWeights, sizeof(pmxVertex.BoneWeights));
 	//}
 
-	///*-------------------------------------------------------------------
+	//*-------------------------------------------------------------------
 	//-            Total mesh
 	//---------------------------------------------------------------------*/
 	//const auto vbData = GPUBufferMetaData::VertexBuffer(sizeof(gm::SkinMeshVertex), file.Vertices.size(), MemoryHeap::Upload, ResourceState::Common, vertices.get());
@@ -100,8 +100,8 @@ void GLTFConverter::PrepareTotalMesh([[maybe_unused]]const GameModelPtr model, [
 
 /****************************************************************************
 *					PrepareEachMaterialMesh
-*************************************************************************//**
-*  @fn        vvoid PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFile& file)
+****************************************************************************/
+/* @fn        vvoid PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFile& file)
 *
 *  @brief     Prepare each material mesh
 *

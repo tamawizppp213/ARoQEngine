@@ -27,8 +27,8 @@ namespace gm::simd::avx
 {
 	/****************************************************************************
 	*				  			   GMSimdMatrix128SSE
-	*************************************************************************//**
-	*  @class     GMSimdMatrix128SSE
+	****************************************************************************/
+	/* @class     GMSimdMatrix128SSE
 	*  @brief     temp
 	*****************************************************************************/
 	class Matrix128Utility : public gm::simd::sse4::Matrix128Utility
@@ -58,8 +58,8 @@ namespace gm::simd::avx
 	#pragma region Math
 	/****************************************************************************
 	*                       Multiply
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128f left, ConstMatrix128f right) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128f left, ConstMatrix128f right) noexcept
 	*
 	*  @brief     Š|‚¯ŽZ
 	*

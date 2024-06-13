@@ -30,8 +30,8 @@ QueryAllocator::QueryAllocator(const gu::uint32 maxQueryCount)
 #pragma region Main Function
 /****************************************************************************
 *                       IssueID
-*************************************************************************//**
-*  @fn        gu::uint32 QueryAllocator::IssueID()
+****************************************************************************/
+/* @fn        gu::uint32 QueryAllocator::IssueID()
 *
 *  @brief     新しいクエリ配列のインデックスを発行します
 *
@@ -63,8 +63,8 @@ gu::uint32 QueryAllocator::IssueID()
 
 /****************************************************************************
 *                       FreeID
-*************************************************************************//**
-*  @fn        void QueryAllocator::FreeID(const gu::uint32 id)
+****************************************************************************/
+/* @fn        void QueryAllocator::FreeID(const gu::uint32 id)
 *
 *  @brief     IDを未使用状態に変更します
 *
@@ -84,8 +84,8 @@ void QueryAllocator::FreeID(const gu::uint32 id)
 
 /****************************************************************************
 *                       ResetID
-*************************************************************************//**
-*  @fn        void QueryAllocator::RestID(const gu::uint32 offsetIndex)
+****************************************************************************/
+/* @fn        void QueryAllocator::RestID(const gu::uint32 offsetIndex)
 *
 *  @brief     ヒープの中身は解放せず, そのままIDのみを初期状態に戻します
 *

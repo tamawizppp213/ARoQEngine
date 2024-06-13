@@ -32,8 +32,8 @@ namespace gltf
 {
 	/****************************************************************************
 	*				  			GLTFResourceReader
-	*************************************************************************//**
-	*  @class     GLTFResourceReader
+	****************************************************************************/
+	/* @class     GLTFResourceReader
 	*  @brief     Resource Reader
 	*****************************************************************************/
 	class GLTFResourceReader
@@ -185,8 +185,8 @@ namespace gltf
 
 	/****************************************************************************
 	*				  			GLBResourceReader
-	*************************************************************************//**
-	*  @class     GLBResourceReader
+	****************************************************************************/
+	/* @class     GLBResourceReader
 	*  @brief     GLB Resource read
 	*****************************************************************************/
 	class GLBResourceReader : public GLTFResourceReader
@@ -225,8 +225,8 @@ namespace gltf
 	
 	/****************************************************************************
 	*                       ReadBinaryData
-	*************************************************************************//**
-	*  @fn        template<typename T> std::vector<T> GLTFResourceReader::ReadBinaryData(const GLTFDocument& document, const detail::asset::GLTFAccessor& accessor) const
+	****************************************************************************/
+	/* @fn        template<typename T> std::vector<T> GLTFResourceReader::ReadBinaryData(const GLTFDocument& document, const detail::asset::GLTFAccessor& accessor) const
 	*  @brief     Read binary function (accessor). Return std::vector<T>
 	*  @param[in] const GLTFDocument& document
 	*  @param[in] const detail::asset::GLTFAccessor& accessor
@@ -260,8 +260,8 @@ namespace gltf
 	}
 	/****************************************************************************
 	*                       ReadBinaryData
-	*************************************************************************//**
-	*  @fn        template<typename T> std::vector<T> GLTFResourceReader::ReadBinaryData(const GLTFDocument& document, const detail::asset::GLTFBufferView& bufferView) const
+	****************************************************************************/
+	/* @fn        template<typename T> std::vector<T> GLTFResourceReader::ReadBinaryData(const GLTFDocument& document, const detail::asset::GLTFBufferView& bufferView) const
 	*  @brief     Read binary function (bufferView). Return std::vector<T>
 	*  @param[in] const GLTFDocument& document
 	*  @param[in] const detail::asset::GLTFBufferView& bufferView
@@ -282,8 +282,8 @@ namespace gltf
 	
 	/****************************************************************************
 	*                       ReadAccessor
-	*************************************************************************//**
-	*  @fn        template<typename T> std::vector<T> GLTFResourceReader::ReadAccessor(const GLTFDocument& document, const detail::asset::GLTFAccessor& accessor) const
+	****************************************************************************/
+	/* @fn        template<typename T> std::vector<T> GLTFResourceReader::ReadAccessor(const GLTFDocument& document, const detail::asset::GLTFAccessor& accessor) const
 	*  @brief     Read accessor data. Return std::vector<float>
 	*  @param[in] const GLTFDocument& document
 	*  @param[in] const detail::asset::GLTFAccessor& accessor
@@ -319,8 +319,8 @@ namespace gltf
 	}
 	/****************************************************************************
 	*                       ReadSparceAcessor
-	*************************************************************************//**
-	*  @fn        std::vector<T> GLTFResourceReader::ReadSparceAcessor(const GLTFDocument& document, const detail::asset::GLTFAccessor& accessor) const
+	****************************************************************************/
+	/* @fn        std::vector<T> GLTFResourceReader::ReadSparceAcessor(const GLTFDocument& document, const detail::asset::GLTFAccessor& accessor) const
 	*  @brief     Read accessor data. Return std::vector<float>
 	*  @param[in] const GLTFDocument& document
 	*  @param[in] const detail::asset::GLTFAccessor& accessor
@@ -369,8 +369,8 @@ namespace gltf
 	}
 	/****************************************************************************
 	*                       ReadBinaryDataURi
-	*************************************************************************//**
-	*  @fn        void GLTFResourceReader::ReadBinaryDataURI(detail::utils::Base64StringView encodedData, detail::utils::Base64BufferView decodedData, const std::streamoff* offsetOverride) const
+	****************************************************************************/
+	/* @fn        void GLTFResourceReader::ReadBinaryDataURI(detail::utils::Base64StringView encodedData, detail::utils::Base64BufferView decodedData, const std::streamoff* offsetOverride) const
 	*  @brief     Read binary data uri 
 	*  @param[in] detail::utils::Base64StringView
 	*  @param[in] detail::utils::Base64BufferView decodedData, 
@@ -380,8 +380,8 @@ namespace gltf
 	
 	/****************************************************************************
 	*                       ReadBinaryDataURI
-	*************************************************************************//**
-	*  @fn        std::vector<T> GLTFResourceReader::ReadBinaryDataURI(detail::utils::Base64StringView encodedData, const std::streamoff* offsetOverride, const size_t* componentCountOverride) const
+	****************************************************************************/
+	/* @fn        std::vector<T> GLTFResourceReader::ReadBinaryDataURI(detail::utils::Base64StringView encodedData, const std::streamoff* offsetOverride, const size_t* componentCountOverride) const
 	*  @brief     Read binary data uri
 	*  @param[in] detail::utils::Base64StringView
 	*  @param[in] const std::streamoff* offsetOverride, 
@@ -391,8 +391,8 @@ namespace gltf
 	
 	/****************************************************************************
 	*                       ReadBinaryData
-	*************************************************************************//**
-	*  @fn        std::vector<T> GLTFResourceReader::ReadBinaryData(const detail::asset::GLTFBuffer& buffer, std::streamoff offset, size_t componentCount) const
+	****************************************************************************/
+	/* @fn        std::vector<T> GLTFResourceReader::ReadBinaryData(const detail::asset::GLTFBuffer& buffer, std::streamoff offset, size_t componentCount) const
 	*  @brief     Read binary data
 	*  @param[in] const detail::asset::GLTFBuffer& buffer, 
 	*  @param[in,out] std::streamoff offset, 
@@ -426,8 +426,8 @@ namespace gltf
 	}
 	/****************************************************************************
 	*                       ReadBinaryDataInterleaved
-	*************************************************************************//**
-	*  @fn        std::vector<T> GLTFResourceReader::ReadBinaryDataInterleaved(const detail::asset::GLTFBuffer& buffer, std::streamoff offset, size_t elementCount, uint8_t typeCount, size_t stride) const
+	****************************************************************************/
+	/* @fn        std::vector<T> GLTFResourceReader::ReadBinaryDataInterleaved(const detail::asset::GLTFBuffer& buffer, std::streamoff offset, size_t elementCount, uint8_t typeCount, size_t stride) const
 	*  @brief     Read binary data interleaved  
 	*  @param[in] const detail::asset::GLTFBuffer& buffer,
 	*  @param[in,out] std::streamoff offset,
@@ -476,8 +476,8 @@ namespace gltf
 	}
 	/****************************************************************************
 	*                       ReadBinaryDataInterleaved
-	*************************************************************************//**
-	*  @fn        template<typename T, typename I>
+	****************************************************************************/
+	/* @fn        template<typename T, typename I>
 				Å@Å@void GLTFResourceReader::ReadSparseBinaryData(const GLTFDocument& gltfDocument, std::vector<T>& baseData, const detail::asset::GLTFAccessor& accessor) const
 	*  @brief     Read binary data interleaved
 	*  @param[in] const GLTFDocument& gltfDocument, 

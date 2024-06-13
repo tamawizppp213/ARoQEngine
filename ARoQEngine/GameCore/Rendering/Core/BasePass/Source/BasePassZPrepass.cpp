@@ -59,8 +59,8 @@ void ZPrepass::OnResize(const std::uint32_t width, const std::uint32_t height)
 
 /****************************************************************************
 *                          Draw
-*************************************************************************//**
-*  @fn        void ZPrepass::Draw(const GPUResourceViewPtr& scene)
+****************************************************************************/
+/* @fn        void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 *
 *  @brief     Draw zprepass texture (ZPrepass : the texture which saves z values from render scene camera)
 *
@@ -98,8 +98,8 @@ void ZPrepass::Draw(const GPUResourceViewPtr& scene)
 
 /****************************************************************************
 *                          Add
-*************************************************************************//**
-*  @fn        void ZPrepass::Add(const GameModelPtr& actor)
+****************************************************************************/
+/* @fn        void ZPrepass::Add(const GameModelPtr& actor)
 *
 *  @brief     Add model
 *
@@ -114,8 +114,8 @@ void ZPrepass::Add(const GameModelPtr& actor)
 
 /****************************************************************************
 *                          Clear
-*************************************************************************//**
-*  @fn        void ZPrepass::Clear()
+****************************************************************************/
+/* @fn        void ZPrepass::Clear()
 *
 *  @brief     Clear registered model buffer
 *
@@ -148,8 +148,8 @@ ZPrepass::GPUResourceViewPtr ZPrepass::GetRenderedTextureView() const noexcept
 #pragma region Setup Function
 /****************************************************************************
 *                          PreparePipelineState
-*************************************************************************//**
-*  @fn        void ZPrepass::PrepareFrameBuffers()
+****************************************************************************/
+/* @fn        void ZPrepass::PrepareFrameBuffers()
 *
 *  @brief     void ZPrepass::PreparePipelineState(const gu::tstring& name)
 *
@@ -197,8 +197,8 @@ void ZPrepass::PreparePipelineState(const gu::tstring& name)
 
 /****************************************************************************
 *                          PrepareFrameBuffers
-*************************************************************************//**
-*  @fn        void ZPrepass::PrepareFrameBuffers()
+****************************************************************************/
+/* @fn        void ZPrepass::PrepareFrameBuffers()
 *
 *  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
 *

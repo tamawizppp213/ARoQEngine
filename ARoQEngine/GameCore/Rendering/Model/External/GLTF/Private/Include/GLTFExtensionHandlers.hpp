@@ -37,8 +37,8 @@ namespace gltf
         using NameKey = std::pair<std::string, std::type_index>;
         /****************************************************************************
         *                          MakeTypeKey
-        *************************************************************************//**
-        *  @fn        template<typename T1, typename T2> TypeKey MakeTypeKey()
+        ****************************************************************************/
+        /* @fn        template<typename T1, typename T2> TypeKey MakeTypeKey()
         *  @brief     Return TypeKey
         *  @param[in] void
         *  @return 　　TypeKey
@@ -47,8 +47,8 @@ namespace gltf
         TypeKey MakeTypeKey() { return { typeid(T1), typeid(T2) }; }
         /****************************************************************************
         *                          MakeTypeKey
-        *************************************************************************//**
-        *  @fn        template<typename T> TypeKey MakeTypeKey()
+        ****************************************************************************/
+        /* @fn        template<typename T> TypeKey MakeTypeKey()
         *  @brief     Return TypeKey
         *  @param[in] GLTFExtension
         *  @return 　　TypeKey
@@ -57,8 +57,8 @@ namespace gltf
         TypeKey MakeTypeKey(const GLTFExtension& extension) { return { typeid(extension), typeid(T) }; }
         /****************************************************************************
          *                          MakeTypeKey
-         *************************************************************************//**
-         *  @fn        TypeKey MakeTypeKey()
+         ****************************************************************************/
+         /* @fn        TypeKey MakeTypeKey()
          *  @brief     Return TypeKey
          *  @param[in] GLTFExtension
          *  @param[in] GLTFProperty
@@ -67,8 +67,8 @@ namespace gltf
         TypeKey MakeTypeKey(const GLTFExtension& extension, const GLTFProperty& property);
         /****************************************************************************
         *                          MakeNameKey
-        *************************************************************************//**
-        *  @fn        template<typename T> NameKey MakeNameKey(const std::string& name, const GLTFProperty& property)
+        ****************************************************************************/
+        /* @fn        template<typename T> NameKey MakeNameKey(const std::string& name, const GLTFProperty& property)
         *  @brief     Return NameKey
         *  @param[in] const std::string& name
         *  @return 　　NameKey
@@ -77,8 +77,8 @@ namespace gltf
         NameKey MakeNameKey(const std::string& name) { return{ name, typeid(T) }; }
         /****************************************************************************
         *                          MakeNameKey
-        *************************************************************************//**
-        *  @fn        NameKey MakeNameKey(const std::string& name, const GLTFProperty& property)
+        ****************************************************************************/
+        /* @fn        NameKey MakeNameKey(const std::string& name, const GLTFProperty& property)
         *  @brief     Return NameKey
         *  @param[in] const std::string& name
         *  @param[in] const GLTFProperty& property
@@ -89,8 +89,8 @@ namespace gltf
 	}
     /****************************************************************************
     *				  			TemplateClass
-    *************************************************************************//**
-    *  @class     TemplateClass
+    ****************************************************************************/
+    /* @class     TemplateClass
     *  @brief     temp
     *****************************************************************************/
     template<typename TReturn, typename ...TArgs>

@@ -92,8 +92,8 @@ namespace
 
 	/****************************************************************************
 	*				  			SwapchainSupportDetails
-	*************************************************************************//**
-	*  @struct    SwapchainSupportDetails
+	****************************************************************************/
+	/* @struct    SwapchainSupportDetails
 	*  @brief     Swapchain support (use query function)
 	*****************************************************************************/
 	struct SwapchainSupportDetails
@@ -181,8 +181,8 @@ RHISwapchain::~RHISwapchain()
 #pragma region Render Function
 /****************************************************************************
 *							SetUp
-*************************************************************************//**
-*  @fn        void RHISwapchain::SetUp()
+****************************************************************************/
+/* @fn        void RHISwapchain::SetUp()
 *  @brief     Prepare the swapchain setting
 *  @param[in] void
 *  @return 　　void
@@ -241,8 +241,8 @@ void RHISwapchain::SetUp()
 
 /****************************************************************************
 *							PrepareNextImage
-*************************************************************************//**
-*  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
+****************************************************************************/
+/* @fn        std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
 *  @brief     When NextImage is ready, Signal is issued and the next frame Index is returned.
 *  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *  @param[in] std::uint64_t signalValue (Normally : ++fenceValueを代入)
@@ -291,8 +291,8 @@ std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFe
 }
 /****************************************************************************
 *							Present
-*************************************************************************//**
-*  @fn        void RHISwapchain::Present()
+****************************************************************************/
+/* @fn        void RHISwapchain::Present()
 *  @brief     Display front buffer
 *  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *  @param[in] std::uint64_t waitValue
@@ -360,8 +360,8 @@ void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const
 }
 /****************************************************************************
 *                     Resize
-*************************************************************************//**
-*  @fn        void RHISwapchain::Resize(const size_t width, const size_t height)
+****************************************************************************/
+/* @fn        void RHISwapchain::Resize(const size_t width, const size_t height)
 *  @brief     Resize screen size. (set resized swapchain buffers )
 *  @param[in] const size_t width
 *  @param[in] const size_t height
@@ -397,8 +397,8 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 }
 /****************************************************************************
 *                     GetCurrentBufferIndex
-*************************************************************************//**
-*  @fn        size_t RHISwapchain::GetCurrentBufferIndex() const
+****************************************************************************/
+/* @fn        size_t RHISwapchain::GetCurrentBufferIndex() const
 *  @brief     Return current frame buffer
 *  @param[in] void
 *  @return 　　size_t
@@ -411,8 +411,8 @@ size_t RHISwapchain::GetCurrentBufferIndex() const
 #pragma region Set Up Function
 /****************************************************************************
 *                     InitializeSwapchain
-*************************************************************************//**
-*  @fn        void RHISwapchain::InitializeSwapchain()
+****************************************************************************/
+/* @fn        void RHISwapchain::InitializeSwapchain()
 *  @brief     Initialize swapchain
 *  @param[in] void
 *  @return 　　void
@@ -531,8 +531,8 @@ void RHISwapchain::InitializeSwapchain()
 }
 /****************************************************************************
 *							GetCurrentBufferIndex
-*************************************************************************//**
-*  @fn        size_t RHISwapchain::GetCurrentBufferIndex() const
+****************************************************************************/
+/* @fn        size_t RHISwapchain::GetCurrentBufferIndex() const
 *  @brief     Get current buffer
 *  @param[in] void
 *  @return 　　size_t
@@ -554,8 +554,8 @@ void RHISwapchain::UpdateCurrentFrameIndex()
 #pragma region Swap Chain Config
 /****************************************************************************
 *                     SelectSwapchainFormat
-*************************************************************************//**
-*  @fn        VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const gu::DynamicArray<VkSurfaceFormatKHR>& format)
+****************************************************************************/
+/* @fn        VkSurfaceFormatKHR RHISwapchain::SelectSwapchainFormat(const gu::DynamicArray<VkSurfaceFormatKHR>& format)
 * 
 *  @brief     Select swapchain format
 * 
@@ -602,8 +602,8 @@ void RHISwapchain::ChangeSDRFormat(const VkFormat format)
 }
 /****************************************************************************
 *                     SelectSwapchainPresentMode
-*************************************************************************//**
-*  @fn        VkPresentModeKHR GraphicsDeviceVulkan::SelectSwapchainPresentMode(const gu::DynamicArray<VkPresentModeKHR>& presentMode)
+****************************************************************************/
+/* @fn        VkPresentModeKHR GraphicsDeviceVulkan::SelectSwapchainPresentMode(const gu::DynamicArray<VkPresentModeKHR>& presentMode)
 *  @brief     Select vsync mode
 *  @param[in] const gu::DynamicArray<VkPresentModeKHR>& presentMode
 *  @return 　　VkPresentModeKHR
@@ -620,8 +620,8 @@ VkPresentModeKHR RHISwapchain::SelectSwapchainPresentMode(const gu::DynamicArray
 }
 /****************************************************************************
 *                     SelectSwapExtent
-*************************************************************************//**
-*  @fn        VkExtent2D  GraphicsDeviceVulkan::SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
+****************************************************************************/
+/* @fn        VkExtent2D  GraphicsDeviceVulkan::SelectSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities)
 *  @brief     Select swapchain screen size
 *  @param[in] const gu::DynamicArray<VkPresentModeKHR>& presentMode
 *  @return 　　VkExtent2D

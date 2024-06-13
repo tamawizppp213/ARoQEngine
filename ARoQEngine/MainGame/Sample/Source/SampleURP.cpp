@@ -48,8 +48,8 @@ SampleURP::~SampleURP()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleURP::Initialize(const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleURP::Initialize(const GameTimerPtr& gameTimer)
 * 
 *  @brief     Initialize scene
 * 
@@ -64,8 +64,8 @@ void SampleURP::Initialize(const PPPEnginePtr& engine, const GameTimerPtr& gameT
 
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleURP::Update()
+****************************************************************************/
+/* @fn        void SampleURP::Update()
 * 
 *  @brief     Update Scene
 * 
@@ -92,8 +92,8 @@ void SampleURP::Update()
 
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleURP::Draw()
+****************************************************************************/
+/* @fn        void SampleURP::Draw()
 * 
 *  @brief     Draw Scene]]
 * 
@@ -116,8 +116,8 @@ void SampleURP::Draw()
 
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleURP::Terminate()
+****************************************************************************/
+/* @fn        void SampleURP::Terminate()
 * 
 *  @brief     Terminate Scene
 * 
@@ -135,8 +135,8 @@ void SampleURP::Terminate()
 
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleURP::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleURP::LoadMaterials(GameTimer* gameTimer)
 * 
 *  @brief     Load Materials
 * 
@@ -204,8 +204,8 @@ void SampleURP::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleURP::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleURP::OnKeyboardInput()
 * 
 *  @brief     KeyboardInput
 * 
@@ -254,8 +254,8 @@ void SampleURP::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleURP::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleURP::OnMouseInput()
 * 
 *  @brief     MouseInput
 * 
@@ -280,8 +280,8 @@ void SampleURP::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleModel::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleModel::OnGamePadInput()
 * 
 *  @brief     GamePadInput
 * 

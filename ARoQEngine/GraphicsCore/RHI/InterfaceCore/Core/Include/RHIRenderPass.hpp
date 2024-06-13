@@ -29,8 +29,8 @@ namespace rhi::core
 	class RHIFrameBuffer;
 	/****************************************************************************
 	*				  			RHIRenderPass
-	*************************************************************************//**
-	*  @class     RHIRenderPass
+	****************************************************************************/
+	/* @class     RHIRenderPass
 	*  @brief     Render pass:  Use before rendering
 	*****************************************************************************/
 	class RHIRenderPass : public gu::NonCopyable

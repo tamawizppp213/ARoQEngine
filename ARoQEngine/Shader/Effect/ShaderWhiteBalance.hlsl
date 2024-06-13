@@ -41,8 +41,8 @@ VertexOut VSMain(VertexIn vertexIn)
 
 /****************************************************************************
 *                       PSMain
-*************************************************************************//**
-*  @fn        float4 PSMain(VertexOut input) : SV_TARGET
+****************************************************************************/
+/* @fn        float4 PSMain(VertexOut input) : SV_TARGET
 
 *  @brief     Vignette post effect
 

@@ -79,8 +79,8 @@ ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEngin
 #pragma region Main Function
 /****************************************************************************
 *							OnResize
-*************************************************************************//**
-*  @fn        void ColorChange::OnResize(int newWidth, int newHeight)
+****************************************************************************/
+/* @fn        void ColorChange::OnResize(int newWidth, int newHeight)
 * 
 *  @brief     OnResize
 * 
@@ -96,8 +96,8 @@ void ColorChange::OnResize(int newWidth, int newHeight)
 }
 /****************************************************************************
 *							Draw
-*************************************************************************//**
-*  @fn        void ColorChange::Draw
+****************************************************************************/
+/* @fn        void ColorChange::Draw
 * 
 *  @brief     Render to Back Buffer
 * 
@@ -128,8 +128,8 @@ void ColorChange::Draw()
 
 /****************************************************************************
 *							PreparePipelineState
-*************************************************************************//**
-*  @fn        void ColorChange::PreparePipelineState(ColorChangeType type)
+****************************************************************************/
+/* @fn        void ColorChange::PreparePipelineState(ColorChangeType type)
 * 
 *  @brief     Prepare PipelineState
 * 
@@ -176,8 +176,8 @@ void ColorChange::PreparePipelineState(const gu::tstring& addName)
 }
 /****************************************************************************
 *							PrepareResourceView
-*************************************************************************//**
-*  @fn        void ColorChange::PrepareResourceView()
+****************************************************************************/
+/* @fn        void ColorChange::PrepareResourceView()
 *  @brief     Prepare resource view and render texture (back buffer)
 *  @param[in] void
 *  @return Å@Å@void

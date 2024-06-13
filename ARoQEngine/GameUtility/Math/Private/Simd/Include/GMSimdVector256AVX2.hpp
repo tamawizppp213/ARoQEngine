@@ -25,8 +25,8 @@ namespace gm::simd::avx2
 {
 	/****************************************************************************
 	*				  			   GMSimdVector256AVX2
-	*************************************************************************//**
-	*  @class     GMSimdVector256AVX2
+	****************************************************************************/
+	/* @class     GMSimdVector256AVX2
 	*  @brief     temp
 	*****************************************************************************/
 	class Vector256Utility : public gm::simd::avx::Vector256Utility
@@ -65,8 +65,8 @@ namespace gm::simd::avx2
 	#pragma region Getter
 	/****************************************************************************
 	*                       LoadDouble3
-	*************************************************************************//**
-	*  @fn        inline Vector256 SIMD_CALL_CONVENTION Vector256Utility::LoadDouble3(const double* source) noexcept
+	****************************************************************************/
+	/* @fn        inline Vector256 SIMD_CALL_CONVENTION Vector256Utility::LoadDouble3(const double* source) noexcept
 	*
 	*  @brief     Double‚Ì”z—ñ‚ðŽg‚Á‚ÄŠi”[‚·‚é (source->x, source->y, source->z, source->w)
 	*

@@ -25,8 +25,8 @@ namespace rhi::vulkan
 {
 	/****************************************************************************
 	*				  			RHIResourceLayout
-	*************************************************************************//**
-	*  @class     RHIResourceLayout
+	****************************************************************************/
+	/* @class     RHIResourceLayout
 	*  @brief     GPU resource root signature. shader binding setting.
 	*****************************************************************************/
 	class RHIResourceLayout : public  rhi::core::RHIResourceLayout

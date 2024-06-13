@@ -39,8 +39,8 @@ struct DirectLight
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
 *				  			Calculate_F0
-*************************************************************************//**
-*  @fn        float3 Calculate_F0(float refractive_1, float refractive_2 = 1.0f)
+****************************************************************************/
+/* @fn        float3 Calculate_F0(float refractive_1, float refractive_2 = 1.0f)
 *  @brief     Calculate F0
 *  @param[in] float refractive index
 *****************************************************************************/
@@ -71,8 +71,8 @@ float3 Fresnel_Schlick(float u, float3 F90, float3 F0 = 1.0f, float powValue = 5
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
 *				  		DiffuseBRDF_Normalized_Lambert
-*************************************************************************//**
-*  @fn        float DiffuseBRDF_Normalized_Lambert(float3 cDiffuse)
+****************************************************************************/
+/* @fn        float DiffuseBRDF_Normalized_Lambert(float3 cDiffuse)
 
 *  @brief     Calcurate Lambert Diffuse
 
@@ -87,8 +87,8 @@ float DiffuseBRDF_Normalized_Lambert()
 
 /****************************************************************************
 *				  		DiffuseBRDF_Disney
-*************************************************************************//**
-*  @fn        float DiffuseBRDF_Disney(const float normalDotEye, const float normalDotLight, const float lightDotHalf, const float roughness)
+****************************************************************************/
+/* @fn        float DiffuseBRDF_Disney(const float normalDotEye, const float normalDotLight, const float lightDotHalf, const float roughness)
 
 *  @brief     Calcurate BRDF Diffuse using the disney(burley) model.
 *             [Burley 2012, "Physically-Based Shading at Disney"]
@@ -109,8 +109,8 @@ float DiffuseBRDF_Disney(const float normalDotEye, const float normalDotLight, c
 
 /****************************************************************************
 *				  		DiffuseBRDF_OnenNayar
-*************************************************************************//**
-*  @fn        float3 DiffuseBRDF_OnenNayar(const float normalDotEye, const float normalDotLight, const float eyeDotHalf, const float roughness)
+****************************************************************************/
+/* @fn        float3 DiffuseBRDF_OnenNayar(const float normalDotEye, const float normalDotLight, const float eyeDotHalf, const float roughness)
 
 *  @brief     Calcurate BRDF Diffuse using the onenNayar model.
 *             [Gotanda 2012, "Beyond a Simple Physically Based Blinn-Phong Model in Real-Time""]
@@ -138,8 +138,8 @@ float DiffuseBRDF_OnenNayar(const float normalDotEye, const float normalDotLight
 
 /****************************************************************************
 *				  		DiffuseBRDF_Gotanda
-*************************************************************************//**
-*  @fn        float3 DiffuseBRDF_Gotanda(const float normalDotEye, const float normalDotLight, const float eyeDotHalf, const float roughness)
+****************************************************************************/
+/* @fn        float3 DiffuseBRDF_Gotanda(const float normalDotEye, const float normalDotLight, const float eyeDotHalf, const float roughness)
 
 *  @brief     Calcurate BRDF Diffuse using the Gotanda model.
 *             [Gotanda 2014, "Designing Reflectance Models for New Consoles"]
@@ -187,8 +187,8 @@ float DiffuseBRDF_Gotanda(const float normalDotEye, const float normalDotLight, 
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
 *				  			SpecularD_NDF_GGX
-*************************************************************************//**
-*  @fn        float SpecularBRDF_D_NDF_GGX(float NormalDotHalf, float roughness)
+****************************************************************************/
+/* @fn        float SpecularBRDF_D_NDF_GGX(float NormalDotHalf, float roughness)
 *
 *  @brief     Calculate Specular D (normal distribution fuction)
               Has long tale.
@@ -214,8 +214,8 @@ float SpecularBRDF_D_NDF_GGX(const float normalDotHalf, const float roughness)
 
 /****************************************************************************
 *				  			SpecularD_NDF_Beckmann
-*************************************************************************//**
-*  @fn        float SpecularBRDF_D_NDF_Beckmann(float NormalDotHalf, float roughness)
+****************************************************************************/
+/* @fn        float SpecularBRDF_D_NDF_Beckmann(float NormalDotHalf, float roughness)
 *
 *  @brief     Calculate Specular D (normal distribution fuction)
               Beckmann distribution
@@ -238,8 +238,8 @@ float SpecularBRDF_D_NDF_Beckmann(const float normalDotHalf, const float roughne
 
 /****************************************************************************
 *				  			Fresnel_Schlick
-*************************************************************************//**
-*  @fn        float3 Fresnel_Schlick(float3 F0, float3 normal, float3 lightVector)
+****************************************************************************/
+/* @fn        float3 Fresnel_Schlick(float3 F0, float3 normal, float3 lightVector)
 
 *  @brief     Calcurate Reflectance
 
@@ -257,8 +257,8 @@ float3 SpecularBRDF_F_Schlick(const float3 toEye, const float3 halfVector, const
 }
 /****************************************************************************
 *				  			SpecularBRDF_F_None
-*************************************************************************//**
-*  @fn        SpecularBRDF_F_None()
+****************************************************************************/
+/* @fn        SpecularBRDF_F_None()
 
 *  @brief     Return (1.1.1)
 
@@ -273,8 +273,8 @@ float3 SpecularBRDF_F_None()
 
 /****************************************************************************
 *				  			SpecularBRDF_V_Neumann
-*************************************************************************//**
-*  @fn        float SpecularBRDF_V_Neumann(const float normalDotEye, const float normalDotLight)
+****************************************************************************/
+/* @fn        float SpecularBRDF_V_Neumann(const float normalDotEye, const float normalDotLight)
 
 *  @brief     Calculate neumann model
 
@@ -330,8 +330,8 @@ float SpecularBRDF_V_SmithJoint(const float roughness, const float normalDotEye,
 
 /****************************************************************************
 *				  			Geometry_Smiths_Schlick_GGX
-*************************************************************************//**
-*  @fn        float Geometry_Smiths_Schlick_GGX(float3 normal, float3 toEye, float roughness)
+****************************************************************************/
+/* @fn        float Geometry_Smiths_Schlick_GGX(float3 normal, float3 toEye, float roughness)
 *  @brief     Calculate Specular G
 *  @param[in] float3 normal
 *  @param[in] float3 toEye 
@@ -349,8 +349,8 @@ float Geometry_Smiths_Schlick_GGX(float3 normal, float3 toEye, float roughness)
 
 /****************************************************************************
 *				  	Geometry_Smiths_Schlick_GGX_EnvironmentMap
-*************************************************************************//**
-*  @fn        float Geometry_Smiths_Schlick_GGX_EnvironmentMap(float3 normal, float3 toEye, float roughness)
+****************************************************************************/
+/* @fn        float Geometry_Smiths_Schlick_GGX_EnvironmentMap(float3 normal, float3 toEye, float roughness)
 *  @brief     Calculate Specular G
 *  @param[in] float3 normal
 *  @param[in] float3 toEye 
@@ -367,8 +367,8 @@ float Geometry_Smiths_Schlick_GGX_EnvironmentMap(float3 normal, float3 toEye, fl
 
 /****************************************************************************
 *				  		Masking_And_Shadowing_Function
-*************************************************************************//**
-*  @fn        float Masking_And_Shadowing_Function(float3 normal, float3 toEye, float3 light, float roughness)
+****************************************************************************/
+/* @fn        float Masking_And_Shadowing_Function(float3 normal, float3 toEye, float3 light, float roughness)
 *  @brief     Masking, shadowing fuction
 *  @param[in] float3 F0 : ((n1 - n2) / (n1 + n2))^2 : n(refraction, default n2 = 1 (air))
 *  @param[in] float3 normal 
@@ -383,8 +383,8 @@ float Masking_And_Shadowing_Function(float3 normal, float3 toEye, float3 light, 
 
 /****************************************************************************
 *				  		Masking_Abd_Shadowing_Function_EnvironmentMap
-*************************************************************************//**
-*  @fn        float Masking_Abd_Shadowing_Function_EnvironmentMap(float3 normal, float toEye, float3 light, float roughness)
+****************************************************************************/
+/* @fn        float Masking_Abd_Shadowing_Function_EnvironmentMap(float3 normal, float toEye, float3 light, float roughness)
 *  @brief     Masking, shadowing fuction
 *  @param[in] float3 F0 : ((n1 - n2) / (n1 + n2))^2 : n(refraction, default n2 = 1 (air))
 *  @param[in] float3 normal 
@@ -436,8 +436,8 @@ float3 ClearCoatTransmittance(float normalDotLight, float normalDotEye, float me
 
 /****************************************************************************
 *				  	AccumlateSurfaceEnergy
-*************************************************************************//**
-*  @class     float3 AccumlateSurfaceEnergy(in BRDFSurface surface, float3 light, float3 toEye)
+****************************************************************************/
+/* @class     float3 AccumlateSurfaceEnergy(in BRDFSurface surface, float3 light, float3 toEye)
 *  @brief     Diffuse: Lambert Specular: Cook_Torrence_Model
 *  @param[in] BRDFSurface surface
 *  @param[in] float3 light

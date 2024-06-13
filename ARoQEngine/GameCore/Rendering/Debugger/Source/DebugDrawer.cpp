@@ -49,8 +49,8 @@ DebugDrawer::~DebugDrawer()
 #pragma region Main Function
 /****************************************************************************
 *                          Draw
-*************************************************************************//**
-*  @fn        void DebugDrawer::Draw(const GPUResourceViewPtr& scene)
+****************************************************************************/
+/* @fn        void DebugDrawer::Draw(const GPUResourceViewPtr& scene)
 *
 *  @brief     Draw wireframe object
 *
@@ -79,8 +79,8 @@ void DebugDrawer::Draw(const GPUResourceViewPtr& scene)
 
 /****************************************************************************
 *                          Add
-*************************************************************************//**
-*  @fn        void DebugDrawer::Add(const GameModelPtr& model)
+****************************************************************************/
+/* @fn        void DebugDrawer::Add(const GameModelPtr& model)
 *
 *  @brief     Add model
 *
@@ -95,8 +95,8 @@ void DebugDrawer::Add(const GameModelPtr& model)
 
 /****************************************************************************
 *                          Clear
-*************************************************************************//**
-*  @fn        void DebugDrawer::Clear()
+****************************************************************************/
+/* @fn        void DebugDrawer::Clear()
 *
 *  @brief     Clear registered model buffer
 *

@@ -251,8 +251,8 @@ gu::SharedPointer<core::TLASBuffer>  RHIDevice::CreateRayTracingTLASBuffer(const
 #pragma region Set Up Function
 /****************************************************************************
 *                     CheckSupports
-*************************************************************************//**
-*  @fn        void RHIDevice::CheckSupports()
+****************************************************************************/
+/* @fn        void RHIDevice::CheckSupports()
 * 
 *  @brief     Check all supports of the device and assign them to the member variable "bool". 
 *             Add extension name when needed.
@@ -297,8 +297,8 @@ void RHIDevice::CheckSupports()
 
 /****************************************************************************
 *                     SetUpCommandQueueInfo
-*************************************************************************//**
-*  @fn        void RHIDevice::SetUpCommandQueueInfo()
+****************************************************************************/
+/* @fn        void RHIDevice::SetUpCommandQueueInfo()
 *
 *  @brief     Set command queue information (QueueFamilyIndex + QueueCount)
 *             QueueFamily      : 同じ能力を持っているキューをひとまとめにしたもの.
@@ -373,8 +373,8 @@ void RHIDevice::SetUpCommandQueueInfo()
 
 /****************************************************************************
 *                     GetLogicalDevice
-*************************************************************************//**
-*  @fn        bool GraphicsDeviceVulkan::CreateLogicalDevice()
+****************************************************************************/
+/* @fn        bool GraphicsDeviceVulkan::CreateLogicalDevice()
 * 
 *  @brief     Get Logical Device
 * 
@@ -529,7 +529,7 @@ void RHIDevice::CreateLogicalDevice()
 		queuePriorities[queueInfo.Key] = gu::DynamicArray<float>(queueInfo.Value.QueueCount, 1.0f);
 		_newCreateCommandQueueIndex[queueInfo.Key] = 0;
 
-		VkDeviceQueueCreateInfo createInfo;
+		VkDeviceQueueCreateInfo createInfo = {};
 		createInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;  // structure type
 		createInfo.queueFamilyIndex = queueInfo.Value.QueueFamilyIndex;           // queue index
 		createInfo.queueCount       = queueInfo.Value.QueueCount;                 // queue count : 1
@@ -563,7 +563,7 @@ void RHIDevice::CreateLogicalDevice()
 }
 
 
-std::uint64_t RHIDevice::GetDeviceAddress(VkBuffer buffer)
+std::uint64_t RHIDevice::GetDeviceAddress(VkBuffer buffer) const
 {
 	VkBufferDeviceAddressInfo addressInfo = {};
 	addressInfo.sType  = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
@@ -574,8 +574,8 @@ std::uint64_t RHIDevice::GetDeviceAddress(VkBuffer buffer)
 
 /****************************************************************************
 *                     GetMemoryTypeIndex
-*************************************************************************//**
-*  @fn        std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags)
+****************************************************************************/
+/* @fn        std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t typeBits, const VkMemoryPropertyFlags& flags)
 *
 *  @brief     使いたいメモリの種類を持っているmemoryIndexを返す.
 *
@@ -609,8 +609,8 @@ std::uint32_t RHIDevice::GetMemoryTypeIndex(std::uint32_t requiredTypeBits, cons
 #pragma region Property
 /****************************************************************************
 *                     SetName
-*************************************************************************//**
-*  @fn        void RHIDevice::SetName(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void RHIDevice::SetName(const gu::tstring& name)
 *
 *  @brief     Set Logical device name
 *
@@ -625,8 +625,8 @@ void RHIDevice::SetName(const gu::tstring& name)
 
 /****************************************************************************
 *                     SetVkResourceName
-*************************************************************************//**
-*  @fn        void RHIDevice::SetVkResourceName(const gu::tstring& name, const VkObjectType type, const std::uint64_t objectHandle)
+****************************************************************************/
+/* @fn        void RHIDevice::SetVkResourceName(const gu::tstring& name, const VkObjectType type, const std::uint64_t objectHandle)
 *
 *  @brief     Set Vulkan resource name. 
 *
@@ -671,8 +671,8 @@ void RHIDevice::SetVkResourceName(const gu::tstring& name, const VkObjectType ty
 
 /****************************************************************************
 *                     SetDefaultHeap
-*************************************************************************//**
-*  @fn        gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
+****************************************************************************/
+/* @fn        gu::SharedPointer<core::RHIDescriptorHeap> RHIDevice::GetDefaultHeap(const core::DescriptorHeapType heapType)
 *
 *  @brief     Set Default descriptor heap
 *

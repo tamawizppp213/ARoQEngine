@@ -52,8 +52,8 @@ void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fil
 }
 /****************************************************************************
 *                       Compile Shader
-*************************************************************************//**
-*  @fn        BlobComPtr CompileShader( const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target)
+****************************************************************************/
+/* @fn        BlobComPtr CompileShader( const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target)
 *  @brief     Compile shader
 *  @param[in] test
 *  @return Å@Å@void
@@ -203,8 +203,8 @@ void GPUShaderState::VkCompile(const gu::tstring& fileName, const gu::tstring& e
 
 /****************************************************************************
 *							LoadBinary
-*************************************************************************//**
-*  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& fileName)
+****************************************************************************/
+/* @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& fileName)
 *  @brief     Load Binary Data (Offline Compile)
 *  @param[in] core::ShaderType type
 *  @param[in] gu::tstring& fileName : filePath

@@ -47,8 +47,8 @@ CoreWindow::~CoreWindow()
 #pragma region Main Function
 /****************************************************************************
 *                     Create
-*************************************************************************//**
-*  @fn        void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc, const gu::SharedPointer<core::CoreWindow>& parentWindow)
+****************************************************************************/
+/* @fn        void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& application, const core::CoreWindowDesc& desc, const gu::SharedPointer<core::CoreWindow>& parentWindow)
 *
 *  @brief     ウィンドウを作成します
 *
@@ -283,8 +283,8 @@ void CoreWindow::Create(const SharedPointer<core::PlatformApplication>& applicat
 
 /****************************************************************************
 *                     Show
-*************************************************************************//**
-*  @fn        bool CoreWindow::Show()
+****************************************************************************/
+/* @fn        bool CoreWindow::Show()
 *
 *  @brief     ウィンドウを表示します
 *
@@ -331,8 +331,8 @@ bool CoreWindow::Show()
 
 /****************************************************************************
 *                     Hide
-*************************************************************************//**
-*  @fn        bool CoreWindow::Hide()
+****************************************************************************/
+/* @fn        bool CoreWindow::Hide()
 *
 *  @brief     Visibleであった場合にウィンドウを隠します
 *
@@ -353,8 +353,8 @@ bool CoreWindow::Hide()
 
 /****************************************************************************
 *                     Minimize
-*************************************************************************//**
-*  @fn        bool CoreWindow::Minimize()
+****************************************************************************/
+/* @fn        bool CoreWindow::Minimize()
 *
 *  @brief     ウィンドウを最小化します.
 *
@@ -379,8 +379,8 @@ bool CoreWindow::Minimize()
 
 /****************************************************************************
 *                     Maximize
-*************************************************************************//**
-*  @fn        bool CoreWindow::Maximize()
+****************************************************************************/
+/* @fn        bool CoreWindow::Maximize()
 *
 *  @brief     ウィンドウを最大化します
 *
@@ -406,8 +406,8 @@ bool CoreWindow::Maximize()
 
 /****************************************************************************
 *                     ReStore
-*************************************************************************//**
-*  @fn        bool CoreWindow::ReStore()
+****************************************************************************/
+/* @fn        bool CoreWindow::ReStore()
 *
 *  @brief     ウィンドウをアクティブにして表示する。最小化・最大化されている場合は元のサイズと位置に復元される.
 *
@@ -433,8 +433,8 @@ bool CoreWindow::ReStore()
 
 /****************************************************************************
 *                     Destroy
-*************************************************************************//**
-*  @fn        bool CoreWindow::Destroy()
+****************************************************************************/
+/* @fn        bool CoreWindow::Destroy()
 *
 *  @brief     ウィンドウをアクティブにして表示する。最小化・最大化されている場合は元のサイズと位置に復元される.
 *
@@ -449,8 +449,8 @@ bool CoreWindow::Destroy()
 
 /****************************************************************************
 *                     Resize
-*************************************************************************//**
-*  @fn        void CoreWindow::Resize(const gu::int32 x, const gu::int32 y, const gu::int32 width, const gu::int32 height)
+****************************************************************************/
+/* @fn        void CoreWindow::Resize(const gu::int32 x, const gu::int32 y, const gu::int32 width, const gu::int32 height)
 *
 *  @brief     ウィンドウのサイズを変更します
 *
@@ -546,8 +546,8 @@ void CoreWindow::Resize(const gu::int32 x, const gu::int32 y, const gu::int32 wi
 }
 /****************************************************************************
 *                     DisableTouchFeedback
-*************************************************************************//**
-*  @fn        void CoreWindow::DisableTouchFeedback()
+****************************************************************************/
+/* @fn        void CoreWindow::DisableTouchFeedback()
 *
 *  @brief     タッチ入力を無効化します. 
 *
@@ -616,8 +616,8 @@ void CoreWindow::DisableTouchFeedback()
 
 /****************************************************************************
 *                     AdjustWindowRegion
-*************************************************************************//**
-*  @fn        void CoreWindow::AdjustWindowRegion(const int32 width, const int32 height)
+****************************************************************************/
+/* @fn        void CoreWindow::AdjustWindowRegion(const int32 width, const int32 height)
 *
 *  @brief     ウィンドウ領域の調整
 *
@@ -637,8 +637,8 @@ void CoreWindow::AdjustWindowRegion(const int32 width, const int32 height)
 
 /****************************************************************************
 *                     CreateWindowRegionObject
-*************************************************************************//**
-*  @fn        HRGN CoreWindow::CreateWindowRegionObject(const bool useBorderWhenMaximized) const
+****************************************************************************/
+/* @fn        HRGN CoreWindow::CreateWindowRegionObject(const bool useBorderWhenMaximized) const
 *
 *  @brief     Regionオブジェクトの作成
 *
@@ -717,8 +717,8 @@ HRGN CoreWindow::CreateWindowRegionObject(const bool useBorderWhenMaximized) con
 
 /****************************************************************************
 *                     GetFullScreenInfo
-*************************************************************************//**
-*  @fn        bool CoreWindow::GetFullScreenInfo(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height) const
+****************************************************************************/
+/* @fn        bool CoreWindow::GetFullScreenInfo(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height) const
 *
 *  @brief     現在指定したウィンドウに最も交差しているモニターのサイズを取得します. 
 *
@@ -756,8 +756,8 @@ bool CoreWindow::GetFullScreenInfo(gu::int32& x, gu::int32& y, gu::int32& width,
 
 /****************************************************************************
 *                     BringToFront
-*************************************************************************//**
-*  @fn        void BringToFront(const bool forceFront)
+****************************************************************************/
+/* @fn        void BringToFront(const bool forceFront)
 *
 *  @brief     既に設定されたウィンドウを最前面に表示する
 * 
@@ -800,8 +800,8 @@ void CoreWindow::BringToFront(const bool forceFront)
 
 /****************************************************************************
 *                     Move
-*************************************************************************//**
-*  @fn        void CoreWindow::Move(const int32 x, const int32 y)
+****************************************************************************/
+/* @fn        void CoreWindow::Move(const int32 x, const int32 y)
 *
 *  @brief     指定したx, y座標にウィンドウを移動させます
 *
@@ -840,8 +840,8 @@ void CoreWindow::Move(const int32 x, const int32 y)
 
 /****************************************************************************
 *                     SetWindowMode
-*************************************************************************//**
-*  @fn        void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
+****************************************************************************/
+/* @fn        void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
 *
 *  @brief     ウィンドウモードの設定
 *
@@ -958,8 +958,8 @@ void CoreWindow::SetWindowMode(const core::WindowMode windowMode)
 
 /****************************************************************************
 *                     GetWindowBorderSize
-*************************************************************************//**
-*  @fn        int32 CoreWindow::GetWindowBorderSize() const
+****************************************************************************/
+/* @fn        int32 CoreWindow::GetWindowBorderSize() const
 *
 *  @brief     ウィンドウの境界部分のサイズを返す
 *
@@ -991,8 +991,8 @@ int32 CoreWindow::GetWindowBorderSize() const
 
 /****************************************************************************
 *                     GetWindowTitleBarSize
-*************************************************************************//**
-*  @fn        int32 CoreWindow::GetWindowTitleBarSize() const
+****************************************************************************/
+/* @fn        int32 CoreWindow::GetWindowTitleBarSize() const
 *
 *  @brief     ウィンドウのタイトルバーのサイズを返す
 *
@@ -1007,8 +1007,8 @@ int32 CoreWindow::GetWindowTitleBarSize() const
 
 /****************************************************************************
 *                     GetWindowPostion
-*************************************************************************//**
-*  @fn        void CoreWindow::GetWindowPostion(gu::int32& x, gu::int32& y) const
+****************************************************************************/
+/* @fn        void CoreWindow::GetWindowPostion(gu::int32& x, gu::int32& y) const
 *
 *  @brief     ウィンドウの左上の位置を返します
 *
@@ -1029,8 +1029,8 @@ void CoreWindow::GetWindowPostion(gu::int32& x, gu::int32& y) const
 
 /****************************************************************************
 *                     GetRestoredDimensions
-*************************************************************************//**
-*  @fn        bool CoreWindow::GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height)
+****************************************************************************/
+/* @fn        bool CoreWindow::GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height)
 *
 *  @brief     サイズとウィンドウの位置を取得します
 *
@@ -1078,8 +1078,8 @@ bool CoreWindow::GetRestoredDimensions(gu::int32& x, gu::int32& y, gu::int32& wi
 
 /****************************************************************************
 *                     ExistPointInWindow
-*************************************************************************//**
-*  @fn        bool CoreWindow::ExistPointInWindow(const gu::int32 x, const gu::int32 y) const
+****************************************************************************/
+/* @fn        bool CoreWindow::ExistPointInWindow(const gu::int32 x, const gu::int32 y) const
 *
 *  @brief     指定した位置がウィンドウ中に存在するかを判定します.
 *
@@ -1099,8 +1099,8 @@ bool CoreWindow::ExistPointInWindow(const gu::int32 x, const gu::int32 y) const
 
 /****************************************************************************
 *                     SetOpacity
-*************************************************************************//**
-*  @fn        void CoreWindow::SetOpacity(const float opacity) const
+****************************************************************************/
+/* @fn        void CoreWindow::SetOpacity(const float opacity) const
 *
 *  @brief     不透明度を0～1の範囲で設定します
 *
@@ -1116,8 +1116,8 @@ void CoreWindow::SetOpacity(const float opacity) const
 
 /****************************************************************************
 *                     SetKeyboardFocus
-*************************************************************************//**
-*  @fn        void CoreWindow::SetKeyboardFocus()
+****************************************************************************/
+/* @fn        void CoreWindow::SetKeyboardFocus()
 *
 *  @brief      KeyboardFocusにこのウィンドウを設定する
 *
@@ -1132,8 +1132,8 @@ void CoreWindow::SetKeyboardFocus()
 
 /****************************************************************************
 *                     SetKeyboardFocus
-*************************************************************************//**
-*  @fn        void CoreWindow::SetKeyboardFocus()
+****************************************************************************/
+/* @fn        void CoreWindow::SetKeyboardFocus()
 *
 *  @brief     親ウィンドウが最小化されたときに呼び出される関数
 *
@@ -1148,8 +1148,8 @@ bool CoreWindow::OnParentWindowMinimized()
 
 /****************************************************************************
 *                     SetKeyboardFocus
-*************************************************************************//**
-*  @fn        void CoreWindow::SetKeyboardFocus()
+****************************************************************************/
+/* @fn        void CoreWindow::SetKeyboardFocus()
 *
 *  @brief     親ウィンドウが最小化されたときに呼び出される関数
 *
@@ -1254,8 +1254,8 @@ bool CoreWindow::IsFullscreenSupported() const
 
 /****************************************************************************
 *                     OnTransparenySupportChanged
-*************************************************************************//**
-*  @fn        void CoreWindow::OnTransparenySupportChanged(const core::WindowTransparency transparency)
+****************************************************************************/
+/* @fn        void CoreWindow::OnTransparenySupportChanged(const core::WindowTransparency transparency)
 *
 *  @brief     透過度の設定
 *

@@ -113,8 +113,8 @@ GPUBuffer::~GPUBuffer()
 //}
 /****************************************************************************
 *                     CopyStart
-*************************************************************************//**
-*  @fn        void GPUBuffer::CopyStart()
+****************************************************************************/
+/* @fn        void GPUBuffer::CopyStart()
 *  @brief     Call Map Function
 *  @param[in] void
 *  @return Å@Å@void
@@ -134,8 +134,8 @@ void GPUBuffer::Map()
 
 /****************************************************************************
 *                     CopyTotalData
-*************************************************************************//**
-*  @fn        void GPUBuffer::CopyData()
+****************************************************************************/
+/* @fn        void GPUBuffer::CopyData()
 * 
 *  @brief     GPU copy the specified range
 * 
@@ -156,8 +156,8 @@ void GPUBuffer::UploadIndex(const void* data, const gu::uint64 elementCount, con
 
 /****************************************************************************
 *                     Unmap
-*************************************************************************//**
-*  @fn        void GPUBuffer::Unmap()
+****************************************************************************/
+/* @fn        void GPUBuffer::Unmap()
 * 
 *  @brief     Call UnMap Function
 * 
@@ -174,8 +174,8 @@ void GPUBuffer::Unmap()
 #pragma region Debug
 /****************************************************************************
 *                     SetName
-*************************************************************************//**
-*  @fn        void GPUBuffer::SetName(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void GPUBuffer::SetName(const gu::tstring& name)
 * 
 *  @brief     Set Buffer Name
 * 
@@ -194,8 +194,8 @@ void GPUBuffer::SetName(const gu::tstring& name)
 #pragma region SetUp
 /****************************************************************************
 *                     Prepare
-*************************************************************************//**
-*  @fn        void GPUBuffer::Prepare()
+****************************************************************************/
+/* @fn        void GPUBuffer::Prepare()
 * 
 *  @brief     Create Buffer and Bind buffer memory
 * 

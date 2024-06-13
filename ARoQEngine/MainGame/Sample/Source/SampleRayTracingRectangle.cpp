@@ -36,8 +36,8 @@ SampleRayTracingRectangle::~SampleRayTracingRectangle()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleRayTracingRectangle::Initialize(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleRayTracingRectangle::Initialize(GameTimer* gameTimer)
 *  @brief     Initialize scene
 *  @param[in]  const GameTimerPtr& gameTimer
 *  @return 　　void
@@ -48,8 +48,8 @@ void SampleRayTracingRectangle::Initialize(const PPPEnginePtr& engine, const Gam
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleRayTracingRectangle::Update()
+****************************************************************************/
+/* @fn        void SampleRayTracingRectangle::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -60,8 +60,8 @@ void SampleRayTracingRectangle::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleRayTracingRectangle::Draw()
+****************************************************************************/
+/* @fn        void SampleRayTracingRectangle::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -91,8 +91,8 @@ void SampleRayTracingRectangle::Draw()
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleRayTracingRectangle::Terminate()
+****************************************************************************/
+/* @fn        void SampleRayTracingRectangle::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -109,8 +109,8 @@ void SampleRayTracingRectangle::Terminate()
 #pragma region Protected Function
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleRayTracingRectangle
+****************************************************************************/
+/* @fn        void SampleRayTracingRectangle
 *  @param[in] void
 *  @return 　　void
 *****************************************************************************/
@@ -135,8 +135,8 @@ void SampleRayTracingRectangle::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleRayTracingRectangle::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleRayTracingRectangle::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -147,8 +147,8 @@ void SampleRayTracingRectangle::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleRayTracingRectangle::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleRayTracingRectangle::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -159,8 +159,8 @@ void SampleRayTracingRectangle::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleRayTracingRectangle::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleRayTracingRectangle::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void
@@ -171,8 +171,8 @@ void SampleRayTracingRectangle::OnGamePadInput()
 }
 /****************************************************************************
 *                     ExecuteSceneTransition
-*************************************************************************//**
-*  @fn        void SampleRayTracingRectangle::ExecuteSceneTranstion()
+****************************************************************************/
+/* @fn        void SampleRayTracingRectangle::ExecuteSceneTranstion()
 *  @brief     Scene Transition
 *  @param[in] void
 *  @return 　　void
@@ -185,8 +185,8 @@ void SampleRayTracingRectangle::ExecuteSceneTransition()
 #pragma region SetUp Function
 /****************************************************************************
 *                     BuildBuffer
-*************************************************************************//**
-*  @fn        void SampleRayTracingRectangle::BuildBuffer()
+****************************************************************************/
+/* @fn        void SampleRayTracingRectangle::BuildBuffer()
 *  @brief     Build Vertex and Index Buffers
 *  @param[in] void
 *  @return 　　void

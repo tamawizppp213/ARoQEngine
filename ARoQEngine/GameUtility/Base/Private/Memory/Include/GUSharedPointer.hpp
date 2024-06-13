@@ -26,8 +26,8 @@ namespace gu
 {
 	/****************************************************************************
 	*				  			   GUSharedPointer
-	*************************************************************************//**
-	*  @class     GUSharedPointer
+	****************************************************************************/
+	/* @class     GUSharedPointer
 	*  @brief     if the reference count is 0, the resource ownered by this will destroy.
 	*****************************************************************************/
 	template<class ElementType,  SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>
@@ -202,8 +202,8 @@ namespace gu
 
 	/****************************************************************************
 	*				  			   EnableSharedFromThis
-	*************************************************************************//**
-	*  @class     EnableSharedFromThis
+	****************************************************************************/
+	/* @class     EnableSharedFromThis
 	*  @brief     自分自身のクラスからスマートポインタの参照を渡すときに使用します. 
 	*             現在, MakeShared時, インタフェース部分に(platform::coreとかに継承)継承を入れると認識しない場合があります. 
 	*             そのため, MakeSharedを実際に適用するクラス(platform::windowsに継承)に直接継承を入れるようにしてください.

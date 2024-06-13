@@ -28,8 +28,8 @@ namespace gc::core
 	class GameModel;
 	/****************************************************************************
 	*				  			    PMXConverter
-	*************************************************************************//**
-	*  @class     PMXConverter
+	****************************************************************************/
+	/* @class     PMXConverter
 	*  @brief     PMX model <-> Game engine model
 	*****************************************************************************/
 	class GLTFConverter : public IGameModelConverter, public gu::Copyable

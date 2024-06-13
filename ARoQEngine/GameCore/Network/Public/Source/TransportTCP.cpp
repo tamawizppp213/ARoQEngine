@@ -46,8 +46,8 @@ TransportTCP::~TransportTCP()
 #pragma region Public Function 
 /****************************************************************************
 *                      SendPacket
-*************************************************************************//**
-*  @fn        void TransportTCP::SendPacket()
+****************************************************************************/
+/* @fn       void TransportTCP::SendPacket()
 *
 *  @brief     Send packet
 *
@@ -89,8 +89,8 @@ void TransportTCP::SendPacket()
 
 /****************************************************************************
 *                      ReceivePacket
-*************************************************************************//**
-*  @fn        void TransportTCP::ReceivePacket()
+****************************************************************************/
+/* @fn       void TransportTCP::ReceivePacket()
 *
 *  @brief     Transmission processing on the communication thread side.
 *
@@ -128,8 +128,8 @@ void TransportTCP::ReceivePacket()
 
 /****************************************************************************
 *                      Connect
-*************************************************************************//**
-*  @fn        bool TransportTCP::Connect(const IPAddress& address, const std::uint32_t port)
+****************************************************************************/
+/* @fn       bool TransportTCP::Connect(const IPAddress& address, const std::uint32_t port)
 *
 *  @brief     Transport Connection (return true: Connection Success, false: Connection Fail)
 *
@@ -163,8 +163,8 @@ bool TransportTCP::Connect(const IPAddress& address, const std::uint32_t port)
 }
 /****************************************************************************
 *                      Disonnect
-*************************************************************************//**
-*  @fn        void TransportTCP::Disconnect()
+****************************************************************************/
+/* @fn       void TransportTCP::Disconnect()
 *
 *  @brief     Transport Disconnection
 *

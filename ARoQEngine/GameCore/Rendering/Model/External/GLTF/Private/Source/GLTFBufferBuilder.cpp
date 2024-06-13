@@ -55,8 +55,8 @@ BufferBuilder::BufferBuilder(std::unique_ptr<ResourceWriter>&& resourceWriter,
     _functionGeneratorAccessorID  (std::move(functionGeneratorAccessorID)){}
 /****************************************************************************
 *                       AddBuffer
-*************************************************************************//**
-*  @fn        const asset::GLTFBuffer& BufferBuilder::AddBuffer(const char* bufferID)
+****************************************************************************/
+/* @fn        const asset::GLTFBuffer& BufferBuilder::AddBuffer(const char* bufferID)
 *  @brief     Add buffer
 *  @param[in] const char* bufferID Name
 *  @return 　　const asset::GLTFBuffer&
@@ -75,8 +75,8 @@ const asset::GLTFBuffer& BufferBuilder::AddBuffer(const char* bufferID)
 }
 /****************************************************************************
 *                       AddBufferView
-*************************************************************************//**
-*  @fn        const asset::GLTFBufferView& BufferBuilder::AddBufferView(Optional<asset::BufferViewTarget> target)
+****************************************************************************/
+/* @fn        const asset::GLTFBufferView& BufferBuilder::AddBufferView(Optional<asset::BufferViewTarget> target)
 *  @brief     Add buffer view
 *  @param[in] Optional<asset::BufferViewTarget> target
 *  @return 　　const asset::GLTFBufferView&
@@ -100,8 +100,8 @@ const asset::GLTFBufferView& BufferBuilder::AddBufferView(Optional<asset::Buffer
 }
 /****************************************************************************
 *                       AddBufferView
-*************************************************************************//**
-*  @fn        const asset::GLTFBufferView& BufferBuilder::AddBufferView(const void* data, size_t byteLength, Optional<size_t> byteStride, Optional<asset::BufferViewTarget> target)
+****************************************************************************/
+/* @fn        const asset::GLTFBufferView& BufferBuilder::AddBufferView(const void* data, size_t byteLength, Optional<size_t> byteStride, Optional<asset::BufferViewTarget> target)
 *  @brief     Add buffer view
 *  @param[in] const void* data
 *  @param[in] size_t byteLength[
@@ -135,8 +135,8 @@ const asset::GLTFBufferView& BufferBuilder::AddBufferView(const void* data, size
 }
 /****************************************************************************
 *                       AddAccessor
-*************************************************************************//**
-*  @fn        const asset::GLTFAccessor& BufferBuilder::AddAccessor(const void* data, size_t count, AccessorDesc accessorDesc)
+****************************************************************************/
+/* @fn        const asset::GLTFAccessor& BufferBuilder::AddAccessor(const void* data, size_t count, AccessorDesc accessorDesc)
 *  @brief     Add Accessor
 *  @param[in] const void* data
 *  @param[in] size_t count
@@ -169,8 +169,8 @@ const asset::GLTFAccessor& BufferBuilder::AddAccessor(const void* data, size_t c
 }
 /****************************************************************************
 *                       GetCurrentBuffer
-*************************************************************************//**
-*  @fn        const asset::GLTFBuffer& BufferBuilder::GetCurrentBuffer() const
+****************************************************************************/
+/* @fn        const asset::GLTFBuffer& BufferBuilder::GetCurrentBuffer() const
 *  @brief     Get Current Buffer
 *  @param[in] void
 *  @return 　　const asset::GLTFBuffer&
@@ -181,8 +181,8 @@ const asset::GLTFBuffer& BufferBuilder::GetCurrentBuffer() const
 }
 /****************************************************************************
 *                       GetCurrentBufferView
-*************************************************************************//**
-*  @fn        const asset::GLTFBufferView& BufferBuilder::GetCurrentBufferView() const
+****************************************************************************/
+/* @fn        const asset::GLTFBufferView& BufferBuilder::GetCurrentBufferView() const
 *  @brief     Get Current BufferView
 *  @param[in] void
 *  @return 　　const asset::GLTFBufferView&
@@ -193,8 +193,8 @@ const asset::GLTFBufferView& BufferBuilder::GetCurrentBufferView() const
 }
 /****************************************************************************
 *                       GetCurrentAccessor
-*************************************************************************//**
-*  @fn        const asset::GLTFAccessor& BufferBuilder::GetCurrentAccessor() const
+****************************************************************************/
+/* @fn        const asset::GLTFAccessor& BufferBuilder::GetCurrentAccessor() const
 *  @brief     Get Current Accessor
 *  @param[in] void
 *  @return 　　const asset::GLTFAccessor&
@@ -205,8 +205,8 @@ const asset::GLTFAccessor& BufferBuilder::GetCurrentAccessor() const
 }
 /****************************************************************************
 *                       GetBufferCount
-*************************************************************************//**
-*  @fn        size_t BufferBuilder::GetBufferCount() const
+****************************************************************************/
+/* @fn        size_t BufferBuilder::GetBufferCount() const
 *  @brief     Get Buffer Count
 *  @param[in] void
 *  @return 　　size_t
@@ -217,8 +217,8 @@ size_t BufferBuilder::GetBufferCount() const
 }
 /****************************************************************************
 *                       GetBufferViewCount
-*************************************************************************//**
-*  @fn        size_t BufferBuilder::GetBufferViewCount() const
+****************************************************************************/
+/* @fn        size_t BufferBuilder::GetBufferViewCount() const
 *  @brief     Get Buffer View Count
 *  @param[in] void
 *  @return 　　size_t
@@ -229,8 +229,8 @@ size_t BufferBuilder::GetBufferViewCount() const
 }
 /****************************************************************************
 *                       GetAccessirCount
-*************************************************************************//**
-*  @fn        size_t BufferBuilder::GetAccessorCount() const
+****************************************************************************/
+/* @fn        size_t BufferBuilder::GetAccessorCount() const
 *  @brief     Get Accessor Count
 *  @param[in] void
 *  @return 　　size_t
@@ -241,8 +241,8 @@ size_t BufferBuilder::GetAccessorCount() const
 }
 /****************************************************************************
 *                       GetResourceWriter
-*************************************************************************//**
-*  @fn        ResourceWriter& BufferBuilder::GetResourceWriter()
+****************************************************************************/
+/* @fn        ResourceWriter& BufferBuilder::GetResourceWriter()
 *  @brief     Get Resource Writer
 *  @param[in] void
 *  @return 　　ResourceWriter& 
@@ -253,8 +253,8 @@ ResourceWriter& BufferBuilder::GetResourceWriter()
 }
 /****************************************************************************
 *                       GetResourceWriter
-*************************************************************************//**
-*  @fn        const ResourceWriter& BufferBuilder::GetResourceWriter() const
+****************************************************************************/
+/* @fn        const ResourceWriter& BufferBuilder::GetResourceWriter() const
 *  @brief     Get Resource Writer
 *  @param[in] void
 *  @return 　　const ResourceWriter&
@@ -265,8 +265,8 @@ const ResourceWriter& BufferBuilder::GetResourceWriter() const
 }
 /****************************************************************************
 *                       AddAccessors
-*************************************************************************//**
-*  @fn        void BufferBuilder::AddAccessors(const void* data, size_t count, size_t byteStride, const AccessorDesc* desc, size_t descCount, std::string* outputIDs)
+****************************************************************************/
+/* @fn        void BufferBuilder::AddAccessors(const void* data, size_t count, size_t byteStride, const AccessorDesc* desc, size_t descCount, std::string* outputIDs)
 *  @brief     Add acessors
 *  @param[in] const void* data
 *  @param[in] size_t count
@@ -359,8 +359,8 @@ void BufferBuilder::AddAccessors(const void* data, size_t count, size_t byteStri
 }
 /****************************************************************************
 *                       Output
-*************************************************************************//**
-*  @fn        void BufferBuilder::Output(GLTFDocument& document)
+****************************************************************************/
+/* @fn        void BufferBuilder::Output(GLTFDocument& document)
 *  @brief     Output
 *  @param[in] GLTFDocument& document
 *  @return 　　void

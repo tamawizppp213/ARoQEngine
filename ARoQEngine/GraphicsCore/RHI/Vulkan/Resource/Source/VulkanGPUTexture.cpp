@@ -88,8 +88,8 @@ GPUTexture::~GPUTexture()
 #pragma region Main Function
 /****************************************************************************
 *                     Load
-*************************************************************************//**
-*  @fn        void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
+****************************************************************************/
+/* @fn        void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core::RHICommandList>& commandList)
 *
 *  @brief     Load texture
 *
@@ -207,8 +207,8 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 #pragma region Prepare 
 /****************************************************************************
 *                     Prepare
-*************************************************************************//**
-*  @fn        void GPUTexture::Prepare()
+****************************************************************************/
+/* @fn        void GPUTexture::Prepare()
 *
 *  @brief     Prepare texture
 *
@@ -289,8 +289,8 @@ void GPUTexture::Prepare()
 #pragma region Debug
 /****************************************************************************
 *                     SetName
-*************************************************************************//**
-*  @fn        void GPUBuffer::SetName(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void GPUBuffer::SetName(const gu::tstring& name)
 *  @brief     Set Buffer Name
 *  @param[in] const gu::tstring& name
 *  @return @@void

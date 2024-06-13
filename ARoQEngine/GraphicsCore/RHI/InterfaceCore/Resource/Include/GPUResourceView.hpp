@@ -32,8 +32,8 @@ namespace rhi::core
 	class RHIResourceLayout;
 	/****************************************************************************
 	*				  			GPUResourceView
-	*************************************************************************//**
-	*  @class     GPUResourceView
+	****************************************************************************/
+	/* @class     GPUResourceView
 	*  @brief     Specify the access mode to resource. 
 	*             Use the bind function to bind resource layout array index to the command list. 
 	*****************************************************************************/

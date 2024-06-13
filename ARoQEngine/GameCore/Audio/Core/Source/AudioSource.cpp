@@ -55,8 +55,8 @@ AudioSource::~AudioSource()
 #pragma region Public Function
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void AudioSource::Update(const float deltaTime)
+****************************************************************************/
+/* @fn        void AudioSource::Update(const float deltaTime)
 *
 *  @brief     This function is used to perform a fade
 *
@@ -71,8 +71,8 @@ void AudioSource::Update(const float deltaTime)
 
 /****************************************************************************
 *                       Play
-*************************************************************************//**
-*  @fn        bool AudioSource::Play()
+****************************************************************************/
+/* @fn        bool AudioSource::Play()
 * 
 *  @brief     Play sound. (Playback from the beginning at any time
 * 
@@ -99,8 +99,8 @@ bool AudioSource::Play(const float loopBeginSeconds, const float loopIntervalSec
 }
 /****************************************************************************
 *                       Pause
-*************************************************************************//**
-*  @fn        bool AudioSource::Pause()
+****************************************************************************/
+/* @fn        bool AudioSource::Pause()
 * 
 *  @brief     Sound Pause.
 * 
@@ -117,8 +117,8 @@ bool AudioSource::Pause()
 }
 /****************************************************************************
 *                       Stop
-*************************************************************************//**
-*  @fn        bool AudioSource::Stop()
+****************************************************************************/
+/* @fn        bool AudioSource::Stop()
 * 
 *  @brief     Sound Stop.
 * 
@@ -134,8 +134,8 @@ bool AudioSource::Stop()
 }
 /****************************************************************************
 *                       Replay
-*************************************************************************//**
-*  @fn        bool AudioSource::Replay()
+****************************************************************************/
+/* @fn        bool AudioSource::Replay()
 * 
 *  @brief     Restart sound. Play from the middle part
 * 
@@ -153,8 +153,8 @@ bool AudioSource::Replay()
 
 /****************************************************************************
 *                       ExitLoop
-*************************************************************************//**
-*  @fn        bool AudioSource::ExitLoop()
+****************************************************************************/
+/* @fn        bool AudioSource::ExitLoop()
 * 
 *  @brief     ExitLoop.
 * 
@@ -174,8 +174,8 @@ bool AudioSource::ExitLoop()
 
 /****************************************************************************
 *                       SetUp
-*************************************************************************//**
-*  @fn        bool AudioSource::SetUp(const AudioClipPtr& audioClip, const SoundType soundType, const float volume)
+****************************************************************************/
+/* @fn        bool AudioSource::SetUp(const AudioClipPtr& audioClip, const SoundType soundType, const float volume)
 * 
 *  @brief     Set audio clip.
 * 
@@ -222,8 +222,8 @@ bool AudioSource::SetUp(const AudioClipPtr& audioClip, const SoundType soundType
 
 /****************************************************************************
 *                       SetPan
-*************************************************************************//**
-*  @fn        bool AudioSource::SetPan(float pan)
+****************************************************************************/
+/* @fn        bool AudioSource::SetPan(float pan)
 * 
 *  @brief     Changes the balance of the sound output from the headset or speakers.
 * 
@@ -279,8 +279,8 @@ bool AudioSource::SetPan(float pan)
 
 /****************************************************************************
 *                       IsUseReverb
-*************************************************************************//**
-*  @fn        bool AudioSource::IsUseReverb()
+****************************************************************************/
+/* @fn        bool AudioSource::IsUseReverb()
 *  @brief     Sets the enable flag for Reverb (reverberation effect).
 *  @param[in] bool isReverb
 *  @return 　　void
@@ -303,8 +303,8 @@ bool AudioSource::IsUseReverb(bool isReverb)
 
 /****************************************************************************
 *                       IsPlaying
-*************************************************************************//**
-*  @fn        bool AudioSource::IsPlaying()
+****************************************************************************/
+/* @fn        bool AudioSource::IsPlaying()
 * 
 *  @brief     Is playing (true-> playing, false -> not playing)
 * 
@@ -337,8 +337,8 @@ bool AudioSource::IsPlaying()
 
 /****************************************************************************
 *                       GetPitch
-*************************************************************************//**
-*  @fn        float AudioSource::GetPitch()
+****************************************************************************/
+/* @fn        float AudioSource::GetPitch()
 * 
 *  @brief     Get Current Pitch
 * 
@@ -358,8 +358,8 @@ float AudioSource::GetPitch()
 
 /****************************************************************************
 *                       SetPitch
-*************************************************************************//**
-*  @fn        void AudioSource::SetPitch(float pitch)
+****************************************************************************/
+/* @fn        void AudioSource::SetPitch(float pitch)
 *  @brief     Set Current Pitch
 *  @param[in] void
 *  @return 　　float
@@ -378,8 +378,8 @@ void AudioSource::SetPitch(float pitch)
 
 /****************************************************************************
 *                       SetMaxPitch
-*************************************************************************//**
-*  @fn        void AudioSource::SetMaxPitch(float maxPitch)
+****************************************************************************/
+/* @fn        void AudioSource::SetMaxPitch(float maxPitch)
 *  @brief     Set Max Pitch
 *  @param[in] float maxPitch
 *  @return 　　void
@@ -390,8 +390,8 @@ void AudioSource::SetMaxPitch(float maxPitch)
 }
 /****************************************************************************
 *                       AdjustPitch
-*************************************************************************//**
-*  @fn        void AudioSource::AdjustPitch(float diffPitch)
+****************************************************************************/
+/* @fn        void AudioSource::AdjustPitch(float diffPitch)
 *  @brief     This function will add or subtract from the current pitch.
 *  @param[in] void
 *  @return 　　void
@@ -407,8 +407,8 @@ void AudioSource::AdjustPitch(float diffPitch)
 #pragma region Volume
 /****************************************************************************
 *                       GetVolume
-*************************************************************************//**
-*  @fn        float AudioSource::GetVolume() const]
+****************************************************************************/
+/* @fn        float AudioSource::GetVolume() const]
 *
 *  @brief     Get Current Volume
 * 
@@ -427,8 +427,8 @@ float AudioSource::GetVolume() const
 
 /****************************************************************************
 *                       SetVolume
-*************************************************************************//**
-*  @fn        void AudioSource::SetVolume(float volume)
+****************************************************************************/
+/* @fn        void AudioSource::SetVolume(float volume)
 *  @brief     Set Current Volume
 *  @param[in] float volume
 *  @return 　　void
@@ -444,8 +444,8 @@ bool AudioSource::SetVolume(float volume)
 
 /****************************************************************************
 *                       AdjustVolume
-*************************************************************************//**
-*  @fn        void AudioSource::AdjustVolume(float diffVolume)
+****************************************************************************/
+/* @fn        void AudioSource::AdjustVolume(float diffVolume)
 *  @brief     Adjust Current Volume
 *  @param[in] void
 *  @return 　　void
@@ -467,8 +467,8 @@ bool AudioSource::SetMaxVolumeLimit(const float maxVolume)
 #pragma region Protected Function
 /****************************************************************************
 *                       FlushAudioData
-*************************************************************************//**
-*  @fn        void AudioSource::FlushAudioData()
+****************************************************************************/
+/* @fn        void AudioSource::FlushAudioData()
 * 
 *  @brief     Flush Audio Data
 * 
@@ -501,8 +501,8 @@ void AudioSource::FlushAudioData(const float loopBeginSeconds, const float loopI
 
 /****************************************************************************
 *                       CreateSourceVoice
-*************************************************************************//**
-*  @fn        bool AudioSource::CreateSourceVoice()
+****************************************************************************/
+/* @fn        bool AudioSource::CreateSourceVoice()
 * 
 *  @brief     Load Xaudio SourceVoice
 * 
@@ -536,8 +536,8 @@ bool AudioSource::CreateSourceVoice()
 
 /****************************************************************************
 *                       CreateReverb
-*************************************************************************//**
-*  @fn        bool AudioSource::CreateReverb()
+****************************************************************************/
+/* @fn        bool AudioSource::CreateReverb()
 *  @brief     Create Reverb
 *  @param[in] void
 *  @return 　　bool
@@ -566,8 +566,8 @@ bool AudioSource::CreateReverb()
 
 /****************************************************************************
 *                       SelectSoundType
-*************************************************************************//**
-*  @fn        bool AudioSource::SelectIsLoop(const SoundType soundType)
+****************************************************************************/
+/* @fn        bool AudioSource::SelectIsLoop(const SoundType soundType)
 * 
 *  @brief     Change the number of loops by SoundType.
 * 

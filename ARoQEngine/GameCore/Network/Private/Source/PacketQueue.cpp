@@ -52,8 +52,8 @@ PacketQueue::~PacketQueue()
 #pragma region Main Function 
 /****************************************************************************
 *                      Enqueue
-*************************************************************************//**
-*  @fn        void PacketQueue::Enqueue(const std::vector<std::uint8_t>& data)
+****************************************************************************/
+/* @fn        void PacketQueue::Enqueue(const std::vector<std::uint8_t>& data)
 *
 *  @brief     Enqueue packet byte data to the memory stream.
 *
@@ -90,8 +90,8 @@ void PacketQueue::Enqueue(const std::vector<std::uint8_t>& data, const std::uint
 
 /****************************************************************************
 *                      Dequeue
-*************************************************************************//**
-*  @fn        std::vector<std::uint8_t> PacketQueue::Dequeue(const std::uint64_t byteSize)
+****************************************************************************/
+/* @fn        std::vector<std::uint8_t> PacketQueue::Dequeue(const std::uint64_t byteSize)
 *
 *  @brief     Dequeue packet byte data from the memory stream. (Return)
 *

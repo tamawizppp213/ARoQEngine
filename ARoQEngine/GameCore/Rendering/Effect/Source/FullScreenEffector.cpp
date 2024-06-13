@@ -54,8 +54,8 @@ IFullScreenEffector::IFullScreenEffector(const LowLevelGraphicsEnginePtr& engine
 #pragma region Protected Function
 /****************************************************************************
 *							PrepareVertexAndIndexBuffer
-*************************************************************************//**
-*  @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
+****************************************************************************/
+/* @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
 *  @brief     Prepare Rect Vertex and Index Buffer
 *  @param[in] const gu::tstring& addName
 *  @return Å@Å@void

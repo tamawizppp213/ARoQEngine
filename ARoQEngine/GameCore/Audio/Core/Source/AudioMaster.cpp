@@ -63,8 +63,8 @@ AudioMaster::~AudioMaster()
 
 /****************************************************************************
 *                       GetAudioInterface
-*************************************************************************//**
-*  @fn        IXAudio2* AudioMaster::GetAudioInterface() const noexcept
+****************************************************************************/
+/* @fn        IXAudio2* AudioMaster::GetAudioInterface() const noexcept
 * 
 *  @brief     Get XAudio2 Interface Pointer
 * 
@@ -80,8 +80,8 @@ AudioMaster::IXAudio2Ptr AudioMaster::GetAudioInterface() const noexcept
 
 /****************************************************************************
 *                       GetMasteringVoice
-*************************************************************************//**
-*  @fn        IXAudio2MasteringVoice* AudioMaster::GetMasteringVoice() const noexcept
+****************************************************************************/
+/* @fn        IXAudio2MasteringVoice* AudioMaster::GetMasteringVoice() const noexcept
 * 
 *  @brief     Get Mastering Voice
 * 
@@ -96,8 +96,8 @@ AudioMaster::IXAudio2MasteringVoicePtr AudioMaster::GetMasteringVoice() const no
 
 /****************************************************************************
 *                       GetX3DAudioInterface
-*************************************************************************//**
-*  @fn        X3DAUDIO_HANDLE& AudioMaster::GetX3DAudioInterface() const
+****************************************************************************/
+/* @fn        X3DAUDIO_HANDLE& AudioMaster::GetX3DAudioInterface() const
 *  @brief     Get X3DAudio2 Interface
 *  @param[in] void
 *  @return Å@Å@X3DAUDIO_HANDLE&
@@ -124,8 +124,8 @@ bool AudioMaster::GetVolumeParamters(float* peakLevels, float* rmsParams, const 
 #pragma region Protected Function
 /****************************************************************************
 *                       CreateXAudio2
-*************************************************************************//**
-*  @fn        bool AudioMaster::CreateXAudio2()
+****************************************************************************/
+/* @fn        bool AudioMaster::CreateXAudio2()
 * 
 *  @brief     Create XAudio2 Instance and Set debug mode
 * 
@@ -180,8 +180,8 @@ bool AudioMaster::CreateXAudio2()
 
 /****************************************************************************
 *                       CreateMasterVoice
-*************************************************************************//**
-*  @fn        bool AudioMaster::CreateMasteringVoice()
+****************************************************************************/
+/* @fn        bool AudioMaster::CreateMasteringVoice()
 * 
 *  @brief     Create Mastering Voice for Initialize
 * 
@@ -211,8 +211,8 @@ bool AudioMaster::CreateMasteringVoice()
 
 /****************************************************************************
 *                       CreateX3DAudio
-*************************************************************************//**
-*  @fn        bool AudioMaster::CreateX3DAudio()
+****************************************************************************/
+/* @fn        bool AudioMaster::CreateX3DAudio()
 * 
 *  @brief     Create X3DAudio for Initialize
 * 
@@ -232,8 +232,8 @@ bool AudioMaster::CreateX3DAudio()
 
 /****************************************************************************
 *                       CreateVolumeMeter
-*************************************************************************//**
-*  @fn        bool AudioMaster::CreateVolumeMeter()
+****************************************************************************/
+/* @fn        bool AudioMaster::CreateVolumeMeter()
 *
 *  @brief     Create total volume logger
 *

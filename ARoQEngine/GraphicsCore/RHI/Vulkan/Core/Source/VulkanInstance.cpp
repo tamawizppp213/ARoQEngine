@@ -30,8 +30,8 @@ namespace
 #pragma region Create and Destroy Debug Messenger
 	/****************************************************************************
 	*				  			CreateDebugUtilsMessengerEXT
-	*************************************************************************//**
-	*  @class     DestroyDebugUtilsMessengerEXT
+	****************************************************************************/
+	/* @class     DestroyDebugUtilsMessengerEXT
 	*  @brief     Define a callback to capture the messages
 	*****************************************************************************/
 	VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
@@ -49,8 +49,8 @@ namespace
 
 	/****************************************************************************
 	*				  			DestroyDebugUtilsMessengerEXT
-	*************************************************************************//**
-	*  @class     DestroyDebugUtilsMessengerEXT
+	****************************************************************************/
+	/* @class     DestroyDebugUtilsMessengerEXT
 	*  @brief     Call free debug messenger
 	*****************************************************************************/
 	void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
@@ -65,8 +65,8 @@ namespace
 #pragma region Debug Report Function
 	/****************************************************************************
 	*                     SkipErrorMessage
-	*************************************************************************//**
-	*  @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
+	****************************************************************************/
+	/* @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
 	*  @brief     Return isSkip (true : skip, false: not skip)
 	*  @param[in] void
 	*  @return 　　bool
@@ -103,8 +103,8 @@ namespace
 
 	/****************************************************************************
 	*                     DebugReportCallback
-	*************************************************************************//**
-	*  @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
+	****************************************************************************/
+	/* @fn        gu::DynamicArray<VkExtensionProperties> RHIInstance::AcquireExtensionProperties()
 	*  @brief     Report debug error message. (処理は止めない. 報告のみ)
 	*****************************************************************************/
 	static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
@@ -254,7 +254,7 @@ RHIInstance::~RHIInstance()
 #pragma region Adapter Function
 /****************************************************************************
 *                     EnumrateAdapters
-*************************************************************************//**
+****************************************************************************/
 /* @brief     Return all availablle adapter lists
 *  @param[in] void
 *  @return 　　gu::DynamicArray<gu::SharedPointer<core::RHIAdapter>> 
@@ -280,7 +280,7 @@ gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::Enumra
 
 /****************************************************************************
 *                     SearchHighPerformanceAdapter
-*************************************************************************//**
+****************************************************************************/
 /* @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの多いものから
 *              (High) xGPU, dGPU iGPU (Low) selected
 *
@@ -312,7 +312,7 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAda
 
 /****************************************************************************
 *                     SearchMinimumPowerAdapter
-*************************************************************************//**
+****************************************************************************/
 /* @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの少ないものから
 *             (Low) iGPU, dGPU xGPU (High)
 *
@@ -343,7 +343,7 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchMinimumPowerAdapte
 
 /****************************************************************************
 *                     SearchAdapter
-*************************************************************************//**
+****************************************************************************/
 /* @brief     高性能または最小電力を示すAdapterを選択（（高）xGPU、dGPU iGPU（低）
 *
 *  @param[in] const DXGI_GPU_PREFERENCE preference (high performance or minimum power)
@@ -385,7 +385,7 @@ gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchAdapter(const VkPh
 
 /****************************************************************************
 *                     LogAdapters
-*************************************************************************//**
+****************************************************************************/
 /* @brief     Show all available adapter information using Output debug string
 *  @param[in] void
 *  @return 　　void
@@ -406,8 +406,8 @@ void RHIInstance::LogAdapters() const
 #pragma region Debug Function
 /****************************************************************************
 *                     CheckValidationLayerSupport
-*************************************************************************//**
-*  @fn        bool RHIDevice::CheckValidationLayerSupport()
+****************************************************************************/
+/* @fn        bool RHIDevice::CheckValidationLayerSupport()
 *  @brief     Validation layer support check
 *  @param[in] void
 *  @return 　　bool
@@ -465,8 +465,8 @@ gu::DynamicArray<VkLayerProperties> RHIInstance::GetInstanceLayers() const
 
 /****************************************************************************
 *                     FillFilteredNameArray
-*************************************************************************//**
-*  @fn        VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+****************************************************************************/
+/* @fn        VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
 			  const gu::DynamicArray<VkLayerProperties>& properties,
 		      const gu::DynamicArray<Entry>& requestedLayers)
 
@@ -511,8 +511,8 @@ VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<gu::string>& used,
 
 /****************************************************************************
 *                     FillFilteredNameArray
-*************************************************************************//**
-*  @fn        VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
+****************************************************************************/
+/* @fn        VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<std::string>& used,
 			  const gu::DynamicArray<VkLayerProperties>& properties,
 			  const gu::DynamicArray<Entry>& requestedLayers)
 
@@ -564,8 +564,8 @@ VkResult RHIInstance::FillFilteredNameArray(gu::DynamicArray<gu::string>& used,
 
 /****************************************************************************
 *                     PopulateDebugMessengerCreateInfo
-*************************************************************************//**
-*  @fn        void RHIInstance::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+****************************************************************************/
+/* @fn        void RHIInstance::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
 *  @brief     Set up callback debug report 
 *  @param[out] VkDebugReportCallbackCreateInfoEXT& createInfo
 *  @return 　　void
@@ -589,8 +589,8 @@ void RHIInstance::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateIn
 #pragma region Private Function
 /****************************************************************************
 *                     FindNewestVulkanAPIVersion
-*************************************************************************//**
-*  @brief     最新のVulkan APIのバージョンを設定します.
+****************************************************************************/
+/* @brief     最新のVulkan APIのバージョンを設定します.
 *
 *  @param[in] void
 *
@@ -623,8 +623,8 @@ void RHIInstance::FindNewestVulkanAPIVersion()
 
 /****************************************************************************
 *                     Engineの状態にあった拡張機能を調べます
-*************************************************************************//**
-*  @brief     Engineの状態にあった拡張機能を調べます
+****************************************************************************/
+/* @brief     Engineの状態にあった拡張機能を調べます
 *
 *  @param[in] void
 *
@@ -657,8 +657,8 @@ bool RHIInstance::CheckVulkanSupportInEngine() const
 }
 /****************************************************************************
 *                     AcquireExtensionProperties
-*************************************************************************//**
-*  @fn        gu::DynamicArray<gu::string> AcquireExtensionList() const;
+****************************************************************************/
+/* @fn        gu::DynamicArray<gu::string> AcquireExtensionList() const;
 * 
 *  @brief     VkInstanceがサポートしている拡張機能リストをstring配列で返します
 * 
@@ -694,8 +694,8 @@ gu::DynamicArray<gu::string> RHIInstance::AcquireExtensionList() const
 
 /****************************************************************************
 *                     EnumratePhysicalDevices
-*************************************************************************//**
-*  @fn        gu::DynamicArray<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices() const
+****************************************************************************/
+/* @fn        gu::DynamicArray<VkPhysicalDevice> RHIInstance::EnumratePhysicalDevices() const
 * 
 *  @brief     物理デバイスのポインタを全てリスト化して渡します.
 * 

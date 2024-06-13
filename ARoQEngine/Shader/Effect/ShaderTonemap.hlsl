@@ -32,8 +32,8 @@ static const int COLOR_SPACE_BT2100 = 1;
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
 *				  			SelectTonemapping
-*************************************************************************//**
-*  @fn        float4 SelectTonemapping(float4 color)
+****************************************************************************/
+/* @fn        float4 SelectTonemapping(float4 color)
 *  @brief     Select tonemapping
 *  @param[in] float4 color
 *  @return    float4

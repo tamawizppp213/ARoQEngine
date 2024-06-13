@@ -57,8 +57,8 @@ RHISwapchain::~RHISwapchain()
 #pragma region Main Function
 /****************************************************************************
 *							Resize
-*************************************************************************//**
-*  @fn        void RHISwapchain::Resize(const size_t width, const size_t height)
+****************************************************************************/
+/* @fn        void RHISwapchain::Resize(const size_t width, const size_t height)
 * 
 *  @brief     Resize screen size. (set resized swapchain buffers )
 * 
@@ -113,8 +113,8 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 }
 /****************************************************************************
 *							PrepareNextImage
-*************************************************************************//**
-*  @fn        std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
+****************************************************************************/
+/* @fn        std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t signalValue)
 *  @brief     NextImageの準備が完了したときSignalを発行し, 次のframe Indexを返す. 
 *  @param[in] const gu::SharedPointer<core::RHIFence>
 *  @param[in] uint64 signalValue (Normally : ++fenceValueを代入)
@@ -128,8 +128,8 @@ gu::uint32 RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFence
 }
 /****************************************************************************
 *							Present
-*************************************************************************//**
-*  @fn        void RHISwapchain::Present()
+****************************************************************************/
+/* @fn        void RHISwapchain::Present()
 *  @brief     Display front buffer
 *  @param[in] const gu::SharedPointer<core::RHIFence>& fence
 *  @param[in] std::uint64_t waitValue
@@ -151,8 +151,8 @@ void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const
 
 /****************************************************************************
 *							GetCurrentBufferIndex
-*************************************************************************//**
-*  @fn        size_t RHISwapchain::GetCurrentBufferIndex() const
+****************************************************************************/
+/* @fn        size_t RHISwapchain::GetCurrentBufferIndex() const
 * 
 *  @brief     現在のバッファーのIndexを返します
 * 
@@ -167,8 +167,8 @@ size_t RHISwapchain::GetCurrentBufferIndex() const
 
 /****************************************************************************
 *                      SwitchFullScreenMode
-*************************************************************************//**
-*  @fn        void RHISwapchain::SwitchFullScreenMode(const bool isOn)
+****************************************************************************/
+/* @fn        void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 *
 *  @brief     フルスクリーンモードを設定する 
 (isOn : true->フルスクリーンモードに移行する. false : windowモードに移行する)
@@ -196,8 +196,8 @@ void RHISwapchain::SwitchFullScreenMode(const bool isOn)
 
 /****************************************************************************
 *                      SetUp
-*************************************************************************//**
-*  @fn        void RHISwapchain::SetUp()
+****************************************************************************/
+/* @fn        void RHISwapchain::SetUp()
 *
 *  @brief     Set up
 *
@@ -346,8 +346,8 @@ void RHISwapchain::SetUp()
 
 /****************************************************************************
 *                      StartUpHDR
-*************************************************************************//**
-*  @fn        void RHISwapchain::StartUpHDR()
+****************************************************************************/
+/* @fn        void RHISwapchain::StartUpHDR()
 *
 *  @brief     HDRモードとSDRモードを切り替える
 *
@@ -371,8 +371,8 @@ void RHISwapchain::SwitchHDRMode(const bool enableHDR)
 
 /****************************************************************************
 *                      IsSupportedHDRInDisplayOutput
-*************************************************************************//**
-*  @fn        bool RHISwapchain::IsSupportedHDRInCurrentDisplayOutput()
+****************************************************************************/
+/* @fn        bool RHISwapchain::IsSupportedHDRInCurrentDisplayOutput()
 *
 *  @brief     現在のディスプレイ出力がHDR機能をサポートしているかを調べる
 *             ただし, swapchainのバージョンが4より小さい場合は常にfalseを返すので注意すること
@@ -413,8 +413,8 @@ bool RHISwapchain::IsSupportedHDRInCurrentDisplayOutput()
 
 /****************************************************************************
 *                      LogHDROutput
-*************************************************************************//**
-*  @fn        void RHISwapchain::LogHDROutput()
+****************************************************************************/
+/* @fn        void RHISwapchain::LogHDROutput()
 *
 *  @brief     HDR上でのモニター設定を出力上に表示します.
 *
@@ -470,8 +470,8 @@ void RHISwapchain::LogHDROutput()
 # pragma region Color Space
 /****************************************************************************
 *                     EnsureSwapChainColorSpace
-*************************************************************************//**
-*  @fn        void RHISwapchain::EnsureSwapChainColorSpace()
+****************************************************************************/
+/* @fn        void RHISwapchain::EnsureSwapChainColorSpace()
 * 
 *  @brief     Check SwapChain Color Space
 *             (こちらはピクセルフォーマットにのっとって移行します. 今後は未使用になります)
@@ -506,8 +506,8 @@ void RHISwapchain::EnsureSwapChainColorSpace()
 
 /****************************************************************************
 *                     EnsureSwapChainColorSpace
-*************************************************************************//**
-*  @fn        void RHISwapchain::EnsureSwapChainColorSpace(const core::DisplayColorGamut colorGamut, const core::DisplayOutputFormat displayFormat)
+****************************************************************************/
+/* @fn        void RHISwapchain::EnsureSwapChainColorSpace(const core::DisplayColorGamut colorGamut, const core::DisplayOutputFormat displayFormat)
 *
 *  @brief     Check SwapChain Color Space
 *
@@ -574,8 +574,8 @@ void RHISwapchain::EnsureSwapChainColorSpace(const core::DisplayColorGamut color
 
 /****************************************************************************
 *                     SetHDRMetaData
-*************************************************************************//**
-*  @fn        void RHISwapchain::SetHDRMetaData()
+****************************************************************************/
+/* @fn        void RHISwapchain::SetHDRMetaData()
 * 
 *  @brief     Set HDR Meta Data
 * 

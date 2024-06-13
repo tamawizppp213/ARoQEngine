@@ -74,8 +74,8 @@ CascadeShadow::~CascadeShadow()
 #pragma region Main Function
 /****************************************************************************
 *							Draw
-*************************************************************************//**
-*  @fn        void CascadeShadow::Draw()
+****************************************************************************/
+/* @fn        void CascadeShadow::Draw()
 * 
 *  @brief     Draw shadow map and draw shadow
 * 
@@ -105,8 +105,8 @@ void CascadeShadow::Draw(const gu::SharedPointer<GameTimer>& gameTimer,const gm:
 
 /****************************************************************************
 *							Add
-*************************************************************************//**
-*  @fn        void CascadeShadow::Add(const GameModelPtr& gameModel)
+****************************************************************************/
+/* @fn        void CascadeShadow::Add(const GameModelPtr& gameModel)
 *
 *  @brief     Add game models for the rendering shadow
 *
@@ -152,8 +152,8 @@ void CascadeShadow::PrepareResourceView(const gu::tstring& name)
 
 /****************************************************************************
 *						UpdateLightCamera
-*************************************************************************//**
-*  @fn        void CascadeShadow::Update()
+****************************************************************************/
+/* @fn        void CascadeShadow::Update()
 *
 *  @brief     Move the directional light camera
 *

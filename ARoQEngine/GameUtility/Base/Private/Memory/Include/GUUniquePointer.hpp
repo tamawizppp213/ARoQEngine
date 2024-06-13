@@ -24,8 +24,8 @@ namespace gu
 {
 	/****************************************************************************
 	*				  			   GUUniquePointer
-	*************************************************************************//**
-	*  @class     UniquePointer
+	****************************************************************************/
+	/* @class     UniquePointer
 	*  @brief     This class has the only one ownered resource.
 	*****************************************************************************/
 	template<class ElementType, class Deleter = gu::DefaultDeleter<ElementType>>

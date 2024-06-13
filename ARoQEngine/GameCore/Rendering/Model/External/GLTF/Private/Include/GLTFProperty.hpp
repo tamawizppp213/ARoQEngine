@@ -35,8 +35,8 @@ namespace gltf
 
 		/****************************************************************************
 		*				  			GLTFProperty
-		*************************************************************************//**
-		*  @struct     GLTFProperty
+		****************************************************************************/
+		/* @struct     GLTFProperty
 		*  @brief      Property (has extension and extra)
 		*****************************************************************************/
 		struct GLTFProperty
@@ -99,8 +99,8 @@ namespace gltf
 
 		/****************************************************************************
 		*				  			TemplateStruct
-		*************************************************************************//**
-		*  @struct     TemplateStruct
+		****************************************************************************/
+		/* @struct     TemplateStruct
 		*  @brief     temp
 		*****************************************************************************/
 		struct GLTFChildOfRootProperty : GLTFProperty
@@ -136,8 +136,8 @@ namespace gltf
 #pragma region GLTFProperty
 		/****************************************************************************
 		*							GetExtension
-		*************************************************************************//**
-		*  @fn        template<typename T> inline const T& GLTFProperty::GetExtension() const
+		****************************************************************************/
+		/* @fn       template<typename T> inline const T& GLTFProperty::GetExtension() const
 		*  @brief     Find Extension from unordered map.
 		*  @param[in] void
 		*  @return 　　const T& extension
@@ -153,8 +153,8 @@ namespace gltf
 		}
 		/****************************************************************************
 		*							GetExtension
-		*************************************************************************//**
-		*  @fn        template<typename T> inline T& GLTFProperty::GetExtension()
+		****************************************************************************/
+		/* @fn       template<typename T> inline T& GLTFProperty::GetExtension()
 		*  @brief     Find Extension from unordered map.
 		*  @param[in] void
 		*  @return 　　const T& extension
@@ -170,8 +170,8 @@ namespace gltf
 		}
 		/****************************************************************************
 		*							SetExtension
-		*************************************************************************//**
-		*  @fn        inline void GLTFProperty::SetExtension(std::unique_ptr<GLTFExtension>&& extension)
+		****************************************************************************/
+		/* @fn       inline void GLTFProperty::SetExtension(std::unique_ptr<GLTFExtension>&& extension)
 		*  @brief     Set extension
 		*  @param[in] std::unique_ptr<GLTFExtension>&& extension
 		*  @return 　　const T& extension

@@ -48,8 +48,8 @@ namespace gm::simd::sse4
 {
 	/****************************************************************************
 	*				  			   GVector128Utility
-	*************************************************************************//**
-	*  @class     Vector128Utility
+	****************************************************************************/
+	/* @class     Vector128Utility
 	*  @brief     SSE4を使ったSimd演算
 	*****************************************************************************/
 	class Vector128Utility : public gm::simd::sse3::Vector128Utility
@@ -135,8 +135,8 @@ namespace gm::simd::sse4
 	#pragma region Setter
 	/****************************************************************************
 	*                       SetY
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION SetY(ConstVector128 vector, const float y) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION SetY(ConstVector128 vector, const float y) noexcept
 	*
 	*  @brief     Floatを使ってVectorのYに値を代入する
 	*
@@ -152,8 +152,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                       SetZ
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION SetZ(ConstVector128 vector, const float z) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION SetZ(ConstVector128 vector, const float z) noexcept
 	*
 	*  @brief     Floatを使ってVectorのZに値を代入する
 	*
@@ -169,8 +169,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                       SetW
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION SetW(ConstVector128 vector, const float w) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION SetW(ConstVector128 vector, const float w) noexcept
 	*
 	*  @brief     Floatを使ってVectorのWに値を代入する
 	*
@@ -186,8 +186,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                       StoreFloat3
-	*************************************************************************//**
-	*  @fn        inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat3(float* destination, ConstVector128 source) noexcept
+	****************************************************************************/
+	/* @fn       inline void SIMD_CALL_CONVENTION Vector128Utility::StoreFloat3(float* destination, ConstVector128 source) noexcept
 	*
 	*  @brief     Vector128をもとにFloat配列に代入します
 	*
@@ -209,8 +209,8 @@ namespace gm::simd::sse4
 	#pragma region Getter
 	/****************************************************************************
 	*                       LoadFloat3
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat3(const float* source) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::LoadFloat3(const float* source) noexcept
 	*
 	*  @brief     Floatの配列を使って格納する (source->x, source->y, source->z, source->w)
 	*
@@ -229,8 +229,8 @@ namespace gm::simd::sse4
 	#pragma region Math
 	/****************************************************************************
 	*                      LengthVector2
-	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector2(ConstVector128 vector) noexcept
+	****************************************************************************/
+	/* @fn       inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector2(ConstVector128 vector) noexcept
 	*
 	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
@@ -246,8 +246,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                      LengthVector3
-	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector3(ConstVector128 vector) noexcept
+	****************************************************************************/
+	/* @fn       inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector3(ConstVector128 vector) noexcept
 	*
 	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
@@ -263,8 +263,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                      LengthVector4
-	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector4(ConstVector128 vector) noexcept
+	****************************************************************************/
+	/* @fn       inline float SIMD_CALL_CONVENTION Vector128Utility::LengthVector4(ConstVector128 vector) noexcept
 	*
 	*  @brief     2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
 	*
@@ -280,8 +280,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                      DotVector2
-	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector2(ConstVector128 left, ConstVector128 right)
+	****************************************************************************/
+	/* @fn       inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector2(ConstVector128 left, ConstVector128 right)
 	*
 	*  @brief     内積を算出
 	*
@@ -297,8 +297,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                      DotVector3
-	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector3(ConstVector128 left, ConstVector128 right)
+	****************************************************************************/
+	/* @fn       inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector3(ConstVector128 left, ConstVector128 right)
 	*
 	*  @brief     内積を算出
 	*
@@ -314,8 +314,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                      DotVector4
-	*************************************************************************//**
-	*  @fn        inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector4(ConstVector128 left, ConstVector128 right)
+	****************************************************************************/
+	/* @fn       inline float SIMD_CALL_CONVENTION Vector128Utility::DotVector4(ConstVector128 left, ConstVector128 right)
 	*
 	*  @brief     内積を算出
 	*
@@ -331,8 +331,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                      NormalizeVector2
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::NormalizeVector2(ConstVector128 vector) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::NormalizeVector2(ConstVector128 vector) noexcept
 	*
 	*  @brief     入力ベクトルの単位ベクトルを返します
 	*
@@ -367,8 +367,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                      NormalizeVector3
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::NormalizeVector3(ConstVector128 vector) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::NormalizeVector3(ConstVector128 vector) noexcept
 	*
 	*  @brief     入力ベクトルの単位ベクトルを返します
 	*
@@ -403,8 +403,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                      NormalizeVector4
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::NormalizeVector4(ConstVector128 vector) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::NormalizeVector4(ConstVector128 vector) noexcept
 	*
 	*  @brief     入力ベクトルの単位ベクトルを返します
 	*
@@ -439,8 +439,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                       Round
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Round(ConstVector128 vector) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Round(ConstVector128 vector) noexcept
 	*
 	*  @brief     最も近い整数に丸める
 	*
@@ -455,8 +455,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                       Truncate
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Truncate(ConstVector128 vector) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Truncate(ConstVector128 vector) noexcept
 	*
 	*  @brief     切り捨て (指定した数値の端数を切り捨てた整数に丸める。数直線上で0の方向にある次の整数
 	*
@@ -471,8 +471,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                       Floor
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Floor(ConstVector128 vector) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Floor(ConstVector128 vector) noexcept
 	*
 	*  @brief     負の方向に丸める
 	*
@@ -487,8 +487,8 @@ namespace gm::simd::sse4
 
 	/****************************************************************************
 	*                      Ceiling
-	*************************************************************************//**
-	*  @fn        inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Ceiling(ConstVector128 vector) noexcept
+	****************************************************************************/
+	/* @fn       inline Vector128 SIMD_CALL_CONVENTION Vector128Utility::Ceiling(ConstVector128 vector) noexcept
 	*
 	*  @brief     切り上げ 数直線上で正の方向にある次の整数に丸める
 	*

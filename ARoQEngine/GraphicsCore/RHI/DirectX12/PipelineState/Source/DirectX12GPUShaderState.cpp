@@ -31,8 +31,8 @@ using namespace rhi::directX12;
 
 /****************************************************************************
 *                           Compile
-*************************************************************************//**
-*  @fn        void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version)
+****************************************************************************/
+/* @fn        void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version)
 * 
 *  @brief     Online Compile 
 * 
@@ -82,8 +82,8 @@ void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fil
 }
 /****************************************************************************
 *							LoadBinary
-*************************************************************************//**
-*  @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& fileName)
+****************************************************************************/
+/* @fn        void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& fileName)
 * 
 *  @brief     Load Binary Data (Offline Compile)
 * 

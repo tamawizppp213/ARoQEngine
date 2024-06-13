@@ -21,8 +21,8 @@ extern const DECLSPEC_SELECTANY NULL_STRUCT D3D12_DEFAULT;
 #pragma region Box
 /****************************************************************************
 *					DIRECTX12_BOX : public D3D12_BOX
-*************************************************************************//**
-*  @struct    DirectX12_BOX
+****************************************************************************/
+/* @struct    DirectX12_BOX
 *  @brief     DirectX12_BOX (This struct is derived from D3D12_BOX)
 *****************************************************************************/
 struct DIRECTX12_BOX : public D3D12_BOX
@@ -73,8 +73,8 @@ inline bool operator!=(const D3D12_BOX& l, const D3D12_BOX& r)
 #pragma region DepthStencil
 /****************************************************************************
 *			DEPTH_STENCIL_DESC   public  D3D12_DEPTH_STENCIL_DESC
-*************************************************************************//**
-*  @struct    DEPTH_STENCIL_DESC
+****************************************************************************/
+/* @struct    DEPTH_STENCIL_DESC
 *  @brief     easier DEPTH_STENCIL_DESC (This struct is derived from D3D12_DEPTH_STENCIL_DESC)
 *****************************************************************************/
 struct DEPTH_STENCIL_DESC : public D3D12_DEPTH_STENCIL_DESC
@@ -134,8 +134,8 @@ struct DEPTH_STENCIL_DESC : public D3D12_DEPTH_STENCIL_DESC
 #pragma region BlendDesc
 /****************************************************************************
 *					BLEND_DESC : public D3D12_BLEND_DESC
-*************************************************************************//**
-*  @struct    BLEND_DESC
+****************************************************************************/
+/* @struct    BLEND_DESC
 *  @brief     easier BLEND_DESC (This struct is derived from D3D12_BLEND_DESC )
 *****************************************************************************/
 struct BLEND_DESC : public D3D12_BLEND_DESC
@@ -165,8 +165,8 @@ struct BLEND_DESC : public D3D12_BLEND_DESC
 #pragma region RasterizerDesc
 /****************************************************************************
 *				RASTERIZER_DESC : public D3D12_RASTERIZER_DESC
-*************************************************************************//**
-*  @struct    RASTERIZER_DESC
+****************************************************************************/
+/* @struct    RASTERIZER_DESC
 *  @brief     easier RASTERIZER_DESC (This struct is derived from D3D12_RASTERIZER_DESC )
 *****************************************************************************/
 struct RASTERIZER_DESC : public D3D12_RASTERIZER_DESC
@@ -220,8 +220,8 @@ struct RASTERIZER_DESC : public D3D12_RASTERIZER_DESC
 #pragma endregion RasterizerDesc
 /****************************************************************************
 *		RESOURCE_ALLOCATION_INFO : public D3D12_RESOURCE_ALLOCATION_INFO
-*************************************************************************//**
-*  @struct    RESOURCE_ALLOCATION_INFO
+****************************************************************************/
+/* @struct    RESOURCE_ALLOCATION_INFO
 *  @brief     easier RESOURCE_ALLOCATION_INFO (This struct is derived from D3D12_RESOURCE_ALLOCATION_INFO )
 *****************************************************************************/
 struct RESOURCE_ALLOCATION_INFO : public D3D12_RESOURCE_ALLOCATION_INFO
@@ -242,8 +242,8 @@ struct RESOURCE_ALLOCATION_INFO : public D3D12_RESOURCE_ALLOCATION_INFO
 #pragma region HeapProperty
 /****************************************************************************
 *			HEAP_PROPERTY : public D3D12_HEAP_PROPERTIES
-*************************************************************************//**
-*  @struct    HEAP_PROPERTY
+****************************************************************************/
+/* @struct    HEAP_PROPERTY
 *  @brief     easier Heap property (This struct is derived from D3D12_HEAP_PROPERTIES)
 *****************************************************************************/
 struct HEAP_PROPERTY : public D3D12_HEAP_PROPERTIES
@@ -311,8 +311,8 @@ inline bool operator!=(const D3D12_HEAP_PROPERTIES& l, const D3D12_HEAP_PROPERTI
 #pragma region HeapDesc
 /****************************************************************************
 *					HEAP_DESC : public D3D12_HEAP_DESC
-*************************************************************************//**
-*  @struct    HEAP_DESC
+****************************************************************************/
+/* @struct    HEAP_DESC
 *  @brief     easier Heap descriptor (This struct is derived from D3D12_HEAP_DESC)
 *****************************************************************************/
 struct HEAP_DESC : public D3D12_HEAP_DESC
@@ -428,8 +428,8 @@ inline UINT D3D12CalcSubresource(UINT mipSlice, UINT arraySlice, UINT planeSlice
 
 /****************************************************************************
 *					RESOURCE_DESC : D3D12_RESOURCE_DESC
-*************************************************************************//**
-*  @struct    RESOURCE_DESC
+****************************************************************************/
+/* @struct    RESOURCE_DESC
 *  @brief     easier Resource descriptor (This struct is derived from DD3D12_RESOURCE_DESC)
 *****************************************************************************/
 struct RESOURCE_DESC : public D3D12_RESOURCE_DESC
@@ -760,8 +760,8 @@ inline UINT64 UpdateSubresources(
 }
 /****************************************************************************
 *					BARRIER : public D3D12_RESOURCE_BARRIER
-*************************************************************************//**
-*  @struct    BARRIER
+****************************************************************************/
+/* @struct    BARRIER
 *  @brief     easier Barrier (This struct is derived from D3D12_RESOURCE_BARRIER)
 *             Transition, Aliasing, Unordered Access View
 *****************************************************************************/
@@ -833,8 +833,8 @@ struct BARRIER : public D3D12_RESOURCE_BARRIER
 
 /****************************************************************************
 *				DESCRIPTOR_RANGE : public D3D12_DESCRIPTOR_RANGE
-*************************************************************************//**
-*  @struct    DESCRIPTOR_RANGE
+****************************************************************************/
+/* @struct    DESCRIPTOR_RANGE
 *  @brief     Easier descriptor range (This struct is derived from D3D12_DESCRIPTOR_RANGE)
 *****************************************************************************/
 struct DESCRIPTOR_RANGE : public D3D12_DESCRIPTOR_RANGE
@@ -880,8 +880,8 @@ struct DESCRIPTOR_RANGE : public D3D12_DESCRIPTOR_RANGE
 
 /****************************************************************************
 *				ROOT_DESCRIPTOR_TABLE : public D3D12_ROOT_DESCRIPTOR_TABLE
-*************************************************************************//**
-*  @struct    ROOT_DESCRIPTOR_TABLE
+****************************************************************************/
+/* @struct    ROOT_DESCRIPTOR_TABLE
 *  @brief     Easier RootSignature desicriptor table(This struct is derived from D3D12_ROOT_DESCRIPTOR_TABLE)
 *****************************************************************************/
 struct ROOT_DESCRIPTOR_TABLE : public D3D12_ROOT_DESCRIPTOR_TABLE
@@ -919,8 +919,8 @@ struct ROOT_DESCRIPTOR_TABLE : public D3D12_ROOT_DESCRIPTOR_TABLE
 
 /****************************************************************************
 *				ROOT_CONSTANTS : public D3D12_ROOT_CONSTANTS
-*************************************************************************//**
-*  @struct    ROOT_CONSTANTS
+****************************************************************************/
+/* @struct    ROOT_CONSTANTS
 *  @brief     Easier RootSignature Constant(This struct is derived from D3D12_ROOT_CONSTANTS)
 *****************************************************************************/
 struct ROOT_CONSTANTS : public D3D12_ROOT_CONSTANTS
@@ -958,8 +958,8 @@ struct ROOT_CONSTANTS : public D3D12_ROOT_CONSTANTS
 
 /****************************************************************************
 *				ROOT_DESCRIPTOR : public D3D12_ROOT_DESCRIPTOR
-*************************************************************************//**
-*  @struct    ROOT_DESCRIPTOR
+****************************************************************************/
+/* @struct    ROOT_DESCRIPTOR
 *  @brief     Easier RootSignature Discriptor(This struct is derived from D3D12_ROOT_DESCRIPTOR)
 *****************************************************************************/
 struct ROOT_DESCRIPTOR : public D3D12_ROOT_DESCRIPTOR
@@ -990,8 +990,8 @@ struct ROOT_DESCRIPTOR : public D3D12_ROOT_DESCRIPTOR
 
 /****************************************************************************
 *				ROOT_PARAMETER : public D3D12_ROOT_PARAMETER
-*************************************************************************//**
-*  @struct    ROOT_PARAMETER
+****************************************************************************/
+/* @struct    ROOT_PARAMETER
 *  @brief     Easier RootSignature Discriptor(This struct is derived from D3D12_ROOT_PARAMETER)
 *****************************************************************************/
 struct ROOT_PARAMETER : public D3D12_ROOT_PARAMETER
@@ -1099,8 +1099,8 @@ struct ROOT_PARAMETER : public D3D12_ROOT_PARAMETER
 
 /****************************************************************************
 *			STATIC_SAMPLER_DESC : public D3D12_STATIC_SAMPLER_DESC
-*************************************************************************//**
-*  @struct    STATIC_SAMPLER_DESC
+****************************************************************************/
+/* @struct    STATIC_SAMPLER_DESC
 *  @brief     Easier Sampler (This struct is derived from D3D12_STATIC_SAMPLER_DESC)
 *****************************************************************************/
 struct STATIC_SAMPLER_DESC : public D3D12_STATIC_SAMPLER_DESC
@@ -1206,8 +1206,8 @@ struct STATIC_SAMPLER_DESC : public D3D12_STATIC_SAMPLER_DESC
 
 /****************************************************************************
 *			ROOT_SIGNATURE_DESC : public D3D12_ROOT_SIGNATURE_DESC
-*************************************************************************//**
-*  @struct    ROOT_SIGNATURE_DESC
+****************************************************************************/
+/* @struct    ROOT_SIGNATURE_DESC
 *  @brief     Easier RootSignature Descriptor (This struct is derived from D3D12_ROOT_SIGNATURE_DESC)
 *****************************************************************************/
 struct ROOT_SIGNATURE_DESC : public D3D12_ROOT_SIGNATURE_DESC

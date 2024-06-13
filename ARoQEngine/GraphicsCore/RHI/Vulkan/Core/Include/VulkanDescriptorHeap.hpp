@@ -28,8 +28,8 @@ namespace rhi::vulkan
 	
 	/****************************************************************************
 	*				  			GPUResource
-	*************************************************************************//**
-	*  @class     GPUResource
+	****************************************************************************/
+	/* @class     GPUResource
 	*  @brief     Resource (å„Ç≈NoncopyableÇ…ïœçXÇ∑ÇÈ)
 	*****************************************************************************/
 	class RHIDescriptorHeap : public rhi::core::RHIDescriptorHeap
@@ -61,7 +61,7 @@ namespace rhi::vulkan
 			return _resourceAllocator.GetDescriptorSet(id); 
 		}
 		
-		VkDescriptorPool GetVkDescriptorPool() { return _descriptorPool; }
+		VkDescriptorPool GetVkDescriptorPool() const{ return _descriptorPool; }
 
 		/****************************************************************************
 		**                Constructor and Destructor

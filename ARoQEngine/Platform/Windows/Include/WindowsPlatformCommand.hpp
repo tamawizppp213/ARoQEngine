@@ -27,8 +27,8 @@ namespace platform::windows
 {
 	/****************************************************************************
 	*				  			   WindowsPlatformCommand
-	*************************************************************************//**
-	*  @class     WindowsPlatformCommand
+	****************************************************************************/
+	/* @class     WindowsPlatformCommand
 	*  @brief     temp
 	*****************************************************************************/
 	class PlatformCommand : public platform::core::PlatformCommand

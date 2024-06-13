@@ -410,7 +410,7 @@ GPUTextureMetaData GPUTextureMetaData::DepthStencilMultiSample(const gu::uint32 
 #pragma region BlendProperty
 /****************************************************************************
 *                     NoColorWrite
-*************************************************************************//**
+****************************************************************************/
 /* @brief     そのままレンダーターゲットの出力を表示します
 *
 *  @param[in] bool useAlphaToCoverage
@@ -434,7 +434,7 @@ BlendProperty BlendProperty::NoColorWrite(const bool enableBlend)
 
 /****************************************************************************
 *                     OverWrite
-*************************************************************************//**
+****************************************************************************/
 /* @brief     そのままピクセルシェーダーの出力を上書きします
 *
 *  @param[in] bool useAlphaToCoverage
@@ -456,7 +456,7 @@ BlendProperty BlendProperty::OverWrite(const bool enableBlend)
 
 /****************************************************************************
 *                     AlphaBlend
-*************************************************************************//**
+****************************************************************************/
 /*  @brief    アルファブレンドを実行します destination * (1 - source.Alpha) + source * 1
 *
 *  @param[in] bool useAlphaToCoverage

@@ -29,8 +29,8 @@ namespace rhi::vulkan
 {
 	/****************************************************************************
 	*				  			RHICommandAllocator
-	*************************************************************************//**
-	*  @class     RHICommandAllocator
+	****************************************************************************/
+	/* @class     RHICommandAllocator
 	*  @brief     Execute GPU Command list
 	*****************************************************************************/
 	class RHICommandAllocator : public rhi::core::RHICommandAllocator

@@ -31,8 +31,8 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			 ResourceAllocator
-	*************************************************************************//**
-	*  @class     ResourceAllocator
+	****************************************************************************/
+	/* @class     ResourceAllocator
 	*  @brief     Resource view index management
 	*****************************************************************************/
 	class ResourceAllocator : public gu::NonCopyable

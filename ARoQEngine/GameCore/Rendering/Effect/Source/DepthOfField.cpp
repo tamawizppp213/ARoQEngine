@@ -60,8 +60,8 @@ void Dof::OnResize(float newWidth, float newHeight)
 }
 /****************************************************************************
 *							Draw
-*************************************************************************//**
-*  @fn        void Dof::Draw(GPUResource* renderTarget, GPUResource* zPrepass) 
+****************************************************************************/
+/* @fn        void Dof::Draw(GPUResource* renderTarget, GPUResource* zPrepass) 
 *  @brief     Draw 
 *  @param[in] GPUResource* renderTarget
 *  @param[in] GPUResource* zPrepass
@@ -103,7 +103,7 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 
 	computeList->Dispatch(roundUpWidth / THREAD, roundUpHeight / THREAD, 1);
 
-	///*-------------------------------------------------------------------
+	//*-------------------------------------------------------------------
 	//-               Rhomboid Blur
 	//---------------------------------------------------------------------*/
 	computeList->SetComputePipeline(_rhomboidPipeline);
@@ -113,7 +113,7 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 
 	computeList->Dispatch(roundUpWidth / THREAD, roundUpHeight / THREAD, 1);
 
-	///*-------------------------------------------------------------------
+	//*-------------------------------------------------------------------
 	//-               FinalRender
 	//---------------------------------------------------------------------*/
 	computeList->SetComputePipeline(_finalRenderPipeline);
@@ -137,8 +137,8 @@ void Dof::Draw(const ResourceViewPtr& zPrepass)
 
 /****************************************************************************
 *							SetUpBlurParameter
-*************************************************************************//**
-*  @fn        void Dof::SetUpBlurParameter(const float width, const float height, const float radius)
+****************************************************************************/
+/* @fn        void Dof::SetUpBlurParameter(const float width, const float height, const float radius)
 * 
 *  @brief     Set up blur parameter
 * 
@@ -159,8 +159,8 @@ void Dof::SetUpBlurParameter(const float width, const float height, const float 
 }
 /****************************************************************************
 *							SetUpClipSize
-*************************************************************************//**
-*  @fn        void Dof::SetUpClipSize(const float nearClip, const float farClip)
+****************************************************************************/
+/* @fn        void Dof::SetUpClipSize(const float nearClip, const float farClip)
 * 
 *  @brief     Set up clip size
 * 
@@ -201,8 +201,8 @@ void Dof::PrepareRenderBuffer(const gu::uint32 width, const gu::uint32 height)
 
 /****************************************************************************
 *							PrepareBlurParameterBuffer
-*************************************************************************//**
-*  @fn        void Dof::PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Dof::PrepareBlurParameterBuffer(const float width, const float height, const float radius, const gu::tstring& name)
 * 
 *  @brief     Prepare Blur Parameter Buffer
 * 
@@ -228,8 +228,8 @@ void Dof::PrepareBlurParameterBuffer(const float width, const float height, cons
 
 /****************************************************************************
 *							PrepareClipSizeBuffer
-*************************************************************************//**
-*  @fn        void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const gu::tstring& name)
 * 
 *  @brief     Prepare Clip Size
 * 
@@ -252,8 +252,8 @@ void Dof::PrepareClipSizeBuffer(float nearClip, float farClip, const gu::tstring
 }
 /****************************************************************************
 *							PreparePipelineState
-*************************************************************************//**
-*  @fn        void Dof::PreparePipelineState(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Dof::PreparePipelineState(const gu::tstring& name)
 * 
 *  @brief     Prepare vertical, rhomboid, finalRender PSO
 * 

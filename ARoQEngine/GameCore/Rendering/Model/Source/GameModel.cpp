@@ -57,8 +57,8 @@ GameModel::~GameModel()
 #pragma region Main Function
 /****************************************************************************
 *					Load
-*************************************************************************//**
-*  @fn        void Model::Load(const PrimitiveMeshType type, const std::int32_t materialID)
+****************************************************************************/
+/* @fn        void Model::Load(const PrimitiveMeshType type, const std::int32_t materialID)
 *
 *  @brief     Load primitive mesh (The mesh size is set all 1.0f (width, height and depth...)).
 *             If you want to change size, you should change the scale parameter.
@@ -105,8 +105,8 @@ void GameModel::Load(const PrimitiveMeshType type, const MaterialPtr& material)
 
 /****************************************************************************
 *					Load
-*************************************************************************//**
-*  @fn        void Model::Load(const gu::tstring& filePath)
+****************************************************************************/
+/* @fn        void Model::Load(const gu::tstring& filePath)
 *
 *  @brief     Load model mesh
 *
@@ -171,8 +171,8 @@ void GameModel::Draw(bool isDrawingEachMaterial, const std::uint32_t materialOff
 #pragma region Set up
 /****************************************************************************
 *					PrepareGameWorldBuffer
-*************************************************************************//**
-*  @fn        void GameModel::PrepareGameWorldBuffer()
+****************************************************************************/
+/* @fn        void GameModel::PrepareGameWorldBuffer()
 *
 *  @brief     Prepare Game world constant buffer
 *

@@ -31,8 +31,8 @@ namespace rhi::core
 	class GPUBuffer;
 	/****************************************************************************
 	*				  			RHIDescriptorHeap
-	*************************************************************************//**
-	*  @class     RHIDescriptorHeap
+	****************************************************************************/
+	/* @class     RHIDescriptorHeap
 	*  @brief     Register descriptor view heap 
 	*****************************************************************************/
 	class RHIDescriptorHeap : public gu::NonCopyable

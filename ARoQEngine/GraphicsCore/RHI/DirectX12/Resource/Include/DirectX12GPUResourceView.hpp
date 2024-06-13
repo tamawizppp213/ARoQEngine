@@ -27,8 +27,8 @@ namespace rhi::directX12
 	class RHIDescriptorHeap;
 	/****************************************************************************
 	*				  			GPUResourceView
-	*************************************************************************//**
-	*  @class     GPUResourceView
+	****************************************************************************/
+	/* @class     GPUResourceView
 	*  @brief     Resource view 
 	*****************************************************************************/
 	class GPUResourceView : public core::GPUResourceView

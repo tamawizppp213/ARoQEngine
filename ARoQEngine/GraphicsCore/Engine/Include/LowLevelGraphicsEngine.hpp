@@ -40,8 +40,8 @@ namespace rhi::core
 }
 /****************************************************************************
 *				  			LowLevelGraphicsEngine
-*************************************************************************//**
-*  @class     LowLevelGraphicsEngine
+****************************************************************************/
+/* @class     LowLevelGraphicsEngine
 *  @brief     LowLevelGraphicsEngine
 *****************************************************************************/
 class LowLevelGraphicsEngine final : public gu::NonCopyable

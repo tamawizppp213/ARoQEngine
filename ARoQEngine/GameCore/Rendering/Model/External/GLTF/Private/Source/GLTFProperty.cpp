@@ -44,8 +44,8 @@ GLTFProperty& GLTFProperty::operator=(const GLTFProperty& other)
 }
 /****************************************************************************
 *							GetExtensions
-*************************************************************************//**
-*  @fn        std::vector<std::reference_wrapper<GLTFExtension> >GLTFProperty::GetExtensions() const
+****************************************************************************/
+/* @struct        std::vector<std::reference_wrapper<GLTFExtension> >GLTFProperty::GetExtensions() const
 *  @brief     Get All Extension in this instance.
 *  @param[in] void
 *  @return Å@Å@std::vector<std::reference_wrapper<GLTFExtension> 

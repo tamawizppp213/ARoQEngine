@@ -28,8 +28,8 @@ namespace platform::windows
 {
 	/****************************************************************************
 	*				  		CoreWindowMessageHandler
-	*************************************************************************//**
-	*  @class     CoreWindowMessageHandler
+	****************************************************************************/
+	/* @class     CoreWindowMessageHandler
 	*  @brief     Cursor interface
 	*****************************************************************************/
 	class CoreWindowMessageHandler : public core::CoreWindowMessageHandler

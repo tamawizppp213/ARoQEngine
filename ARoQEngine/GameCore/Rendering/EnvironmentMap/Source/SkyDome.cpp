@@ -91,8 +91,8 @@ void SkyDome::Draw(const GPUResourceViewPtr& cameraResourceView)
 #pragma region Private Function
 /****************************************************************************
 *							PrepareVertexAndIndexBuffer
-*************************************************************************//**
-*  @fn        void Skybox::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
+****************************************************************************/
+/* @fn        void Skybox::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 *  @brief     Prepare Sphere Vertex Buffer
 *  @param[in] const gu::tstring& addName
 *  @return 　　void
@@ -143,8 +143,8 @@ void SkyDome::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 }
 /****************************************************************************
 *							PrepareSkyObject
-*************************************************************************//**
-*  @fn        void Skybox::PrepareSkyObject(const gu::tstring& addName)
+****************************************************************************/
+/* @fn        void Skybox::PrepareSkyObject(const gu::tstring& addName)
 *  @brief     Build World Matrix Infomation
 *  @param[in] gu::tstring& addName
 *  @return 　　void
@@ -171,8 +171,8 @@ void SkyDome::PrepareSkyObject(const gu::tstring& addName)
 
 /****************************************************************************
 *							PreparePipelineState
-*************************************************************************//**
-*  @fn        void Skybox::PreparePipelineState(const gu::tstring& addName)
+****************************************************************************/
+/* @fn        void Skybox::PreparePipelineState(const gu::tstring& addName)
 *  @brief     Prepare pipelineState
 *  @param[in] gu::tstring& addName
 *  @return 　　void

@@ -34,8 +34,8 @@ namespace gc::rendering
 
 	/****************************************************************************
 	*				  			   SceneLightBuffer
-	*************************************************************************//**
-	*  @class     SceneLightBuffer
+	****************************************************************************/
+	/* @class     SceneLightBuffer
 	*  @brief     Scene light buffer
 	*****************************************************************************/
 	template<typename TLight> requires std::is_base_of_v<LightData, TLight>
@@ -140,8 +140,8 @@ namespace gc::rendering
 
 	/****************************************************************************
 	*                       BindHitLightIDLists
-	*************************************************************************//**
-	*  @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
+	****************************************************************************/
+	/* @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
 				  void SceneLightBuffer<TLight>::BindHitLightIDListss
 
 	*  @brief     Bind UAV about the HitLightIDLists In Tile.
@@ -162,8 +162,8 @@ namespace gc::rendering
 
 	/****************************************************************************
 	*                       SetLight
-	*************************************************************************//**
-	*  @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
+	****************************************************************************/
+	/* @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
 				  void SceneLightBuffer<TLight>::SetLight(const std::uint32_t index, const TLight& light)
 
 	*  @brief     Set light and prepare copy to the GPU.
@@ -189,8 +189,8 @@ namespace gc::rendering
 
 	/****************************************************************************
 	*                       UpdateLightData
-	*************************************************************************//**
-	*  @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
+	****************************************************************************/
+	/* @fn        template<typename TLight> requires std::is_base_of_v<LightData, TLight>
 				  void SceneLightBuffer<TLight>::UpdateLightData()
 
 	*  @brief     Copy the CPU light data to the GPU buffer

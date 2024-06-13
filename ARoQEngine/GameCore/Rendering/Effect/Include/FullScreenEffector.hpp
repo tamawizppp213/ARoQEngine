@@ -35,8 +35,8 @@ namespace gc
 {
 	/****************************************************************************
 	*				  			IFullScreenEffector
-	*************************************************************************//**
-	*  @class     IFullScreenEffector
+	****************************************************************************/
+	/* @class     IFullScreenEffector
 	*  @brief     Provide the full screen polygon and drawing interface.
 	*****************************************************************************/
 	class IFullScreenEffector : public gu::NonCopyable

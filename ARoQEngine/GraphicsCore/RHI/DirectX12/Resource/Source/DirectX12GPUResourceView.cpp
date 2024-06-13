@@ -81,8 +81,8 @@ GPUResourceView::~GPUResourceView()
 #pragma region Bind Function
 /****************************************************************************
 *                     Bind
-*************************************************************************//**
-*  @fn        void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index)
+****************************************************************************/
+/* @fn        void GPUResourceView::Bind(const gu::SharedPointer<core::RHICommandList>& commandList, const std::uint32_t index)
 *
 *  @brief     Bind resource layout array index to the command list.
               index : resource layout array index
@@ -139,8 +139,8 @@ void GPUResourceView::CreateView(const gu::SharedPointer<directX12::RHIDescripto
 
 /****************************************************************************
 *                     CreateSRV
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create shader resource view
 * 
@@ -304,8 +304,8 @@ void GPUResourceView::CreateSRV(const gu::SharedPointer<directX12::RHIDescriptor
 }
 /****************************************************************************
 *                     CreateRAS
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create raytracing acceleration structure
 
@@ -343,8 +343,8 @@ void GPUResourceView::CreateRAS(const gu::SharedPointer<directX12::RHIDescriptor
 
 /****************************************************************************
 *                     CreateUAV
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create unordered access view
 * 
@@ -461,8 +461,8 @@ void GPUResourceView::CreateUAV(const gu::SharedPointer<directX12::RHIDescriptor
 
 /****************************************************************************
 *                     CreateRTV
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create render target view
 * 
@@ -578,8 +578,8 @@ void GPUResourceView::CreateRTV(const gu::SharedPointer<directX12::RHIDescriptor
 
 /****************************************************************************
 *                     CreateDSV
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create depth stencil view
 * 
@@ -649,8 +649,8 @@ void GPUResourceView::CreateDSV(const gu::SharedPointer<directX12::RHIDescriptor
 
 /****************************************************************************
 *                     CreateCBV
-*************************************************************************//**
-*  @fn        void GPUResourceView::CreateCBV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
+****************************************************************************/
+/* @fn        void GPUResourceView::CreateCBV(const gu::SharedPointer<directX12::RHIDescriptorHeap>& heap)
 * 
 *  @brief     Create constant buffer view 
 * 
@@ -690,8 +690,8 @@ void GPUResourceView::CreateCBV(const gu::SharedPointer<directX12::RHIDescriptor
 
 /****************************************************************************
 *                     SelectDescriptorHeap
-*************************************************************************//**
-*  @fn        const gu::SharedPointer<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
+****************************************************************************/
+/* @fn        const gu::SharedPointer<directX12::RHIDescriptorHeap> GPUResourceView::SelectDescriptorHeap(const core::ResourceViewType type)
 * 
 *  @brief     Select DirectX12 Descriptor Heap. return custom heap or default heap 
 * 

@@ -34,8 +34,8 @@ namespace gu::details::smart_pointer
 {
 	/****************************************************************************
 	*				  			  ReferenceControllerBase
-	*************************************************************************//**
-	*  @class     ReferenceControllerBase
+	****************************************************************************/
+	/* @class     ReferenceControllerBase
 	*  @brief     参照カウントを保持するための基底クラス
 	*****************************************************************************/
 	template<SharedPointerThreadMode Mode = SHARED_POINTER_DEFAULT_THREAD_MODE>

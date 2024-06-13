@@ -30,8 +30,8 @@ namespace platform::windows
 	class CoreWindow;
 	/****************************************************************************
 	*				  			    PlatformApplication
-	*************************************************************************//**
-	*  @class     PlatformApplication
+	****************************************************************************/
+	/* @class     PlatformApplication
 	*  @brief     ウィンドウを管理し, メッセージループを管理するクラス
 	*****************************************************************************/
 	class PlatformApplication : public platform::core::PlatformApplication, public gu::EnableSharedFromThis<PlatformApplication>

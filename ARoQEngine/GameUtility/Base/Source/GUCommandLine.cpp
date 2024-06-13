@@ -29,8 +29,8 @@ tstring CommandLine::_commandLine    = SP("");
 #pragma region Main Function
 /****************************************************************************
 *                       BuildFromArgumentVector
-*************************************************************************//**
-*  @brief     main関数で使われるargv, argcを使ってコマンドラインを構築します.
+****************************************************************************/
+/* @brief     main関数で使われるargv, argcを使ってコマンドラインを構築します.
 
 *  @param[in] const int32   argumentCount  : コマンドライン引数の数
 *  @param[in] const wchar** argumentVector : コマンドラインの文字配列 (argumentCount分だけ) 
@@ -82,8 +82,8 @@ tstring CommandLine::BuildFromArgumentVector(const int32 argumentCount, const wc
 
 /****************************************************************************
 *                       BuildFromArgumentVector
-*************************************************************************//**
-*  @brief     main関数で使われるargv, argcを使ってコマンドラインを構築します.
+****************************************************************************/
+/* @brief     main関数で使われるargv, argcを使ってコマンドラインを構築します.
 
 *  @param[in] const int32   argumentCount  : コマンドライン引数の数
 *  @param[in] const char** argumentVector : コマンドラインの文字配列 (argumentCount分だけ)

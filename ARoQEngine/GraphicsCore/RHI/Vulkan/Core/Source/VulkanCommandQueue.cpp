@@ -41,8 +41,8 @@ RHICommandQueue::RHICommandQueue(const gu::SharedPointer<rhi::core::RHIDevice>& 
 #pragma region Public Function
 /****************************************************************************
 *							Wait
-*************************************************************************//**
-*  @fn        void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
+****************************************************************************/
+/* @fn        void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
 * 
 *  @brief     Used to wait for another Command queue to complete execution. (in GPU)
 * 
@@ -89,8 +89,8 @@ void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, const
 
 /****************************************************************************
 *							Signal
-*************************************************************************//**
-*  @fn        void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
+****************************************************************************/
+/* @fn        void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t value)
 *
 *  @brief     Update value when the Command Queue execution completes.
 *             GPUì‡Ç≈èàóùÇ™äÆåãÇµÇ‹Ç∑.Å@
@@ -135,8 +135,8 @@ void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, con
 
 /****************************************************************************
 *							Execute
-*************************************************************************//**
-*  @fn        void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
+****************************************************************************/
+/* @fn        void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core::RHICommandList>>& commandLists)
 *
 *  @brief     Execute command list contents. normally set graphics, compute, transfer commandlist
 *             All CommandLists to be assigned must be Closed.

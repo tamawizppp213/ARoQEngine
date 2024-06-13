@@ -68,8 +68,8 @@ PSInput VSMain(VertexIn vertexIn)
 
 /****************************************************************************
 *                       PSMain
-*************************************************************************//**
-*  @fn        float4 PSMain(VertexOut input) : SV_TARGET
+****************************************************************************/
+/* @fn        float4 PSMain(VertexOut input) : SV_TARGET
 
 *  @brief     ScreenSpacerReflection post effect
 
@@ -124,8 +124,8 @@ float4 ExecuteSSR(PSInput input) : SV_TARGET
 
 /****************************************************************************
 *				  			NDCDepthToViewDepth
-*************************************************************************//**
-*  @fn        float NDCDepthToViewDepth(const float z_ndc)
+****************************************************************************/
+/* @fn        float NDCDepthToViewDepth(const float z_ndc)
 
 *  @brief     Convert ndc Depth to view space depth
 
@@ -142,8 +142,8 @@ float NDCDepthToViewDepth(const float z_ndc)
 
 /****************************************************************************
 *				  			ExecuteRayMarchInCameraSpace
-*************************************************************************//**
-*  @fn        bool ExecuteRayMarchInCameraSpace(const float3 rayOrigin, const float3 rayDirection)
+****************************************************************************/
+/* @fn        bool ExecuteRayMarchInCameraSpace(const float3 rayOrigin, const float3 rayDirection)
 
 *  @brief     カメラ空間でのレイマーチングの実行
 
@@ -218,8 +218,8 @@ bool ExecuteRayMarchInCameraSpace(const float3 rayOrigin, const float3 rayDirect
 
 /****************************************************************************
 *				  			CalculateAlpha
-*************************************************************************//**
-*  @fn        float CalculateAlpha(const bool isIntersect, const float2 hitRayUV, const float3 hitRayPosition, const float3 rayOrigin)
+****************************************************************************/
+/* @fn        float CalculateAlpha(const bool isIntersect, const float2 hitRayUV, const float3 hitRayPosition, const float3 rayOrigin)
 
 *  @brief     画面の外側になるほど画面外に向かってレイトレーシングが行われ, 正しい結果にならないため, 画面の外側に行くほどSSRによる反射を弱くする
 

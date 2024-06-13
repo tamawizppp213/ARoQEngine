@@ -51,8 +51,8 @@ RHIResourceLayout::RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& d
 #pragma region SetUp Function
 /****************************************************************************
 *                     SetUp
-*************************************************************************//**
-*  @fn        void RHIResourceLayout::SetUp(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const gu::Optional<core::Constant32Bits>& constant32Bits)
+****************************************************************************/
+/* @fn        void RHIResourceLayout::SetUp(const gu::DynamicArray<core::ResourceLayoutElement>& elements, const gu::DynamicArray<core::SamplerLayoutElement>& samplers, const gu::Optional<core::Constant32Bits>& constant32Bits)
 *  @brief     Set up pipeline layout
 *  @param[in] const gu::DynamicArray<core::ResourceLayoutElement>& elements
 *  @param[in] const gu::DynamicArray<core::SamplerLayoutElement>& samplers

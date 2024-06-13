@@ -32,8 +32,8 @@ namespace
 {
 	/****************************************************************************
 	*                       DeserializeToIndexedContainer
-	*************************************************************************//**
-	*  @fn        template<typename T>
+	****************************************************************************/
+	/* @fn        template<typename T>
 				　 IndexedContainer<const T> DeserializeToIndexedContainer(const char* name, const rapidjson::Value& value)
 	*  @brief     Deserialize index container
 	*  @param[in] const char* name
@@ -71,8 +71,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseExtensions
-	*************************************************************************//**
-	*  @fn        void ParseExtensions(const rapidjson::Value& value, detail::GLTFProperty& node)
+	****************************************************************************/
+	/* @fn        void ParseExtensions(const rapidjson::Value& value, detail::GLTFProperty& node)
 	*  @brief     Parse extension data
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] detail::GLTFProperty& node
@@ -110,8 +110,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseExtras
-	*************************************************************************//**
-	*  @fn        void ParseExtras(const rapidjson::Value& value, detail::GLTFProperty& node)
+	****************************************************************************/
+	/* @fn        void ParseExtras(const rapidjson::Value& value, detail::GLTFProperty& node)
 	*  @brief     Parse extra data
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] detail::GLTFProperty& node
@@ -128,8 +128,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseProperty
-	*************************************************************************//**
-	*  @fn        void ParseProperty(const rapidjson::Value& value, detail::GLTFProperty& node)
+	****************************************************************************/
+	/* @fn        void ParseProperty(const rapidjson::Value& value, detail::GLTFProperty& node)
 	*  @brief     Parse extra property data
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] detail::GLTFProperty& node
@@ -142,8 +142,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseTextureInfo
-	*************************************************************************//**
-	*  @fn        void ParseTextureInfo(const rapidjson::Value& value, detail::asset::GLTFTextureInfo textureInfomation)
+	****************************************************************************/
+	/* @fn        void ParseTextureInfo(const rapidjson::Value& value, detail::asset::GLTFTextureInfo textureInfomation)
 	*  @brief     Parse TextureInfo data
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] detail::GLTFTextureInfo textureInfo
@@ -158,8 +158,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseAsset
-	*************************************************************************//**
-	*  @fn        GLTFAsset ParseAsset(const rapidjson::Value& assetValue, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFAsset ParseAsset(const rapidjson::Value& assetValue, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse asset
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] const ExtensionDeserializer& extensionDeserializer
@@ -177,8 +177,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseAsset
-	*************************************************************************//**
-	*  @fn        GLTFAsset ParseAsset(const rapidjson::Value& assetValue, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFAsset ParseAsset(const rapidjson::Value& assetValue, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse asset
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] const ExtensionDeserializer& extensionDeserializer
@@ -247,8 +247,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseBufferView
-	*************************************************************************//**
-	*  @fn        GLTFBufferView ParseBufferView(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFBufferView ParseBufferView(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse Buffer view
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] const ExtensionDeserializer& extensionDeserializer
@@ -280,8 +280,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseScene
-	*************************************************************************//**
-	*  @fn        GLTFScene ParseScene(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFScene ParseScene(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse Scene
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] const ExtensionDeserializer& extensionDeserializer
@@ -307,8 +307,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseMorphTarget
-	*************************************************************************//**
-	*  @fn        GLTFScene ParseMorphTarget(const rapidjson::Value& value)
+	****************************************************************************/
+	/* @fn        GLTFScene ParseMorphTarget(const rapidjson::Value& value)
 	*  @brief     Parse MorphTarget
 	*  @param[in] rapidjson::Value& value
 	*  @return 　　GLTFMorphTarget
@@ -323,8 +323,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseMorphTargets
-	*************************************************************************//**
-	*  @fn        GLTFScene ParseMorphTargets(const rapidjson::Value& value, GLTFMeshPrimitive& primitive)
+	****************************************************************************/
+	/* @fn        GLTFScene ParseMorphTargets(const rapidjson::Value& value, GLTFMeshPrimitive& primitive)
 	*  @brief     Parse MorphTargets
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] GLTFMeshPrimitive& primitive
@@ -345,8 +345,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseMeshPrimitive
-	*************************************************************************//**
-	*  @fn        GLTFMeshPrimitive ParseMeshPrimitive(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFMeshPrimitive ParseMeshPrimitive(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse MeshPrimitive
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] const ExtensionDeserializer& extensionDeserializer
@@ -377,8 +377,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseMesh
-	*************************************************************************//**
-	*  @fn        GLTFMesh ParseMesh(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFMesh ParseMesh(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse Mesh
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] const ExtensionDeserializer& extensionDeserializer
@@ -406,8 +406,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseNodeScale
-	*************************************************************************//**
-	*  @fn        void ParseNodeScale(const rapidjson::Value& value, GLTFNode& node)
+	****************************************************************************/
+	/* @fn        void ParseNodeScale(const rapidjson::Value& value, GLTFNode& node)
 	*  @brief     Parse Node Scale
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] GLTFNode& node
@@ -436,8 +436,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseNodeTranslation
-	*************************************************************************//**
-	*  @fn        void ParseNodeScale(const rapidjson::Value& value, GLTFNode& node)
+	****************************************************************************/
+	/* @fn        void ParseNodeScale(const rapidjson::Value& value, GLTFNode& node)
 	*  @brief     Parse Node Translation
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] GLTFNode& node
@@ -466,8 +466,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseNodeRotation
-	*************************************************************************//**
-	*  @fn        void ParseNodeRotation(const rapidjson::Value& value, GLTFNode& node)
+	****************************************************************************/
+	/* @fn        void ParseNodeRotation(const rapidjson::Value& value, GLTFNode& node)
 	*  @brief     Parse Node Rotation
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] GLTFNode& node
@@ -497,8 +497,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseNodeMatrix
-	*************************************************************************//**
-	*  @fn        void ParseNodeMatrix(const rapidjson::Value& value, GLTFNode& node)
+	****************************************************************************/
+	/* @fn        void ParseNodeMatrix(const rapidjson::Value& value, GLTFNode& node)
 	*  @brief     Parse Node Matrix
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] GLTFNode& node
@@ -530,8 +530,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseNodeChildren
-	*************************************************************************//**
-	*  @fn        void ParseNodeChildren(const rapidjson::Value& value, GLTFNode& node)
+	****************************************************************************/
+	/* @fn        void ParseNodeChildren(const rapidjson::Value& value, GLTFNode& node)
 	*  @brief     Parse Node Children
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] GLTFNode& node
@@ -552,8 +552,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseCamera
-	*************************************************************************//**
-	*  @fn        GLTFCamera ParseCamera(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFCamera ParseCamera(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse Camera
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] const ExtensionDeserializer& extensionDeserializer
@@ -639,8 +639,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseNode
-	*************************************************************************//**
-	*  @fn        GLTFNode ParseNode(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
+	****************************************************************************/
+	/* @fn        GLTFNode ParseNode(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
 	*  @brief     Parse Node
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -662,8 +662,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseBuffer
-	*************************************************************************//**
-	*  @fn        GLTFBuffer ParseNode(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
+	****************************************************************************/
+	/* @fn        GLTFBuffer ParseNode(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
 	*  @brief     Parse Buffer
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -679,8 +679,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseSampler
-	*************************************************************************//**
-	*  @fn        GLTFSampler ParseSampler(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
+	****************************************************************************/
+	/* @fn        GLTFSampler ParseSampler(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
 	*  @brief     Parse Sampler
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -710,8 +710,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseAnimationTarget
-	*************************************************************************//**
-	*  @fn        GLTFAnimationtarget ParseAnimationTarget(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
+	****************************************************************************/
+	/* @fn        GLTFAnimationtarget ParseAnimationTarget(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
 	*  @brief     Parse Animation Target
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -741,8 +741,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseAnimationChannel
-	*************************************************************************//**
-	*  @fn        GLTFAnimationChannel ParseAnimationChannel(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
+	****************************************************************************/
+	/* @fn        GLTFAnimationChannel ParseAnimationChannel(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
 	*  @brief     Parse Animation Channel
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -767,8 +767,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseAnimationSampler
-	*************************************************************************//**
-	*  @fn        GLTFAnimationSampler ParseAnimationSampler(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
+	****************************************************************************/
+	/* @fn        GLTFAnimationSampler ParseAnimationSampler(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
 	*  @brief     Parse Animation Sampler
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -790,8 +790,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseAnimation
-	*************************************************************************//**
-	*  @fn        GLTFAnimation ParseAnimation(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
+	****************************************************************************/
+	/* @fn        GLTFAnimation ParseAnimation(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserialzier)
 	*  @brief     Parse Animation
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -808,8 +808,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseSkin
-	*************************************************************************//**
-	*  @fn        GLTFSkin ParseSkin(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFSkin ParseSkin(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse Skin
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -837,8 +837,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseExtensionUsed
-	*************************************************************************//**
-	*  @fn        void ParseExtesisonUsed(const rapidjson::Document& jsonDocument, GLTFDocument& gltfDocument)
+	****************************************************************************/
+	/* @fn        void ParseExtesisonUsed(const rapidjson::Document& jsonDocument, GLTFDocument& gltfDocument)
 	*  @brief     Parse Extension Used
 	*  @param[in] rapidjson::Document& jsonDocument
 	*  @param[in] GLTFDocument& gltfDocument
@@ -858,8 +858,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseExtensionRequired
-	*************************************************************************//**
-	*  @fn        void ParseExtensionRequired(const rapidjson::Document& jsonDocument, GLTFDocument& gltfDocument)
+	****************************************************************************/
+	/* @fn        void ParseExtensionRequired(const rapidjson::Document& jsonDocument, GLTFDocument& gltfDocument)
 	*  @brief     Parse Extension Required
 	*  @param[in] rapidjson::Document& jsonDocument
 	*  @param[in] GLTFDocument& gltfDocument
@@ -879,8 +879,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ValidateMaterial
-	*************************************************************************//**
-	*  @fn        void ValidateMaterial(GLTFMaterial& material)
+	****************************************************************************/
+	/* @fn        void ValidateMaterial(GLTFMaterial& material)
 	*  @brief     Validate Material
 	*  @param[in,out] GLTFMaterial material
 	*  @return 　　void
@@ -895,8 +895,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseMaterial
-	*************************************************************************//**
-	*  @fn        GLTFMaterial ParseMaterial(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFMaterial ParseMaterial(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse Material
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -1016,8 +1016,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseTexture
-	*************************************************************************//**
-	*  @fn        GLTFTexture ParseTexture(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFTexture ParseTexture(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse Texture
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -1034,8 +1034,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       ParseImage
-	*************************************************************************//**
-	*  @fn        GLTFImage ParseImage(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFImage ParseImage(const rapidjson::Value& value, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Parse Image
 	*  @param[in] rapidjson::Value& value
 	*  @param[in] ExtensionDeserializer& extensionDeserializer
@@ -1053,8 +1053,8 @@ namespace
 	}
 	/****************************************************************************
 	*                       DeserializerInternal
-	*************************************************************************//**
-	*  @fn        GLTFDocument DeserializerInternal(const rapidjson::Document& document, const ExtensionDeserializer& extensionDeserializer)
+	****************************************************************************/
+	/* @fn        GLTFDocument DeserializerInternal(const rapidjson::Document& document, const ExtensionDeserializer& extensionDeserializer)
 	*  @brief     Deserialize
 	*  @param[in] rapidjson::Document& document
 	*  @param[in] ExtensionDeserializer& extensionDeserializer

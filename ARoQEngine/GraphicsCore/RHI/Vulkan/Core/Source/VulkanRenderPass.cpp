@@ -48,8 +48,8 @@ RHIRenderPass::RHIRenderPass(const gu::SharedPointer<core::RHIDevice>& device, c
 #pragma region Property
 /****************************************************************************
 *							GetVkClearValues
-*************************************************************************//**
-*  @fn        gu::DynamicArray<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
+****************************************************************************/
+/* @fn        gu::DynamicArray<VkClearValue> rhi::vulkan::RHIRenderPass::GetVkClearValues() const 
 *
 *  @brief     Return clear value array including each render target and depth stencil buffer
 *

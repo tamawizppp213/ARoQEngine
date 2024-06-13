@@ -55,8 +55,8 @@ LightCulling::~LightCulling()
 #pragma region Main Function 
 /****************************************************************************
 *                        Execute
-*************************************************************************//**
-*  @fn        void LightCulling::Execute(const ResourceViewPtr& scene, const ResourceViewPtr& light)
+****************************************************************************/
+/* @fn        void LightCulling::Execute(const ResourceViewPtr& scene, const ResourceViewPtr& light)
 *
 *  @brief     Execute light culling
 *
@@ -98,8 +98,8 @@ void LightCulling::Execute(const ResourceViewPtr& scene, const ResourceViewPtr& 
 #pragma region Set Up Function
 /****************************************************************************
 *                        PrepareBuffer
-*************************************************************************//**
-*  @fn        void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
+****************************************************************************/
+/* @fn        void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 *
 *  @brief     Prepare read and writable buffers (each light id buffer)
 *
@@ -134,8 +134,8 @@ void LightCulling::PrepareBuffer(const LightCullingDesc& desc)
 
 /****************************************************************************
 *                        PreparePipelineState
-*************************************************************************//**
-*  @fn        void LightCulling::PreparePipelineState()
+****************************************************************************/
+/* @fn        void LightCulling::PreparePipelineState()
 *
 *  @brief     Prepare compute pipeline state and resource layout
 *

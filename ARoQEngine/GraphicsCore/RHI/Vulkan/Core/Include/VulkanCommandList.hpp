@@ -26,8 +26,8 @@ namespace rhi::vulkan
 	class GPUGraphicsPipelineState;
 	/****************************************************************************
 	*				  			TemplateClass
-	*************************************************************************//**
-	*  @class     TemplateClass
+	****************************************************************************/
+	/* @class     TemplateClass
 	*  @brief     temp
 	*****************************************************************************/
 	class RHICommandList : public rhi::core::RHICommandList, public gu::EnableSharedFromThis<RHICommandList>

@@ -27,8 +27,8 @@ namespace gm
 {
 	/****************************************************************************
 	*				  			Sort
-	*************************************************************************//**
-	*  @class     Sort
+	****************************************************************************/
+	/* @class     Sort
 	*  @brief     Sort
 	*****************************************************************************/
 	template<typename T>
@@ -94,8 +94,8 @@ namespace gm
 #pragma region Public Function
 	/****************************************************************************
 	*							InsertionSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::InsertionSortAscend(T* array, int arraySize)
+	****************************************************************************/
+	/* @fn        void Sort<T>::InsertionSortAscend(T* array, int arraySize)
 	*  @brief     Insertion Sort (O(N ~ N^2))
 	*  @param[out]T*  array
 	*  @param[in] int arraySize
@@ -119,8 +119,8 @@ namespace gm
 
 	/****************************************************************************
 	*							InsertionSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::InsertionSortDescend(T* array, int arraySize)
+	****************************************************************************/
+	/* @fn        void Sort<T>::InsertionSortDescend(T* array, int arraySize)
 	*  @brief     Insertion Sort (O(N ~ N^2))
 	*  @param[out]T* array
 	*  @param[in] int arraySize
@@ -143,8 +143,8 @@ namespace gm
 	}
 	/****************************************************************************
 	*							BubbleSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::BubbleSortDescend(T* array, int arraySize)
+	****************************************************************************/
+	/* @fn        void Sort<T>::BubbleSortDescend(T* array, int arraySize)
 	*  @brief     Bubble Sort (O(N^2))
 	*  @param[out]T* array
 	*  @param[in] int arraySize
@@ -169,8 +169,8 @@ namespace gm
 	}
 	/****************************************************************************
 	*							BubbleSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::InsertionSortDescend(T* array, int arraySize)
+	****************************************************************************/
+	/* @fn        void Sort<T>::InsertionSortDescend(T* array, int arraySize)
 	*  @brief     Insertion Sort (O(N^2))
 	*  @param[out]T* array
 	*  @param[in] int arraySize
@@ -195,8 +195,8 @@ namespace gm
 	}
 	/****************************************************************************
 	*							SelectionSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::SelectionSortAscend(T* array, int arraySize)
+	****************************************************************************/
+	/* @fn        void Sort<T>::SelectionSortAscend(T* array, int arraySize)
 	*  @brief     Selection Sort (O(N^2)) !note: This sort is instable and has a bug. 
 	*  @param[out]T* array
 	*  @param[in] int arraySize
@@ -225,8 +225,8 @@ namespace gm
 	}
 	/****************************************************************************
 	*							SelectionSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::SelectionSortDescend(T* array, int arraySize)
+	****************************************************************************/
+	/* @fn        void Sort<T>::SelectionSortDescend(T* array, int arraySize)
 	*  @brief     Selection Sort (O(N^2))!note: This sort is instable and has a bug.
 	*  @param[out]T* array
 	*  @param[in] int arraySize
@@ -256,8 +256,8 @@ namespace gm
 
 	/****************************************************************************
 	*							ShellSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::ShellSortAscend(T* array, int arraySize)
+	****************************************************************************/
+	/* @fn        void Sort<T>::ShellSortAscend(T* array, int arraySize)
 	*  @brief     Shell Sort (O(N^1.25))(step: g_{n+1} = 3g_n +1).
 	*  @param[out]T* array
 	*  @param[in] int arraySize
@@ -291,8 +291,8 @@ namespace gm
 	}
 	/****************************************************************************
 	*							ShellSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::ShellSortDescend(T* array, int arraySize)
+	****************************************************************************/
+	/* @fn        void Sort<T>::ShellSortDescend(T* array, int arraySize)
 	*  @brief     Shell Sort (O(N^1.25))(step: g_{n+1} = 3g_n +1).
 	*  @param[out]T* array
 	*  @param[in] int arraySize
@@ -327,8 +327,8 @@ namespace gm
 
 	/****************************************************************************
 	*							MergeSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::MergeSortAscend(T* array, int left, int right)
+	****************************************************************************/
+	/* @fn        void Sort<T>::MergeSortAscend(T* array, int left, int right)
 	*  @brief     Merge Sort (O(nlogn))(stable).
 	*  @param[out]T* array
 	*  @param[in] int left index
@@ -349,8 +349,8 @@ namespace gm
 
 	/****************************************************************************
 	*							MergeSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::MergeSortDescend(T* array, int left, int right)
+	****************************************************************************/
+	/* @fn        void Sort<T>::MergeSortDescend(T* array, int left, int right)
 	*  @brief     Merge Sort (O(nlogn))(stable).
 	*  @param[out]T* array
 	*  @param[in] int left Index
@@ -371,8 +371,8 @@ namespace gm
 
 	/****************************************************************************
 	*							QuickSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::QuickSortAscend(T* array, int left, int right)
+	****************************************************************************/
+	/* @fn        void Sort<T>::QuickSortAscend(T* array, int left, int right)
 	*  @brief     Quick Sort (If the number of index is small (<= 64), switch to insertion sort for performance)
 	*  @param[out]T*  array
 	*  @param[in] int left index
@@ -410,8 +410,8 @@ namespace gm
 
 	/****************************************************************************
 	*							QuickSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::QuickSortDescend(T* array, int left, int right)
+	****************************************************************************/
+	/* @fn        void Sort<T>::QuickSortDescend(T* array, int left, int right)
 	*  @brief     Quick Sort (If the number of index is small (<= 64), switch to insertion sort for performance)
 	*  @param[out]T*  array
 	*  @param[in] int left index
@@ -450,8 +450,8 @@ namespace gm
 
 	/****************************************************************************
 	*							InsertionSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::InsertionSortAscend(std::vector<T>& vector)
+	****************************************************************************/
+	/* @fn        void Sort<T>::InsertionSortAscend(std::vector<T>& vector)
 	*  @brief     Insertion Sort (O(N ~ N^2))
 	*  @param[out]std::vector<T>& vector
 	*  @return 　　void
@@ -474,8 +474,8 @@ namespace gm
 
 	/****************************************************************************
 	*							InsertionSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::InsertionSortDescend(std::vector<T>& vector)
+	****************************************************************************/
+	/* @fn        void Sort<T>::InsertionSortDescend(std::vector<T>& vector)
 	*  @brief     Insertion Sort (O(N ~ N^2))
 	*  @param[out]std::vector<T>& vector
 	*  @return 　　void
@@ -497,8 +497,8 @@ namespace gm
 	}
 	/****************************************************************************
 	*							BubbleSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::BubbleSortDescend(std::vector<T>& vector)
+	****************************************************************************/
+	/* @fn        void Sort<T>::BubbleSortDescend(std::vector<T>& vector)
 	*  @brief     Bubble Sort (O(N^2))
 	*  @param[out]T* array
 	*  @param[in] int arraySize
@@ -523,8 +523,8 @@ namespace gm
 	}
 	/****************************************************************************
 	*							BubbleSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::InsertionSortDescend(std::vector<T>& vector)
+	****************************************************************************/
+	/* @fn        void Sort<T>::InsertionSortDescend(std::vector<T>& vector)
 	*  @brief     Insertion Sort (O(N^2))
 	*  @param[out]std::vector<T>& vector
 	*  @return 　　void
@@ -548,8 +548,8 @@ namespace gm
 	}
 	/****************************************************************************
 	*							SelectionSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::SelectionSortAscend(std::vector<T>& vector)
+	****************************************************************************/
+	/* @fn        void Sort<T>::SelectionSortAscend(std::vector<T>& vector)
 	*  @brief     Selection Sort (O(N^2)) !note: This sort is instable and has a bug.
 	*  @param[out]std::vector<T>& vector
 	*  @return 　　void
@@ -577,8 +577,8 @@ namespace gm
 	}
 	/****************************************************************************
 	*							SelectionSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::SelectionSortDescendstd::vector<T>& vector)
+	****************************************************************************/
+	/* @fn        void Sort<T>::SelectionSortDescendstd::vector<T>& vector)
 	*  @brief     Selection Sort (O(N^2))!note: This sort is instable and has a bug.
 	*  @param[out]std::vector<T>& vector
 	*  @return 　　void
@@ -607,8 +607,8 @@ namespace gm
 
 	/****************************************************************************
 	*							ShellSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::ShellSortAscend(std::vector<T>& vector)
+	****************************************************************************/
+	/* @fn        void Sort<T>::ShellSortAscend(std::vector<T>& vector)
 	*  @brief     Shell Sort (O(N^1.25))(step: g_{n+1} = 3g_n +1).
 	*  @param[out]std::vector<T>& vector
 	*  @param[in] int arraySize
@@ -642,8 +642,8 @@ namespace gm
 	}
 	/****************************************************************************
 	*							ShellSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::ShellSortDescend(std::vector<T>& vector)
+	****************************************************************************/
+	/* @fn        void Sort<T>::ShellSortDescend(std::vector<T>& vector)
 	*  @brief     Shell Sort (O(N^1.25))(step: g_{n+1} = 3g_n +1).
 	*  @param[out]std::vector<T>& vector
 	*  @return 　　void
@@ -677,8 +677,8 @@ namespace gm
 
 	/****************************************************************************
 	*							MergeSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::MergeSortAscend(std::vector<T>& vector)
+	****************************************************************************/
+	/* @fn        void Sort<T>::MergeSortAscend(std::vector<T>& vector)
 	*  @brief     Merge Sort (O(nlogn))(stable).
 	*  @param[out]std::vector<T>& vector
 	*  @return 　　void
@@ -697,8 +697,8 @@ namespace gm
 
 	/****************************************************************************
 	*							MergeSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::MergeSortDescend(std::vector<T>& vector)
+	****************************************************************************/
+	/* @fn        void Sort<T>::MergeSortDescend(std::vector<T>& vector)
 	*  @brief     Merge Sort (O(nlogn))(stable).
 	*  @param[out]std::vector<T>& vector
 	*  @return 　　void
@@ -718,8 +718,8 @@ namespace gm
 #pragma region Private Function
 	/****************************************************************************
 	*							  Merge
-	*************************************************************************//**
-	*  @fn        void Sort<T>::MergeSort(T* array, int arraySize, int left, int mid, int right)
+	****************************************************************************/
+	/* @fn        void Sort<T>::MergeSort(T* array, int arraySize, int left, int mid, int right)
 	*  @brief     For Merge Sort 
 	*  @param[out]T* array
 	*  @param[in] int left
@@ -781,8 +781,8 @@ namespace gm
 
 /****************************************************************************
 *							  Merge
-*************************************************************************//**
-*  @fn        void Sort<T>::MergeSort(T* array, int arraySize, int left, int mid, int right)
+****************************************************************************/
+/* @fn        void Sort<T>::MergeSort(T* array, int arraySize, int left, int mid, int right)
 *  @brief     For Merge Sort
 *  @param[out]T* array
 *  @param[in] int arraySize
@@ -845,8 +845,8 @@ namespace gm
 
 	/****************************************************************************
 	*							  Merge
-	*************************************************************************//**
-	*  @fn        void Sort<T>::MergeAscend(std::vector& vector, int left, int mid, int right)
+	****************************************************************************/
+	/* @fn        void Sort<T>::MergeAscend(std::vector& vector, int left, int mid, int right)
 	*  @brief     For Merge Sort
 	*  @param[out]std::vector<T>& vector
 	*  @param[in] int left
@@ -909,8 +909,8 @@ namespace gm
 
 	/****************************************************************************
 	*							  Merge
-	*************************************************************************//**
-	*  @fn        void Sort<T>::MergeDescend(std::vector& vector, int left, int mid, int right)
+	****************************************************************************/
+	/* @fn        void Sort<T>::MergeDescend(std::vector& vector, int left, int mid, int right)
 	*  @brief     For Merge Sort
 	*  @param[out]std::vector<T>& vector
 	*  @param[in] int left
@@ -973,8 +973,8 @@ namespace gm
 
 	/****************************************************************************
 	*							QuickSortAscend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::QuickSortAscend(std::vector<T>& vector, int left, int right)
+	****************************************************************************/
+	/* @fn        void Sort<T>::QuickSortAscend(std::vector<T>& vector, int left, int right)
 	*  @brief     Quick Sort (If the number of index is small (<= 64), switch to insertion sort for performance)
 	*  @param[out]std::vector<T>& vector
 	*  @param[in] int left index
@@ -1012,8 +1012,8 @@ namespace gm
 
 	/****************************************************************************
 	*							QuickSortDescend
-	*************************************************************************//**
-	*  @fn        void Sort<T>::QuickSortDescend(std::vector<T>& vector, int left, int right)
+	****************************************************************************/
+	/* @fn        void Sort<T>::QuickSortDescend(std::vector<T>& vector, int left, int right)
 	*  @brief     Quick Sort (If the number of index is small (<= 64), switch to insertion sort for performance)
 	*  @param[out]std::vector<T>& vector
 	*  @param[in] int left index
@@ -1051,8 +1051,8 @@ namespace gm
 
 	/****************************************************************************
 	*							  Median
-	*************************************************************************//**
-	*  @fn        static T Sort<T>::Median(T& a, T& b, T& c);
+	****************************************************************************/
+	/* @fn        static T Sort<T>::Median(T& a, T& b, T& c);
 	*  @brief     For Quick Sort
 	*  @param[out]T
 	*  @return 　　void

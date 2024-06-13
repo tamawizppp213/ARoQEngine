@@ -52,8 +52,8 @@ RHIFrameBuffer::~RHIFrameBuffer()
 #pragma region Prepare
 /****************************************************************************
 *                      Prepare
-*************************************************************************//**
-*  @fn        void RHIFrameBuffer::Prepare()
+****************************************************************************/
+/* @fn        void RHIFrameBuffer::Prepare()
 *
 *  @brief     Prepare heap and resource view (render target and depth stencil)
 *

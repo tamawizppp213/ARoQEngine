@@ -23,8 +23,8 @@ namespace gu::details::smart_pointer
 {
 	/****************************************************************************
 	*				  			   GUObserverPointer
-	*************************************************************************//**
-	*  @class     GUObserverPointer
+	****************************************************************************/
+	/* @class     GUObserverPointer
 	*  @brief     Shared pointer and weak pointer's base class 
 	*             Default deleter is DefaultDeleterClass
 	*****************************************************************************/

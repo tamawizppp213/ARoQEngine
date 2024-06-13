@@ -79,8 +79,8 @@ GaussianBlur::GaussianBlur(const LowLevelGraphicsEnginePtr& engine, const std::u
 
 /****************************************************************************
 *							OnResize
-*************************************************************************//**
-*  @fn        void GaussianBlur::OnResize(int newWidth, int newHeight)
+****************************************************************************/
+/* @fn        void GaussianBlur::OnResize(int newWidth, int newHeight)
 *  @brief     OnResize
 *  @param[in] std::uint32_t newWidth
 *  @param[in] std::uint32_t newHeight
@@ -92,8 +92,8 @@ void GaussianBlur::OnResize(const std::uint32_t newWidth, const std::uint32_t ne
 }
 /****************************************************************************
 *							Draw
-*************************************************************************//**
-*  @fn        void GaussianBlur::Draw(GPUResource* renderTarget)
+****************************************************************************/
+/* @fn        void GaussianBlur::Draw(GPUResource* renderTarget)
 *  @brief     Draw Gaussian blur
 *  @param[in,out] GPUResource* renderTarget
 *  @return 　　void
@@ -218,8 +218,8 @@ void GaussianBlur::Draw(const FrameBufferPtr& frameBuffer, const std::uint32_t r
 
 /****************************************************************************
 *							SetUpWeightTable
-*************************************************************************//**
-*  @fn        void GaussianBlur::SetUpWeightTable(float sigma)
+****************************************************************************/
+/* @fn        void GaussianBlur::SetUpWeightTable(float sigma)
 *  @brief     WeightTable
 *  @param[in] float sigma
 *  @return 　　void
@@ -252,8 +252,8 @@ void GaussianBlur::SetUpWeightTable(float sigma)
 #pragma region Protected Function
 /****************************************************************************
 *							PrepareBlurParameters
-*************************************************************************//**
-*  @fn        void GaussianBlur::PrepareBlurParameters()
+****************************************************************************/
+/* @fn        void GaussianBlur::PrepareBlurParameters()
 *  @brief     Prepare Blur Parameter
 *  @param[in] const gu::tstring& name
 *  @return 　　void
@@ -278,8 +278,8 @@ void GaussianBlur::PrepareBlurParameters(const gu::tstring& name)
 }
 /****************************************************************************
 *							PrepareTextureSizeBuffer
-*************************************************************************//**
-*  @fn        void GaussianBlur::PrepareTextureSizeBuffer(int width, int height)
+****************************************************************************/
+/* @fn        void GaussianBlur::PrepareTextureSizeBuffer(int width, int height)
 *  @brief     Prepare Texture Size Buffer
 *  @param[in] std::uint32_t width
 *  @param[in] std::uint32_t height
@@ -308,8 +308,8 @@ void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std
 
 /****************************************************************************
 *							PreparePipelineState
-*************************************************************************//**
-*  @fn        void GaussianBlur::PreparePipelineState()
+****************************************************************************/
+/* @fn        void GaussianBlur::PreparePipelineState()
 * 
 *  @brief     Prepare xblur, yblur, and finalblur PSO
 * 
@@ -405,8 +405,8 @@ void GaussianBlur::PreparePipelineState(const gu::tstring& name)
 
 /****************************************************************************
 *							PrepareResourceView
-*************************************************************************//**
-*  @fn        void GaussianBlur::PrepareResourceView()
+****************************************************************************/
+/* @fn        void GaussianBlur::PrepareResourceView()
 * 
 *  @brief     Prepare xblur, yblur, and finalblur resource views
 * 

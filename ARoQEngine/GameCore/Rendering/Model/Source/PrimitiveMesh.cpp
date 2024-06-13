@@ -29,8 +29,8 @@ PrimitiveMesh::~PrimitiveMesh()
 #pragma endregion Constructor and Destructor
 /****************************************************************************
 *							     Rect
-*************************************************************************//**
-*  @fn         void PrimitiveMeshGenerator::Rect(float width, float height)
+****************************************************************************/
+/* @struct         void PrimitiveMeshGenerator::Rect(float width, float height)
 *  @brief      Create rect vertex and index data (Center is origin)
 *  @param[in]  float width
 *  @param[in]  float height
@@ -64,8 +64,8 @@ PrimitiveMesh PrimitiveMeshGenerator::Rect(float width, float height, float dept
 
 /****************************************************************************
 *							Quadrangle
-*************************************************************************//**
-*  @fn         void PrimitiveMeshGenerator::Quadrangle(float x, float y, float w, float h, float depth)
+****************************************************************************/
+/* @struct         void PrimitiveMeshGenerator::Quadrangle(float x, float y, float w, float h, float depth)
 *  @brief      Create Quadrangle vertex and index data
 *  @param[in]  float x
 *  @param[in]  float y
@@ -99,8 +99,8 @@ PrimitiveMesh PrimitiveMeshGenerator::Quadrangle(float x, float y, float w, floa
 
 /****************************************************************************
 *							Box
-*************************************************************************//**
-*  @fn         void PrimitiveMeshGenerator::Box(float width, float height, float depth, UINT32 numSubdivisions, bool isInvertNormal)
+****************************************************************************/
+/* @struct         void PrimitiveMeshGenerator::Box(float width, float height, float depth, UINT32 numSubdivisions, bool isInvertNormal)
 *  @brief      Create Box vertex and index data (Box center is origin)
 *  @param[in]  float width
 *  @param[in]  float height
@@ -198,8 +198,8 @@ PrimitiveMesh PrimitiveMeshGenerator::Box(float width, float height, float depth
 
 /****************************************************************************
 *							Sphere
-*************************************************************************//**
-*  @fn         void PrimitiveMeshGenerator::Sphere(float radius, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal)
+****************************************************************************/
+/* @struct         void PrimitiveMeshGenerator::Sphere(float radius, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal)
 *  @brief      Create Sphere vertex and index data (Sphere center is origin)
 *  @param[in]  float radius
 *  @param[in]  UINT32 sliceCount
@@ -300,8 +300,8 @@ PrimitiveMesh PrimitiveMeshGenerator::Sphere(float radius, std::uint32_t sliceCo
 
 /****************************************************************************
 *							GeoSphere
-*************************************************************************//**
-*  @fn         void PrimitiveMeshGenerator::GeoSphere(float radius, UINT32 numSubdivisions)
+****************************************************************************/
+/* @struct     void PrimitiveMeshGenerator::GeoSphere(float radius, UINT32 numSubdivisions)
 *  @brief      Create geoSphere vertex and index data (GeoSphere center is origin)
 *  @param[in]  float radius
 *  @param[in]  UINT32 numSubdivisions
@@ -382,8 +382,8 @@ PrimitiveMesh PrimitiveMeshGenerator::GeoSphere(float radius, std::uint32_t numS
 
 /****************************************************************************
 *							Cylinder
-*************************************************************************//**
-*  @fn         void PrimitiveMeshGenerator::Cylinder(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal)
+****************************************************************************/
+/* @struct         void PrimitiveMeshGenerator::Cylinder(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, bool isInvertNormal)
 *  @brief      Create Cylinder vertex and index data (Cylinder center is origin)
 *  @param[in]  float bottomRadius
 *  @param[in]  float topRadius
@@ -463,8 +463,8 @@ PrimitiveMesh PrimitiveMeshGenerator::Cylinder(float bottomRadius, float topRadi
 
 /****************************************************************************
 *							Grid
-*************************************************************************//**
-*  @fn         void PrimitiveMeshGenerator::Grid(float width, float depth, UINT32 rows, UINT32 columns, bool isInvertNormal)
+****************************************************************************/
+/* @struct         void PrimitiveMeshGenerator::Grid(float width, float depth, UINT32 rows, UINT32 columns, bool isInvertNormal)
 *  @brief      Create grid vertex and index data (Grid center is origin)
 *  @param[in]  float width
 *  @param[in]  float depth
@@ -607,8 +607,8 @@ PrimitiveMesh PrimitiveMeshGenerator::Torus(float majorRadius, float minorRadius
 #pragma region Private Function
 /****************************************************************************
 *							IsInvertNormal
-*************************************************************************//**
-*  @fn         void PrimitiveMeshGenerator::IsInvertNormal(PrimitiveMesh& meshData)
+****************************************************************************/
+/* @struct         void PrimitiveMeshGenerator::IsInvertNormal(PrimitiveMesh& meshData)
 *  @brief      Invert meshData normal vector
 *  @param[out] MeshData& meshData
 *  @return 　　 void
@@ -625,8 +625,8 @@ void PrimitiveMeshGenerator::IsInvertNormal(PrimitiveMesh& meshData)
 
 /****************************************************************************
 *							SubDivide
-*************************************************************************//**
-*  @fn         void PrimitiveMeshGenerator::SubDivide(MeshData& meshData)
+****************************************************************************/
+/* @struct         void PrimitiveMeshGenerator::SubDivide(MeshData& meshData)
 *  @brief      Divide each mesh
 *  @param[out] PrimitiveMesh& meshData
 *  @return 　　 void
@@ -742,8 +742,8 @@ gm::Vertex PrimitiveMeshGenerator::MidPoint(const Vertex& v0, const Vertex& v1)
 
 /****************************************************************************
 *							BuildCylinderTopCap
-*************************************************************************//**
-*  @fn         void GeometryGenerator::BuildCylinderTopCap(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, MeshData& meshData)
+****************************************************************************/
+/* @struct         void GeometryGenerator::BuildCylinderTopCap(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, MeshData& meshData)
 *  @brief      Create Cylinder top cap vertex and index data (GeoSphere center is origin)
 *  @param[in]  float bottomRadius,
 *  @param[in]  float topRadius,
@@ -786,8 +786,8 @@ void PrimitiveMeshGenerator::BuildCylinderTopCap(float topRadius, float height, 
 
 /****************************************************************************
 *							BuildCylinderBottomCap
-*************************************************************************//**
-*  @fn         void GeometryGenerator::BuildCylinderBottomCap(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, MeshData& meshData)
+****************************************************************************/
+/* @struct         void GeometryGenerator::BuildCylinderBottomCap(float bottomRadius, float topRadius, float height, UINT32 sliceCount, UINT32 stackCount, MeshData& meshData)
 *  @brief      Create Cylinder bottom cap vertex and index data (GeoSphere center is origin)
 *  @param[in]  float bottomRadius,
 *  @param[in]  float topRadius,

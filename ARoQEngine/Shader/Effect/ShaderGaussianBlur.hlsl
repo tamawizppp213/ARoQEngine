@@ -50,8 +50,8 @@ struct PSBlurInput
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
 *				  			GetPixelColor
-*************************************************************************//**
-*  @fn        float4 GetPixelColor(int x, int y, int2 textureSize)
+****************************************************************************/
+/* @fn        float4 GetPixelColor(int x, int y, int2 textureSize)
 *  @brief     Convert RGBA32 to float4 format
 *  @param[in] int x
 *  @param[in] int y

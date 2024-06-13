@@ -1,12 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   $safeitemname$.hpp
+///  @file   JsonReader.hpp
 ///  @brief  temp
-///  @author $username$
-///  @date   $time$
+///  @author toide
+///  @date   2024/06/13 23:19:53
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef $safeitemname$_HPP
-#define $safeitemname$_HPP
+#ifndef JSON_READER_HPP
+#define JSON_READER_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
@@ -21,12 +21,12 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 /****************************************************************************
-*				  			   $safeitemname$
+*				  			   JsonReader
 ****************************************************************************/
-/* @class     $safeitemname$
+/* @class     JsonReader
 *   @brief     temp
 *****************************************************************************/
-class $safeitemname$
+class JsonReader
 {
 public:
 	#pragma region Public Function

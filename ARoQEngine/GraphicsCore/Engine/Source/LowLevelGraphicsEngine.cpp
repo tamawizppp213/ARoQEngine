@@ -48,8 +48,8 @@ LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 #pragma region Main Function
 /****************************************************************************
 *                     Start Up
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
 * 
 *  @brief     Windows api start up lowlevel graphics engine
 * 
@@ -139,8 +139,8 @@ void LowLevelGraphicsEngine::StartUp(GraphicsAPI apiVersion, void* hwnd, void* h
 
 /****************************************************************************
 *                     BeginDrawFrame
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::BeginDrawFrame()
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::BeginDrawFrame()
 * 
 *  @brief     The first call to the Draw function generates the back buffer image and executes the Default render pass.
 * 
@@ -168,8 +168,8 @@ void LowLevelGraphicsEngine::BeginDrawFrame()
 
 /****************************************************************************
 *                     EndDrawFrame
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::EndDrawFrame()
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::EndDrawFrame()
 * 
 *  @brief     Call at the end of the Draw function to execute the command list and Flip the Swapchain. 
 * 
@@ -223,8 +223,8 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 
 /****************************************************************************
 *                     FlushCommandQueue
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType type)
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType type)
 *
 *  @brief     Execute command queue 
 *
@@ -279,8 +279,8 @@ void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandLi
 
 /****************************************************************************
 *                     OnResize
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHeight)
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHeight)
 * 
 *  @brief     Resize swapchain
 * 
@@ -327,8 +327,8 @@ void LowLevelGraphicsEngine::BeginSwapchainRenderPass()
 
 /****************************************************************************
 *                     ShutDown
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::ShutDown()
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::ShutDown()
 *
 *  @brief     Release all render resources
 *
@@ -385,8 +385,8 @@ void LowLevelGraphicsEngine::ShutDown()
 #pragma region SetUp
 /****************************************************************************
 *                     SetUpHeap
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::SetUpHeap()
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::SetUpHeap()
 * 
 *  @brief     Prepare Logical Device's Default Heap. (Each size is defined by this class static variables X_DESC_COUNT)
 * 
@@ -423,8 +423,8 @@ void LowLevelGraphicsEngine::SetUpFence()
 }
 /****************************************************************************
 *                     SetUpRenderResource
-*************************************************************************//**
-*  @fn        void LowLevelGraphicsEngine::SetUpRenderResource()
+****************************************************************************/
+/* @fn        void LowLevelGraphicsEngine::SetUpRenderResource()
 * 
 *  @brief     Prepare render pass and frame buffer
 * 

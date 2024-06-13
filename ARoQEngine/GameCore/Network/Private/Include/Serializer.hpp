@@ -27,8 +27,8 @@ namespace gc
 	
 	/****************************************************************************
 	*				  			 Serializer
-	*************************************************************************//**
-	*  @class     Serializer
+	****************************************************************************/
+	/* @class     Serializer
 	*  @brief     serialize data 
 	*****************************************************************************/
 	class Serializer
@@ -84,8 +84,8 @@ namespace gc
 
 	/****************************************************************************
 	*                      Serialize
-	*************************************************************************//**
-	*  @fn        template <typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
+	****************************************************************************/
+	/* @fn        template <typename T> requires std::is_integral_v<T> || std::is_floating_point_v<T>
 	              void Serializer::Serialize(const T element) 
 	*
 	*  @brief     Serialize (T type -> std::vector<std::uint8_t>)
@@ -103,8 +103,8 @@ namespace gc
 
 	/****************************************************************************
 	*                      Deserialize
-	*************************************************************************//**
-	*  @fn        template <typename T> T Serializer::Deserialize()
+	****************************************************************************/
+	/* @fn        template <typename T> T Serializer::Deserialize()
 	*
 	*  @brief     Deserialize (Read) value
 	*

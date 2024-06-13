@@ -55,8 +55,8 @@ Sobel::~Sobel()
 #pragma region Main Function
 /****************************************************************************
 *							OnResize
-*************************************************************************//**
-*  @fn        void Sobel::OnResize(int newWidth, int newHeight)
+****************************************************************************/
+/* @fn        void Sobel::OnResize(int newWidth, int newHeight)
 * 
 *  @brief     OnResize
 * 
@@ -73,8 +73,8 @@ void Sobel::OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight
 
 /****************************************************************************
 *							Draw
-*************************************************************************//**
-*  @fn        void Draw(const ResourceViewPtr& sourceSRV)
+****************************************************************************/
+/* @fn        void Draw(const ResourceViewPtr& sourceSRV)
 *
 *  @brief     Draw sobel filter. 
 *
@@ -126,8 +126,8 @@ void Sobel::SetColor(const gm::Float4& color)
 #pragma region SetUp Function
 /****************************************************************************
 *							PrepareOutlineInfo
-*************************************************************************//**
-*  @fn        void Sobel::PrepareOutlineInfo(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Sobel::PrepareOutlineInfo(const gu::tstring& name)
 *
 *  @brief     Prepare outline info structure and GPU buffer
 *
@@ -155,8 +155,8 @@ void Sobel::PrepareOutlineInfo(const gu::tstring& name)
 
 /****************************************************************************
 *							PrepareResourceView
-*************************************************************************//**
-*  @fn        void Sobel::PrepareResourceView()
+****************************************************************************/
+/* @fn        void Sobel::PrepareResourceView()
 *
 *  @brief     Prepare SRV and UAV
 *
@@ -180,8 +180,8 @@ void Sobel::PrepareResourceView()
 
 /****************************************************************************
 *							PreparePipelineState
-*************************************************************************//**
-*  @fn        void Sobel::PreparePipelineState(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void Sobel::PreparePipelineState(const gu::tstring& name)
 *
 *  @brief     Prepare Compute pipeline state
 *

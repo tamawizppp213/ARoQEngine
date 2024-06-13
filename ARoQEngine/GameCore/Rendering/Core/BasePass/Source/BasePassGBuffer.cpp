@@ -84,8 +84,8 @@ void GBuffer::Draw(const GPUResourceViewPtr& scene)
 #pragma region Set up Function
 /****************************************************************************
 *                          PreparePipelineState
-*************************************************************************//**
-*  @fn        void GBuffer::PreparePipelineState(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void GBuffer::PreparePipelineState(const gu::tstring& name)
 *
 *  @brief     Prepare pipeline state
 *
@@ -143,8 +143,8 @@ void GBuffer::PreparePipelineState(const gu::tstring& name)
 
 /****************************************************************************
 *                          PrepareFrameBuffers
-*************************************************************************//**
-*  @fn        void ZPrepass::PrepareFrameBuffers()
+****************************************************************************/
+/* @fn        void ZPrepass::PrepareFrameBuffers()
 *
 *  @brief     Prepare render resources. (renderPass, frameCount's frame buffers)
 *

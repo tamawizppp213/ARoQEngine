@@ -83,8 +83,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*				  			   GMSimdMatrix128SSE
-	*************************************************************************//**
-	*  @class     GMSimdMatrix128SSE
+	****************************************************************************/
+	/* @class     GMSimdMatrix128SSE
 	*  @brief     temp
 	*****************************************************************************/
 	class Matrix128Utility
@@ -352,8 +352,8 @@ namespace gm::simd::sse
 	#pragma region Setter
 	/****************************************************************************
 	*                       Identity
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Identity() noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Identity() noexcept
 	*
 	*  @brief     単位行列
 	*
@@ -368,8 +368,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       Identity
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Set(
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Set(
 	    const float m00, const float m01, const float m02, const float m03,
 		const float m10, const float m11, const float m12, const float m13,
 		const float m20, const float m21, const float m22, const float m23,
@@ -412,8 +412,8 @@ namespace gm::simd::sse
 	#pragma region Operator
 	/****************************************************************************
 	*                       Add
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	*
 	*  @brief     加算
 	*
@@ -435,8 +435,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       Subtract
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Subtract(ConstMatrix128 left, ConstMatrix128 right) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Subtract(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	*
 	*  @brief     減算
 	*
@@ -458,8 +458,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       Multiply
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	*
 	*  @brief     掛け算
 	*
@@ -541,8 +541,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       Transpose
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Transpose(ConstMatrix128 left, ConstMatrix128 right) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Transpose(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	*
 	*  @brief     転置
 	*
@@ -576,8 +576,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       Inverse
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Inverse(ConstMatrix128 matrix, float* determinant) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Inverse(ConstMatrix128 matrix, float* determinant) noexcept
 	*
 	*  @brief     行列
 	*
@@ -712,8 +712,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       Determinant
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Determinant(ConstMatrix128 left, ConstMatrix128 right) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Determinant(ConstMatrix128 left, ConstMatrix128 right) noexcept
 	*
 	*  @brief     行列式
 	*
@@ -857,8 +857,8 @@ namespace gm::simd::sse
 	#pragma region Math
 	/****************************************************************************
 	*                       IsIdentity
-	*************************************************************************//**
-	*  @fn        inline bool SIMD_CALL_CONVENTION Matrix128Utility::IsIdentity(ConstMatrix128 matrix) noexcept
+	****************************************************************************/
+	/* @fn        inline bool SIMD_CALL_CONVENTION Matrix128Utility::IsIdentity(ConstMatrix128 matrix) noexcept
 	*
 	*  @brief     単位行列であるかどうかを調べます
 	*
@@ -880,8 +880,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       Translation
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Translation(const float offsetX, const float offsetY, const float offsetZ) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Translation(const float offsetX, const float offsetY, const float offsetZ) noexcept
 	*
 	*  @brief     並進移動用の行列を作成します.
 	*
@@ -904,8 +904,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       Translation
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Translation(const float offsetX, const float offsetY, const float offsetZ) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Translation(const float offsetX, const float offsetY, const float offsetZ) noexcept
 	*
 	*  @brief     並進移動用の行列を作成します.
 	*
@@ -926,8 +926,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       Scaling
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Scaling(const float scaleX, const float scaleY, const float scaleZ) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Scaling(const float scaleX, const float scaleY, const float scaleZ) noexcept
 	*
 	*  @brief     スケーリング用の行列を作成します.
 	*
@@ -950,8 +950,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       Scaling
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Scaling(Vector128Utility::ConstVector128 scale) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Scaling(Vector128Utility::ConstVector128 scale) noexcept
 	*
 	*  @brief     スケーリング用の行列を作成します.
 	*
@@ -1016,8 +1016,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       RotationX
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationX(const float radian) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationX(const float radian) noexcept
 	*
 	*  @brief     X軸に対してrad単位で角度を回転します
 	*
@@ -1052,8 +1052,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       RotationY
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationX(const float radian) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationX(const float radian) noexcept
 	*
 	*  @brief     X軸に対してrad単位で角度を回転します
 	*
@@ -1088,8 +1088,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       RotationZ
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationX(const float radian) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationX(const float radian) noexcept
 	*
 	*  @brief     X軸に対してrad単位で角度を回転します
 	*
@@ -1125,8 +1125,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       RotationRollPitchYaw
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationX(const float radian) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationX(const float radian) noexcept
 	*
 	*  @brief     ロー(y axis)、ピッチ(x-axis)、ヨー(z-axis)を使ってrad単位で角度を回転します
 	*
@@ -1143,8 +1143,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       RotationRollPitchYaw
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationRollPitchYaw(Vector128Utility::ConstVector128 radian) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationRollPitchYaw(Vector128Utility::ConstVector128 radian) noexcept
 	*
 	*  @brief     ロー(y axis)、ピッチ(x-axis)、ヨー(z-axis)を使ってrad単位で角度を回転します
 	*
@@ -1190,8 +1190,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       RotationNormal
-	*************************************************************************//**
-	*  @fn       inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationNormal(Vector128Utility::ConstVector128 normalAxis, const float radian) noexcept
+	****************************************************************************/
+	/* @fn       inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationNormal(Vector128Utility::ConstVector128 normalAxis, const float radian) noexcept
 	*
 	*  @brief     法線方向を中心にrad単位で角度を回転します
 	*
@@ -1251,8 +1251,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       RotationAxis
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationRollPitchYaw(Vector128Utility::ConstVector128 radian) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationRollPitchYaw(Vector128Utility::ConstVector128 radian) noexcept
 	*
 	*  @brief     ある軸を中心にrad単位で角度を回転します
 	*
@@ -1271,8 +1271,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       RotationQuaternion
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationRollPitchYaw(Vector128Utility::ConstVector128 radian) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::RotationRollPitchYaw(Vector128Utility::ConstVector128 radian) noexcept
 	*
 	*  @brief     クォータニオンを使ってrad単位で角度を回転します
 	*
@@ -1337,9 +1337,9 @@ namespace gm::simd::sse
 		return vResult;
 	}
 
-	///*----------------------------------------------------------------------
-	//*  @brief : 影の変換行列を作成します.
-	///*----------------------------------------------------------------------*/
+	//*----------------------------------------------------------------------
+	/*  @brief : 影の変換行列を作成します.
+	//*----------------------------------------------------------------------*/
 	//inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::Shadow(Vector128Utility::ConstVector128 shadowPlane, Vector128Utility::ConstVector128 lightPosition) noexcept
 	//{
 	//	static const Vector128u select0001 = { {{ GM_SELECT_0, GM_SELECT_0, GM_SELECT_0, GM_SELECT_1}} };
@@ -1356,8 +1356,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       LookAtLH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookAtLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookAtLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept
 	*
 	*  @brief     FocusPositionに視点を向けるための変換行列を作成します(左手系)
 	*
@@ -1374,8 +1374,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       LookAtRH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookAtRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookAtRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept
 	*
 	*  @brief     FocusPositionに視点を向けるための変換行列を作成します(右手系)
 	*
@@ -1392,8 +1392,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       LookToLH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookToLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookToLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept
 	*
 	*  @brief     視点を対象方向に向けるための変換行列を作成します(左手系)
 	*
@@ -1434,8 +1434,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       LookToRH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookToRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::LookToRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept
 	*
 	*  @brief     視点を対象方向に向けるための変換行列を作成します(右手系)
 	*
@@ -1452,8 +1452,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       PerspectiveLH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::PerspectiveLH(const float viewWidth, const float viewHeight, const float nearZ, const float farZ) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::PerspectiveLH(const float viewWidth, const float viewHeight, const float nearZ, const float farZ) noexcept
 	*
 	*  @brief     透視投影を行うための変換行列を作成します (左手系)
 	*
@@ -1511,8 +1511,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       PerspectiveRH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::PerspectiveRH(const float viewWidth, const float viewHeight, const float nearZ, const float farZ) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::PerspectiveRH(const float viewWidth, const float viewHeight, const float nearZ, const float farZ) noexcept
 	*
 	*  @brief     透視投影を行うための変換行列を作成します (左手系)
 	*
@@ -1570,8 +1570,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       PerspectiveFovLH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::PerspectiveFovLH(const float fovAngleY, const float aspectRatio, const float nearZ, const float farZ) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::PerspectiveFovLH(const float fovAngleY, const float aspectRatio, const float nearZ, const float farZ) noexcept
 	*
 	*  @brief     透視投影を視野角を使って変換する行列を作成します  (左手系)
 	*
@@ -1634,8 +1634,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                       PerspectiveFovRH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::PerspectiveFovRH(const float fovAngleY, const float aspectRatio, const float nearZ, const float farZ) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::PerspectiveFovRH(const float fovAngleY, const float aspectRatio, const float nearZ, const float farZ) noexcept
 	*
 	*  @brief     透視投影を視野角を使って変換する行列を作成します  (右手系)
 	*
@@ -1698,8 +1698,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                      OrthographicLH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::OrthographicLH(const float viewWidth, const float viewHeight, const float nearZ, const float farZ) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::OrthographicLH(const float viewWidth, const float viewHeight, const float nearZ, const float farZ) noexcept
 	*
 	*  @brief     平行投影を視野角を使って変換する行列を作成します  (左手系)
 	*
@@ -1755,8 +1755,8 @@ namespace gm::simd::sse
 
 	/****************************************************************************
 	*                      OrthographicRH
-	*************************************************************************//**
-	*  @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::OrthographicRH(const float viewWidth, const float viewHeight, const float nearZ, const float farZ) noexcept
+	****************************************************************************/
+	/* @fn        inline Matrix128 SIMD_CALL_CONVENTION Matrix128Utility::OrthographicRH(const float viewWidth, const float viewHeight, const float nearZ, const float farZ) noexcept
 	*
 	*  @brief     平行投影を視野角を使って変換する行列を作成します  (右手系)
 	*

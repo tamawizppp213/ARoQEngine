@@ -23,8 +23,8 @@
 
 /****************************************************************************
 *				  			 BitConverter
-*************************************************************************//**
-*  @class     BitConverter
+****************************************************************************/
+/* @class     BitConverter
 *  @brief     Convert default type into  byte vector array
 *****************************************************************************/
 class BitConverter
@@ -64,8 +64,8 @@ protected:
 
 /****************************************************************************
 *                     GetBytes
-*************************************************************************//**
-*  @fn        template<typename T> std::vector<std::uint8_t> BitConverter::GetBytes(const T value, bool isLittleEndian)
+****************************************************************************/
+/* @fn        template<typename T> std::vector<std::uint8_t> BitConverter::GetBytes(const T value, bool isLittleEndian)
 *
 *  @brief     Convert Default type input bytes array
 *
@@ -116,8 +116,8 @@ std::vector<std::uint8_t> BitConverter::GetBytes(const T value)
 
 /****************************************************************************
 *                     GetValue
-*************************************************************************//**
-*  @fn        template<typename T> T BitConverter::GetValue(const std::vector<std::uint8_t>& inputs, const std::uint32_t startOffset, bool isLittleEndian)
+****************************************************************************/
+/* @fn        template<typename T> T BitConverter::GetValue(const std::vector<std::uint8_t>& inputs, const std::uint32_t startOffset, bool isLittleEndian)
 *
 *  @brief     Convert byte array data into T value
 *

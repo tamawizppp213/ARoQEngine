@@ -31,8 +31,8 @@ namespace platform::core
 
 	/****************************************************************************
 	*				  			    PlatformApplication
-	*************************************************************************//**
-	*  @class     PlatformApplication
+	****************************************************************************/
+	/* @class     PlatformApplication
 	*  @brief     This class is the window list manager.
 	*****************************************************************************/
 	class PlatformApplication 

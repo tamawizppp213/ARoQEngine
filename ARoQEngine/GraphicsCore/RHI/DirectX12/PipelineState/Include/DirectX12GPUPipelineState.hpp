@@ -26,8 +26,8 @@ namespace rhi::directX12
 
 	/****************************************************************************
 	*				  			GPUBlendState
-	*************************************************************************//**
-	*  @class     GPUBlendState
+	****************************************************************************/
+	/* @class     GPUBlendState
 	*  @brief     BlendState
 	*****************************************************************************/
 	class GPUGraphicsPipelineState : public rhi::core::GPUGraphicsPipelineState
@@ -72,8 +72,8 @@ namespace rhi::directX12
 
 	/****************************************************************************
 	*				  			GPUBlendState
-	*************************************************************************//**
-	*  @class     GPUBlendState
+	****************************************************************************/
+	/* @class     GPUBlendState
 	*  @brief     BlendState
 	*****************************************************************************/
 	class GPUComputePipelineState : public rhi::core::GPUComputePipelineState

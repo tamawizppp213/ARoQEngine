@@ -171,8 +171,8 @@ bool Parse::Bool(const tstring& stream, const tstring& match, bool& value)
 
 /****************************************************************************
 *                       Contains
-*************************************************************************//**
-*  @fn        bool Contains(const tstring& stream, const tstring& parameter);
+****************************************************************************/
+/* @fn        bool Contains(const tstring& stream, const tstring& parameter);
 *
 *  @brief     •¶š—ñ‘S‘Ì‚ğ’T‚µ, Parameter–¼‚ª•¶š—ñ’†‚ÉŠÜ‚Ü‚ê‚é‚©‚ğŒŸõ‚µ‚Ü‚·
 *

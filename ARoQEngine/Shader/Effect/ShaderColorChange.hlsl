@@ -32,8 +32,8 @@ VertexOut VSMain(VertexIn vertexIn)
 }
 /****************************************************************************
 *                       PSMonochrome
-*************************************************************************//**
-*  @fn        float4 PSMonochrome(VertexOut input) : SV_TARGET
+****************************************************************************/
+/* @fn        float4 PSMonochrome(VertexOut input) : SV_TARGET
 *  @brief     Monochrome post effect
 *  @param[in] void
 *  @return 　　float4
@@ -46,8 +46,8 @@ float4 PSMonochrome(VertexOut input) : SV_TARGET
 }
 /****************************************************************************
 *                       PSSepia
-*************************************************************************//**
-*  @fn        float4 PSSepia(VertexOut input) : SV_TARGET
+****************************************************************************/
+/* @fn        float4 PSSepia(VertexOut input) : SV_TARGET
 *  @brief     Sepia post effect
 *  @param[in] void
 *  @return 　　float4
@@ -64,8 +64,8 @@ float4 PSSepia(VertexOut input) : SV_TARGET
 }
 /****************************************************************************
 *                       PSGrayScale
-*************************************************************************//**
-*  @fn        float4 PSGrayScale(VertexOut input) : SV_TARGET
+****************************************************************************/
+/* @fn        float4 PSGrayScale(VertexOut input) : SV_TARGET
 *  @brief     Gray scale post effect
 *  @param[in] void
 *  @return 　　float4
@@ -78,8 +78,8 @@ float4 PSGrayScale(VertexOut input) : SV_TARGET
 }
 /****************************************************************************
 *                       PSBinary
-*************************************************************************//**
-*  @fn        float4 PSBinary(VertexOut input) : SV_TARGET
+****************************************************************************/
+/* @fn        float4 PSBinary(VertexOut input) : SV_TARGET
 *  @brief     Binary post effect
 *  @param[in] void
 *  @return 　　float4
@@ -95,8 +95,8 @@ float4 PSBinary(VertexOut input) : SV_TARGET
 }
 /****************************************************************************
 *                       PSInvert
-*************************************************************************//**
-*  @fn        float4 PSInvert(VertexOut input) : SV_TARGET
+****************************************************************************/
+/* @fn        float4 PSInvert(VertexOut input) : SV_TARGET
 *  @brief     Invert post effect
 *  @param[in] void
 *  @return 　　float4

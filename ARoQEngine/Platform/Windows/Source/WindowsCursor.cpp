@@ -50,8 +50,8 @@ ICursor::~ICursor()
 #pragma region Main Function
 /****************************************************************************
 *                     Show
-*************************************************************************//**
-*  @fn        void ICursor::Show()
+****************************************************************************/
+/* @fn        void ICursor::Show()
 *
 *  @brief     Show cursor
 *
@@ -66,8 +66,8 @@ void ICursor::Show()
 
 /****************************************************************************
 *                     Hide
-*************************************************************************//**
-*  @fn        void ICursor::Hide()
+****************************************************************************/
+/* @fn        void ICursor::Hide()
 *
 *  @brief     Hide cursor
 *
@@ -82,8 +82,8 @@ void ICursor::Hide()
 
 /****************************************************************************
 *                     Lock
-*************************************************************************//**
-*  @fn        void ICursor::Lock(core::Rectangle* rectangle)
+****************************************************************************/
+/* @fn        void ICursor::Lock(core::Rectangle* rectangle)
 *
 *  @brief     カーソルを領域内だけでしか動かせないようにします
 *
@@ -99,8 +99,8 @@ bool ICursor::Lock(core::Rectangle* rectangle)
 
 /****************************************************************************
 *                     CreateCursorFromFile
-*************************************************************************//**
-*  @fn        void* ICursor::CreateCursorFromFile(const gu::char8* filePath, const gm::Float2 inHotSpot)
+****************************************************************************/
+/* @fn        void* ICursor::CreateCursorFromFile(const gu::char8* filePath, const gm::Float2 inHotSpot)
 *
 *  @brief     ファイルを読み込んでカーソルを使用します. 
 *             現在.curのみ受付可能です. 
@@ -118,8 +118,8 @@ void* ICursor::CreateCursorFromFile(const char* filePath)
 
 /****************************************************************************
 *                     CreateCursorFromRGBABuffer
-*************************************************************************//**
-*  @fn        void* ICursor::CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int32 width, const gu::int32 height)
+****************************************************************************/
+/* @fn        void* ICursor::CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int32 width, const gu::int32 height)
 *
 *  @brief     RGBAの構造体から直接アイコンを作成します
 *
@@ -176,8 +176,8 @@ void* ICursor::CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int3
 
 /****************************************************************************
 *                     GetType
-*************************************************************************//**
-*  @fn        core::CursorType ICursor::GetType() const 
+****************************************************************************/
+/* @fn        core::CursorType ICursor::GetType() const 
 *
 *  @brief     Return cursor type
 *
@@ -192,8 +192,8 @@ core::CursorType ICursor::GetType() const
 
 /****************************************************************************
 *                     GetSize
-*************************************************************************//**
-*  @fn        void ICursor::GetSize(gu::int32& width, gu::int32& height) const
+****************************************************************************/
+/* @fn        void ICursor::GetSize(gu::int32& width, gu::int32& height) const
 *
 *  @brief     Return cursor size
 *
@@ -236,8 +236,8 @@ void ICursor::GetSize(gu::int32& width, gu::int32& height) const
 
 /****************************************************************************
 *                     SetType
-*************************************************************************//**
-*  @fn        void ICursor::SetType(const core::CursorType type)
+****************************************************************************/
+/* @fn        void ICursor::SetType(const core::CursorType type)
 *
 *  @brief     Set cursor type
 *
@@ -314,8 +314,8 @@ void ICursor::SetType(const core::CursorType type)
 
 /****************************************************************************
 *                     GetPosition
-*************************************************************************//**
-*  @fn        gm::Float2 ICursor::GetPosition() const
+****************************************************************************/
+/* @fn        gm::Float2 ICursor::GetPosition() const
 *
 *  @brief     Get cursor position in the monitor
 *
@@ -333,8 +333,8 @@ gm::Float2 ICursor::GetPosition() const
 
 /****************************************************************************
 *                     SetPosition
-*************************************************************************//**
-*  @fn        void ICursor::SetPosition() const
+****************************************************************************/
+/* @fn        void ICursor::SetPosition() const
 *
 *  @brief     Set cursor position in the monitor
 *

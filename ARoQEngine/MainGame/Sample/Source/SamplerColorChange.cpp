@@ -48,8 +48,8 @@ SampleColorChange::~SampleColorChange()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleColorChange::Initialize( const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleColorChange::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in]  const GameTimerPtr& gameTimer
 *  @return 　　void
@@ -60,8 +60,8 @@ void SampleColorChange::Initialize(const PPPEnginePtr& engine, const GameTimerPt
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleColorChange::Update()
+****************************************************************************/
+/* @fn        void SampleColorChange::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -74,8 +74,8 @@ void SampleColorChange::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleSky::Draw()
+****************************************************************************/
+/* @fn        void SampleSky::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -109,8 +109,8 @@ void SampleColorChange::Draw()
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleColorChange::Terminate()
+****************************************************************************/
+/* @fn        void SampleColorChange::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -133,8 +133,8 @@ void SampleColorChange::Terminate()
 
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleColorChange::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleColorChange::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
@@ -193,8 +193,8 @@ void SampleColorChange::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleColorChange::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleColorChange::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -244,8 +244,8 @@ void SampleColorChange::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleColorChange::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleColorChange::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -266,8 +266,8 @@ void SampleColorChange::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleColorChange::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleColorChange::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void

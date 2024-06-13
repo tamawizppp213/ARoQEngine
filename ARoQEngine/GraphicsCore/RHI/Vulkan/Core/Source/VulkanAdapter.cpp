@@ -98,8 +98,8 @@ gu::SharedPointer<core::RHIDevice> RHIDisplayAdapter::CreateDevice()
 
 /****************************************************************************
 *                     PrintInfo
-*************************************************************************//**
-*  @fn        void RHIAdapter::PrintInfo()
+****************************************************************************/
+/* @fn        void RHIAdapter::PrintInfo()
 * 
 *  @brief     物理デバイスの名前とスペックを出力に表示します@n
 *             基本的に実行時のログとして使用するものになります. @n
@@ -134,8 +134,8 @@ void RHIDisplayAdapter::PrintInfo() const
 
 /****************************************************************************
 *                     GetProperties
-*************************************************************************//**
-*  @fn        VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const 
+****************************************************************************/
+/* @fn        VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const 
 * 
 *  @brief     Return device properties struct
 * 
@@ -153,8 +153,8 @@ VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const noexcept
 
 /****************************************************************************
 *                     GetLimits
-*************************************************************************//**
-*  @fn        VkPhysicalDeviceLimits RHIDisplayAdapter::GetLimits() const noexcept
+****************************************************************************/
+/* @fn        VkPhysicalDeviceLimits RHIDisplayAdapter::GetLimits() const noexcept
 *
 *  @brief     Return device limit
 *
@@ -169,8 +169,8 @@ VkPhysicalDeviceLimits RHIDisplayAdapter::GetLimits() const noexcept
 
 /****************************************************************************
 *                     GetFormatProperties
-*************************************************************************//**
-*  @fn        VkFormatProperties RHIDisplayAdapter::GetFormatProperties(const VkFormat format) const noexcept
+****************************************************************************/
+/* @fn        VkFormatProperties RHIDisplayAdapter::GetFormatProperties(const VkFormat format) const noexcept
 *
 *  @brief     Return device format properties struct
 *
@@ -187,8 +187,8 @@ VkFormatProperties RHIDisplayAdapter::GetFormatProperties(const VkFormat format)
 
 /****************************************************************************
 *                     GetSupport
-*************************************************************************//**
-*  @fn        VkPhysicalDeviceFeatures RHIDisplayAdapter::GetSupports() const noexcept
+****************************************************************************/
+/* @fn        VkPhysicalDeviceFeatures RHIDisplayAdapter::GetSupports() const noexcept
 * 
 *  @brief     Return physical device support contents
 * 
@@ -205,8 +205,8 @@ VkPhysicalDeviceFeatures RHIDisplayAdapter::GetSupports() const noexcept
 
 /****************************************************************************
 *                     GetMemoryProperties
-*************************************************************************//**
-*  @fn        VkPhysicalDeviceMemoryProperties RHIDisplayAdapter::GetMemoryProperties() const noexcept
+****************************************************************************/
+/* @fn        VkPhysicalDeviceMemoryProperties RHIDisplayAdapter::GetMemoryProperties() const noexcept
 *
 *  @brief     Return physical device memory property
 *
@@ -223,8 +223,8 @@ VkPhysicalDeviceMemoryProperties RHIDisplayAdapter::GetMemoryProperties() const 
 
 /****************************************************************************
 *                     GetExtensionProperties
-*************************************************************************//**
-*  @fn        VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const
+****************************************************************************/
+/* @fn        VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const
 * 
 *  @brief     Return extension name and spec version
 * 
@@ -249,8 +249,8 @@ gu::DynamicArray<VkExtensionProperties> RHIDisplayAdapter::GetExtensionPropertie
 
 /****************************************************************************
 *                     GetExtensionNameList
-*************************************************************************//**
-*  @fn        gu::DynamicArray<const char*> RHIDisplayAdapter::GetExtensionNameList() const noexcept
+****************************************************************************/
+/* @fn        gu::DynamicArray<const char*> RHIDisplayAdapter::GetExtensionNameList() const noexcept
 * 
 *  @brief     Return all extension name list. 
 * 
@@ -277,8 +277,8 @@ gu::DynamicArray<gu::string> RHIDisplayAdapter::GetExtensionNameList() const noe
 
 /****************************************************************************
 *                     GetExtensionProperties
-*************************************************************************//**
-*  @fn        VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const
+****************************************************************************/
+/* @fn        VkPhysicalDeviceProperties RHIDisplayAdapter::GetProperties() const
 * 
 *  @brief     Return extension name and spec version
 * 

@@ -48,8 +48,8 @@ GameObject::~GameObject()
 #pragma region Find Function 
 /****************************************************************************
 *                          Find
-*************************************************************************//**
-*  @fn        GameObject* GameObject::Find(const gu::string& name)
+****************************************************************************/
+/* @fn        GameObject* GameObject::Find(const gu::string& name)
 * 
 *  @brief     This function returns the gameObject with the same name as the assign name.
 * 
@@ -71,8 +71,8 @@ GameObject::GameObjectPtr GameObject::Find(const gu::tstring& name)
 
 /****************************************************************************
 *                          GameObjectsWithTag
-*************************************************************************//**
-*  @fn        gu::DynamicArray<GameObject*> GameObject::GameObjectsWithTag(const gu::string& tag)
+****************************************************************************/
+/* @fn        gu::DynamicArray<GameObject*> GameObject::GameObjectsWithTag(const gu::string& tag)
 * 
 *  @brief     This function returns the gameObject list with the same tag as the assign tag.
 * 
@@ -100,8 +100,8 @@ gu::DynamicArray<GameObject::GameObjectPtr> GameObject::GameObjectsWithTag(const
 #pragma region Destroy
 /****************************************************************************
 *                          Destroy
-*************************************************************************//**
-*  @fn        GameObject* GameObject::Destroy(GameObject* gameObject)
+****************************************************************************/
+/* @fn        GameObject* GameObject::Destroy(GameObject* gameObject)
 * 
 *  @brief     (Safe delete ) This function destroy the game object with the same assigned object
 * 
@@ -122,8 +122,8 @@ bool GameObject::Destroy(GameObjectPtr& gameObject)
 
 /****************************************************************************
 *                          DestroyAllTagObject
-*************************************************************************//**
-*  @fn        void GameObject::DestroyAllTagObject(const gu::string& tag)
+****************************************************************************/
+/* @fn        void GameObject::DestroyAllTagObject(const gu::string& tag)
 * 
 *  @brief     This function destroys all objects with the tag
 * 
@@ -152,8 +152,8 @@ void GameObject::DestroyAllTagObjects(const gu::tstring& tag)
 
 /****************************************************************************
 *                          DestroyWithChildren
-*************************************************************************//**
-*  @fn        void GameObject::DestroyWithChildren(GameObjectPtr& gameObject)
+****************************************************************************/
+/* @fn        void GameObject::DestroyWithChildren(GameObjectPtr& gameObject)
 * 
 *  @brief     This function destroys gameObjects including child objects.
 * 
@@ -174,8 +174,8 @@ void GameObject::DestroyWithChildren(GameObjectPtr& gameObject)
 
 /****************************************************************************
 *                          RemoveChild
-*************************************************************************//**
-*  @fn        bool GameObject::RemoveChild(GameObject* child)
+****************************************************************************/
+/* @fn        bool GameObject::RemoveChild(GameObject* child)
 *
 *  @brief     This function removes child gameObject
 *
@@ -203,8 +203,8 @@ bool GameObject::RemoveChild(GameObjectPtr& child)
 
 /****************************************************************************
 *                          ClearChildren
-*************************************************************************//**
-*  @fn        bool GameObject::ClearChildren()
+****************************************************************************/
+/* @fn        bool GameObject::ClearChildren()
 *
 *  @brief     This function clears children object.
 *
@@ -220,8 +220,8 @@ void GameObject::ClearChildren()
 
 /****************************************************************************
 *                          ClearAllGameObjects
-*************************************************************************//**
-*  @fn        bool GameObject::ClearAllGameObjects()
+****************************************************************************/
+/* @fn        bool GameObject::ClearAllGameObjects()
 *
 *  @brief     Clear all game objects.
 *
@@ -240,8 +240,8 @@ void GameObject::ClearAllGameObjects()
 #pragma region Component Function 
 ///****************************************************************************
 //*                          AddComponent
-//*************************************************************************//**
-//*  @fn        void GameObject::AddComponent(Component* component)
+//****************************************************************************/
+///* @fn        void GameObject::AddComponent(Component* component)
 //*  @brief     Add GameComponent
 //*  @param[in] Component* component
 //*  @return 　　void
@@ -265,8 +265,8 @@ void GameObject::ClearAllGameObjects()
 //}
 ///****************************************************************************
 //*                          RemoveComponent
-//*************************************************************************//**
-//*  @fn        void GameObject::RemoveComponent(Component* component)
+//****************************************************************************/
+///* @fn        void GameObject::RemoveComponent(Component* component)
 //*  @brief     Remove GameComponent. (Erase same component )
 //*  @param[in] Component* component
 //*  @return 　　void

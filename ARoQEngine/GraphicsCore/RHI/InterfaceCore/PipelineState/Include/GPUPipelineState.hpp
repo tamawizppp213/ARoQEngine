@@ -31,8 +31,8 @@ namespace rhi::core
 	class RHIDevice;
 	/****************************************************************************
 	*				  			RHIPipelineState
-	*************************************************************************//**
-	*  @class     RHIPipelineState
+	****************************************************************************/
+	/* @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
 	class GPUBasePipelineState : public gu::NonCopyable
@@ -75,8 +75,8 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			RHIPipelineState
-	*************************************************************************//**
-	*  @class     RHIPipelineState
+	****************************************************************************/
+	/* @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
 	class GPUGraphicsPipelineState : public GPUBasePipelineState
@@ -171,8 +171,8 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			GPUComputePipelineState
-	*************************************************************************//**
-	*  @class     GPUComputePipelineState
+	****************************************************************************/
+	/* @class     GPUComputePipelineState
 	*  @brief     Compute PipelineState
 	*****************************************************************************/
 	class GPUComputePipelineState : public GPUBasePipelineState
@@ -213,8 +213,8 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			RHIPipelineState
-	*************************************************************************//**
-	*  @class     RHIPipelineState
+	****************************************************************************/
+	/* @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
 	class GPURayTracingPipelineState : public GPUBasePipelineState

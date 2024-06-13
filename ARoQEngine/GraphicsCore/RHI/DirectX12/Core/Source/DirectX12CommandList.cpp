@@ -84,7 +84,7 @@ RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& de
 #pragma region Call Draw Frame
 /****************************************************************************
 *                     BeginRecording
-*************************************************************************//**
+****************************************************************************/
 /* @brief     コマンドリストを記録状態に変更します. これはDraw関数の最初に使用します @n
 *  @param[in] 描画フレーム中に呼ばれる場合にコマンドアロケータの中身をResetするかを決定するbool値.@n
 *             描画フレーム中に呼ぶのは, コマンドリストを切り替える際に使用される可能性があるためです.
@@ -119,7 +119,7 @@ void RHICommandList::BeginRecording(const bool stillMidFrame)
 
 /****************************************************************************
 *                     EndRecording
-*************************************************************************//**
+****************************************************************************/
 /*  @brief     コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
 * 
 *  @param[in] void
@@ -147,8 +147,8 @@ void RHICommandList::EndRecording()
 
 /****************************************************************************
 *                     Reset
-*************************************************************************//**
-*  @fn        void RHICommandList::Reset(const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator)
+****************************************************************************/
+/* @fn        void RHICommandList::Reset(const gu::SharedPointer<rhi::core::RHICommandAllocator>& commandAllocator)
 *
 *  @brief     Proceed to the record state. コマンドリストを記録状態に変更します.
 		      基本的には, ResetではなくBeginRecordingを使用してください.
@@ -197,8 +197,8 @@ void RHICommandList::Reset(const gu::SharedPointer<rhi::core::RHICommandAllocato
 
 /****************************************************************************
 *                     BeginRenderPass
-*************************************************************************//**
-*  @fn        void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer)
+****************************************************************************/
+/* @fn        void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer)
 *
 *  @brief     Begin render pass and frame buffer.
 *
@@ -235,8 +235,8 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 
 /****************************************************************************
 *                     EndRenderPass
-*************************************************************************//**
-*  @fn        void RHICommandList::EndRenderPass()
+****************************************************************************/
+/* @fn        void RHICommandList::EndRenderPass()
 *
 *  @brief     End render pass
 *
@@ -267,7 +267,7 @@ void RHICommandList::EndRenderPass()
 #pragma region GPU Command
 /****************************************************************************
 *                       SetDepthBounds
-*************************************************************************//**
+****************************************************************************/
 /* @brief     深度が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させます.
 *  
 *  @param[in] const float 最小の深度情報
@@ -294,8 +294,8 @@ void RHICommandList::SetDescriptorHeap(const gu::SharedPointer<core::RHIDescript
 #pragma region Query
 /****************************************************************************
 *                       BeginQuery
-*************************************************************************//**
-*  @fn        void RHICommandList::BeginQuery(const core::QueryResultLocation& location)
+****************************************************************************/
+/* @fn        void RHICommandList::BeginQuery(const core::QueryResultLocation& location)
 *
 *  @brief     GPU情報を取得するためのクエリを開始します
 *
@@ -329,8 +329,8 @@ void RHICommandList::BeginQuery(const core::QueryResultLocation& location)
 
 /****************************************************************************
 *                       EndQuery
-*************************************************************************//**
-*  @fn        void RHICommandList::EndQuery(const core::QueryResultLocation& location)
+****************************************************************************/
+/* @fn        void RHICommandList::EndQuery(const core::QueryResultLocation& location)
 *
 *  @brief     GPU情報を取得するためのクエリを終了します
 *
@@ -349,7 +349,7 @@ void RHICommandList::EndQuery(const core::QueryResultLocation& location)
 #pragma endregion Query
 /****************************************************************************
 *                       SetPrimitiveTopology
-*************************************************************************//**
+****************************************************************************/
 /* @brief    頂点情報のつなぎ方を設定します. 
 * 
 *  @param[in] プリミティブのトポロジー種類
@@ -363,7 +363,7 @@ void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology
 
 /****************************************************************************
 *                       SetViewport
-*************************************************************************//**
+****************************************************************************/
 /*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
 *  @param[in] const core::Viewport* : 描画領域を示す単一のビューポート
 *  @return 　　void
@@ -396,7 +396,7 @@ void RHICommandList::SetViewport(const core::Viewport& viewport)
 
 /****************************************************************************
 *                       SetViewport
-*************************************************************************//**
+****************************************************************************/
 /*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します
 *  @param[in] const core::Viewport* : 描画領域を記述した配列, もしくは単一のViewportのアドレス
 *  @param[in] const gu::uint32 : ビューポートの配列数
@@ -429,7 +429,7 @@ void RHICommandList::SetViewport(const core::Viewport* viewport, const gu::uint3
 
 /****************************************************************************
 *                       SetViewport
-*************************************************************************//**
+****************************************************************************/
 /* @brief     VRのような立体視を行う時に設定する描画領域です
 * 
 *  @param[in] const core::Viewport& 左側の視野を示す描画領域
@@ -467,7 +467,7 @@ void RHICommandList::SetStereoViewport(const core::Viewport& leftView, const cor
 
 /****************************************************************************
 *                       SetScissorRect
-*************************************************************************//**
+****************************************************************************/
 /*  @brief     ビューポート内で実際に描画される領域を制限するためのシザー矩形を手動で設定します.
 * 
 *  @param[in] const core::ScissorRect* : 描画領域を制限するためのシザー矩形の配列
@@ -490,7 +490,7 @@ void RHICommandList::SetScissor(const core::ScissorRect* rect, const gu::uint32 
 
 /****************************************************************************
 *                       SetViewportAndScissor
-*************************************************************************//**
+****************************************************************************/
 /* @brief     描画領域を示すビューポートと, その中で実際に描画される範囲を指定するシザー矩形をそれぞれ手動で設定します.
 * 
 *  @param[in] const core::Viewport& 描画領域を示すビューポート
@@ -677,7 +677,7 @@ void RHICommandList::FlushResourceBarriers()
 #pragma region Copy 
 /****************************************************************************
 *                     CopyResource
-*************************************************************************//**
+****************************************************************************/
 /* @brief   あるリソースの領域をまとめて別のリソースにコピーする.
 *           組み合わせに応じて自動でバッファかテクスチャかを判定します.
 *
@@ -693,7 +693,7 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUTexture>& des
 
 /****************************************************************************
 *                     CopyResource
-*************************************************************************//**
+****************************************************************************/
 /* @brief     あるリソースの領域をまとめて別のリソースにコピーする. 
 *           組み合わせに応じて自動でバッファかテクスチャかを判定します
 *
@@ -738,7 +738,7 @@ void RHICommandList::CopyResource(const gu::SharedPointer<core::GPUResource>& de
 
 /****************************************************************************
 *                     CopyBufferRegion
-*************************************************************************//**
+****************************************************************************/
 /*  @brief     GPUバッファの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
 *
 *  @param[in] const gu::SharedPointer<core::GPUBuffer> : コピー先のバッファ
@@ -795,7 +795,7 @@ void RHICommandList::CopyBufferRegion(const gu::SharedPointer<core::GPUBuffer>& 
 
 /****************************************************************************
 *                     CopyTextureRegion
-*************************************************************************//**
+****************************************************************************/
 /*  @brief     GPUテクスチャの領域をあるGPUポインタから別のGPUポインタにコピーを行う. GPU版のmemcpy
 *
 *  @param[in] const gu::SharedPointer<core::GPUTexture> : コピー先のテクスチャ
@@ -958,8 +958,8 @@ void RHICommandList::SetName(const gu::tstring& name)
 #pragma region Private Function
 /****************************************************************************
 *                     BeginRenderPassImpl
-*************************************************************************//**
-*  @fn        void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer)<directX12::RHIFrameBuffer>& frameBuffer)
+****************************************************************************/
+/* @fn        void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer)<directX12::RHIFrameBuffer>& frameBuffer)
 *  @brief     If you used render pass, this function is called. Set frame buffer (render target and depth stencil) to command buffer.
 *             When you use core::AttachmentLoad::Clear, color or depthStencil frame buffer is cleared.
 *  @param[in] const gu::SharedPointer<directX12::RHIRenderPass>& renderPass
@@ -1039,8 +1039,8 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 
 /****************************************************************************
 *                     OMSetFrameBuffer
-*************************************************************************//**
-*  @fn        void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer)
+****************************************************************************/
+/* @fn        void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRenderPass>& renderPass, const gu::SharedPointer<directX12::RHIFrameBuffer>& frameBuffer)
 *  @brief     If not used render pass, this function is called. Set frame buffer (render target and depth stencil) to command buffer.
 *             When you use core::AttachmentLoad::Clear, color or depthStencil frame buffer is cleared.
 *  @param[in] const gu::SharedPointer<directX12::RHIRenderPass>& renderPass

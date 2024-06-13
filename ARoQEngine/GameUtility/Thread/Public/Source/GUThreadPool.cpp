@@ -60,8 +60,8 @@ ThreadPool::~ThreadPool()
 #pragma region Main Function
 /****************************************************************************
 *                     ExecuteWork
-*************************************************************************//**
-*  @fn        void ThreadPool::ExecuteWork()
+****************************************************************************/
+/* @fn        void ThreadPool::ExecuteWork()
 *
 *  @brief     A worker function to be assigned to each thread in the pool,
 *             Continuously pops tasks out of the queue and execute them, as long as the atomic variable running is set to true.

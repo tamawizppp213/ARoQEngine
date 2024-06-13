@@ -26,8 +26,8 @@ namespace rhi::directX12
 	class RHIDescriptorHeap;
 	/****************************************************************************
 	*				  			RHIFrameBuffer
-	*************************************************************************//**
-	*  @class     RHIFrameBuffer
+	****************************************************************************/
+	/* @class     RHIFrameBuffer
 	*  @brief     Render and Depth Stencil Buffer
 	*****************************************************************************/
 	class RHIFrameBuffer : public rhi::core::RHIFrameBuffer

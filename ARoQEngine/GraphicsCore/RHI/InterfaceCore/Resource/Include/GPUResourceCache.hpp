@@ -34,8 +34,8 @@ namespace rhi::core
 
 	/****************************************************************************
 	*				  			GPUResourceCache
-	*************************************************************************//**
-	*  @class     GPUResourceCache
+	****************************************************************************/
+	/* @class     GPUResourceCache
 	*  @brief     GPUResource loader cache for game application
 	*****************************************************************************/
 	class GPUResourceCache : public gu::NonCopyable

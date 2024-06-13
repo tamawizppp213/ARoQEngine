@@ -27,8 +27,8 @@ float Screen::_onePixelHeight           = 1.0f / DEFAULT_SCREEN_HEIGHT;
 //////////////////////////////////////////////////////////////////////////////////
 /****************************************************************************
 *                       GetScreenWidth
-*************************************************************************//**
-*  @fn        int Screen::GetScreenWidth()
+****************************************************************************/
+/* @fn        int Screen::GetScreenWidth()
 *  @brief     return current screen pixel width
 *  @param[in] void
 *  @return 　　int 
@@ -39,8 +39,8 @@ int Screen::GetScreenWidth()
 }
 /****************************************************************************
 *                       GetScreenHeight
-*************************************************************************//**
-*  @fn        int Screen::GetScreenHeight()
+****************************************************************************/
+/* @fn        int Screen::GetScreenHeight()
 *  @brief     return current screen pixel height
 *  @param[in] void
 *  @return 　　int
@@ -51,8 +51,8 @@ int Screen::GetScreenHeight()
 }
 /****************************************************************************
 *                       GetOnePixelWidth
-*************************************************************************//**
-*  @fn        float Screen::GetOnePixelWidth()
+****************************************************************************/
+/* @fn        float Screen::GetOnePixelWidth()
 *  @brief     return one pixel width
 *  @param[in] void
 *  @return 　　float
@@ -63,8 +63,8 @@ float Screen::GetOnePixelWidth()
 }
 /****************************************************************************
 *                       GetOnePixelHeight
-*************************************************************************//**
-*  @fn        float Screen::GetOnePixelHeight()
+****************************************************************************/
+/* @fn        float Screen::GetOnePixelHeight()
 *  @brief     return one pixel height
 *  @param[in] void
 *  @return 　　float
@@ -75,8 +75,8 @@ float Screen::GetOnePixelHeight()
 }
 /****************************************************************************
 *                       GetFullScreenWidth
-*************************************************************************//**
-*  @fn        float Screen::GetOnePixelWidth()
+****************************************************************************/
+/* @fn        float Screen::GetOnePixelWidth()
 *  @brief     return one pixel height
 *  @param[in] void
 *  @return 　　int
@@ -87,8 +87,8 @@ int Screen::GetFullScreenWidth()
 }
 /****************************************************************************
 *                       GetFullScreenHeight
-*************************************************************************//**
-*  @fn        float Screen::GetOnePixelHeight()
+****************************************************************************/
+/* @fn        float Screen::GetOnePixelHeight()
 *  @brief     return full screen pixel height
 *  @param[in] void
 *  @return 　　int
@@ -99,8 +99,8 @@ int Screen::GetFullScreenHeight()
 }
 /****************************************************************************
 *                       SetFullScreenWidth
-*************************************************************************//**
-*  @fn        float Screen::SetFullScreenWidth(int width)
+****************************************************************************/
+/* @fn        float Screen::SetFullScreenWidth(int width)
 *  @brief     Set Full screen width
 *  @param[in] int width
 *  @return 　　void
@@ -111,8 +111,8 @@ void Screen::SetFullScreenWidth(int width)
 }
 /****************************************************************************
 *                       SetFullScreenHeight
-*************************************************************************//**
-*  @fn        float Screen::SetFullScreenHeight(int height)
+****************************************************************************/
+/* @fn        float Screen::SetFullScreenHeight(int height)
 *  @brief     Set Full screen height
 *  @param[in] int height
 *  @return 　　void
@@ -123,8 +123,8 @@ void Screen::SetFullScreenHeight(int height)
 }
 /****************************************************************************
 *                       SetScreenWidth
-*************************************************************************//**
-*  @fn        float Screen::SetScreenWidth(int width)
+****************************************************************************/
+/* @fn        float Screen::SetScreenWidth(int width)
 *  @brief     Set screen width
 *  @param[in] int width
 *  @return 　　void
@@ -136,8 +136,8 @@ void Screen::SetScreenWidth(int width)
 }
 /****************************************************************************
 *                       SetScreenHeight
-*************************************************************************//**
-*  @fn        float Screen::SetScreenHeight(int height)
+****************************************************************************/
+/* @fn        float Screen::SetScreenHeight(int height)
 *  @brief     Set screen height
 *  @param[in] int height
 *  @return 　　void
@@ -149,8 +149,8 @@ void Screen::SetScreenHeight(int height)
 }
 /****************************************************************************
 *                       GetAspectRatio
-*************************************************************************//**
-*  @fn        float Screen::GetAspectRatio()
+****************************************************************************/
+/* @fn        float Screen::GetAspectRatio()
 *  @brief     Get aspect ratio
 *  @param[in] void
 *  @return 　　float 

@@ -28,8 +28,8 @@ namespace gc::audio
 	class AudioClip;
 	/****************************************************************************
 	*				  		AudioClipCache
-	*************************************************************************//**
-	*  @class     AudioClipCache
+	****************************************************************************/
+	/* @class     AudioClipCache
 	*  @brief     audio clip resource cache. (Basically, This class is used by ResourceManager class.)
 	*****************************************************************************/
 	class AudioClipCache : public gu::NonCopyable

@@ -31,8 +31,8 @@ namespace rhi::core
 	class GPUResourceView;
 	/****************************************************************************
 	*				  			RHIFrameBuffer
-	*************************************************************************//**
-	*  @class     RHIFrameBuffer
+	****************************************************************************/
+	/* @class     RHIFrameBuffer
 	*  @brief     Render and Depth Stencil Buffer
 	*****************************************************************************/
 	class RHIFrameBuffer : public gu::NonCopyable

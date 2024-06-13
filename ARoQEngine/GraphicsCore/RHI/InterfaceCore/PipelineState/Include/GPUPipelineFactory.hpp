@@ -33,8 +33,8 @@ namespace rhi::core
 	class GPUBlendState;
 	/****************************************************************************
 	*				  			RHIPipelineState
-	*************************************************************************//**
-	*  @class     RHIPipelineState
+	****************************************************************************/
+	/* @class     RHIPipelineState
 	*  @brief     PipelineState
 	*****************************************************************************/
 	class GPUPipelineFactory : public gu::NonCopyable

@@ -71,7 +71,7 @@ RHICommandQueue::~RHICommandQueue()
 #pragma region Execute Function
 /****************************************************************************
 *							Wait
-*************************************************************************//**
+****************************************************************************/
 /*  @brief    他のコマンドキューとの実行順序を保証するため, ほかのコマンドキューの実行完了を待つ@n
 *             Fenceが持つWaitはCPU側も処理が止まってしまいますが, @n
 *             CommandQueueのWaitは指定したValue以上の値になるまでGPU内でのみ処理を止めます.
@@ -89,8 +89,8 @@ void RHICommandQueue::Wait(const gu::SharedPointer<core::RHIFence>& fence, gu::u
 
 /****************************************************************************
 *							Signal
-*************************************************************************//**
-*  @brief     Update value when the Command Queue execution completes.
+****************************************************************************/
+/* @brief     Update value when the Command Queue execution completes.
 *             GPU内で処理が完結します.　
 * 
 *  @param[in] const gu::SharedPointer<core::RHIFence>& fence
@@ -107,7 +107,7 @@ void RHICommandQueue::Signal(const gu::SharedPointer<core::RHIFence>& fence, gu:
 
 /****************************************************************************
 *							Execute
-*************************************************************************//**
+****************************************************************************/
 /* @brief     コマンドリストに貯めた内容を実行する. 通常はset graphics, compute, transfer commandlist
 * 
 *  @param[in] GPUのコマンドを貯めたコマンドリスト配列
@@ -137,8 +137,8 @@ void RHICommandQueue::Execute(const gu::DynamicArray<gu::SharedPointer<rhi::core
 
 /****************************************************************************
 *							GetTimestampFrequency
-*************************************************************************//**
-*  @brief     コマンドキュー中のGPUタイムスタンプをHz単位で返します.
+****************************************************************************/
+/* @brief     コマンドキュー中のGPUタイムスタンプをHz単位で返します.
 *
 *  @param[in] void
 *
@@ -154,8 +154,8 @@ gu::uint64 RHICommandQueue::GetTimestampFrequency()
 
 /****************************************************************************
 *							GetCalibrationTimestamp
-*************************************************************************//**
-*  @brief      GPUとCPUの計測時刻をMicroSeconds単位で取得します@n
+****************************************************************************/
+/* @brief      GPUとCPUの計測時刻をMicroSeconds単位で取得します@n
 * 　　　　　　測定したい区間でそれぞれTimestampの結果を保存し, その差分を引けば計測時間を測定可能です
 *
 *  @param[in] void

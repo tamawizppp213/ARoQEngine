@@ -32,8 +32,8 @@ Mouse::Mouse()
 
 /****************************************************************************
 *							Initialize
-*************************************************************************//**
-*  @fn        bool Mouse::Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd)
+****************************************************************************/
+/* @fn        bool Mouse::Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd)
 *  @brief     Mouse Initialize
 *  @param[in] LPDIRECTINPUT8 dInput
 *  @param[in] HINSTANCE hInstace
@@ -62,8 +62,8 @@ bool Mouse::Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd)
 
 /****************************************************************************
 *							Update
-*************************************************************************//**
-*  @fn        bool Mouse::Update()
+****************************************************************************/
+/* @fn        bool Mouse::Update()
 *  @brief     Check Mouse Input
 *  @param[in] void
 *  @return 　　void
@@ -86,8 +86,8 @@ void Mouse::Update()
 
 /****************************************************************************
 *							Finalize
-*************************************************************************//**
-*  @fn        void Mouse::Finalize()
+****************************************************************************/
+/* @fn        void Mouse::Finalize()
 *  @brief     Finish Mouse Device
 *  @param[in] void
 *  @return 　　void
@@ -104,8 +104,8 @@ void Mouse::Finalize()
 
 /****************************************************************************
 *							IsPress
-*************************************************************************//**
-*  @fn        void Mouse::IsPress()
+****************************************************************************/
+/* @fn        void Mouse::IsPress()
 *  @brief     Detect pressing button
 *  @param[in] mouseButton
 *  @return 　　void
@@ -117,8 +117,8 @@ bool Mouse::IsPress(int mouseButton)
 
 /****************************************************************************
 *							IsTrigger
-*************************************************************************//**
-*  @fn        void Mouse::IsTrigger()
+****************************************************************************/
+/* @fn        void Mouse::IsTrigger()
 *  @brief     Detect trigger button
 *  @param[in] mouseButton
 *  @return 　　void
@@ -135,8 +135,8 @@ bool Mouse::IsTrigger(int mouseButton)
 
 /****************************************************************************
 *							IsRelease
-*************************************************************************//**
-*  @fn        void Mouse::IsRelease()
+****************************************************************************/
+/* @fn        void Mouse::IsRelease()
 *  @brief     Detect release button
 *  @param[in] mouseButton
 *  @return 　　void
@@ -153,8 +153,8 @@ bool Mouse::IsRelease(int mouseButton)
 
 /****************************************************************************
 *							GetMousePosition
-*************************************************************************//**
-*  @fn        MousePosition& Mouse::GetMousePosition
+****************************************************************************/
+/* @fn        MousePosition& Mouse::GetMousePosition
 *  @brief     Get Mouse Position
 *  @param[in] void
 *  @return 　　MousePosition&
@@ -168,8 +168,8 @@ MousePosition& Mouse::GetMousePosition()
 
 /****************************************************************************
 *							GetMousePosition_X
-*************************************************************************//**
-*  @fn        int Mouse::GetMousePosition_X
+****************************************************************************/
+/* @fn        int Mouse::GetMousePosition_X
 *  @brief     Get Mouse Position X
 *  @param[in] void
 *  @return 　　int
@@ -183,8 +183,8 @@ int Mouse::GetMousePosition_X()
 
 /****************************************************************************
 *							GetMousePosition_Y
-*************************************************************************//**
-*  @fn        int Mouse::GetMousePosition_Y
+****************************************************************************/
+/* @fn        int Mouse::GetMousePosition_Y
 *  @brief     Get Mouse Position Y
 *  @param[in] void
 *  @return 　　int
@@ -198,8 +198,8 @@ int Mouse::GetMousePosition_Y()
 
 /****************************************************************************
 *							GetMouseVelocity
-*************************************************************************//**
-*  @fn        DirectX::XMFLOAT2 Mouse::GetMouseVelocity
+****************************************************************************/
+/* @fn        DirectX::XMFLOAT2 Mouse::GetMouseVelocity
 *  @brief     GetMouseVelocity
 *  @param[in] void
 *  @return 　　XMFLOAT2

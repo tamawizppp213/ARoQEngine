@@ -29,8 +29,8 @@ namespace gc::core
 	class GameWorldInfo;
 	/****************************************************************************
 	*				  			Model
-	*************************************************************************//**
-	*  @class     Model
+	****************************************************************************/
+	/* @class     Model
 	*  @brief     This class doesn't have the skin mesh. If you use skin mesh, you should use SkinModel class.
 	*****************************************************************************/
 	class GameModel : public gc::core::GameActor

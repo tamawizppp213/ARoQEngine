@@ -32,8 +32,8 @@ GameActor::~GameActor()
 #pragma region Main Function
 /****************************************************************************
 *                       GameActor
-*************************************************************************//**
-*  @fn        void GameActor::Update(const float deltaTime, const bool enableUpdateChild)
+****************************************************************************/
+/* @fn        void GameActor::Update(const float deltaTime, const bool enableUpdateChild)
 *
 *  @brief     Update
 *
@@ -52,8 +52,8 @@ void GameActor::Update(const float deltaTime, const bool enableUpdateChild)
 
 /****************************************************************************
 *                       UpdateComponents
-*************************************************************************//**
-*  @fn        void GameActor::UpdateComponents(float deltaTime)
+****************************************************************************/
+/* @fn        void GameActor::UpdateComponents(float deltaTime)
 *  @brief     Update game components
 *  @param[in] float deltaTime
 *  @return Å@Å@void
@@ -68,8 +68,8 @@ void GameActor::UpdateComponents([[maybe_unused]]float deltaTime)
 
 /****************************************************************************
 *                       UpdateChild
-*************************************************************************//**
-*  @fn        void GameActor::UpdateChild(const float deltaTime)
+****************************************************************************/
+/* @fn        void GameActor::UpdateChild(const float deltaTime)
 * 
 *  @brief     Update child 
 * 

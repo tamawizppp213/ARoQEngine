@@ -25,8 +25,8 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			GPUGraphicsPipelineState
-	*************************************************************************//**
-	*  @class     GPUGraphicsPipelineState
+	****************************************************************************/
+	/* @class     GPUGraphicsPipelineState
 	*  @brief     Graphics Pipeline State
 	*****************************************************************************/
 	class GPUGraphicsPipelineState : public rhi::core::GPUGraphicsPipelineState
@@ -72,8 +72,8 @@ namespace rhi::vulkan
 
 	/****************************************************************************
 	*				  			GPUComputePipelineState
-	*************************************************************************//**
-	*  @class     GPUComputePipelineState
+	****************************************************************************/
+	/* @class     GPUComputePipelineState
 	*  @brief     Compute pipeline state
 	*****************************************************************************/
 	class GPUComputePipelineState : public rhi::core::GPUComputePipelineState

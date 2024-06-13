@@ -66,8 +66,8 @@ ShadowMap::~ShadowMap()
 #pragma region Main Function
 /****************************************************************************
 *                     Draw
-*************************************************************************//**
-*  @fn        void ShadowMap::Draw(const ResourceViewPtr& scene)
+****************************************************************************/
+/* @fn        void ShadowMap::Draw(const ResourceViewPtr& scene)
 *
 *  @brief     Draw the shadow map to the frame buffer. 
 *             In addition, we apply the gaussian blur for the VSM method.
@@ -112,8 +112,8 @@ void ShadowMap::Draw(const ResourceViewPtr& scene)
 
 /****************************************************************************
 *							Add
-*************************************************************************//**
-*  @fn        void ShadowMap::Add(const GameModelPtr& gameModel)
+****************************************************************************/
+/* @fn        void ShadowMap::Add(const GameModelPtr& gameModel)
 *
 *  @brief     Add game models for the rendering shadow
 *
@@ -132,8 +132,8 @@ void ShadowMap::Add(const GameModelPtr& gameModel)
 #pragma region Set Up Function
 /****************************************************************************
 *                     PrepareVertexAndIndexBuffer
-*************************************************************************//**
-*  @fn        void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
 *
 *  @brief     Prepare the vertex and index buffers. These buffers were created for the frame count.
 *
@@ -187,8 +187,8 @@ void ShadowMap::PrepareVertexAndIndexBuffer(const gu::tstring& name)
 
 /****************************************************************************
 *                     PrepareRenderResource
-*************************************************************************//**
-*  @fn        void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name)
+****************************************************************************/
+/* @fn        void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint32_t height, const gu::tstring& name)
 *
 *  @brief     Prepare the renderPass and frame buffer
 *
@@ -227,8 +227,8 @@ void ShadowMap::PrepareRenderResource(const std::uint32_t width, const std::uint
 
 /****************************************************************************
 *                     PreparePipelineState
-*************************************************************************//**
-*  @fn        void ShadowMap::PreparePipelineState(const gu::tstring& name)
+****************************************************************************/
+/* @fn        void ShadowMap::PreparePipelineState(const gu::tstring& name)
 * 
 *  @brief     Prepare the vertex and index buffers. These buffers we
 *

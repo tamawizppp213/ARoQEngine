@@ -30,8 +30,8 @@ namespace rhi::directX12
 {
 	/****************************************************************************
 	*				  			RHIDescriptorHeap
-	*************************************************************************//**
-	*  @class     RHIDescriptorHeap
+	****************************************************************************/
+	/* @class     RHIDescriptorHeap
 	*  @brief     Descriptor Heap (manage resource view) 
 	*****************************************************************************/
 	class RHIDescriptorHeap : public rhi::core::RHIDescriptorHeap

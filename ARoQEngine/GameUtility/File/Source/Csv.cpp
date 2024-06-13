@@ -174,8 +174,8 @@ void error::InvalidSingleCharacter  ::FormatErrorMessage() const
 #pragma region ByteSource
 /****************************************************************************
 *							Read
-*************************************************************************//**
-*  @fn        int NonOwningStringByteSource::Read(char* buffer, int desiredByteCount)
+****************************************************************************/
+/* @fn        int NonOwningStringByteSource::Read(char* buffer, int desiredByteCount)
 *  @brief     Return copyByteCount
 *  @param[in] char* buffer
 *  @param[in] int desiredByteCount
@@ -223,8 +223,8 @@ AsynchronousReader::~AsynchronousReader()
 }
 /****************************************************************************
 *							Initialize
-*************************************************************************//**
-*  @fn        void AsynchronousReader::Initialize(ByteSourcePtr byteSource)
+****************************************************************************/
+/* @fn        void AsynchronousReader::Initialize(ByteSourcePtr byteSource)
 *  @brief     Initialize 
 *  @param[in] BytesourcePtr byteSource
 *  @return 　　void
@@ -266,8 +266,8 @@ void AsynchronousReader::Initialize(ByteSourcePtr byteSource)
 }
 /****************************************************************************
 *							StartRead
-*************************************************************************//**
-*  @fn        void AsynchronousReader::StartRead(char* buffer, int desiredByteCount)
+****************************************************************************/
+/* @fn        void AsynchronousReader::StartRead(char* buffer, int desiredByteCount)
 *  @brief     Start file read thread
 *  @param[in,out] char* buffer
 *  @param[in]     int desiredByteCount
@@ -283,8 +283,8 @@ void AsynchronousReader::StartRead(char* buffer, int desiredByteCount)
 }
 /****************************************************************************
 *							FinishedRead
-*************************************************************************//**
-*  @fn        int AsynchronousReader::FinishRead()
+****************************************************************************/
+/* @fn        int AsynchronousReader::FinishRead()
 *  @brief     Read Finished request
 *  @param[in] void
 *  @return 　　int
@@ -305,8 +305,8 @@ int AsynchronousReader::FinishRead()
 #pragma region LineReader
 /****************************************************************************
 *							OpenFile
-*************************************************************************//**
-*  @fn        FILE* OpenFile(const std::wstring& filePath)
+****************************************************************************/
+/* @fn        FILE* OpenFile(const std::wstring& filePath)
 *  @brief     Open FilePath
 *  @param[in] const std::wstring& wString
 *  @return 　　FILE*
@@ -327,8 +327,8 @@ LineReader::ByteSourcePtr LineReader::OpenFile(const std::string& fileName)
 }
 /****************************************************************************
 *							Initialize
-*************************************************************************//**
-*  @fn        void LineReader::Initialize(ByteSourcePtr byteSource)
+****************************************************************************/
+/* @fn        void LineReader::Initialize(ByteSourcePtr byteSource)
 *  @brief     Initialize 
 *  @param[in] ByteSourcePtr byteSource
 *  @return 　　void
@@ -350,8 +350,8 @@ void LineReader::Initialize(ByteSourcePtr byteSource)
 }
 /****************************************************************************
 *							ProceedNextLine
-*************************************************************************//**
-*  @fn        char* LineReader::ProceedNextLine()
+****************************************************************************/
+/* @fn        char* LineReader::ProceedNextLine()
 *  @brief     Initialize
 *  @param[in] void
 *  @return 　　char*

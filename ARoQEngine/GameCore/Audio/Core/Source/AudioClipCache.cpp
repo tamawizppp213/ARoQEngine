@@ -34,8 +34,8 @@ AudioClipCache::~AudioClipCache()
 #pragma region Main Function
 /****************************************************************************
 *                       Load
-*************************************************************************//**
-*  @fn        AudioClipCache::AudioClipPtr AudioClipCache::Load(const std::wstring& filePath)
+****************************************************************************/
+/* @fn        AudioClipCache::AudioClipPtr AudioClipCache::Load(const std::wstring& filePath)
 *
 *  @brief     Load audio clip. (wav file)
 *
@@ -72,8 +72,8 @@ AudioClipCache::AudioClipPtr AudioClipCache::Load(const std::wstring& filePath)
 
 /****************************************************************************
 *                       Exist
-*************************************************************************//**
-*  @fn        bool AudioClipCache::Exist(const std::wstring& filePath)
+****************************************************************************/
+/* @fn        bool AudioClipCache::Exist(const std::wstring& filePath)
 *
 *  @brief     Exist audio clip
 *

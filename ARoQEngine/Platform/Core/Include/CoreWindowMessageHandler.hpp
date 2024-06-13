@@ -28,8 +28,8 @@ namespace platform::core
 	class CoreWindow;
 	/****************************************************************************
 	*				  			    CoreWindowMessageHandler
-	*************************************************************************//**
-	*  @class     CoreWindowMessageHandler
+	****************************************************************************/
+	/* @class     CoreWindowMessageHandler
 	*  @brief     ウィンドウのメッセージを受け取った時に使用するHandlerクラス
 	*****************************************************************************/
 	class CoreWindowMessageHandler : public gu::NonCopyable

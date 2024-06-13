@@ -36,8 +36,8 @@ SampleRectangle::~SampleRectangle()
 #pragma region Public Function
 /****************************************************************************
 *                       Initialize
-*************************************************************************//**
-*  @fn        void SampleRectangle::Initialize( const GameTimerPtr& gameTimer)
+****************************************************************************/
+/* @fn        void SampleRectangle::Initialize( const GameTimerPtr& gameTimer)
 *  @brief     Initialize scene
 *  @param[in]  const GameTimerPtr& gameTimer
 *  @return 　　void
@@ -48,8 +48,8 @@ void SampleRectangle::Initialize(const PPPEnginePtr& engine, const GameTimerPtr&
 }
 /****************************************************************************
 *                       Update
-*************************************************************************//**
-*  @fn        void SampleRectangle::Update()
+****************************************************************************/
+/* @fn        void SampleRectangle::Update()
 *  @brief     Update Scene
 *  @param[in] void
 *  @return 　　void
@@ -60,8 +60,8 @@ void SampleRectangle::Update()
 }
 /****************************************************************************
 *                       Draw
-*************************************************************************//**
-*  @fn        void SampleRectangle::Draw()
+****************************************************************************/
+/* @fn        void SampleRectangle::Draw()
 *  @brief     Draw Scene
 *  @param[in] void
 *  @return 　　void
@@ -92,8 +92,8 @@ void SampleRectangle::Draw()
 }
 /****************************************************************************
 *                       Terminate
-*************************************************************************//**
-*  @fn        void SampleRectangle::Terminate()
+****************************************************************************/
+/* @fn        void SampleRectangle::Terminate()
 *  @brief     Terminate Scene
 *  @param[in] void
 *  @return 　　void
@@ -110,8 +110,8 @@ void SampleRectangle::Terminate()
 #pragma region Protected Function
 /****************************************************************************
 *                       LoadMaterials
-*************************************************************************//**
-*  @fn        void SampleRectangle::LoadMaterials(GameTimer* gameTimer)
+****************************************************************************/
+/* @fn        void SampleRectangle::LoadMaterials(GameTimer* gameTimer)
 *  @brief     Load Materials
 *  @param[in] void
 *  @return 　　void
@@ -137,8 +137,8 @@ void SampleRectangle::LoadMaterials()
 }
 /****************************************************************************
 *                       OnKeyboardInput
-*************************************************************************//**
-*  @fn        void SampleRectangle::OnKeyboardInput()
+****************************************************************************/
+/* @fn        void SampleRectangle::OnKeyboardInput()
 *  @brief     KeyboardInput
 *  @param[in] void
 *  @return 　　void
@@ -149,8 +149,8 @@ void SampleRectangle::OnKeyboardInput()
 }
 /****************************************************************************
 *                       OnMouseInput
-*************************************************************************//**
-*  @fn        void SampleRectangle::OnMouseInput()
+****************************************************************************/
+/* @fn        void SampleRectangle::OnMouseInput()
 *  @brief     MouseInput
 *  @param[in] void
 *  @return 　　void
@@ -161,8 +161,8 @@ void SampleRectangle::OnMouseInput()
 }
 /****************************************************************************
 *                       OnGamePadInput
-*************************************************************************//**
-*  @fn        void SampleRectangle::OnGamePadInput()
+****************************************************************************/
+/* @fn        void SampleRectangle::OnGamePadInput()
 *  @brief     GamePadInput
 *  @param[in] void
 *  @return 　　void
@@ -173,8 +173,8 @@ void SampleRectangle::OnGamePadInput()
 }
 /****************************************************************************
 *                     ExecuteSceneTransition
-*************************************************************************//**
-*  @fn        void SampleRectangle::ExecuteSceneTranstion()
+****************************************************************************/
+/* @fn        void SampleRectangle::ExecuteSceneTranstion()
 *  @brief     Scene Transition
 *  @param[in] void
 *  @return 　　void
@@ -187,8 +187,8 @@ void SampleRectangle::ExecuteSceneTransition()
 #pragma region SetUp Function
 /****************************************************************************
 *                     BuildBuffer
-*************************************************************************//**
-*  @fn        void SampleRectangle::BuildBuffer()
+****************************************************************************/
+/* @fn        void SampleRectangle::BuildBuffer()
 *  @brief     Build Vertex and Index Buffers
 *  @param[in] void
 *  @return 　　void

@@ -26,8 +26,8 @@
 //	class PhysicsActor;
 //	/****************************************************************************
 //	*				        SimpleCollisionDetector
-//	*************************************************************************//**
-//	*  @class     SimpleCollisionDetector
+//	****************************************************************************/
+//	/* @class     SimpleCollisionDetector
 //	*  @brief     Collision detection using the each geometry
 //	*****************************************************************************/
 //	class SimpleCollisionDetector : public gu::NonCopyable
