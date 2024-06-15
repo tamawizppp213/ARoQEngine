@@ -112,12 +112,12 @@ PMXFile::~PMXFile()
 	Joints         .Clear(); Joints         .ShrinkToFit();
 }
 #pragma region PMXFileFunction
-bool PMXFile::Read(const gu::tstring& filePath)
+bool PMXFile::Read(const gu::tstring& filePath, const bool useAsync)
 {
 	/*-------------------------------------------------------------------
 	-             ファイルハンドルの取得
 	---------------------------------------------------------------------*/
-	const auto fileHandle = IFileSystem::Get()->OpenRead(filePath.CString());
+	const auto fileHandle = IFileSystem::Get()->OpenRead(filePath.CString(), false, useAsync);
 
 	// ファイルが開けなかった場合はfalseを返す
 	if (!fileHandle)

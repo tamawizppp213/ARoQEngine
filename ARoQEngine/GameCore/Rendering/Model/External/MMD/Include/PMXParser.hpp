@@ -36,9 +36,10 @@ namespace gc::file::pmx
 		/*!**********************************************************************
 		*  @brief     PMXファイルを読み込む関数
 		*  @param[in] const gu::tstring& ファイルパス
+		*  @param[in] const bool 非同期で読み込むかどうか
 		*  @return    bool
 		*************************************************************************/
-		bool Read(const gu::tstring& filePath);
+		bool Read(const gu::tstring& filePath, const bool useAsync = false);
 
 		#pragma endregion
 
