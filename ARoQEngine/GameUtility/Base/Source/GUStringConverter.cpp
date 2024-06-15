@@ -231,6 +231,35 @@ wstring StringConverter::ConvertStringToWString(const string& utf8String)
 }
 
 /*!**********************************************************************
+*  @brief     utf8•¶Žš—ñ‚©‚ç‚ÉWString‚É•¶Žš—ñ‚ð•ÏŠ·‚µ‚Ü‚·.
+*  @param[in] const string& utf8
+*  @return    wstring
+*************************************************************************/
+tstring StringConverter::ConvertUTF8ToTString(const u8string& utf8)
+{
+	/*-------------------------------------------------------------------
+	-              •ÏŠ·
+	---------------------------------------------------------------------*/
+	const auto source                 = CharacterCode::GetCharacterCode(CharacterCodeType::UTF8);
+	const auto destination            = CharacterCode::TStringCharacterCode();
+	const auto characterCodeConverter = MakeShared<CharacterCodeConverter>(source, destination);
+
+	Check(source);
+	Check(destination);
+
+	const auto& byteArray = characterCodeConverter->Convert(reinterpret_cast<const uint8*>(utf8.CString()), utf8.Size());
+
+	/*-------------------------------------------------------------------
+	-              •¶Žš—ñ‚É‘ã“ü
+	---------------------------------------------------------------------*/
+	tstring result = SP("");
+	result.Assign(reinterpret_cast<const tchar*>(byteArray.Data()), byteArray.Size() / sizeof(tchar));
+
+	return result;
+
+}
+
+/*!**********************************************************************
 *  @brief     WString‚©‚ç‚ÉString‚É•¶Žš—ñ‚ð•ÏŠ·‚µ‚Ü‚·.
 *  @param[in] const wstring& utf8
 *  @return    wstring

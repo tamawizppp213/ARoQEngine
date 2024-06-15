@@ -19,7 +19,7 @@ using namespace gu::details::string;
 namespace
 {
 	/*! @brief 後続バイト数です. 0: ASCII文字, 1: ヨーロッパ特有文字(ウムラウトなど), 2: ひらがななど, 3: 絵文字のようなもの, 4, 5 : 基本許可されていない*/
-	constexpr uint8 UTF8_BYTE_MAP[] =
+	constexpr uint8 UTF8_BYTE_MAP[256] =
 	{
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -27,15 +27,15 @@ namespace
 
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //64 ～ 127
 
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //128 ～ 191
 
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-		2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5,
+		0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, //192～213
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, // 214～235
+		2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5,
 	};
 
 	/*! @brief UTF-8 → UTF-32 の変換時に使用し、UTF-8 のバイトマークを打ち消す */
@@ -417,19 +417,19 @@ UnicodeConvertResult UnicodeConverter::CodePointUTF8ToUTF32(const uint8** source
 	/*-------------------------------------------------------------------
 	-       追加で読むバイト数を取得します. (範囲チェック)
 	---------------------------------------------------------------------*/
-	const auto bytes  = UTF8_BYTE_MAP[*source];
+	const unsigned short bytes  = static_cast<unsigned short>(UTF8_BYTE_MAP[*source]);
 	
 	if(source + bytes >= sourceEnd)
 	{
 		return UnicodeConvertResult::SourceExhausted;
 	}
-
+	
 	/*-------------------------------------------------------------------
 	-       UTF8のバイトシーケンスであるかを確認
 	---------------------------------------------------------------------*/
 	if (!IsLegalUTF8(source, static_cast<uint64>(bytes) + 1))
 	{
-		return UnicodeConvertResult::SourceIllegal;
+		//return UnicodeConvertResult::SourceIllegal;
 	}
 
 	/*-------------------------------------------------------------------
@@ -898,8 +898,7 @@ bool UnicodeConverter::IsLegalUTF8(const uint8* sourceStart, const uint64 length
 {
 	uint8 result = 0;
 
-	// 最初に一番後ろを指し、フォールスルーでひとつずつ前へ見ていく
-	const uint8* source = sourceStart + length;
+	const uint8* source = sourceStart;
 
 	switch(length)
 	{
@@ -909,76 +908,77 @@ bool UnicodeConverter::IsLegalUTF8(const uint8* sourceStart, const uint64 length
 		}
 		case 4:
 		{
-			if ((result = (*--source)) < 0x80 || result > 0xBF)
+			if ((0xF8 & *source) == 0xF0 && *source <= 0xF4)
 			{
-				return false;
+				// Each of the following bytes is a value
+				 // between 0x80 and 0xBF
+				if (((0xC0 & *(source + 1)) != 0x80) || ((0xC0 & *(source + 2)) != 0x80)
+					|| ((0xC0 & *(source + 3)) != 0x80))
+				{
+					return false;
+				}
+
+				// If the first byte of the sequence is 0xF0
+				// then the first continuation byte must be between 0x90 and 0xBF
+				// otherwise, if the byte is 0xF4
+				// then the first continuation byte must be between 0x80 and 0x8F
+				if (*source == 0xF0)
+				{
+					if (*(source + 1) < 0x90 || *(source + 1) > 0xBF)
+					{
+						return false;
+					}
+				}
+				else if (*source == 0xF4)
+				{
+					if (*(source + 1) < 0x80 || *(source + 1) > 0x8F)
+					{
+						return false;
+					}
+				}
 			}
 		}
 		case 3:
 		{
-			if ((result = (*--source)) < 0x80 || result > 0xBF)
+			// Each of the following bytes starts with
+		    // 0b10xxxxxx in a valid string
+			if (((0xC0 & *(source + 1)) != 0x80) || ((0xC0 & *(source + 2)) != 0x80))
 			{
 				return false;
+			}
+
+			// If the first byte of the sequence is 0xE0
+			// then the first continuation byte must be between 0xA0 and 0xBF
+			// otherwise, if the byte is 0xF4
+			// then the first continuation byte must be between 0x80 and 0x9F
+			if (*source == 0xE0)
+			{
+				if (*(source + 1) < 0xA0 || *(source + 1) > 0xBF)
+				{
+					return false;
+				}
+			}
+			else if (*source == 0xED)
+			{
+				if (*(source + 1) > 0x9F)
+				{
+					return false;
+				}
 			}
 		}
 		case 2:
 		{
-			if ((result = (*--source)) < 0x80 || result > 0xBF)
-				return false;
-
-			switch (*source)
+			// The following byte starts with 0b10xxxxxx in a valid string
+			if ((0xC0 & *(source + 1)) != 0x80)
 			{
-				case 0xE0:
-				{
-					if (result < 0xA0)
-					{
-						return false;
-					}
-					break;
-				}
-				case 0xED:
-				{
-					if (result > 0x9F)
-					{
-						return false;
-					}
-					break;
-				}
-				case 0xF0:
-				{
-					if (result < 0x90)
-					{
-						return false;
-					}
-					break;
-				}
-				case 0xF4:
-				{
-					if (result > 0x8F)
-					{
-						return false;
-					}
-					break;
-				}
-				default:
-				{
-					if (result < 0x80)
-					{
-						return false;
-					}
-				}
+				return false;
 			}
 		}
 		case 1:
 		{
-			if (*source >= 0x80 && *source < 0xC2)
-			{
-				return false;
-			}
+			break;
 		}
 	}
-
-	if (*source > 0xF4) { return false; }
 
 	return true;
 }

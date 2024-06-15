@@ -79,7 +79,14 @@ namespace gu
 		*  @param[in] const string& utf8
 		*  @return    wstring
 		*************************************************************************/
-		static wstring ConvertStringToWString(const string& utf8);
+		static wstring ConvertStringToWString(const string& rawString);
+
+		/*!**********************************************************************
+		*  @brief     utf8•¶Žš—ñ‚©‚ç‚ÉWString‚É•¶Žš—ñ‚ð•ÏŠ·‚µ‚Ü‚·.
+		*  @param[in] const string& utf8
+		*  @return    wstring
+		*************************************************************************/
+		static tstring ConvertUTF8ToTString(const u8string& utf8);
 
 		/*!**********************************************************************
 		*  @brief     WString‚©‚ç‚ÉString‚É•¶Žš—ñ‚ð•ÏŠ·‚µ‚Ü‚·.
