@@ -12,7 +12,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "JsonType.hpp"
+#include "JsonCommon.hpp"
 #include "GameUtility/Container/Include/GUHashMap.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
@@ -119,6 +119,11 @@ namespace gu::file::json
 		#pragma endregion 
 
 		#pragma region Public Operator 
+		/* @brief 名前を使ってオブジェクトを取得*/
+		SharedPointer<JsonValue>& operator[](tstring& key) { return _values[key]; }
+
+		/* @brief 名前を使ってオブジェクトを取得*/
+		const SharedPointer<JsonValue>& operator[](const tstring& key) const { return _values[key]; }
 
 		#pragma endregion 
 
