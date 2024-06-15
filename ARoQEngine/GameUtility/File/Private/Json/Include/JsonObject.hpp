@@ -120,11 +120,9 @@ namespace gu::file::json
 
 		#pragma region Public Operator 
 		/* @brief 名前を使ってオブジェクトを取得*/
-		SharedPointer<JsonValue>& operator[](tstring& key) { return _values[key]; }
+		SharedPointer<JsonValue>& operator[](const tstring& key) { return _values[key]; }
 
 		/* @brief 名前を使ってオブジェクトを取得*/
-		const SharedPointer<JsonValue>& operator[](const tstring& key) const { return _values[key]; }
-
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor
