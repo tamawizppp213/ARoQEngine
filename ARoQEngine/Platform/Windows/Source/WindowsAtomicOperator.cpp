@@ -142,7 +142,7 @@ gu::int64 CoreAtomicOperator::Decrement(volatile gu::int64* value)
 * ************************************************************************/
 gu::int8 CoreAtomicOperator::Add(volatile gu::int8* value, gu::int8 addValue)
 {
-	return ::_InterlockedExchangeAdd8((char*)value, addValue);
+	return ::_InterlockedExchangeAdd8((char*)value, addValue) + addValue;
 }
 
 /*!**********************************************************************
@@ -153,7 +153,7 @@ gu::int8 CoreAtomicOperator::Add(volatile gu::int8* value, gu::int8 addValue)
 * ************************************************************************/
 gu::int16 CoreAtomicOperator::Add(volatile gu::int16* value, gu::int16 addValue)
 {
-	return ::_InterlockedExchangeAdd16((short*)value, addValue);
+	return ::_InterlockedExchangeAdd16((short*)value, addValue) + addValue;
 }
 
 /*!**********************************************************************
@@ -164,7 +164,7 @@ gu::int16 CoreAtomicOperator::Add(volatile gu::int16* value, gu::int16 addValue)
 * ************************************************************************/
 gu::int32 CoreAtomicOperator::Add(volatile gu::int32* value, gu::int32 addValue)
 {
-	return ::_InterlockedExchangeAdd((long*)value, addValue);
+	return ::_InterlockedExchangeAdd((long*)value, addValue) + addValue;
 }
 
 /*!**********************************************************************
@@ -175,7 +175,7 @@ gu::int32 CoreAtomicOperator::Add(volatile gu::int32* value, gu::int32 addValue)
 * ************************************************************************/
 gu::int64 CoreAtomicOperator::Add(volatile gu::int64* value, gu::int64 addValue)
 {
-	return ::_InterlockedExchangeAdd64((long long*)value, addValue);
+	return ::_InterlockedExchangeAdd64((long long*)value, addValue) + addValue;
 }
 
 /*!**********************************************************************
@@ -186,7 +186,7 @@ gu::int64 CoreAtomicOperator::Add(volatile gu::int64* value, gu::int64 addValue)
 * ************************************************************************/
 gu::int8 CoreAtomicOperator::Subtract(volatile gu::int8* value, gu::int8 subValue)
 {
-	return ::_InterlockedExchangeAdd8((char*)value, -subValue);
+	return ::_InterlockedExchangeAdd8((char*)value, -subValue) - subValue;
 }
 
 /*!**********************************************************************
@@ -197,7 +197,7 @@ gu::int8 CoreAtomicOperator::Subtract(volatile gu::int8* value, gu::int8 subValu
 * ************************************************************************/
 gu::int16 CoreAtomicOperator::Subtract(volatile gu::int16* value, gu::int16 subValue)
 {
-	return ::_InterlockedExchangeAdd16((short*)value, -subValue);
+	return ::_InterlockedExchangeAdd16((short*)value, -subValue) - subValue;
 }
 
 /*!**********************************************************************
@@ -208,7 +208,7 @@ gu::int16 CoreAtomicOperator::Subtract(volatile gu::int16* value, gu::int16 subV
 * ************************************************************************/
 gu::int32 CoreAtomicOperator::Subtract(volatile gu::int32* value, gu::int32 subValue)
 {
-	return ::_InterlockedExchangeAdd((long*)value, -subValue);
+	return ::_InterlockedExchangeAdd((long*)value, -subValue) - subValue;
 }
 
 /*!**********************************************************************
@@ -219,7 +219,7 @@ gu::int32 CoreAtomicOperator::Subtract(volatile gu::int32* value, gu::int32 subV
 * ************************************************************************/
 gu::int64 CoreAtomicOperator::Subtract(volatile gu::int64* value, gu::int64 subValue)
 {
-	return ::_InterlockedExchangeAdd64((long long*)value, -subValue);
+	return ::_InterlockedExchangeAdd64((long long*)value, -subValue) - subValue;
 }
 
 /*!**********************************************************************

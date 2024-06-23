@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "Platform/Core/Include/CoreAtomicOperator.hpp"
 #include "GameUtility/Base/Include/GUClassUtility.hpp"
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +55,7 @@ namespace gu
 		*  @param[in] MemoryOrder order : メモリの実行順序を指定します
 		*  @return    T
 		*************************************************************************/
-		T Load(const MemoryOrder order = MemoryOrder::SequentiallyConsistent) const;
+		T Load(const MemoryOrder order = MemoryOrder::SequentiallyConsistent);
 
 		/*!**********************************************************************
 		*  @brief     値を設定します
@@ -66,44 +67,34 @@ namespace gu
 		void Store(const T value, const MemoryOrder order = MemoryOrder::SequentiallyConsistent);
 
 		/*!**********************************************************************
-		*  @brief     castをしたうえで値を設定します
-		*  @attention 現在Windowsのみ対応しています
-		*  @param[in] const OtherType value
-		*  @param[in] MemoryOrder order : メモリの実行順序を指定します
-		*  @return    void
-		*************************************************************************/
-		template<typename Other>
-		__forceinline void Store(const Other value)
-		{
-			platform::core::AtomicOperator::Write(&_value, static_cast<T>(value));
-		}
-
-		/*!**********************************************************************
 		*  @brief     値を加算します. 
+		*  @attention 現在Windowsのみ対応しています
 		*  @param[in] const T value
 		*  @return    T
 		*************************************************************************/
-		__forceinline T Add(const T value) 
+		__forceinline T Add(const T value, [[maybe_unused]] const MemoryOrder order = MemoryOrder::SequentiallyConsistent) 
 		{
 			return platform::core::AtomicOperator::Add(&_value, value);
 		}
 
 		/*!**********************************************************************
 		*  @brief     値を減算します.
+		*  @attention 現在Windowsのみ対応しています
 		*  @param[in] const T value
 		*  @return    T
 		* ************************************************************************/
-		__forceinline T Subtract(const T value)
+		__forceinline T Subtract(const T value, [[maybe_unused]] const MemoryOrder order = MemoryOrder::SequentiallyConsistent)
 		{
 			return platform::core::AtomicOperator::Subtract(&_value, value);
 		}
 
 		/*!**********************************************************************
 		*  @brief     And演算を行います.
+		*  @attention 現在Windowsのみ対応しています
 		*  @param[in] const T operand
 		*  @return    T
 		* ************************************************************************/
-		__forceinline T And(const T operand)
+		__forceinline T And(const T operand, [[maybe_unused]] const MemoryOrder order = MemoryOrder::SequentiallyConsistent)
 		{
 			return platform::core::AtomicOperator::And(&_value, operand);
 		}
@@ -113,7 +104,7 @@ namespace gu
 		*  @param[in] const T operand
 		*  @return    T
 		* ************************************************************************/
-		__forceinline T Or(const T operand)
+		__forceinline T Or(const T operand, [[maybe_unused]] const MemoryOrder order = MemoryOrder::SequentiallyConsistent)
 		{
 			return platform::core::AtomicOperator::Or(&_value, operand);
 		}
@@ -123,7 +114,7 @@ namespace gu
 		*  @param[in] const T operand
 		*  @return    T
 		* ************************************************************************/
-		__forceinline T Xor(const T operand)
+		__forceinline T Xor(const T operand, [[maybe_unused]] const MemoryOrder order = MemoryOrder::SequentiallyConsistent)
 		{
 			return platform::core::AtomicOperator::Xor(&_value, operand);
 		}
@@ -135,6 +126,50 @@ namespace gu
 		#pragma endregion 
 
 		#pragma region Public Operator 
+
+		/*! @brief 代入*/
+		__forceinline T operator=(const T value) volatile noexcept
+		{
+			Store(value);
+			return _value;
+		}
+
+		/*! @brief 等しいか*/
+		__forceinline bool operator==(const T value) const noexcept
+		{
+			return _value == value;
+		}
+
+		/*! @brief 等しくないか*/
+		__forceinline bool operator!=(const T value) const noexcept
+		{
+			return _value != value;
+		}
+
+		/*! @brief 大きいか*/
+		__forceinline bool operator>(const T value) const noexcept
+		{
+			return _value > value;
+		}
+
+		/*! @brief 大きいか等しいか*/
+		__forceinline bool operator>=(const T value) const noexcept
+		{
+			return _value >= value;
+		}
+
+		/*! @brief 小さいか*/
+		__forceinline bool operator<(const T value) const noexcept
+		{
+			return _value < value;
+		}
+
+		/*! @brief 小さいか等しいか*/
+		__forceinline bool operator<=(const T value) const noexcept
+		{
+			return _value <= value;
+		}
+
 
 		/*! @brief インクリメント*/
 		__forceinline T operator++()
@@ -152,6 +187,21 @@ namespace gu
 
 		#pragma region Public Constructor and Destructor
 		
+		/*! @brief 値を設定*/
+		__forceinline Atomic(const T value)
+		{
+			Store(value);
+		}
+
+		/*! @brief デフォルトコンストラクタ*/
+		__forceinline Atomic()
+		{
+			Store(0);
+		}
+
+		/*! @brief デストラクタ*/
+		__forceinline ~Atomic() noexcept = default;
+
 		#pragma endregion 
 
 	protected:
@@ -186,8 +236,10 @@ namespace gu
 	};
 
 	template<typename T>
-	T Atomic<T>::Load(const MemoryOrder order) const
+	T Atomic<T>::Load(const MemoryOrder order)
 	{
+		T result;
+
 		switch (order)
 		{
 			case MemoryOrder::Relaxed:
@@ -195,7 +247,7 @@ namespace gu
 			case MemoryOrder::Consume:
 			case MemoryOrder::Acquire:
 			{
-				_value = platform::core::AtomicOperator::Read(&_value);
+				result = platform::core::AtomicOperator::Read(&_value);
 				break;
 			}
 			default:
@@ -204,7 +256,7 @@ namespace gu
 			}
 		}
 
-		return _value;
+		return result;
 	}
 
 	template<typename T>
