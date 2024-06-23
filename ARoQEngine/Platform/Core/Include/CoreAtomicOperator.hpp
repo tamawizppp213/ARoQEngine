@@ -12,7 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "CorePlatformMacros.hpp"
-#include PLATFORM_COMPILED_HEADER(Platform, Atomic.hpp)
+#include PLATFORM_COMPILED_HEADER(Platform, AtomicOperator.hpp)
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -24,6 +24,6 @@
 
 namespace platform::core
 {
-	using CoreAtomic = PLATFORM_CLASS(CoreAtomic);
+	using AtomicOperator = PLATFORM_CLASS(CoreAtomicOperator);
 }
 #endif
