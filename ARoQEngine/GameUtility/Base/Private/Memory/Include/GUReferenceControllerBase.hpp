@@ -12,6 +12,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GameUtility/Base/Include/GUType.hpp"
+#include "GameUtility/Base/Private/Base/Include/GUTypeTraitsStruct.hpp"
 #include <atomic>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -42,7 +43,7 @@ namespace gu::details::smart_pointer
 	class ReferenceControllerBase
 	{
 	private:
-		using ReferenceCountType = std::conditional_t<Mode == SharedPointerThreadMode::ThreadSafe, std::atomic<int32>, int32>;
+		using ReferenceCountType = details::type_traits::Conditional<Mode == SharedPointerThreadMode::ThreadSafe, std::atomic<int32>, int32>::ValueType;
 
 	public:
 		/****************************************************************************
