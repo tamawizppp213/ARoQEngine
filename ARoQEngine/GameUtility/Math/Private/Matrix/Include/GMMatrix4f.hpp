@@ -230,7 +230,7 @@ namespace gm
 		#pragma region Getter
 		/*----------------------------------------------------------------------
 		*  @brief : 各要素を取得します (ただし、これは参照ではなくコピーなので注意)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Vector4f GetX() const { return _matrix.Row[0]; }
 		__forceinline Vector4f GetY() const { return _matrix.Row[1]; }
 		__forceinline Vector4f GetZ() const { return _matrix.Row[2]; }
@@ -239,7 +239,7 @@ namespace gm
 
 		/*----------------------------------------------------------------------
 		*  @brief : 4x4行列を取得
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Float4x4 ToFloat4x4() const
 		{
 			Float4x4 result = {};
@@ -251,7 +251,7 @@ namespace gm
 		#pragma region Setter
 		/*----------------------------------------------------------------------
 		*  @brief : 各行を設定します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void SetX(const Vector4f& x) { _matrix.Row[0] = x; }
 		__forceinline void SetY(const Vector4f& y) { _matrix.Row[1] = y; }
 		__forceinline void SetZ(const Vector4f& z) { _matrix.Row[2] = z; }
@@ -346,7 +346,7 @@ namespace gm
 		#pragma region Math
 		/*----------------------------------------------------------------------
 		*  @brief : 転置
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Matrix4f SIMD_CALL_CONVENTION Transpose() const
 		{
 			return SIMD_NAME_SPACE::Matrix128Utility::Transpose(_matrix);
@@ -355,7 +355,7 @@ namespace gm
 		/*----------------------------------------------------------------------
 		*  @brief : 逆行列 
 		            float* 行列式
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline Matrix4f SIMD_CALL_CONVENTION Inverse(float* determine) const
 		{
 			return SIMD_NAME_SPACE::Matrix128Utility::Inverse(_matrix, determine);
@@ -363,7 +363,7 @@ namespace gm
 
 		/*----------------------------------------------------------------------
 		*  @brief : 逆行列
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline float SIMD_CALL_CONVENTION Determinant() const
 		{
 			return SIMD_NAME_SPACE::Matrix128Utility::Determinant(_matrix);
@@ -371,7 +371,7 @@ namespace gm
 
 		/*----------------------------------------------------------------------
 		*  @brief : 対象の行列をscale, rotationのquoternion, translation(並進)に分割します.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		/*__forceinline bool SIMD_CALL_CONVENTION DecomposeSRT(Vector3f* scale, QuaternionF* quaternion, Vector3f* translation) noexcept
 		{
 			return SIMD_NAME_SPACE::Matrix128Utility::DecomposeSRT(_matrix, &scale->operator gm::simd::sse::Vector128(), quaternion, &);
@@ -435,7 +435,7 @@ namespace gm
 	
 	/*----------------------------------------------------------------------
 	*  @brief : 転置
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline MATRIX128 Transpose(const Matrix4f& matrix) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::Transpose(matrix);
@@ -445,7 +445,7 @@ namespace gm
 	*  @brief : 逆行列
 	*           const Matrix4f& matrix
 	*           float* 行列式
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline MATRIX128 Inverse(const Matrix4f& matrix, float* determinant = nullptr) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::Inverse(matrix, determinant);
@@ -453,7 +453,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 逆行列
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline float Determinant(const Matrix4f& matrix) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::Determinant(matrix);
@@ -461,7 +461,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 並進移動用の行列を作成します.
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f Translation(const float offsetX, const float offsetY, const float offsetZ) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::Translation(offsetX, offsetY, offsetZ);
@@ -479,7 +479,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : スケーリング用の行列を作成します.
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f Scaling(const float scaleX, const float scaleY, const float scaleZ) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::Scaling(scaleX, scaleY, scaleZ);
@@ -497,7 +497,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : X, (Y, Z)軸それぞれに対してrad単位で角度を回転します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f RotationX(const float radian) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationX(radian);
@@ -515,7 +515,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : ロー(y axis)、ピッチ(x-axis)、ヨー(z-axis)を使ってrad単位で角度を回転します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f RotationRollPitchYawMatrix(const float roll, const float pitch, const float yaw) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationRollPitchYaw(roll, pitch, yaw);
@@ -533,7 +533,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 法線ベクトルを中心にrad単位で角度を回転します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f RotationNormalMatrix(const Vector3f& normal, const float radian) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationNormal(normal, radian);
@@ -546,7 +546,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : ある軸を中心にrad単位で角度を回転します
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f RotationAxisMatrix(const Vector3f& axis, const float radian) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationAxis(axis, radian);
@@ -559,7 +559,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : クォータニオンを使って回転
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f RotationQuaternion(const QuaternionF& q) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::RotationQuaternion(q);
@@ -567,7 +567,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 		*  @brief : FocusPositionに視点を向けるための変換行列を作成します(左手系, 右手系)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 	__forceinline Matrix4f LookAtLH(const Vector3f& eyePosition, const Vector3f& focusPosition, const Vector3f& worldUp) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::LookAtLH(eyePosition, focusPosition, worldUp);
@@ -579,7 +579,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 視点を対象方向に向けるための変換行列を作成します(左手系, 右手系)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f LookToLH(const Vector3f& eyePosition, const Vector3f& eyeDirection, const Vector3f& worldUp) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::LookToLH(eyePosition, eyeDirection, worldUp);
@@ -592,7 +592,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 透視投影を行うための変換行列を作成します (左手系, 右手系)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f PerspectiveLH(const float viewWidth, const float viewHeight, const float nearZ, const float farZ) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::PerspectiveLH(viewWidth, viewHeight, nearZ, farZ);
@@ -605,7 +605,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 透視投影を視野角を使って変換する行列を作成します (左手系, 右手系)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f PerspectiveFovLH(const float fovAngleY, const float aspectRatio, const float nearZ, const float farZ) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::PerspectiveFovLH(fovAngleY, aspectRatio, nearZ, farZ);
@@ -618,7 +618,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 平行投影を行うための変換行列を作成します (左手系, 右手系)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Matrix4f OrthographicLH(const float viewWidth, const float viewHeight, const float nearZ, const float farZ) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::OrthographicLH(viewWidth, viewHeight, nearZ, farZ);
@@ -631,7 +631,7 @@ namespace gm
 
 	/*----------------------------------------------------------------------
 	*  @brief : 平行投影を行うための変換行列を作成します (左手系, 右手系)
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	__forceinline Vector3f TransformNormalVector3(const Matrix4f& matrix, const Vector3f vector) noexcept
 	{
 		return SIMD_NAME_SPACE::Matrix128Utility::TransformNormalVector3(matrix, vector);

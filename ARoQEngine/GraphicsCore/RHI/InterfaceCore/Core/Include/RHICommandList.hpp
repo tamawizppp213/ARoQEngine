@@ -64,12 +64,12 @@ namespace rhi::core
 
 		/*----------------------------------------------------------------------
 		*  @brief : Start the render pass. This function basically called at draw function at start
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void BeginRenderPass(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<RHIFrameBuffer>& frameBuffer) = 0;
 		
 		/*----------------------------------------------------------------------
 		*  @brief : Finish the render pass. This function basically called at draw function at end
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void EndRenderPass() = 0;
 
 		/*!**********************************************************************
@@ -108,12 +108,12 @@ namespace rhi::core
 		#pragma region Query
 		/*----------------------------------------------------------------------
 		*  @brief :  Starts the query to get GPU information.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void BeginQuery(const QueryResultLocation& location) = 0;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  End the query to get GPU information.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void EndQuery(const QueryResultLocation& location) = 0;
 		#pragma endregion Query
 
@@ -183,7 +183,7 @@ namespace rhi::core
 		*           startIndexLocation    : インデックスを読み取り始める, インデックスバッファ中の配列要素数
 		* 　　　　　　 baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
 		*           startInstanceLocation : 描画を行う最初のインスタンス番号
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void DrawIndexedInstanced (gu::uint32 indexCountPerInstance, gu::uint32 instanceCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0, gu::uint32 startInstanceLocation = 0) = 0;
 		
 		/*-------------------------------------------------------------------
@@ -197,12 +197,12 @@ namespace rhi::core
 		
 		/*----------------------------------------------------------------------
 		*  @brief :インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const gu::uint32 drawCallCount) = 0;
 
 		/*----------------------------------------------------------------------
 		*  @brief :Mesh shaderで使用する描画関数です.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void DispatchMesh(const gu::uint32 threadGroupCountX = 1, const gu::uint32 threadGroupCountY = 1, const gu::uint32 threadGroupCountZ = 1) = 0;
 		
 		/*-------------------------------------------------------------------

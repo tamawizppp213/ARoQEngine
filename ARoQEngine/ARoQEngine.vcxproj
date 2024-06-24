@@ -247,6 +247,10 @@
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIFont.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UISlider.hpp" />
     <ClInclude Include="GameCore\Rendering\UI\Public\Include\UIText.hpp" />
+    <ClInclude Include="GameUtility\Base\Include\GUAtomic.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Base\Include\GUCommandLine.hpp">
       <SubType>
       </SubType>
@@ -489,7 +493,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonType.hpp">
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonCommon.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -826,9 +830,25 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Platform\Core\Include\CoreAtomicOperator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Core\Include\CoreCommonState.hpp" />
+    <ClInclude Include="Platform\Core\Include\CoreCriticalSection.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Core\Include\CoreCursor.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreFileSystem.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Core\Include\CoreHardware.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Core\Include\CoreOS.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -838,6 +858,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="Platform\Core\Include\CorePlatformMacros.hpp" />
+    <ClInclude Include="Platform\Core\Include\CoreProcess.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Core\Include\CoreWindow.hpp" />
     <ClInclude Include="Platform\Core\Include\CoreWindowMessageHandler.hpp" />
     <ClInclude Include="Platform\Core\Private\File\Include\CoreFileCommonState.hpp">
@@ -848,11 +872,35 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Platform\Core\Private\Process\Include\CoreProcessSetting.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsAtomicOperator.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsCriticalSection.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Windows\Include\WindowsFileSystem.hpp">
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsHardware.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsOS.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Windows\Include\WindowsPlatformCommand.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsProcess.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -1133,6 +1181,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="GameUtility\File\Private\Json\Source\JsonReader.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\File\Private\Json\Source\JsonValueArray.cpp">
       <SubType>
       </SubType>
@@ -1271,6 +1323,10 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="Platform\Core\Source\CorePlatformApplication.cpp" />
+    <ClCompile Include="Platform\Core\Source\CoreProcess.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Platform\Core\Source\CoreWindow.cpp" />
     <ClCompile Include="Platform\Core\Source\CoreWindowMessageHandler.cpp" />
     <ClCompile Include="Platform\Windows\Private\File\Source\WindowsFileHandleWithBuffering.cpp">
@@ -1281,14 +1337,34 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="Platform\Windows\Source\WindowsAtomicOperator.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Platform\Windows\Source\WindowsCriticalSection.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Platform\Windows\Source\WindowsCursor.cpp" />
     <ClCompile Include="Platform\Windows\Source\WIndowsError.cpp" />
     <ClCompile Include="Platform\Windows\Source\WindowsFileSystem.cpp">
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="Platform\Windows\Source\WindowsHardware.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Platform\Windows\Source\WindowsOS.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="Platform\Windows\Source\WindowsPlatformApplication.cpp" />
     <ClCompile Include="Platform\Windows\Source\WindowsPlatformCommand.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="Platform\Windows\Source\WindowsProcess.cpp">
       <SubType>
       </SubType>
     </ClCompile>
@@ -1401,6 +1477,7 @@
     <None Include="Shader\Core\ShaderColor.hlsli" />
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
     <None Include="Shader\Core\ShaderCore.hlsli" />
+    <None Include="Shader\Core\ShaderMath.hlsli" />
     <None Include="Shader\Core\ShaderVertexType.hlsli" />
     <None Include="Shader\Effect\ShaderTonemapType.hlsli" />
     <None Include="Shader\Lighting\ShaderBRDF.hlsli" />

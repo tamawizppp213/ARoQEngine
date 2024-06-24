@@ -83,27 +83,27 @@ namespace rhi::core
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief :  Return gpu resource shader binding element
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		const ResourceLayoutElement&  GetResourceElement(const size_t index) const { return _desc.Elements[index]; }
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Return shader layout element of the sampler state
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		const SamplerLayoutElement&   GetSamplerElement (const size_t index) const { return _desc.Samplers[index]; }
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Return Constant32Bits data
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		gu::Optional<Constant32Bits> GetConstant32Bits() const noexcept { return _desc.Constant32Bits; }
 
 		/*----------------------------------------------------------------------
 		*  @brief :  Return All gpu resource shader binding elements
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		const gu::DynamicArray<ResourceLayoutElement>& GetResourceElements() const{ return _desc.Elements; }
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Return all sampler state shader binding elements
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		const gu::DynamicArray<SamplerLayoutElement>&  GetSamplerElements () const{ return _desc.Samplers; }
 		
 		virtual void SetName(const gu::tstring& name) = 0;

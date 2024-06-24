@@ -73,43 +73,43 @@ namespace gm::simd::sse4
 	#pragma region Math
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static float SIMD_CALL_CONVENTION LengthVector2(ConstVector128 vector) noexcept;
 		__forceinline static float SIMD_CALL_CONVENTION LengthVector3(ConstVector128 vector) noexcept;
 		__forceinline static float SIMD_CALL_CONVENTION LengthVector4(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出 (ただし, 返り値はfloatではなくVector128型で返されますので, 後々GetXなどで対応してください.)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static float SIMD_CALL_CONVENTION DotVector2(ConstVector128 left, ConstVector128 right) noexcept;
 		__forceinline static float SIMD_CALL_CONVENTION DotVector3(ConstVector128 left, ConstVector128 right) noexcept;
 		__forceinline static float SIMD_CALL_CONVENTION DotVector4(ConstVector128 left, ConstVector128 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 入力ベクトルの単位ベクトルを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION NormalizeVector2(ConstVector128 vector) noexcept;
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION NormalizeVector3(ConstVector128 vector) noexcept;
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION NormalizeVector4(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 最も近い整数に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION Round(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 切り捨て (指定した数値の端数を切り捨てた整数に丸める。数直線上で0の方向にある次の整数
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION Truncate(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 負の方向に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION Floor(ConstVector128 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 切り上げ 数直線上で正の方向にある次の整数に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION Ceiling(ConstVector128 vector) noexcept;
 
 	#pragma endregion Math

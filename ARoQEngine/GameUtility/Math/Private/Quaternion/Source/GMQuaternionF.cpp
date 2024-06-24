@@ -49,7 +49,7 @@ __forceinline QuaternionF gm::RotationRollPitchYawQuaternion(const Vector3f& rol
 
 /*----------------------------------------------------------------------
 *  @brief : ある法線ベクトル軸を中心に回転を行います
-/*----------------------------------------------------------------------*/
+*----------------------------------------------------------------------*/
 __forceinline QuaternionF gm::RotationNormalQuaternion(const Vector3f& normalAxis, const float angle) noexcept
 {
 	return SIMD_NAME_SPACE::Quaternion128Utility::RotationNormal(normalAxis, angle);
@@ -57,7 +57,7 @@ __forceinline QuaternionF gm::RotationNormalQuaternion(const Vector3f& normalAxi
 
 /*----------------------------------------------------------------------
 *  @brief : ある軸を中心に回転を行います
-/*----------------------------------------------------------------------*/
+*----------------------------------------------------------------------*/
 __forceinline QuaternionF gm::RotationAxisQuaternion(const Vector3f& axis, const float angle) noexcept
 {
 	return SIMD_NAME_SPACE::Quaternion128Utility::RotationAxis(axis, angle);

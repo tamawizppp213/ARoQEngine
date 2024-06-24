@@ -295,7 +295,7 @@ namespace gu
 		#pragma region Public Operator 
 		/*----------------------------------------------------------------------
 		*  @brief : Žw’è‚µ‚½“ú•t‚Æ“¯‚¶‚©‚Ç‚¤‚©, ˆá‚¤‚©‚Ç‚¤‚©
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline bool operator==(const DateTime& right) const { return (_ticks == right._ticks); }
 		__forceinline bool operator!=(const DateTime& right) const { return (_ticks != right._ticks); }
 		__forceinline bool operator> (const DateTime& right) const { return (_ticks > right._ticks); }

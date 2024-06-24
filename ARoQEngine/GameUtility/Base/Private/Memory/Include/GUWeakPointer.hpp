@@ -40,7 +40,7 @@ namespace gu
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : Release the observer pointer
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void Reset() { ReleaseObserverReference(); }
 
 
@@ -53,14 +53,14 @@ namespace gu
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  Constructs an empty weak pointer.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		WeakPointer() : details::smart_pointer::ObserverPointerBase<ElementType, Mode>() {};
 
 		WeakPointer(decltype(__nullptr)) : details::smart_pointer::ObserverPointerBase<ElementType, Mode>() {};
 
 		/*----------------------------------------------------------------------
 		*  Constructs a weak pointer from the shared pointer.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		explicit WeakPointer(const SharedPointer<ElementType, Mode>& pointer)
 			: ObserverPointerBase<ElementType, Mode>(pointer)
 		{
@@ -69,14 +69,14 @@ namespace gu
 
 		/*----------------------------------------------------------------------
 		*  Constructs a weak pointer from the changable shared pointer.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class OtherType>
 		explicit WeakPointer(const SharedPointer<OtherType, Mode>& pointer)
 			:details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer) { AddObserverReference(); }
 
 		/*----------------------------------------------------------------------
 		*  Copy constructs have the same weak pointer type
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		WeakPointer(const WeakPointer& pointer)
 			:details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer) { AddObserverReference(); }
 
@@ -84,7 +84,7 @@ namespace gu
 		
 		/*----------------------------------------------------------------------
 		*  Copy constructs have the other pointer type
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class OtherType>
 		WeakPointer(const WeakPointer<OtherType>& pointer)
 			: ObserverPointerBase<ElementType, Mode>(pointer) { AddObserverReference(); }
@@ -100,13 +100,13 @@ namespace gu
 
 		/*----------------------------------------------------------------------
 		*  Move constructs have the same weak pointer type
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		WeakPointer(WeakPointer&& pointer) 
 			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer) {  }
 
 		/*----------------------------------------------------------------------
 		*  Move constructs have the other weak pointer type
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class OtherType>
 		WeakPointer(WeakPointer<OtherType>&& pointer) 
 			: details::smart_pointer::ObserverPointerBase<ElementType, Mode>(pointer){}

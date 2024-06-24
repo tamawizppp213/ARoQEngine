@@ -40,7 +40,7 @@ namespace gm::simd::avx2
 		#pragma region Operator
 		/*----------------------------------------------------------------------
 		*  @brief : Š|‚¯ŽZ
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Matrix128 SIMD_CALL_CONVENTION Multiply(ConstMatrix128 left, ConstMatrix128 right) noexcept;
 		#pragma endregion Operator
 

@@ -42,13 +42,13 @@ namespace gm::simd::sse4
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : FocusPositionに視点を向けるための変換行列を作成します(左手系, 右手系)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Matrix128 SIMD_CALL_CONVENTION LookAtLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept;
 		__forceinline static sse::Matrix128 SIMD_CALL_CONVENTION LookAtRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 focusPosition, Vector128Utility::ConstVector128 worldUp) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 視点を対象方向に向けるための変換行列を作成します(左手系, 右手系)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Matrix128 SIMD_CALL_CONVENTION LookToLH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept;
 		__forceinline static sse::Matrix128 SIMD_CALL_CONVENTION LookToRH(Vector128Utility::ConstVector128 eyePosition, Vector128Utility::ConstVector128 eyeDirection, Vector128Utility::ConstVector128 worldUp) noexcept;
 

@@ -1,19 +1,16 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   CoreCriticalSection.hpp
-///  @brief  OSにおいて, データの競合を防ぐためのクリティカルセクションを提供します.@n
-///          一つのプロセス内で使用でき, プロセス間で共有することは出来ない.
+///  @file   CoreHardware.hpp
+///  @brief  CPUやGPUなどのハードウェア情報を取得するクラスです.
 ///  @author toide
-///  @date   2024/06/21 0:09:35
+///  @date   2024/06/23 19:01:07
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef CORE_CRITICAL_SECTION_HPP
-#define CORE_CRITICAL_SECTION_HPP
+#ifndef CORE_HARDWARE_HPP
+#define CORE_HARDWARE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "CorePlatformMacros.hpp"
-#include PLATFORM_COMPILED_HEADER(Platform, CriticalSection.hpp)
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -25,7 +22,6 @@
 
 namespace platform::core
 {
-	/*! @brief 高速化のため, 仮想関数を使いませんでした*/
-	using CriticalSection = PLATFORM_CLASS(CoreCriticalSection);
+	
 }
 #endif

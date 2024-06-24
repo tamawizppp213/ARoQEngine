@@ -29,7 +29,9 @@
 #include "GameUtility/Base/Include/GUCommandLine.hpp"
 #include "GameUtility/Base/Include/GUParse.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
-
+#include "Platform/Windows/Include/WindowsHardware.hpp"
+//#include "GameUtility/File/Private/Json/Include/JsonReader.hpp"
+// 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -64,6 +66,7 @@
     const auto argument = gu::CommandLine::BuildFromArgumentVector(argumentCount, argumentVector);
 #endif
 
+    const auto test = platform::windows::CoreHardware::GetCPUCacheLineSize();
     gu::CommandLine::SetUp(argument.CString());
 
     /********************************************

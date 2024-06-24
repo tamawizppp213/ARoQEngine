@@ -176,8 +176,6 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 /****************************************************************************
 *                     Destoy
 ****************************************************************************/
-/* @fn        void RHIDevice::Destroy()
-*
 /* @brief     Release command resource and device
 *
 *  @param[in] void

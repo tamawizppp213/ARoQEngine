@@ -55,12 +55,12 @@ namespace rhi::directX12
 
 		/*----------------------------------------------------------------------
 		*  @brief : RenderPassを開始します.基本的には各Draw関数のBeginRecordingの後に呼ばれます
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief : RenderPassを終了します.基本的には各Draw関数のEndRecording前に呼ばれます
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		virtual void EndRenderPass() override;
 
 		/*!**********************************************************************
@@ -79,12 +79,12 @@ namespace rhi::directX12
         #pragma region Query
 		/*----------------------------------------------------------------------
 		*  @brief : GPU情報を取得するためのクエリを開始します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		void BeginQuery(const core::QueryResultLocation& location) override;
 
 		/*----------------------------------------------------------------------
 		*  @brief : GPU情報を取得するためのクエリを終了します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		void EndQuery(const core::QueryResultLocation& location) override;
 
 		#pragma endregion Query
@@ -154,22 +154,22 @@ namespace rhi::directX12
 		*           startIndexLocation    : インデックスを読み取り始める, インデックスバッファ中の配列要素数
 		* 　　　　　　 baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
 		*           startInstanceLocation : 描画を行う最初のインスタンス番号
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		void DrawIndexedInstanced(gu::uint32 indexCountPerInstance, gu::uint32 instanceCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0, gu::uint32 startInstanceLocation = 0) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief : インデックスがついているモデルでかつ, インスタンシング描画が必要ないプリミティブを描画します.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		void DrawIndexed(gu::uint32 indexCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0) override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		void DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const gu::uint32 drawCallCount) override;
 
 		/*----------------------------------------------------------------------
 		*  @brief :Mesh shaderで使用する描画関数です. 
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		void DispatchMesh(const gu::uint32 threadGroupCountX = 1, const gu::uint32 threadGroupCountY = 1, const gu::uint32 threadGroupCountZ = 1) override;
         #pragma endregion Graphics Command Function
 		/*-------------------------------------------------------------------

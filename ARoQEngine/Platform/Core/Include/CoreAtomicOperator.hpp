@@ -24,6 +24,7 @@
 
 namespace platform::core
 {
+	/*! @brief ‹É—Í‚‘¬‰»‚Ì‚½‚ß, staticŠÖ”ŒÄ‚Ño‚µ‚ªo—ˆ‚é‚æ‚¤‚É‚µ‚Ü‚µ‚½*/
 	using AtomicOperator = PLATFORM_CLASS(CoreAtomicOperator);
 }
 #endif

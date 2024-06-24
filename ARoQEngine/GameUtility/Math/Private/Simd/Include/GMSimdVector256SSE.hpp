@@ -68,27 +68,27 @@ namespace gm::simd::sse
 		#pragma region Setter
 		/*----------------------------------------------------------------------
 		*  @brief : ゼロ初期化したVector256を返す関数
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Zero() noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : double4つからVector256クラスを生成する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Set(const double x, const double y, const double z, const double w) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : double1つからVector256クラスを生成する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Set(const double value) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : Int4つからVector256クラスを生成する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION SetInt(const gu::uint32 x, const gu::uint32 y, const gu::uint32 z, const gu::uint32 w) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : Doubleを使ってVectorのX(, Y, Z, W)要素に値を代入する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION SetX(ConstVector256 vector, const double x) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION SetY(ConstVector256 vector, const double y) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION SetZ(ConstVector256 vector, const double z) noexcept;
@@ -96,7 +96,7 @@ namespace gm::simd::sse
 
 		/*----------------------------------------------------------------------
 		*  @brief : ベクトルを使ってdouble配列に代入する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static void SIMD_CALL_CONVENTION StoreDouble(double* destination, ConstVector256 source) noexcept;
 		__forceinline static void SIMD_CALL_CONVENTION StoreDouble2(double* destination, ConstVector256 source) noexcept;
 		__forceinline static void SIMD_CALL_CONVENTION StoreDouble3(double* destination, ConstVector256 source) noexcept;
@@ -108,7 +108,7 @@ namespace gm::simd::sse
 		*           One      : 1, 1, 1, 1
 		*           Infinity : INF, INF, INF, INF
 		*           Epsilon  : doubleEpsilon
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION SplatX(ConstVector256 vector) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION SplatY(ConstVector256 vector) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION SplatZ(ConstVector256 vector) noexcept;
@@ -120,7 +120,7 @@ namespace gm::simd::sse
 
 		/*----------------------------------------------------------------------
 		*  @brief : ベクトルを並び替えます.indexを指定するとそのindexにあったVector4型を取得
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Swizzle(ConstVector256 vector,
 			const gu::uint32 xIndex, const gu::uint32 yIndex,
 			const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept;
@@ -129,7 +129,7 @@ namespace gm::simd::sse
 		*  @brief : 2つのベクトルから要素を抽出し, 新しいベクトルを作成する
 		*           0～3 : aからのx, y, z, w
 		*           4～7 : bからのx, y, z, w
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Permute(ConstVector256 a, ConstVector256,
 			const gu::uint32 xIndex, const gu::uint32 yIndex,
 			const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept;
@@ -137,14 +137,14 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------
 		*  @brief : 2つのベクトルから要素を抽出し, 新しいベクトルを作成する
 		*           control vectorが0の場合はleftから, 非0の場合はrightからそれぞれ抽出が行われます
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Select(ConstVector256 left, ConstVector256 right, ConstVector256 control) noexcept;
 		#pragma endregion Setter
 
 		#pragma region Getter
 		/*----------------------------------------------------------------------
 		*  @brief : FPUレジスタに格納されたX(, Y, Z, W)等の要素を取り出す
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static double SIMD_CALL_CONVENTION GetX(ConstVector256 vector) noexcept;
 		__forceinline static double SIMD_CALL_CONVENTION GetY(ConstVector256 vector) noexcept;
 		__forceinline static double SIMD_CALL_CONVENTION GetZ(ConstVector256 vector) noexcept;
@@ -152,7 +152,7 @@ namespace gm::simd::sse
 
 		/*----------------------------------------------------------------------
 		*  @brief : doubleの配列を使ってベクトルに格納する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION LoadDouble(const double* source) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION LoadDouble2(const double* source) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION LoadDouble3(const double* source) noexcept;
@@ -163,53 +163,53 @@ namespace gm::simd::sse
 		#pragma region Operator
 		/*----------------------------------------------------------------------
 		*  @brief : 2つのベクトルの各要素同士の和を算出します. (left + right)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Add(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2つのベクトルの各要素同士の差を算出します. (left - right)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Subtract(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2つのベクトルの各要素同士の積を算出します. (left * right)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Multiply(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2つのベクトルの各要素同士の除算を算出します. (left / right)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Divide(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2つのベクトルの各要素同士のあまりを算出します. (left % right)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Mod(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief :  subtractLeft - (multiplyLeft * multiplyRight)を算出します.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION NegativeMultiplySubtract(ConstVector256 multiplyLeft, ConstVector256 multiplyRight, ConstVector256 subtractLeft) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : multiplyLeft * multiplyRight + addを算出します.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION MultiplyAdd(ConstVector256 multiplyLeft, ConstVector256 multiplyRight, ConstVector256 add) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : ベクトルの各要素同士の逆数を算出します. (1.0f / vector)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Reciprocal(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : double値を使って各要素に掛けます scale * vector
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Scale(ConstVector256 vector, const double scale) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 二つのベクトルが等しいかどうかを調べます
 		*           (Eachは各要素毎に等しいかどうかを調べます.)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool      SIMD_CALL_CONVENTION EqualVector2(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION EqualVector3(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION EqualVector4(ConstVector256 left, ConstVector256 right) noexcept;
@@ -218,7 +218,7 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------
 		*  @brief : 二つのベクトルが等しくないかを調べます
 		*           (Eachは各要素毎に等しいかどうかを調べます.)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool      SIMD_CALL_CONVENTION NotEqualVector2(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION NotEqualVector3(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION NotEqualVector4(ConstVector256 left, ConstVector256 right) noexcept;
@@ -228,7 +228,7 @@ namespace gm::simd::sse
 		*  @brief : 二つのベクトルがすべて等しいかどうかを調べます.
 		*           比較時には符号なし整数(U32)として比較します.
 		*           (Eachは各要素ごとに等しいかどうかを調べます)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool      SIMD_CALL_CONVENTION EqualAsIntVector2(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION EqualAsIntVector3(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION EqualAsIntVector4(ConstVector256 left, ConstVector256 right) noexcept;
@@ -238,7 +238,7 @@ namespace gm::simd::sse
 		*  @brief : 二つのベクトルが一つでも等しくないかどうかを調べます.
 		*           比較時には符号なし整数(U32)として比較します.
 		*           (Eachは各要素ごとに等しいかどうかを調べます)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool      SIMD_CALL_CONVENTION NotEqualAsIntVector2(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION NotEqualAsIntVector3(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION NotEqualAsIntVector4(ConstVector256 left, ConstVector256 right) noexcept;
@@ -246,7 +246,7 @@ namespace gm::simd::sse
 
 		/*----------------------------------------------------------------------
 		*  @brief : 一定範囲内で値が等しいかを調べる (left - epsilon <= right <= left + epsilon)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool      SIMD_CALL_CONVENTION NearEqualVector2(ConstVector256 left, ConstVector256 right, ConstVector256 epsilon) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION NearEqualVector3(ConstVector256 left, ConstVector256 right, ConstVector256 epsilon) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION NearEqualVector4(ConstVector256 left, ConstVector256 right, ConstVector256 epsilon) noexcept;
@@ -254,7 +254,7 @@ namespace gm::simd::sse
 
 		/*----------------------------------------------------------------------
 		*  @brief : 左の方が全ての要素において大きいかを調べます (left > right)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool      SIMD_CALL_CONVENTION GreaterVector2(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION GreaterVector3(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION GreaterVector4(ConstVector256 left, ConstVector256 right) noexcept;
@@ -262,7 +262,7 @@ namespace gm::simd::sse
 
 		/*----------------------------------------------------------------------
 		*  @brief : 左の方が全ての要素において大きいor等しいかを調べます (left >= right)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool      SIMD_CALL_CONVENTION GreaterOrEqualVector2(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION GreaterOrEqualVector3(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION GreaterOrEqualVector4(ConstVector256 left, ConstVector256 right) noexcept;
@@ -270,7 +270,7 @@ namespace gm::simd::sse
 
 		/*----------------------------------------------------------------------
 		*  @brief : 左の方が全ての要素において小さいかを調べます (left < right)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool      SIMD_CALL_CONVENTION LessVector2(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION LessVector3(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION LessVector4(ConstVector256 left, ConstVector256 right) noexcept;
@@ -278,7 +278,7 @@ namespace gm::simd::sse
 
 		/*----------------------------------------------------------------------
 		*  @brief : 左の方が全ての要素において小さいor等しいかを調べます (left <= right)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool      SIMD_CALL_CONVENTION LessOrEqualVector2(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION LessOrEqualVector3(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION LessOrEqualVector4(ConstVector256 left, ConstVector256 right) noexcept;
@@ -286,7 +286,7 @@ namespace gm::simd::sse
 
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内にあるかどうか -bounds <= vector <= +bounds
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool      SIMD_CALL_CONVENTION InBoundsVector2(ConstVector256 vector, ConstVector256 bounds) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION InBoundsVector3(ConstVector256 vector, ConstVector256 bounds) noexcept;
 		__forceinline static bool      SIMD_CALL_CONVENTION InBoundsVector4(ConstVector256 vector, ConstVector256 bounds) noexcept;
@@ -297,22 +297,22 @@ namespace gm::simd::sse
 		#pragma region Bit
 		/*----------------------------------------------------------------------
 		*  @brief : ビット単位の論理積の演算を行います
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION AndInt(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : ビット単位の論理和の演算を行います
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION OrInt(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : ビット単位の論理積否定の演算を行います
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION NorInt(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : ビット単位の排他的論理和の演算を行います
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION XorInt(ConstVector256 left, ConstVector256 right) noexcept;
 
 		#pragma endregion Bit
@@ -320,26 +320,26 @@ namespace gm::simd::sse
 		#pragma region Math
 		/*----------------------------------------------------------------------
 		*  @brief : 各要素にマイナスを取ったものを返す.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Negate(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static double SIMD_CALL_CONVENTION LengthVector2(ConstVector256 vector) noexcept;
 		__forceinline static double SIMD_CALL_CONVENTION LengthVector3(ConstVector256 vector) noexcept;
 		__forceinline static double SIMD_CALL_CONVENTION LengthVector4(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 2次ノルム(各要素の2乗和をルートを取ったときのベクトルの大きさ)を算出
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static double SIMD_CALL_CONVENTION LengthSquaredVector2(ConstVector256 vector) noexcept;
 		__forceinline static double SIMD_CALL_CONVENTION LengthSquaredVector3(ConstVector256 vector) noexcept;
 		__forceinline static double SIMD_CALL_CONVENTION LengthSquaredVector4(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 内積を算出 (ただし, 返り値はdoubleではなくVector256型で返されますので, 後々GetXなどで対応してください.)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static double SIMD_CALL_CONVENTION DotVector2(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static double SIMD_CALL_CONVENTION DotVector3(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static double SIMD_CALL_CONVENTION DotVector4(ConstVector256 left, ConstVector256 right) noexcept;
@@ -347,14 +347,14 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------
 		*  @brief : 外積を算出 left, rightに垂直なベクトルを返す
 		*           2次元の場合は平行四辺形の面積を返すという意味合い
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION CrossVector2(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION CrossVector3(ConstVector256 left, ConstVector256 right) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION CrossVector4(ConstVector256 first, ConstVector256 second, ConstVector256 third) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 入力ベクトルの単位ベクトルを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION NormalizeVector2(ConstVector256 vector) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION NormalizeVector3(ConstVector256 vector) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION NormalizeVector4(ConstVector256 vector) noexcept;
@@ -363,7 +363,7 @@ namespace gm::simd::sse
 		*  @brief     反射ベクトルを算出
 		*  @param[in] ConstVector256 : input  (入射ベクトル)
 		*  @param[in] ConstVector256 : normal (反射を行う法線ベクトル)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION ReflectVector2(ConstVector256 input, ConstVector256 normal) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION ReflectVector3(ConstVector256 input, ConstVector256 normal) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION ReflectVector4(ConstVector256 input, ConstVector256 normal) noexcept;
@@ -373,7 +373,7 @@ namespace gm::simd::sse
 		*  @param[in] ConstVector256 : input  (入射ベクトル)
 		*  @param[in] ConstVector256 : normal (反射を行う法線ベクトル)
 		*  @param[in] const double    : refractionIndex (屈折率)
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION RefractVector2(ConstVector256 input, ConstVector256 normal, const double refractionIndex) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION RefractVector3(ConstVector256 input, ConstVector256 normal, const double refractionIndex) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION RefractVector4(ConstVector256 input, ConstVector256 normal, const double refractionIndex) noexcept;
@@ -384,81 +384,81 @@ namespace gm::simd::sse
 
 		/*----------------------------------------------------------------------
 		*  @brief : 非常に大きい値か
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static bool IsInfiniteVector2(ConstVector256 vector) noexcept;
 		__forceinline static bool IsInfiniteVector3(ConstVector256 vector) noexcept;
 		__forceinline static bool IsInfiniteVector4(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素に根号を取ったものを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Sqrt(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素の逆数を取り, それに根号を取ったものを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION ReciprocalSqrt(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のsin, cos, tanを返します [rad]
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Sin(ConstVector256 vector) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Cos(ConstVector256 vector) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Tan(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のarcsin, arccos, arctanを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION ArcSin(ConstVector256 vector) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION ArcCos(ConstVector256 vector) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION ArcTan(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のsinH, cosH, tanHを返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION SinH(ConstVector256 vector) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION CosH(ConstVector256 vector) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION TanH(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素に対するsin成分とcos成分を取り出します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static void SIMD_CALL_CONVENTION SinCos(ConstVector256 input, Vector256* sin, Vector256* cos) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素の2^{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Exp2(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素の10^{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Exp10(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のe^{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION ExpE(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のlog2{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Log2(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のlog10{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Log10(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のloge{vector}を返します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION LogE(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素のPowを返します
 		*           base^{power}
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Pow(ConstVector256 base, ConstVector256 power) noexcept;
 
 		/*----------------------------------------------------------------------
@@ -466,7 +466,7 @@ namespace gm::simd::sse
 		*  @param[in]  t = 0の時の値
 		   @param[in]  t = 1の時の値
 		   @param[in]  t : 線形補間の割合
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Lerp(ConstVector256 start, ConstVector256 end, const double t) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION LerpV(ConstVector256 start, ConstVector256 end, ConstVector256 t) noexcept;
 
@@ -478,13 +478,13 @@ namespace gm::simd::sse
 		   @param[in]  終点の位置
 		   @param[in]  終点におけるスプラインの接線を表すベクトル
 		   @param[in]  t : エルミート補間の割合
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Hermite(ConstVector256 startPosition, ConstVector256 startTangent, ConstVector256 endPosition, ConstVector256 endTangent, const double t) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION HermiteV(ConstVector256 startPosition, ConstVector256 startTangent, ConstVector256 endPosition, ConstVector256 endTangent, ConstVector256 t) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief      CatMull-Romスプライン補間の結果を返します。4つの制御点を全て通るスプライン補間
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION CatMullRom(ConstVector256 position0, ConstVector256 position1, ConstVector256 position2, ConstVector256 position3, const double t) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION CatMullRomV(ConstVector256 position0, ConstVector256 position1, ConstVector256 position2, ConstVector256 position3, ConstVector256 t) noexcept;
 
@@ -494,52 +494,52 @@ namespace gm::simd::sse
 					   (f==0 && g>=0 && 1-f-g>=0) の場合、ポイントは Position0>Position2 行目にあります>。
 					   (f>=0 && g==0 && 1-f-g>=0) の場合、ポイントは Position0>Position1> 行目にあります。
 					   (f>=0 && g>=0 && 1-f-g==0) の場合、ポイントは Position1>Position2 行目にあります>。
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION BaryCentric(ConstVector256 position0, ConstVector256 position1, ConstVector256 position2, const double f, const double g) noexcept;
 		__forceinline static Vector256 SIMD_CALL_CONVENTION BaryCentricV(ConstVector256 position0, ConstVector256 position1, ConstVector256 position2, ConstVector256 f, ConstVector256 g) noexcept;
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素について最小値となる方を選択します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Min(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 全ての要素について最大値となる方を選択します
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Max(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 最も近い整数に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Round(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 切り捨て (指定した数値の端数を切り捨てた整数に丸める。数直線上で0の方向にある次の整数
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Truncate(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 負の方向に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Floor(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 切り上げ 数直線上で正の方向にある次の整数に丸める
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Ceiling(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 指定範囲内で数値を設定する
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Clamp(ConstVector256 vector, ConstVector256 min, ConstVector256 max) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 1以上には行かないようにする
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Saturate(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : 絶対値
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION Abs(ConstVector256 vector) noexcept;
 
 		#pragma endregion Math
@@ -547,17 +547,17 @@ namespace gm::simd::sse
 		#pragma region Angle
 		/*----------------------------------------------------------------------
 		*  @brief : - pi <= theta <= piの範囲に収めるようにします.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION ModAngles(ConstVector256 vector) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : - pi <= theta <= piの範囲に収めるようにした上で足し算を行います.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION AddAngles(ConstVector256 left, ConstVector256 right) noexcept;
 
 		/*----------------------------------------------------------------------
 		*  @brief : - pi <= theta <= piの範囲に収めるようにした上で引き算を行います.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static Vector256 SIMD_CALL_CONVENTION SubtractAngles(ConstVector256 left, ConstVector256 right) noexcept;
 		#pragma endregion Angle
 		/****************************************************************************
@@ -2927,7 +2927,7 @@ namespace gm::simd::sse
 	{
 		/*----------------------------------------------------------------------
 		*   指数部と仮数部を取り出す.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		// vectorの指数部を取り出す  
 		__m128i rawBiased      = _mm_and_si128(_mm_castps_si128(vector),VECTOR_128F_INFINITY);
 		// vectorの仮数部を取り出す
@@ -2958,7 +2958,7 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------
 		*   以下ではテイラー展開を用いてLog2の近似値を計算する
 		*   log2(y) = a7 * mantissa^7 + a6 * mantissa^6 + .. + a0
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		// Compute the approximation.
 		// tempは1.f (fは仮数部)を表す
 		__m128i temp = _mm_or_si128(VECTOR_128F_ONE, t); 
@@ -3034,7 +3034,7 @@ namespace gm::simd::sse
 	{
 		/*----------------------------------------------------------------------
 		*   指数部と仮数部を取り出す.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__m128i rawBiased      = _mm_and_si128(_mm_castps_si128(vector), VECTOR_128F_INFINITY);
 		__m128i trailing       = _mm_and_si128(_mm_castps_si128(vector), VECTOR_128I_QNAN_TEST);
 		__m128i isExponentZero = _mm_cmpeq_epi32(VECTOR_128F_ZERO, rawBiased);
@@ -3062,7 +3062,7 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------
 		*   以下ではテイラー展開を用いてLog2の近似値を計算する
 		*   log2(y) = a7 * mantissa^7 + a6 * mantissa^6 + .. + a0
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		// Compute the approximation.
 		// tempは1.f (fは仮数部)を表す
 		__m128i tmp = _mm_or_si128(VECTOR_128F_ONE, t);
@@ -3138,7 +3138,7 @@ namespace gm::simd::sse
 	{
 		/*----------------------------------------------------------------------
 		*   指数部と仮数部を取り出す.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__m128i rawBiased      = _mm_and_si128(_mm_castps_si128(vector), VECTOR_128F_INFINITY);
 		__m128i trailing       = _mm_and_si128(_mm_castps_si128(vector), VECTOR_128I_QNAN_TEST);
 		__m128i isExponentZero = _mm_cmpeq_epi32(VECTOR_128F_ZERO, rawBiased);
@@ -3166,7 +3166,7 @@ namespace gm::simd::sse
 		/*----------------------------------------------------------------------
 		*   以下ではテイラー展開を用いてLog2の近似値を計算する
 		*   log2(y) = a7 * mantissa^7 + a6 * mantissa^6 + .. + a0
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		// Compute the approximation.
 		__m128i tmp = _mm_or_si128(VECTOR_128F_ONE, t);
 		__m128 y = _mm_sub_ps(_mm_castsi128_ps(tmp), VECTOR_128F_ONE);

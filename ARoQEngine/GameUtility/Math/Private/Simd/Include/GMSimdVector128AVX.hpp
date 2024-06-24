@@ -40,7 +40,7 @@ namespace gm::simd::avx
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  @brief : ベクトルを並び替えます.indexを指定するとそのindexにあったVector4型を取得
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION Swizzle(ConstVector128 vector,
 			const gu::uint32 xIndex, const gu::uint32 yIndex,
 			const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept;
@@ -49,7 +49,7 @@ namespace gm::simd::avx
 		*  @brief : 2つのベクトルから要素を抽出し, 新しいベクトルを作成する
 		*           0～3 : aからのx, y, z, w
 		*           4～7 : bからのx, y, z, w
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline static sse::Vector128 SIMD_CALL_CONVENTION Permute(ConstVector128 a, ConstVector128,
 			const gu::uint32 xIndex, const gu::uint32 yIndex,
 			const gu::uint32 zIndex, const gu::uint32 wIndex) noexcept;

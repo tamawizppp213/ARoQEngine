@@ -37,12 +37,12 @@ namespace gu
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*   @brief : Function to relinquish ownership of a resource
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		ElementType* Release() noexcept;
 
 		/*----------------------------------------------------------------------
 		*   @brief : Reset the pointer
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		__forceinline void Reset(ElementType* pointer = nullptr)
 		{
 			Deleter()(_elementPointer);
@@ -68,14 +68,14 @@ namespace gu
 		*****************************************************************************/
 		/*----------------------------------------------------------------------
 		*  Constructs an empty unique pointer.
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		UniquePointer() noexcept : _elementPointer(nullptr) {};
 
 		UniquePointer(decltype(__nullptr)) : _elementPointer(nullptr) {};
 
 		/*----------------------------------------------------------------------
 		*  Destructor
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		~UniquePointer()
 		{
 			Deleter()(_elementPointer);
@@ -83,12 +83,12 @@ namespace gu
 
 		/*----------------------------------------------------------------------
 		*  Constructs a new unique pointer from the raw pointer
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		explicit UniquePointer(ElementType* elementPointer) : _elementPointer(elementPointer) {};
 
 		/*----------------------------------------------------------------------
 		*  Move Constructs a unique pointer
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		UniquePointer(UniquePointer&& right) noexcept : _elementPointer(right.Release()) {};
 
 		UniquePointer& operator=(UniquePointer&& right) noexcept
@@ -99,7 +99,7 @@ namespace gu
 
 		/*----------------------------------------------------------------------
 		*  Move Constructs a unique pointer from the other type unique pointer
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		template<class OtherType, class OtherDeleter>
 		UniquePointer(UniquePointer<OtherType, OtherDeleter>&& right) noexcept
 			: _elementPointer(right.Release()){ };
@@ -113,7 +113,7 @@ namespace gu
 
 		/*----------------------------------------------------------------------
 		*  Copy Constructs : delete
-		/*----------------------------------------------------------------------*/
+		*----------------------------------------------------------------------*/
 		UniquePointer(const UniquePointer&)            = delete;
 		UniquePointer& operator=(const UniquePointer&) = delete;
 	private:

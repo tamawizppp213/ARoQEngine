@@ -74,7 +74,7 @@ IFileSystem::IFileSystem() : core::IFileSystem()
 {
 	/*----------------------------------------------------------------------
 	*         長いパスが有効かどうかを確認します.
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	HKEY keyHandle = NULL;
 
 	// レジストリキーを開きます.
@@ -115,7 +115,7 @@ gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenRead(const
 {
 	/*----------------------------------------------------------------------
 	*         フラグ設定
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	const uint32 accessFlag = GENERIC_READ;
 	const uint32 createFlag = OPEN_EXISTING;
 	const uint32 shareFlag = FILE_SHARE_READ | (allowWrite ? FILE_SHARE_WRITE : 0);
@@ -123,7 +123,7 @@ gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenRead(const
 
 	/*----------------------------------------------------------------------
 	*         ファイルを開きます.
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	const auto fileHandle = ::CreateFileW(fileName, accessFlag, shareFlag, NULL, createFlag, FILE_ATTRIBUTE_NORMAL | asyncFlag, NULL);
 	if (fileHandle != INVALID_HANDLE_VALUE)
 	{
@@ -148,7 +148,7 @@ gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenWrite(cons
 {
 	/*----------------------------------------------------------------------
 	*         フラグ設定
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	const uint32 accessFlag = GENERIC_WRITE | (allowRead ? GENERIC_READ : 0);
 	const uint32 createFlag = append ? OPEN_ALWAYS : CREATE_ALWAYS;
 	const uint32 shareFlag  = (allowRead ? FILE_SHARE_READ : 0);
@@ -156,7 +156,7 @@ gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenWrite(cons
 
 	/*----------------------------------------------------------------------
 	*         ファイルを開きます.
-	/*----------------------------------------------------------------------*/
+	*----------------------------------------------------------------------*/
 	const auto fileHandle = ::CreateFileW(fileName, accessFlag, shareFlag, NULL, createFlag, FILE_ATTRIBUTE_NORMAL | asyncFlag, NULL);
 	if (fileHandle != INVALID_HANDLE_VALUE)
 	{
