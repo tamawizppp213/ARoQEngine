@@ -33,21 +33,69 @@ namespace platform::windows
 	public:
 		#pragma region Public Function
 		/*!**********************************************************************
-		*  @brief     レジストリキーを探します.
+		*  @brief     レジストリキーを探します.　
 		*  @param[in] void* hKey ルートキー
 		*  @param[in] const tstring& subKey サブキー
 		*  @param[in] const tstring& valueName 値名
-		*  @param[out] tstring& 出力文字列
+		*  @param[out] tstring& キーの値
 		*  @return    bool キーが存在するかどうか
 		*************************************************************************/
 		static bool QueryRegistryKey(void* hKey, const gu::tstring& subKey, const gu::tstring& valueName, gu::tstring& outData);
 
 		/*!**********************************************************************
-		*  @brief     Visual studioのCommonToolsのパスを取得します (取得できない場合は空の文字列を返します.)
-		*  @param[in] const gu::uint32 Visual Studioのメジャーバージョン (VS2022の場合は17)
-		*  @return    tstring CommonToolsのパス
+		*  @brief     Registryキーに対応する値を取得します. この関数はUserのCurrentUserに存在するキーのみを探します.
+		*  @param[in] const gu::tstring& キーが存在する場所
+		*  @param[in] const gu::tstring& キー名
+		*  @param[out]tstring& キーの値
+		*  @return    bool 成功したかどうか
 		*************************************************************************/
-		static gu::tstring GetVisualStudioCommonToolsPath(const gu::uint32 majorVersion);
+		static bool GetRegistryKeyValue(const gu::tstring& keyPlace, const gu::tstring& valueName, gu::tstring& outValue);
+
+		/*!**********************************************************************
+		*  @brief     Registryキーに対応する値を設定します. この関数はUserのCurrentUserに存在するキーのみを探します.
+		*  @param[in] const gu::tstring& キーが存在する場所
+		*  @param[in] const gu::tstring& キー名
+		*  @param[in] tstring& キーの値
+		*  @return    bool 成功したかどうか
+		*************************************************************************/
+		static bool SetRegistryKeyValue(const gu::tstring& keyPlace, const gu::tstring& valueName, const gu::tstring& value);
+
+		/*!**********************************************************************
+		*  @brief     Registryキーに対応する値を削除します. この関数はUserのCurrentUserに存在するキーのみを探します.
+		*  @param[in] const gu::tstring& キーが存在する場所
+		*  @param[in] const gu::tstring& キー名
+		*  @return    bool 成功したかどうか
+		*************************************************************************/
+		static bool DeleteRegistryKeyValue(const gu::tstring& keyPlace, const gu::tstring& valueName);
+
+		/*!**********************************************************************
+		*  @brief     Registryキー自体を削除します. この関数はUserのCurrentUserに存在するキーのみを探します.
+		*  @param[in] const gu::tstring& キーが存在する場所
+		*  @param[in] const bool 下層のキーも削除するか
+		*  @return    bool 成功したかどうか
+		*************************************************************************/
+		static bool DeleteRegistryKey(const gu::tstring& keyPlace, const bool isRecursive);
+
+		/*!**********************************************************************
+		*  @brief     OSのIDを取得します
+		*  @param[in] void
+		*  @return    tstring ID名
+		*************************************************************************/
+		static gu::tstring GetOperatingSystemID();
+
+		/*!**********************************************************************
+		*  @brief     最後のエラーコードを取得します
+		*  @param[in] void
+		*  @return    gu::uint32 エラーコード
+		*************************************************************************/
+		static gu::uint32 GetLastError();
+
+		/*!**********************************************************************
+		*  @brief     最後のエラーコードを設定します
+		*  @param[in] void
+		*  @return    const gu::uint32 エラーコード
+		*************************************************************************/
+		static void SetLastError(const gu::uint32 errorCode);
 
 		#pragma endregion 
 

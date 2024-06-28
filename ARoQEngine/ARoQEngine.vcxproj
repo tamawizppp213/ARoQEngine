@@ -200,10 +200,18 @@
     <ClInclude Include="GameCore\Audio\Core\Include\AudioSource.hpp" />
     <ClInclude Include="GameCore\Audio\Core\Include\AudioSource3D.hpp" />
     <ClInclude Include="GameCore\Audio\Private\Include\WavDecoder.hpp" />
+    <ClInclude Include="GameCore\Core\Include\BaseObject.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameCore\Core\Include\Camera.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameActor.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameComponent.hpp" />
     <ClInclude Include="GameCore\Core\Include\GameObject.hpp" />
+    <ClInclude Include="GameCore\Core\Include\SceneObject.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameCore\Core\Include\GameWorldInfo.hpp" />
     <ClInclude Include="GameCore\Core\Include\ResourceManager.hpp" />
     <ClInclude Include="GameCore\Input\Include\GameInput.hpp" />
@@ -1474,6 +1482,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shader\BasePass\DefferedRenderingSettings.hlsli" />
     <None Include="Shader\Core\ShaderColor.hlsli" />
     <None Include="Shader\Core\ShaderConstantBuffer3D.hlsli" />
     <None Include="Shader\Core\ShaderCore.hlsli" />
@@ -1488,6 +1497,14 @@
     <ResourceCompile Include="MenuResource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Shader\BasePass\DefferedRendering.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MainPS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shader\Core\ShaderDebug.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
