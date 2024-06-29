@@ -44,12 +44,11 @@ namespace gu::file::json
 	public:
 		#pragma region Public Function
 		/*!**********************************************************************
-		*  @brief     Jsonファイルを最後まで読み込みます. 
-		*  @param[in] const gu::tstring& filePath : 読み込みたいJsonファイルのパス
-		*  @param[in] const bool 非同期読み込みを行うか
+		*  @brief     次の値を読み込みます
+		*  @param[out]JsonNotation&  
 		*  @return    bool : 読み込みに成功したかどうか
 		*************************************************************************/
-		bool Read(const gu::tstring& filePath, const bool useAsync);
+		bool ReadNext(JsonNotation& notation);
 
 		#pragma endregion 
 
@@ -63,6 +62,11 @@ namespace gu::file::json
 
 		#pragma region Public Constructor and Destructor
 
+		JsonReader(const gu::tstring& filePath, const bool useAsync = false)
+		{
+			Initialize(filePath, useAsync);
+		}
+		
 		#pragma endregion 
 
 	protected:
@@ -72,12 +76,27 @@ namespace gu::file::json
 
 		#pragma region Protected Function
 		/*!**********************************************************************
+		*  @brief     Jsonファイルを最後まで読み込みます.
+		*  @param[in] const gu::tstring& filePath : 読み込みたいJsonファイルのパス
+		*  @param[in] const bool 非同期読み込みを行うか
+		*  @return    bool : 読み込みに成功したかどうか
+		*************************************************************************/
+		bool Initialize(const gu::tstring& filePath, const bool useAsync);
+
+		/*!**********************************************************************
 		*  @brief      次のトークンが見つかるまでファイルポインタを進めます. 
 		*  @param[in]  const tstring& jsonファイルを文字列化したもの
 		*  @param[out] JsonToken token : 次のトークン
 		*  @return     bool : 読み込みに成功したかどうか
 		*************************************************************************/
 		bool ParseNextToken(const tstring& json, JsonToken& token);
+
+		/*!**********************************************************************
+		*  @brief      数値型を読み取ります. 
+		*  @param[in]  const tchar 文字列
+		*  @return     bool : 読み込みに成功したかどうか
+		*************************************************************************/
+		bool ParseNumberToken(const tstring& json);
 
 		#pragma endregion 
 
@@ -103,6 +122,18 @@ namespace gu::file::json
 		{
 			return character == SP(' ') || character == SP('\t') || character == SP('\n') || character == SP('\r');
 		}
+
+		/*!**********************************************************************
+		*  @brief      Jsonの数値型の判定
+		*  @param[out] const tchar character
+		*  @return     bool
+		*************************************************************************/
+		__forceinline bool IsNumber(const tchar character)
+		{
+			return (SP('0') <= character && character <= SP('9')) || character == SP('-') || character == SP('.')
+				|| character == SP('+') || character == SP('e') || character == SP('E');
+		}
+
 		#pragma endregion 
 
 		#pragma region Private Property 
@@ -110,11 +141,14 @@ namespace gu::file::json
 		/*! @brief Parseを行っているインデックス*/
 		gu::uint64 _parseIndex = 0;
 
-		/*! @brief jsonの行数*/
-		gu::uint32  _lineCount = 0;
+		/*! @brief キー名*/
+		gu::tstring _key = SP("");
 
-		/*! @brief 各行の文字数*/
-		gu::uint32 _characterCount = 0;
+		/*! @brief 生データ*/
+		gu::tstring _rawData = SP("");
+
+		/*! @brief 現在のToken*/
+		JsonToken _token = JsonToken::None;
 
 		#pragma endregion 
 

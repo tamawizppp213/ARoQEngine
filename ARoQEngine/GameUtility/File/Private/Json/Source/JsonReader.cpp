@@ -35,7 +35,7 @@ using namespace gu;
 *  @param[in] const bool 非同期読み込みを行うか
 *  @return    bool : 読み込みに成功したかどうか
 *************************************************************************/
-bool JsonReader::Read(const gu::tstring& filePath, const bool useAsync)
+bool JsonReader::Initialize(const gu::tstring& filePath, const bool useAsync)
 {
 	/*-------------------------------------------------------------------
 	-            ファイルハンドルを取得
@@ -50,7 +50,6 @@ bool JsonReader::Read(const gu::tstring& filePath, const bool useAsync)
 	/*-------------------------------------------------------------------
 	-            ファイルの全文字列を取得する
 	---------------------------------------------------------------------*/
-	tstring    fileString = SP("");
 	const auto fileSize   = fileHandle->Size();
 
 	{
@@ -61,14 +60,45 @@ bool JsonReader::Read(const gu::tstring& filePath, const bool useAsync)
 		// 文字列メモリ負荷対策
 		u8string utf8String(byteArray.Data(), fileSize);
 
-		fileString = StringConverter::ConvertUTF8ToTString(utf8String);
+		_rawData = StringConverter::ConvertUTF8ToTString(utf8String);
 	}
 
-	
+
 
 	return true;
 
 }
+
+/*!**********************************************************************
+*  @brief     次の値を読み込みます
+*  @param[out]JsonNotation&
+*  @return    bool : 読み込みに成功したかどうか
+*************************************************************************/
+bool JsonReader::ReadNext(JsonNotation& notation)
+{
+	/*-------------------------------------------------------------------
+	-            空の文字列の場合は読み込み失敗
+	---------------------------------------------------------------------*/
+	if(_rawData.IsEmpty())
+	{
+		return false;
+	}
+
+	/*-------------------------------------------------------------------
+	-            空の文字列の場合は読み込み失敗
+	---------------------------------------------------------------------*/
+	bool readWasSuccess = false;
+	_key.Clear();
+
+	do
+	{
+		JsonValueType currentState = JsonValueType::Null;
+
+
+
+	} while (readWasSuccess && _token == JsonToken::None);
+}
+
 #pragma endregion Public Function
 
 #pragma region Public Property
@@ -84,32 +114,37 @@ bool JsonReader::Read(const gu::tstring& filePath, const bool useAsync)
 *************************************************************************/
 bool JsonReader::ParseNextToken(const tstring& json, JsonToken& token)
 {
-	for (uint64 i = _parseIndex; i < json.Size(); ++i)
+	while (true)
 	{
 		// 文字列を1文字分進める
 		++_parseIndex;
 
 		// 終端文字の場合は終了
-		if (json[i] == SP('\0'))
+		if (json[_parseIndex] == SP('\0'))
 		{
 			break;
 		}
 
 		// 改行文字の場合は文字数をリセット
-		if(json[i] == SP('\n'))
+		if(json[_parseIndex] == SP('\n'))
 		{
-			++_lineCount;
-			_characterCount = 0;
+			
 		}
 
 		// 空白文字の場合はスキップ
-		if (IsWhiteSpace(json[i]))
+		if (IsWhiteSpace(json[_parseIndex]))
 		{
 			continue;
 		}
 
+		// 数値型の読み込み
+		if (!IsNumber(json[_parseIndex]))
+		{
+
+		}
+
 		// トークンの種類を判定
-		switch (json[i])
+		switch (json[_parseIndex])
 		{
 			case SP('{'):
 			{
@@ -156,6 +191,47 @@ bool JsonReader::ParseNextToken(const tstring& json, JsonToken& token)
 			}
 		}
 	}
+
+	return true;
+}
+
+/*!**********************************************************************
+*  @brief      数値型を読み取ります.
+*  @param[in]  const tchar 文字列
+*  @return     bool : 読み込みに成功したかどうか
+*************************************************************************/
+bool JsonReader::ParseNumberToken(const tstring& json)
+{
+	/*-------------------------------------------------------------------
+	-            文字列数の取得
+	---------------------------------------------------------------------*/
+	const tchar* startIndex = &json[_parseIndex];
+	uint64 characterCount = 0;
+
+	while (true)
+	{
+		// 終端文字の場合は終了
+		if (json[_parseIndex] == SP('\0'))
+		{
+			break;
+		}
+
+		if (!IsNumber(json[_parseIndex]))
+		{
+			++_parseIndex;
+			break;
+		}
+
+		// 文字列を1文字分進める
+		++characterCount;
+		++_parseIndex;
+	}
+
+	/*-------------------------------------------------------------------
+	-            数値データの読み込み
+	---------------------------------------------------------------------*/
+	tstring numberString(startIndex, characterCount);
+
 
 	return true;
 }
