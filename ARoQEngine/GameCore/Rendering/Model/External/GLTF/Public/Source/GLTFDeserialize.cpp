@@ -14,7 +14,7 @@
 #include "GameCore/Rendering/Model/External/GLTF/Private/Include/GLTFExtensionHandlers.hpp"
 #include "GameCore/Rendering/Model/External/GLTF/Private/Include/GLTFConstants.hpp"
 #include "GameCore/Rendering/Model/External/GLTF/Private/Include/GLTFSchemaValidation.hpp"
-#include "GameUtility/File/Include/Json.hpp"
+#include "GameUtility/File/Include/JsonOld.hpp"
 #include <iostream>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
