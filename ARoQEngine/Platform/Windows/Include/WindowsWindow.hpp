@@ -398,19 +398,26 @@ namespace platform::windows
 		/****************************************************************************
 		**                Protected Property
 		*****************************************************************************/
-		/* @brief : Window handle*/
+		/* @brief Window handle*/
 		HWND _hwnd = NULL;
 
+		/*! @brief WindowのClient領域のアスペクト比*/
 		float _aspectRatio = 0.0f;
 
+		/*! @brief ウィンドウがまだ最初のShow() を呼び出していないか*/
 		bool _isFirstTimeVisible = true;
+
+		/*! @brief 初回の最小化*/
 		bool _initiallyMinimized = false;
+
+		/*! @brief 初回の最大*/
 		bool _initiallyMaximized = false;
+
+		/*! @brief 96DPI以上のDPI設定を有効化するか*/
+		bool _enableHighDPIMode = false;
 
 		// @brief : ディスプレイの拡大率です. 
 		float _dpiScaleFactor = 1.0f;
-
-		bool _enableHighDPIMode = false;
 
 		// @brief : ディスプレイの仮想的な幅と高さを設定します. 
 		// 実際にリサイズしてGPUバッファのパフォーマンスに影響を与えるのではなく, 
@@ -428,11 +435,11 @@ namespace platform::windows
 		// @brief : 親ウィンドウが最小化される前の配置情報
 		WINDOWPLACEMENT _previousParentMinimizedWindowPlacement = WINDOWPLACEMENT();
 
-		// @brief : DPIを手動で変更するか
-		bool _useManualDPIChange = false;
-
 		// @brief : 参照カウント
 		gu::int32 _oleReferenceCount = 0;
+
+		// @brief : DPIを手動で変更するか
+		bool _useManualDPIChange = false;
 
 		#pragma endregion
 	private:
