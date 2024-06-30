@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GeneralWindow.hpp
-///             @brief  ウィンドウを作成するクラス
-///             @author Toide Yutaro
-///             @date   2023_08_31
+///  @file   WindowsWindow.hpp
+///  @brief  ウィンドウを作成するクラス
+///  @author Toide Yutaro
+///  @date   2023_08_31
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef WINDOWS_WINDOW_HPP
