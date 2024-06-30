@@ -34,7 +34,7 @@ namespace platform::core
 
 	};
 
-#pragma region Mouse
+	#pragma region Mouse
 	/****************************************************************************
 	*				  			    CursorType
 	****************************************************************************/
@@ -69,9 +69,9 @@ namespace platform::core
 		ClickActivate, //!< マウスクリックでアクティブ化
 	};
 
-#pragma endregion Mouse
+	#pragma endregion Mouse
 
-#pragma region Window
+	#pragma region Window
 	/****************************************************************************
 	*				  			  ActivationPolicy
 	****************************************************************************/
@@ -138,7 +138,7 @@ namespace platform::core
 		float Opacity                 = 1.0f;  //!< ウィンドウの透明度
 		wchar_t* Title                = L"PPP Game Window"; //!< ウィンドウのタイトル
 		bool  HasWindowOSWindowBorder = true;  //!< OSのウィンドウの境界線を使用したい場合はtrue
-		bool  IsVanillaWindow         = true;  //!< ウィンドウのデフォルトの境界線を使用するか
+		bool  IsVanillaWindow         = true;  //!< 特別な目的に使用するか.
 		bool  SupportMaximize         = true;  //!< ウィンドウの最大化をするか  
 		bool  SupportMinimize         = true;  //!< ウィンドウの最小化をするか
 		bool  SupportResize           = true;  //!< ウィンドウのリサイズを可能にするか
