@@ -469,6 +469,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\File\Include\Json.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\File\Private\Json\Include\JsonReader.hpp">
       <SubType>
       </SubType>
@@ -506,6 +510,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameUtility\File\Private\Json\Include\JsonValue.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameUtility\File\Private\Json\Include\JsonWriter.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -786,7 +794,7 @@
     <ClInclude Include="GameUtility\File\External\rapidjson\writer.h" />
     <ClInclude Include="GameUtility\File\Include\Csv.hpp" />
     <ClInclude Include="GameUtility\File\Include\FileSystem.hpp" />
-    <ClInclude Include="GameUtility\File\Include\Json.hpp" />
+    <ClInclude Include="GameUtility\File\Include\JsonOld.hpp" />
     <ClInclude Include="GameUtility\File\Include\UnicodeUtility.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMCollision.hpp" />
     <ClInclude Include="GameUtility\Math\Include\GMColor.hpp" />
@@ -888,6 +896,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="Platform\Windows\Include\WindowsCommonState.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="Platform\Windows\Include\WindowsCriticalSection.hpp">
       <SubType>
       </SubType>
@@ -912,7 +924,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="Platform\Windows\Include\WindowsWindowsMessageHandler.hpp" />
+    <ClInclude Include="Platform\Windows\Include\WindowsMessage.hpp" />
     <ClInclude Include="Platform\Windows\Private\File\Include\WindowsFileHandleWithBuffering.hpp">
       <SubType>
       </SubType>
@@ -1217,6 +1229,10 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="GameUtility\File\Source\Json.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameUtility\Math\Private\Quaternion\Source\GMQuaternionF.cpp">
       <SubType>
       </SubType>
@@ -1302,7 +1318,7 @@
     <ClCompile Include="GameUtility\Base\Source\Screen.cpp" />
     <ClCompile Include="GameUtility\File\Source\Csv.cpp" />
     <ClCompile Include="GameUtility\File\Source\FileSystem.cpp" />
-    <ClCompile Include="GameUtility\File\Source\Json.cpp" />
+    <ClCompile Include="GameUtility\File\Source\JsonOld.cpp" />
     <ClCompile Include="GameUtility\File\Source\UnicodeUtility.cpp" />
     <ClCompile Include="GameUtility\Math\Source\GMQuaternion.cpp" />
     <ClCompile Include="GraphicsCore\Engine\Source\LowLevelGraphicsEngine.cpp" />
@@ -1477,7 +1493,7 @@
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCapsule.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometryCircle.cpp" />
     <ClCompile Include="PhysicsCore\Geometry\Public\Source\GeometrySphere.cpp" />
-    <ClCompile Include="Platform\Windows\Source\WindowsWindowMessageHandler.cpp" />
+    <ClCompile Include="Platform\Windows\Source\WindowsMessage.cpp" />
     <ClCompile Include="Plugins\DDSLoader\dds_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -1504,6 +1520,8 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MainPS</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.6</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MainPS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.6</ShaderModel>
     </FxCompile>
     <FxCompile Include="Shader\Core\ShaderDebug.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

@@ -29,8 +29,8 @@
 #include "GameUtility/Base/Include/GUCommandLine.hpp"
 #include "GameUtility/Base/Include/GUParse.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
-#include "Platform/Windows/Include/WindowsHardware.hpp"
-//#include "GameUtility/File/Private/Json/Include/JsonReader.hpp"
+
+#include "GameUtility/File/Private/Json/Include/JsonReader.hpp"
 // 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -60,14 +60,19 @@
                 CommandLineÇÃéÊìæ
     -----------------------------------------------------------------*/
 #if PLATFORM_OS_WINDOWS && !_DEBUG
-    const gu::char8* constLine = const_cast<gu::char8*>(lpCommandLine);
+    const char* constLine = const_cast<char*>(lpCommandLine);
     const auto argument = gu::CommandLine::BuildFromArgumentVector(1, &constLine);
 #else
     const auto argument = gu::CommandLine::BuildFromArgumentVector(argumentCount, argumentVector);
 #endif
 
-    const auto test = platform::windows::CoreHardware::GetCPUCacheLineSize();
     gu::CommandLine::SetUp(argument.CString());
+
+    /*---------------------------------------------------------------
+				JsonÉtÉ@ÉCÉãÇÃì«Ç›çûÇ›
+    -----------------------------------------------------------------*/
+   /* gu::file::json::JsonReader reader;
+    reader.Read(SP("Resources/test.json"), false);*/
 
     /********************************************
     **         Initialize
