@@ -63,9 +63,6 @@ bool JsonSerializer::Deserialize(const gu::SharedPointer<JsonReader>& reader, St
 	// “Ç‚ÝŽæ‚Á‚Ä‚¢‚éNotation
 	JsonNotation notation = JsonNotation::None;
 
-	/*-------------------------------------------------------------------
-	-         “Ç‚ÝŽæ‚è
-	
 
 	return false;
 }

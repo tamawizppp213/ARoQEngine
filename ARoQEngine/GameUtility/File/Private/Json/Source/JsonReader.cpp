@@ -63,8 +63,6 @@ bool JsonReader::Initialize(const gu::tstring& filePath, const bool useAsync)
 		_rawData = StringConverter::ConvertUTF8ToTString(utf8String);
 	}
 
-
-
 	return true;
 
 }

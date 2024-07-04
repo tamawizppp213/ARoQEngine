@@ -249,4 +249,27 @@ void WindowsOS::SetLastError(const gu::uint32 errorCode)
 	::SetLastError((DWORD)errorCode);
 }
 
+/*!**********************************************************************
+*  @brief     COMライブラリを初期化します
+*  @param[in] void
+*  @return    bool
+*************************************************************************/
+bool WindowsOS::CoInitialize(const bool useMultiThread)
+{
+	HRESULT hResult = ::CoInitializeEx(nullptr, useMultiThread ? COINIT_MULTITHREADED : COINIT_APARTMENTTHREADED);
+
+	// S_FALSEについては既に初期化が行われているために成功判定とみなします. 
+	return hResult == S_OK || hResult == S_FALSE;
+}
+
+/*!**********************************************************************
+*  @brief     COMライブラリを終了します
+*  @param[in] void
+*  @return    void
+*************************************************************************/
+void WindowsOS::CoUninitialize()
+{
+	::CoUninitialize();
+}
+
 #pragma endregion Public Function

@@ -26,8 +26,7 @@ namespace rhi::directX12
 	/****************************************************************************
 	*				  			RHIDisplayAdapter
 	****************************************************************************/
-	/* @class     RHIDisplayAdapter
-	*  @brief     論理デバイスに渡す物理デバイス(Apdapter)の設定, GPU情報を取得
+	/* @brief     論理デバイスに渡す物理デバイス(Apdapter)の設定, GPU情報を取得
 	*****************************************************************************/
 	class RHIDisplayAdapter : public core::RHIDisplayAdapter, public gu::EnableSharedFromThis<RHIDisplayAdapter>
 	{

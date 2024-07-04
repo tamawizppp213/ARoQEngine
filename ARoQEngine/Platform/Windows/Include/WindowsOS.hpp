@@ -97,6 +97,20 @@ namespace platform::windows
 		*************************************************************************/
 		static void SetLastError(const gu::uint32 errorCode);
 
+		/*!**********************************************************************
+		*  @brief     COMライブラリを初期化します
+		*  @param[in] const bool マルチスレッドを使用するか
+		*  @return    bool
+		*************************************************************************/
+		static bool CoInitialize(const bool useMultiThread = false);
+
+		/*!**********************************************************************
+		*  @brief     COMライブラリを終了します
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
+		static void CoUninitialize();
+
 		#pragma endregion 
 
 		#pragma region Public Property

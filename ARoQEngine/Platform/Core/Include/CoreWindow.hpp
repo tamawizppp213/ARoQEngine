@@ -296,6 +296,13 @@ namespace platform::core
 		**************************************************************************/
 		virtual bool GetFullScreenInfo(gu::int32& x, gu::int32& y, gu::int32& width, gu::int32& height) const = 0;
 
+		/*!***********************************************************************
+		*  @brief      Windowì¬‚Ì‚½‚ß‚Ì‰Šúİ’è‚ğ•Ô‚µ‚Ü‚·. 
+		*  @param[in]  void
+		*  @return     const CoreWindowDesc& 
+		**************************************************************************/
+		__forceinline const CoreWindowDesc& GetDesc() const { return _windowDesc; }
+
 		#pragma endregion
 
 		#pragma region Public Constructor and Destructor

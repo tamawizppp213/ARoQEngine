@@ -150,6 +150,8 @@ namespace gu::file::json
 		/*! @brief åªç›ÇÃToken*/
 		JsonToken _token = JsonToken::None;
 
+		/*! @brief */
+
 		#pragma endregion 
 
 	};
