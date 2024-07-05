@@ -58,6 +58,7 @@ namespace rhi::core
 		*  @brief     最も性能が高い物理デバイスを自動で選定します. 高い順にxGPU(外部GPU), dGPU(discrete GPU), iGPU (integrated GPU)の順に優先されます
 		*  @note      DirectX12では外部GPU, ディスクリートGPU, 統合GPUの順に選択されます.　@n 
 		*             Vulkanではまだ外部GPUが対応できておらず, ディスクリートGPU, integrated GPU (最初に選択されたGPU)の順に選択されます@n
+		*  @param[in] void
 		*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
 		*************************************************************************/
 		virtual gu::SharedPointer<RHIDisplayAdapter> SearchHighPerformanceAdapter() = 0;
@@ -72,13 +73,16 @@ namespace rhi::core
 		
 		/*!**********************************************************************
 		*  @brief     全ての利用可能な物理デバイスを配列の形で返します.
-		*  @attention この関数は, 配列の順番が特に指定がありません. 
+		*  @attention この関数は, 配列の順番が特に指定がありません.
+		*  @param[in] void
 		*  @return    gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> : 物理デバイスの配列
 		*************************************************************************/
 		virtual gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> EnumrateAdapters() const = 0;
 		
 		/*!**********************************************************************
 		*  @brief     出力欄に全ての物理デバイスを記入します
+		*  @param[in] void
+		*  @return    void
 		*************************************************************************/
 		virtual void LogAdapters() const = 0;
 

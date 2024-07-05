@@ -278,16 +278,12 @@ gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> RHIInstance::Enumra
 	return adapterLists;
 }
 
-/****************************************************************************
-*                     SearchHighPerformanceAdapter
-****************************************************************************/
-/* @brief     (Supported GPU: NVidia, AMD, Intel) VideoMemoryの多いものから
-*              (High) xGPU, dGPU iGPU (Low) selected
-*
+/*!**********************************************************************
+*  @brief     最も性能が高い物理デバイスを自動で選定します. 高い順にxGPU(外部GPU), dGPU(discrete GPU), iGPU (integrated GPU)の順に優先されます
+*  @note      DirectX12では外部GPU, ディスクリートGPU, 統合GPUの順に選択されます.
 *  @param[in] void
-*
-*  @return 　　gu::SharedPointer<core::RHIDisplayAdapter>
-*****************************************************************************/
+*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
+*************************************************************************/
 gu::SharedPointer<core::RHIDisplayAdapter> RHIInstance::SearchHighPerformanceAdapter()
 {
 	const VkPhysicalDeviceType types[] =

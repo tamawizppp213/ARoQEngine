@@ -30,8 +30,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			RHIDisplayAdapter
 	****************************************************************************/
-	/* @class     RHIDisplayAdapter
-	*  @brief     論理デバイスに渡す物理デバイス(Apdapter)の設定, GPU情報を取得
+	/* @brief     論理デバイスに渡す物理デバイス(Apdapter)の設定, GPU情報を取得
 	*****************************************************************************/
 	class RHIDisplayAdapter : public gu::NonCopyable
 	{
@@ -123,9 +122,8 @@ namespace rhi::core
 		#pragma endregion
 
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
+
 		/*! @brief Default constructor*/
 		RHIDisplayAdapter() = default;
 
@@ -138,15 +136,16 @@ namespace rhi::core
 			Check(_instance);
 		}; 
 
-	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
-		
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+	protected:
+		#pragma region Protected Constructor and Destructor
+		#pragma endregion
+
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
 		/*! @brief : 物理デバイス名 */
 		gu::string _name = "";
 
@@ -175,6 +174,8 @@ namespace rhi::core
 
 		/*! @brief : true : dGPU, xGPU, false : iGPU*/
 		bool _isDiscreteGPU = false;
+
+		#pragma endregion
 	};
 }
 

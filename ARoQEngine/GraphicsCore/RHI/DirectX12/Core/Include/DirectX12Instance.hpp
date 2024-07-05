@@ -50,7 +50,8 @@ namespace rhi::directX12
 
 		/*!**********************************************************************
 		*  @brief     最も性能が高い物理デバイスを自動で選定します. 高い順にxGPU(外部GPU), dGPU(discrete GPU), iGPU (integrated GPU)の順に優先されます
-		*  @note      DirectX12では外部GPU, ディスクリートGPU, 統合GPUの順に選択されます.　@n
+		*  @note      DirectX12では外部GPU, ディスクリートGPU, 統合GPUの順に選択されます.
+		*  @param[in] void
 		*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
 		*************************************************************************/
 		virtual gu::SharedPointer<core::RHIDisplayAdapter> SearchHighPerformanceAdapter() override;
@@ -58,19 +59,23 @@ namespace rhi::directX12
 		/*!**********************************************************************
 		*  @brief     最も性能が低い(消費電力が低い)物理デバイスを自動で選定します. 高い順にiGPU (integrated GPU), dGPU(discrete GPU), xGPU(外部GPU)の順に優先されます
 		*  @note      DirectX12では統合GPU, ディスクリートGPU, 外部GPUの順に選択されます.　@n
+		*  @param[in] void
 		*  @return gu::SharedPointer<RHIDisplayAdapter> DisplayAdapterのポインタ
 		*************************************************************************/
 		virtual gu::SharedPointer<core::RHIDisplayAdapter> SearchMinimumPowerAdapter ()override;
 		
 		/*!**********************************************************************
 		*  @brief     全ての利用可能な物理デバイスを配列の形で返します.
-		* @attention この関数は, 配列の順番が特に指定がありません. 
+		*  @attention この関数は, 配列の順番が特に指定がありません. 
+		*  @param[in] void
 		*  @return    gu::DynamicArray<gu::SharedPointer<RHIDisplayAdapter>> : 物理デバイスの配列
 		*************************************************************************/
 		virtual gu::DynamicArray<gu::SharedPointer<core::RHIDisplayAdapter>> EnumrateAdapters() const override;
 		
 		/*!**********************************************************************
 		*  @brief     出力欄に全ての物理デバイスを記入します
+		*  @param[in] void
+		*  @return    void
 		*************************************************************************/
 		void LogAdapters() const override;
 
@@ -87,10 +92,10 @@ namespace rhi::directX12
 		*************************************************************************/
 		GPUCrashDebuggingMode GetGPUCrashDebuggingMode() const { return _gpuCrashDebuggingMode; }
 
+		#if D3D12_CORE_ENABLED
 		/*!**********************************************************************
 		*  @brief     DirectXAgilitySDKがロード済みかを返します
 		*************************************************************************/
-		#if D3D12_CORE_ENABLED
 		bool HasLoadedDirectXAgilitySDK() const;
 		#endif
 
@@ -140,6 +145,7 @@ namespace rhi::directX12
 
 		/*!**********************************************************************
 		*  @brief     高性能または最小電力を示すAdapterを選択（（高）xGPU、dGPU iGPU（低）
+		*  @param[in] const DXGI_GPU_PREFERENCE 選択するGPUの種類
 		*  @return    gu::SharedPointer<RHIDisplayAdapter> : 物理デバイスのポインタ
 		*************************************************************************/
 		gu::SharedPointer<core::RHIDisplayAdapter> SearchAdapter(const DXGI_GPU_PREFERENCE preference) const;
