@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIResourceLayout.hpp"
 #include "DirectX12Core.hpp"
+#define COM_NO_WINDOWS_H
 #include <d3d12.h>
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,29 +38,39 @@ namespace rhi::directX12
 		#pragma endregion
 
 		#pragma region Public Property
-		/*----------------------------------------------------------------------
-		*  @brief :  DirectX12のリソースレイアウトを返します. 
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     DirectX12のリソースレイアウトを返します. 
+		*  @param[in] void
+		*  @return    RootSignatureComPtr
+		*************************************************************************/
 		RootSignatureComPtr GetRootSignature() const noexcept { return _rootSignature; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :   For directX ray tracing resource layout
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     レイトレーシング用のグローバスルートシグネチャを返します.
+		*  @param[in] void
+		*  @return    D3D12_GLOBAL_ROOT_SIGNATURE
+		*************************************************************************/
 		D3D12_GLOBAL_ROOT_SIGNATURE GetGlobalRootSignature() const { return D3D12_GLOBAL_ROOT_SIGNATURE(_rootSignature.Get()); }
 
-		/*----------------------------------------------------------------------
-		*  @brief :   レイトレーシング用のローカルルートシグネチャを返します. 
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     レイトレーシング用のローカルルートシグネチャを返します. 
+		*  @param[in] void
+		*  @return    D3D12_LOCAL_ROOT_SIGNATURE
+		*************************************************************************/
 		D3D12_LOCAL_ROOT_SIGNATURE GetLocalRootSignature() const { return D3D12_LOCAL_ROOT_SIGNATURE(_rootSignature.Get()); }
 
-		/*----------------------------------------------------------------------
-		*  @brief :   Bindに必要な総数を返します. 
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     Bindに必要な総数を返します.
+		*  @param[in] void
+		*  @return    gu::uint8
+		*************************************************************************/
 		gu::uint8 GetElementsCount() const noexcept { return _elementsCount; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :   32bit用のConstant buffer中の要素数を返します
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     32bit用のConstant buffer中の要素数を返します
+		*  @param[in] void
+		*  @return    gu::uint8
+		*************************************************************************/
 		gu::uint8 GetConstant32BitsCount() const noexcept { return _constant32BitsCount; }
 		
 		/*!**********************************************************************
@@ -180,11 +191,15 @@ namespace rhi::directX12
 		*************************************************************************/
 		void SetUp();
 
-		/*----------------------------------------------------------------------
-		*  @brief :   RootSignatureの作成をVersionに合わせて行います.
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     RootSignatureの作成をVersionに合わせて行います.
+		*  @param[in] const D3D12_VERSIONED_ROOT_SIGNATURE_DESC
+		*  @param[out] ID3DBlob** rootSignatureBlob
+		*  @param[out] ID3DBlob** errorBlob
+		*  @return    HRESULT
+		*************************************************************************/
 		HRESULT SerializeVersionedRootSignature(const D3D12_VERSIONED_ROOT_SIGNATURE_DESC& desc,
-			ID3DBlob** rootSignatureBlob, ID3DBlob** errrorBlob);
+			ID3DBlob** rootSignatureBlob, ID3DBlob** errorBlob);
 		#pragma endregion
 
 		#pragma region Private Property
