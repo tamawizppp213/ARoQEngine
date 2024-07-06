@@ -12,7 +12,7 @@
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassGBuffer.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassLightCulling.hpp"
-#include "GameCore/Rendering/Effect/Include/SSAO.hpp"
+#include "GameCore/Rendering/PostProcess/Include/SSAO.hpp"
 #include "GameCore/Rendering/Light/Include/CascadeShadow.hpp"
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameCore/Rendering/UI/Public/Include/UIRenderer.hpp"

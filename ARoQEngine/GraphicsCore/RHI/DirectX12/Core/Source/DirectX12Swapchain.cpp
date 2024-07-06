@@ -67,7 +67,7 @@ RHISwapchain::~RHISwapchain()
 * 
 *  @return @@void
 *****************************************************************************/
-void RHISwapchain::Resize(const size_t width, const size_t height)
+void RHISwapchain::Resize(const uint32 width, const uint32 height)
 {
 	/*-------------------------------------------------------------------
 	-          If the size is not change, we do nothing
@@ -86,23 +86,23 @@ void RHISwapchain::Resize(const size_t width, const size_t height)
 	---------------------------------------------------------------------*/
 	for (auto& buffer : _backBuffers) { buffer.Reset(); }
 	ThrowIfFailed(_swapchain->ResizeBuffers(
-		static_cast<UINT>(_desc.FrameBufferCount),
-		static_cast<UINT>(_desc.WindowInfo.Width),
-		static_cast<UINT>(_desc.WindowInfo.Height),
+		static_cast<uint32>(_desc.FrameBufferCount),
+		static_cast<uint32>(_desc.WindowInfo.Width),
+		static_cast<uint32>(_desc.WindowInfo.Height),
 		_backBufferFormat,
 		_swapchainFlag));
 
 	/*-------------------------------------------------------------------
 	-         Reset Command List
 	---------------------------------------------------------------------*/
-	for (size_t index = 0; index < _backBuffers.Size(); ++index)
+	for (uint64 index = 0; index < _backBuffers.Size(); ++index)
 	{
 		ResourceComPtr backBuffer = nullptr;
 		ThrowIfFailed(_swapchain->GetBuffer(static_cast<UINT>(index), IID_PPV_ARGS(backBuffer.GetAddressOf())));
 
 		auto info = core::GPUTextureMetaData::Texture2D(
-			static_cast<size_t>(_desc.WindowInfo.Width),
-			static_cast<size_t>(_desc.WindowInfo.Height), 
+			static_cast<uint64>(_desc.WindowInfo.Width),
+			static_cast<uint64>(_desc.WindowInfo.Height), 
 			_desc.PixelFormat, 1, core::TextureCreateFlags::RenderTargetable);
 
 		info.State = core::ResourceState::Present;
@@ -335,7 +335,7 @@ void RHISwapchain::SetUp()
 
 
 		auto info = core::GPUTextureMetaData::Texture2D(
-			static_cast<size_t>(_desc.WindowInfo.Width), static_cast<size_t>(_desc.WindowInfo.Height), _desc.PixelFormat, 1, 
+			static_cast<uint32>(_desc.WindowInfo.Width), static_cast<size_t>(_desc.WindowInfo.Height), _desc.PixelFormat, 1, 
 			core::TextureCreateFlags::RenderTargetable);
 		info.State = core::ResourceState::Common;
 

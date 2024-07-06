@@ -20,7 +20,7 @@
 #include <iostream>
 #include "GameUtility/Math/Include/GMDistribution.hpp"
 #include "GameUtility/Math/Include/GMColor.hpp"
-#include "GameCore/Rendering/Effect/Include/Blur.hpp"
+#include "GameCore/Rendering/PostProcess/Include/Blur.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

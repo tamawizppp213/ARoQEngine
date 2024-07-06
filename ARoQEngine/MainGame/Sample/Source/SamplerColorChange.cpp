@@ -11,13 +11,13 @@
 #include "MainGame/Sample/Include/SampleColorChange.hpp"
 #include "GameCore/Rendering/EnvironmentMap/Include/SkyDome.hpp"
 #include "GameCore/Core/Include/Camera.hpp"
-#include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
-#include "GameCore/Rendering/Effect/Include/Blur.hpp"
-#include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
-#include "GameCore/Rendering/Effect/Include/Mosaic.hpp"
-#include "GameCore/Rendering/Effect/Include/Vignette.hpp"
-#include "GameCore/Rendering/Effect/Include/WhiteBalance.hpp"
-#include "GameCore/Rendering/Effect/Include/ScreenSpaceReflection.hpp"
+#include "GameCore/Rendering/PostProcess/Include/ColorChange.hpp"
+#include "GameCore/Rendering/PostProcess/Include/Blur.hpp"
+#include "GameCore/Rendering/PostProcess/Include/DepthOfField.hpp"
+#include "GameCore/Rendering/PostProcess/Include/Mosaic.hpp"
+#include "GameCore/Rendering/PostProcess/Include/Vignette.hpp"
+#include "GameCore/Rendering/PostProcess/Include/WhiteBalance.hpp"
+#include "GameCore/Rendering/PostProcess/Include/ScreenSpaceReflection.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 #include "GameCore/Rendering/Debugger/Include/ScreenCapture.hpp"
@@ -219,7 +219,7 @@ void SampleColorChange::OnKeyboardInput()
 	}
 	if (_gameInput.GetKeyboard()->IsTrigger(DIK_P))
 	{
-		_colorIndex = (_colorIndex + 1) % _colorChanges.size();
+		_colorIndex = ((gu::uint64)_colorIndex + 1) % _colorChanges.size();
 	}
 	if (_gameInput.GetKeyboard()->IsTrigger(DIK_O))
 	{

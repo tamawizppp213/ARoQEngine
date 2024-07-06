@@ -118,6 +118,14 @@ namespace rhi::core
 		
 		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const gu::SortedMap<DescriptorHeapType, size_t>& heapInfo) = 0;
 		
+		/*!**********************************************************************
+		*  @brief     リソースレイアウトを作成します. (リソースレイアウトはGPUリソースのバインドを管理します.)
+		*  @param[in] const gu::DynamicArray<ResourceLayoutElement>, 
+		*  @param[in] const gu::DynamicArray<SamplerLayoutElement>, 
+		*  @param[in] const gu::Optional<Constant32Bits>, 
+		*  @param[in] const gu::tstring
+		*  @return    gu::SharedPointer<RHIResourceLayout>
+		*************************************************************************/
 		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<ResourceLayoutElement>& elements = {}, const gu::DynamicArray<SamplerLayoutElement>& samplers = {}, const gu::Optional<Constant32Bits>& constant32Bits = {}, const gu::tstring& name = SP("ResourceLayout")) = 0;
 		
 		virtual gu::SharedPointer<GPUPipelineFactory>         CreatePipelineFactory() = 0;

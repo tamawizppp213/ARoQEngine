@@ -47,7 +47,7 @@ namespace rhi::vulkan
 		void Present(const gu::SharedPointer<core::RHIFence>& fence, std::uint64_t waitValue) override ;
 		
 		/* @brief : Resize screen size. Rebuild everything once and update again.*/
-		void Resize(const size_t width, const size_t height) override ;
+		void Resize(const gu::uint32 width, const gu::uint32 height) override ;
 		
 		/* @brief : Return current frame buffer*/
 		size_t GetCurrentBufferIndex() const override ;
@@ -66,7 +66,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Property
 		*****************************************************************************/
-		VkSwapchainKHR GetSwapchain() { return _swapchain; }
+		VkSwapchainKHR GetSwapchain() const { return _swapchain; }
 
 		/****************************************************************************
 		**                Constructor and Destructor

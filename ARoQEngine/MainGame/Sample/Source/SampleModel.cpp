@@ -13,7 +13,7 @@
 #include "GameCore/Core/Include/Camera.hpp"
 #include "GameCore/Rendering/Model/Include/GameModel.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
-#include "GameCore/Rendering/Effect/Include/DepthOfField.hpp"
+#include "GameCore/Rendering/PostProcess/Include/DepthOfField.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassZPrepass.hpp"
 #include "GameCore/Rendering/Core/BasePass/Include/BasePassGBuffer.hpp"
 

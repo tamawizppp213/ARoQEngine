@@ -32,39 +32,37 @@ namespace rhi::directX12
 	class GPUSampler : public core::GPUSampler
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
+		#pragma region Public Property
+
 		D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc(){ return _samplerDesc; }
 
 		const D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc() const noexcept { return _samplerDesc; }
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+		
 		GPUSampler() = default;
 
 		~GPUSampler() = default;
 
 		explicit GPUSampler(const gu::SharedPointer<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
+
+		#pragma endregion
 	
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		#pragma region Protected Property
 		D3D12_STATIC_SAMPLER_DESC _samplerDesc = {};
+		#pragma endregion	
 	};
 }
 #endif

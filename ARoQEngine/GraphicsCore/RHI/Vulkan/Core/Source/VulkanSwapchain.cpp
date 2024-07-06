@@ -367,7 +367,7 @@ void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const
 *  @param[in] const size_t height
 *  @return Å@Å@void
 *****************************************************************************/
-void RHISwapchain::Resize(const size_t width, const size_t height)
+void RHISwapchain::Resize(const gu::uint32 width, const gu::uint32 height)
 {
 	/*-------------------------------------------------------------------
 	-          If the size is not change, we do nothing

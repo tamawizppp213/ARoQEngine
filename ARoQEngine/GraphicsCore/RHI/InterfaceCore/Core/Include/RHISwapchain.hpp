@@ -82,7 +82,7 @@ namespace rhi::core
 		/*----------------------------------------------------------------------
 		*  @brief :  Resize screen size. Rebuild everything once and update again.
 		*----------------------------------------------------------------------*/
-		virtual void Resize(const size_t width, const size_t height) = 0;
+		virtual void Resize(const gu::uint32 width, const gu::uint32 height) = 0;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :  Return current frame buffer

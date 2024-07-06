@@ -39,22 +39,22 @@ namespace rhi::core
 		static constexpr gu::int32 GLOBAL_ROOT_SIGNATURE_REGISTER_SPACE = 1;
 		static constexpr gu::int32 LOCAL_ROOT_SIGNATURE_REGISTER_SPACE  = 2;
 
-		static ResourceLayoutElement GlobalRootSignature(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = GLOBAL_ROOT_SIGNATURE_REGISTER_SPACE)
+		static ResourceLayoutElement GlobalRootSignature(const core::DescriptorHeapType type, const gu::uint32 binding = 0, const gu::uint32 registerSpace = GLOBAL_ROOT_SIGNATURE_REGISTER_SPACE)
 		{
 			return ResourceLayoutElement(type, binding, registerSpace, rhi::core::ShaderVisibleFlag::All);
 		}
 
-		static ResourceLayoutElement LocalRootSignature(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = LOCAL_ROOT_SIGNATURE_REGISTER_SPACE)
+		static ResourceLayoutElement LocalRootSignature(const core::DescriptorHeapType type, const gu::uint32 binding = 0, const gu::uint32 registerSpace = LOCAL_ROOT_SIGNATURE_REGISTER_SPACE)
 		{
 			return ResourceLayoutElement(type, binding, registerSpace, rhi::core::ShaderVisibleFlag::All);
 		}
 
-		static ResourceLayoutElement GraphicsRootSignature(const core::DescriptorHeapType type, const size_t binding, const size_t registerSpace = 0, const core::ShaderVisibleFlag flag = core::ShaderVisibleFlag::All)
+		static ResourceLayoutElement GraphicsRootSignature(const core::DescriptorHeapType type, const gu::uint32 binding, const gu::uint32 registerSpace = 0, const core::ShaderVisibleFlag flag = core::ShaderVisibleFlag::All)
 		{
 			return ResourceLayoutElement(type, binding, registerSpace, flag);
 		}
 
-		static ResourceLayoutElement ComputeRootSignature(const core::DescriptorHeapType type, const size_t binding, const size_t registerSpace = 0, const core::ShaderVisibleFlag flag = core::ShaderVisibleFlag::All)
+		static ResourceLayoutElement ComputeRootSignature(const core::DescriptorHeapType type, const gu::uint32 binding, const gu::uint32 registerSpace = 0, const core::ShaderVisibleFlag flag = core::ShaderVisibleFlag::All)
 		{
 			return ResourceLayoutElement(type, binding, registerSpace, flag);
 		}
@@ -64,8 +64,8 @@ namespace rhi::core
 		*****************************************************************************/
 		ShaderVisibleFlag  Visibility     = ShaderVisibleFlag::All;    // Specify the shaders that can access the contents of the root signature slot.
 		DescriptorHeapType DescriptorType = DescriptorHeapType::CBV;  // Descriptor type
-		size_t             Binding        = 0;                        // binding or shader resister. In case of srv, 3 is mapped in register(t3) of HLSL.   
-		size_t             RegisterSpace  = 0;                        // register space. normally this value is set 0. Multiple descriptor arrays of unknown size can be prevented from overlapping
+		gu::uint32         Binding        = 0;                        // binding or shader resister. In case of srv, 3 is mapped in register(t3) of HLSL.   
+		gu::uint32         RegisterSpace  = 0;                        // register space. normally this value is set 0. Multiple descriptor arrays of unknown size can be prevented from overlapping
 		                                                              // register space how to: https://learn.microsoft.com/ja-jp/windows/win32/direct3d12/resource-binding-in-hlsl
 
 		/****************************************************************************
@@ -73,7 +73,7 @@ namespace rhi::core
 		*****************************************************************************/
 		ResourceLayoutElement() = default;
 
-		explicit ResourceLayoutElement(const core::DescriptorHeapType type, const size_t binding = 0, const size_t registerSpace = 0, const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
+		explicit ResourceLayoutElement(const core::DescriptorHeapType type, const gu::uint32 binding = 0, const gu::uint32 registerSpace = 0, const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
 			: Binding(binding), RegisterSpace(registerSpace), DescriptorType(type), Visibility(visibility)
 		{
 		};
@@ -96,8 +96,8 @@ namespace rhi::core
 		**                Public Property
 		*****************************************************************************/
 		ShaderVisibleFlag Visibility     = ShaderVisibleFlag::All;
-		size_t           Binding        = 0;
-		size_t           RegisterSpace  = 0;
+		gu::uint32            Binding        = 0;
+		gu::uint32           RegisterSpace  = 0;
 		gu::SharedPointer<GPUSampler> Sampler;
 
 		/****************************************************************************
@@ -105,7 +105,7 @@ namespace rhi::core
 		*****************************************************************************/
 		SamplerLayoutElement() = default;
 
-		explicit SamplerLayoutElement(const gu::SharedPointer<GPUSampler>& sampler, const size_t binding = 0, const size_t space = 0, const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
+		explicit SamplerLayoutElement(const gu::SharedPointer<GPUSampler>& sampler, const gu::uint32 binding = 0, const gu::uint32 space = 0, const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
 			: Visibility(visibility), Binding(binding), RegisterSpace(space), Sampler(sampler)
 		{
 		};
@@ -161,7 +161,7 @@ namespace rhi::core
 		{
 			gu::uint32 UInt;
 			gu::int32  Int;
-			float         Float;
+			float      Float;
 		};
 		Value32Bit() = default;
 
@@ -189,9 +189,9 @@ namespace rhi::core
 		**                Public Property
 		*****************************************************************************/
 		ShaderVisibleFlag Visibility     = ShaderVisibleFlag::All;
-		size_t           Binding        = 0; // リソースレイアウト上でバインドするIndex
-		size_t           RegisterSpace  = 0; // レジスタ空間
-		size_t           Count          = 1; // 32 bitの定数を割り当てる数
+		gu::uint32        Binding        = 0; // リソースレイアウト上でバインドするIndex
+		gu::uint32        RegisterSpace  = 0; // レジスタ空間
+		gu::uint32        Count          = 1; // 32 bitの定数を割り当てる数
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -200,9 +200,9 @@ namespace rhi::core
 
 		explicit Constant32Bits
 		(
-			const size_t count, 
-			const size_t binding = 0, 
-			const size_t space   = 0, 
+			const gu::uint32 count, 
+			const gu::uint32 binding = 0, 
+			const gu::uint32 space   = 0, 
 			const ShaderVisibleFlag visibility = ShaderVisibleFlag::All)
 			: Visibility(visibility), Binding(binding), RegisterSpace(space), Count(count)
 		{

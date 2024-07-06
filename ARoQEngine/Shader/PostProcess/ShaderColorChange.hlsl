@@ -33,8 +33,7 @@ VertexOut VSMain(VertexIn vertexIn)
 /****************************************************************************
 *                       PSMonochrome
 ****************************************************************************/
-/* @fn        float4 PSMonochrome(VertexOut input) : SV_TARGET
-*  @brief     Monochrome post effect
+/* @brief     Monochrome post effect
 *  @param[in] void
 *  @return 　　float4
 *****************************************************************************/
@@ -47,8 +46,7 @@ float4 PSMonochrome(VertexOut input) : SV_TARGET
 /****************************************************************************
 *                       PSSepia
 ****************************************************************************/
-/* @fn        float4 PSSepia(VertexOut input) : SV_TARGET
-*  @brief     Sepia post effect
+/* @brief     Sepia post effect
 *  @param[in] void
 *  @return 　　float4
 *****************************************************************************/
@@ -79,8 +77,7 @@ float4 PSGrayScale(VertexOut input) : SV_TARGET
 /****************************************************************************
 *                       PSBinary
 ****************************************************************************/
-/* @fn        float4 PSBinary(VertexOut input) : SV_TARGET
-*  @brief     Binary post effect
+/* @brief     Binary post effect
 *  @param[in] void
 *  @return 　　float4
 *****************************************************************************/
@@ -89,22 +86,18 @@ float4 PSBinary(VertexOut input) : SV_TARGET
     float4 dest = float4(DestDiffuseMap.Sample(SamplerLinearClamp, input.UV));
     float Y = dot(dest.rgb, float3(0.2126, 0.7152, 0.0722));
     Y = (Y < 128.0f / 255.0f) ? 0 : 1;
-    float4 result = float4(Y, Y, Y, 1);
-    return result;
-
+    return float4(Y, Y, Y, 1);
 }
 /****************************************************************************
 *                       PSInvert
 ****************************************************************************/
-/* @fn        float4 PSInvert(VertexOut input) : SV_TARGET
-*  @brief     Invert post effect
+/* @brief     Invert post effect
 *  @param[in] void
 *  @return 　　float4
 *****************************************************************************/
 float4 PSInvert(VertexOut input) : SV_TARGET
 {
     float4 dest = float4(DestDiffuseMap.Sample(SamplerLinearClamp, input.UV));
-    float4 result = float4(1.0f - dest.rgb, dest.a);
-    return result;
+    return float4(1.0f - dest.rgb, dest.a);
 }
 #endif

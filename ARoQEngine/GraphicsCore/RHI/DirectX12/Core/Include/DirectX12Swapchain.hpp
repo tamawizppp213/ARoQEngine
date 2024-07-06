@@ -49,7 +49,7 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------
 		*  @brief :  画面サイズを変更する。一度すべてを再構築し、再度アップデートする。
 		*----------------------------------------------------------------------*/
-		void Resize(const size_t width, const size_t height) override ;
+		void Resize(const gu::uint32 width, const gu::uint32 height) override ;
 		
 		/* @brief : Return current frame buffer*/
 		size_t GetCurrentBufferIndex() const override;

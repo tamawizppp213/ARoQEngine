@@ -33,13 +33,10 @@ namespace rhi::directX12
 	class RHIResourceLayout : public  rhi::core::RHIResourceLayout
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
+		#pragma region Public Property
 		/*----------------------------------------------------------------------
 		*  @brief :  DirectX12のリソースレイアウトを返します. 
 		*----------------------------------------------------------------------*/
@@ -58,94 +55,140 @@ namespace rhi::directX12
 		/*----------------------------------------------------------------------
 		*  @brief :   Bindに必要な総数を返します. 
 		*----------------------------------------------------------------------*/
-		size_t GetElementsCount() const noexcept { return _elementsCount; }
+		gu::uint8 GetElementsCount() const noexcept { return _elementsCount; }
 
 		/*----------------------------------------------------------------------
 		*  @brief :   32bit用のConstant buffer中の要素数を返します
 		*----------------------------------------------------------------------*/
-		size_t GetConstant32BitsCount() const noexcept { return _constant32BitsCount; }
+		gu::uint8 GetConstant32BitsCount() const noexcept { return _constant32BitsCount; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Unordered Access Viewがあることを返します
-		*----------------------------------------------------------------------*/
-		bool HasUAV() const { return _hasUAV; }
+		/*!**********************************************************************
+		*  @brief     Unordered Access Viewがあるかを返します
+		*  @param[in] void
+		*  @return    bool Unordered Access Viewがあるか
+		*************************************************************************/
+		__forceinline bool HasUAV() const { return _uavCount > 0; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Shader Resource Viewがあることを返します
-		*----------------------------------------------------------------------*/
-		bool HasSRV() const { return _hasSRV; }
+		/*!**********************************************************************
+		*  @brief     Shader Resource Viewがあるかを返します
+		*  @param[in] void
+		*  @return    bool Shader Resource Viewがあるか
+		*************************************************************************/
+		__forceinline bool HasSRV() const { return _srvCount > 0; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Constant Buffer Viewがあることを返します
-		*----------------------------------------------------------------------*/
-		bool HasCBV() const { return _hasCBV; }
+		/*!**********************************************************************
+		*  @brief     Constant Buffer Viewがあるかを返します
+		*  @param[in] void
+		*  @return    bool Constant Buffer Viewがあるか
+		*************************************************************************/
+		__forceinline bool HasCBV() const { return _cbvCount > 0; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Descriptor Tableがあることを返します
-		*----------------------------------------------------------------------*/
-		bool HasTableResource() const { return _hasCBV || _hasSRV || _hasUAV; }
+		/*!**********************************************************************
+		*  @brief     Descriptor Tableがあるかを返します
+		*  @param[in] void
+		*  @return    bool Descriptor Tableがあるか
+		*************************************************************************/
+		__forceinline bool HasTableResource() const { return HasCBV() || HasSRV() || HasUAV(); }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Static Sampler state があることを返します
-		*----------------------------------------------------------------------*/
-		bool HasStaticSampler() const { return _hasStaticSampler; }
+		/*!**********************************************************************
+		*  @brief     Static Sampler stateがあるかを返します
+		*  @param[in] void
+		*  @return    bool Static Sampler stateがあるか
+		*************************************************************************/
+		__forceinline bool HasStaticSampler() const { return _staticSamplerCount > 0; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Dynamic Sampler stateがあることを返します
-		*----------------------------------------------------------------------*/
-		bool HasDynamicSampler() const { return _hasDynamicSampler; }
+		/*!**********************************************************************
+		*  @brief     Dynamic Sampler stateがあるかを返します
+		*  @param[in] void
+		*  @return    bool Dynamic Sampler stateがあるか
+		*************************************************************************/
+		__forceinline bool HasDynamicSampler() const { return _dynamicSamplerCount > 0; }
 
+		/*!**********************************************************************
+		*  @brief     デバッグ表示名を設定します
+		*  @param[in] const gu::tstring& name : デバッグ表示名
+		*  @return    void
+		*************************************************************************/
 		void SetName(const gu::tstring& name) override;
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		RHIResourceLayout() = default;
 		
+		/*! @brief デストラクタ*/
 		~RHIResourceLayout();
 		
+		/*! @brief 作成する際の基本となるコンストラクタ*/
 		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const gu::Optional<core::Constant32Bits>& = {}, const gu::tstring& name = SP("ResourceLayout"));
 		
+		/*! @brief 単一のResourceElementで初期化*/
 		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const core::ResourceLayoutElement& element, const core::SamplerLayoutElement& sampler, const gu::Optional<core::Constant32Bits>& constant32Bits = {}, const gu::tstring& name = SP("ResourceLayout"));
 
+		/*! @brief Descriptorを使って初期化*/
 		explicit RHIResourceLayout(const gu::SharedPointer<core::RHIDevice>& device, const rhi::core::RHIResourceLayoutDesc& desc, const gu::tstring& name = SP("ResourceLayout"));
 
+		#pragma endregion
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		#pragma region Protected Function
+
+		#pragma endregion
+
+		#pragma region Protected Property
+		/*! @brief DirectX12で使用するRootSignature*/
 		RootSignatureComPtr _rootSignature = nullptr;
-		
-		size_t _elementsCount = 0;
-		
-		size_t _constant32BitsCount = 0;
 
+		/*! @brief RootSignatureのBindingレベル*/
 		D3D12_RESOURCE_BINDING_TIER _bindingTier = D3D12_RESOURCE_BINDING_TIER_1;
 
-		/*----------------------------------------------------------------------
-		*        Resource viewが存在するか
-		*----------------------------------------------------------------------*/
-		bool _hasUAV = false;
-		bool _hasSRV = false;
-		bool _hasCBV = false;
-		bool _hasStaticSampler = false;
-		bool _hasDynamicSampler = false;
+		/*! @brief Descriptor Tableの要素数*/
+		gu::uint8 _elementsCount = 0;
+
+		/*! @brief constant32Bitsの要素数*/
+		gu::uint8 _constant32BitsCount = 0;
+
+		/*! @brief UAVが存在するか*/
+		gu::uint8 _uavCount = 0;
+
+		/*! @brief SRVが存在するか*/
+		gu::uint8 _srvCount = 0;
+
+		/*! @brief CBVが存在するか*/
+		gu::uint8 _cbvCount = 0;
+
+		/*! @brief Static Samplerが存在するか*/
+		gu::uint8 _staticSamplerCount = 0;
+
+		/*! @brief DynamicSamplerが存在するか*/
+		gu::uint8 _dynamicSamplerCount = 0;
+		#pragma endregion
+
 
 	private:
-		/*----------------------------------------------------------------------
-		*  @brief :   RootSignatureの作成まで一通り行います.
-		*----------------------------------------------------------------------*/
+		#pragma region Private Constructor and Destructor
+		#pragma endregion
+
+		#pragma region Private Function
+		/*!**********************************************************************
+		*  @brief     RootSignatureの作成まで一通り行います.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		void SetUp();
 
 		/*----------------------------------------------------------------------
 		*  @brief :   RootSignatureの作成をVersionに合わせて行います.
 		*----------------------------------------------------------------------*/
-		HRESULT SerializeVersionedRootSignature(const D3D12_VERSIONED_ROOT_SIGNATURE_DESC& desc, 
+		HRESULT SerializeVersionedRootSignature(const D3D12_VERSIONED_ROOT_SIGNATURE_DESC& desc,
 			ID3DBlob** rootSignatureBlob, ID3DBlob** errrorBlob);
+		#pragma endregion
+
+		#pragma region Private Property
+		#pragma endregion
 	};
 }
 #endif

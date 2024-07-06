@@ -13,6 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Core.hpp"
+#define COM_NO_WINDOWS_H
 #include <d3d12.h>
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define

@@ -34,13 +34,26 @@ namespace rhi::core
 	*****************************************************************************/
 	struct RHIResourceLayoutDesc
 	{
+		/*! @brief Descriptor Tableに登録される各要素*/
 		gu::DynamicArray<core::ResourceLayoutElement> Elements = {};
+
+		/*! @brief 動的サンプラー*/
 		gu::DynamicArray<core::SamplerLayoutElement>  Samplers = {};
-		gu::Optional<core::Constant32Bits>      Constant32Bits = {};
+		
+		/*! @brief 32bitの定数*/
+		gu::Optional<core::Constant32Bits> Constant32Bits = {};
+
+		/*! @brief RootSignatureの種類を指定*/
 		RootSignatureType ResourceLayoutType = RootSignatureType::Rasterize;
+
+		/*! @brief リソースに直接Indexで指定できるようにするか*/
 		bool UseDirectlyIndexedResourceHeap  = false;
+
+		/*! @brief 動的サンプラーに直接Indexで指定するようにするか*/
 		bool UseDirectlyIndexedSamplerHeap   = false;
-		bool UseIAInputLayout                = true;
+
+		/*! @brief Input Assemblyの入力レイアウトをシェーダーステージに採用するか*/
+		bool UseIAInputLayout = true;
 
 		RHIResourceLayoutDesc(
 			const gu::DynamicArray<core::ResourceLayoutElement>& elements = {},
@@ -74,13 +87,10 @@ namespace rhi::core
 	class RHIResourceLayout : public gu::NonCopyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
+		#pragma region Public Property
 		/*----------------------------------------------------------------------
 		*  @brief :  Return gpu resource shader binding element
 		*----------------------------------------------------------------------*/
@@ -107,14 +117,14 @@ namespace rhi::core
 		const gu::DynamicArray<SamplerLayoutElement>&  GetSamplerElements () const{ return _desc.Samplers; }
 		
 		virtual void SetName(const gu::tstring& name) = 0;
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+		#pragma endregion
 
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
 		RHIResourceLayout() = default;
 
 		virtual ~RHIResourceLayout()
@@ -151,16 +161,17 @@ namespace rhi::core
 			_desc.Constant32Bits = { constant32Bits };
 		}
 
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
+		/*! @brief 論理デバイス*/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 		
 		RHIResourceLayoutDesc _desc = {};
+		#pragma endregion
 	};
 }
 #endif
