@@ -12,6 +12,7 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Adapter.hpp"
 #include "Platform/Core/Include/CorePlatformMacros.hpp"
+#include "Platform/Core/Include/CoreOS.hpp"
 #include "GameUtility/Base/Include/GUParse.hpp"
 #include "GameUtility/Base/Include/GUCommandLine.hpp"
 #include <d3d12.h>
@@ -299,7 +300,7 @@ void RHIInstance::LogAdapters() const
 *************************************************************************/
 bool RHIInstance::HasLoadedDirectXAgilitySDK() const
 {
-	return ::GetModuleHandleA("D3D12Core.dll") != NULL;
+	return platform::core::OS::GetDLLHandle(SP("D3D12Core.dll")) != nullptr;
 }
 #endif
 #pragma endregion Public Function

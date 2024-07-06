@@ -34,24 +34,6 @@ namespace platform::windows
 
 		#pragma region Public Function
 
-		#pragma region DLL Function
-		/*!**********************************************************************
-		*  @brief     指定されたファイル名のDLLをロードし, そのハンドルを返します. @n
-		*             https://qiita.com/tera1707/items/727e7ad4dc9f3205c137
-		*  @param[in] const tstring& fiieName : ロードしたいDLLのファイル名
-		*  @return    void* : ロードしたDLLのハンドル
-		*************************************************************************/
-		virtual void* GetDLLHandle(const gu::tstring& fileName) const override;
-
-		/*!**********************************************************************
-		*  @brief     指定されたファイル名のDLLをメモリから解放します
-		*  @param[in] void* handle : ロードしたDLLのハンドル
-		*  @return    bool 結果
-		*************************************************************************/
-		virtual bool FreeDLLHandle(void* handle) const override;
-
-		#pragma endregion DLL Function
-
 		#pragma region Process Function
 
 		/*!**********************************************************************

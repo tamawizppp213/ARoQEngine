@@ -11,6 +11,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "CorePlatformMacros.hpp"
+#include PLATFORM_COMPILED_HEADER(Platform, OS.hpp)
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -19,59 +21,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-
-/****************************************************************************
-*				  			   CoreOS
-*************************************************************************//**
-/*  @class     CoreOS
-*   @brief     temp
-*****************************************************************************/
-class CoreOS
+namespace platform::core
 {
-public:
-	#pragma region Public Function
-
-	#pragma endregion 
-
-	#pragma region Public Property
-
-	#pragma endregion 
-
-	#pragma region Public Operator 
-
-	#pragma endregion 
-
-	#pragma region Public Constructor and Destructor
-
-	#pragma endregion 
-
-protected:
-	#pragma region Protected Constructor and Destructor
-
-	#pragma endregion 
-
-	#pragma region Protected Function
-
-	#pragma endregion 
-
-	#pragma region Protected Property
-
-	#pragma endregion
-
-private:
-	#pragma region Private Constructor and Destructor
-
-	#pragma endregion
-
-	#pragma region Private Function
-
-	#pragma endregion 
-
-	#pragma region Private Property
-
-	#pragma endregion 
-
-};
-
+	/****************************************************************************
+	*				  			   CoreOS
+	*************************************************************************//**
+	/*  @brief   OSèÓïÒÇÇ‹Ç∆ÇﬂÇΩÉNÉâÉX
+	*****************************************************************************/
+	#if PLATFORM_OS_WINDOWS
+	using OS = platform::windows::WindowsOS;
+	#endif
+}
 
 #endif

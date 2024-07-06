@@ -14,6 +14,7 @@
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include "Platform/Core/Include/CorePlatformMacros.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
+#define COM_NO_WINDOWS_H
 #include <d3d12.h> // ‚±‚êŽ©‘Ìwindows.hˆË‘¶‚È‚Ì‚©
 
 //////////////////////////////////////////////////////////////////////////////////

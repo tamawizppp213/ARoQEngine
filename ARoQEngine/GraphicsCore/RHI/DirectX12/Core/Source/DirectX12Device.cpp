@@ -33,6 +33,7 @@
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingBLASBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingTLASBuffer.hpp"
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingGeometry.hpp"
+#include "Platform/Core/Include/CoreOS.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include <d3d12.h>
@@ -68,7 +69,10 @@ RHIDevice::RHIDevice()
 
 RHIDevice::~RHIDevice()
 {
-	if (_device) { Destroy(); }
+	if (_device) 
+	{
+		Destroy(); 
+	}
 }
 
 RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, const core::RHIMultiGPUMask& mask) :
@@ -126,10 +130,9 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	SetupDefaultCommandSignatures();
 	CheckAtomicOperation();
 	
-	/*if (USE_INTEL_EXTENSION && adapter->IsAdapterIntel())
-	{
-		CreateIntelExtensionContext();
-	}*/
+#if USE_PIX
+	_pixDLLHandle = platform::core::OS::GetDLLHandle(L"WinPixEventRuntime.dll");
+#endif
 }
 
 #pragma endregion Constructor and Destructor
@@ -202,6 +205,14 @@ void RHIDevice::Destroy()
 
 	if (_drawIndexedIndirectCommandSignature) { _drawIndexedIndirectCommandSignature.Reset(); }
 
+	/*-------------------------------------------------------------------
+	-             PIXを未使用状態にしておく
+	---------------------------------------------------------------------*/
+	if (_pixDLLHandle)
+	{
+		platform::core::OS::FreeDLLHandle(_pixDLLHandle);
+		_pixDLLHandle = nullptr;
+	}
 
 	/*-------------------------------------------------------------------
 	-              Clear device
@@ -1129,15 +1140,13 @@ void RHIDevice::CheckMaxHeapSize()
 
 	_maxSamplerHeapCount = D3D12_MAX_SHADER_VISIBLE_SAMPLER_HEAP_SIZE;
 }
-/****************************************************************************
-*                     FindHighestFeatureLevel
-****************************************************************************/
-/* @brief     DirectXで使用可能な最大の機能レベルを自動で設定します
-*
+
+/*!**********************************************************************
+*  @brief     DirectXで使用可能な最大の機能レベルを自動で設定します
+*  @note      現在は12_2が最大サポートレベルです
 *  @param[in] void
-*
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void RHIDevice::FindHighestFeatureLevel()
 {
 	const D3D_FEATURE_LEVEL featureLevels[] =
@@ -1204,7 +1213,7 @@ void RHIDevice::SetupPlatformPixelFormats()
 	PixelFormatInfo::Get(R8G8_UNORM          ).PlatformFormat = DXGI_FORMAT_R8G8_UNORM;
 	PixelFormatInfo::Get(R8G8_SNORM          ).PlatformFormat = DXGI_FORMAT_R8G8_SNORM;
 	PixelFormatInfo::Get(D32_FLOAT           ).PlatformFormat = DXGI_FORMAT_D32_FLOAT;
-	PixelFormatInfo::Get(R32_FLOAT           ).PlatformFormat  = DXGI_FORMAT_R32_FLOAT;
+	PixelFormatInfo::Get(R32_FLOAT           ).PlatformFormat = DXGI_FORMAT_R32_FLOAT;
 	PixelFormatInfo::Get(R32_UINT            ).PlatformFormat = DXGI_FORMAT_R32_UINT;
 	PixelFormatInfo::Get(R32_SINT            ).PlatformFormat = DXGI_FORMAT_R32_SINT;
 	PixelFormatInfo::Get(D16_UNORM           ).PlatformFormat = DXGI_FORMAT_D16_UNORM;
@@ -1239,12 +1248,13 @@ void RHIDevice::SetupPlatformPixelFormats()
 	PixelFormatInfo::Get(BC6H_SFLOAT16       ).PlatformFormat = DXGI_FORMAT_BC6H_SF16;
 }
 
-/****************************************************************************
-*                     FindHighestShaderModel
-****************************************************************************/
-/* @brief      DirectXで使用可能な最大のシェーダーモデルを設定します@n
-               現在は6_9が指定可能なサポートレベルですが, 環境に応じてレベルは下がる場合があります
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     DirectXで使用可能な最大のシェーダーモデルを設定します
+*  @note      現在は6_9が指定可能なサポートレベルですが, 環境に応じてレベルは下がる場合があります@n
+*             https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/overviews-direct3d-11-devices-downlevel-intro
+*  @param[in] void
+*  @return    void
+*************************************************************************/
 void RHIDevice::FindHighestShaderModel()
 {
 	
@@ -1383,17 +1393,9 @@ void RHIDevice::CheckHighestRootSignatureVersion()
 
 #if USE_INTEL_EXTENSION
 
-/****************************************************************************
-*                     CreateIntelExtensionContext
-****************************************************************************/
-/* @fn        INTCExtensionContext* RHIDevice::CreateIntelExtensionContext(INTCExtensionInfo& intelExtensionInfo)
-*
-/* @brief     INTCExtensionContextを生成します.
-*
-*  @param[out]void
-*
-*  @return    void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief  Intel extension contextを生成します.
+*************************************************************************/
 void RHIDevice::CreateIntelExtensionContext()
 {
 	_isSupportedIntelEmulatedAtomic64 = false;
@@ -1502,17 +1504,9 @@ void RHIDevice::CreateIntelExtensionContext()
 }
 
 
-/****************************************************************************
-*                     DestroyIntelExtensionContext
-****************************************************************************/
-/* @fn        void RHIDevice::DestroyIntelExtensionContext()
-*
-/* @brief     INTCExtensionContextを破棄します. 
-*
-*  @param[in] INTCExtensionContext* 
-*
-*  @return    void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief   Intel extension contextを破棄します.
+*************************************************************************/
 void RHIDevice::DestroyIntelExtensionContext()
 {
 	if (_intelExtensionContext == nullptr) { return; }
@@ -1535,15 +1529,9 @@ void RHIDevice::DestroyIntelExtensionContext()
 	}
 }
 
-/****************************************************************************
-*                     IsSupportedIntelEmulatedAtomic64
-****************************************************************************/
-/* @brief     Atomic 64 bitがサポートされているかを返します.
-*
-*  @param[in] void
-*
-*  @return    bool
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief  :Atomic 64 bitがサポートされているかを返します.
+*************************************************************************/
 bool RHIDevice::IsSupportedIntelEmulatedAtomic64()
 {
 	/*-------------------------------------------------------------------

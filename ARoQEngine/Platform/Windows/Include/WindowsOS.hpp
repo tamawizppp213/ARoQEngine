@@ -111,6 +111,21 @@ namespace platform::windows
 		*************************************************************************/
 		static void CoUninitialize();
 
+		/*!**********************************************************************
+		*  @brief     指定されたファイル名のDLLをロードし, そのハンドルを返します. @n
+		*             https://qiita.com/tera1707/items/727e7ad4dc9f3205c137
+		*  @param[in] const tstring& fiieName : ロードしたいDLLのファイル名
+		*  @return    void* : ロードしたDLLのハンドル
+		*************************************************************************/
+		static void* GetDLLHandle(const gu::tstring& fileName);
+
+		/*!**********************************************************************
+		*  @brief     指定されたファイル名のDLLをメモリから解放します
+		*  @param[in] void* handle : ロードしたDLLのハンドル
+		*  @return    bool 結果
+		*************************************************************************/
+		static bool FreeDLLHandle(void* handle);
+
 		#pragma endregion 
 
 		#pragma region Public Property

@@ -14,6 +14,7 @@
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDevice.hpp"
 #include "DirectX12Core.hpp"
 #include <dxgiformat.h>
+#define COM_NO_WINDOWS_H
 #include <d3d12.h>
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,8 +33,7 @@ namespace rhi::directX12
 	/****************************************************************************
 	*				  			Device class
 	****************************************************************************/
-	/* @class     Device
-	*  @brief     Logical Device : shared_ptrで管理すること
+	/* @brief     Logical Device : shared_ptrで管理すること
 	*****************************************************************************/
 	class RHIDevice : public core::RHIDevice, public gu::EnableSharedFromThis<RHIDevice>
 	{
@@ -490,15 +490,19 @@ namespace rhi::directX12
 		void SetupPlatformPixelFormats();
 
 		/*!**********************************************************************
-		*  @brief  DirectXで使用可能な最大の機能レベルを自動で設定します
-		*  @note   現在は12_2が最大サポートレベルです
+		*  @brief     DirectXで使用可能な最大の機能レベルを自動で設定します
+		*  @note      現在は12_2が最大サポートレベルです
+		*  @param[in] void
+		*  @return    void
 		*************************************************************************/
 		void FindHighestFeatureLevel();
 
 		/*!**********************************************************************
-		*  @brief  DirectXで使用可能な最大のシェーダーモデルを設定します
-		*  @note   現在は6_9が指定可能なサポートレベルですが, 環境に応じてレベルは下がる場合があります@n
-		*          https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/overviews-direct3d-11-devices-downlevel-intro
+		*  @brief     DirectXで使用可能な最大のシェーダーモデルを設定します
+		*  @note      現在は6_9が指定可能なサポートレベルですが, 環境に応じてレベルは下がる場合があります@n
+		*             https://learn.microsoft.com/ja-jp/windows/win32/direct3d11/overviews-direct3d-11-devices-downlevel-intro
+		*  @param[in] void
+		*  @return    void
 		*************************************************************************/
 		void FindHighestShaderModel();
 
@@ -577,6 +581,14 @@ namespace rhi::directX12
 		*  @brief : Defaultのディスクリプタヒープ
 		*----------------------------------------------------------------------*/
 		gu::SortedMap<DefaultHeapType, gu::SharedPointer<core::RHIDescriptorHeap>> _defaultHeap;
+
+	#if USE_PIX
+		/*! @brief PIXを実行するためのDLLハンドラ*/
+		void* _pixDLLHandle = nullptr;
+
+		/*! @brief GPUキャプチャを行った際のハンドラ*/
+		void* _gpuCaptureHandle = nullptr;
+	#endif
 
 		#pragma endregion Private Property
 	};
