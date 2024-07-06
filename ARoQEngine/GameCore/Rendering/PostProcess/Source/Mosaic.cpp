@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/Vignette.hpp"
+#include "../Include/Mosaic.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
@@ -32,19 +32,23 @@ using namespace rhi::core;
 //                             Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-Vignette::Vignette()
+Mosaic::Mosaic()
 {
 
 }
 
-Vignette::~Vignette()
+Mosaic::~Mosaic()
 {
 
 }
 
-Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettings& settings, const gu::tstring& addName)
-	: IFullScreenEffector(engine), _settings(settings)
+Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, const gu::tstring& addName)
+	: IFullScreenEffector(engine)
 {
+#ifdef _DEBUG
+	Check(blockSize >= 0.0f);
+#endif
+
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
@@ -54,28 +58,22 @@ Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettin
 	-           Prepare Pipeline
 	---------------------------------------------------------------------*/
 	PrepareVertexAndIndexBuffer(name);
-	PrepareBuffer(name);
+	PrepareBuffer(blockSize, name);
 	PreparePipelineState(name);
 	PrepareResourceView();
 }
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function
-void Vignette::OnResize(int newWidth, int newHeight)
+void Mosaic::OnResize(int newWidth, int newHeight)
 {
 	printf("width: %d, height: %d\n", newWidth, newHeight);
 }
 
-void Vignette::Draw()
+void Mosaic::Draw()
 {
-	if (_isSettingChanged)
-	{
-		_resourceViews[0]->GetBuffer()->UploadByte(&_settings, sizeof(_settings));
-		_isSettingChanged = false;
-	}
-
-	const auto frameIndex = _engine->GetCurrentFrameIndex();
-	const auto device = _engine->GetDevice();
+	const auto frameIndex          = _engine->GetCurrentFrameIndex();
+	const auto device              = _engine->GetDevice();
 	const auto graphicsCommandList = _engine->GetCommandList(CommandListType::Graphics);
 
 	/*-------------------------------------------------------------------
@@ -84,7 +82,7 @@ void Vignette::Draw()
 	graphicsCommandList->SetResourceLayout(_resourceLayout);
 	graphicsCommandList->SetGraphicsPipeline(_pipeline);
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
-	graphicsCommandList->SetIndexBuffer(_indexBuffers[frameIndex]);
+	graphicsCommandList->SetIndexBuffer (_indexBuffers[frameIndex]);
 	_resourceViews[0]->Bind(graphicsCommandList, 0);
 	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 1);
 	graphicsCommandList->DrawIndexedInstanced(
@@ -94,26 +92,29 @@ void Vignette::Draw()
 
 #pragma region Set up function
 
-void Vignette::PrepareBuffer(const gu::tstring& name)
+void Mosaic::PrepareBuffer(const float blockSize, const gu::tstring& name)
 {
 	const auto device = _engine->GetDevice();
-	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(VignetteSettings), 1);
+	const auto metaData = GPUBufferMetaData::ConstantBuffer(sizeof(MosaicInfo), 1);
 
 	const auto buffer = device->CreateBuffer(metaData);
-	const auto bufferName = name + SP("VignetteSettings");
-	buffer->SetName(bufferName);
+	buffer->SetName(name + SP("MosaicInfo"));
 
 	/*-------------------------------------------------------------------
 	-			Set Information
 	---------------------------------------------------------------------*/
-	buffer->UploadByte(&_settings, metaData.GetTotalByte(), 0, nullptr);
+	_mosaicInfo.WindowSize = {(float)_width, (float)_height };
+	_mosaicInfo.BlockSize  = blockSize;
+	_mosaicInfo.Padding    = 0.0f;
+
+	buffer->UploadByte(&_mosaicInfo, metaData.GetTotalByte(), 0, nullptr);
 	_resourceViews.Push(device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer));
 }
 
 
-void Vignette::PreparePipelineState(const gu::tstring& addName)
+void Mosaic::PreparePipelineState(const gu::tstring& addName)
 {
-	const auto device = _engine->GetDevice();
+	const auto device  = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 
 	/*-------------------------------------------------------------------
@@ -122,7 +123,7 @@ void Vignette::PreparePipelineState(const gu::tstring& addName)
 	_resourceLayout = device->CreateResourceLayout
 	(
 		{
-			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // Vignette setting
+			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // Mosaic info
 			ResourceLayoutElement(DescriptorHeapType::SRV, 0), // source texture
 		},
 		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearClamp)), 0) }
@@ -133,14 +134,14 @@ void Vignette::PreparePipelineState(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\Effect\\ShaderVignette.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core")});
-	ps->Compile(ShaderType::Pixel, SP("Shader\\Effect\\ShaderVignette.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\PostProcess\\ShaderMosaic.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel , SP("Shader\\PostProcess\\ShaderMosaic.hlsl"),SP("PSMain"), 6.4f, {SP("Shader\\Core")});
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
 	---------------------------------------------------------------------*/
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
-	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
+	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite(true)));
 	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
 	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());
@@ -150,8 +151,8 @@ void Vignette::PreparePipelineState(const gu::tstring& addName)
 	_pipeline->SetName(addName + SP("PSO"));
 }
 
-void Vignette::PrepareResourceView()
+void Mosaic::PrepareResourceView()
 {
-
+	
 }
 #pragma endregion Set up function

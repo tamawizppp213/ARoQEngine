@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Rendering/Effect/Include/Blur.hpp"
+#include "GameCore/Rendering/PostProcess/Include/Blur.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIRenderPass.hpp"
@@ -319,7 +319,7 @@ void GaussianBlur::PrepareTextureSizeBuffer(const std::uint32_t width, const std
 *****************************************************************************/
 void GaussianBlur::PreparePipelineState(const gu::tstring& name)
 {
-	gu::tstring defaultPath = SP("Shader\\Effect\\ShaderGaussianBlur.hlsl");
+	gu::tstring defaultPath = SP("Shader\\PostProcess\\ShaderGaussianBlur.hlsl");
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 	/*-------------------------------------------------------------------

@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Rendering/Effect/Include/Bloom.hpp"
+#include "GameCore/Rendering/PostProcess/Include/Bloom.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
@@ -150,7 +150,7 @@ void Bloom::PrepareGaussianBlurs(const std::uint32_t width, const std::uint32_t 
 
 void Bloom::PreparePipelineState(const gu::tstring& name)
 {
-	const gu::tstring defaultPath = SP("Shader\\Effect\\ShaderBloom.hlsl");
+	const gu::tstring defaultPath = SP("Shader\\PostProcess\\ShaderBloom.hlsl");
 	const auto device = _engine->GetDevice();
 	const auto factory = device->CreatePipelineFactory();
 

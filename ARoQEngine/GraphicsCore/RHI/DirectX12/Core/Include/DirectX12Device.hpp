@@ -42,6 +42,8 @@ namespace rhi::directX12
 		/*!**********************************************************************
 		*  @brief     論理デバイスを破棄する.
 		*  @note      この関数を呼ばないとSharedPointerでデストラクタが呼ばれない可能性があったため.
+		*  @param[in] void
+		*  @return    void
 		*************************************************************************/
 		void Destroy() override;
 
@@ -480,6 +482,7 @@ namespace rhi::directX12
 		/*!**********************************************************************
 		*  @brief     出力の場所にDirectX12のエラーが生じた場合に報告する機能をデバッグモードのみ追加する
 		*  @param[in] void
+		*  @return    void
 		*************************************************************************/
 		void ReportLiveObjects();
 
@@ -533,7 +536,14 @@ namespace rhi::directX12
 		void CheckSamplerFeedbackSupport();
 		void CheckAllowTearingSupport();
 		void CheckStencilReferenceFromPixelShaderSupport();
+
+		/*!**********************************************************************
+		*  @brief     HLSLで明示的にGPU上で複数スレッドの使用が可能. Wave : プロセッサ上の同時に実行されるスレッドの集合, Lane : 個々のスレッド
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		void CheckWaveLaneSupport();
+
 		void CheckNative16bitOperation();
 		void CheckAtomicOperation();
 		void CheckAdditionalUAVType();

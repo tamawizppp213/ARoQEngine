@@ -75,14 +75,12 @@ gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core
 	return gu::MakeShared<DEFAULT_GRAPHICS_API::RHIInstance>(debugCreateInfo);
 }
 
-/****************************************************************************
-*                     GetPreferredAdapterVendor
-****************************************************************************/
-/* @brief    物理デバイスの好みがある場合は, コマンドラインの結果に基づいてDisplayAdapterVenderTypeを返す @n
-*            コマンドラインの文字列は, prefer_(DisplayAdapterVenderTypeに指定されるベンダー名)で指定してください
-* 
-*  @return   DisplayAdapterVendorType
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     物理デバイスの好みがある場合は, コマンドラインの結果に基づいてDisplayAdapterVenderTypeを返す @n
+*             コマンドラインの文字列は, prefer_(DisplayAdapterVenderTypeに指定されるベンダー名)で指定してください
+*  @details   コマンド一覧 @n
+*             prefer_AMD, prefer_Intel, prefer_Nvidia, prefer_Microsoft
+*************************************************************************/
 DisplayAdapterVendorType rhi::core::RHIInstance::GetPreferredAdapterVendor() const
 {
 	if(Parse::Contains(CommandLine::Get(), SP("prefer_AMD")))

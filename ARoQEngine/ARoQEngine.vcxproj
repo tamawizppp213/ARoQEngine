@@ -221,19 +221,19 @@
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\ScreenSpaceReflection.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\Vignette.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\WhiteBalance.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\ScreenSpaceReflection.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\Vignette.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\WhiteBalance.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\CascadeShadow.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\UniversalRenderPipeline.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\DebugDrawer.hpp" />
     <ClInclude Include="GameCore\Rendering\Debugger\Include\ScreenCapture.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\FullScreenEffector.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\Mosaic.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\ParticleEffect.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\ParticleEffectStruct.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\Sobel.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\SSAO.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\FullScreenEffector.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\Mosaic.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\ParticleEffect.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\ParticleEffectStruct.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\Sobel.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\SSAO.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProperty.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\SceneLightBuffer.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\ShadowMap.hpp" />
@@ -697,10 +697,10 @@
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassLightCulling.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\BasePass\Include\BasePassZPrepass.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Renderer\Include\RenderPipeline.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\Bloom.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\Blur.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\ColorChange.hpp" />
-    <ClInclude Include="GameCore\Rendering\Effect\Include\DepthOfField.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\Bloom.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\Blur.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\ColorChange.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\DepthOfField.hpp" />
     <ClInclude Include="GameCore\Rendering\EnvironmentMap\Include\SkyDome.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\External\Include\IESProfiler.hpp" />
     <ClInclude Include="GameCore\Rendering\Light\Include\LightType.hpp" />
@@ -1107,14 +1107,14 @@
     <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\UniversalRenderPipeline.cpp" />
     <ClCompile Include="GameCore\Rendering\Debugger\Source\DebugDrawer.cpp" />
     <ClCompile Include="GameCore\Rendering\Debugger\Source\ScreenCapture.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\FullScreenEffector.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\Mosaic.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\ParticleEffect.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\ScreenSpaceReflection.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\Sobel.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\SSAO.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\Vignette.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\WhiteBalance.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\FullScreenEffector.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\Mosaic.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\ParticleEffect.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\ScreenSpaceReflection.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\Sobel.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\SSAO.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\Vignette.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\WhiteBalance.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\Source\CascadeShadow.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\Source\ShadowMap.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\GLTF\Public\Source\GLTFModelConverter.cpp" />
@@ -1279,10 +1279,10 @@
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassLightCulling.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\BasePass\Source\BasePassZPrepass.cpp" />
     <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\RenderingPipeline.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\Bloom.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\Blur.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\ColorChange.cpp" />
-    <ClCompile Include="GameCore\Rendering\Effect\Source\DepthOfField.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\Bloom.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\Blur.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\ColorChange.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\DepthOfField.cpp" />
     <ClCompile Include="GameCore\Rendering\EnvironmentMap\Source\SkyDome.cpp" />
     <ClCompile Include="GameCore\Rendering\Light\External\Source\IESProfiler.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\GLTF\Private\Source\GLTFAnimationUtils.cpp" />
@@ -1504,7 +1504,7 @@
     <None Include="Shader\Core\ShaderCore.hlsli" />
     <None Include="Shader\Core\ShaderMath.hlsli" />
     <None Include="Shader\Core\ShaderVertexType.hlsli" />
-    <None Include="Shader\Effect\ShaderTonemapType.hlsli" />
+    <None Include="Shader\PostProcess\ShaderTonemapType.hlsli" />
     <None Include="Shader\Lighting\ShaderBRDF.hlsli" />
     <None Include="Shader\Lighting\ShaderLightType.hlsli" />
     <None Include="Shader\Lighting\ShaderShadow.hlsli" />
@@ -1529,7 +1529,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderColorChange.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderColorChange.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
@@ -1537,7 +1537,7 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderDepthOfField.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderDepthOfField.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -1549,7 +1549,7 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VerticalBlur</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VerticalBlur</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderGaussianBlur.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderGaussianBlur.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -1561,7 +1561,7 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExecuteBlur</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExecuteBlur</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderBloom.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderBloom.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.4</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -1573,13 +1573,13 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SamplingLuminance</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SamplingLuminance</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderMosaic.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderMosaic.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderSobel.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderSobel.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.4</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
@@ -1591,25 +1591,25 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ExecuteSobel</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ExecuteSobel</EntryPointName>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderSSR.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderSSR.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderTonemap.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderTonemap.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderVignette.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderVignette.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Shader\Effect\ShaderWhiteBalance.hlsl">
+    <FxCompile Include="Shader\PostProcess\ShaderWhiteBalance.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>

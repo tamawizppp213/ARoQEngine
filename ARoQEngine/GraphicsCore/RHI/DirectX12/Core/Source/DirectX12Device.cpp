@@ -139,15 +139,11 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 
 #pragma region Set up and Destroy
 
-/****************************************************************************
-*                     SetUpDefaultHeap
-****************************************************************************/
-/* @brief     各ディスクリプタヒープをDefaultHeapCountに基づいて作成します
-*
+/*!**********************************************************************
+*  @brief     各ディスクリプタヒープをDefaultHeapCountに基づいて作成します
 *  @param[in] const core::DefaultHeapCount ディスクリプタヒープのサイズを決定する構造体
-*
 *  @return    void
-*****************************************************************************/
+*************************************************************************/
 void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 {
 	/*-------------------------------------------------------------------
@@ -161,7 +157,7 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 	/*-------------------------------------------------------------------
 	-                   Set up descriptor count
 	---------------------------------------------------------------------*/
-	gu::SortedMap<core::DescriptorHeapType, size_t> heapInfoList;
+	gu::SortedMap<core::DescriptorHeapType, uint64> heapInfoList;
 	heapInfoList[core::DescriptorHeapType::CBV]     = heapCount.CBVDescCount;
 	heapInfoList[core::DescriptorHeapType::SRV]     = heapCount.SRVDescCount;
 	heapInfoList[core::DescriptorHeapType::UAV]     = heapCount.UAVDescCount;
@@ -176,15 +172,12 @@ void RHIDevice::SetUpDefaultHeap(const core::DefaultHeapCount& heapCount)
 
 }
 
-/****************************************************************************
-*                     Destoy
-****************************************************************************/
-/* @brief     Release command resource and device
-*
+/*!**********************************************************************
+*  @brief     論理デバイスを破棄する.
+*  @note      この関数を呼ばないとSharedPointerでデストラクタが呼ばれない可能性があったため.
 *  @param[in] void
-*
 *  @return    void
-*****************************************************************************/
+*************************************************************************/
 void RHIDevice::Destroy()
 {
 #if USE_INTEL_EXTENSION
@@ -383,20 +376,16 @@ gu::SharedPointer<core::RHIQuery> RHIDevice::CreateQuery(const core::QueryHeapTy
 	return gu::StaticPointerCast<core::RHIQuery>(gu::MakeShared<directX12::RHIQuery>(SharedFromThis(), heapType));
 }
 
-/****************************************************************************
-*                     CreateCommittedResource
-****************************************************************************/
-/* @brief     Heap領域の確保と実際にデータをメモリに確保するのを両方行う関数
-*             参考はD3D12Resources.cpp(UE5)
-*
+/*!**********************************************************************
+*  @brief     Heap領域の確保と実際にGPUにデータをメモリに確保するのを両方行う関数
+*  @note      本関数はDirectX12専用の関数です. Heapの最低Alignmentは64kBです. 
 *  @param[out] const ResourceComPtr&        :これからメモリを確保したいGPUリソース
 *  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
 *  @param[in]  const D3D12_HEAP_PROPERTIES& : どの場所にメモリを確保するか等メモリ確保の仕方を設定する
 *  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
 *  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
-* 
-*  @return 　　HRESULT
-*****************************************************************************/
+*  @return     HRESULT : 処理が成功したか
+*************************************************************************/
 HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 	const D3D12_RESOURCE_DESC& resourceDesc,
 	const D3D12_HEAP_PROPERTIES& heapProps,
@@ -498,18 +487,15 @@ HRESULT RHIDevice::CreateCommittedResource(ResourceComPtr& resource,
 	return result;
 }
 
-/****************************************************************************
-*                     CreateReservedResource
-****************************************************************************/
-/* @brief     既に存在しているHeap内にまだマップまでは行わない予約済みのリソースを作成
-*
+/*!**********************************************************************
+*  @brief      Heap内にまだマップまでは行わない予約済みのリソースを作成. 要は初期化を行わずにメモリ領域だけ確保している状態のこと.
+*  @note       本関数はDirectX12専用の関数です.
 *  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
 *  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
 *  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
 *  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
-*
-*  @return 　　HRESULT
-*****************************************************************************/
+*  @return     HRESULT : 処理が成功したか
+*************************************************************************/
 HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const D3D12_RESOURCE_STATES initialState,const D3D12_CLEAR_VALUE* clearValue)
 {
 	// GPUのメモリ確保した後にその情報を格納する先が見つからない場合はそのまま終了
@@ -571,21 +557,17 @@ HRESULT RHIDevice::CreateReservedResource( ResourceComPtr& resource, const D3D12
 	return result;
 }
 
-/****************************************************************************
-*                     CreatePlacedResource
-****************************************************************************/
-/* @brief     既に作成済みのヒープに配置されるリソースを作成する.
-*             Committed, Reserved, Placedの中では最も高速に動作する
-*
+/*!**********************************************************************
+*  @brief      既に作成済みのヒープに配置されるリソースを作成する.  Committed, Reserved, Placedの中では最も高速に動作する
+*  @note       本関数はDirectX12専用の関数です.
 *  @param[out] const ResourceComPtr&        :これからメモリをしたいGPUリソース
 *  @param[in]  const D3D12_RESOURCE_DESC&   : メモリを確保する際のGPUリソース情報
 *  @param[in]  const HeapComPtr&            : 既に確保済みのGPUヒープ領域
 *  @param[in]  const gu::uint64             : 確保するヒープのオフセット
 *  @param[in]  const D3D12_RESOURCE_STATES  : メモリ確保後, 最初に設定されるGPUリソースの状態
 *  @param[in]  const D3D12_CLEAR_VALUE*     : クリアカラー
-*
-*  @return 　　HRESULT
-*****************************************************************************/
+*  @return     HRESULT : 処理が成功したか
+*************************************************************************/
 HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_RESOURCE_DESC& resourceDesc, const HeapComPtr& heap, const gu::uint64 heapOffset, const D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* clearValue )
 {
 	// GPUのメモリ確保した後にその情報を格納する先が見つからない場合はそのまま終了
@@ -658,17 +640,11 @@ HRESULT RHIDevice::CreatePlacedResource( ResourceComPtr& resource, const D3D12_R
 
 #pragma region Debug Function
 
-/****************************************************************************
-*                     ReportLiveObjects
-****************************************************************************/
-/* @fn        void GraphicsDeviceDirectX12::ReportLiveObjects()
-* 
-/* @brief     ReportLiveObjects
-* 
+/*!**********************************************************************
+*  @brief     出力の場所にDirectX12のエラーが生じた場合に報告する機能をデバッグモードのみ追加する
 *  @param[in] void
-* 
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void RHIDevice::ReportLiveObjects()
 {
 #ifdef _DEBUG
@@ -1291,19 +1267,11 @@ void RHIDevice::FindHighestShaderModel()
 	_maxSupportedShaderModel = D3D_SHADER_MODEL_5_1;
 }
 
-/****************************************************************************
-*                     CheckWaveLaneSupport
-****************************************************************************/
-/* @fn        void RHIDevice::CheckWaveLaneSupport()
-*
-/* @brief      HLSLで明示的にGPU上で複数スレッドの使用が可能となります.
-		       Wave : プロセッサ上の同時に実行されるスレッドの集合
-			   Lane : 個々のスレッド
-*
+/*!**********************************************************************
+*  @brief     HLSLで明示的にGPU上で複数スレッドの使用が可能. Wave : プロセッサ上の同時に実行されるスレッドの集合, Lane : 個々のスレッド
 *  @param[in] void
-*
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void RHIDevice::CheckWaveLaneSupport()
 {
 	D3D12_FEATURE_DATA_D3D12_OPTIONS1 options{};

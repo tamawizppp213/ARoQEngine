@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/ShadowMap.hpp"
 #include "../../Model/Include/GameModel.hpp"
-#include "../../Effect/Include/Blur.hpp"
+#include "../../PostProcess/Include/Blur.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"

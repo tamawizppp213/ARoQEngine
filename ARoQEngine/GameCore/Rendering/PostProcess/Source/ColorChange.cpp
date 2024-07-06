@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameCore/Rendering/Effect/Include/ColorChange.hpp"
+#include "GameCore/Rendering/PostProcess/Include/ColorChange.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIFrameBuffer.hpp"
@@ -158,8 +158,8 @@ void ColorChange::PreparePipelineState(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\Effect\\ShaderColorChange.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
-	ps->Compile(ShaderType::Pixel , SP("Shader\\Effect\\ShaderColorChange.hlsl"), s_ShaderFunctionName[(int)_colorType], 6.4f, { SP("Shader\\Core") });
+	vs->Compile(ShaderType::Vertex, SP("Shader\\PostProcess\\ShaderColorChange.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
+	ps->Compile(ShaderType::Pixel , SP("Shader\\PostProcess\\ShaderColorChange.hlsl"), s_ShaderFunctionName[(int)_colorType], 6.4f, { SP("Shader\\Core") });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
