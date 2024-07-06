@@ -91,31 +91,46 @@ namespace rhi::core
 		#pragma endregion
 
 		#pragma region Public Property
-		/*----------------------------------------------------------------------
-		*  @brief :  Return gpu resource shader binding element
-		*----------------------------------------------------------------------*/
-		const ResourceLayoutElement&  GetResourceElement(const size_t index) const { return _desc.Elements[index]; }
+		/*!**********************************************************************
+		*  @brief     GPUリソースのシェーダーバインディング要素を返します
+		*  @param[in] void
+		*  @return    const ResourceLayoutElement&
+		*************************************************************************/
+		const ResourceLayoutElement&  GetResourceElement(const gu::uint8 index) const { return _desc.Elements[index]; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Return shader layout element of the sampler state
-		*----------------------------------------------------------------------*/
-		const SamplerLayoutElement&   GetSamplerElement (const size_t index) const { return _desc.Samplers[index]; }
+		/*!**********************************************************************
+		*  @brief     SamplerLayoutElementを返します
+		*  @param[in] void
+		*  @return    const SamplerLayoutElement& 
+		*************************************************************************/
+		const SamplerLayoutElement& GetSamplerElement (const gu::uint8 index) const { return _desc.Samplers[index]; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Return Constant32Bits data
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     Constant32Bitsを返します
+		*  @param[in] void
+		*  @return    gu::Optional<Constant32Bits>
+		*************************************************************************/
 		gu::Optional<Constant32Bits> GetConstant32Bits() const noexcept { return _desc.Constant32Bits; }
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Return All gpu resource shader binding elements
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     全てのResourceLayoutElementを返します
+		*  @param[in] void
+		*  @return    gu::DynamicArray<ResourceLayoutElement>
+		*************************************************************************/
 		const gu::DynamicArray<ResourceLayoutElement>& GetResourceElements() const{ return _desc.Elements; }
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Return all sampler state shader binding elements
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     サンプラーステートのシェーダーバインディング要素を返します
+		*  @param[in] void 
+		*  @return    gu::DynamicArray<SamplerLayoutElement>& : サンプラーステートのシェーダーバインディング要素
+		*************************************************************************/
 		const gu::DynamicArray<SamplerLayoutElement>&  GetSamplerElements () const{ return _desc.Samplers; }
 		
+		/*!**********************************************************************
+		*  @brief     デバッグ表示名を設定します
+		*  @param[in] const gu::tstring& name : デバッグ表示名
+		*  @return    void
+		*************************************************************************/
 		virtual void SetName(const gu::tstring& name) = 0;
 		
 		#pragma endregion
