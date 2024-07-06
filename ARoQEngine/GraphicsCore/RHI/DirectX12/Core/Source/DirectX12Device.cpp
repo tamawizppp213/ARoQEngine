@@ -208,11 +208,13 @@ void RHIDevice::Destroy()
 	/*-------------------------------------------------------------------
 	-             PIXÇñ¢égópèÛë‘Ç…ÇµÇƒÇ®Ç≠
 	---------------------------------------------------------------------*/
+#if USE_PIX
 	if (_pixDLLHandle)
 	{
 		platform::core::OS::FreeDLLHandle(_pixDLLHandle);
 		_pixDLLHandle = nullptr;
 	}
+#endif
 
 	/*-------------------------------------------------------------------
 	-              Clear device
