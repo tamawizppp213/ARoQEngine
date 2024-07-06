@@ -7,7 +7,6 @@
 #ifndef SHADER_VERTEX_TYPE_HLSLI
 #define SHADER_VERTEX_TYPE_HLSLI
 
-
 struct VSInputVertex
 {
     float4 Position : POSITION;
