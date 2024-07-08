@@ -203,9 +203,19 @@ namespace rhi::core
 		/*-------------------------------------------------------------------
 		-               Device Support Check
 		---------------------------------------------------------------------*/
-		virtual bool IsSupportedDxr                () const = 0; // Ray Tracing 
+		/*!**********************************************************************
+		*  @brief     DirectX Ray Tracingが使えるかどうかを返します.
+		*  @param[in] void
+		*  @return    bool Ray Tracingが使えるかどうか
+		*************************************************************************/
+		virtual bool IsSupportedDxr() const = 0; // Ray Tracing 
 
-		virtual bool IsSupportedHDR                () const = 0; // HDR check ()
+		/*!**********************************************************************
+		*  @brief     HDRが使えるかどうかを返します.
+		*  @param[in] void
+		*  @return    bool HDRが使えるかどうか
+		*************************************************************************/
+		virtual bool IsSupportedHDR() const = 0; // HDR check ()
 
 		virtual bool IsSupportedVariableRateShading() const = 0;
 

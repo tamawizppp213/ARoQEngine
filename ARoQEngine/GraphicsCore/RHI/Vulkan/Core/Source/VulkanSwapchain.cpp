@@ -140,7 +140,7 @@ RHISwapchain::RHISwapchain(
 	const gu::SharedPointer<rhi::core::RHIDevice>& device, 
 	const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue, 
 	const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat,
-	const size_t frameBufferCount, std::uint32_t vsync, bool isValidHDR) : rhi::core::RHISwapchain(device, commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
+	const gu::uint8 frameBufferCount, gu::uint8 vsync, bool isValidHDR) : rhi::core::RHISwapchain(device, commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR)
 {
 	SetUp();
 }
@@ -298,7 +298,7 @@ std::uint32_t RHISwapchain::PrepareNextImage(const gu::SharedPointer<core::RHIFe
 *  @param[in] std::uint64_t waitValue
 *  @return 　　void
 *****************************************************************************/
-void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const std::uint64_t waitValue)
+void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const gu::uint64 waitValue)
 {
 	const auto vkFence = gu::StaticPointerCast<vulkan::RHIFence>(fence);
 	const auto vkQueue = gu::StaticPointerCast<vulkan::RHICommandQueue>(_desc.CommandQueue);
@@ -306,7 +306,7 @@ void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const
 	/*-------------------------------------------------------------------
 	-          Set up timeline semaphore submit info
 	---------------------------------------------------------------------*/
-	constexpr std::uint64_t temp = std::numeric_limits<std::uint64_t>::max();
+	constexpr std::uint64_t temp = std::numeric_limits<gu::uint64>::max();
 	VkTimelineSemaphoreSubmitInfo timelineInfo = {};
 	timelineInfo.sType                     = VK_STRUCTURE_TYPE_TIMELINE_SEMAPHORE_SUBMIT_INFO;
 	timelineInfo.waitSemaphoreValueCount   = 1;
@@ -358,15 +358,13 @@ void RHISwapchain::Present(const gu::SharedPointer<core::RHIFence>& fence, const
 	
 
 }
-/****************************************************************************
-*                     Resize
-****************************************************************************/
-/* @fn        void RHISwapchain::Resize(const size_t width, const size_t height)
-*  @brief     Resize screen size. (set resized swapchain buffers )
-*  @param[in] const size_t width
-*  @param[in] const size_t height
-*  @return 　　void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     画面サイズを変更します. 一度すべてを再構築し、再度アップデートします. @n
+* 　　　　　　　 事前にコマンドの実行が終了していることを確認してください.
+*  @param[in] const gu::uint32 width : 画面の幅
+*  @param[in] const gu::uint32 height : 画面の高さ
+*  @return    void
+*************************************************************************/
 void RHISwapchain::Resize(const gu::uint32 width, const gu::uint32 height)
 {
 	/*-------------------------------------------------------------------
@@ -403,9 +401,9 @@ void RHISwapchain::Resize(const gu::uint32 width, const gu::uint32 height)
 *  @param[in] void
 *  @return 　　size_t
 *****************************************************************************/
-size_t RHISwapchain::GetCurrentBufferIndex() const
+gu::uint8 RHISwapchain::GetCurrentBufferIndex() const
 {
-	return static_cast<std::uint32_t>(_currentBufferIndex);
+	return static_cast<gu::uint8>(_currentBufferIndex);
 }
 #pragma endregion   Render Function
 #pragma region Set Up Function

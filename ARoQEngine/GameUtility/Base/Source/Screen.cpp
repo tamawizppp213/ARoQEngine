@@ -17,8 +17,8 @@ static constexpr int DEFAULT_SCREEN_WIDTH = 1920;
 static constexpr int DEFAULT_SCREEN_HEIGHT = 1080;
 int Screen::_currentPixelWidth          = DEFAULT_SCREEN_WIDTH;
 int Screen::_currentPixelHeight         = DEFAULT_SCREEN_HEIGHT;
-int Screen::_fullScreenResolutionWidth  = DEFAULT_SCREEN_WIDTH;
-int Screen::_fullScreenResolutionHeight = DEFAULT_SCREEN_HEIGHT;
+int Screen::_fullScreenResolutionWidth  = 3840;
+int Screen::_fullScreenResolutionHeight = 2560;
 float Screen::_onePixelWidth            = 1.0f / DEFAULT_SCREEN_WIDTH;
 float Screen::_onePixelHeight           = 1.0f / DEFAULT_SCREEN_HEIGHT;
 //////////////////////////////////////////////////////////////////////////////////

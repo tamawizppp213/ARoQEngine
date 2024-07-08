@@ -28,8 +28,7 @@ namespace rhi::directX12
 	/****************************************************************************
 	*				  			RHIResourceLayout
 	****************************************************************************/
-	/* @class     RHIResourceLayout
-	*  @brief     GPU resource root signature. shader binding setting.
+	/* @brief     GPU resource root signature. shader binding setting.
 	*****************************************************************************/
 	class RHIResourceLayout : public  rhi::core::RHIResourceLayout
 	{

@@ -136,7 +136,7 @@ LRESULT CALLBACK PlatformApplication::StaticWindowProcedure(HWND hwnd, UINT mess
 	
 	if (application)
 	{
-		application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
+		return application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
 	}
 	else
 	{
@@ -148,7 +148,7 @@ LRESULT CALLBACK PlatformApplication::StaticWindowProcedure(HWND hwnd, UINT mess
 		if (application)
 		{
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)application);
-			application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
+			return application->ApplicationWindowMessageProcedure(hwnd, message, wParam, lParam);
 		}
 	}
 
@@ -245,11 +245,14 @@ void PlatformApplication::SetUpWindow(const SharedPointer<core::CoreWindow>& win
 *****************************************************************************/
 bool PlatformApplication::PumpMessage()
 {
-	if (PeekMessage(&_windowMessage, NULL, 0, 0, PM_REMOVE))
+	MSG message = { 0 };
+
+	if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
 	{
 		/*-----------------------------------------------------------------
 				メッセージの変換と割り当て
 		--------------------------------------------------------------------*/
+		_windowMessage = message;
 		TranslateMessage(&_windowMessage);
 		DispatchMessage(&_windowMessage);
 
@@ -453,7 +456,6 @@ LRESULT PlatformApplication::ProcessImmediateWindowsMessage(HWND hwnd, UINT mess
 		--------------------------------------------------------------------*/
 		case WM_ACTIVATEAPP:
 		{
-			_isResizing = false;
 			PushDeferredWindowsMessage(hwnd, message, wParam, lParam);
 			break;
 		}
@@ -719,7 +721,13 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 				return 0;
 			}
 
-			_messageHandler->OnSizeChanged(window, LOWORD(message.LParam), HIWORD(message.LParam));
+			if(_resizingWidth == LOWORD(message.LParam) && _resizingHeight == HIWORD(message.LParam))
+			{
+				return 0;
+			}
+
+			_resizingWidth  = LOWORD(message.LParam);
+			_resizingHeight = HIWORD(message.LParam);
 
 			switch (message.WParam)
 			{
@@ -758,6 +766,26 @@ LRESULT PlatformApplication::ProcessDeferredWindowsMessage(const DeferredMessage
 		{
 			_messageHandler->OnWindowResizing(window);
 			break;
+		}
+		/*-----------------------------------------------------------------
+			移動またはサイズ変更モーダル ループに入った後、ウィンドウに 1 回送信
+			(wParam: 使用しない, lParam: 使用しない)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-entersizemove
+		--------------------------------------------------------------------*/
+		case WM_ENTERSIZEMOVE:
+		{
+			return 0;
+		}
+		/*-----------------------------------------------------------------
+			移動またはサイズ変更モーダル ループを終了した後、ウィンドウに 1 回送信されます
+			(wParam: 使用しない, lParam: 使用しない)
+			https://learn.microsoft.com/ja-jp/windows/win32/winmsg/wm-exitsizemove
+		--------------------------------------------------------------------*/
+		case WM_EXITSIZEMOVE:
+		{
+			_messageHandler->OnSizeChanged(window, _resizingWidth, _resizingHeight);
+
+			return 0;
 		}
 		/*-----------------------------------------------------------------
 		  DPIが変化した時に送信

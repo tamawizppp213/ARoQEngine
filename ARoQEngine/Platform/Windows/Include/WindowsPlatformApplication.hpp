@@ -231,6 +231,10 @@ namespace platform::windows
 
 		MSG _windowMessage = { NULL };
 
+		/*! @brief 変更中のウィンドウの幅*/
+		gu::uint32 _resizingWidth = 0;
+		gu::uint32 _resizingHeight = 0;
+
 		// @brief : メインループの外で実行するときにtrueになります
 		bool _allowedToDeferredMessageProcessing = false;
 

@@ -290,15 +290,12 @@ void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandLi
 * 
 *  @return @@void
 *****************************************************************************/
-void LowLevelGraphicsEngine::OnResize(const size_t newWidth, const size_t newHeight)
+void LowLevelGraphicsEngine::OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight)
 {
 	if (!(_width != newWidth || _height != newHeight)) { return; }
 
-	Screen::SetScreenWidth((int)newWidth);
-	Screen::SetScreenHeight((int)newHeight);
-	SetFrameBuffers((int)newWidth, (int)newHeight);
-
 	_swapchain->Resize(newWidth, newHeight);
+	SetFrameBuffers((int)newWidth, (int)newHeight);
 
 	/*-------------------------------------------------------------------
 	-          Wait Graphics Queue

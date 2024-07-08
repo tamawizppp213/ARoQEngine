@@ -140,13 +140,16 @@ namespace rhi::core
 
 	protected:
 		#pragma region Protected Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		RHIResourceLayout() = default;
 
+		/*! @brief デストラクタ*/
 		virtual ~RHIResourceLayout()
 		{
 			if (_device) { _device.Reset(); }
 		}
 
+		/*! @brief Descriptorで作成*/
 		explicit RHIResourceLayout(const gu::SharedPointer<RHIDevice>& device, const RHIResourceLayoutDesc& desc)
 			: _device(device), _desc(desc)
 		{

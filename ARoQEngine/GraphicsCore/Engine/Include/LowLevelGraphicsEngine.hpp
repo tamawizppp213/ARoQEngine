@@ -77,7 +77,7 @@ public:
 	void EndDrawFrame();   // call at end draw frame
 	
 	/* @brief : Resize swapchain*/
-	void OnResize(const size_t newWidth, const size_t newHeight);
+	void OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight);
 	
 	/* @brief : Release all render resources*/
 	void ShutDown();

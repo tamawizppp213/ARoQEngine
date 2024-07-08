@@ -88,6 +88,7 @@ namespace platform::core
 		**************************************************************************/
 		virtual bool OnWindowResizing([[maybe_unused]] const CoreWindowPtr& window)
 		{
+			_isResizing = true;
 			return true;
 		}
 

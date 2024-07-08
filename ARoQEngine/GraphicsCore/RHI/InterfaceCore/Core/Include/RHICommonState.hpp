@@ -227,8 +227,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			DisplayOutputFormat
 	****************************************************************************/
-	/* @enum      DisplayOutputFormat
-	*  @brief     Color format
+	/* @brief     Color format
 	*****************************************************************************/
 	enum class DisplayOutputFormat : gu::uint8
 	{
@@ -245,26 +244,24 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			DisplayColorGamut
 	****************************************************************************/
-	/* @enum      DisplayColorGamut
-	*  @brief     Color range
-	*             https://uwatechnologies.hatenablog.com/entry/2022/04/09/001938
-	* 　　　　　 　　　https://garagefarm.net/jp-blog/what-is-color-space-and-why-you-should-use-aces
+	/* @brief     色域 @n
+	*  @note      https://uwatechnologies.hatenablog.com/entry/2022/04/09/001938 @n 
+	* 　　　　　 　　https://garagefarm.net/jp-blog/what-is-color-space-and-why-you-should-use-aces @n
 	*             https://qiita.com/UWATechnology/items/2a40dbc66bf48041d405
 	*****************************************************************************/
 	enum class DisplayColorGamut : gu::uint8
 	{
-		SRGB_D65,    // srgb color format    + white point D65 (Windows標準色域)
-		DCIP3_D65,   // dcpi3   color format + white point D65 (映像撮影に使われるカラーフィルムの色域に対応した広範囲の色域を表現できる規格)
-		Rec2020_D65, // rec2020 color format + white point D65 (HDR用に使われる色域)
-		ACES_D60,    // aces    color format + white point D60 (ダイナミックレンジが広い)  
-		ACEScg_D60   // aces cg color format 
+		SRGB_D65,    //!< srgb color format    + white point D65 (Windows標準色域)
+		DCIP3_D65,   //!< dcpi3   color format + white point D65 (映像撮影に使われるカラーフィルムの色域に対応した広範囲の色域を表現できる規格)
+		Rec2020_D65, //!< rec2020 color format + white point D65 (HDR用に使われる色域)
+		ACES_D60,    //!< aces    color format + white point D60 (ダイナミックレンジが広い)  
+		ACEScg_D60   //!< aces cg color format 
 	};
 
 	/****************************************************************************
 	*				  			HDRDisplayInfo
 	****************************************************************************/
-	/* @enum      HDRDisplayInfo
-	*  @brief     HDR display settings (RHIDeviceにて設定を行います)
+	/* @brief     HDR display settings (RHIDeviceにて設定を行います)
 	*             https://qiita.com/dgtanaka/items/672d2e7b3152f4e5ed49
 	*****************************************************************************/
 	struct HDRDisplayInfo

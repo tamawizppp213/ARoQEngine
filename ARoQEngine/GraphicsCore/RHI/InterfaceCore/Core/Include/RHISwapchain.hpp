@@ -32,8 +32,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			SwapchainDesc
 	****************************************************************************/
-	/* @struct    SwapchainDesc
-	*  @brief     Swapchain descriptor
+	/* @brief Swapchainを生成する際の初期設定
 	*****************************************************************************/
 	struct SwapchainDesc
 	{
@@ -41,14 +40,29 @@ namespace rhi::core
 		using CommandQueuePtr = gu::SharedPointer<RHICommandQueue>;
 
 	public:
-		CommandQueuePtr CommandQueue     = nullptr;
-		WindowInfo      WindowInfo       = {};
-		PixelFormat     PixelFormat      = PixelFormat::Unknown; 
-		gu::uint64      FrameBufferCount = 3;
-		gu::uint32      VSync            = 0;
-		bool            IsValidHDR       = true;
-		bool            IsValidStereo    = false;
-		bool            IsFullScreen     = false;
+		/*! @brief コマンドを実行するキュー. フロントバッファに表示する際に使用します.*/
+		CommandQueuePtr CommandQueue = nullptr;
+
+		/*! @brief 初期フレームにおけるウィンドウ情報*/
+		WindowInfo WindowInfo = {};
+
+		/*! @brief 描画で使用するピクセルフォーマット*/
+		PixelFormat PixelFormat = PixelFormat::Unknown; 
+
+		/*! @brief フレームバッファの数*/
+		gu::uint8 FrameBufferCount = 3;
+
+		/*! @brief VSyncの設定 (0: VSync無効化, 1: VSync有効, 以降fpsが半分になります.)*/
+		gu::uint8 VSync = 0;
+
+		/*! @brief HDRの有効化*/
+		bool IsValidHDR = true;
+
+		/*! @brief 立体視の使用*/
+		bool IsValidStereo = false;
+
+		/*! @brief フルスクリーンの使用*/
+		bool IsFullScreen = false;
 
 		~SwapchainDesc()
 		{
@@ -59,106 +73,150 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			RHISwapchain
 	****************************************************************************/
-	/* @class     RHISwapchain
-	*  @brief     Update frame buffer image
+	/* @brief     Update frame buffer image
 	*****************************************************************************/
 	class RHISwapchain : public gu::NonCopyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		/*----------------------------------------------------------------------
-		*  @brief :  When NextImage is ready, 
-		　　　　　　　　　Signal is issued and the next frame Index is returned.
-		*----------------------------------------------------------------------*/
+		#pragma region Public Function
+		/*!**********************************************************************
+		*  @brief     NextImageが準備出来たとき, Signalを発行して次のフレームインデックスを返します
+		*  @param[in] const gu::SharedPointer<core::RHIFence>& fence : フェンス
+		*  @param[in] const gu::uint64 signalValue : 準備完了時にフェンスに書き込まれるシグナル値
+		*  @return    gu::uint32 次のフレームインデックス
+		*************************************************************************/
 		virtual gu::uint32 PrepareNextImage(const gu::SharedPointer<RHIFence>& fence, const gu::uint64 signalValue) = 0;
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Display front buffer
-		*----------------------------------------------------------------------*/
-		virtual void Present(const gu::SharedPointer<RHIFence>& fence, std::uint64_t waitValue) = 0;
+		/*!**********************************************************************
+		*  @brief     バックバッファを次フレームのフロントバッファにします
+		*  @param[in] const gu::SharedPointer<core::RHIFence>& fence : フェンス
+		*  @param[in] const gu::uint64 waitValue : 待機する値
+		*  @return    void
+		*************************************************************************/
+		virtual void Present(const gu::SharedPointer<RHIFence>& fence, gu::uint64 waitValue) = 0;
 		
-		/*----------------------------------------------------------------------
-		*  @brief :  Resize screen size. Rebuild everything once and update again.
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     画面サイズを変更します. 一度すべてを再構築し、再度アップデートします. @n
+		* 　　　　　　　 事前にコマンドの実行が終了していることを確認してください.
+		*  @param[in] const gu::uint32 width : 画面の幅
+		*  @param[in] const gu::uint32 height : 画面の高さ
+		*  @return    void
+		*************************************************************************/
 		virtual void Resize(const gu::uint32 width, const gu::uint32 height) = 0;
-		
-		/*----------------------------------------------------------------------
-		*  @brief :  Return current frame buffer
-		*----------------------------------------------------------------------*/
-		virtual size_t GetCurrentBufferIndex() const = 0;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Switch full screen mode
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     フルスクリーンモードと指定された解像度のスクリーンモードを切り替える
+		* 　　　　　　  (isOn : true->フルスクリーンモードに移行する. false : windowモードに移行する)
+		*  @param[in] const bool isOn : true->フルスクリーンモードに移行する. false : windowモードに移行する
+		*  @return    void
+		*************************************************************************/
 		virtual void SwitchFullScreenMode(const bool isOn) = 0;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  Switch hdr mode. 
-		*            enableHDR : true -> HDR, false -> SDR
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     HDRモードとSDRモードを切り替える.
+		*  @param[in] const bool enableHDR : true -> HDR, false -> SDR
+		*  @return    void
+		*************************************************************************/
 		virtual void SwitchHDRMode(const bool enableHDR) = 0;
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
-		/* @brief: Return swapchain's render pixel width*/
-		size_t      GetWidth      () const noexcept { return _desc.WindowInfo.Width; }
+		#pragma region Public Property
+		/*!**********************************************************************
+		*  @brief     現在描画コマンドを詰め込みたいバックバッファのインデックスを返します
+		*  @param[in] void
+		*  @return    gu::uint32 スワップチェインの描画する幅
+		*************************************************************************/
+		virtual gu::uint8 GetCurrentBufferIndex() const = 0;
 
-		/* @brief: Return swapchain's render pixel height*/
-		size_t      GetHeight     () const noexcept { return _desc.WindowInfo.Height; }
+		/*!**********************************************************************
+		*  @brief     スワップチェインの描画する幅を返します
+		*  @param[in] void
+		*  @return    gu::uint32 スワップチェインの描画する幅
+		*************************************************************************/
+		__forceinline gu::uint32  GetWidth() const noexcept { return _desc.WindowInfo.Width; }
 
-		/* @brief : Return pixel format */
-		PixelFormat GetPixelFormat() const noexcept { return _desc.PixelFormat; }
+		/*!**********************************************************************
+		*  @brief     スワップチェインの描画する高さを返します
+		*  @param[in] void
+		*  @return    gu::uint32 スワップチェインの描画する高さ
+		*************************************************************************/
+		__forceinline gu::uint32  GetHeight() const noexcept { return _desc.WindowInfo.Height; }
 
-		/* @brief : Return render window information (width, height, window handle pointer)*/
-		WindowInfo  GetWindowInfo () const noexcept { return _desc.WindowInfo; }
+		/*!**********************************************************************
+		*  @brief     描画で使用するピクセルフォーマット
+		*  @param[in] void
+		*  @return    PixelFormat 描画で使用するピクセルフォーマット
+		*************************************************************************/
+		__forceinline PixelFormat GetPixelFormat() const noexcept { return _desc.PixelFormat; }
 
-		/* @brief : Return back buffer of the specified frame*/
-		gu::SharedPointer<GPUTexture> GetBuffer(const size_t index) { return _backBuffers[index]; }
+		/*!**********************************************************************
+		*  @brief     Windowの幅や高さ, ハンドルを返します
+		*  @param[in] void
+		*  @return    const WindowInfo& Windowの情報
+		*************************************************************************/
+		__forceinline const WindowInfo& GetWindowInfo() const noexcept { return _desc.WindowInfo; }
+
+		/*!**********************************************************************
+		*  @brief     バックバッファの参照を返します
+		*  @param[in] const gu::uint8 フレームバッファのインデックス
+		*  @return    gu::SharedPointer<GPUTexture> バックバッファ
+		*************************************************************************/
+		__forceinline gu::SharedPointer<GPUTexture> GetBuffer(const gu::uint8 index) { return _backBuffers[index]; }
 		
-		/* @biref : Return back buffer's total frame count*/
-		size_t      GetBufferCount() const noexcept { return _backBuffers.Size(); }
+		/*!**********************************************************************
+		*  @brief     フレームバッファの総数を返します. 
+		*  @param[in] void
+		*  @return    gu::uint8 フレームバッファの数
+		*************************************************************************/
+		__forceinline gu::uint8 GetBufferCount() const noexcept { return _desc.FrameBufferCount; }
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+		#pragma endregion
 		
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+
+		/*! @brief デフォルトコンストラクタ*/
 		RHISwapchain() = default;
 
+		/*! @brief デストラクタ*/
 		virtual ~RHISwapchain()
 		{
 			_backBuffers.Clear(); _backBuffers.ShrinkToFit();
 			if (_device)       { _device.Reset(); }
 		};
 
-		explicit RHISwapchain(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, size_t frameBufferCount = 3, std::uint32_t vsync = 0, bool isValidHDR = true, bool isFullScreen = false)
+		/*! @brief 一つずつ設定*/
+		explicit RHISwapchain(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, PixelFormat pixelFormat, gu::uint8 frameBufferCount = 3, gu::uint8 vsync = 0, bool isValidHDR = true, bool isFullScreen = false)
 		{
-			_device = device; _desc.CommandQueue = commandQueue; _desc.WindowInfo = windowInfo; _desc.PixelFormat = pixelFormat; _desc.VSync = vsync; _desc.FrameBufferCount = frameBufferCount; _desc.IsValidHDR = isValidHDR;
-			_isFullScreen = isFullScreen;
+			_device = device; _desc.CommandQueue = commandQueue; _desc.WindowInfo = windowInfo; _desc.PixelFormat = pixelFormat; _desc.VSync = vsync; _desc.FrameBufferCount = frameBufferCount; _desc.IsValidHDR = isValidHDR; _desc.IsFullScreen = isFullScreen;
 		}
 
+		/*! @brief SwapchainのDescriptorを使って初期化*/
 		explicit RHISwapchain(const gu::SharedPointer<RHIDevice>& device, const SwapchainDesc& desc):
 			_device(device), _desc(desc)
 		{
-			_isFullScreen = _desc.IsFullScreen;
+			
 		}
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
-		gu::SharedPointer<RHIDevice>       _device = nullptr;
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
+
+		/*! @brief 論理デバイス*/
+		gu::SharedPointer<RHIDevice> _device = nullptr;
 		
-		gu::DynamicArray<gu::SharedPointer<GPUTexture>> _backBuffers; //[0] : render target 
+		/*! @brief バックバッファ*/
+		gu::DynamicArray<gu::SharedPointer<GPUTexture>> _backBuffers; 
 		
+		/*! @brief スワップチェインの現在の設定*/
 		SwapchainDesc _desc = {};
 
-		bool _isFullScreen = false;
+		#pragma endregion
 	};
 }
 #endif
