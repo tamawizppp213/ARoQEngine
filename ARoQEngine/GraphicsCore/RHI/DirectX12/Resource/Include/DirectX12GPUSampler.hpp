@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12GPUBuffer.hpp
-///             @brief  GPU Buffer 
-///             @author Toide Yutaro
-///             @date   2022_07_08
+///  @file   DirectX12GPUSampler.hpp
+///  @brief  テクスチャサンプリングの方法の設定項目を記述するクラスです.
+///  @author Toide Yutaro
+///  @date   2024_07_09
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_GPU_SAMPLER_HPP
@@ -24,10 +24,9 @@
 namespace rhi::directX12
 {
 	/****************************************************************************
-	*				  			GPUBuffer
+	*				  			GPUSampler
 	****************************************************************************/
-	/* @class     GPUBuffer
-	*  @brief     Buffer
+	/* @brief  テクスチャサンプリングの方法の設定項目を記述するクラスです.
 	*****************************************************************************/
 	class GPUSampler : public core::GPUSampler
 	{
@@ -45,10 +44,13 @@ namespace rhi::directX12
 
 		#pragma region Public Constructor and Destructor
 		
+		/*! @brief デフォルトコンストラクタ*/
 		GPUSampler() = default;
 
+		/*! @brief デストラクタ*/
 		~GPUSampler() = default;
 
+		/*! @brief 論理デバイスとサンプラー情報で初期化*/
 		explicit GPUSampler(const gu::SharedPointer<core::RHIDevice>& device, const core::SamplerInfo& samplerInfo);
 
 		#pragma endregion
@@ -61,6 +63,8 @@ namespace rhi::directX12
 		#pragma endregion
 
 		#pragma region Protected Property
+
+		/*! @brief サンプラー情報*/
 		D3D12_STATIC_SAMPLER_DESC _samplerDesc = {};
 		#pragma endregion	
 	};

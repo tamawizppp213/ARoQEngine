@@ -281,7 +281,7 @@ void Dof::PreparePipelineState(const gu::tstring& name)
 			ResourceLayoutElement(DescriptorHeapType::UAV, 1)
 		},
 		{
-			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0)
+			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearWrap)),0)
 		}
 	);
 

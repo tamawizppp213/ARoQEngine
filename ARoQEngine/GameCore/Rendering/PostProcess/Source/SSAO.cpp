@@ -290,7 +290,7 @@ void SSAO::PreparePipelineState(const gu::tstring& name)
 	/*-------------------------------------------------------------------
 	-             Setup default sampler
 	---------------------------------------------------------------------*/
-	auto depthSampler   = SamplerInfo::GetDefaultSampler(SamplerLinearBorder);
+	auto depthSampler   = SamplerInfo::GetDefaultSampler(LinearBorder);
 	depthSampler.Border = BorderColor::OpaqueWhite;
 
 	/*-------------------------------------------------------------------
@@ -309,8 +309,8 @@ void SSAO::PreparePipelineState(const gu::tstring& name)
 		},
 		{
 			SamplerLayoutElement(device->CreateSampler(depthSampler), 2),
-			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerPointClamp)), 1),
-			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerPointClamp)), 0)
+			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(NearestClamp)), 1),
+			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(NearestClamp)), 0)
 		}
 	);
 

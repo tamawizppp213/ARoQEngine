@@ -163,7 +163,7 @@ void LightCulling::PreparePipelineState()
 			                                                    // If you needs the other light list, you should add this layout.
 		},
 		{
-			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearClamp)), 0)
+			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearClamp)), 0)
 		}
 	);
 

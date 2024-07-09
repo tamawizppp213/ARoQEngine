@@ -144,9 +144,9 @@ void ScreenSpaceReflection::PreparePipelineState(const gu::tstring& addName)
 		},
 		{ 
 
-			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)), 0),
-			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerPointClamp)), 1),
-			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearClamp)), 2),
+			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearWrap)), 0),
+			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(NearestClamp)), 1),
+			SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearClamp)), 2),
 		}
 	);
 

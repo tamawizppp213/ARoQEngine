@@ -1,9 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   FullScreenEffector.hpp
-///             @brief  This class is mainly used for the sake of post effect.
-///                     This class provides full screen polygon and drawing interface.
-///             @author Toide Yutaro
-///             @date   2023_02_20
+///  @file   FullScreenEffector.hpp
+///  @brief  This class is mainly used for the sake of post effect.
+///          This class provides full screen polygon and drawing interface.
+///  @author Toide Yutaro
+///  @date   2023_02_20
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef FULL_SCREEN_EFFECTOR_HPP
@@ -48,33 +48,38 @@ namespace gc
 		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
 		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
+
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+
 		/* @brief : Resize frame buffer (Not implement)*/
 		virtual void OnResize(int newWidth, int newHeight) = 0;
 
 		/*@brief : Render to back buffer*/
 		virtual void Draw() = 0;
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
+		#pragma endregion
 
+	    #pragma region Public Property
+
+		#pragma endregion
 
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor 
+
+		/*! @brief デフォルトコンストラクタ*/
 		IFullScreenEffector();
 
+		/*! @brief デストラクタ*/
 		virtual ~IFullScreenEffector();
 
+		/*! @brief グラフィクスエンジンを使って初期化*/
 		IFullScreenEffector(const LowLevelGraphicsEnginePtr& engine);
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+
+		#pragma endregion
+
+		#pragma region Protected Function
+
 		virtual void PreparePipelineState(const gu::tstring& addName) = 0;
 
 		virtual void PrepareResourceView() = 0;
@@ -88,9 +93,10 @@ namespace gc
 			return name;
 		}
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		#pragma endregion
+
+		#pragma region Protected Property
+
 		/* @brief : frame resources*/
 		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 		
@@ -107,6 +113,8 @@ namespace gc
 
 		/* @brief : device and command list*/
 		LowLevelGraphicsEnginePtr _engine = nullptr;
+
+		#pragma endregion
 	};
 }
 #endif

@@ -84,7 +84,7 @@ VkShaderStageFlagBits EnumConverter::Convert(const rhi::core::ShaderVisibleFlag 
 ---------------------------------------------------------------------*/
 VkFilter EnumConverter::Convert(const rhi::core::FilterOption filter, const rhi::core::FilterMask mask)
 {
-	if (filter == core::FilterOption::Anisotropy) { return VkFilter::VK_FILTER_LINEAR; }
+	if (filter == core::FilterOption::AnisotropicLinear) { return VkFilter::VK_FILTER_LINEAR; }
 
 	// this equation indicates that the true value shows the filter has linear sampling option, 
 	// and the false value has point sampling option.  
@@ -97,7 +97,7 @@ VkFilter EnumConverter::Convert(const rhi::core::FilterOption filter, const rhi:
 ---------------------------------------------------------------------*/
 VkSamplerMipmapMode EnumConverter::Convert(const rhi::core::FilterOption filter)
 {
-	if (filter == core::FilterOption::Anisotropy) return VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR;
+	if (filter == core::FilterOption::AnisotropicLinear) return VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR;
 	return (static_cast<std::uint8_t>(filter) & 1) != 0 ?
 		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_LINEAR:
 		VkSamplerMipmapMode::VK_SAMPLER_MIPMAP_MODE_NEAREST;

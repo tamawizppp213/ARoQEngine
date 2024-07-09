@@ -44,7 +44,6 @@ namespace rhi::directX12
 		static D3D12_ROOT_SIGNATURE_FLAGS Convert1(const rhi::core::ShaderVisibleFlag visibility);
 #pragma endregion Shader
 #pragma region Sampler State
-		static D3D12_FILTER               Convert(const rhi::core::FilterOption filter);
 		static D3D12_TEXTURE_ADDRESS_MODE Convert(const rhi::core::SamplerAddressMode addressingMode);
 		static D3D12_STATIC_BORDER_COLOR  Convert(const rhi::core::BorderColor borderColor);
 #pragma endregion Sampler State

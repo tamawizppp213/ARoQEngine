@@ -36,7 +36,7 @@ GPUSampler::GPUSampler(const gu::SharedPointer<core::RHIDevice>& device, const c
 		.addressModeV            = EnumConverter::Convert(samplerInfo.AddressModeV),
 		.addressModeW            = EnumConverter::Convert(samplerInfo.AddressModeW),
 		.mipLodBias              = samplerInfo.MipLODBias,                                            // LOD bias (本来出したいLODよりもシャープに, ボケて見せれる)
-		.anisotropyEnable        = (samplerInfo.Filter == core::FilterOption::Anisotropy),            // Use anisotropy filtering 
+		.anisotropyEnable        = (samplerInfo.Filter == core::FilterOption::AnisotropicLinear),            // Use anisotropy filtering 
 		.maxAnisotropy           = static_cast<float>(samplerInfo.MaxAnisotropy),                    
 		.compareEnable           = false,                                                             // PCFを使用する場合はtrueにする必要があるが, 現状はfalse
 		.compareOp               = VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL,  

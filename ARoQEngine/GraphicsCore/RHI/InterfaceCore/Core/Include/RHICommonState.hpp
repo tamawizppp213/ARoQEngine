@@ -383,41 +383,56 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			SamplerAddressMode
 	****************************************************************************/
-	/* @class     SamplerAddressMode
-	*  @brief     Texture addressing mode // reference : https://learn.microsoft.com/ja-jp/windows/uwp/graphics-concepts/texture-addressing-modes
+	/* @brief   テクスチャアドレッシングモードを指定します.  
+	*  @note    reference : https://learn.microsoft.com/ja-jp/windows/uwp/graphics-concepts/texture-addressing-modes
 	*****************************************************************************/
 	enum class SamplerAddressMode : gu::uint8
 	{
-		Wrap    = 1, // repeat texture pattern
-		Mirror  = 2, // mirror and repeat texture pattern
-		Clamp   = 3, // cut over 1.0 and below 0.0
-		Border  = 4, // set border color 
+		Wrap    = 1, //!< 0 ～ 1までを一枚のテクスチャとして, 繰り返し描画します. 
+		Mirror  = 2, //!< 0 ～ 1までを一枚のテクスチャとして, 繰り返し描画します. ただし, 偶数回目は反転して描画します.
+		Clamp   = 3, //!< 0 ～ 1までを一枚のテクスチャとして, 超えた分は端の色で描画します.
+		Border  = 4, //!< 0 ～ 1までを一枚のテクスチャとして, 超えた分はボーダーカラーで描画します.
 	};
 
 	/****************************************************************************
 	*				  			BorderColor
 	****************************************************************************/
-	/* @class     BorderColor
-	*  @brief     Specifies the border color for a sampler
+	/* @brief サンプリングのテクスチャの端を超えた分の色を指定します.
 	*****************************************************************************/
 	enum class BorderColor : gu::uint8
 	{
-		TransparentBlack, // Indicates black, with the alpha component as fully transparent
-		OpaqueBlack,      // Indicates black, with the alpha component as fully opaque(完全不透明)
-		OpaqueWhite       // Indicates white, with the alpha component as fully opaque
+		TransparentBlack, //!< アルファ成分が完全に透明な黒を示す
+		OpaqueBlack,      //!< アルファ成分が完全に不透明な黒を示す
+		OpaqueWhite       //!< アルファ成分を完全に不透明として白を示す
 	};
 
 	/****************************************************************************
 	*				  			FilterMask
 	****************************************************************************/
-	/* @class     FilterMask
-	*  @brief     Sample mask
+	/* @brief  テクスチャフィルタの種類を指定します.　(ToDo : FilterOptionの変更に伴って値が間違ってます)
 	*****************************************************************************/
 	enum class FilterMask : gu::uint8
 	{
 		Mip = 0x1,
 		Mag = 0x2,
 		Min = 0x4
+	};
+
+	/****************************************************************************
+	*				  			CompareOperator
+	****************************************************************************/
+	/* @brief 書き込み先の参照ピクセルと書き込みたいテストピクセルを比較するための演算子を指定します.
+	*****************************************************************************/
+	enum class CompareOperator : gu::uint8
+	{
+		Never,          //!< Always false
+		Less,           //!< reference < test
+		Equal,          //!< reference = test
+		LessEqual,      //!< reference <= test
+		Greater,        //!< reference > test
+		NotEqual,       //!< reference not equal test
+		GreaterEqual,   //!< reference >= test
+		Always          //!< Always true
 	};
 
 	/****************************************************************************
@@ -428,15 +443,11 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class FilterOption : gu::uint8
 	{
-		MinPointMagPointMipPoint    = 0,
-		MinPointMagPointMipLinear   = 1,
-		MinPointMagLinearMipPoint   = 2,
-		MinPointMagLinearMipLinear  = 3,
-		MinLinearMagPointMipPoint   = 4,
-		MinLinearMagPointMipLinear  = 5,
-		MinLinearMagLinearMipPoint  = 6,
-		MinLinearMagLinearMipLinear = 7,
-		Anisotropy = 8
+		Nearest            = 0, //!< ピクセルの中心位置に最も近いテクセルの色を選択します.
+		BiLinear           = 1, //!< ピクセルの中心位置に最も近い4つのテクセルの色を加重平均して選択します.
+		TriLinear          = 2, //!< 最も近いミップレベル2つに対してBiLinearフィルタを適用し, その結果を加重平均して選択します.　ミップマップの境目でのアーティファクトを押さえます
+		AnisotropicNearest = 3, //!< カメラの視野角とテクセルの歪みに応じてサンプリングします. 最近傍補間
+		AnisotropicLinear  = 4, //!< カメラの視野角とテクセルの歪みに応じてサンプリングします. 線形補間
 	};
 
 	/****************************************************************************
@@ -447,20 +458,23 @@ namespace rhi::core
 	*****************************************************************************/
 	enum DefaultSamplerType
 	{
-		SamplerPointWrap,         // Point  + Wrap
-		SamplerPointClamp,        // Point  + Clamp
-		SamplerLinearWrap,        // Linear + Wrap
-		SamplerLinearClamp,       // Linear + Clamp
-		SamplerLinearBorder,      /// Linear + Border
-		SamplerAnisotropicWrap,   // Anisotropic + Wrap
-		SamplerAnisotropicClamp   // Anisotropic + Clamp
+		NearestWrap,              // Point  + Wrap
+		NearestClamp,             // Point  + Clamp
+		LinearWrap,               // BiLinear + Wrap
+		LinearClamp,              // BiLinear + Clamp
+		LinearBorder,             // BiLinear + Border
+		TriLinearWrap,            // TriLinear + Wrap
+		TriLinearClamp,           // TriLinear + Clamp
+		AnisotropicNearestWrap,   // Anisotropic + Wrap
+		AnisotropicNearestClamp,  // Anisotropic + Clamp
+		AnisotropicLinearWrap,    // Anisotropic + Wrap
+		AnisotropicLinearClamp    // Anisotropic + Clamp
 	};
 
 	/****************************************************************************
 	*				  			SamplerInfo
 	****************************************************************************/
-	/* @class     SamplerInfo
-	*  @brief     Custum sampler state. (Normally you should use default sampler type, and call GetDefaultSampler)
+	/* @brief  サンプラー情報, 基本的にはDefaultSamplerTypeを指定して初期化することが多いです.
 	*****************************************************************************/
 	struct SamplerInfo
 	{
@@ -468,20 +482,44 @@ namespace rhi::core
 		/****************************************************************************
 		**                Public Property
 		*****************************************************************************/
-		FilterOption        Filter        = FilterOption::MinPointMagPointMipPoint; // Specify sampling method for image enlargement/shirinkage*
-		SamplerAddressMode  AddressModeU  = SamplerAddressMode::Wrap;               // Texture addressing mode in the U direction
-		SamplerAddressMode  AddressModeV  = SamplerAddressMode::Wrap;               // Texture addressing mode in the V direction
-		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;               // Texture addressing mode in the W direction
-		BorderColor         Border        = BorderColor::TransparentBlack;          // Border color 
-		gu::uint64              MaxAnisotropy = 1;                                      // Max anisotropy
-		gu::float32         MipLODBias    = 0.0f;                                   // Defined LOD = normalLOD + bias
-		gu::float32         MinLOD        = 0.0f;                                   // Min LOD size
-		gu::float32         MaxLOD        = MAX_FLOAT32;                            // Max LOD size: FLT_MAX 上限を指定しない.
+		/*! @brief テクスチャサンプリングの方法を指定します*/
+		FilterOption Filter = FilterOption::Nearest;
+		
+		/*! @brief U方向のテクスチャアドレッシングモード*/
+		SamplerAddressMode  AddressModeU  = SamplerAddressMode::Wrap;
+		
+		/*! @brief V方向のテクスチャアドレッシングモード*/
+		SamplerAddressMode  AddressModeV  = SamplerAddressMode::Wrap;
+		
+		/*! @brief W方向のテクスチャアドレッシングモード*/
+		SamplerAddressMode  AddressModeW  = SamplerAddressMode::Wrap;
+
+		/*! @brief テクスチャの端を超えた分の色を指定します*/
+		BorderColor Border = BorderColor::TransparentBlack;
+
+		/*! @brief テクスチャサンプリングを行う際の比較演算子を指定します*/
+		CompareOperator Compare = CompareOperator::Never;
+
+		/*! @brief 最大となるAnisotropyのクランプ値 (0～16)*/
+		gu::uint8  MaxAnisotropy = 1;
+
+		/*! @brief ミップマップのLODのバイアス値を指定します. Defined LOD = normalLOD + bias*/
+		gu::float32 MipLODBias = 0.0f;
+
+		/*! @brief テクスチャの最小LODサイズを指定します*/
+		gu::float32 MinLOD = 0.0f;
+
+		/*! @brief テクスチャの最大LODサイズを指定します*/
+		gu::float32 MaxLOD = MAX_FLOAT32;
 
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
+
+		/*! @brief デフォルトコンストラクタ*/
 		SamplerInfo() = default;
+
+		/*! @brief フィルタの種類を指定して初期化します*/
 		explicit SamplerInfo(
 			const FilterOption filter,
 			const SamplerAddressMode addressU = SamplerAddressMode::Wrap,
@@ -508,7 +546,7 @@ namespace rhi::core
 			const SamplerAddressMode addressV = SamplerAddressMode::Wrap,
 			const SamplerAddressMode addressW = SamplerAddressMode::Wrap,
 			const BorderColor border = BorderColor::TransparentBlack) :
-			Filter(FilterOption::Anisotropy),
+			Filter(FilterOption::AnisotropicNearest),
 			AddressModeU(addressU),
 			AddressModeV(addressV),
 			AddressModeW(addressW),
@@ -788,23 +826,6 @@ namespace rhi::core
 	};
 	#pragma endregion   Rasterizer State
 #pragma region DepthStencilState
-	/****************************************************************************
-	*				  			CompareOperator
-	****************************************************************************/
-	/* @enum      CompareOperator
-	*  @brief     Compare operator
-	*****************************************************************************/
-	enum class CompareOperator : gu::uint8
-	{
-		Never,          // Always false
-		Less,           // reference < test
-		Equal,          // reference = test
-		LessEqual,      // reference <= test
-		Greater,        // reference > test
-		NotEqual,       // reference not equal test
-		GreaterEqual,   // reference >= test
-		Always          // Always true
-	};
 
 	/****************************************************************************
 	*				  			StencilOperator

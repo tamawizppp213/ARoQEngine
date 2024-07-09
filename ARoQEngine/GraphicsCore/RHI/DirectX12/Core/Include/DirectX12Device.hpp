@@ -61,7 +61,13 @@ namespace rhi::directX12
 		
 		virtual gu::SharedPointer<core::RHIFence> CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("")) override;
 		
-		virtual gu::SharedPointer<core::RHICommandList>             CreateCommandList(const gu::SharedPointer<core::RHICommandAllocator>& commandAllocator, const gu::tstring& name) override;
+		/*!**********************************************************************
+		*  @brief     GPUの描画命令をまとめるためのコマンドリストを作成します
+		*  @param[in] const gu::SharedPointer<core::RHICommandAllocator> コマンドリストのメモリを格納するアロケータ
+		*  @param[in] const gu::tstring : デバッグ名
+		*  @return    gu::SharedPointer<core::RHICommandList> コマンドリストのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<core::RHICommandList> CreateCommandList(const gu::SharedPointer<core::RHICommandAllocator>& commandAllocator, const gu::tstring& name) override;
 		
 		/*!**********************************************************************
 		*  @brief     コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信するコマンドキューを作成します
@@ -79,9 +85,24 @@ namespace rhi::directX12
 		*************************************************************************/
 		virtual gu::SharedPointer<core::RHICommandAllocator> CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name) override;
 		
-		virtual gu::SharedPointer<core::RHISwapchain>               CreateSwapchain       (const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const gu::uint32 vsync = 0, const bool isValidHDR = true) override;
+		/*!**********************************************************************
+		*  @brief     フレームバッファによる画像を画面に表示するスワップチェインを作成します
+		*  @param[in] const gu::SharedPointer<core::RHICommandQueue> : コマンドキュー
+		*  @param[in] const core::WindowInfo : ウィンドウ情報
+		*  @param[in] const core::PixelFormat : ピクセルフォーマット
+		*  @param[in] const gu::uint8 : フレームバッファの数
+		*  @param[in] const gu::uint8 : Vsyncの設定
+		*  @param[in] const bool : HDRの設定
+		*  @return    gu::SharedPointer<core::RHISwapchain>
+		*************************************************************************/
+		virtual gu::SharedPointer<core::RHISwapchain> CreateSwapchain (const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const gu::uint8 frameBufferCount = 2, const gu::uint8 vsync = 0, const bool isValidHDR = true) override;
 		
-		virtual gu::SharedPointer<core::RHISwapchain>               CreateSwapchain(const core::SwapchainDesc& desc) override;
+		/*!**********************************************************************
+		*  @brief     フレームバッファによる画像を画面に表示するスワップチェインを作成します
+		*  @param[in] const core::SwapchainDesc : スワップチェインの設定
+		*  @return    gu::SharedPointer<core::RHISwapchain>
+		*************************************************************************/
+		virtual gu::SharedPointer<core::RHISwapchain> CreateSwapchain(const core::SwapchainDesc& desc) override;
 
 		virtual gu::SharedPointer<core::RHIDescriptorHeap>          CreateDescriptorHeap  (const core::DescriptorHeapType heapType, const size_t maxDescriptorCount) override;
 		

@@ -115,29 +115,6 @@ D3D12_STATIC_BORDER_COLOR EnumConverter::Convert(const rhi::core::BorderColor bo
 	}
 }
 
-/*-------------------------------------------------------------------
--               Sampling filter mode when the image is enlarged or shirinked.
----------------------------------------------------------------------*/
-D3D12_FILTER EnumConverter::Convert(const rhi::core::FilterOption filter)
-{
-	switch (filter)
-	{
-		using enum core::FilterOption;
-
-		case MinPointMagPointMipPoint   : return D3D12_FILTER_MIN_MAG_MIP_POINT;
-		case MinPointMagPointMipLinear  : return D3D12_FILTER_MIN_MAG_POINT_MIP_LINEAR;
-		case MinPointMagLinearMipPoint  : return D3D12_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
-		case MinPointMagLinearMipLinear : return D3D12_FILTER_MIN_POINT_MAG_MIP_LINEAR;
-		case MinLinearMagPointMipPoint  : return D3D12_FILTER_MIN_LINEAR_MAG_MIP_POINT;
-		case MinLinearMagPointMipLinear : return D3D12_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
-		case MinLinearMagLinearMipPoint : return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-		case MinLinearMagLinearMipLinear: return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-		case Anisotropy                 : return D3D12_FILTER_ANISOTROPIC;
-
-		default:
-			throw std::runtime_error("not supported filter option (directX12 api)");
-	}
-}
 #pragma endregion Sampler State
 
 #pragma region BlendState

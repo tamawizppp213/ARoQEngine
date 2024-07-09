@@ -118,7 +118,7 @@ gu::SharedPointer<core::RHIFrameBuffer> RHIDevice::CreateFrameBuffer(const gu::S
 	return gu::StaticPointerCast<core::RHIFrameBuffer>(gu::MakeShared <vulkan::RHIFrameBuffer>(SharedFromThis(), renderPass, renderTarget, depthStencil));
 }
 
-gu::SharedPointer<core::RHISwapchain>  RHIDevice::CreateSwapchain(const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const std::uint32_t vsync, const bool isValidHDR)
+gu::SharedPointer<core::RHISwapchain>  RHIDevice::CreateSwapchain(const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const gu::uint8 frameBufferCount, const gu::uint8 vsync, const bool isValidHDR)
 {
 	return gu::StaticPointerCast<core::RHISwapchain>(gu::MakeShared<vulkan::RHISwapchain>(SharedFromThis(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR));
 }

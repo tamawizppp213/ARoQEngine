@@ -185,7 +185,7 @@ void SkyDome::PreparePipelineState(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-             Setup resource layout elements
 	---------------------------------------------------------------------*/
-	const auto sampler = device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap));
+	const auto sampler = device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearWrap));
 	_resourceLayout = device->CreateResourceLayout
 	(
 		{

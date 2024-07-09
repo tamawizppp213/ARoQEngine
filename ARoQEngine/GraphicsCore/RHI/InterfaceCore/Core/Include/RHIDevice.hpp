@@ -110,7 +110,17 @@ namespace rhi::core
 		*************************************************************************/
 		virtual gu::SharedPointer<RHICommandAllocator> CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name = SP("CommandAllocator")) = 0;
 		
-		virtual gu::SharedPointer<RHISwapchain>               CreateSwapchain(const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const size_t frameBufferCount = 2, const gu::uint32 vsync = 0, const bool isValidHDR = true) = 0;
+		/*!**********************************************************************
+		*  @brief     フレームバッファによる画像を画面に表示するスワップチェインを作成します
+		*  @param[in] const gu::SharedPointer<core::RHICommandQueue> : コマンドキュー
+		*  @param[in] const core::WindowInfo : ウィンドウ情報
+		*  @param[in] const core::PixelFormat : ピクセルフォーマット
+		*  @param[in] const gu::uint8 : フレームバッファの数
+		*  @param[in] const gu::uint8 : Vsyncの設定
+		*  @param[in] const bool : HDRの設定
+		*  @return    gu::SharedPointer<core::RHISwapchain>
+		*************************************************************************/
+		virtual gu::SharedPointer<RHISwapchain> CreateSwapchain(const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const gu::uint8 frameBufferCount = 2, const gu::uint8 vsync = 0, const bool isValidHDR = true) = 0;
 		
 		virtual gu::SharedPointer<RHISwapchain>               CreateSwapchain(const SwapchainDesc& desc) = 0;
 

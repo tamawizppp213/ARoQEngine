@@ -150,7 +150,7 @@ void ColorChange::PreparePipelineState(const gu::tstring& addName)
 	_resourceLayout = device->CreateResourceLayout
 	(
 		{ ResourceLayoutElement(DescriptorHeapType::SRV, 0)},
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearClamp)), 0) }
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearClamp)), 0) }
 	);
 
 	/*-------------------------------------------------------------------

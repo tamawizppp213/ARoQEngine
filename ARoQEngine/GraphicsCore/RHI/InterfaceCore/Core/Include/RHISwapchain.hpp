@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   RHISwapchain.hpp
-///             @brief  Update frame buffer image
-///             @author Toide Yutaro
-///             @date   2022_06_24
+///  @file   RHISwapchain.hpp
+///  @brief  フレームバッファによる画像を画面に表示するクラス
+///  @author Toide Yutaro
+///  @date   2024_07_09
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef RHI_SWAP_CHAIN_HPP
@@ -73,7 +73,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			RHISwapchain
 	****************************************************************************/
-	/* @brief     Update frame buffer image
+	/* @brief  フレームバッファによる画像を画面に表示するクラス
 	*****************************************************************************/
 	class RHISwapchain : public gu::NonCopyable
 	{

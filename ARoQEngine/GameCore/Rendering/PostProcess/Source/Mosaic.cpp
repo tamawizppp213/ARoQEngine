@@ -126,7 +126,7 @@ void Mosaic::PreparePipelineState(const gu::tstring& addName)
 			ResourceLayoutElement(DescriptorHeapType::CBV, 0), // Mosaic info
 			ResourceLayoutElement(DescriptorHeapType::SRV, 0), // source texture
 		},
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearClamp)), 0) }
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearClamp)), 0) }
 	);
 
 	/*-------------------------------------------------------------------

@@ -143,7 +143,7 @@ void URP::PrepareModelPipeline()
 			ResourceLayoutElement(DescriptorHeapType::SRV, 1), // Specular map
 			ResourceLayoutElement(DescriptorHeapType::SRV, 2), // Normal map
 		},
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0) }
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearWrap)),0) }
 	);
 
 	/*-------------------------------------------------------------------

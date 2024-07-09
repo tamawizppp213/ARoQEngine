@@ -335,7 +335,7 @@ void GaussianBlur::PreparePipelineState(const gu::tstring& name)
 			ResourceLayoutElement(DescriptorHeapType::UAV, 1), // xblur texture
 			ResourceLayoutElement(DescriptorHeapType::UAV, 2), // xy blur texture
 		},
-		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)), 0) }
+		{ SamplerLayoutElement(device->CreateSampler(SamplerInfo::GetDefaultSampler(LinearWrap)), 0) }
 	);
 
 	/*-------------------------------------------------------------------

@@ -260,7 +260,7 @@ gu::SharedPointer<core::RHICommandAllocator> RHIDevice::CreateCommandAllocator(c
 	return dxPointer;
 }
 
-gu::SharedPointer<core::RHISwapchain> RHIDevice::CreateSwapchain(const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount, const gu::uint32 vsync, const bool isValidHDR )
+gu::SharedPointer<core::RHISwapchain> RHIDevice::CreateSwapchain(const gu::SharedPointer<core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const gu::uint8 frameBufferCount, const gu::uint8 vsync, const bool isValidHDR )
 {
 	return gu::StaticPointerCast<core::RHISwapchain>(gu::MakeShared<directX12::RHISwapchain>(SharedFromThis(), commandQueue, windowInfo, pixelFormat, frameBufferCount, vsync, isValidHDR));
 }

@@ -23,60 +23,76 @@ SamplerInfo SamplerInfo::GetDefaultSampler(DefaultSamplerType type)
 	SamplerInfo samplerDesc = {};
 	switch (type)
 	{
-	case DefaultSamplerType::SamplerPointWrap:
+	case DefaultSamplerType::NearestWrap:
 	{
-		samplerDesc.Filter       = FilterOption::MinPointMagPointMipPoint;
+		samplerDesc.Filter       = FilterOption::Nearest;
 		samplerDesc.AddressModeU = SamplerAddressMode::Wrap;
 		samplerDesc.AddressModeV = SamplerAddressMode::Wrap;
 		samplerDesc.AddressModeW = SamplerAddressMode::Wrap;
 		break;
 	}
-	case DefaultSamplerType::SamplerPointClamp:
+	case DefaultSamplerType::NearestClamp:
 	{
-		samplerDesc.Filter       = FilterOption::MinPointMagPointMipPoint;
+		samplerDesc.Filter       = FilterOption::Nearest;
 		samplerDesc.AddressModeU = SamplerAddressMode::Clamp;
 		samplerDesc.AddressModeV = SamplerAddressMode::Clamp;
 		samplerDesc.AddressModeW = SamplerAddressMode::Clamp;
 		break;
 	}
-	case DefaultSamplerType::SamplerLinearWrap:
+	case DefaultSamplerType::LinearWrap:
 	{
-		samplerDesc.Filter       = FilterOption::MinLinearMagLinearMipLinear;
+		samplerDesc.Filter       = FilterOption::BiLinear;
 		samplerDesc.AddressModeU = SamplerAddressMode::Wrap;
 		samplerDesc.AddressModeV = SamplerAddressMode::Wrap;
 		samplerDesc.AddressModeW = SamplerAddressMode::Wrap;
 		break;
 	}
-	case DefaultSamplerType::SamplerLinearClamp:
+	case DefaultSamplerType::LinearClamp:
 	{
-		samplerDesc.Filter       = FilterOption::MinLinearMagLinearMipLinear;
+		samplerDesc.Filter       = FilterOption::BiLinear;
 		samplerDesc.AddressModeU = SamplerAddressMode::Clamp;
 		samplerDesc.AddressModeV = SamplerAddressMode::Clamp;
 		samplerDesc.AddressModeW = SamplerAddressMode::Clamp;
 		break;
 	}
-	case DefaultSamplerType::SamplerLinearBorder:
+	case DefaultSamplerType::LinearBorder:
 	{
-		samplerDesc.Filter       = FilterOption::MinLinearMagLinearMipLinear;
+		samplerDesc.Filter = FilterOption::BiLinear;
 		samplerDesc.AddressModeU = SamplerAddressMode::Border;
 		samplerDesc.AddressModeV = SamplerAddressMode::Border;
 		samplerDesc.AddressModeW = SamplerAddressMode::Border;
 		break;
 	}
-	case DefaultSamplerType::SamplerAnisotropicWrap:
+	case DefaultSamplerType::AnisotropicNearestWrap:
 	{
-		samplerDesc.Filter       = FilterOption::Anisotropy;
+		samplerDesc.Filter       = FilterOption::AnisotropicNearest;
 		samplerDesc.AddressModeU = SamplerAddressMode::Wrap;
 		samplerDesc.AddressModeV = SamplerAddressMode::Wrap;
 		samplerDesc.AddressModeW = SamplerAddressMode::Wrap;
 		break;
 	}
-	case DefaultSamplerType::SamplerAnisotropicClamp:
+	case DefaultSamplerType::AnisotropicNearestClamp:
 	{
-		samplerDesc.Filter       = FilterOption::Anisotropy;
-		samplerDesc.AddressModeU = SamplerAddressMode::Clamp;
-		samplerDesc.AddressModeV = SamplerAddressMode::Clamp;
-		samplerDesc.AddressModeW = SamplerAddressMode::Clamp;
+		samplerDesc.Filter = FilterOption::AnisotropicNearest;
+		samplerDesc.AddressModeU = SamplerAddressMode::Wrap;
+		samplerDesc.AddressModeV = SamplerAddressMode::Wrap;
+		samplerDesc.AddressModeW = SamplerAddressMode::Wrap;
+		break;
+	}
+	case DefaultSamplerType::AnisotropicLinearWrap:
+	{
+		samplerDesc.Filter = FilterOption::AnisotropicLinear;
+		samplerDesc.AddressModeU = SamplerAddressMode::Wrap;
+		samplerDesc.AddressModeV = SamplerAddressMode::Wrap;
+		samplerDesc.AddressModeW = SamplerAddressMode::Wrap;
+		break;
+	}
+	case DefaultSamplerType::AnisotropicLinearClamp:
+	{
+		samplerDesc.Filter = FilterOption::AnisotropicNearest;
+		samplerDesc.AddressModeU = SamplerAddressMode::Wrap;
+		samplerDesc.AddressModeV = SamplerAddressMode::Wrap;
+		samplerDesc.AddressModeW = SamplerAddressMode::Wrap;
 		break;
 	}
 	}

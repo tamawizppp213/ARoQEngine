@@ -31,8 +31,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			RHICommandQueue
 	****************************************************************************/
-	/* @class     RHICommandQueue
-	*  @brief     コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信します.(Execute関数) @n
+	/* @brief     コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信します.(Execute関数) @n
 	*             また, コマンドキュー間のGPU側の同期も行うことが可能です (Wait, Signal) @n
     *                                         |
     *              set signal value (t=1)     | wait (t=1)-> execute gpu commands

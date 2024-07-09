@@ -233,7 +233,7 @@ void SampleRectangle::BuildPipelineState()
 	-             Setup resource layout elements
 	---------------------------------------------------------------------*/
 	gu::DynamicArray<SamplerLayoutElement> samplerElements(1);
-	samplerElements[0] = SamplerLayoutElement(rhiDevice->CreateSampler(SamplerInfo::GetDefaultSampler(SamplerLinearWrap)),0,0);
+	samplerElements[0] = SamplerLayoutElement(rhiDevice->CreateSampler(SamplerInfo::GetDefaultSampler(LinearWrap)),0,0);
 
 	/*-------------------------------------------------------------------
 	-             Set up graphics resource layout

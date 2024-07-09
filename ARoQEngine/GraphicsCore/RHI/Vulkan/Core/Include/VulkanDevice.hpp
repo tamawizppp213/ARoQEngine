@@ -61,7 +61,7 @@ namespace rhi::vulkan
 		
 		gu::SharedPointer<core::RHICommandAllocator>     CreateCommandAllocator(const core::CommandListType type, const gu::tstring& name) override;
 		
-		gu::SharedPointer<core::RHISwapchain>            CreateSwapchain(const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const size_t frameBufferCount = 3, const std::uint32_t vsync = 0, const bool isValidHDR = true) override;
+		gu::SharedPointer<core::RHISwapchain>            CreateSwapchain(const gu::SharedPointer<rhi::core::RHICommandQueue>& commandQueue, const core::WindowInfo& windowInfo, const core::PixelFormat& pixelFormat, const gu::uint8 frameBufferCount = 3, const gu::uint8 vsync = 0, const bool isValidHDR = true) override;
 		
 		gu::SharedPointer<core::RHISwapchain>            CreateSwapchain(const core::SwapchainDesc& desc) override;
 
