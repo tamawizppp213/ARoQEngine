@@ -35,10 +35,18 @@ namespace rhi::directX12
 		#pragma endregion
 
 		#pragma region Public Property
-
-		D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc(){ return _samplerDesc; }
-
-		const D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc() const noexcept { return _samplerDesc; }
+		/*!**********************************************************************
+		*  @brief     DirectX12のサンプラー情報を返します.
+		*  @param[in] void
+		*  @return    D3D12_STATIC_SAMPLER_DESC サンプラー情報
+		*************************************************************************/
+		__forceinline D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc() { return _samplerDesc; }
+		/*!**********************************************************************
+	    *  @brief     DirectX12のサンプラー情報を返します.
+	    *  @param[in] void
+	    *  @return    const D3D12_STATIC_SAMPLER_DESC サンプラー情報
+	    *************************************************************************/
+		__forceinline const D3D12_STATIC_SAMPLER_DESC& GetSamplerDesc() const noexcept { return _samplerDesc; }
 
 		#pragma endregion
 

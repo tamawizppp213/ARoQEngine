@@ -541,7 +541,7 @@ namespace rhi::core
 		}
 
 		explicit SamplerInfo(
-			const gu::uint32 maxAnisotropy,
+			const gu::uint8 maxAnisotropy,
 			const SamplerAddressMode addressU = SamplerAddressMode::Wrap,
 			const SamplerAddressMode addressV = SamplerAddressMode::Wrap,
 			const SamplerAddressMode addressW = SamplerAddressMode::Wrap,
@@ -830,34 +830,32 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			StencilOperator
 	****************************************************************************/
-	/* @class     StencilOperator
-	*  @brief     Stencil operator (設定したテストが失敗, または成功した場合に格納されたステンシル値に何が起こるかを指定する) 
+	/* @brief     Stencil operator (設定したテストが失敗, または成功した場合に格納されたステンシル値に何が起こるかを指定する) 
 	*             良い感じの説明: https://www.asawicki.info/news_1654_stencil_test_explained_using_code
 	*****************************************************************************/
 	enum class StencilOperator : gu::uint8
 	{
-		Keep,                 // keep the current value
-		Zero,                 // set the value to 0
-		Replace,              // sets the value to reference value.
-		IncrementAndClamp,    // increments the current value and clamps to the maximum representable unsigned value
-		DecrementAndClamp,    // decrement the current value and clamps to 0
-		Invert,               // bitwise-inverts the current value
-		IncrementAndWrap,     // increment the current value and wrap to 0 when the maximum value would have been exceeded
-		DecrementAndWrap      // decrements the current value and wrap to the maximum possible value when the value wourld bo below 0
+		Keep,                 //!< keep the current value
+		Zero,                 //!< set the value to 0
+		Replace,              //!< sets the value to reference value.
+		IncrementAndClamp,    //!< increments the current value and clamps to the maximum representable unsigned value
+		DecrementAndClamp,    //!< decrement the current value and clamps to 0
+		Invert,               //!< bitwise-inverts the current value
+		IncrementAndWrap,     //!< increment the current value and wrap to 0 when the maximum value would have been exceeded
+		DecrementAndWrap      //!< decrements the current value and wrap to the maximum possible value when the value wourld bo below 0
 	};
 
 	/****************************************************************************
 	*				  			StencilOperatorInfo
 	****************************************************************************/
-	/* @class     StencilOperatorInfo
-	*  @brief     StencilOperatorInfo https://www.asawicki.info/news_1654_stencil_test_explained_using_code
+	/* @brief   ステンシルテストの演算 https://www.asawicki.info/news_1654_stencil_test_explained_using_code
 	*****************************************************************************/
 	struct StencilOperatorInfo
 	{
-		CompareOperator CompareOperator   = CompareOperator::Always; // Stencil test
-		StencilOperator FailOperator      = StencilOperator::Keep;   // Failed stencil action
-		StencilOperator PassOperator      = StencilOperator::Keep;   // Succeed stencil action
-		StencilOperator DepthFailOperator = StencilOperator::Keep;   // Failed depth test action
+		CompareOperator CompareOperator   = CompareOperator::Always; //!< Stencil test
+		StencilOperator FailOperator      = StencilOperator::Keep;   //!< Failed stencil action
+		StencilOperator PassOperator      = StencilOperator::Keep;   //!< Succeed stencil action
+		StencilOperator DepthFailOperator = StencilOperator::Keep;   //!< Failed depth test action
 		gu::uint32   Reference         = 0;
 		StencilOperatorInfo() = default;
 	};
@@ -870,15 +868,29 @@ namespace rhi::core
 	*****************************************************************************/
 	struct DepthStencilProperty
 	{
-		bool                UseDepthTest       = true;                       // Use depth test
-		bool                DepthWriteEnable   = true;                       // Enable to write depth
-		bool                StenciWriteEnable  = false;                      // Enable to write Stencil (stencil test: 描画マスクみたいなやつ)  
-		bool                UseDepthBoundsTest = false;                      // Use depth bounds test (vulkan api only)https://shikihuiku.wordpress.com/2012/06/27/depth-bounds-test1/
-		float               MinDepthBounds     = 0.0f;                       // Min depth bounds test region
-		float               MaxDepthBounds     = 0.0f;                       // Max depth bounds test region
-		CompareOperator     DepthOperator      = CompareOperator::LessEqual; // Depth test operator
-		StencilOperatorInfo Front              = StencilOperatorInfo();      // Use depth test and stencil test results for pixels with surface normals facing the camera
-		StencilOperatorInfo Back               = StencilOperatorInfo();      // Use depth test and stencil test results for pixels where the surface normal is away from the camera
+		/*! @brief ステンシルバッファへの書き込みを許容するかどうか*/
+		CompareOperator DepthOperator = CompareOperator::LessEqual;
+
+		/*! @brief デプスバッファへの書き込みを許容するかどうか*/
+		bool DepthWriteEnable = true; 
+
+		/*! @brief ステンシルバッファへの書き込みを許容するかどうか (ステンシルテスト : 描画マスクみたいなもの)*/
+		bool StencilWriteEnable = false;
+
+		/*! @brief DepthBoundTest (最大最小デプス範囲内で描画)　https://shikihuiku.wordpress.com/2012/06/27/depth-bounds-test1/*/
+		bool UseDepthBoundsTest = false;
+		
+		/*! @brief DepthBoundsTestの最小デプス*/
+		float MinDepthBounds = 0.0f;
+
+		/*! @brief DepthBoundsTestの最大デプス*/
+		float MaxDepthBounds = 0.0f;
+
+		/*! @brief サーフェス法線がカメラ方向を向いているピクセルのデプステストとステンシルテストの結果を使用する。*/
+		StencilOperatorInfo Front = StencilOperatorInfo();
+
+		/*! @brief 表面の法線がカメラから離れているピクセルには、デプステストとステンシルテストの結果を使用する。*/
+		StencilOperatorInfo Back = StencilOperatorInfo();
 	};
 
 #pragma endregion  DepthStencilState

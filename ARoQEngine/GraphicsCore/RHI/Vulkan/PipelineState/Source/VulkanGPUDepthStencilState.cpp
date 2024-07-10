@@ -26,13 +26,13 @@ GPUDepthStencilState::GPUDepthStencilState( const gu::SharedPointer<rhi::core::R
 	_depthStencilDesc.sType                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 	_depthStencilDesc.pNext                 = nullptr;
 	_depthStencilDesc.flags                 = 0;
-	_depthStencilDesc.depthTestEnable       = _property.UseDepthTest;                           // Use depth test
+	_depthStencilDesc.depthTestEnable       = _property.DepthOperator != rhi::core::CompareOperator::Always || _property.DepthWriteEnable;
 	_depthStencilDesc.depthWriteEnable      = _property.DepthWriteEnable;                       // Enable to write depth buffer
 	_depthStencilDesc.depthCompareOp        = EnumConverter::Convert(_property.DepthOperator);  // Depth compare operator : Depth compare test is used.
 	_depthStencilDesc.depthBoundsTestEnable = _property.UseDepthBoundsTest;                     // Use depth bounds test: situations (https://shikihuiku.wordpress.com/2012/06/27/depth-bounds-test1/
 	_depthStencilDesc.minDepthBounds        = 0.0f;                                             // Min depth bounds test region 
 	_depthStencilDesc.maxDepthBounds        = 0.0f;                                             // Max depth bounds test region
-	_depthStencilDesc.stencilTestEnable     = _property.StenciWriteEnable;                      // Use stencil test
+	_depthStencilDesc.stencilTestEnable     = _property.StencilWriteEnable;                      // Use stencil test
 	_depthStencilDesc.front = VkStencilOpState(
 		EnumConverter::Convert(_property.Front.FailOperator),                                   // front stencil failed operator
 		EnumConverter::Convert(_property.Front.PassOperator),                                   // front stencil pass operator
