@@ -9,15 +9,12 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUShaderState.hpp"
-#include <stdexcept>
-#include <sstream>
-#include <fstream>
-#include <iomanip>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::core;
-
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -40,14 +37,25 @@ gu::tstring GPUShaderState::GetShaderTypeName(core::ShaderType shaderType)
 		case ShaderType::ClosestHit:
 		case ShaderType::Miss:         return SP("lib");
 		default:
-			throw std::runtime_error("not supported shader type");
+			throw "not supported shader type";
 	}
 }
 
+
 gu::tstring GPUShaderState::Format(float version)
 {
-	std::wstringstream stream;
-	stream << std::fixed << std::setprecision(1) << version;
-	std::wstring temp = stream.str().substr(0, 1) + L"_" + stream.str().substr(2, 1); // main version 5, 6, sub version .1, .2
-	return gu::tstring(temp.c_str());
+	tstring number = gu::tstring::FromNumber(version);
+	number = number.Left(number.Find(SP(".")) + 2); // +2なのは, 小数第一位 + indexのずれ
+
+	return number.SubString(0, 1) + SP("_") + number.SubString(2, 1); // main version 5, 6, sub version .1, .2
+}
+
+/*!**********************************************************************
+*  @brief     有効なシェーダー設定かどうかを返します
+*  @param[in] void
+*  @return    bool
+*************************************************************************/
+bool GPUShaderState::IsValidShaderType() const noexcept
+{
+	return true;
 }

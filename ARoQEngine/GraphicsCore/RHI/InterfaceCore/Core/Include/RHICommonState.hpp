@@ -370,13 +370,27 @@ namespace rhi::core
 		Miss              // ray tracing miss shader
 	};
 	
-	struct BlobData
+	/****************************************************************************
+	*				  		BlobData
+	****************************************************************************/
+	/* @brief   シェーダーのコードを格納する構造体です.
+	*****************************************************************************/
+	struct ShaderCode
 	{
-		void*  BufferPointer = nullptr;
-		gu::uint64 BufferSize = 0;
-		BlobData() = default;
-		~BlobData() = default;
-		BlobData(void* bufferPointer, gu::uint64 bufferSize) : BufferPointer(bufferPointer), BufferSize(bufferSize) {};
+		/*! @brief シェーダーバイトコードの先頭ポインタ*/
+		void* Pointer = nullptr;
+
+		/*! @brief シェーダーバイトコードのバイトサイズ [Byte]*/
+		gu::uint64 ByteSize = 0;
+
+		/*! @brief デフォルトコンストラクタ*/
+		ShaderCode() = default;
+
+		/*! @brief デストラクタ*/
+		~ShaderCode() = default;
+
+		/*! @brief 正規の初期化*/
+		ShaderCode(void* bufferPointer, const gu::uint64 bufferSize) : Pointer(bufferPointer), ByteSize(bufferSize) {};
 	};
 #pragma endregion        Shader Type
 	#pragma region Sampler State

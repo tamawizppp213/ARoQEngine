@@ -77,8 +77,8 @@ void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fil
 		_dxBlob = DxCompile(fileName,dxMacros.Data(), entryPoint, target);
 	}
 
-	_blobData.BufferPointer = _dxBlob->GetBufferPointer();
-	_blobData.BufferSize    = _dxBlob->GetBufferSize();
+	_blobData.Pointer = _dxBlob->GetBufferPointer();
+	_blobData.ByteSize    = _dxBlob->GetBufferSize();
 }
 /****************************************************************************
 *							LoadBinary
@@ -122,8 +122,8 @@ void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& 
 	fin.read((char*)blob->GetBufferPointer(), size);
 	fin.close();
 
-	_blobData.BufferPointer = blob->GetBufferPointer();
-	_blobData.BufferSize    = size;
+	_blobData.Pointer = blob->GetBufferPointer();
+	_blobData.ByteSize    = size;
 	_dxBlob = blob;
 }
 

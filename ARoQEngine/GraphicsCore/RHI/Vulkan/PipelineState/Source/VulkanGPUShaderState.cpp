@@ -196,8 +196,8 @@ void GPUShaderState::VkCompile(const gu::tstring& fileName, const gu::tstring& e
 	_stage.pName = _name.CString();
 	
 
-	_blobData.BufferPointer= byteCode->GetBufferPointer();
-	_blobData.BufferSize   = byteCode->GetBufferSize();
+	_blobData.Pointer= byteCode->GetBufferPointer();
+	_blobData.ByteSize = byteCode->GetBufferSize();
 	
 }
 
@@ -235,6 +235,6 @@ void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& 
 	fin.read((char*)blob->GetBufferPointer(), size);
 	fin.close();
 
-	_blobData.BufferPointer = blob->GetBufferPointer();
-	_blobData.BufferSize = size;
+	_blobData.Pointer = blob->GetBufferPointer();
+	_blobData.ByteSize = size;
 }

@@ -39,11 +39,11 @@ void GPUGraphicsPipelineState::CompleteSetting()
 	desc.PrimitiveTopologyType = EnumConverter::Convert1(_inputAssemblyState->GetPrimitiveTopology());
 	desc.pRootSignature        = _resourceLayout      ? static_cast<RHIResourceLayout*>(_resourceLayout.Get())->GetRootSignature().Get() : nullptr;
 	desc.InputLayout           = _inputAssemblyState  ? static_cast<GPUInputAssemblyState*>(_inputAssemblyState.Get())->GetDxLayoutDesc()      : D3D12_INPUT_LAYOUT_DESC();
-	desc.VS                    = _vertexShaderState   ? static_cast<GPUShaderState*>      (_vertexShaderState  .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
-	desc.PS                    = _pixelShaderState    ? static_cast<GPUShaderState*>      (_pixelShaderState   .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
-	desc.HS                    = _hullShaderState     ? static_cast<GPUShaderState*>      (_hullShaderState    .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
-	desc.DS                    = _domainShaderState   ? static_cast<GPUShaderState*>      (_domainShaderState  .Get())->GetShader()            : D3D12_SHADER_BYTECODE();
-	desc.GS                    = _geometryShaderState ? static_cast<GPUShaderState*>      (_geometryShaderState.Get())->GetShader()            : D3D12_SHADER_BYTECODE();
+	desc.VS                    = _vertexShaderState   ? static_cast<GPUShaderState*>      (_vertexShaderState  .Get())->GetDxShader()            : D3D12_SHADER_BYTECODE();
+	desc.PS                    = _pixelShaderState    ? static_cast<GPUShaderState*>      (_pixelShaderState   .Get())->GetDxShader()            : D3D12_SHADER_BYTECODE();
+	desc.HS                    = _hullShaderState     ? static_cast<GPUShaderState*>      (_hullShaderState    .Get())->GetDxShader()            : D3D12_SHADER_BYTECODE();
+	desc.DS                    = _domainShaderState   ? static_cast<GPUShaderState*>      (_domainShaderState  .Get())->GetDxShader()            : D3D12_SHADER_BYTECODE();
+	desc.GS                    = _geometryShaderState ? static_cast<GPUShaderState*>      (_geometryShaderState.Get())->GetDxShader()            : D3D12_SHADER_BYTECODE();
 	desc.DepthStencilState     = _depthStencilState   ? static_cast<GPUDepthStencilState*>(_depthStencilState  .Get())->GetDepthStencilState() : D3D12_DEPTH_STENCIL_DESC();
 	desc.BlendState            = _blendState          ? static_cast<GPUBlendState*>       (_blendState         .Get())->GetDxBlendState()      : D3D12_BLEND_DESC();
 	desc.RasterizerState       = _rasterizerState     ? static_cast<GPURasterizerState*>  (_rasterizerState    .Get())->GetDxRasterizerDesc()  : D3D12_RASTERIZER_DESC();
@@ -81,7 +81,7 @@ void GPUComputePipelineState::CompleteSetting()
 	-                      Set Descriptor
 	---------------------------------------------------------------------*/
 	D3D12_COMPUTE_PIPELINE_STATE_DESC desc = {};
-	desc.CS             = _computeShaderState ? dxShader->GetShader() : D3D12_SHADER_BYTECODE();
+	desc.CS             = _computeShaderState ? dxShader->GetDxShader() : D3D12_SHADER_BYTECODE();
 	desc.Flags          = D3D12_PIPELINE_STATE_FLAG_NONE;
 	desc.pRootSignature = _resourceLayout ? dxLayout->GetRootSignature().Get() : nullptr;
 	desc.NodeMask       = 0;
