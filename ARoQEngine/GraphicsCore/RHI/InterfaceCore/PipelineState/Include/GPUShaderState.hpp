@@ -11,9 +11,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
+#include "GPUShaderCompiler.hpp"
 #include "GPUState.hpp"
-#include "GameUtility/Container/Include/GUDynamicArray.hpp"
+
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -25,6 +25,7 @@
 namespace rhi::core
 {
 	class RHIDevice;
+
 	/****************************************************************************
 	*				  			GPUShaderState
 	****************************************************************************/
@@ -37,8 +38,12 @@ namespace rhi::core
 		static constexpr float NEWEST_VERSION = 6.8f;
 
 		#pragma region Public Function
-		// @brief: Online Compile, fileName(filePath), entryPoint(Main Function Name), version (current version <= 6.6f )
-		virtual void Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint = SP("main"), const float version = NEWEST_VERSION, const gu::DynamicArray<gu::tstring>& includeDirectories = {}, const gu::DynamicArray<gu::tstring>& defines = {}) = 0;
+		/*!**********************************************************************
+		*  @brief     HLSLファイルをリアルタイムにコンパイルします. これにより, シェーダーコードが生成されます.
+		*  @param[in] const ShaderCompilerOption& option : シェーダーコンパイル時の設定項目
+		*  @return    void
+		*************************************************************************/
+		virtual void Compile(const ShaderCompilerOption& option) = 0;
 
 		// @brief : Offline Compile, already compiled fileName(filePath)
 		virtual void LoadBinary(const core::ShaderType type, const gu::tstring& fileName) = 0;
@@ -80,6 +85,13 @@ namespace rhi::core
 		*  @return    float バージョン
 		*************************************************************************/
 		__forceinline gu::float32 GetShaderVersion () const noexcept { return _version; }
+
+		/*!**********************************************************************
+		*  @brief     設定されたシェーダーがRayTracingで使用可能なシェーダーか
+		*  @param[in] void
+		*  @return    bool 
+		*************************************************************************/
+		bool IsRayTracingShader() const;
 
 		#pragma endregion
 

@@ -12,13 +12,14 @@
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12EnumConverter.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Core.hpp"
 #include "GraphicsCore/RHI/DirectX12/Core/Include/DirectX12Debug.hpp"
+#include "GameUtility/Base/Include/GUAssert.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"
 #include "GameUtility/File/Include/FileSystem.hpp"
 #include <sstream>
 #include <fstream>
 #include <d3dcompiler.h>
 #include <dxcapi.h>
-#include <string>
+
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -29,52 +30,52 @@ using namespace rhi::directX12;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 
-/****************************************************************************
-*                           Compile
-****************************************************************************/
-/* @fn        void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version)
-* 
-*  @brief     Online Compile 
-* 
-*  @param[in] core::ShaderType type
-* 
-*  @param[in] gu::tstring& fileName : filePath
-* 
-*  @param[in] gu::tstring& entryPoint (Main Shader Function Name)
-* 
-*  @param[in] float version (current newest version : 6.6f)
-* 
-*  @return 　　void
-*****************************************************************************/
-void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version, const gu::DynamicArray<gu::tstring>& includeDirectories, const gu::DynamicArray<gu::tstring>& defines)
+/*!**********************************************************************
+*  @brief     HLSLファイルをリアルタイムにコンパイルします. これにより, シェーダーコードが生成されます.
+*  @param[in] const ShaderCompilerOption& option : シェーダーコンパイル時の設定項目
+*  @return    void
+*************************************************************************/
+void GPUShaderState::Compile(const core::ShaderCompilerOption& option)
 {
-#if __DEBUG
-	assert(0.0f < version && version <= NEWEST_VERSION);
-#endif
-	_shaderType = type; _version = version;
-
-	// Set target Name ex) vs_6.0, ps_6.1...
-	gu::tstring target = GetShaderTypeName(type) + SP("_") + gu::tstring(Format(version).CString());
 	/*-------------------------------------------------------------------
-	-          Select Compile Mode Based on Shader Version
+	-         シェーダーバージョンのチェック
 	---------------------------------------------------------------------*/
-	if (version >= 6.0f)
+	Check(0.0f < option.Version && option.Version <= NEWEST_VERSION);
+	
+	_version = option.Version;
+
+	/*-------------------------------------------------------------------
+	-         シェーダー種別のチェック
+	---------------------------------------------------------------------*/
+	Check(IsValidShaderType());
+
+	_shaderType = option.Type; 
+
+	/*-------------------------------------------------------------------
+	-         シェーダーターゲットを設定 ex) vs_6.0, ps_6.1...
+	---------------------------------------------------------------------*/
+	gu::tstring target = GetShaderTypeName(option.Type) + SP("_") + gu::tstring(Format(option.Version).CString());
+
+	/*-------------------------------------------------------------------
+	-      シェーダーバージョンに伴ってコンパイル方法を変更
+	---------------------------------------------------------------------*/
+	if (option.Version >= 6.0f)
 	{
-		_dxBlob = DxCompile(fileName, entryPoint, target, includeDirectories, defines);
+		_dxBlob = DxilCompile(option.FileName, option.EntryPoint, target, option.IncludeDirectories, option.Defines);
 	}
 	else
 	{
-		gu::DynamicArray<D3D_SHADER_MACRO> dxMacros(defines.Size());
-		gu::DynamicArray<std::string> nameList(defines.Size()); //ダンぐリング対策
-		for (int i = 0; i < defines.Size(); ++i)
+		gu::DynamicArray<D3D_SHADER_MACRO> dxMacros(option.Defines.Size());
+		gu::DynamicArray<std::string> nameList(option.Defines.Size()); //ダンぐリング対策
+		for (int i = 0; i < option.Defines.Size(); ++i)
 		{
-			const auto temp = std::wstring(defines[i].CString());
+			const auto temp = std::wstring(option.Defines[i].CString());
 			nameList[i]            = unicode::ToUtf8String(temp);
 			dxMacros[i].Name       = nameList[i].c_str();
 			dxMacros[i].Definition = nullptr; // 後々
 		}
 
-		_dxBlob = DxCompile(fileName,dxMacros.Data(), entryPoint, target);
+		_dxBlob = DxCompile(option.FileName,dxMacros.Data(), option.EntryPoint, target);
 	}
 
 	_blobData.Pointer = _dxBlob->GetBufferPointer();
@@ -128,35 +129,38 @@ void GPUShaderState::LoadBinary(const core::ShaderType type, const gu::tstring& 
 }
 
 #pragma region DxCompile
-BlobComPtr GPUShaderState::DxCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const gu::DynamicArray<gu::tstring>& includeDirectories, const gu::DynamicArray<gu::tstring>& defines)
+BlobComPtr GPUShaderState::DxilCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const gu::DynamicArray<gu::tstring>& includeDirectories, const gu::DynamicArray<gu::tstring>& defines)
 {
 	/*-------------------------------------------------------------------
-	-            Create blob data from shader text file.
-	-            Initialize DXC library
+	-         DXCライブラリを作成し, シェーダーコードの読み込みやコンパイルを行う
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcLibrary> dxcLibrary = nullptr;
-	ThrowIfFailed(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&dxcLibrary)));
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(dxcLibrary.GetAddressOf())));
 	
 	/*-------------------------------------------------------------------
-	-                  Create dxc compliler
+	-          DXCコンパイラを作成
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcCompiler> dxcCompiler = nullptr;
 	ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler)));
 
 	/*-------------------------------------------------------------------
-	-                  Create Blob data of the source code
+	-			ソースコードの情報作成
 	---------------------------------------------------------------------*/
 	ComPtr<IDxcBlobEncoding> sourceBlob = nullptr;
 	UINT32 codePage = CP_UTF8;
 	ThrowIfFailed(dxcLibrary->CreateBlobFromFile(fileName.CString(), &codePage, &sourceBlob));
 
+	/*-------------------------------------------------------------------
+	-			Includerの作成
+	---------------------------------------------------------------------*/
 	ComPtr<IDxcIncludeHandler> dxcIncludeHandler = nullptr;
 	dxcLibrary->CreateIncludeHandler(&dxcIncludeHandler);
 
 	/*-------------------------------------------------------------------
 	-                  Create Blob data of the source code
 	---------------------------------------------------------------------*/
-	gu::DynamicArray<LPCWSTR> arguments = {};
+	gu::DynamicArray<const gu::wchar*> arguments = {};
+	arguments.Reserve(includeDirectories.Size());
 	for (const auto& directory : includeDirectories)
 	{
 		arguments.Push(L"-I");

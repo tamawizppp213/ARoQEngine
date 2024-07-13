@@ -134,8 +134,8 @@ void Mosaic::PreparePipelineState(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\PostProcess\\ShaderMosaic.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
-	ps->Compile(ShaderType::Pixel , SP("Shader\\PostProcess\\ShaderMosaic.hlsl"),SP("PSMain"), 6.4f, {SP("Shader\\Core")});
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\PostProcess\\ShaderMosaic.hlsl"), SP("VSMain"), { SP("Shader\\Core")} });
+	ps->Compile({ ShaderType::Pixel , SP("Shader\\PostProcess\\ShaderMosaic.hlsl"),SP("PSMain"),  {SP("Shader\\Core")} });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State

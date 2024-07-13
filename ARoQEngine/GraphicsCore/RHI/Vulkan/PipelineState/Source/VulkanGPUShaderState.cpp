@@ -37,17 +37,17 @@ GPUShaderState::~GPUShaderState()
 	}
 }
 
-void GPUShaderState::Compile(const core::ShaderType type, const gu::tstring& fileName, const gu::tstring& entryPoint, const float version, const gu::DynamicArray<gu::tstring>& includeDirectories, [[maybe_unused]]const gu::DynamicArray<gu::tstring>& defines)
+void GPUShaderState::Compile(const core::ShaderCompilerOption& option)
 {
 #if __DEBUG
 	assert(0.0f < version && version <= NEWEST_VERSION);
 #endif
-	_shaderType = type; _version = version;
+	_shaderType = option.Type; _version = option.Version;
 
 	// Set target Name ex) vs_6.0, ps_6.1...
-	gu::tstring target = GetShaderTypeName(type) + L"_" + Format(_version);
+	gu::tstring target = GetShaderTypeName(option.Type) + L"_" + Format(_version);
 
-	VkCompile(fileName, entryPoint, target, includeDirectories);
+	VkCompile(option.FileName, option.EntryPoint, target, option.IncludeDirectories);
 
 }
 /****************************************************************************

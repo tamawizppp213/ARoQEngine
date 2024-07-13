@@ -291,9 +291,9 @@ void Dof::PreparePipelineState(const gu::tstring& name)
 	const auto verticalCS    = factory->CreateShaderState();
 	const auto rhomboidCS    = factory->CreateShaderState();
 	const auto finalRenderCS = factory->CreateShaderState();
-	verticalCS   ->Compile(ShaderType::Compute, defaultPath, SP("VerticalBlur"), 6.4f, { SP("Shader\\Core") });
-	rhomboidCS   ->Compile(ShaderType::Compute, defaultPath, SP("RhomboidBlur"), 6.4f, { SP("Shader\\Core") });
-	finalRenderCS->Compile(ShaderType::Compute, defaultPath, SP("FinalRender") , 6.4f, { SP("Shader\\Core") });
+	verticalCS  ->Compile({ ShaderType::Compute, defaultPath, SP("VerticalBlur"), { SP("Shader\\Core") } });
+	rhomboidCS   ->Compile({ ShaderType::Compute, defaultPath, SP("RhomboidBlur"), { SP("Shader\\Core") } });
+	finalRenderCS->Compile({ ShaderType::Compute, defaultPath, SP("FinalRender") , { SP("Shader\\Core") } });
 	
 	/*-------------------------------------------------------------------
 	-			Load pipeline state

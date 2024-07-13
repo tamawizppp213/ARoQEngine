@@ -136,8 +136,8 @@ void WhiteBalance::PreparePipelineState(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, L"Shader\\PostProcess\\ShaderWhiteBalance.hlsl", L"VSMain", 6.4f, { L"Shader\\Core" });
-	ps->Compile(ShaderType::Pixel, L"Shader\\PostProcess\\ShaderWhiteBalance.hlsl", L"PSMain", 6.4f, { L"Shader\\Core" });
+	vs->Compile({ ShaderType::Vertex, L"Shader\\PostProcess\\ShaderWhiteBalance.hlsl", L"VSMain",{L"Shader\\Core" } });
+	ps->Compile({ ShaderType::Pixel, L"Shader\\PostProcess\\ShaderWhiteBalance.hlsl", L"PSMain", { L"Shader\\Core" } });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State

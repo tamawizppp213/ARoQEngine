@@ -9,7 +9,7 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUShaderState.hpp"
-
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDevice.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -57,5 +57,42 @@ gu::tstring GPUShaderState::Format(float version)
 *************************************************************************/
 bool GPUShaderState::IsValidShaderType() const noexcept
 {
+	// Mesh Shaderがサポートされていない場合は, Mesh Shaderを使用できません
+	if (_shaderType == ShaderType::Mesh && !_device->IsSupportedMeshShading())
+	{
+		return false;
+	}
+
+	// Ray Tracing Shaderがサポートされていない場合は, Ray Tracing Shaderを使用できません
+	if (IsRayTracingShader() && !_device->IsSupportedDxr())
+	{
+		return false;
+	}
+	
+	// それ以外の場合は, 有効なシェーダー設定です
 	return true;
+}
+
+/*!**********************************************************************
+*  @brief     設定されたシェーダーがRayTracingで使用可能なシェーダーか
+*  @param[in] void
+*  @return    bool
+*************************************************************************/
+bool GPUShaderState::IsRayTracingShader() const
+{
+	switch(_shaderType)
+	{
+		case ShaderType::RayGeneration:
+		case ShaderType::Intersection:
+		case ShaderType::AnyHit:
+		case ShaderType::ClosestHit:
+		case ShaderType::Miss:
+		{
+			return true;
+		}
+		default:
+		{
+			return false;
+		}
+	}
 }

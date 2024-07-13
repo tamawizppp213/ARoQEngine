@@ -155,8 +155,8 @@ void ScreenSpaceReflection::PreparePipelineState(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\Effect\\ShaderSSR.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
-	ps->Compile(ShaderType::Pixel, SP("Shader\\Effect\\ShaderSSR.hlsl"), SP("ExecuteSSR"), 6.4f, { SP("Shader\\Core") });
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\Effect\\ShaderSSR.hlsl"), SP("VSMain"), { SP("Shader\\Core") } });
+	ps->Compile({ ShaderType::Pixel, SP("Shader\\Effect\\ShaderSSR.hlsl"), SP("ExecuteSSR"), { SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State

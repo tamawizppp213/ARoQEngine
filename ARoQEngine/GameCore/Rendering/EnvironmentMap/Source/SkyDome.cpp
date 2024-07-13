@@ -203,8 +203,8 @@ void SkyDome::PreparePipelineState(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\EnvironmentMap\\ShaderSkybox.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
-	ps->Compile(ShaderType::Pixel , SP("Shader\\EnvironmentMap\\ShaderSkybox.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\EnvironmentMap\\ShaderSkybox.hlsl"), SP("VSMain"),  { SP("Shader\\Core") } });
+	ps->Compile({ ShaderType::Pixel , SP("Shader\\EnvironmentMap\\ShaderSkybox.hlsl"), SP("PSMain"),  { SP("Shader\\Core") } });
 
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::AlphaBlend()));

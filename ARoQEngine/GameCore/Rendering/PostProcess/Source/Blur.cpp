@@ -344,7 +344,7 @@ void GaussianBlur::PreparePipelineState(const gu::tstring& name)
 	if (_useCS)
 	{
 		const auto blurCS = factory->CreateShaderState();
-		blurCS->Compile(ShaderType::Compute, defaultPath, SP("ExecuteBlur"), 6.4f, { SP("Shader\\Core") });
+		blurCS->Compile({ ShaderType::Compute, defaultPath, SP("ExecuteBlur"), { SP("Shader\\Core") } });
 
 		_computePipeline = device->CreateComputePipelineState(_resourceLayout);
 		_computePipeline->SetComputeShader(blurCS);
@@ -364,11 +364,11 @@ void GaussianBlur::PreparePipelineState(const gu::tstring& name)
 		const auto blurPS   = factory->CreateShaderState();
 		const auto mainPS   = factory->CreateShaderState();
 		const auto mainVS   = factory->CreateShaderState();
-		blurVS_X->Compile(ShaderType::Vertex, defaultPath, SP("VS_XBlur"), 6.4f, { SP("Shader\\Core") });
-		blurVS_Y->Compile(ShaderType::Vertex, defaultPath, SP("VS_YBlur"), 6.4f, { SP("Shader\\Core") });
-		blurPS  ->Compile(ShaderType::Pixel, defaultPath,  SP("PSBlur")  , 6.4f, { SP("Shader\\Core") });
-		mainVS  ->Compile(ShaderType::Vertex, defaultPath, SP("VSFinal"), 6.4f, { SP("Shader\\Core") });
-		mainPS  ->Compile(ShaderType::Pixel, defaultPath, SP("PSFinal"), 6.4f, {SP("Shader\\Core")});
+		blurVS_X->Compile({ ShaderType::Vertex, defaultPath, SP("VS_XBlur"),{ SP("Shader\\Core") } });
+		blurVS_Y->Compile({ ShaderType::Vertex, defaultPath, SP("VS_YBlur"), { SP("Shader\\Core") } });
+		blurPS->Compile({ ShaderType::Pixel, defaultPath,  SP("PSBlur")  , { SP("Shader\\Core") } });
+		mainVS->Compile({ ShaderType::Vertex, defaultPath, SP("VSFinal"),  { SP("Shader\\Core") } });
+		mainPS->Compile({ ShaderType::Pixel, defaultPath, SP("PSFinal"),  {SP("Shader\\Core")} });
 
 		// XBlur
 		_xBlur.Pipeline = device->CreateGraphicPipelineState(_xBlur.RenderPass, _resourceLayout);

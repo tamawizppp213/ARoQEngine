@@ -260,8 +260,8 @@ void ShadowMap::PreparePipelineState(const gu::tstring& name)
 	
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, defaultPath, SP("VSMain"), 6.4f , {SP("Shader\\Core")});
-	ps->Compile(ShaderType::Pixel , defaultPath, SP("PSMain"), 6.4f,  {SP("Shader\\Core")});
+	vs->Compile({ ShaderType::Vertex, defaultPath, SP("VSMain"), {SP("Shader\\Core")} });
+	ps->Compile({ ShaderType::Pixel , defaultPath, SP("PSMain"), {SP("Shader\\Core")} });
 
 	/*-------------------------------------------------------------------
 	-			Create graphics pipeline

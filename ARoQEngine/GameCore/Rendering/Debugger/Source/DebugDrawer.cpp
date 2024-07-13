@@ -140,8 +140,8 @@ void DebugDrawer::PreparePipelineState(const gu::tstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\Core\\ShaderDebug.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
-	ps->Compile(ShaderType::Pixel , SP("Shader\\Core\\ShaderDebug.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\Core\\ShaderDebug.hlsl"), SP("VSMain"), { SP("Shader\\Core") } });
+	ps->Compile({ ShaderType::Pixel , SP("Shader\\Core\\ShaderDebug.hlsl"), SP("PSMain"), { SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
 	-             Setup blend state (all alpha blend)

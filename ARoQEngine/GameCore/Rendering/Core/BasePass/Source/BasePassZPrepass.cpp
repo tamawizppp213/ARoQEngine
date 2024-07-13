@@ -178,8 +178,8 @@ void ZPrepass::PreparePipelineState(const gu::tstring& name)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\Lighting\\ShaderZPrepass.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core")});
-	ps->Compile(ShaderType::Pixel , SP("Shader\\Lighting\\ShaderZPrepass.hlsl"), SP("PSMain"), 6.4f, { SP("Shader\\Core") });
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\Lighting\\ShaderZPrepass.hlsl"), SP("VSMain"), { SP("Shader\\Core")}});
+	ps->Compile({ ShaderType::Pixel , SP("Shader\\Lighting\\ShaderZPrepass.hlsl"), SP("PSMain"), {SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state

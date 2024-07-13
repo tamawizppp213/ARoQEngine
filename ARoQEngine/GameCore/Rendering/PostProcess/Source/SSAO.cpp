@@ -321,9 +321,9 @@ void SSAO::PreparePipelineState(const gu::tstring& name)
 	const auto mainPS = factory->CreateShaderState();
 	const auto blurPS = factory->CreateShaderState();
 
-	vs->Compile(ShaderType::Vertex   , defaultPath, SP("VSMain"), 6.4f, {SP("Shader\\Core")});
-	mainPS->Compile(ShaderType::Pixel, defaultPath, SP("ExecuteSSAO"), 6.4f, { SP("Shader\\Core") });
-	blurPS->Compile(ShaderType::Pixel, defaultPath, SP("ExecuteSSAOBlur"), 6.4f, { SP("Shader\\Core") });
+	vs->Compile({ ShaderType::Vertex   , defaultPath, SP("VSMain"), {SP("Shader\\Core")} });
+	mainPS->Compile({ ShaderType::Pixel, defaultPath, SP("ExecuteSSAO"), { SP("Shader\\Core")} });
+	blurPS->Compile({ ShaderType::Pixel, defaultPath, SP("ExecuteSSAOBlur"), { SP("Shader\\Core")} });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics pipeline state

@@ -171,7 +171,7 @@ void LightCulling::PreparePipelineState()
 	-             Set shader
 	---------------------------------------------------------------------*/
 	const auto cs = factory->CreateShaderState();
-	cs->Compile(ShaderType::Compute, defaultPath, L"LightCulling", 6.4f, { L"Shader\\Core" });
+	cs->Compile({ ShaderType::Compute, defaultPath, L"LightCulling", { L"Shader\\Core" } });
 
 	/*-------------------------------------------------------------------
 	-             Build compute pipeline state

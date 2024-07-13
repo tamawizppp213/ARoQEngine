@@ -168,8 +168,8 @@ void Bloom::PreparePipelineState(const gu::tstring& name)
 
 	const auto luminanceCS  = factory->CreateShaderState();
 	const auto finalBloomCS = factory->CreateShaderState();
-	luminanceCS->Compile(ShaderType::Compute, defaultPath, SP("SamplingLuminance"), 6.4f, {});
-	finalBloomCS->Compile(ShaderType::Compute, defaultPath, SP("FinalBloom"), 6.4f, {});
+	luminanceCS->Compile({ ShaderType::Compute, defaultPath, SP("SamplingLuminance"), {} });
+	finalBloomCS->Compile({ ShaderType::Compute, defaultPath, SP("FinalBloom"), {} });
 
 	_luminancePipeline  = device->CreateComputePipelineState(_resourceLayout);
 	_finalBloomPipeline = device->CreateComputePipelineState(_resourceLayout);

@@ -212,7 +212,7 @@ void Sobel::PreparePipelineState(const gu::tstring& name)
 	-			Load Blob data
 	---------------------------------------------------------------------*/
 	const auto sobelCS = factory->CreateShaderState();
-	sobelCS->Compile(ShaderType::Compute, defaultPath, SP("ExecuteSobel"), 6.4f, {});
+	sobelCS->Compile({ShaderType::Compute, defaultPath, SP("ExecuteSobel"),{} });
 
 	/*-------------------------------------------------------------------
 	-			Set pipeline state

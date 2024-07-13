@@ -245,8 +245,8 @@ void SampleRayTracingRectangle::BuildPipelineState()
 	const auto vertexShader = factory->CreateShaderState();
 	const auto pixelShader  = factory->CreateShaderState();
 	// Compile 
-	vertexShader->Compile(ShaderType::Vertex, SP("Shader\\Sprite\\ShaderTest.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core")});
-	pixelShader ->Compile(ShaderType::Pixel , SP("Shader\\Sprite\\ShaderTest.hlsl"), SP("PSTest"), 6.4f, { SP("Shader\\Core") });
+	vertexShader->Compile({ ShaderType::Vertex, SP("Shader\\Sprite\\ShaderTest.hlsl"), SP("VSMain"), { SP("Shader\\Core")} });
+	pixelShader->Compile({ ShaderType::Pixel , SP("Shader\\Sprite\\ShaderTest.hlsl"), SP("PSTest"), { SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state

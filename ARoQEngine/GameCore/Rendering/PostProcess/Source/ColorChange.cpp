@@ -158,8 +158,8 @@ void ColorChange::PreparePipelineState(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile(ShaderType::Vertex, SP("Shader\\PostProcess\\ShaderColorChange.hlsl"), SP("VSMain"), 6.4f, { SP("Shader\\Core") });
-	ps->Compile(ShaderType::Pixel , SP("Shader\\PostProcess\\ShaderColorChange.hlsl"), s_ShaderFunctionName[(int)_colorType], 6.4f, { SP("Shader\\Core") });
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\PostProcess\\ShaderColorChange.hlsl"), SP("VSMain"), { SP("Shader\\Core") } });
+	ps->Compile({ ShaderType::Pixel , SP("Shader\\PostProcess\\ShaderColorChange.hlsl"), s_ShaderFunctionName[(int)_colorType], { SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
