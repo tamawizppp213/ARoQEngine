@@ -56,102 +56,109 @@ namespace platform::core
 		#pragma region Public Function
 		/*!**********************************************************************
 		*  @brief     ファイルを開いて読み込みます. この時, 実行時の状況に応じて同期/非同期を自動で切り替えます.  
-		*  @param[in] const tchar* ファイルパス
+		*  @param[in] const gu::tstring ファイルパス
 		*  @param[in] const bool   ファイルの書き込みを行います.
 		*  @param[in] const bool   非同期読み込みを実行するかを設定します (デフォルトは同期読み込み)
 		*  @return    IFileHandle* ファイルのハンドル
 		*************************************************************************/
-		virtual gu::SharedPointer<file::IFileHandle> OpenRead(const gu::tchar* fileName, const bool allowWrite = false, const bool useAsync = false) = 0;
+		virtual gu::SharedPointer<file::IFileHandle> OpenRead(const gu::tstring& fileName, const bool allowWrite = false, const bool useAsync = false) = 0;
 
 		/*!**********************************************************************
 		*  @brief     ファイルを開いて書き込みます. この時, 実行時の状況に応じて同期/非同期を自動で切り替えます
-		*  @param[in] const tchar* ファイルパス
+		*  @param[in] const gu::tstring ファイルパス
 		*  @param[in] const bool   既に書き込まれた部分を上書きせず, 後ろに追加するかを決めます (Default: 新規上書き)
 		*  @param[in] const bool   ファイルの閲覧も行います. (Default : false)
 		*   @param[in] const bool  非同期書き込みを実行するかを設定します (デフォルトは同期書き込み)
 		*  @return    IFileHandle* ファイルのハンドル
 		*************************************************************************/
-		virtual gu::SharedPointer<file::IFileHandle> OpenWrite(const gu::tchar* fileName, const bool append = false, const bool allowRead = false, const bool useAsync = false) = 0;
+		virtual gu::SharedPointer<file::IFileHandle> OpenWrite(const gu::tstring& fileName, const bool append = false, const bool allowRead = false, const bool useAsync = false) = 0;
 
 		/*!**********************************************************************
 		*  @brief 指定したファイルが存在するかを確認します. 
-		*  @param[in] const tchar* ファイルパス
+		*  @param[in] const tstring ファイルパス
 		*  @return    bool ファイルが存在する場合, trueを返します.
 		*************************************************************************/
-		virtual bool FileExists(const gu::tchar* filePath) const = 0;
+		virtual bool FileExists(const gu::tstring& filePath) const = 0;
 
 		/*!**********************************************************************
 		*  @brief 指定したファイルが存在するかを確認します.
-		*  @param[in] const tchar* ディレクトリ
+		*  @param[in] const gu::tstring& ディレクトリ
 		*  @return    bool ファイルが存在する場合, trueを返します.
 		*************************************************************************/
-		virtual bool DirectoryExists(const gu::tchar* directory) const = 0;
+		virtual bool DirectoryExists(const gu::tstring& directory) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     ディレクトリを作成します. 既にディレクトリが存在する場合もtrueを返します.  
-		*  @param[in] const tchar* ディレクトリ
+		*  @param[in] const gu::tstring& ディレクトリ
 		*  @return    bool ディレクトリを作成出来た場合, 既にディレクトリが存在する場合にtrueを返します
 		*************************************************************************/
-		virtual bool CreateDirectory(const gu::tchar* directory) const = 0;
+		virtual bool CreateDirectory(const gu::tstring& directory) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     ディレクトリを削除します.
-		*  @param[in] const tchar* ディレクトリ
+		*  @param[in] const gu::tstring& ディレクトリ
 		*  @return    bool ディレクトリを削除出来た場合にtrueを返します
 		*************************************************************************/
-		virtual bool DeleteDirectory(const gu::tchar* directory) const = 0;
+		virtual bool DeleteDirectory(const gu::tstring& directory) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     ファイルを削除します.
-		*  @param[in] const tchar* ファイルパス
+		*  @param[in] const gu::tstring& ファイルパス
 		*  @return    bool ディレクトリを作成出来た場合にtrueを返します
 		*************************************************************************/
-		virtual bool DeleteFile(const gu::tchar* filePath) const = 0;
+		virtual bool DeleteFile(const gu::tstring& filePath) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     ファイルをコピーします
-		*  @param[in] const tchar* コピー前のファイルパス
-		*  @param[in] const tchar* コピー後のファイルパス
+		*  @param[in] const gu::tstring& コピー前のファイルパス
+		*  @param[in] const gu::tstring& コピー後のファイルパス
 		*  @param[in] const bool   上書きを許可するかを設定します
 		*  @return    bool ファイルがコピーできた場合にtrueを返します
 		*************************************************************************/
-		virtual bool CopyFile(const gu::tchar* from, const gu::tchar* to, const bool overwrite) const = 0;
+		virtual bool CopyFile(const gu::tstring& from, const gu::tstring& to, const bool overwrite) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     ファイルを移動します
-		*  @param[in] const tchar* 移動前のファイルパス
-		*  @param[in] const tchar* 移動後のファイルパス
+		*  @param[in] const gu::tstring& 移動前のファイルパス
+		*  @param[in] const gu::tstring& 移動後のファイルパス
 		*  @return    bool ファイルが移動できた場合にtrueを返します
 		*************************************************************************/
-		virtual bool MoveFile(const gu::tchar* from, const gu::tchar* to) const = 0;
+		virtual bool MoveFile(const gu::tstring& from, const gu::tstring& to) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     読み取りだけしか出来ないファイルかどうか
-		*  @param[in] const tchar* ファイルパス
+		*  @param[in] const gu::tstring& ファイルパス
 		*  @return    bool Readonlyであればtrue
 		*************************************************************************/
-		virtual bool IsReadOnly(const gu::tchar* filePath) const = 0;
+		virtual bool IsReadOnly(const gu::tstring& filePath) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     ファイル, もしくはディレクトリのリンク(参照)の種類を返します.
-		*  @param[in] const tchar* ファイルパス, もしくはディレクトリ
+		*  @param[in] const gu::tstring& ファイルパス, もしくはディレクトリ
 		*  @return    file::LinkType リンクの種類
 		*************************************************************************/
-		virtual file::LinkType LinkType(const gu::tchar* path) const = 0;
+		virtual file::LinkType LinkType(const gu::tstring& path) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     指定したファイルパスの拡張子を取得します
-		*  @param[in] const tchar* ファイルパス
-		*  @return    const tchar* 拡張子です. (見つからない場合はnullptrを返します)
+		*  @param[in] const gu::tstring& ファイルパス
+		*  @return    gu::tstring 拡張子です. (見つからない場合はnullptrを返します)
 		*************************************************************************/
-		virtual gu::tstring GetExtension(const gu::tchar* filePath) const = 0;
+		virtual gu::tstring GetExtension(const gu::tstring& filePath) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     ディレクトリ(ファイル名の手前まで)を取得します.
-		*  @param[in] const tchar* ファイルパス
-		*  @return    const char* ファイル名手前までのディレクトリ
+		*  @param[in] const gu::tstring& ファイルパス
+		*  @return    gu::tstring ファイル名手前までのディレクトリ
 		*************************************************************************/
-		virtual gu::tstring GetDirectory(const gu::tchar* filePath) const = 0;
+		virtual gu::tstring GetDirectory(const gu::tstring& filePath) const = 0;
+
+		/*!**********************************************************************
+		*  @brief     ディレクトリを取り去ってファイル名を取得します
+		*  @param[in] const gu::tstring& ディレクトリを含めたファイル名
+		*  @return    gu::tstring
+		*************************************************************************/
+		virtual gu::tstring GetFileName(const gu::tstring& filePath) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     自身のプロセスに関する作業ディレクトリを取得します.
@@ -163,20 +170,20 @@ namespace platform::core
 		/*!**********************************************************************
 		*  @brief     対象のディレクトリ直下にハードリンクを作成します. @n
 		*             ハードリンクは, ファイルの内容を共有するファイルのことです.
-		*  @param[in] const tchar* リンクを行いたい元のファイルパス
-		*  @param[in] const tchar* リンクを作成したいファイルパス
+		*  @param[in] const gu::tstring& リンクを行いたい元のファイルパス
+		*  @param[in] const gu::tstring& リンクを作成したいファイルパス
 		*  @return    bool
 		*************************************************************************/
-		virtual bool CreateHardLink(const gu::tchar* sourcePath, const gu::tchar* newHardLinkPath) const = 0;
+		virtual bool CreateHardLink(const gu::tstring& sourcePath, const gu::tstring& newHardLinkPath) const = 0;
 
 		/*!**********************************************************************
 		*  @brief     対象のディレクトリ直下にシンボリックリンクを作成します. @n
 		*             シンボリックリンクは, ファイルのパスを参照するファイルのことです.
-		*  @param[in] const tchar* リンクを行いたい元のファイルパス
-		*  @param[in] const tchar* リンクを作成したいファイルパス
+		*  @param[in] const gu::tstring& リンクを行いたい元のファイルパス
+		*  @param[in] const gu::tstring& リンクを作成したいファイルパス
 		*  @return    bool
 		*************************************************************************/
-		virtual bool CreateSymbolicLink(const gu::tchar* sourcePath, const gu::tchar* newSymbolicLinkPath) const = 0;
+		virtual bool CreateSymbolicLink(const gu::tstring& sourcePath, const gu::tstring& newSymbolicLinkPath) const = 0;
 		#pragma endregion 
 
 		#pragma region Public Property

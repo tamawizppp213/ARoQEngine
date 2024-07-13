@@ -107,11 +107,11 @@ IFileSystem::~IFileSystem()
 #pragma region Public Function
 /*!**********************************************************************
 *  @brief     ファイルを開いて読み込みます
-*  @param[in] const tchar* ファイルパス
+*  @param[in] const tstring& ファイルパス
 *  @param[in] const bool   ファイルの書き込みを行います.
 *  @return    IFileHandle* ファイルのハンドル
 *************************************************************************/
-gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenRead(const gu::tchar* fileName, const bool allowWrite, const bool useAsync)
+gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenRead(const gu::tstring& fileName, const bool allowWrite, const bool useAsync)
 {
 	/*----------------------------------------------------------------------
 	*         フラグ設定
@@ -124,7 +124,7 @@ gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenRead(const
 	/*----------------------------------------------------------------------
 	*         ファイルを開きます.
 	*----------------------------------------------------------------------*/
-	const auto fileHandle = ::CreateFileW(fileName, accessFlag, shareFlag, NULL, createFlag, FILE_ATTRIBUTE_NORMAL | asyncFlag, NULL);
+	const auto fileHandle = ::CreateFileW(fileName.CString(), accessFlag, shareFlag, NULL, createFlag, FILE_ATTRIBUTE_NORMAL | asyncFlag, NULL);
 	if (fileHandle != INVALID_HANDLE_VALUE)
 	{
 		const auto result = gu::MakeShared<windows::file::IFileHandle>(fileHandle, accessFlag, createFlag, asyncFlag);
@@ -139,12 +139,12 @@ gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenRead(const
 
 /*!**********************************************************************
 *  @brief     ファイルを開いて書き込みます.
-*  @param[in] const tchar* ファイルパス
+*  @param[in] const tstring& ファイルパス
 *  @param[in] const bool   既に書き込まれた部分を上書きせず, 後ろに追加するかを決めます (Default: 新規上書き)
 *  @param[in] const bool   ファイルの閲覧も行います. (Default : false)
 *  @return    IFileHandle* ファイルのハンドル
 *************************************************************************/
-gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenWrite(const gu::tchar* fileName, const bool append, const bool allowRead, const bool useAsync)
+gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenWrite(const gu::tstring& fileName, const bool append, const bool allowRead, const bool useAsync)
 {
 	/*----------------------------------------------------------------------
 	*         フラグ設定
@@ -157,7 +157,7 @@ gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenWrite(cons
 	/*----------------------------------------------------------------------
 	*         ファイルを開きます.
 	*----------------------------------------------------------------------*/
-	const auto fileHandle = ::CreateFileW(fileName, accessFlag, shareFlag, NULL, createFlag, FILE_ATTRIBUTE_NORMAL | asyncFlag, NULL);
+	const auto fileHandle = ::CreateFileW(fileName.CString(), accessFlag, shareFlag, NULL, createFlag, FILE_ATTRIBUTE_NORMAL | asyncFlag, NULL);
 	if (fileHandle != INVALID_HANDLE_VALUE)
 	{
 		const auto result = gu::MakeShared<windows::file::IFileHandle>(fileHandle, accessFlag, createFlag, asyncFlag);
@@ -185,46 +185,46 @@ gu::SharedPointer<platform::core::file::IFileHandle> IFileSystem::OpenWrite(cons
 
 /*!**********************************************************************
 *  @brief 指定したファイルが存在するかを確認します.
-*  @param[in] const tchar* ファイルパス
+*  @param[in] const tstring& ファイルパス
 *  @return    bool ファイルが存在する場合, trueを返します.
 *************************************************************************/
-bool IFileSystem::FileExists(const gu::tchar* filePath) const
+bool IFileSystem::FileExists(const gu::tstring& filePath) const
 {
-	const auto result = ::GetFileAttributesW(filePath);
+	const auto result = ::GetFileAttributesW(filePath.CString());
 
 	return (result != INVALID_ID) && !(result & FILE_ATTRIBUTE_DIRECTORY);
 }
 
 /*!**********************************************************************
 *  @brief 指定したファイルが存在するかを確認します.
-*  @param[in] const tchar* ディレクトリ
+*  @param[in] const tstring& ディレクトリ
 *  @return    bool ファイルが存在する場合, trueを返します.
 *************************************************************************/
-bool IFileSystem::DirectoryExists(const gu::tchar* directory) const
+bool IFileSystem::DirectoryExists(const gu::tstring& directory) const
 {
-	const auto result = ::GetFileAttributesW(directory);
+	const auto result = ::GetFileAttributesW(directory.CString());
 
 	return (result != INVALID_ID) && (result & FILE_ATTRIBUTE_DIRECTORY);
 }
 
 /*!**********************************************************************
 *  @brief     ディレクトリを作成します. 既にディレクトリが存在する場合もtrueを返します.
-*  @param[in] const tchar* ディレクトリ
+*  @param[in] const tstring& ディレクトリ
 *  @return    bool ディレクトリを作成出来た場合, 既にディレクトリが存在する場合にtrueを返します
 *************************************************************************/
-bool IFileSystem::CreateDirectory(const gu::tchar* directory) const
+bool IFileSystem::CreateDirectory(const gu::tstring& directory) const
 {
-	return (!!::CreateDirectoryW(directory, NULL)) || ::GetLastError() == ERROR_ALREADY_EXISTS;
+	return (!!::CreateDirectoryW(directory.CString(), NULL)) || ::GetLastError() == ERROR_ALREADY_EXISTS;
 }
 
 /*!**********************************************************************
 *  @brief     ディレクトリを削除します.
-*  @param[in] const tchar* ディレクトリ
+*  @param[in] const tstring& ディレクトリ
 *  @return    bool ディレクトリを削除出来た場合にtrueを返します
 *************************************************************************/
-bool IFileSystem::DeleteDirectory(const gu::tchar* directory) const
+bool IFileSystem::DeleteDirectory(const gu::tstring& directory) const
 {
-	::RemoveDirectoryW(directory);
+	::RemoveDirectoryW(directory.CString());
 
 	const auto lastError = ::GetLastError();
 	const bool succeeded = !DirectoryExists(directory);
@@ -237,62 +237,62 @@ bool IFileSystem::DeleteDirectory(const gu::tchar* directory) const
 
 /*!**********************************************************************
 *  @brief     ファイルを削除します.
-*  @param[in] const tchar* ファイルパス
+*  @param[in] const tstring& ファイルパス
 *  @return    bool ディレクトリを作成出来た場合にtrueを返します
 *************************************************************************/
-bool IFileSystem::DeleteFile(const gu::tchar* filePath) const
+bool IFileSystem::DeleteFile(const gu::tstring& filePath) const
 {
-	return !!::DeleteFileW(filePath);
+	return !!::DeleteFileW(filePath.CString());
 }
 
 /*!**********************************************************************
 *  @brief     ファイルを移動します
-*  @param[in] const tchar* 移動前のファイルパス
-*  @param[in] const tchar* 移動後のファイルパス
+*  @param[in] const tstring& 移動前のファイルパス
+*  @param[in] const tstring& 移動後のファイルパス
 *  @param[in] const bool   上書きを許可するかを設定します
 *  @return    bool ファイルが移動できた場合にtrueを返します
 *************************************************************************/
-bool IFileSystem::CopyFile(const gu::tchar* from, const gu::tchar* to, const bool overwrite) const
+bool IFileSystem::CopyFile(const gu::tstring& from, const gu::tstring& to, const bool overwrite) const
 {
-	return !!::CopyFileW(from, to, !overwrite);
+	return !!::CopyFileW(from.CString(), to.CString(), !overwrite);
 }
 
 /*!**********************************************************************
 *  @brief     ファイルを移動します
-*  @param[in] const tchar* 移動前のファイルパス
-*  @param[in] const tchar* 移動後のファイルパス
+*  @param[in] const tstring& 移動前のファイルパス
+*  @param[in] const tstring& 移動後のファイルパス
 *  @return    bool ファイルが移動できた場合にtrueを返します
 *************************************************************************/
-bool IFileSystem::MoveFile(const gu::tchar* from, const gu::tchar* to) const
+bool IFileSystem::MoveFile(const gu::tstring& from, const gu::tstring& to) const
 {
-	return !!::MoveFileW(from, to);
+	return !!::MoveFileW(from.CString(), to.CString());
 }
 
 /*!**********************************************************************
 *  @brief     読み取りだけしか出来ないファイルかどうか
-*  @param[in] const tchar* ファイルパス
+*  @param[in] const tstring& ファイルパス
 *  @return    bool Readonlyであればtrue
 *************************************************************************/
-bool IFileSystem::IsReadOnly(const gu::tchar* filePath) const
+bool IFileSystem::IsReadOnly(const gu::tstring& filePath) const
 {
-	const auto result = ::GetFileAttributesW(filePath);
+	const auto result = ::GetFileAttributesW(filePath.CString());
 
 	return (result != INVALID_ID) && (result & FILE_ATTRIBUTE_READONLY);
 }
 
 /*!**********************************************************************
 *  @brief     ファイル, もしくはディレクトリのリンク(参照)の種類を返します.
-*  @param[in] const tchar* ファイルパス, もしくはディレクトリ
+*  @param[in] const tstring& ファイルパス, もしくはディレクトリ
 *  @return    file::LinkType リンクの種類
 *************************************************************************/
-platform::core::file::LinkType IFileSystem::LinkType(const tchar* path) const
+platform::core::file::LinkType IFileSystem::LinkType(const tstring& path) const
 {
 	using enum platform::core::file::LinkType;
 
 	/*-------------------------------------------------------------------
 	-        ディレクトリかファイルかを判定します.
 	---------------------------------------------------------------------*/
-	const auto attribute = ::GetFileAttributesW(path);
+	const auto attribute = ::GetFileAttributesW(path.CString());
 
 	if (attribute == INVALID_FILE_ATTRIBUTES)
 	{
@@ -315,7 +315,7 @@ platform::core::file::LinkType IFileSystem::LinkType(const tchar* path) const
 		flagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
 	}
 
-	const auto fileHandle = ::CreateFileW(path, desiredAccess, FILE_SHARE_READ, NULL, OPEN_EXISTING, flagsAndAttributes, NULL);
+	const auto fileHandle = ::CreateFileW(path.CString(), desiredAccess, FILE_SHARE_READ, NULL, OPEN_EXISTING, flagsAndAttributes, NULL);
 
 	/*-------------------------------------------------------------------
 	-        ファイルが存在しない
@@ -384,24 +384,37 @@ platform::core::file::LinkType IFileSystem::LinkType(const tchar* path) const
 
 /*!**********************************************************************
 *  @brief     指定したファイルパスの拡張子を取得します
-*  @param[in] const tchar* ファイルパス
-*  @return    const tchar* 拡張子です. (見つからない場合はnullptrを返します)
+*  @param[in] const tstring& ファイルパス
+*  @return    gu::tstring 拡張子です. (見つからない場合はnullptrを返します)
 *************************************************************************/
-gu::tstring IFileSystem::GetExtension(const gu::tchar* filePath) const
+gu::tstring IFileSystem::GetExtension(const gu::tstring& filePath) const
 {
-	return gu::tstring(::PathFindExtensionW(filePath));
+	return gu::tstring(::PathFindExtensionW(filePath.CString()));
 }
 
 /*!**********************************************************************
 *  @brief     ディレクトリ(ファイル名の手前まで)を取得します.
-*  @param[in] const tchar* ファイルパス
-*  @return    const char* ファイル名手前までのディレクトリ
+*  @param[in] const tstring& ファイルパス
+*  @return    gu::tstring ファイル名手前までのディレクトリ
 *************************************************************************/
-gu::tstring IFileSystem::GetDirectory(const gu::tchar* filePath) const
+gu::tstring IFileSystem::GetDirectory(const gu::tstring& filePath) const
 {
 	const auto stringPath = tstring(filePath);
 	const auto index      = stringPath.ReverseFind(SP("/"));
 	return stringPath.SubString(0, index + 1);
+}
+
+/*!**********************************************************************
+*  @brief     ディレクトリを取り去ってファイル名を取得します
+*  @param[in] const tstring& ディレクトリを含めたファイル名
+*  @return    gu::tstring
+*************************************************************************/
+gu::tstring IFileSystem::GetFileName(const gu::tstring& filePath) const
+{
+	const auto stringPath = tstring(filePath);
+	const auto slashIndex = stringPath.ReverseFind(SP("/"));
+	const auto dotIndex   = stringPath.ReverseFind(SP("."));
+	return stringPath.SubString(slashIndex + 1, dotIndex - 1);
 }
 
 /*!**********************************************************************
@@ -432,24 +445,24 @@ gu::tstring IFileSystem::GetProcessDirectory() const
 /*!**********************************************************************
 *  @brief     対象のディレクトリ直下にハードリンクを作成します. @n
 *             ハードリンクは, ファイルの内容を共有するファイルのことです.
-*  @param[in] const tchar* リンクを行いたい元のファイルパス
-*  @param[in] const tchar* リンクを作成したいファイルパス
+*  @param[in] const tstring& リンクを行いたい元のファイルパス
+*  @param[in] const tstring& リンクを作成したいファイルパス
 *  @return    bool
 *************************************************************************/
-bool IFileSystem::CreateHardLink(const gu::tchar* sourcePath, const gu::tchar* newHardLinkPath) const
+bool IFileSystem::CreateHardLink(const gu::tstring& sourcePath, const gu::tstring& newHardLinkPath) const
 {
-	return !!::CreateHardLinkW(newHardLinkPath, sourcePath, NULL);
+	return !!::CreateHardLinkW(newHardLinkPath.CString(), sourcePath.CString(), NULL);
 }
 
 /*!**********************************************************************
 *  @brief     対象のディレクトリ直下にシンボリックリンクを作成します. @n
 *             シンボリックリンクは, ファイルのパスを参照するファイルのことです.
-*  @param[in] const tchar* リンクを行いたい元のファイルパス
-*  @param[in] const tchar* リンクを作成したいファイルパス
+*  @param[in] const tstring& リンクを行いたい元のファイルパス
+*  @param[in] const tstring& リンクを作成したいファイルパス
 *  @return    bool
 *************************************************************************/
-bool IFileSystem::CreateSymbolicLink(const gu::tchar* sourcePath, const gu::tchar* newSymbolicLinkPath) const
+bool IFileSystem::CreateSymbolicLink(const gu::tstring& sourcePath, const gu::tstring& newSymbolicLinkPath) const
 {
-	return !!::CreateSymbolicLinkW(newSymbolicLinkPath, sourcePath, 0);
+	return !!::CreateSymbolicLinkW(newSymbolicLinkPath.CString(), sourcePath.CString(), 0);
 }
 #pragma endregion Public Function
