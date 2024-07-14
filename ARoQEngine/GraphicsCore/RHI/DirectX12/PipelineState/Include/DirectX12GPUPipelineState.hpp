@@ -34,83 +34,146 @@ namespace rhi::directX12
 	class GPUGraphicsPipelineState : public rhi::core::GPUGraphicsPipelineState
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		void CompleteSetting() override;
+		#pragma region Public Function
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief     GraphicsPipelineが作成できたタイミングで動作させます. Descriptorを作成します.
+		*  @param[in] const gu::tstring デバッグ表示名
+		*  @return    void
+		*************************************************************************/
+		void CompleteSetting(const gu::tstring& name) override;
+
+		#pragma endregion
+
+		#pragma region Public Property
+
+		/*!**********************************************************************
+		*  @brief     DirectX12で使用するGraphics Pipelineのポインタ
+		*  @param[in] void
+		*  @return    PipelineStateComPtr
+		*************************************************************************/
 		PipelineStateComPtr GetPipeline() const noexcept { return _graphicsPipeline; }
-		
-		// @brief : This function is needed to call after calling completeSetting function 
+
+		/*!**********************************************************************
+		*  @brief     自身のPSOを再生成する際に使用します. PSOの一部でキャッシュを使用することで高速化を図ります.
+		*  @param[in] void
+		*  @return    BlobComPtr
+		*************************************************************************/
+		__forceinline BlobComPtr GetCachePSO() const noexcept { return _cachePSO; }
+
+		/*!**********************************************************************
+		*  @brief     デバッグ時に使用する名前
+		*  @param[in] const gu::tstring& name
+		*  @return    void
+		*************************************************************************/
 		void SetName(const gu::tstring& name) override { _graphicsPipeline->SetName(name.CString());}
+
+		#pragma endregion
 		
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
+
+		/*! @brief デフォルトコンストラクタ*/
 		GPUGraphicsPipelineState() = default;
 		
+		/*! @brief デストラクタ*/
 		~GPUGraphicsPipelineState() = default;
 		
+		/*! @brief RenderPassとResourceLayoutを使って初期化*/
 		explicit GPUGraphicsPipelineState(
 			const gu::SharedPointer<core::RHIDevice>& device,
 			const gu::SharedPointer<core::RHIRenderPass>&renderPass,
 			const gu::SharedPointer<core::RHIResourceLayout>& layout) : core::GPUGraphicsPipelineState(device, renderPass,layout){};
-	
-	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		#pragma endregion
+
+	protected:
+
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
+
+		/*! @brief DirectX12を使用したGraphics Pipeline*/
 		PipelineStateComPtr _graphicsPipeline = nullptr;
 
+		/*! @brief パイプライン生成の際に使用するキャッシュ*/
+		BlobComPtr _cachePSO = nullptr;
+
+		#pragma endregion
 	};
 
 	/****************************************************************************
-	*				  			GPUBlendState
+	*				  			GPUComputePipelineState
 	****************************************************************************/
-	/* @class     GPUBlendState
-	*  @brief     BlendState
+	/* @brief  Compute Shaderを使用する場合のCompute pipeline state
 	*****************************************************************************/
 	class GPUComputePipelineState : public rhi::core::GPUComputePipelineState
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		void CompleteSetting() override;
+		#pragma region Public Function
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief     ComputePipelineが作成できたタイミングで動作させます. Descriptorを作成します.
+		*  @param[in] const gu::tstring デバッグ表示名
+		*  @return    void
+		*************************************************************************/
+		virtual void CompleteSetting(const gu::tstring& name) override;
+
+		#pragma endregion
+
+		#pragma region Public Property
+		/*!**********************************************************************
+		*  @brief     DirectX12で使用するGraphics Pipelineのポインタ
+		*  @param[in] void
+		*  @return    PipelineStateComPtr
+		*************************************************************************/
 		PipelineStateComPtr GetPipeline() const noexcept { return _computePipeline; }
 		
-		void SetName(const gu::tstring& name) override;
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		/*!**********************************************************************
+		*  @brief     自身のPSOを再生成する際に使用します. PSOの一部でキャッシュを使用することで高速化を図ります. 
+		*  @param[in] void
+		*  @return    BlobComPtr
+		*************************************************************************/
+		__forceinline BlobComPtr GetCachePSO() const noexcept { return _cachePSO; }
+
+		/*!**********************************************************************
+		*  @brief     デバッグ時に使用する名前
+		*  @param[in] const gu::tstring& name
+		*  @return    void
+		*************************************************************************/
+		virtual void SetName(const gu::tstring& name) override;
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+
+		/*! @brief デフォルトコンストラクタ*/
 		GPUComputePipelineState() = default;
 		
+		/*! @brief デストラクタ*/
 		~GPUComputePipelineState() = default;
 		
+		/*! @brief 論理デバイスとResourceLayoutを使って初期化*/
 		explicit GPUComputePipelineState(
 			const gu::SharedPointer<core::RHIDevice>& device,
 		const gu::SharedPointer<core::RHIResourceLayout>& layout = nullptr) : core::GPUComputePipelineState(device, layout){};
-	
-	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+	protected:
+		#pragma region Protected Constructor and Destructor
+		#pragma endregion
+
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
+		
+		/* @brief DirectX12で使用するCompute Pipeline*/
 		PipelineStateComPtr _computePipeline = nullptr;
+
+		/*! @brief パイプライン生成の際に使用するキャッシュ https://logicalbeat.jp/blog/6220/ */
+		BlobComPtr _cachePSO = nullptr;
+		#pragma endregion
 
 	};
 }

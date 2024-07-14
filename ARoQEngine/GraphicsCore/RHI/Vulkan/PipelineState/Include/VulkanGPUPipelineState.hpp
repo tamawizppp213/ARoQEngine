@@ -35,7 +35,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void CompleteSetting() override;
+		void CompleteSetting(const gu::tstring& name) override;
 
 		/****************************************************************************
 		**                Public Property
@@ -82,7 +82,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void CompleteSetting() override;
+		void CompleteSetting(const gu::tstring& name) override;
 
 		/****************************************************************************
 		**                Public Property

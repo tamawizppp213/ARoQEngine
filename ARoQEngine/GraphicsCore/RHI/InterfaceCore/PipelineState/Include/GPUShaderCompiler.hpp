@@ -56,6 +56,7 @@ namespace rhi::core
 	{
 	public:
 		static constexpr gu::float32 NEWEST_VERSION = 6.6f;
+
 		#pragma region Public Function
 
 		#pragma endregion 
@@ -84,7 +85,6 @@ namespace rhi::core
 
 		/*! @brief デバッグ内容を出力するディレクトリ*/
 		gu::tstring DebugOutputDirectory = SP("");
-
 
 		#pragma endregion 
 

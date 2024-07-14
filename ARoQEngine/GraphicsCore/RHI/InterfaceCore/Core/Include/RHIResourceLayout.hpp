@@ -29,8 +29,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			RHIResourceLayoutDesc
 	****************************************************************************/
-	/* @class     RHIResourceLayoutDesc
-	*  @brief     Resource layout descriptor (set up how to bind gpu resource)
+	/* @brief  Resource layout descriptor (set up how to bind gpu resource)
 	*****************************************************************************/
 	struct RHIResourceLayoutDesc
 	{
@@ -81,8 +80,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			RHIResourceLayout
 	****************************************************************************/
-	/* @class     RHIResourceLayout
-	*  @brief     Resource layout (set up how to bind gpu resource)
+	/*  @brief  GPUのリソースのバインド方法を設定するリソースレイアウト
 	*****************************************************************************/
 	class RHIResourceLayout : public gu::NonCopyable
 	{
@@ -188,6 +186,7 @@ namespace rhi::core
 		/*! @brief 論理デバイス*/
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 		
+		/*! @brief ResourceLayoutの*/
 		RHIResourceLayoutDesc _desc = {};
 		#pragma endregion
 	};

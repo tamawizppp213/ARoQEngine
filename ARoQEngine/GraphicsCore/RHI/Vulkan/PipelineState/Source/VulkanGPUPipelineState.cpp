@@ -45,7 +45,7 @@ GPUGraphicsPipelineState::~GPUGraphicsPipelineState()
 	_dynamicStates.Clear(); _dynamicStates.ShrinkToFit();
 }
 
-void GPUGraphicsPipelineState::CompleteSetting()
+void GPUGraphicsPipelineState::CompleteSetting(const gu::tstring& name)
 {
 	/*-------------------------------------------------------------------
 	-           Set vk resources 
@@ -159,7 +159,7 @@ void GPUGraphicsPipelineState::SetName(const gu::tstring& name)
 #pragma endregion Graphcis Pipeline State
 
 #pragma region Compute Pipeline State
-void GPUComputePipelineState::CompleteSetting()
+void GPUComputePipelineState::CompleteSetting(const gu::tstring& name)
 {
 	if (!_computeShaderState) { OutputDebugStringA("compute shader state is set nullptr\n");  return; }
 
