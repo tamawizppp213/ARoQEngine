@@ -30,7 +30,19 @@ namespace rhi::core
 	*****************************************************************************/
 	enum class ShaderCompilerFlags : gu::uint64
 	{
-		None = 0,
+		None                 = 0,
+		Debug                = 1 << 0, //!< コンパイラに, デバッグファイル/行/型/シンボルを出力コードに挿入するように指示
+		SkipValidation       = 1 << 1, //!< シェーダーの検証を無効化します. 
+		LowLevelOptimization = 1 << 2, //!< コンパイラは実行時間とコードサイズのバランスを取るように最適化O1)
+		WarningAsErrors      = 1 << 3, //!< 警告をエラーとして扱います
+		NoWarnings           = 1 << 4, //!< 警告を出力しない
+		StrictMode           = 1 << 4, //!< 厳格モードを使用します
+		PreferFlowControl    = 1 << 5, //!< 条件分岐などのフロー制御構造を優先します
+		AvoidFlowControl     = 1 << 6, //!< 条件分岐などのフロー制御構造を避けます
+		GenerateDebugSymbol  = 1 << 7, //!< PDB出力の際に使用します. デバッグシンボルを生成します
+		DebugNameForSource   = 1 << 8, //!< デバッグPDBを出力する場合, ハッシュにソースファイルとバイナリを指定します
+		DebugNameForBinary   = 1 << 9, //!< デバッグPDBを出力する場合, ハッシュにバイナリファイル名を使用します.
+		AutoBindingSpace     = 1 << 10,//!< 自動でBindingSpaceを決定する
 	};
 
 	ENUM_CLASS_FLAGS(ShaderCompilerFlags);

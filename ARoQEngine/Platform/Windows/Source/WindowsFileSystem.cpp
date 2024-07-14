@@ -412,9 +412,18 @@ gu::tstring IFileSystem::GetDirectory(const gu::tstring& filePath) const
 gu::tstring IFileSystem::GetFileName(const gu::tstring& filePath) const
 {
 	const auto stringPath = tstring(filePath);
-	const auto slashIndex = stringPath.ReverseFind(SP("/"));
-	const auto dotIndex   = stringPath.ReverseFind(SP("."));
-	return stringPath.SubString(slashIndex + 1, dotIndex - 1);
+	if (stringPath.Contains(SP("/"), true))
+	{
+		const auto slashIndex = stringPath.ReverseFind(SP("/"));
+		const auto dotIndex = stringPath.ReverseFind(SP("."));
+		return stringPath.SubString(slashIndex + 1, dotIndex - slashIndex - 1);
+	}
+	else
+	{
+		const auto slashIndex = stringPath.ReverseFind(SP("\\"));
+		const auto dotIndex = stringPath.ReverseFind(SP("."));
+		return stringPath.SubString(slashIndex + 1, dotIndex - slashIndex - 1);
+	}
 }
 
 /*!**********************************************************************

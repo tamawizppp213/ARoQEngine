@@ -17,6 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+struct IDxcBlob;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
@@ -49,11 +50,18 @@ namespace rhi::directX12
 		#pragma region Public Property
 
 		/*!**********************************************************************
-		*  @brief     DirectX12のBlobを返します.
+		*  @brief     DirectX12のソースコードのBlobデータを返します.
 		*  @param[in] void
-		*  @return    BlobComPtr : DirectX12のBlob
+		*  @return    BlobComPtr : DirectX12のソースコード
 		*************************************************************************/
-		BlobComPtr GetDxBlob() const noexcept { return _dxBlob; }
+		BlobComPtr GetSourceBlob() const noexcept { return _sourceBlob; }
+
+		/*!**********************************************************************
+		*  @brief     DirectX12のReflectionのBlobデータを返します.
+		*  @param[in] void
+		*  @return    BlobComPtr : DirectX12のReflectionのBlob
+		*************************************************************************/
+		BlobComPtr GetReflectionBlob() const noexcept { return _reflectionBlob; }
 
 		/*!**********************************************************************
 		*  @brief     DirectX12で使用するShaderByteCodeを返します.
@@ -85,21 +93,30 @@ namespace rhi::directX12
 		#pragma region Protected Function
 		/*!**********************************************************************
 		*  @brief     ShaderModel6.0以上で動作します.DXILという中間言語にコンパイルします 
-		*  @param[in] const gu::tstring& fileName : ファイル名
-		*  @param[in] const gu::tstring& entryPoint : エントリーポイント
-		*  @param[in] const gu::tstring& target : シェーダーターゲット
-		*  @param[in] includeを行うディレクトリのリスト
-		*  @param[in] defineマクロを使用するリスト
-		*  @return    BlobComPtr : DirectX12のBlob
+		*  @param[in] const core::ShaderCompilerOption	
+		*  @return    void
 		*************************************************************************/
-		BlobComPtr DxilCompile(const gu::tstring& fileName, const gu::tstring& entryPoint, const gu::tstring& target, const gu::DynamicArray<gu::tstring>& includeDirectories, const gu::DynamicArray<gu::tstring>& defines);
+		void DXILCompile(const core::ShaderCompilerOption& option);
 		
+		/*!**********************************************************************
+		*  @brief     ShaderModel6.0以上で動作します. https://simoncoenen.com/blog/programming/graphics/DxcCompiling
+		*  @param[in] const core::ShaderCompilerOption& 
+		*  @param[out]gu::DynamicArray<const gu::tchar*>& コマンドラインの引数 
+		*  @return    void
+		*************************************************************************/
+		void SetupDXILArguments(const core::ShaderCompilerOption& option, gu::DynamicArray<const gu::tchar*>& arguments);
+
 		BlobComPtr DxCompile(const gu::tstring& fileName, const D3D_SHADER_MACRO* defines, const gu::tstring& entryPoint, const gu::tstring& target);
 		
 		#pragma endregion
 
 		#pragma region Protected Property
-		BlobComPtr _dxBlob = nullptr;
+		/*! @brief ソースコードのバッファ*/
+		BlobComPtr _sourceBlob = nullptr;
+
+		/*! @brief リフレクションデータを保持するバッファ*/
+		BlobComPtr _reflectionBlob = nullptr;
+ 
 		#pragma endregion
 	};
 }
