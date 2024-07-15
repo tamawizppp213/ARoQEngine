@@ -27,7 +27,7 @@
 /* @class     Class
 *  @brief     temp
 *****************************************************************************/
-namespace gc::rendering
+namespace engine
 {
 	struct GBufferDesc
 	{

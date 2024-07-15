@@ -28,14 +28,14 @@
 using namespace sample;
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc;
+using namespace engine;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 namespace
 {
-	gu::SharedPointer<gc::rendering::ScreenCapture> _capture = nullptr;
+	gu::SharedPointer<ScreenCapture> _capture = nullptr;
 }
 SampleColorChange::SampleColorChange()
 {
@@ -90,8 +90,8 @@ void SampleColorChange::Draw()
 	const auto frameBuffer = _engine->GetFrameBuffer(frameIndex);
 
 	commandList->SetViewportAndScissor(
-		core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
-		core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
+		rhi::core::Viewport(0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		rhi::core::ScissorRect(0, 0, (long)Screen::GetScreenWidth(), (long)Screen::GetScreenHeight()));
 
 	_skybox->Draw(_camera->GetResourceView());
 
@@ -179,7 +179,7 @@ void SampleColorChange::LoadMaterials()
 	_vignette = gu::MakeShared<Vignette>(_engine, vignetteSettings);
 
 	_whiteBalance = gu::MakeShared<WhiteBalance>(_engine, 1.0f, 0.0f);
-	_capture = gu::MakeShared<gc::rendering::ScreenCapture>(_engine, _gameInput.GetKeyboard());
+	_capture = gu::MakeShared<ScreenCapture>(_engine, _gameInput.GetKeyboard());
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

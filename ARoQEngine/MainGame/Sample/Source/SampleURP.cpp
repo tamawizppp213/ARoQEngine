@@ -30,9 +30,7 @@
 using namespace sample;
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc;
-using namespace gc::core;
-using namespace gc::rendering;
+using namespace engine;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -185,7 +183,7 @@ void SampleURP::LoadMaterials()
 	/*-------------------------------------------------------------------
 	-           Universal Rendering Pipeline
 	---------------------------------------------------------------------*/
-	_renderer = gu::MakeShared<gc::URP>(_engine, _gameTimer);
+	_renderer = gu::MakeShared<URP>(_engine, _gameTimer);
 	_renderer->SetSceneView(_camera->GetResourceView());
 	_renderer->Add(Forward, _model);
 	_renderer->Add(Forward, _floor);

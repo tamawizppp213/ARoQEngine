@@ -17,20 +17,20 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::rendering;
+using namespace engine;
 using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const GBufferDesc& desc, [[maybe_unused]]const gu::tstring& addName)
+GBufferBase::GBufferBase(const LowLevelGraphicsEnginePtr& engine, const GBufferDesc& desc, [[maybe_unused]]const gu::tstring& addName)
 	: _engine(engine), _desc(desc)
 {
 	
 }
 
-GBuffer::~GBuffer()
+GBufferBase::~GBufferBase()
 {
 	_frameBuffers.Clear();
 	_frameBuffers.ShrinkToFit();
@@ -39,23 +39,23 @@ GBuffer::~GBuffer()
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function
-void GBuffer::Add(const GameModelPtr& model)
+void GBufferBase::Add(const GameModelPtr& model)
 {
 	_gameModels.Push(model);
 }
 
-void GBuffer::Clear()
+void GBufferBase::Clear()
 {
 	_gameModels.Clear();
 	_gameModels.ShrinkToFit();
 }
 
-void GBuffer::Clear(const GameModelPtr& model)
+void GBufferBase::Clear(const GameModelPtr& model)
 {
 	_gameModels.Remove(model);
 }
 
-GBuffer::TexturePtr GBuffer::GetRenderedTexture(const std::uint32_t index) const noexcept
+GBufferBase::TexturePtr GBufferBase::GetRenderedTexture(const std::uint32_t index) const noexcept
 {
 	const auto& frameIndex = _engine->GetCurrentFrameIndex();
 	const auto& frameBuffer = _frameBuffers[frameIndex];
@@ -64,7 +64,7 @@ GBuffer::TexturePtr GBuffer::GetRenderedTexture(const std::uint32_t index) const
 	return frameBuffer->GetRenderTargets()[index];
 }
 
-GBuffer::GPUResourceViewPtr GBuffer::GetRenderedTextureView(const std::uint32_t index) const noexcept
+GBufferBase::GPUResourceViewPtr GBufferBase::GetRenderedTextureView(const std::uint32_t index) const noexcept
 {
 	const auto& frameIndex = _engine->GetCurrentFrameIndex();
 	const auto& frameBuffer = _frameBuffers[frameIndex];

@@ -31,16 +31,12 @@ namespace rhi::core
 	class GPUTexture;
 }
 
-namespace gc::core
-{
-	class GameModel;
-}
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::basepass
+namespace engine
 {
-
+	class GameModel;
 	/****************************************************************************
 	*				  			TemplateClass
 	****************************************************************************/
@@ -56,7 +52,7 @@ namespace gc::basepass
 		using FrameBufferPtr     = gu::SharedPointer<rhi::core::RHIFrameBuffer>;
 		using TexturePtr         = gu::SharedPointer<rhi::core::GPUTexture>;
 		using RenderPassPtr      = gu::SharedPointer<rhi::core::RHIRenderPass>;
-		using GameModelPtr       = gu::SharedPointer<gc::core::GameModel>;
+		using GameModelPtr       = gu::SharedPointer<GameModel>;
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 	public:
 		/****************************************************************************

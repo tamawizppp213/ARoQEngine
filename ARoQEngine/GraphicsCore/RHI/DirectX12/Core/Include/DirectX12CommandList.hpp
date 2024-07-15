@@ -91,8 +91,8 @@ namespace rhi::directX12
 		#pragma region Graphics Command Function
 		/*!**********************************************************************
 		*  @brief     深度が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させます.
-		*  @param[in] const float : 最小の深度情報
-		*  @param[in] const float : 最大の深度情報
+		*  @param[in] const gu::float32 : 最小の深度情報
+		*  @param[in] const gu::float32 : 最大の深度情報
 		*  @return    void
 		*************************************************************************/
 		virtual void SetDepthBounds(const float minDepth, const float maxDepth) override;

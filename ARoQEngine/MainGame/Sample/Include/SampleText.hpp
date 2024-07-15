@@ -26,7 +26,7 @@ namespace rhi::core
 	class GPUResourceCache;
 	class GPUResourceView;
 }
-namespace gc::ui
+namespace engine
 {
 	class Font;
 	class Text;
@@ -43,9 +43,9 @@ namespace sample
 	*****************************************************************************/
 	class SampleText : public Scene
 	{
-		using UIRendererPtr = gu::SharedPointer<gc::ui::UIRenderer>;
-		using TextPtr       = gu::SharedPointer<gc::ui::Text>;
-		using FontPtr       = gu::SharedPointer<gc::ui::Font>;
+		using UIRendererPtr = gu::SharedPointer<engine::UIRenderer>;
+		using TextPtr       = gu::SharedPointer<engine::Text>;
+		using FontPtr       = gu::SharedPointer<engine::Font>;
 		using GPUResourceCachePtr = gu::SharedPointer<rhi::core::GPUResourceCache>;
 		using GPUResourceViewPtr = gu::SharedPointer<rhi::core::GPUResourceView>;
 	public:

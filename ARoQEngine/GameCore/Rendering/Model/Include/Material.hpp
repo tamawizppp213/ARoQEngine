@@ -35,7 +35,7 @@ namespace rhi::core
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gc::core
+namespace engine
 {
 	enum class UsageTexture
 	{

@@ -22,7 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc::ui;
+using namespace engine;
 using namespace gm;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -111,7 +111,7 @@ void UIRenderer::Clear()
 //	
 //}
 
-void UIRenderer::AddFrameObjects(const gu::DynamicArray<ui::Image>& images, const ResourceViewPtr& view)
+void UIRenderer::AddFrameObjects(const gu::DynamicArray<Image>& images, const ResourceViewPtr& view)
 {
 	/*-------------------------------------------------------------------
 	-               sprite count check

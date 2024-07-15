@@ -22,19 +22,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
 class GameTimer;
-namespace gc
+
+namespace engine
 {
 	class Camera;
-}
-namespace gc::core
-{
 	class GameModel;
 	class GameWorldInfo;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::rendering
+namespace engine
 {
 	class ShadowMap;
 
@@ -63,10 +61,10 @@ namespace gc::rendering
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
-		using GameModelPtr              = gu::SharedPointer<gc::core::GameModel>;
-		using CameraPtr                 = gu::SharedPointer<gc::Camera>;
+		using GameModelPtr              = gu::SharedPointer<GameModel>;
+		using CameraPtr                 = gu::SharedPointer<Camera>;
 		using ShadowMapPtr              = gu::SharedPointer<ShadowMap>;
-		using GameWorldInfoPtr          = gu::SharedPointer<gc::core::GameWorldInfo>;
+		using GameWorldInfoPtr          = gu::SharedPointer<GameWorldInfo>;
 
 	public:
 

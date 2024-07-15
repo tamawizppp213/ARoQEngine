@@ -23,7 +23,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-using namespace gc;
+using namespace engine;
 using namespace rhi;
 using namespace rhi::core;
 
@@ -61,7 +61,7 @@ Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettin
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function
-void Vignette::OnResize(int newWidth, int newHeight)
+void Vignette::OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight)
 {
 	printf("width: %d, height: %d\n", newWidth, newHeight);
 }

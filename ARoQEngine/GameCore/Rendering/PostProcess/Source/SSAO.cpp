@@ -26,7 +26,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::core;
-using namespace gc;
+using namespace engine;
 using namespace gm;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ SSAO::SSAO(const LowLevelGraphicsEnginePtr& engine, const ResourceViewPtr& norma
 	PrepareVertexAndIndexBuffer(name);
 	PreparePipelineState(name);
 
-	_gaussianBlur = gu::MakeShared<gc::GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), false);
+	_gaussianBlur = gu::MakeShared<engine::GaussianBlur>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), false);
 }
 
 SSAO::~SSAO()
@@ -362,7 +362,7 @@ void SSAO::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
-	core::PrimitiveMesh rectMesh = core::PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
+	PrimitiveMesh rectMesh = PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/

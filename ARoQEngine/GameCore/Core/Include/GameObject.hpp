@@ -25,7 +25,7 @@ class LowLevelGraphicsEngine;
 //								Class 
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gc::core
+namespace engine
 {
 	class GameObject;
 	enum class ObjectType

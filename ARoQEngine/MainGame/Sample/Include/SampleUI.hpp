@@ -26,7 +26,7 @@ namespace rhi::core
 	class GPUResourceCache;
 	class GPUResourceView;
 }
-namespace gc::ui
+namespace engine
 {
 	class Slider;
 	class Button;
@@ -45,11 +45,11 @@ namespace sample
 	*****************************************************************************/
 	class SampleUI : public Scene
 	{
-		using UIRendererPtr       = gu::SharedPointer<gc::ui::UIRenderer>;
-		using ImagePtr            = gu::SharedPointer<gc::ui::Image>;
-		using ButtonPtr           = gu::SharedPointer<gc::ui::Button>;
-		using SliderPtr           = gu::SharedPointer<gc::ui::Slider>;
-		using FontPtr             = gu::SharedPointer<gc::ui::Font>;
+		using UIRendererPtr       = gu::SharedPointer<engine::UIRenderer>;
+		using ImagePtr            = gu::SharedPointer<engine::Image>;
+		using ButtonPtr           = gu::SharedPointer<engine::Button>;
+		using SliderPtr           = gu::SharedPointer<engine::Slider>;
+		using FontPtr             = gu::SharedPointer<engine::Font>;
 		using GPUResourceCachePtr = gu::SharedPointer<rhi::core::GPUResourceCache>;
 		using GPUResourceViewPtr  = gu::SharedPointer<rhi::core::GPUResourceView>;
 	public:

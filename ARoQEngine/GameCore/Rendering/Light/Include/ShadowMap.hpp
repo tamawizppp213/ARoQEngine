@@ -19,19 +19,15 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
-namespace gc
+namespace engine
 {
 	class GaussianBlur;
-
-	namespace core
-	{
-		class GameModel;
-	}
+	class GameModel;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::rendering
+namespace engine
 {
 	/****************************************************************************
 	*				  			   ShadowMap
@@ -43,8 +39,8 @@ namespace gc::rendering
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
-		using GameModelPtr              = gu::SharedPointer<gc::core::GameModel>;
-		using GaussianBlurPtr           = gu::SharedPointer<gc::GaussianBlur>;
+		using GameModelPtr              = gu::SharedPointer<GameModel>;
+		using GaussianBlurPtr           = gu::SharedPointer<GaussianBlur>;
 	public:
 		/****************************************************************************
 		**                Public Function

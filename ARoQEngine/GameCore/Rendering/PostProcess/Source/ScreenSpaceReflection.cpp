@@ -24,7 +24,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-using namespace gc;
+using namespace engine;
 using namespace rhi;
 using namespace rhi::core;
 
@@ -187,7 +187,7 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addNa
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
-	core::PrimitiveMesh rectMesh = core::PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
+	PrimitiveMesh rectMesh = PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/

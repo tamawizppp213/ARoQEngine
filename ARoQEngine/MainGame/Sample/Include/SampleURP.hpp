@@ -16,13 +16,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	class SkyDome;
 	class Camera;
 	class URP;
 }
-namespace gc::core
+namespace engine
 {
 	class GameModel;
 }
@@ -40,10 +40,10 @@ namespace sample
 	*****************************************************************************/
 	class SampleURP : public Scene
 	{
-		using RendererPtr = gu::SharedPointer<gc::URP>;
-		using SkyDomePtr  = gu::SharedPointer<gc::SkyDome>;
-		using CameraPtr   = gu::SharedPointer<gc::Camera>;
-		using ModelPtr    = gu::SharedPointer<gc::core::GameModel>;
+		using RendererPtr = gu::SharedPointer<engine::URP>;
+		using SkyDomePtr  = gu::SharedPointer<engine::SkyDome>;
+		using CameraPtr   = gu::SharedPointer<engine::Camera>;
+		using ModelPtr    = gu::SharedPointer<engine::GameModel>;
 	public:
 		/****************************************************************************
 		**                Public Function

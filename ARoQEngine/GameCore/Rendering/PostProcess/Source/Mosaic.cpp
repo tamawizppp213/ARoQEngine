@@ -23,7 +23,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-using namespace gc;
+using namespace engine;
 using namespace rhi;
 using namespace rhi::core;
 
@@ -65,7 +65,7 @@ Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, c
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function
-void Mosaic::OnResize(int newWidth, int newHeight)
+void Mosaic::OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight)
 {
 	printf("width: %d, height: %d\n", newWidth, newHeight);
 }

@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::basepass
+namespace engine
 {
 	/****************************************************************************
 	*				  			GBuffer
@@ -29,7 +29,7 @@ namespace gc::basepass
 	/* @class     GBuffer
 	*  @brief     GBuffer (普段はDefaultTypeを使用するが, カスタマイズも可能にしている.)
 	*****************************************************************************/
-	class GBuffer : public gc::rendering::GBuffer
+	class GBuffer : public GBufferBase
 	{
 	public:
 		enum BufferType
@@ -55,7 +55,7 @@ namespace gc::basepass
 		GBuffer() = default;
 		
 		GBuffer(const LowLevelGraphicsEnginePtr& engine,
-			const gc::rendering::GBufferDesc& desc = gc::rendering::GBufferDesc((std::uint64_t)BufferType::CountOf),
+			const GBufferDesc& desc = GBufferDesc((std::uint64_t)BufferType::CountOf),
 			const gu::tstring& addName = SP(""));
 
 		~GBuffer();

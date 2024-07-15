@@ -32,14 +32,14 @@ namespace rhi::core
 	class GPUGraphicsPipelineState;
 }
 
-namespace gc::core
+namespace engine
 {
 	class GameModel;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::rendering
+namespace engine
 {
 	/****************************************************************************
 	*				  			GBuffer
@@ -47,11 +47,11 @@ namespace gc::rendering
 	/* @class     GBuffer
 	*  @brief     GBuffer (普段はDefaultTypeを使用するが, カスタマイズも可能にしている.)
 	*****************************************************************************/
-	class GBuffer : public gu::NonCopyable
+	class GBufferBase : public gu::NonCopyable
 	{
 	protected:
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
-		using GameModelPtr              = gu::SharedPointer<gc::core::GameModel>;
+		using GameModelPtr              = gu::SharedPointer<GameModel>;
 		using TexturePtr                = gu::SharedPointer<rhi::core::GPUTexture>;
 		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
 		using FrameBufferPtr            = gu::SharedPointer<rhi::core::RHIFrameBuffer>;
@@ -82,13 +82,13 @@ namespace gc::rendering
 		/****************************************************************************
 		**                Constructor and Destructor
 		*****************************************************************************/
-		GBuffer() = default;
+		GBufferBase() = default;
 
-		GBuffer(const LowLevelGraphicsEnginePtr& engine,
+		GBufferBase(const LowLevelGraphicsEnginePtr& engine,
 			const GBufferDesc& desc = GBufferDesc(),
 			[[maybe_unused]]const gu::tstring& addName = SP(""));
 
-		virtual ~GBuffer();
+		virtual ~GBufferBase();
 
 	protected:
 		/****************************************************************************

@@ -23,10 +23,9 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-using namespace gc;
+using namespace engine;
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc::core;
 
 namespace
 {
@@ -90,7 +89,7 @@ ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEngin
 * 
 *  @return    void
 *****************************************************************************/
-void ColorChange::OnResize(int newWidth, int newHeight)
+void ColorChange::OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight)
 {
 	printf("width: %d, height: %d\n", newWidth, newHeight);
 }

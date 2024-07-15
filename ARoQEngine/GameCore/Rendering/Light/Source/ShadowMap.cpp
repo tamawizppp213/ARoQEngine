@@ -21,8 +21,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::core;
-using namespace gc::rendering;
+using namespace engine;
 using namespace rhi::core;
 using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +51,7 @@ ShadowMap::ShadowMap(const LowLevelGraphicsEnginePtr& engine, const std::uint32_
 	PrepareRenderResource(width, height, name);
 	PreparePipelineState(name);
 
-	_gaussianBlur = gu::MakeShared<gc::GaussianBlur>(_engine, width, height, false);
+	_gaussianBlur = gu::MakeShared<GaussianBlur>(_engine, width, height, false);
 }
 
 ShadowMap::~ShadowMap()

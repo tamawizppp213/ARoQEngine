@@ -35,7 +35,7 @@ struct Texture;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::ui
+namespace engine
 {
 	/****************************************************************************
 	*				  			UIRenderer
@@ -52,7 +52,7 @@ namespace gc::ui
 		using PipelineStatePtr  = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
 		using ResourceLayoutPtr = gu::SharedPointer<rhi::core::RHIResourceLayout>;
 		using ResourceViewPtr   = gu::SharedPointer<rhi::core::GPUResourceView>;
-		using ImagePtr = gu::SharedPointer<ui::Image>;
+		using ImagePtr = gu::SharedPointer<Image>;
 
 	public:
 		/****************************************************************************
@@ -62,7 +62,7 @@ namespace gc::ui
 
 		/* @brief : Add frame ui objects (image, text etc...)*/
 		//void AddFrameObjects(const gu::DynamicArray<ImagePtr>& images, const ResourceViewPtr& view);
-		void AddFrameObjects(const gu::DynamicArray<ui::Image>& images, const ResourceViewPtr& view);
+		void AddFrameObjects(const gu::DynamicArray<Image>& images, const ResourceViewPtr& view);
 
 		/* @brief : Render all registered frame ui objects*/
 		void Draw();

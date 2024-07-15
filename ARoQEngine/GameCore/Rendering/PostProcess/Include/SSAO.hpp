@@ -21,7 +21,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
-namespace gc
+namespace engine
 {
 	class GaussianBlur;
 };
@@ -37,7 +37,7 @@ namespace rhi::core
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gc
+namespace engine
 {
 	/****************************************************************************
 	*				  			    Class
@@ -75,7 +75,7 @@ namespace gc
 		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
 		using VertexBufferPtr           = gu::SharedPointer<rhi::core::GPUBuffer>;
 		using IndexBufferPtr            = gu::SharedPointer<rhi::core::GPUBuffer>;
-		using GaussianBlurPtr           = gu::SharedPointer<gc::GaussianBlur>;
+		using GaussianBlurPtr           = gu::SharedPointer<engine::GaussianBlur>;
 	public:
 		/****************************************************************************
 		**                Public Function

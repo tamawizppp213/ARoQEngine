@@ -31,7 +31,7 @@ class LowLevelGraphicsEngine;
 /* @class     GaussianBlur
 *  @brief     Gaussian + HalfDownSampling + Bilinear Filter
 *****************************************************************************/
-namespace gc
+namespace engine
 {
 
 	class GaussianBlur : public gu::NonCopyable

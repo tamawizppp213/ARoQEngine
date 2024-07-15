@@ -23,8 +23,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc;
-using namespace gc::basepass;
+using namespace engine;
 using namespace rhi::core;
 
 namespace
@@ -40,16 +39,16 @@ _gameTimer(gameTimer)
 {
 	_zPrepass = gu::MakeShared<ZPrepass>(_engine, Screen::GetScreenWidth(), Screen::GetScreenHeight(), L"URP");
 
-	_gBuffer = gu::MakeShared<GBuffer>(engine, gc::rendering::GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
+	_gBuffer = gu::MakeShared<GBuffer>(engine, GBufferDesc((std::uint64_t)GBuffer::BufferType::CountOf), L"URP");
 
 	_ssao = gu::MakeShared<SSAO>(engine, _gBuffer->GetRenderedTextureView(1), _zPrepass->GetRenderedTextureView());
 	
-	const auto shadowDesc = gc::rendering::CascadeShadowDesc();
-	_cascadeShadowMap = gu::MakeShared<rendering::CascadeShadow>(_engine, shadowDesc, L"URP");
+	const auto shadowDesc = CascadeShadowDesc();
+	_cascadeShadowMap = gu::MakeShared<CascadeShadow>(_engine, shadowDesc, L"URP");
 
-	_uiRenderer = gu::MakeShared<ui::UIRenderer>(engine, L"URP", MAX_UI_COUNT);
+	_uiRenderer = gu::MakeShared<UIRenderer>(engine, L"URP", MAX_UI_COUNT);
 
-	_directionalLights = gu::MakeShared<gc::rendering::SceneLightBuffer<gc::rendering::DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
+	_directionalLights = gu::MakeShared<SceneLightBuffer<DirectionalLightData>>(_engine, MAX_DIRECTIONAL_LIGHT, false);
 
 	PrepareModelPipeline();
 }

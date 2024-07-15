@@ -24,8 +24,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::core;
-using namespace gc::rendering;
+using namespace engine;
 using namespace rhi::core;
 using namespace gm;
 //////////////////////////////////////////////////////////////////////////////////
@@ -53,11 +52,11 @@ CascadeShadow::CascadeShadow(const LowLevelGraphicsEnginePtr& engine, const Casc
 	/*-------------------------------------------------------------------
 	-        Shadow map
 	---------------------------------------------------------------------*/
-	_lightCamera = gu::MakeShared<gc::Camera>(_engine);
+	_lightCamera = gu::MakeShared<Camera>(_engine);
 	_shadowMaps.Resize(SHADOW_MAP_COUNT);
 	for (size_t i = 0; i < _shadowMaps.Size(); ++i)
 	{
-		_shadowMaps[i] = gu::MakeShared<rendering::ShadowMap>(_engine, (std::uint32_t)(desc.MaxResolution / pow(2, i)), (std::uint32_t)(desc.MaxResolution / pow(2,i)));
+		_shadowMaps[i] = gu::MakeShared<ShadowMap>(_engine, (std::uint32_t)(desc.MaxResolution / pow(2, i)), (std::uint32_t)(desc.MaxResolution / pow(2,i)));
 	}
 
 	PrepareResourceView (name);

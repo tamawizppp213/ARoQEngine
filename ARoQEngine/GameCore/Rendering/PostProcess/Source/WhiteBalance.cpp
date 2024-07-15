@@ -23,7 +23,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-using namespace gc;
+using namespace engine;
 using namespace rhi;
 using namespace rhi::core;
 
@@ -64,7 +64,7 @@ WhiteBalance::WhiteBalance(const LowLevelGraphicsEnginePtr& engine, const float 
 #pragma endregion Constructor and Destructor
 
 #pragma region Main Function
-void WhiteBalance::OnResize(int newWidth, int newHeight)
+void WhiteBalance::OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight)
 {
 	printf("width: %d, height: %d\n", newWidth, newHeight);
 }

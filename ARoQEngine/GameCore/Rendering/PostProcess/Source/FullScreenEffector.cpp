@@ -18,10 +18,10 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace gm;
-using namespace gc;
+using namespace engine;
+using namespace gu;
 using namespace rhi;
 using namespace rhi::core;
-using namespace gc::core;
 
 //////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -37,7 +37,7 @@ IFullScreenEffector::~IFullScreenEffector()
 	_pipeline.Reset();
 	_resourceLayout.Reset();
 	_resourceViews.Clear(); _resourceViews.ShrinkToFit();
-	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
+	_indexBuffers .Clear(); _indexBuffers .ShrinkToFit();
 	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
 }
 
@@ -75,7 +75,7 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 	// prepare frame count buffer
 	_vertexBuffers.Resize(frameCount);
 	_indexBuffers .Resize(frameCount);
-	for (std::uint32_t i = 0; i < frameCount; ++i)
+	for (uint32 i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------
 		-            Set up

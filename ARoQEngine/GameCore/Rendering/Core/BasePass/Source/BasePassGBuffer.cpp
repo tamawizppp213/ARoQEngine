@@ -21,15 +21,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::basepass;
+using namespace engine;
 using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Constructor and Destructor
-GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const gc::rendering::GBufferDesc& desc, const gu::tstring& addName)
-	: gc::rendering::GBuffer(engine, desc, addName)
+GBuffer::GBuffer(const LowLevelGraphicsEnginePtr& engine, const GBufferDesc& desc, const gu::tstring& addName)
+	: GBufferBase(engine, desc, addName)
 {
 	/*-------------------------------------------------------------------
 	-            Set name

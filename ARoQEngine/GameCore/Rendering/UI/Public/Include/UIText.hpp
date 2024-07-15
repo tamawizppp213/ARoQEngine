@@ -30,7 +30,7 @@ namespace rhi::core
 {
 	class GPUResourceView;
 }
-namespace gc::ui
+namespace engine
 {
 	class Font;
 

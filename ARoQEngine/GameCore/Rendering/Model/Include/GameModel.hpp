@@ -22,7 +22,7 @@ class LowLevelGraphicsEngine;
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::core
+namespace engine
 {
 	class Mesh;
 	class Material;
@@ -33,7 +33,7 @@ namespace gc::core
 	/* @class     Model
 	*  @brief     This class doesn't have the skin mesh. If you use skin mesh, you should use SkinModel class.
 	*****************************************************************************/
-	class GameModel : public gc::core::GameActor
+	class GameModel : public GameActor
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 		using MeshPtr          = gu::SharedPointer<Mesh>; // single mesh pointer

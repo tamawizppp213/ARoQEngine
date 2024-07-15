@@ -27,7 +27,7 @@ namespace rhi::core
 	class RHIResourceLayout;
 	class GPUResourceView;
 }
-namespace gc
+namespace engine
 {
 	struct BloomDesc
 	{

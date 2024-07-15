@@ -32,7 +32,7 @@ namespace rhi::core
 	class GPUBuffer;
 }
 
-namespace gc::core
+namespace engine
 {
 	class GameModel;
 }
@@ -40,7 +40,7 @@ namespace gc::core
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace gc::rendering
+namespace engine
 {
 	/****************************************************************************
 	*				  			    DebugDrawer
@@ -57,7 +57,7 @@ namespace gc::rendering
 		using GPUResourceViewPtr = gu::SharedPointer<rhi::core::GPUResourceView>;
 		using TexturePtr         = gu::SharedPointer<rhi::core::GPUTexture>;
 		using RenderPassPtr      = gu::SharedPointer<rhi::core::RHIRenderPass>;
-		using GameModelPtr       = gu::SharedPointer<gc::core::GameModel>;
+		using GameModelPtr       = gu::SharedPointer<engine::GameModel>;
 	public:
 		/****************************************************************************
 		**                Public Function

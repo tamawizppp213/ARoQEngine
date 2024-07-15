@@ -28,7 +28,7 @@ namespace rhi::core
 	class GPUTexture;
 	class GPUResourceView;
 }
-namespace gc::ui
+namespace engine
 {
 	/****************************************************************************
 	*				  			FontLoader

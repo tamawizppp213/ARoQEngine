@@ -21,7 +21,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace sample;
-using namespace gc::ui;
+using namespace engine;
 using namespace rhi;
 using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
@@ -86,8 +86,8 @@ void SampleUI::Draw()
 	---------------------------------------------------------------------*/
 	const auto commandList = _engine->GetCommandList(CommandListType::Graphics);
 	commandList->SetViewportAndScissor(
-		core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
-		core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
+		rhi::core::Viewport   (0, 0, (float)Screen::GetScreenWidth(), (float)Screen::GetScreenHeight()),
+		rhi::core::ScissorRect(0, 0, (long) Screen::GetScreenWidth(), (long) Screen::GetScreenHeight()));
 
 	_renderer->Draw();
 
@@ -152,7 +152,7 @@ void SampleUI::LoadMaterials()
 	_slider->AddListener(gu::MakeShared<std::function<void(float)>>([&](float value) { return DebugSliderValue(value); }));
 
 	// Create UI Renderer
-	_renderer = gu::MakeShared<gc::ui::UIRenderer>(_engine);
+	_renderer = gu::MakeShared<UIRenderer>(_engine);
 
 	/*-------------------------------------------------------------------
 	-             Close Copy CommandList and Flush CommandQueue

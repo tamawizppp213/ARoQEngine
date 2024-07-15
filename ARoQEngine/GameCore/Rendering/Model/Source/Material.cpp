@@ -20,14 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::core;
+using namespace engine;
 using namespace rhi::core;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
-std::uint64_t gc::core::Material::InstanceCount = 0;
-gc::core::Material::GPUResourceCachePtr gc::core::Material::ResourceCache = nullptr;
+std::uint64_t Material::InstanceCount = 0;
+Material::GPUResourceCachePtr Material::ResourceCache = nullptr;
 
 #pragma region Constructor and Destructor 
 Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaData& bufferInfo, const gu::tstring& addName, 

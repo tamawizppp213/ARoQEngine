@@ -26,7 +26,7 @@ namespace rhi::core
 	class GPUResourceCache;
 	class GPUResourceView;
 }
-namespace gc::ui
+namespace engine
 {
 	class Image;
 	class UIRenderer;
@@ -42,8 +42,8 @@ namespace sample
 	*****************************************************************************/
 	class SampleTexture : public Scene
 	{
-		using UIRendererPtr = gu::SharedPointer<gc::ui::UIRenderer>;
-		using ImagePtr      = gu::SharedPointer<gc::ui::Image>;
+		using UIRendererPtr = gu::SharedPointer<engine::UIRenderer>;
+		using ImagePtr      = gu::SharedPointer<engine::Image>;
 		using GPUResourceCachePtr = gu::SharedPointer<rhi::core::GPUResourceCache>;
 		using GPUResourceViewPtr = gu::SharedPointer<rhi::core::GPUResourceView>;
 	public:

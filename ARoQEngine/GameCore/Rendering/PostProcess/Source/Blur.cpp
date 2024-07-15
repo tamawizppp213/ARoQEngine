@@ -24,7 +24,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc;
+using namespace engine;
 using namespace rhi;
 using namespace rhi::core;
 
@@ -462,7 +462,7 @@ void GaussianBlur::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
-	gc::core::PrimitiveMesh rectMesh = gc::core::PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
+	PrimitiveMesh rectMesh = PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/

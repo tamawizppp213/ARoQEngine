@@ -1,9 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///  @file   FullScreenEffector.hpp
-///  @brief  This class is mainly used for the sake of post effect.
-///          This class provides full screen polygon and drawing interface.
+///  @brief  このクラスは主にポスト・エフェクトのために使われる @n
+///          フルスクリーンのポリゴンを描画するためのインターフェース.
 ///  @author Toide Yutaro
-///  @date   2023_02_20
+///  @date   2024_07_15
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef FULL_SCREEN_EFFECTOR_HPP
@@ -31,13 +31,12 @@ namespace rhi::core
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	/****************************************************************************
 	*				  			IFullScreenEffector
 	****************************************************************************/
-	/* @class     IFullScreenEffector
-	*  @brief     Provide the full screen polygon and drawing interface.
+	/* @brief  フルスクリーンのポリゴンを描画するためのインターフェース. 
 	*****************************************************************************/
 	class IFullScreenEffector : public gu::NonCopyable
 	{
@@ -52,10 +51,19 @@ namespace gc
 	public:
 		#pragma region Public Function
 
-		/* @brief : Resize frame buffer (Not implement)*/
-		virtual void OnResize(int newWidth, int newHeight) = 0;
+		/*!**********************************************************************
+		*  @brief     画面のサイズを変更します. 
+		*  @param[in] const gu::uint32 新しい幅
+		*  @param[in] const gu::uint32 新しい高さ
+		*  @return    void
+		*************************************************************************/
+		virtual void OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight) = 0;
 
-		/*@brief : Render to back buffer*/
+		/*!**********************************************************************
+		*  @brief     コマンドリストに描画内容を登録します
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		virtual void Draw() = 0;
 
 		#pragma endregion
@@ -79,13 +87,33 @@ namespace gc
 		#pragma endregion
 
 		#pragma region Protected Function
+		/*!**********************************************************************
+		*  @brief     Resize可能かを判定します
+		*  @param[in] const gu::uint32 幅
+		*  @param[in] const gu::uint32 高さ
+		*  @return    bool
+		*************************************************************************/
+		__forceinline bool EnableResize(const gu::uint32 newWidth, const gu::uint32 newHeight) const 
+		{
+			return newWidth != _width || newHeight != _height;
+		}
 
+		/*!**********************************************************************
+		*  @brief     パイプラインステートを準備します.
+		*  @param[in] const gu::tstring& デバッグ表示名
+		*  @return    void
+		*************************************************************************/
 		virtual void PreparePipelineState(const gu::tstring& addName) = 0;
 
 		virtual void PrepareResourceView() = 0;
 		
 		void PrepareVertexAndIndexBuffer(const gu::tstring& addName);
 		
+		/*!**********************************************************************
+		*  @brief     デバッグ表示名を準備します. ただし, デフォルト値でFSEffector::が追加されます.
+		*  @param[in] const gu::tstring& デバッグ表示名
+		*  @return    void
+		*************************************************************************/
 		gu::tstring DefineDebugName(const gu::tstring& addName = SP(""))
 		{
 			gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
@@ -108,8 +136,8 @@ namespace gc
 		
 		gu::DynamicArray<ResourceViewPtr> _resourceViews = {};
 
-		std::int32_t _width  = 0;
-		std::int32_t _height = 0;
+		gu::uint32 _width  = 0;
+		gu::uint32 _height = 0;
 
 		/* @brief : device and command list*/
 		LowLevelGraphicsEnginePtr _engine = nullptr;

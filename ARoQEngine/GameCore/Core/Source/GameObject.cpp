@@ -15,13 +15,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::core;
+using namespace engine;
 static constexpr int INVALID_VALUE = -1;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                   Implement
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc::core
+namespace engine
 {
 	gu::DynamicArray<GameObject::GameObjectPtr> GameObject::GameObjects = {};
 	gu::DynamicArray<gu::tstring> GameObject::LayerList = {};
@@ -281,7 +281,7 @@ void GameObject::ClearAllGameObjects()
 //}
 #pragma endregion Component
 #pragma region Private Function
-int gc::core::GameObject::GetLayerBit(const gu::tstring& layer)
+int GameObject::GetLayerBit(const gu::tstring& layer)
 {
 	if (layer == L"") { return INVALID_VALUE; }
 	for (int i = 0; i < 31; ++i) // 4byte

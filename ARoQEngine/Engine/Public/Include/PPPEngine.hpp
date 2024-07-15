@@ -26,7 +26,7 @@ namespace rhi::core
 {
 	class GPUResourceView;
 }
-namespace gc
+namespace engine
 {
 	class IRenderPipeline;
 	class Camera;
@@ -50,9 +50,9 @@ protected:
 	using EngineThreadManagerPtr    = gu::SharedPointer<engine::core::EngineThreadManager>;
 	using GameTimerPtr              = gu::SharedPointer<GameTimer>;
 	using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
-	using RenderPipelinePtr         = gu::SharedPointer<gc::IRenderPipeline>;
+	using RenderPipelinePtr         = gu::SharedPointer<engine::IRenderPipeline>;
 	using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
-	using CameraPtr                 = gu::SharedPointer<gc::Camera>;
+	using CameraPtr                 = gu::SharedPointer<engine::Camera>;
 public:
 	/****************************************************************************
 	**                Public Function

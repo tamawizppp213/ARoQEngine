@@ -24,14 +24,14 @@ namespace rhi::core
 	class RHIResourceLayout;
 	class GPUGraphicsPipelineState;
 }
-namespace gc::core
+namespace engine
 {
 	class GameModel;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	/****************************************************************************
 	*				  			RenderingEngine
@@ -46,7 +46,7 @@ namespace gc
 		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
 		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
 		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
-		using GameModelPtr              = gu::SharedPointer<gc::core::GameModel>;
+		using GameModelPtr              = gu::SharedPointer<GameModel>;
 	
 	public:
 		/****************************************************************************

@@ -16,7 +16,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	class SkyDome;
 	class Camera;
@@ -36,8 +36,8 @@ namespace sample
 	*****************************************************************************/
 	class SampleSky : public Scene
 	{
-		using SkyDomePtr = gu::SharedPointer<gc::SkyDome>;
-		using CameraPtr  = gu::SharedPointer<gc::Camera>;
+		using SkyDomePtr = gu::SharedPointer<engine::SkyDome>;
+		using CameraPtr  = gu::SharedPointer<engine::Camera>;
 	public:
 		/****************************************************************************
 		**                Public Function

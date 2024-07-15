@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	class SkyDome;
 	class Camera;
@@ -43,13 +43,13 @@ namespace sample
 	*****************************************************************************/
 	class SampleColorChange : public Scene
 	{
-		using SkyDomePtr = gu::SharedPointer<gc::SkyDome>;
-		using CameraPtr  = gu::SharedPointer<gc::Camera>;
-		using ColorChangePtr  = gu::SharedPointer<gc::ColorChange>;
-		using GaussianBlurPtr = gu::SharedPointer<gc::GaussianBlur>;
-		using MosaicPtr = gu::SharedPointer<gc::Mosaic>;
-		using VignettePtr = gu::SharedPointer<gc::Vignette>;
-		using WhiteBalancePtr = gu::SharedPointer<gc::WhiteBalance>;
+		using SkyDomePtr = gu::SharedPointer<engine::SkyDome>;
+		using CameraPtr  = gu::SharedPointer<engine::Camera>;
+		using ColorChangePtr  = gu::SharedPointer<engine::ColorChange>;
+		using GaussianBlurPtr = gu::SharedPointer<engine::GaussianBlur>;
+		using MosaicPtr = gu::SharedPointer<engine::Mosaic>;
+		using VignettePtr = gu::SharedPointer<engine::Vignette>;
+		using WhiteBalancePtr = gu::SharedPointer<engine::WhiteBalance>;
 		
 	public:
 		/****************************************************************************

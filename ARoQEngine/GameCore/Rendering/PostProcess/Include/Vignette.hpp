@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace gc
+namespace engine
 {
 	struct VignetteSettings
 	{
@@ -43,7 +43,7 @@ namespace gc
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Resize frame buffer (Not implement)*/
-		void OnResize(int newWidth, int newHeight) override;
+		void OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight) override;
 
 		/*@brief : Render to back buffer*/
 		void Draw() override;
