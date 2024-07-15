@@ -84,7 +84,7 @@ void Vignette::Draw()
 	graphicsCommandList->SetResourceLayout(_resourceLayout);
 	graphicsCommandList->SetGraphicsPipeline(_pipeline);
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
-	graphicsCommandList->SetIndexBuffer(_indexBuffers[frameIndex]);
+	graphicsCommandList->SetIndexBuffer(_indexBuffers[frameIndex], core::PixelFormat::R16_UINT);
 	_resourceViews[0]->Bind(graphicsCommandList, 0);
 	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 1);
 	graphicsCommandList->DrawIndexedInstanced(

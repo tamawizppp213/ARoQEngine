@@ -116,7 +116,7 @@ void ColorChange::Draw()
 	graphicsCommandList->SetResourceLayout(_resourceLayout);
 	graphicsCommandList->SetGraphicsPipeline(_pipeline);
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
-	graphicsCommandList->SetIndexBuffer (_indexBuffers[frameIndex]);
+	graphicsCommandList->SetIndexBuffer (_indexBuffers[frameIndex], core::PixelFormat::R16_UINT);
 	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 0);
 	graphicsCommandList->DrawIndexedInstanced(
 		static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);

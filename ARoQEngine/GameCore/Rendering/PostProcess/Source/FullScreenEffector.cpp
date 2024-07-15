@@ -52,14 +52,11 @@ IFullScreenEffector::IFullScreenEffector(const LowLevelGraphicsEnginePtr& engine
 #pragma endregion Constructor and Destructor
 
 #pragma region Protected Function
-/****************************************************************************
-*							PrepareVertexAndIndexBuffer
-****************************************************************************/
-/* @fn        void IFullScreenEffector::PrepareVertexAndIndexBuffer()
-*  @brief     Prepare Rect Vertex and Index Buffer
-*  @param[in] const gu::tstring& addName
-*  @return 　　void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     頂点バッファとインデックスバッファを準備します.
+*  @param[in] const gu::tstring& デバッグ表示名
+*  @return    void
+*************************************************************************/
 void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName)
 {
 	const auto device     = _engine->GetDevice();
@@ -81,7 +78,7 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 		{Float2( 1.0f,  -1.0f) , Float2(1.0f, 1.0f)}
 	};
 
-	DynamicArray<gu::uint32> indices = { 0, 1, 2, 0, 2, 3 };
+	DynamicArray<gu::uint16> indices = { 0, 1, 2, 0, 2, 3 };
 
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
@@ -90,13 +87,13 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 	// prepare frame count buffer
 	_vertexBuffers.Resize(frameCount);
 	_indexBuffers .Resize(frameCount);
-	for (uint32 i = 0; i < frameCount; ++i)
+	for (uint16 i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------
 		-            Set up
 		---------------------------------------------------------------------*/
 		auto vertexByteSize = sizeof(ScreenVertex);
-		auto indexByteSize  = sizeof(gu::uint32);
+		auto indexByteSize  = sizeof(gu::uint16);
 		auto vertexCount    = vertices.Size();
 		auto indexCount     = indices.Size();
 
