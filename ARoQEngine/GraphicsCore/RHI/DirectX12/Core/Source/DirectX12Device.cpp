@@ -35,7 +35,7 @@
 #include "GraphicsCore/RHI/DirectX12/RayTracing/Include/DirectX12RayTracingGeometry.hpp"
 #include "Platform/Core/Include/CoreOS.hpp"
 #include "GameUtility/Math/Include/GMMatrix.hpp"
-#include "GameUtility/File/Include/UnicodeUtility.hpp"
+#include "GameUtility/Base/Include/GUStringConverter.hpp"
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
@@ -88,8 +88,8 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 		IID_PPV_ARGS(&_device)));
 
 	const auto& gpuName    = adapter->GetName();
-	const auto  deviceName = L"Device::" + unicode::ToWString(gpuName.CString());
-	_device->SetName(deviceName.c_str());
+	const gu::tstring deviceName = gu::tstring(SP("Device::")) + gu::StringConverter::ConvertStringToTString(gpuName.CString());
+	_device->SetName(deviceName.CString());
 
 	/*-------------------------------------------------------------------
 	-                 Set gpu debug break
@@ -106,7 +106,7 @@ RHIDevice::RHIDevice(const gu::SharedPointer<core::RHIDisplayAdapter>& adapter, 
 	-                   Device node count
 	---------------------------------------------------------------------*/
 	_deviceNodeCount = _device->GetNodeCount();
-
+	
 	/*-------------------------------------------------------------------
 	-                   Device Support Check
 	---------------------------------------------------------------------*/

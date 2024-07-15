@@ -64,8 +64,7 @@ namespace rhi::core
 	/****************************************************************************
 	*				  			RHIDevice
 	****************************************************************************/
-	/* @class     RHIDevice 
-	*  @brief     Logical Device interface. Device : GPU resources generator.
+	/* @brief     Logical Device interface. Device : GPU resources generator.
 	*****************************************************************************/
 	class RHIDevice : public gu::NonCopyable
 	{
@@ -122,7 +121,12 @@ namespace rhi::core
 		*************************************************************************/
 		virtual gu::SharedPointer<RHISwapchain> CreateSwapchain(const gu::SharedPointer<RHICommandQueue>& commandQueue, const WindowInfo& windowInfo, const PixelFormat& pixelFormat, const gu::uint8 frameBufferCount = 2, const gu::uint8 vsync = 0, const bool isValidHDR = true) = 0;
 		
-		virtual gu::SharedPointer<RHISwapchain>               CreateSwapchain(const SwapchainDesc& desc) = 0;
+		/*!**********************************************************************
+		*  @brief     フレームバッファによる画像を画面に表示するスワップチェインを作成します
+		*  @param[in] const core::SwapchainDesc : スワップチェインの設定
+		*  @return    gu::SharedPointer<core::RHISwapchain> スワップチェインのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<RHISwapchain> CreateSwapchain(const SwapchainDesc& desc) = 0;
 
 		virtual gu::SharedPointer<RHIDescriptorHeap>          CreateDescriptorHeap(const DescriptorHeapType heapType, const size_t maxDescriptorCount) = 0;
 		
@@ -136,11 +140,16 @@ namespace rhi::core
 		*  @param[in] const gu::tstring
 		*  @return    gu::SharedPointer<RHIResourceLayout>
 		*************************************************************************/
-		virtual gu::SharedPointer<RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<ResourceLayoutElement>& elements = {}, const gu::DynamicArray<SamplerLayoutElement>& samplers = {}, const gu::Optional<Constant32Bits>& constant32Bits = {}, const gu::tstring& name = SP("ResourceLayout")) = 0;
+		virtual gu::SharedPointer<RHIResourceLayout> CreateResourceLayout(const gu::DynamicArray<ResourceLayoutElement>& elements = {}, const gu::DynamicArray<SamplerLayoutElement>& samplers = {}, const gu::Optional<Constant32Bits>& constant32Bits = {}, const gu::tstring& name = SP("ResourceLayout")) = 0;
 		
-		virtual gu::SharedPointer<GPUPipelineFactory>         CreatePipelineFactory() = 0;
+		/*!**********************************************************************
+		*  @brief     各Pipelineステージを作成するためのFactoryクラスを作成します.
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUPipelineFactory> : パイプラインファクトリのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<GPUPipelineFactory> CreatePipelineFactory() = 0;
 		
-		virtual gu::SharedPointer<GPUGraphicsPipelineState>   CreateGraphicPipelineState(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
+		virtual gu::SharedPointer<GPUGraphicsPipelineState> CreateGraphicPipelineState(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
 		
 		virtual gu::SharedPointer<GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0; // after action: setting pipeline
 		
@@ -160,7 +169,7 @@ namespace rhi::core
 		*  @param[in] const gu::tstring& : デバッグ名
 		*  @return    gu::SharedPointer<GPUBuffer> : GPUバッファのポインタ
 		*************************************************************************/
-		virtual gu::SharedPointer<GPUBuffer> CreateBuffer (const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) = 0;
+		virtual gu::SharedPointer<GPUBuffer> CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) = 0;
 		
 		virtual gu::SharedPointer<GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("")) = 0;
 		

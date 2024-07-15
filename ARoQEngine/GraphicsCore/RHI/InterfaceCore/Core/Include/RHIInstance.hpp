@@ -41,7 +41,7 @@ namespace rhi::core
 		*  @brief     手動でGraphics APIを選択します. @n
 		*             そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
 		*  @param[in] const core::GraphicsAPI グラフィクスAPI
-		*  @param[in] const RHIInstanceCreateInfo デバッガの指定用構造体
+		*  @param[in] const RHIInstanceCreateInfo&  CPU, GPUデバッガの有無を指定する構造体
 		*  @return gu::SharedPointer<RHIInstance> RHIInstanceのポインタ
 		*************************************************************************/
 		static gu::SharedPointer<RHIInstance> CreateInstance(const core::GraphicsAPI graphicsAPI, const RHIDebugCreateInfo& debugCreateInfo);
@@ -49,7 +49,7 @@ namespace rhi::core
 		/*!**********************************************************************
 		*  @brief     プラットフォームに合わせて自動でGraphics APIを選択します. @n
 		*             そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
-		*  @param[in] const RHIDebugCreateInfo& debugCreateInfo
+		*  @param[in] const RHIDebugCreateInfo& CPU, GPUデバッガの有無を指定する構造体
 		*  @return gu::SharedPointer<RHIInstance> RHIInstanceのポインタ
 		*************************************************************************/
 		static gu::SharedPointer<RHIInstance> CreateInstance(const RHIDebugCreateInfo& debugCreateInfo);
