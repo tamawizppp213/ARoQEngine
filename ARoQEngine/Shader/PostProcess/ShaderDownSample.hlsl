@@ -25,7 +25,8 @@ SamplerState SamplerLinearWrap : register(s0);
 cbuffer SceneTextureInfo : register(b0)
 {
     float2 SceneTextureInvertSize; // シーンテクスチャの逆サイズ
-    float2 ViewPortMax;            // ビューポートの最大値
+    uint2  ViewPortMax;            // ビューポートの最大ピクセル値 
+    uint2  ViewPortMin;            // ビューポートの最小ピクセル値 
 };
 
 struct PSInput
@@ -98,11 +99,12 @@ RWTexture2D<float4> OutputTexture : register(u0);
 [numthreads(THREADGROUP_SIZE_X, THREADGROUP_SIZE_Y, 1)]
 void MainCS(uint2 dispatchThreadID : SV_DispatchThreadID)
 {
-    const float2 uv = dispatchThreadID.xy * SceneTextureInvertSize;
+    const uint2  pixelPosition = dispatchThreadID + ViewPortMin;
+    const float2 uv            = (float2)dispatchThreadID * SceneTextureInvertSize;
     
-    if (all(uv < ViewPortMax))
+    if (all(pixelPosition < ViewPortMax))
     {
-        OutputTexture[dispatchThreadID.xy] = ExecuteDownSample(uv);
+        OutputTexture[pixelPosition] = ExecuteDownSample(uv);
     }
 }
 #else // PixelShader
