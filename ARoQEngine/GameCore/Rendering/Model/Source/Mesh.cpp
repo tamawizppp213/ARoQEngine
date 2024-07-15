@@ -133,7 +133,7 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const gu::tstring& name)
 	_vertexBuffers.Resize(totalFrameSize);
 	for (size_t i = 0; i < totalFrameSize; ++i)
 	{
-		const auto metaData = GPUBufferMetaData::VertexBuffer(sizeof(gm::Vertex), mesh.Vertices.size(), rhi::core::MemoryHeap::Upload);
+		const auto metaData = GPUBufferMetaData::VertexBuffer(sizeof(gm::Vertex), (gu::uint32)mesh.Vertices.size(), rhi::core::MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(metaData);
 		_vertexBuffers[i]->SetName(name + SP("VB"));
 		_vertexBuffers[i]->UploadByte(mesh.Vertices.data(), metaData.GetTotalByte(), 0, nullptr);
@@ -143,7 +143,7 @@ void Mesh::Prepare(const PrimitiveMesh& mesh, const gu::tstring& name)
 	-              Index Buffer
 	---------------------------------------------------------------------*/
 	{
-		const auto metaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), mesh.Indices.size(), MemoryHeap::Default, ResourceState::Common);
+		const auto metaData = GPUBufferMetaData::IndexBuffer(sizeof(std::uint32_t), (gu::uint32)mesh.Indices.size(), MemoryHeap::Default, ResourceState::Common);
 		_indexCount = mesh.Indices.size();
 
 		_indexBuffer = device->CreateBuffer(metaData);

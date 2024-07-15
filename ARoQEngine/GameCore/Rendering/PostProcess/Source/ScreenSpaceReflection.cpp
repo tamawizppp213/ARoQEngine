@@ -209,7 +209,7 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addNa
 		-            Set Vertex Buffer
 		---------------------------------------------------------------------*/
 		{
-			const auto vbMetaData = GPUBufferMetaData::VertexBuffer(vertexByteSize, vertexCount, MemoryHeap::Upload);
+			const auto vbMetaData = GPUBufferMetaData::VertexBuffer((gu::uint32)vertexByteSize, (gu::uint32)vertexCount, MemoryHeap::Upload);
 			const auto bufferName = addName + SP("VB");
 			_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
 			_vertexBuffers[i]->SetName(gu::tstring(bufferName));
@@ -221,7 +221,7 @@ void ScreenSpaceReflection::PrepareVertexAndIndexBuffer(const gu::tstring& addNa
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
 		{
-			const auto ibMetaData = GPUBufferMetaData::IndexBuffer(indexByteSize, indexCount, MemoryHeap::Default, ResourceState::Common);
+			const auto ibMetaData = GPUBufferMetaData::IndexBuffer((gu::uint32)indexByteSize, (gu::uint32)indexCount, MemoryHeap::Default, ResourceState::Common);
 			const auto bufferName = addName + SP("IB");
 			_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 			_indexBuffers[i]->SetName(bufferName);
