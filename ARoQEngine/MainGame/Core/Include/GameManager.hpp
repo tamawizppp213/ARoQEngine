@@ -33,7 +33,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void GameStart(const engine::setting::StartUpParameters& parameters);
+	void GameStart(const engine::StartUpParameters& parameters);
 	void GameUpdateMain();
 	void GameDrawMain();
 	void GameEnd();

@@ -22,11 +22,18 @@
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 
-namespace engine::setting
+namespace engine
 {
 	struct GraphicsSettings
 	{
-		rhi::core::GraphicsAPI APIversion;
+		/*! @brief 本エンジンで使用するグラフィクスAPI*/
+		rhi::core::GraphicsAPI APIversion = rhi::core::GraphicsAPI::DirectX12;
+
+		/*! @brief フレームバッファの数 (デフォルトは3)*/
+		gu::uint8 FrameBufferCount = 3;
+
+		/*! @brief 垂直同期の使用 (0は使用しない, 1以上からfpsが半減していく)*/
+		gu::uint8 VSync = 0;
 	};
 
 	struct StartUpParameters

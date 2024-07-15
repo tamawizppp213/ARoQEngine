@@ -57,7 +57,7 @@ public:
 	/****************************************************************************
 	**                Public Function
 	*****************************************************************************/
-	void StartUp(const engine::setting::StartUpParameters& setting);
+	void StartUp(const engine::StartUpParameters& setting);
 
 	void Run();
 
@@ -101,7 +101,7 @@ protected:
 #pragma region Variables
 #pragma region Common 
 	// @ brief : 初期設定
-	engine::setting::StartUpParameters StartUpParameter = {};
+	engine::StartUpParameters StartUpParameter = {};
 
 	/* @brief : ウィンドウを管理するクラス*/
 	gu::SharedPointer<platform::core::PlatformApplication>  _platformApplication = nullptr;

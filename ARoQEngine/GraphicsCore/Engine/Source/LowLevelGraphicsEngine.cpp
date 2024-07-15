@@ -46,20 +46,14 @@ LowLevelGraphicsEngine::~LowLevelGraphicsEngine()
 #pragma endregion Destructor
 
 #pragma region Main Function
-/****************************************************************************
-*                     Start Up
-****************************************************************************/
-/* @fn        void LowLevelGraphicsEngine::StartUp(APIVersion apiVersion, HWND hwnd, HINSTANCE hInstance)
-* 
-*  @brief     Windows api start up lowlevel graphics engine
-* 
-*  @param[in] APIVersion apiVersion
-*  @param[in] HWND hwnd
-*  @param[in] HINSTANCE hInstance
-* 
-*  @return 　　void
-*****************************************************************************/
-void LowLevelGraphicsEngine::StartUp(GraphicsAPI apiVersion, void* hwnd, void* hInstance)
+/*!**********************************************************************
+*  @brief     Graphics Engineを起動し, 描画フレームをスタートします.
+*  @param[in] const rhi::core::GraphicsAPI
+*  @param[in] void* window handle
+*  @param[in] void* instance Handle
+*  @return    void
+*************************************************************************/
+void LowLevelGraphicsEngine::StartUp(const GraphicsAPI apiVersion, void* hwnd, void* hInstance)
 {
 	_apiVersion = apiVersion;
 	/*-------------------------------------------------------------------
@@ -81,6 +75,7 @@ void LowLevelGraphicsEngine::StartUp(GraphicsAPI apiVersion, void* hwnd, void* h
 	-      Create logical device
 	---------------------------------------------------------------------*/
 	_device = _adapter->CreateDevice();
+
 	/*-------------------------------------------------------------------
 	-      Get command queue (Graphics, compute, copy command queue )
 	---------------------------------------------------------------------*/

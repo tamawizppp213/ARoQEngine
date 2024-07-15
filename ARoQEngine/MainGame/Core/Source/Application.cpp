@@ -23,7 +23,7 @@ static constexpr int GAME_WINDOW_WIDTH  = 1920;
 static constexpr int GAME_WINDOW_HEIGHT = 1080;
 
 using namespace platform::core;
-using namespace engine::setting;
+using namespace engine;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Implement

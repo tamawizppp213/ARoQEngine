@@ -44,7 +44,7 @@ namespace rhi::core
 /* @class     LowLevelGraphicsEngine
 *  @brief     LowLevelGraphicsEngine
 *****************************************************************************/
-class LowLevelGraphicsEngine final : public gu::NonCopyable
+class LowLevelGraphicsEngine final : public gu::NonCopyAndMove
 {
 protected:
 	using InstancePtr     = gu::SharedPointer<rhi::core::RHIInstance>;
@@ -54,18 +54,21 @@ protected:
 	using CommandQueuePtr = gu::SharedPointer<rhi::core::RHICommandQueue>;
 
 public:
-	/****************************************************************************
-	**                Static Configuration
-	*****************************************************************************/
+	#pragma region Static Const
 	static constexpr gu::uint32 FRAME_BUFFER_COUNT = 3;
 
 	static constexpr gu::uint32 VSYNC = 0; // 0: don't wait, 1:wait(60fps)
+	#pragma endregion
 
-	/****************************************************************************
-	**                Public Function
-	*****************************************************************************/
-	/* @brief : Rendering engine start function.*/
-	void StartUp(rhi::core::GraphicsAPI apiVersion, void* hwnd, void* hInstance);
+	#pragma region Public Function
+	/*!**********************************************************************
+	*  @brief     Graphics Engineを起動し, 描画フレームをスタートします. 
+	*  @param[in] const rhi::core::GraphicsAPI 
+	*  @param[in] void* window handle
+	*  @param[in] void* instance Handle
+	*  @return    void
+	*************************************************************************/
+	void StartUp(const rhi::core::GraphicsAPI apiVersion, void* hwnd, void* hInstance);
 
 	/* @brief : The first call to the Draw function generates the back buffer image and executes the Default render pass. */
 	void BeginDrawFrame();
@@ -88,9 +91,9 @@ public:
 
 	/* @brief Wait command queue (in GPU), but if the stopCPU is set true, gpu and cpu wait.*/
 	void WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU);
-	/****************************************************************************
-	**                Public Property
-	*****************************************************************************/
+	
+	#pragma endregion
+	#pragma region Public Property
 	/* @brief : Device (Create GPU Resource Function List)*/
 	DevicePtr GetDevice() const noexcept { return _device; }
 
@@ -128,28 +131,25 @@ public:
 	{
 		return _queryHeaps.At(queryType); 
 	}
+	#pragma endregion
 
-	/****************************************************************************
-	**                Constructor and Destructor
-	*****************************************************************************/
+	#pragma region Public Constructor and Destructor
+	/*! @brief デフォルトコンストラクタ*/
 	LowLevelGraphicsEngine() = default;
 
+	/*! @brief デストラクタ*/
 	~LowLevelGraphicsEngine();
 
+	#pragma endregion
+
 protected:
-	/****************************************************************************
-	**                Private Function
-	*****************************************************************************/
+	#pragma region Protected Function
 	void SetFrameBuffers(const int width, const int height, 
 		const rhi::core::ClearValue& clearColor = rhi::core::ClearValue(0.0f, 0.3f, 0.3f, 1.0f),
 		const rhi::core::ClearValue& clearDepthColor = rhi::core::ClearValue(0.0f, 0.0f, 0.0f, 1.0f));
+	#pragma endregion 
 
-#pragma region SetUp
-
-#pragma endregion SetUp
-	/****************************************************************************
-	**                Private Property
-	*****************************************************************************/
+	#pragma region Protected Property
 	/* @brief : Graphics API version. (DirectX12 or Vulkan)*/
 	rhi::core::GraphicsAPI _apiVersion = rhi::core::GraphicsAPI::Unknown;
 
@@ -239,11 +239,15 @@ protected:
 	static constexpr int SRV_DESC_COUNT = 1024 * 10;
 	static constexpr int MAX_SAMPLER_STATE = 16;
 
+	#pragma endregion 
+
 private:
+	#pragma region Private Function
 	void SetUpRenderResource();
 	void SetUpHeap();
 	void SetUpFence();
 	void SetUpQuery();
+	#pragma endregion
 
 };
 
