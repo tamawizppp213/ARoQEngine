@@ -36,6 +36,13 @@ namespace rhi::core
 	public:
 		#pragma region Static Function
 		/*!**********************************************************************
+		*  @brief     単純な2Dポリゴン用の頂点データのレイアウト (色はありませｎ)
+		*  @note      新たにVertexをGameCoreで定義する場合はこの関数を取り除き, 移動する.
+		*  @return    gu::DynamicArray<InputLayoutElement>
+		*************************************************************************/
+		static gu::DynamicArray<InputLayoutElement> GetDefaultScreenElement() { return DEFAULT_SCREEN_ELEMENTS; }
+
+		/*!**********************************************************************
 		*  @brief     単純な3Dポリゴン用の頂点データのレイアウト
 		*  @note      新たにVertexをGameCoreで定義する場合はこの関数を取り除き, 移動する. 
 		*  @return    gu::DynamicArray<InputLayoutElement>
@@ -122,6 +129,7 @@ namespace rhi::core
 		#pragma endregion 
 
 	private:
+		static const gu::DynamicArray<InputLayoutElement> DEFAULT_SCREEN_ELEMENTS;
 		static const gu::DynamicArray<InputLayoutElement> DEFAULT_VERTEX_ELEMENTS;
 		static const gu::DynamicArray<InputLayoutElement> DEFAULT_SKINVERTEX_ELEMENTS;
 	};

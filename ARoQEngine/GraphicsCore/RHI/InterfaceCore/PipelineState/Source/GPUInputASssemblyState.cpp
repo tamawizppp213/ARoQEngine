@@ -18,6 +18,12 @@ using namespace rhi::core;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
+const gu::DynamicArray<InputLayoutElement> GPUInputAssemblyState::DEFAULT_SCREEN_ELEMENTS =
+{
+	InputLayoutElement("POSITION", PixelFormat::R32G32_FLOAT   , InputClassification::PerVertex, 0),
+	InputLayoutElement("TEXCOORD", PixelFormat::R32G32_FLOAT   , InputClassification::PerVertex, 0)
+};
+
 const gu::DynamicArray<InputLayoutElement> GPUInputAssemblyState::DEFAULT_VERTEX_ELEMENTS =
 {
 	InputLayoutElement("POSITION", PixelFormat::R32G32B32_FLOAT   , InputClassification::PerVertex, 0),

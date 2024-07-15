@@ -136,7 +136,7 @@ void WhiteBalance::PreparePipelineState(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile({ ShaderType::Vertex, L"Shader\\PostProcess\\ShaderWhiteBalance.hlsl", L"VSMain",{L"Shader\\Core" } });
+	vs->Compile({ ShaderType::Vertex, L"Shader\\PostProcess\\ShaderScreenPass.hlsl", L"MainVS",{L"Shader\\Core" } });
 	ps->Compile({ ShaderType::Pixel, L"Shader\\PostProcess\\ShaderWhiteBalance.hlsl", L"PSMain", { L"Shader\\Core" } });
 
 	/*-------------------------------------------------------------------
@@ -145,7 +145,7 @@ void WhiteBalance::PreparePipelineState(const gu::tstring& addName)
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
 	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
-	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
+	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultScreenElement()));
 	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);

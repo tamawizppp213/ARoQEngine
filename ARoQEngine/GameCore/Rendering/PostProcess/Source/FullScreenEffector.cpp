@@ -67,7 +67,22 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 	/*-------------------------------------------------------------------
 	-            Create Sphere Mesh
 	---------------------------------------------------------------------*/
-	PrimitiveMesh rectMesh = PrimitiveMeshGenerator::Rect(2.0f, 2.0f, 0.0f);
+	struct ScreenVertex
+	{
+		Float2 Position;
+		Float2 TexCoord;
+	};
+
+	DynamicArray<ScreenVertex> vertices = 
+	{
+		{Float2(-1.0f,  -1.0f), Float2(0.0f, 1.0f)},
+		{Float2(-1.0f,   1.0f), Float2(0.0f, 0.0f)},
+		{Float2( 1.0f,   1.0f), Float2(1.0f, 0.0f)},
+		{Float2( 1.0f,  -1.0f) , Float2(1.0f, 1.0f)}
+	};
+
+	DynamicArray<gu::uint32> indices = { 0, 1, 2, 0, 2, 3 };
+
 	/*-------------------------------------------------------------------
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/
@@ -80,26 +95,26 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 		/*-------------------------------------------------------------------
 		-            Set up
 		---------------------------------------------------------------------*/
-		auto vertexByteSize = sizeof(Vertex);
-		auto indexByteSize  = sizeof(std::uint32_t);
-		auto vertexCount    = rectMesh.Vertices.size();
-		auto indexCount     = rectMesh.Indices.size();
+		auto vertexByteSize = sizeof(ScreenVertex);
+		auto indexByteSize  = sizeof(gu::uint32);
+		auto vertexCount    = vertices.Size();
+		auto indexCount     = indices.Size();
 
 		/*-------------------------------------------------------------------
 		-            Set Vertex Buffer 
 		---------------------------------------------------------------------*/
-		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(static_cast<gu::uint32>(vertexByteSize), static_cast<gu::uint32>(vertexCount), MemoryHeap::Upload);
+		const auto vbMetaData = GPUBufferMetaData::VertexBuffer(static_cast<uint32>(vertexByteSize), static_cast<uint32>(vertexCount), MemoryHeap::Upload);
 		_vertexBuffers[i] = device->CreateBuffer(vbMetaData);
 		_vertexBuffers[i]->SetName(addName + SP("VB"));
-		_vertexBuffers[i]->UploadByte(rectMesh.Vertices.data(), vbMetaData.GetTotalByte()); // Map
+		_vertexBuffers[i]->UploadByte(vertices.Data(), vbMetaData.GetTotalByte()); // Map
 
 		/*-------------------------------------------------------------------
 		-            Set Index Buffer
 		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(static_cast<gu::uint32>(indexByteSize), static_cast<gu::uint32>(indexCount), MemoryHeap::Default, ResourceState::Common);
+		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(static_cast<uint32>(indexByteSize), static_cast<uint32>(indexCount), MemoryHeap::Default, ResourceState::Common);
 		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
 		_indexBuffers[i]->SetName(addName + SP("IB"));
-		_indexBuffers[i]->UploadByte(rectMesh.Indices.data(), ibMetaData.GetTotalByte(), 0,  commandList);
+		_indexBuffers[i]->UploadByte(indices.Data(), ibMetaData.GetTotalByte(), 0,  commandList);
 
 	}
 }

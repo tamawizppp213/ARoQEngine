@@ -23,19 +23,17 @@ namespace gm
 	/****************************************************************************
 	*							 Vertex
 	****************************************************************************/
-	/* @struct    Vertex
-	*  @brief     Vertex struct holding position, normal, uv, and color, 
+	/* @brief  Vertex struct holding position, normal, uv, and color, 
 	*****************************************************************************/
 	struct Vertex
 	{
 	public:
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
-		gm::Float3 Position; /// Position
-		gm::Float3 Normal;   /// Normal
-		gm::Float4 Color;    /// Color
-		gm::Float2 UV;       /// UV
+		#pragma region Public Property
+		gm::Float3 Position; //!< Position
+		gm::Float3 Normal;   //!< Normal
+		gm::Float4 Color;    //!< Color
+		gm::Float2 UV;       //!< UV
+		#pragma endregion
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -51,13 +49,11 @@ namespace gm
 		};
 	
 	private:
-		/****************************************************************************
-		**                Private Function
-		*****************************************************************************/
+		#pragma region Private Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Private Property
-		*****************************************************************************/
+		#pragma region Private Property
+		#pragma endregion 
 	};
 
 	struct SkinMeshVertex

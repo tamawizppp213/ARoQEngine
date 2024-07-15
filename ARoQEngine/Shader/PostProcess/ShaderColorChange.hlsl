@@ -10,8 +10,8 @@
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Core/ShaderVertexType.hlsli"
-#define VertexIn VSInputVertex
-#define VertexOut VSOutputVertex
+#define VertexOut PSInputPositionTexture
+
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 /////////////////////////////////////////////////////////////////////////////////
@@ -20,16 +20,7 @@ Texture2D    DestDiffuseMap     : register(t0);
 //////////////////////////////////////////////////////////////////////////////////
 //                            Implement
 //////////////////////////////////////////////////////////////////////////////////
-VertexOut VSMain(VertexIn vertexIn)
-{
-    VertexOut result;
-    result.Position = vertexIn.Position;
-    result.UV       = vertexIn.UV;
-    result.Normal   = vertexIn.Normal;
-    result.Color    = vertexIn.Color;
-    
-    return result;
-}
+
 /****************************************************************************
 *                       PSMonochrome
 ****************************************************************************/

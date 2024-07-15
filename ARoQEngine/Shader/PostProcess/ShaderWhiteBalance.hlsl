@@ -11,8 +11,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Core/ShaderVertexType.hlsli"
 #include "../Core/ShaderColor.hlsli"
-#define VertexIn  VSInputVertex
-#define VertexOut VSOutputVertex
+#define VertexIn  VSInputPositionTexture
+#define VertexOut PSInputPositionTexture
 //////////////////////////////////////////////////////////////////////////////////
 //                             Define
 /////////////////////////////////////////////////////////////////////////////////
@@ -27,17 +27,6 @@ cbuffer WhiteBalanceSettings : register(b0)
 //////////////////////////////////////////////////////////////////////////////////
 //                            Implement
 //////////////////////////////////////////////////////////////////////////////////
-VertexOut VSMain(VertexIn vertexIn)
-{
-    // ‚»‚Ì‚Ü‚ÜPixel shader‚É“n‚·
-    VertexOut result;
-    result.Position = vertexIn.Position;
-    result.UV       = vertexIn.UV;
-    result.Normal   = vertexIn.Normal;
-    result.Color    = vertexIn.Color;
-    
-    return result;
-}
 
 /****************************************************************************
 *                       PSMain

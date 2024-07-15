@@ -133,7 +133,7 @@ void Vignette::PreparePipelineState(const gu::tstring& addName)
 	---------------------------------------------------------------------*/
 	const auto vs = factory->CreateShaderState();
 	const auto ps = factory->CreateShaderState();
-	vs->Compile({ ShaderType::Vertex, SP("Shader\\PostProcess\\ShaderVignette.hlsl"), SP("VSMain"), { SP("Shader\\Core")} });
+	vs->Compile({ ShaderType::Vertex, SP("Shader\\PostProcess\\ShaderScreenPass.hlsl"), SP("MainVS"), { SP("Shader\\Core")} });
 	ps->Compile({ ShaderType::Pixel, SP("Shader\\PostProcess\\ShaderVignette.hlsl"), SP("PSMain"), { SP("Shader\\Core") } });
 
 	/*-------------------------------------------------------------------
@@ -142,7 +142,7 @@ void Vignette::PreparePipelineState(const gu::tstring& addName)
 	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
 	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
-	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
+	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultScreenElement()));
 	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());
 	_pipeline->SetVertexShader(vs);
 	_pipeline->SetPixelShader(ps);

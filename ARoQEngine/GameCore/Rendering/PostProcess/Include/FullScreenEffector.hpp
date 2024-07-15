@@ -105,8 +105,18 @@ namespace engine
 		*************************************************************************/
 		virtual void PreparePipelineState(const gu::tstring& addName) = 0;
 
+		/*!**********************************************************************
+		*  @brief     ResourceViewを準備します.
+		*  @param[in] const gu::tstring& デバッグ表示名
+		*  @return    void
+		*************************************************************************/
 		virtual void PrepareResourceView() = 0;
 		
+		/*!**********************************************************************
+		*  @brief     頂点バッファとインデックスバッファを準備します.
+		*  @param[in] const gu::tstring& デバッグ表示名
+		*  @return    void
+		*************************************************************************/
 		void PrepareVertexAndIndexBuffer(const gu::tstring& addName);
 		
 		/*!**********************************************************************
@@ -125,18 +135,25 @@ namespace engine
 
 		#pragma region Protected Property
 
-		/* @brief : frame resources*/
+		/* @brief : 長方形の頂点バッファ*/
 		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 		
+		/*! @brief 長方形のインデックスバッファ*/
 		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
 		
+		/*! @brief グラフィックスパイプライン*/
 		PipelineStatePtr  _pipeline       = nullptr;
 		
+		/*! @brief GPUのリソースのバインド方法を設定するリソースレイアウト*/
 		ResourceLayoutPtr _resourceLayout = nullptr;
 		
+		/*! @brief GPUのリソースビュー*/
 		gu::DynamicArray<ResourceViewPtr> _resourceViews = {};
 
+		/* @brief : 幅*/
 		gu::uint32 _width  = 0;
+
+		/* @brief : 高さ*/
 		gu::uint32 _height = 0;
 
 		/* @brief : device and command list*/

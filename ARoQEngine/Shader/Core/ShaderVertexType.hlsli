@@ -7,6 +7,18 @@
 #ifndef SHADER_VERTEX_TYPE_HLSLI
 #define SHADER_VERTEX_TYPE_HLSLI
 
+struct VSInputPositionTexture
+{
+    float2 Position : POSITION;
+    float2 UV       : TEXCOORD0;
+};
+
+struct PSInputPositionTexture
+{
+    float4 Position : SV_POSITION;
+    float2 UV       : TEXCOORD0;
+};
+
 struct VSInputVertex
 {
     float4 Position : POSITION;
