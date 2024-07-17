@@ -60,7 +60,6 @@ Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, c
 	PrepareVertexAndIndexBuffer(name);
 	PrepareBuffer(blockSize, name);
 	PreparePipelineState(name);
-	PrepareResourceView();
 }
 #pragma endregion Constructor and Destructor
 
@@ -151,8 +150,4 @@ void Mosaic::PreparePipelineState(const gu::tstring& addName)
 	_pipeline->SetName(addName + SP("PSO"));
 }
 
-void Mosaic::PrepareResourceView()
-{
-	
-}
 #pragma endregion Set up function

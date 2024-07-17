@@ -71,7 +71,6 @@ ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEngin
 	---------------------------------------------------------------------*/
 	PrepareVertexAndIndexBuffer(name);
 	PreparePipelineState(name);
-	PrepareResourceView();
 }
 
 #pragma endregion Constructor and Destructor
@@ -173,16 +172,5 @@ void ColorChange::PreparePipelineState(const gu::tstring& addName)
 	_pipeline->CompleteSetting();
 	_pipeline->SetName(addName + SP("PSO"));
 }
-/****************************************************************************
-*							PrepareResourceView
-****************************************************************************/
-/* @fn        void ColorChange::PrepareResourceView()
-*  @brief     Prepare resource view and render texture (back buffer)
-*  @param[in] void
-*  @return Å@Å@void
-*****************************************************************************/
-void ColorChange::PrepareResourceView()
-{
-	
-}
+
 #pragma endregion Protected Function

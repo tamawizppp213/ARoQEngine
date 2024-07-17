@@ -106,13 +106,6 @@ namespace engine
 		virtual void PreparePipelineState(const gu::tstring& addName) = 0;
 
 		/*!**********************************************************************
-		*  @brief     ResourceViewを準備します.
-		*  @param[in] const gu::tstring& デバッグ表示名
-		*  @return    void
-		*************************************************************************/
-		virtual void PrepareResourceView() = 0;
-		
-		/*!**********************************************************************
 		*  @brief     頂点バッファとインデックスバッファを準備します.
 		*  @param[in] const gu::tstring& デバッグ表示名
 		*  @return    void

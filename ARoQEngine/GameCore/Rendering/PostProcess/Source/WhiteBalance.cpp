@@ -59,7 +59,6 @@ WhiteBalance::WhiteBalance(const LowLevelGraphicsEnginePtr& engine, const float 
 	PrepareVertexAndIndexBuffer(name);
 	PrepareBuffer(_settings, name);
 	PreparePipelineState(name);
-	PrepareResourceView();
 }
 #pragma endregion Constructor and Destructor
 
@@ -153,8 +152,4 @@ void WhiteBalance::PreparePipelineState(const gu::tstring& addName)
 	_pipeline->SetName(addName + L"PSO");
 }
 
-void WhiteBalance::PrepareResourceView()
-{
-
-}
 #pragma endregion Set up function

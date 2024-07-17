@@ -56,7 +56,6 @@ Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettin
 	PrepareVertexAndIndexBuffer(name);
 	PrepareBuffer(name);
 	PreparePipelineState(name);
-	PrepareResourceView();
 }
 #pragma endregion Constructor and Destructor
 
@@ -150,8 +149,4 @@ void Vignette::PreparePipelineState(const gu::tstring& addName)
 	_pipeline->SetName(addName + SP("PSO"));
 }
 
-void Vignette::PrepareResourceView()
-{
-
-}
 #pragma endregion Set up function

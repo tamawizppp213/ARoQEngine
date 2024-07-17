@@ -67,8 +67,6 @@ namespace engine
 
 		void PreparePipelineState(const gu::tstring& addName) override;
 		
-		void PrepareResourceView() override;
-		
 		/****************************************************************************
 		**                Protected Property
 		*****************************************************************************/
