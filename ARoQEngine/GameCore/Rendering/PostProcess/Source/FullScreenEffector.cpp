@@ -39,7 +39,6 @@ IFullScreenEffector::~IFullScreenEffector()
 	_pipeline.Reset();
 	_resourceLayout.Reset();
 	_resourceViews.Clear(); _resourceViews.ShrinkToFit();
-	_indexBuffers .Clear(); _indexBuffers .ShrinkToFit();
 	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
 }
 
@@ -86,18 +85,16 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 	-            Create Mesh Buffer
 	---------------------------------------------------------------------*/
 	const auto frameCount = LowLevelGraphicsEngine::FRAME_BUFFER_COUNT;
+
 	// prepare frame count buffer
 	_vertexBuffers.Resize(frameCount);
-	_indexBuffers .Resize(frameCount);
 	for (uint16 i = 0; i < frameCount; ++i)
 	{
 		/*-------------------------------------------------------------------
 		-            Set up
 		---------------------------------------------------------------------*/
 		auto vertexByteSize = sizeof(ScreenVertex);
-		auto indexByteSize  = sizeof(gu::uint16);
 		auto vertexCount    = vertices.Size();
-		auto indexCount     = indices.Size();
 
 		/*-------------------------------------------------------------------
 		-            Set Vertex Buffer 
@@ -107,15 +104,15 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 		_vertexBuffers[i]->SetName(addName + SP("VB"));
 		_vertexBuffers[i]->UploadByte(vertices.Data(), vbMetaData.GetTotalByte()); // Map
 
-		/*-------------------------------------------------------------------
-		-            Set Index Buffer
-		---------------------------------------------------------------------*/
-		const auto ibMetaData = GPUBufferMetaData::IndexBuffer(static_cast<uint32>(indexByteSize), static_cast<uint32>(indexCount), MemoryHeap::Default, ResourceState::Common);
-		_indexBuffers[i] = device->CreateBuffer(ibMetaData);
-		_indexBuffers[i]->SetName(addName + SP("IB"));
-		_indexBuffers[i]->UploadByte(indices.Data(), ibMetaData.GetTotalByte(), 0,  commandList);
-
 	}
+
+	/*-------------------------------------------------------------------
+	-            Set Index Buffer
+	---------------------------------------------------------------------*/
+	const auto ibMetaData = GPUBufferMetaData::IndexBuffer(static_cast<uint32>(sizeof(gu::uint16)), 6, MemoryHeap::Default, ResourceState::Common);
+	_indexBuffer = device->CreateBuffer(ibMetaData);
+	_indexBuffer->SetName(addName + SP("IB"));
+	_indexBuffer->UploadByte(indices.Data(), ibMetaData.GetTotalByte(), 0, commandList);
 }
 
 /*!**********************************************************************

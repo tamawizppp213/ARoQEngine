@@ -104,7 +104,7 @@ void SceneDownSample::Draw()
 		commandList->SetResourceLayout(_resourceLayout);
 		commandList->SetGraphicsPipeline(_pipeline);
 		commandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
-		commandList->SetIndexBuffer(_indexBuffers[frameIndex], rhi::core::PixelFormat::R16_UINT);
+		commandList->SetIndexBuffer(_indexBuffer, rhi::core::PixelFormat::R16_UINT);
 		_resourceViews[0]->Bind(commandList, 0);
 		_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(commandList, 0);
 		commandList->DrawIndexedInstanced(6, 1, 0, 0, 0);

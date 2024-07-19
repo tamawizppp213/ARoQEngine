@@ -86,11 +86,11 @@ void WhiteBalance::Draw()
 	graphicsCommandList->SetResourceLayout(_resourceLayout);
 	graphicsCommandList->SetGraphicsPipeline(_pipeline);
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
-	graphicsCommandList->SetIndexBuffer(_indexBuffers[frameIndex], core::PixelFormat::R16_UINT);
+	graphicsCommandList->SetIndexBuffer(_indexBuffer, core::PixelFormat::R16_UINT);
 	_resourceViews[0]->Bind(graphicsCommandList, 0);
 	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 1);
 	graphicsCommandList->DrawIndexedInstanced(
-		static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
+		static_cast<gu::uint32>(_indexBuffer->GetElementCount()), 1);
 }
 #pragma endregion Main Function
 

@@ -156,7 +156,7 @@ namespace engine
 		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
 		
 		/*! @brief 長方形のインデックスバッファ*/
-		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
+		IndexBufferPtr  _indexBuffer = nullptr;
 		
 		/*! @brief マクロの使用 (カンマ区切りで)*/
 		gu::DynamicArray<gu::tstring> _useMacros = {};

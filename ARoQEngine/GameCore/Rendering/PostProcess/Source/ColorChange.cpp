@@ -53,7 +53,6 @@ ColorChange::~ColorChange()
 	_pipeline.Reset();
 	_resourceLayout.Reset();
 	_resourceViews.Clear(); _resourceViews.ShrinkToFit();
-	_indexBuffers.Clear(); _indexBuffers.ShrinkToFit();
 	_vertexBuffers.Clear(); _vertexBuffers.ShrinkToFit();
 }
 ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEnginePtr& engine, const gu::tstring& addName) 
@@ -115,10 +114,10 @@ void ColorChange::Draw()
 	graphicsCommandList->SetResourceLayout(_resourceLayout);
 	graphicsCommandList->SetGraphicsPipeline(_pipeline);
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
-	graphicsCommandList->SetIndexBuffer (_indexBuffers[frameIndex], core::PixelFormat::R16_UINT);
+	graphicsCommandList->SetIndexBuffer (_indexBuffer, core::PixelFormat::R16_UINT);
 	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 0);
 	graphicsCommandList->DrawIndexedInstanced(
-		static_cast<std::uint32_t>(_indexBuffers[frameIndex]->GetElementCount()), 1);
+		static_cast<gu::uint32>(_indexBuffer->GetElementCount()), 1);
 }
 #pragma endregion Main Function
 
