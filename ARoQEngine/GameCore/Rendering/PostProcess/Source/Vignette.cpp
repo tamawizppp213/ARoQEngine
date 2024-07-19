@@ -48,7 +48,7 @@ Vignette::Vignette(const LowLevelGraphicsEnginePtr& engine, const VignetteSettin
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	const auto name = DefineDebugName(addName);
+	const auto name = CombineDebugName(addName, SP("Vignette"));
 
 	/*-------------------------------------------------------------------
 	-           Prepare Pipeline

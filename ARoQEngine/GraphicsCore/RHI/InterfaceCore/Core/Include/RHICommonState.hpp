@@ -882,7 +882,7 @@ namespace rhi::core
 	*****************************************************************************/
 	struct DepthStencilProperty
 	{
-		/*! @brief ステンシルバッファへの書き込みを許容するかどうか*/
+		/*! @brief デプスバッファへの書き込み演算方法*/
 		CompareOperator DepthOperator = CompareOperator::LessEqual;
 
 		/*! @brief デプスバッファへの書き込みを許容するかどうか*/

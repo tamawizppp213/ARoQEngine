@@ -64,7 +64,7 @@ ColorChange::ColorChange(const ColorChangeType type, const LowLevelGraphicsEngin
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	const auto name = DefineDebugName(addName);
+	const auto name = CombineDebugName(addName, SP("ColorChange"));
 
 	/*-------------------------------------------------------------------
 	-           Prepare Pipeline

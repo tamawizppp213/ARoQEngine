@@ -27,6 +27,7 @@ namespace engine
 	class Mosaic;
 	class Vignette;
 	class WhiteBalance;
+	class SceneDownSample;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -47,9 +48,10 @@ namespace sample
 		using CameraPtr  = gu::SharedPointer<engine::Camera>;
 		using ColorChangePtr  = gu::SharedPointer<engine::ColorChange>;
 		using GaussianBlurPtr = gu::SharedPointer<engine::GaussianBlur>;
-		using MosaicPtr = gu::SharedPointer<engine::Mosaic>;
-		using VignettePtr = gu::SharedPointer<engine::Vignette>;
+		using MosaicPtr       = gu::SharedPointer<engine::Mosaic>;
+		using VignettePtr     = gu::SharedPointer<engine::Vignette>;
 		using WhiteBalancePtr = gu::SharedPointer<engine::WhiteBalance>;
+		using DownSamplePtr   = gu::SharedPointer<engine::SceneDownSample>;
 		
 	public:
 		/****************************************************************************

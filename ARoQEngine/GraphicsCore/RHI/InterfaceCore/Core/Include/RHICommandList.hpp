@@ -142,6 +142,7 @@ namespace rhi::core
 		*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
 		*  @param[in] const core::Viewport* : 描画領域を記述した配列, もしくは単一のViewportのアドレス
 		*  @param[in] const gu::uint32 : ビューポートの配列数
+		*  @return    void
 		*************************************************************************/
 		virtual void SetViewport (const Viewport* viewport, const gu::uint32 numViewport = 1) = 0;
 		
@@ -149,6 +150,7 @@ namespace rhi::core
 		*  @brief     VRのような立体視を行う時に設定する描画領域です. シザー矩形もViewportに合わせて自動で設定します
 		*  @param[in] const core::Viewport& 左側の視野を示す描画領域
 		*  @param[in] const core::Viewport& 右側の視野を示す描画領域
+		*  @return    void
 		*************************************************************************/
 		virtual void SetStereoViewport(const Viewport& leftView, const Viewport& rightView) = 0;
 
@@ -156,6 +158,7 @@ namespace rhi::core
 		*  @brief     ビューポート内で実際に描画される領域を制限するためのシザー矩形を手動で設定します. 
 		*  @param[in] const core::ScissorRect* : 描画領域を制限するためのシザー矩形の配列
 		*  @param[in] const gu::uint32 : シザー矩形の配列数
+		*  @return    void
 		*************************************************************************/
 		virtual void SetScissor (const ScissorRect* rect , const gu::uint32 numRect = 1) = 0;
 		
@@ -163,8 +166,9 @@ namespace rhi::core
 		*  @brief     描画領域を示すビューポートと, その中で実際に描画される範囲を指定するシザー矩形をそれぞれ手動で設定します.
 		*  @param[in] const core::Viewport& 描画領域を示すビューポート
 		*  @param[in] const core::ScissorRect& 実際に描画される範囲を示すシザー矩形
+		*  @return    void
 		*************************************************************************/
-		virtual void SetViewportAndScissor(const Viewport& viewport, const ScissorRect& rect)       = 0;
+		virtual void SetViewportAndScissor(const Viewport& viewport, const ScissorRect& rect) = 0;
 		
 		virtual void SetVertexBuffer(const gu::SharedPointer<GPUBuffer>& buffer) = 0;
 		
@@ -176,14 +180,15 @@ namespace rhi::core
 		
 		virtual void DrawIndexed          (gu::uint32 indexCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0) = 0;
 		
-		/*----------------------------------------------------------------------
-		*  @brief : インデックスがついているモデルでかつ, インスタンシング描画が必要となるプリミティブを描画します.
-		*           indexCountPerInstance : インスタンス毎に必要となるインデックスの総数
-		*           instance Count        : インスタンスの数
-		*           startIndexLocation    : インデックスを読み取り始める, インデックスバッファ中の配列要素数
-		* 　　　　　　 baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
-		*           startInstanceLocation : 描画を行う最初のインスタンス番号
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     インデックスがついているモデルでかつ, インスタンシング描画が必要となるプリミティブを描画します.
+		*  @param[in] indexCountPerInstance : インスタンス毎に必要となるインデックスの総数
+		*  @param[in] instance Count        : インスタンスの数
+		*  @param[in] startIndexLocation    : インデックスを読み取り始める, インデックスバッファ中の配列要素数
+		*  @param[in] baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
+		*  @param[in] startInstanceLocation : 描画を行う最初のインスタンス番号
+		*  @return    void
+		*************************************************************************/
 		virtual void DrawIndexedInstanced (gu::uint32 indexCountPerInstance, gu::uint32 instanceCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0, gu::uint32 startInstanceLocation = 0) = 0;
 		
 		/*-------------------------------------------------------------------

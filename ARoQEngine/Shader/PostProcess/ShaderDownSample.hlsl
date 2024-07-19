@@ -1,6 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///  @file   ShaderDownSample.cpp
 ///  @brief  描画シーンを縦横半分に縮小するシェーダ. ぼかしを入れることで品質を向上しています
+///          使用マクロ @n
+///          - USE_COMPUTE_SHADER (Switch) : コンピュートシェーダーを使用します. 使用する場合はTHREADGROUP_SIZE_X, Yを定義してください@n
+///          - USE_LOW_QUALITY  (Switch)    : ダウンサンプリングの品質を下げます. 下げる場合, ぼかしを入れません.
 ///  @author toide
 ///  @date   2024/07/06 14:20:34
 //////////////////////////////////////////////////////////////////////////////////
@@ -55,6 +58,7 @@ float4 SampleTexture(const float2 uv)
 *************************************************************************/
 float4 ExecuteDownSample(const float2 uv) : SV_TARGET
 {
+#ifndef USE_LOW_QUALITY 
     // サンプリングするUV値を取得 (ぼかしを入れることでDownSampleの品質を向上しています)
     float2 UVs[4];
     UVs[0] = uv + SceneTextureInvertSize * float2(-1, 1);
@@ -76,7 +80,9 @@ float4 ExecuteDownSample(const float2 uv) : SV_TARGET
     
     // UEによると, まれに黄色になることがあるらしいので, Clampのような扱い
     result.rgb = max(float3(0,0,0), result.rgb);
-
+#else
+    float4 result = SampleTexture(uv);
+#endif
     return result;
 }
 

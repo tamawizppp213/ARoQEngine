@@ -25,8 +25,11 @@ namespace rhi::core
 	class RHIResourceLayout;
 	class GPUResourceView;
 	class GPUGraphicsPipelineState;
+	class GPUComputePipelineState;
 	class GPUBuffer;
 	class GPUTexture;
+	class RHIRenderPass;
+	class GPUShaderState;
 }
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
@@ -46,6 +49,7 @@ namespace engine
 		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
 		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
 		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
+		using ComputePipelineStatePtr   = gu::SharedPointer<rhi::core::GPUComputePipelineState>;
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 
 	public:
@@ -99,6 +103,30 @@ namespace engine
 		}
 
 		/*!**********************************************************************
+		*  @brief     FullScreenStateの基本のグラフィクスパイプラインの設定を行います.
+		*  @param[in] const gu::SharedPointer<rhi::core::RHIRenderPass>& レンダーパス
+		*  @param[in] const gu::SharedPointer<rhi::core::RHIResourceLayout>& リソースレイアウト
+		*  @param[in] const gu::SharedPointer<rhi::core::GPUShaderState>& 頂点シェーダ
+		*  @param[in] const gu::SharedPointer<rhi::core::GPUShaderState>& ピクセルシェーダ
+		*  @return    void
+		*************************************************************************/
+		PipelineStatePtr CreateDefaultFullScreenGraphicsPipelineState(
+			const gu::SharedPointer<rhi::core::RHIRenderPass>& renderPass, 
+			const gu::SharedPointer<rhi::core::RHIResourceLayout>& resourceLayout,
+			const gu::SharedPointer<rhi::core::GPUShaderState>& vs,
+			const gu::SharedPointer<rhi::core::GPUShaderState>& ps) const;
+
+		/*!**********************************************************************
+		*  @brief     FullScreenStateの基本のComputeパイプラインの設定を行います.
+		*  @param[in] const gu::SharedPointer<rhi::core::RHIResourceLayout>& リソースレイアウト
+		*  @param[in] const gu::SharedPointer<rhi::core::GPUShaderState>& コンピュートシェーダー
+		*  @return    void
+		*************************************************************************/
+		ComputePipelineStatePtr CreateDefaultFullScreenComputePipelineState(
+			const gu::SharedPointer<rhi::core::RHIResourceLayout>& resourceLayout,
+			const gu::SharedPointer<rhi::core::GPUShaderState>& cs);
+
+		/*!**********************************************************************
 		*  @brief     パイプラインステートを準備します.
 		*  @param[in] const gu::tstring& デバッグ表示名
 		*  @return    void
@@ -114,15 +142,11 @@ namespace engine
 		
 		/*!**********************************************************************
 		*  @brief     デバッグ表示名を準備します. ただし, デフォルト値でFSEffector::が追加されます.
-		*  @param[in] const gu::tstring& デバッグ表示名
-		*  @return    void
+		*  @param[in] const gu::tstring 加えたい文字列
+		*  @param[in] const gu::tstring 現在の文字列
+		*  @return    gu::tstring
 		*************************************************************************/
-		gu::tstring DefineDebugName(const gu::tstring& addName = SP(""))
-		{
-			gu::tstring name = SP(""); if (addName != SP("")) { name += addName; name += SP("::"); }
-			name += SP("FSEffector::"); // 後に各リソース名称が追加されます.
-			return name;
-		}
+		gu::tstring CombineDebugName(const gu::tstring& addName, const gu::tstring& original) const;
 
 		#pragma endregion
 
@@ -134,9 +158,15 @@ namespace engine
 		/*! @brief 長方形のインデックスバッファ*/
 		gu::DynamicArray<IndexBufferPtr>  _indexBuffers = {};
 		
+		/*! @brief マクロの使用 (カンマ区切りで)*/
+		gu::DynamicArray<gu::tstring> _useMacros = {};
+
 		/*! @brief グラフィックスパイプライン*/
 		PipelineStatePtr  _pipeline       = nullptr;
-		
+
+		/*! @brief コンピュートパイプライン*/
+		ComputePipelineStatePtr _computePipeline = nullptr;
+
 		/*! @brief GPUのリソースのバインド方法を設定するリソースレイアウト*/
 		ResourceLayoutPtr _resourceLayout = nullptr;
 		

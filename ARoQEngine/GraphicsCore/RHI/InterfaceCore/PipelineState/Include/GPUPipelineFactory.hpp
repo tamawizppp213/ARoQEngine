@@ -40,9 +40,7 @@ namespace rhi::core
 	class GPUPipelineFactory : public gu::NonCopyable
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
 		/* @brief : Create and return input assembly state pointer*/
 		virtual gu::SharedPointer<GPUInputAssemblyState> CreateInputAssemblyState(
 			const gu::DynamicArray<InputLayoutElement>& elements,
@@ -52,9 +50,13 @@ namespace rhi::core
 		virtual gu::SharedPointer<GPURasterizerState> CreateRasterizerState(
 			const core::RasterizerProperty& rasterizerProperty) = 0;
 
-		/* @brief : Create and return depth stencil state pointer*/
-		virtual gu::SharedPointer<GPUDepthStencilState> CreateDepthStencilState(
-			const core::DepthStencilProperty& depthStencilProperty = core::DepthStencilProperty()) = 0;
+		/*!**********************************************************************
+		*  @brief     DepthStencilStateÇçÏê¨ÇµÇ‹Ç∑
+		*  @param[in] const core::DepthStencilProperty& DepthStencilÇÃê›íË
+		*  @return    gu::SharedPointer<GPUDepthStencilState> DepthStencilStateÇÃÉ|ÉCÉìÉ^
+		*************************************************************************/
+		virtual gu::SharedPointer<GPUDepthStencilState> CreateDepthStencilState 
+		(const core::DepthStencilProperty& depthStencilProperty = core::DepthStencilProperty()) = 0;
 
 		/* @brief : Create and return shader state pointer*/
 		virtual gu::SharedPointer<GPUShaderState> CreateShaderState() = 0;
@@ -72,30 +74,30 @@ namespace rhi::core
 
 		/* @brief : Create and return input assembly state pointer*/
 		virtual gu::SharedPointer<GPUBlendState> CreateBlendState(const size_t numRenderTargets, const bool alphaToCoverageEnable) = 0;
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma endregion 
+
+		#pragma region Public Property
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+		#pragma endregion
+
 	protected:
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
 		virtual ~GPUPipelineFactory() { if (_device) { _device.Reset(); } }
 		
 		explicit GPUPipelineFactory(const gu::SharedPointer<RHIDevice>& device) : _device(device) {};
 		
 		GPUPipelineFactory() = default;
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma endregion
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
 		gu::SharedPointer<RHIDevice> _device = nullptr;
+		#pragma endregion
 
 	};
 }

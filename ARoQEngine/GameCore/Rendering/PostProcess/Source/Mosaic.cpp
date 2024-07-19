@@ -52,7 +52,7 @@ Mosaic::Mosaic(const LowLevelGraphicsEnginePtr& engine, const float blockSize, c
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	const auto name = DefineDebugName(addName);
+	const auto name = CombineDebugName(addName, SP("Mosaic"));
 
 	/*-------------------------------------------------------------------
 	-           Prepare Pipeline

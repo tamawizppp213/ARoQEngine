@@ -51,7 +51,7 @@ WhiteBalance::WhiteBalance(const LowLevelGraphicsEnginePtr& engine, const float 
 	/*-------------------------------------------------------------------
 	-            Set debug name
 	---------------------------------------------------------------------*/
-	const auto name = DefineDebugName(addName);
+	const auto name = CombineDebugName(addName, SP("WhiteBalance"));
 
 	/*-------------------------------------------------------------------
 	-           Prepare Pipeline

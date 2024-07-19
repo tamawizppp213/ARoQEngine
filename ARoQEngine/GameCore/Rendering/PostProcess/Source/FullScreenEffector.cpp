@@ -12,6 +12,8 @@
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommonState.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineState.hpp"
+#include "GraphicsCore/RHI/InterfaceCore/PipelineState/Include/GPUPipelineFactory.hpp"
 #include "GameCore/Rendering/Model/Include/PrimitiveMesh.hpp"
 #include "GameUtility/Base/Include/Screen.hpp"
 //////////////////////////////////////////////////////////////////////////////////
@@ -114,6 +116,65 @@ void IFullScreenEffector::PrepareVertexAndIndexBuffer(const gu::tstring& addName
 		_indexBuffers[i]->UploadByte(indices.Data(), ibMetaData.GetTotalByte(), 0,  commandList);
 
 	}
+}
+
+/*!**********************************************************************
+*  @brief     デバッグ表示名を準備します. ただし, デフォルト値でFSEffector::が追加されます.
+*  @param[in] const gu::tstring 加えたい文字列
+*  @param[in] const gu::tstring 現在の文字列
+*  @return    gu::tstring
+*************************************************************************/
+gu::tstring IFullScreenEffector::CombineDebugName(const gu::tstring& addName, const gu::tstring& original) const
+{
+	if (addName.IsEmpty()) { return original; }
+
+	return addName + SP("::") + original;
+}
+
+/*!**********************************************************************
+*  @brief     FullScreenStateの基本のグラフィクスパイプラインの設定を行います.
+*  @param[in] const gu::SharedPointer<rhi::core::RHIRenderPass>& レンダーパス
+*  @param[in] const gu::SharedPointer<rhi::core::RHIResourceLayout>& リソースレイアウト
+*  @return    void
+*************************************************************************/
+IFullScreenEffector::PipelineStatePtr IFullScreenEffector::CreateDefaultFullScreenGraphicsPipelineState (
+	const gu::SharedPointer<rhi::core::RHIRenderPass>& renderPass,
+	const gu::SharedPointer<rhi::core::RHIResourceLayout>& resourceLayout, 
+	const gu::SharedPointer<rhi::core::GPUShaderState>& vs, 
+	const gu::SharedPointer<rhi::core::GPUShaderState>& ps) const
+{
+	const auto device = _engine->GetDevice();
+	const auto factory = device->CreatePipelineFactory();
+
+	// DepthStencilPropertyの設定
+	DepthStencilProperty depthStencilProperty = {};
+	depthStencilProperty.DepthWriteEnable = false;
+	depthStencilProperty.DepthOperator    = core::CompareOperator::Always;
+
+	const auto pipeline = device->CreateGraphicPipelineState(renderPass, resourceLayout);
+	pipeline->SetVertexShader(vs);
+	pipeline->SetPixelShader(ps);
+	pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::OverWrite(true)));
+	pipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
+	pipeline->SetDepthStencilState (factory->CreateDepthStencilState(depthStencilProperty));
+	pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultScreenElement()));
+	return pipeline;
+}
+
+/*!**********************************************************************
+*  @brief     FullScreenStateの基本のComputeパイプラインの設定を行います.
+*  @param[in] void
+*  @return    void
+*************************************************************************/
+IFullScreenEffector::ComputePipelineStatePtr IFullScreenEffector::CreateDefaultFullScreenComputePipelineState(
+	const gu::SharedPointer<rhi::core::RHIResourceLayout>& resourceLayout,
+	const gu::SharedPointer<rhi::core::GPUShaderState>& cs
+)
+{
+	const auto device   = _engine->GetDevice();
+	const auto pipeline = device->CreateComputePipelineState(resourceLayout);
+	pipeline->SetComputeShader(cs);
+	return pipeline;
 }
 
 

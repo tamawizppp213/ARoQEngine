@@ -223,6 +223,14 @@
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\GaussianBlur.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\PostProcess\Include\SceneDownSample.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameCore\Rendering\PostProcess\Include\ScreenSpaceReflection.hpp" />
     <ClInclude Include="GameCore\Rendering\PostProcess\Include\Vignette.hpp" />
     <ClInclude Include="GameCore\Rendering\PostProcess\Include\WhiteBalance.hpp" />
@@ -1116,6 +1124,10 @@
     <ClCompile Include="GameCore\Rendering\PostProcess\Source\FullScreenEffector.cpp" />
     <ClCompile Include="GameCore\Rendering\PostProcess\Source\Mosaic.cpp" />
     <ClCompile Include="GameCore\Rendering\PostProcess\Source\ParticleEffect.cpp" />
+    <ClCompile Include="GameCore\Rendering\PostProcess\Source\SceneDownSample.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameCore\Rendering\PostProcess\Source\ScreenSpaceReflection.cpp" />
     <ClCompile Include="GameCore\Rendering\PostProcess\Source\Sobel.cpp" />
     <ClCompile Include="GameCore\Rendering\PostProcess\Source\SSAO.cpp" />

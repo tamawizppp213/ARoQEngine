@@ -298,7 +298,27 @@ namespace rhi::core
 			Check(domainShader->GetShaderType() == core::ShaderType::Domain);
 			_domainShaderState = domainShader;
 		}
-		
+
+		/*!**********************************************************************
+		*  @brief     レンダーパスの設定
+		*  @param[in] const gu::SharedPointer<RHIRenderPass>
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetRenderPass(const gu::SharedPointer<RHIRenderPass>& renderPass)
+		{
+			_renderPass = renderPass;
+		}
+
+		/*!**********************************************************************
+		*  @brief     リソースレイアウトの設定
+		*  @param[in] const gu::SharedPointer<RHIResourceLayout>
+		*  @return    void
+		*************************************************************************/
+		__forceinline void SetRenderPass(const gu::SharedPointer<RHIResourceLayout>& resourceLayout)
+		{
+			_resourceLayout = resourceLayout;
+		}
+
 		/*!**********************************************************************
 		*  @brief     デバッグ時に使用する名前
 		*  @param[in] const gu::tstring& name
