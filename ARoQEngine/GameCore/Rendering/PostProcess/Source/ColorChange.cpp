@@ -162,13 +162,7 @@ void ColorChange::PreparePipelineState(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
 	---------------------------------------------------------------------*/
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
-	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::OverWrite()));
-	_pipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
-	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultScreenElement()));
-	_pipeline->SetDepthStencilState (factory->CreateDepthStencilState());
-	_pipeline->SetVertexShader(vs);
-	_pipeline->SetPixelShader (ps);
+	_pipeline = CreateDefaultFullScreenGraphicsPipelineState(_engine->GetRenderPass(), _resourceLayout, vs, ps);
 	_pipeline->CompleteSetting();
 	_pipeline->SetName(addName + SP("PSO"));
 }
