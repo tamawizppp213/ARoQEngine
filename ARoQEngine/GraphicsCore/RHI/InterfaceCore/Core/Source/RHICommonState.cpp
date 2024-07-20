@@ -105,7 +105,7 @@ GPUBufferMetaData::GPUBufferMetaData(gu::uint32 stride, gu::uint32 count, core::
 {
 	if (gu::HasAnyFlags(Usage, BufferCreateFlags::ConstantBuffer)) 
 	{
-		Stride = CalcConstantBufferByteSize(stride); 
+		Stride = (gu::uint32)CalcConstantBufferByteSize(stride); 
 	}
 }
 
@@ -172,7 +172,7 @@ GPUTextureMetaData GPUTextureMetaData::Texture1DArray(const gu::uint32 width, co
 		.Usage            = usage | TextureCreateFlags::ShaderResource,
 		.Width            = width,
 		.Height           = 1,
-		.DepthOrArraySize = 1,
+		.DepthOrArraySize = length,
 		.MipMapLevels     = mipLevels,
 		.State            = ResourceState::GeneralRead,
 		.PixelFormat      = format,

@@ -149,6 +149,8 @@ void GPUGraphicsPipelineState::CompleteSetting(const gu::tstring& name)
 	{
 		throw std::runtime_error("failed to create graphics pipeline (vulkan api)");
 	}
+
+	SetName(name);
 }
 
 void GPUGraphicsPipelineState::SetName(const gu::tstring& name)
@@ -187,6 +189,8 @@ void GPUComputePipelineState::CompleteSetting(const gu::tstring& name)
 	{
 		throw std::runtime_error("failed to create compute pipeline (vulkan api)");
 	}
+
+	SetName(name);
 }
 
 void GPUComputePipelineState::SetName(const gu::tstring& name)

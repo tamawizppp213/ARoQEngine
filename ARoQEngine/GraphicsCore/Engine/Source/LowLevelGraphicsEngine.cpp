@@ -172,7 +172,7 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	if (graphicsCommandList->IsOpen())
 	{
 		graphicsCommandList->EndRenderPass();
-		graphicsCommandList->CopyResource(_swapchain->GetBuffer(_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
+		graphicsCommandList->CopyResource(_swapchain->GetBuffer((gu::uint8)_currentFrameIndex), _frameBuffers[_currentFrameIndex]->GetRenderTarget());
 		graphicsCommandList->EndRecording();
 	}
 
@@ -204,17 +204,12 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	
 }
 
-/****************************************************************************
-*                     FlushCommandQueue
-****************************************************************************/
-/* @fn        void LowLevelGraphicsEngine::FlushCommandQueue(const rhi::core::CommandListType type)
-*
-*  @brief     Execute command queue 
-*
-*  @param[in] const rhi::core::CommandListType type
-*
-*  @return 　　std::uint64_t
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     対象のコマンドリストを実行し, フェンスのシグナル値を返します.
+*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+*  @param[in] const bool まだフレーム中かどうか
+*  @return    gu::uint64 フェンスのシグナル値
+*************************************************************************/
 std::uint64_t LowLevelGraphicsEngine::FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame)
 {
 	// set command lists
@@ -252,7 +247,14 @@ std::uint64_t LowLevelGraphicsEngine::FlushGPUCommands(const rhi::core::CommandL
 	return _fenceValue;
 }
 
-void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU)
+/*!**********************************************************************
+*  @brief     コマンドキューを呼び出して前までの処理が完了するまでGPUを待機します. 必要に応じてCPUも待機します.
+*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+*  @param[in] const gu::uint64 待機するフェンスの値
+*  @param[in] const bool CPUも待機するかどうか
+*  @return    void
+*************************************************************************/
+void LowLevelGraphicsEngine::WaitExecutionGPUCommands(const rhi::core::CommandListType type, const gu::uint64 waitValue, const bool stopCPU)
 {
 	const auto& commandQueue = _commandQueues[type];
 

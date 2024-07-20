@@ -133,18 +133,18 @@ namespace platform::windows
 		　　　　　@brief : オブジェクトがコントロールの境界内にドラッグされると発生するイベント
 		-----------------------------------------------------------------*/
 		virtual HRESULT STDMETHODCALLTYPE DragEnter(
-			/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
-			/* [in] */ DWORD keyState,
-			/* [in] */ POINTL cursorPosition,
-			/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
+			[[maybe_unused]]/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+			[[maybe_unused]]/* [in] */ DWORD keyState,
+			[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+			[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
 
 		/*---------------------------------------------------------------
 		　　　　　@brief : オブジェクトがコントロールの境界を越えてドラッグされると発生するイベント
 		-----------------------------------------------------------------*/
 		virtual HRESULT STDMETHODCALLTYPE DragOver(
-			/* [in] */ DWORD keyState,
-			/* [in] */ POINTL cursorPosition,
-			/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
+			[[maybe_unused]]/* [in] */ DWORD keyState,
+			[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+			[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
 
 		/*---------------------------------------------------------------
 		　　　　　@brief : オブジェクトがコントロールの境界外にドラッグされたときに発生するイベント
@@ -155,10 +155,10 @@ namespace platform::windows
 		　　　　　@brief : オブジェクトがドロップするときに発生するイベント
 		-----------------------------------------------------------------*/
 		virtual HRESULT STDMETHODCALLTYPE Drop(
-			/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
-			/* [in] */ DWORD keyState,
-			/* [in] */ POINTL cursorPosition,
-			/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
+			[[maybe_unused]]/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+			[[maybe_unused]]/* [in] */ DWORD keyState,
+			[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+			[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect) override;
 
 		#pragma endregion IDropTarget
 
@@ -356,7 +356,7 @@ namespace platform::windows
 		*  @param[in]  void
 		*  @return     bool
 		**************************************************************************/
-		bool OnParentWindowRestored();
+		bool OnParentWindowRestored() const;
 
 		#pragma endregion
 
@@ -381,7 +381,7 @@ namespace platform::windows
 		*  @param[in]  void
 		*  @return     void
 		**************************************************************************/
-		void DisableTouchFeedback();
+		void DisableTouchFeedback() const;
 		
 		/*!***********************************************************************
 		*  @brief      ウィンドウ領域の調整

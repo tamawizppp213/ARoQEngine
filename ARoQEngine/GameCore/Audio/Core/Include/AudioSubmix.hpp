@@ -48,7 +48,7 @@ namespace gc::audio
 		/****************************************************************************
 		**                Public Property
 		*****************************************************************************/
-		SubmixVoicePtr GetSubmixVoice() { return _submixVoice; }
+		SubmixVoicePtr GetSubmixVoice() const { return _submixVoice; }
 
 		/****************************************************************************
 		**                Constructor and Destructor

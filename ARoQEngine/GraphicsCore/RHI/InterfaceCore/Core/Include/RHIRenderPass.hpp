@@ -76,7 +76,7 @@ namespace rhi::core
 		gu::Optional<Attachment> GetDepthAttachment() const noexcept { return _depthAttachment; }
 		
 		/* @brief : Return color attachment size*/
-		size_t GetColorAttachmentSize() const noexcept { return _colorAttachments.Size(); }
+		gu::uint64 GetColorAttachmentSize() const noexcept { return _colorAttachments.Size(); }
 
 		virtual void SetName(const gu::tstring& name) = 0;
 		/****************************************************************************
@@ -108,8 +108,8 @@ namespace rhi::core
 		gu::SharedPointer<RHIDevice> _device = nullptr;
 
 		/* Render Target Render Pass*/
-		gu::DynamicArray<Attachment>    _colorAttachments = {};
-		gu::DynamicArray<ClearValue>    _colorClearValues = {};
+		gu::DynamicArray<Attachment> _colorAttachments = {};
+		gu::DynamicArray<ClearValue> _colorClearValues = {};
 
 		/* Depth Stencil Render pass*/
 		gu::Optional<Attachment> _depthAttachment;

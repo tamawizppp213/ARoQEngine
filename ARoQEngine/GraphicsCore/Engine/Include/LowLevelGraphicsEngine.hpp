@@ -101,16 +101,31 @@ public:
 	/* @brief : Resize swapchain*/
 	void OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight);
 
-	/* @brief : Execute command queue. Return fence signal value */
-	std::uint64_t FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame = false);
+	/*!**********************************************************************
+	*  @brief     対象のコマンドリストを実行し, フェンスのシグナル値を返します.
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @param[in] const bool まだフレーム中かどうか
+	*  @return    gu::uint64 フェンスのシグナル値
+	*************************************************************************/
+	gu::uint64 FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame = false);
 
-	/* @brief Wait command queue (in GPU), but if the stopCPU is set true, gpu and cpu wait.*/
-	void WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU);
+	/*!**********************************************************************
+	*  @brief     コマンドキューを呼び出して前までの処理が完了するまでGPUを待機します. 必要に応じてCPUも待機します.
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @param[in] const gu::uint64 待機するフェンスの値
+	*  @param[in] const bool CPUも待機するかどうか
+	*  @return    void
+	*************************************************************************/
+	void WaitExecutionGPUCommands(const rhi::core::CommandListType type, const gu::uint64 waitValue, const bool stopCPU);
 	
 	#pragma endregion
 
 	#pragma region Public Property
-	/* @brief : Device (Create GPU Resource Function List)*/
+	/*!**********************************************************************
+	*  @brief     論理デバイスを取得します. 
+	*  @param[in] void
+	*  @return    DevicePtr : 論理デバイスのSharedPointer
+	*************************************************************************/
 	DevicePtr GetDevice() const noexcept { return _device; }
 
 	/* @brief : CommandList (Regist GPU Commands) */

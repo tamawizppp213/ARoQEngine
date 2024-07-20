@@ -110,7 +110,7 @@ void Mouse::Finalize()
 *  @param[in] mouseButton
 *  @return 　　void
 *****************************************************************************/
-bool Mouse::IsPress(int mouseButton)
+bool Mouse::IsPress(int mouseButton) const
 {
 	return (_currentMouseState.rgbButtons[mouseButton] & 0x80) ? true : false;
 }
@@ -123,7 +123,7 @@ bool Mouse::IsPress(int mouseButton)
 *  @param[in] mouseButton
 *  @return 　　void
 *****************************************************************************/
-bool Mouse::IsTrigger(int mouseButton)
+bool Mouse::IsTrigger(int mouseButton) const
 {
 	if (!(_previousMouseState.rgbButtons[mouseButton] & 0x80) &&
 		(_currentMouseState.rgbButtons[mouseButton] & 0x80))
@@ -141,7 +141,7 @@ bool Mouse::IsTrigger(int mouseButton)
 *  @param[in] mouseButton
 *  @return 　　void
 *****************************************************************************/
-bool Mouse::IsRelease(int mouseButton)
+bool Mouse::IsRelease(int mouseButton) const
 {
 	if ((_previousMouseState.rgbButtons[mouseButton] & 0x80) &&
 		!(_currentMouseState.rgbButtons[mouseButton] & 0x80))
@@ -204,7 +204,7 @@ int Mouse::GetMousePosition_Y()
 *  @param[in] void
 *  @return 　　XMFLOAT2
 *****************************************************************************/
-gm::Float2 Mouse::GetMouseVelocity()
+gm::Float2 Mouse::GetMouseVelocity() const
 {
 	gm::Float2 velocity={};
 	velocity.x = (float)_currentMouseState.lX;
@@ -214,7 +214,7 @@ gm::Float2 Mouse::GetMouseVelocity()
 #pragma endregion Public Function
 
 #pragma region Private Function
-bool Mouse::CreateHWND()
+bool Mouse::CreateHWND() const
 {
 	if (_hwnd == nullptr)
 	{
@@ -224,7 +224,7 @@ bool Mouse::CreateHWND()
 	return true;
 }
 
-bool Mouse::CreateHInstance()
+bool Mouse::CreateHInstance() const
 {
 	if (_hInstance == nullptr)
 	{

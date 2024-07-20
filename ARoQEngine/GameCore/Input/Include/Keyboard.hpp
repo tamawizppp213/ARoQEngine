@@ -11,6 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <Windows.h>
 //////////////////////////////////////////////////////////////////////////////////
@@ -37,9 +38,9 @@ public:
 	bool Initialize(LPDIRECTINPUT8 dInput, HINSTANCE hInstance, HWND hwnd);
 	void Update();
 	void Finalize();
-	bool IsPress  (int keyCode);
-	bool IsTrigger(int keyCode);
-	bool IsRelease(int keyCode);
+	bool IsPress  (int keyCode) const;
+	bool IsTrigger(int keyCode) const;
+	bool IsRelease(int keyCode) const;
 	/****************************************************************************
 	**                Public Property
 	*****************************************************************************/
@@ -58,8 +59,8 @@ private:
 	/****************************************************************************
 	**                Private Function
 	*****************************************************************************/
-	bool CreateHWND();
-	bool CreateHInstance();
+	bool CreateHWND() const;
+	bool CreateHInstance() const;
 	bool CreateKeyboardDevice();
 	bool CreateDataFormat();
 	bool CreateCooperativeLevel();

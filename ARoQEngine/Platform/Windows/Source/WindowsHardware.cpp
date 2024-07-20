@@ -81,7 +81,7 @@ gu::tstring CoreHardware::GetCPUVendorName()
 	{
 		int32 Data[3];
 		char  Buffer[12 + 1];
-	} CPUVenderNameInfo;
+	} CPUVenderNameInfo = {};
 
 	CPUVenderNameInfo.Data[0] = arguments[1];
 	CPUVenderNameInfo.Data[1] = arguments[3];
@@ -118,7 +118,7 @@ gu::tstring CoreHardware::GetCPUModelName()
 		return tstring();
 	}
 
-	const int32 modelInfo[3] = { 0x80000002, 0x80000003, 0x80000004 };
+	const int32 modelInfo[3] = { (int32)0x80000002, (int32)0x80000003, (int32)0x80000004 };
 
 	for (int32 i = 0; i < 3; ++i)
 	{

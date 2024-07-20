@@ -543,7 +543,7 @@ void CoreWindow::Resize(const gu::int32 x, const gu::int32 y, const gu::int32 wi
 *  @param[in]  void
 *  @return     void
 **************************************************************************/
-void CoreWindow::DisableTouchFeedback()
+void CoreWindow::DisableTouchFeedback() const
 {
 #if WINVER < 0x0602
 	const auto userDLL = GetModuleHandle(L"user32.dll");
@@ -1065,7 +1065,7 @@ bool CoreWindow::OnParentWindowMinimized()
 *  @param[in]  void
 *  @return     bool
 **************************************************************************/
-bool CoreWindow::OnParentWindowRestored()
+bool CoreWindow::OnParentWindowRestored() const
 {
 	return !!::SetWindowPlacement(_hwnd, &_previousParentMinimizedWindowPlacement);
 }
@@ -1076,10 +1076,10 @@ bool CoreWindow::OnParentWindowRestored()
 　　　　　@brief : オブジェクトがコントロールの境界内にドラッグされると発生するイベント
 -----------------------------------------------------------------*/
 HRESULT STDMETHODCALLTYPE CoreWindow::DragEnter(
-	/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
-	/* [in] */ DWORD keyState,
-	/* [in] */ POINTL cursorPosition,
-	/* [out][in] */ __RPC__inout DWORD* cursorEffect)
+	[[maybe_unused]]/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+	[[maybe_unused]]/* [in] */ DWORD keyState,
+	[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+	[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect)
 {
 	return S_OK;
 }
@@ -1088,9 +1088,9 @@ HRESULT STDMETHODCALLTYPE CoreWindow::DragEnter(
 　　　　　@brief : オブジェクトがコントロールの境界を越えてドラッグされると発生するイベント
 -----------------------------------------------------------------*/
 HRESULT STDMETHODCALLTYPE CoreWindow::DragOver(
-	/* [in] */ DWORD keyState,
-	/* [in] */ POINTL cursorPosition,
-	/* [out][in] */ __RPC__inout DWORD* cursorEffect)
+	[[maybe_unused]]/* [in] */ DWORD keyState,
+	[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+	[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect)
 {
 	return S_OK;
 }
@@ -1107,10 +1107,10 @@ HRESULT STDMETHODCALLTYPE CoreWindow::DragLeave()
 　　　　　@brief : オブジェクトがドロップするときに発生するイベント
 -----------------------------------------------------------------*/
 HRESULT STDMETHODCALLTYPE CoreWindow::Drop(
-	/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
-	/* [in] */ DWORD keyState,
-	/* [in] */ POINTL cursorPosition,
-	/* [out][in] */ __RPC__inout DWORD* cursorEffect)
+	[[maybe_unused]]/* [unique][in] */ __RPC__in_opt IDataObject* dataObject,
+	[[maybe_unused]]/* [in] */ DWORD keyState,
+	[[maybe_unused]]/* [in] */ POINTL cursorPosition,
+	[[maybe_unused]]/* [out][in] */ __RPC__inout DWORD* cursorEffect)
 {
 	return S_OK;
 }

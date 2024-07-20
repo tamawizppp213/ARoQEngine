@@ -134,7 +134,7 @@ void SampleAudio::LoadMaterials()
 	_audioSource = std::make_shared<AudioSource>(_audioMaster, audioClip, SoundType::BGM, 1.0f);
 	_audioSource->Play();
 
-	_audioSubmix = std::make_shared<AudioSubmix>(_audioMaster, 2, audioClip->GetSamplingFrequency());
+	_audioSubmix = std::make_shared<AudioSubmix>(_audioMaster, 2, (std::uint32_t)audioClip->GetSamplingFrequency());
 	_audioSubmix->Regist(_audioSource);
 	_audioSubmix->Reverb(true);
 }

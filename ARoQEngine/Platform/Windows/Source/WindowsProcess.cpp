@@ -298,10 +298,10 @@ bool CoreProcess::ExecuteProcess(const gu::tstring& programPath, const gu::tstri
 	STARTUPINFOEX startupInfo = {};
 	Memory::Zero(&startupInfo, sizeof(STARTUPINFOEX));
 	startupInfo.StartupInfo.cb          = sizeof(STARTUPINFOEX);
-	startupInfo.StartupInfo.dwX         = CW_USEDEFAULT;
-	startupInfo.StartupInfo.dwY         = CW_USEDEFAULT;
-	startupInfo.StartupInfo.dwXSize     = CW_USEDEFAULT;
-	startupInfo.StartupInfo.dwYSize     = CW_USEDEFAULT;
+	startupInfo.StartupInfo.dwX         = (DWORD)CW_USEDEFAULT;
+	startupInfo.StartupInfo.dwY         = (DWORD)CW_USEDEFAULT;
+	startupInfo.StartupInfo.dwXSize     = (DWORD)CW_USEDEFAULT;
+	startupInfo.StartupInfo.dwYSize     = (DWORD)CW_USEDEFAULT;
 	startupInfo.StartupInfo.dwFlags     = STARTF_USESHOWWINDOW;
 	startupInfo.StartupInfo.wShowWindow = SW_SHOWMINNOACTIVE;
 	startupInfo.StartupInfo.hStdInput   = ::GetStdHandle(STD_INPUT_HANDLE);
@@ -425,7 +425,7 @@ bool CoreProcess::ExecuteProcess(const gu::tstring& programPath, const gu::tstri
 	else
 	{
 		const auto errorCode = ::GetLastError();
-		_RPT0(_CRT_WARN, "CreateProcess failed (%d).\n", errorCode);
+		_RPTN(_CRT_WARN, "CreateProcess failed (%d).\n", errorCode);
 
 		if (outReturnCode != nullptr)
 		{
@@ -598,7 +598,7 @@ bool CoreProcess::IsProcessRunning(const gu::tstring& processName) const
 
 	if (snapshot != INVALID_HANDLE_VALUE)
 	{
-		PROCESSENTRY32 processEntry;
+		PROCESSENTRY32 processEntry = {};
 		processEntry.dwSize = sizeof(PROCESSENTRY32);
 
 		/*-------------------------------------------------------------------
@@ -806,7 +806,7 @@ bool CoreProcess::ReadPipe(void* readPipe, void* outData, gu::uint64 byteSize) c
 	-          利用可能なデータが存在する場合, パイプからデータを読み取ります
 	---------------------------------------------------------------------*/
 	uint32 readBytes = 0;
-	if (::ReadFile(readPipe, outData, byteSize, (::DWORD*)&readBytes, NULL) == FALSE)
+	if (::ReadFile(readPipe, outData, (DWORD)byteSize, (::DWORD*)&readBytes, NULL) == FALSE)
 	{
 		return false;
 	}
@@ -863,7 +863,7 @@ bool CoreProcess::WritePipe(void* writePipe, const void* data, gu::uint64 byteSi
 	/*-------------------------------------------------------------------
 	-          パイプにデータを書き込みます
 	---------------------------------------------------------------------*/
-	return !!::WriteFile(writePipe, data, byteSize, NULL, NULL) ;
+	return !!::WriteFile(writePipe, data, (DWORD)byteSize, NULL, NULL) ;
 }
 
 #pragma endregion Public Function

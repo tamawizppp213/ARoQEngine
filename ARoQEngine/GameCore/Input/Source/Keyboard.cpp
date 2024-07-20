@@ -108,7 +108,7 @@ void Keyboard::Finalize()
 *  @param[in] keyCode
 *  @return 　　bool
 *****************************************************************************/
-bool Keyboard::IsPress(int keyCode)
+bool Keyboard::IsPress(int keyCode) const
 {
 	return (_keyState[keyCode] & 0x80) ? true : false;
 }
@@ -121,7 +121,7 @@ bool Keyboard::IsPress(int keyCode)
 *  @param[in] keyCode
 *  @return 　　bool
 *****************************************************************************/
-bool Keyboard::IsTrigger(int keyCode)
+bool Keyboard::IsTrigger(int keyCode) const
 {
 	return (_keyStateTrigger[keyCode] & 0x80) ? true : false;
 }
@@ -134,14 +134,14 @@ bool Keyboard::IsTrigger(int keyCode)
 *  @param[in] keyCode
 *  @return 　　bool
 *****************************************************************************/
-bool Keyboard::IsRelease(int keyCode)
+bool Keyboard::IsRelease(int keyCode) const
 {
 	return (_keyStateRelease[keyCode] & 0x80) ? true : false;
 }
 #pragma endregion Public Function
 
 #pragma region Private Function
-bool Keyboard::CreateHWND()
+bool Keyboard::CreateHWND() const
 {
 	if (_hwnd == nullptr)
 	{
@@ -151,7 +151,7 @@ bool Keyboard::CreateHWND()
 	return true;
 }
 
-bool Keyboard::CreateHInstance()
+bool Keyboard::CreateHInstance() const
 {
 	if (_hInstance == nullptr)
 	{

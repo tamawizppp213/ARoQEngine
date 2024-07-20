@@ -152,7 +152,7 @@ void* ICursor::CreateCursorFromRGBABuffer(const gm::RGBA* pixels, const gu::int3
 		.hbmColor = cursorColor
 	};
 
-	const auto cursorHandle = ::CreateIconIndirect(&iconInfo);
+	//const auto cursorHandle = ::CreateIconIndirect(&iconInfo);
 
 	/*---------------------------------------------------------------
 			èIóπèàóù
