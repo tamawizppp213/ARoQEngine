@@ -143,8 +143,6 @@ void LowLevelGraphicsEngine::StartUp(const GraphicsAPI apiVersion, void* hwnd, v
 * 
 *  @return @@void
 *****************************************************************************/
-gu::uint64 start = 0;
-gu::uint64 end = 0;
 void LowLevelGraphicsEngine::BeginDrawFrame()
 {
 	/*-------------------------------------------------------------------
@@ -158,7 +156,7 @@ void LowLevelGraphicsEngine::BeginDrawFrame()
 	---------------------------------------------------------------------*/
 	graphicsCommandList->BeginRecording(false);
 	computeCommandList ->BeginRecording(false);
-	start = _commandQueues[core::CommandListType::Graphics]->GetCalibrationTimestamp().GPUMicroseconds;
+	_beginDrawFrameTimeStamp = _commandQueues[core::CommandListType::Graphics]->GetCalibrationTimestamp();
 }
 
 /****************************************************************************
@@ -212,8 +210,10 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	_currentFrameIndex = _swapchain->PrepareNextImage(_fence, ++_fenceValue);
 	SetUpFence(); // reset fence value for the next frame
 
-	end = _commandQueues[core::CommandListType::Graphics]->GetCalibrationTimestamp().GPUMicroseconds;
+	_endDrawFrameTimeStamp = _commandQueues[core::CommandListType::Graphics]->GetCalibrationTimestamp();
 	//printf("%f\n", 1e6 / (end - start));
+	_gpuTimer = (_endDrawFrameTimeStamp.GPUMicroseconds - _beginDrawFrameTimeStamp.GPUMicroseconds) / 1e6;
+	_cpuTimer = (_endDrawFrameTimeStamp.CPUMicroseconds - _beginDrawFrameTimeStamp.CPUMicroseconds) / 1e6;
 }
 
 /****************************************************************************

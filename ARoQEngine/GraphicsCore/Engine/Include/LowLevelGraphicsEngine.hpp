@@ -176,6 +176,12 @@ protected:
 	/* @brief : current frame index*/
 	gu::uint32 _currentFrameIndex = 0;
 
+	/*! @brief TimeStamp*/
+	rhi::core::GPUTimingCalibrationTimestamp _beginDrawFrameTimeStamp = {};
+	rhi::core::GPUTimingCalibrationTimestamp _endDrawFrameTimeStamp = {};
+	gu::double64 _gpuTimer = 0.0;
+	gu::double64 _cpuTimer = 0.0;
+
 #pragma region Rendering Variables
 	/*----------------------------------------------------------------------
 	*  @brief : 描画バッファを毎フレーム交換するためのSwapchain
@@ -214,8 +220,8 @@ protected:
 	/*----------------------------------------------------------------------
 	*  @brief : スクリーンの縦横
 	*----------------------------------------------------------------------*/
-	gu::int32 _width  = 0;
-	gu::int32 _height = 0;
+	gu::uint32 _width  = 0;
+	gu::uint32 _height = 0;
 
 #pragma endregion Rendering Variables
 
