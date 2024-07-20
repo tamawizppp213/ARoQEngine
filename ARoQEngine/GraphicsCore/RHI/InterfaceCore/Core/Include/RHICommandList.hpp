@@ -65,14 +65,19 @@ namespace rhi::core
 		*************************************************************************/
 		virtual void EndRecording() = 0; // Call end function at end
 
-		/*----------------------------------------------------------------------
-		*  @brief : Start the render pass. This function basically called at draw function at start
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     新たなRenderPassを開始します. RenderPassの指定カラーを使った初期化なども行います.
+		*  @param[in] const gu::SharedPointer<core::RHIRenderPass>& RenderPass : 開始するRenderPass
+		*  @param[in] const gu::SharedPointer<core::RHIFrameBuffer>& FrameBuffer : 開始するFrameBuffer
+		*  @return    void
+		*************************************************************************/
 		virtual void BeginRenderPass(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<RHIFrameBuffer>& frameBuffer) = 0;
 		
-		/*----------------------------------------------------------------------
-		*  @brief : Finish the render pass. This function basically called at draw function at end
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     既存のRenderPassを終了します.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
 		virtual void EndRenderPass() = 0;
 
 		/*!**********************************************************************

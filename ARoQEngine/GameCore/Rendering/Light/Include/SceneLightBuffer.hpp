@@ -254,7 +254,7 @@ namespace engine
 			const int tileCount = static_cast<int>((Screen::GetScreenWidth() / TILE_LENGTH) * (Screen::GetScreenHeight()/ TILE_LENGTH));
 
 			// set up light ID buffer ()
-			auto bufferInfo          = GPUBufferMetaData::DefaultBuffer(sizeof(std::int32_t), count * tileCount);
+			auto bufferInfo          = GPUBufferMetaData::DefaultBuffer(sizeof(gu::uint32), (gu::uint32)count * tileCount);
 			bufferInfo.Usage = BufferCreateFlags::UnorderedAccess;
 			const auto buffer        = device->CreateBuffer(bufferInfo, L"LightID");
 

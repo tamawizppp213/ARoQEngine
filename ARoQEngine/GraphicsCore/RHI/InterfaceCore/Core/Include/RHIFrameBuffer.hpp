@@ -41,18 +41,16 @@ namespace rhi::core
 		using TexturePtr      = gu::SharedPointer<GPUTexture>;
 		using ResourceViewPtr = gu::SharedPointer<GPUResourceView>;
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
+		#pragma region Public Property
+
 		/* @brief : Render Target Size (basically one) */
-		size_t      GetRenderTargetSize() { return _renderTargets.Size(); };
+		gu::uint32 GetRenderTargetSize() { return static_cast<gu::uint32>(_renderTargets.Size()); };
 
 		/* @brief : Return render target pointer*/
-		TexturePtr GetRenderTarget(const size_t index = 0) { return _renderTargets[index]; };
+		TexturePtr GetRenderTarget(const gu::uint32 index = 0) { return _renderTargets[index]; };
 
 		/* @brief : Return render target pointer list*/
 		gu::DynamicArray<TexturePtr>& GetRenderTargets() { return _renderTargets; }
@@ -61,21 +59,21 @@ namespace rhi::core
 		TexturePtr GetDepthStencil() { return _depthStencil; };
 
 		/* @brief : Return viewport */
-		Viewport    GetFullViewport(const size_t index = 0) const noexcept;
+		Viewport    GetFullViewport(const gu::uint32 index = 0) const noexcept;
 
 		/* @brief : Return scissor rect*/
-		ScissorRect GetFullScissorRect(const size_t index = 0) const noexcept;
+		ScissorRect GetFullScissorRect(const gu::uint32 index = 0) const noexcept;
 
 		/* @brief : Return render target view pointer list*/
 		const gu::DynamicArray<ResourceViewPtr>& GetRenderTargetViews() const { return _renderTargetViews; }
 
 		/* @brief : Return render target view pointer*/
-		ResourceViewPtr GetRenderTargetView(const size_t index = 0) const { return _renderTargetViews[index]; }
+		ResourceViewPtr GetRenderTargetView(const gu::uint32 index = 0) const { return _renderTargetViews[index]; }
 
 		/* @brief : Return render target shader resource view*/
-		ResourceViewPtr GetRenderTargetSRV(const size_t index = 0) const noexcept { return _renderTargetSRVs[index]; }
+		ResourceViewPtr GetRenderTargetSRV(const gu::uint32 index = 0) const noexcept { return _renderTargetSRVs[index]; }
 
-		ResourceViewPtr GetRenderTargetUAV(const size_t index = 0) const noexcept { return _renderTargetUAVs[index]; }
+		ResourceViewPtr GetRenderTargetUAV(const gu::uint32 index = 0) const noexcept { return _renderTargetUAVs[index]; }
 
 		/* @brief : Return depth stencil view pointer (if not used : return nullptr)*/
 		ResourceViewPtr GetDepthStencilView() const noexcept { return _depthStencilView; }
@@ -84,30 +82,37 @@ namespace rhi::core
 
 		void SetRenderTargets(const gu::DynamicArray<TexturePtr>& textures);
 
-		void SetRenderTarget(const TexturePtr& texture, const size_t index = 0);
+		void SetRenderTarget(const TexturePtr& texture, const gu::uint32 index = 0);
 
 		void SetDepthStencil(const TexturePtr& texture);
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma endregion
+
+		#pragma region Public Constructor and Destructor
+		#pragma endregion
 
 
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+		/*! @brief デフォルトコンストラクタ*/
 		RHIFrameBuffer() = default;
 
+		/*! @brief デストラクタ*/
 		virtual ~RHIFrameBuffer();
 
-		explicit RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr);
+		/*! @brief 論理デバイス, レンダーパス, 複数のレンダーターゲット, デプスステンシルを使って初期化*/
+		explicit RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, 
+			const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr);
 
-		explicit RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr);
-		
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		/*! @brief 論理デバイス, レンダーパス, レンダーターゲット, デプスステンシルを使って初期化*/
+		explicit RHIFrameBuffer(const gu::SharedPointer<RHIDevice>& device, const gu::SharedPointer<core::RHIRenderPass>& renderPass, 
+			const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr);
+		#pragma endregion 
+
+		#pragma region Protected Function
+		#pragma endregion
+
+		#pragma region Protected Property
 		gu::SharedPointer<RHIDevice>     _device     = nullptr;
 		gu::SharedPointer<RHIRenderPass> _renderPass = nullptr;
 
@@ -119,9 +124,12 @@ namespace rhi::core
 		TexturePtr      _depthStencil     = nullptr;
 		ResourceViewPtr _depthStencilView = nullptr;
 		ResourceViewPtr _depthStencilSRV  = nullptr;
+		#pragma endregion
 
 	private:
+		#pragma region Private Function
 		void CheckResourceFormat();
+		#pragma endregion
 	};
 }
 #endif

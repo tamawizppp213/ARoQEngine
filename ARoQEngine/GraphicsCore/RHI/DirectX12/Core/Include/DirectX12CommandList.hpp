@@ -56,23 +56,20 @@ namespace rhi::directX12
 		*************************************************************************/
 		virtual void EndRecording () override;
 
-		/*----------------------------------------------------------------------
-		*  @brief : RenderPassを開始します.基本的には各Draw関数のBeginRecordingの後に呼ばれます
-		*----------------------------------------------------------------------*/
-		virtual void BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer) override;
-		
-		/*----------------------------------------------------------------------
-		*  @brief : RenderPassを終了します.基本的には各Draw関数のEndRecording前に呼ばれます
-		*----------------------------------------------------------------------*/
-		virtual void EndRenderPass() override;
-
 		/*!**********************************************************************
-		*  @brief     マルチレンダーターゲット, およびデプスステンシルの消去を行います. RenderPass, OMSetRenderTarget両方とも消去可能です
-		*  @param[in] const gu::SharedPointer<core::RHIRenderPass> & レンダーパス
-		*  @param[in] const gu::SharedPointer<core::RHIFrameBuffer>& フレームバッファ
+		*  @brief     新たなRenderPassを開始します. RenderPassの指定カラーを使った初期化なども行います.  
+		*  @param[in] const gu::SharedPointer<core::RHIRenderPass>& RenderPass : 開始するRenderPass
+		*  @param[in] const gu::SharedPointer<core::RHIFrameBuffer>& FrameBuffer : 開始するFrameBuffer
 		*  @return    void
 		*************************************************************************/
-
+		virtual void BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer) override;
+		
+		/*!**********************************************************************
+		*  @brief     既存のRenderPassを終了します.
+		*  @param[in] void
+		*  @return    void
+		*************************************************************************/
+		virtual void EndRenderPass() override;
 
 		/*!**********************************************************************
 		*  @brief     コマンドリストを記録状態に変更します.またコマンドアロケータ中のコマンドバッファの内容を先頭に戻します.

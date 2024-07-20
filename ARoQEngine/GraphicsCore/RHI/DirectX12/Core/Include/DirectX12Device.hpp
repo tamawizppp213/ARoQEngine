@@ -55,7 +55,7 @@ namespace rhi::directX12
 		*************************************************************************/
 		virtual void SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) override;
 
-		virtual gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
+		virtual gu::SharedPointer<core::RHIFrameBuffer> CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& renderTargets, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
 		virtual gu::SharedPointer<core::RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::GPUTexture>& renderTarget, const gu::SharedPointer<core::GPUTexture>& depthStencil = nullptr) override;
 		
@@ -215,8 +215,9 @@ namespace rhi::directX12
 
 		#pragma region Public Property
 		/*!**********************************************************************
-		*  @brief  DirectX12で使用する論理デバイスのComポインタ
-		*  @return DeviceComPtr : 論理デバイスのCOMポインタ. (GPUResourceの作成等に使用する)
+		*  @brief     DirectX12で使用する論理デバイスのComポインタ
+		*  @param[in] void
+		*  @return    DeviceComPtr : 論理デバイスのCOMポインタ. (GPUResourceの作成等に使用する)
 		*************************************************************************/
 		DeviceComPtr GetDevice() const noexcept { return _device; }
 

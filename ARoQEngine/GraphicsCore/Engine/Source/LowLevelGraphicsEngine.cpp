@@ -132,17 +132,11 @@ void LowLevelGraphicsEngine::StartUp(const GraphicsAPI apiVersion, void* hwnd, v
 	_hasInitialized = true;
 }
 
-/****************************************************************************
-*                     BeginDrawFrame
-****************************************************************************/
-/* @fn        void LowLevelGraphicsEngine::BeginDrawFrame()
-* 
-*  @brief     The first call to the Draw function generates the back buffer image and executes the Default render pass.
-* 
+/*!**********************************************************************
+*  @brief     CommandListを開き, 描画フレームをスタートします.
 *  @param[in] void
-* 
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void LowLevelGraphicsEngine::BeginDrawFrame()
 {
 	/*-------------------------------------------------------------------
@@ -159,17 +153,11 @@ void LowLevelGraphicsEngine::BeginDrawFrame()
 	_beginDrawFrameTimeStamp = _commandQueues[core::CommandListType::Graphics]->GetCalibrationTimestamp();
 }
 
-/****************************************************************************
-*                     EndDrawFrame
-****************************************************************************/
-/* @fn        void LowLevelGraphicsEngine::EndDrawFrame()
-* 
-*  @brief     Call at the end of the Draw function to execute the command list and Flip the Swapchain. 
-* 
+/*!**********************************************************************
+*  @brief     CommandListを閉じ, 描画フレームを終了し, バックバッファを切り替えます.
 *  @param[in] void
-* 
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void LowLevelGraphicsEngine::EndDrawFrame()
 {
 	/*-------------------------------------------------------------------
@@ -211,9 +199,9 @@ void LowLevelGraphicsEngine::EndDrawFrame()
 	SetUpFence(); // reset fence value for the next frame
 
 	_endDrawFrameTimeStamp = _commandQueues[core::CommandListType::Graphics]->GetCalibrationTimestamp();
-	//printf("%f\n", 1e6 / (end - start));
 	_gpuTimer = (_endDrawFrameTimeStamp.GPUMicroseconds - _beginDrawFrameTimeStamp.GPUMicroseconds) / 1e6;
 	_cpuTimer = (_endDrawFrameTimeStamp.CPUMicroseconds - _beginDrawFrameTimeStamp.CPUMicroseconds) / 1e6;
+	
 }
 
 /****************************************************************************

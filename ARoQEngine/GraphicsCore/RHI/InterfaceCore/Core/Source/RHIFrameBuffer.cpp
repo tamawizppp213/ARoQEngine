@@ -74,7 +74,7 @@ void RHIFrameBuffer::CheckResourceFormat()
 }
 #pragma endregion Prepare
 #pragma region Property
-Viewport RHIFrameBuffer::GetFullViewport(const size_t index) const noexcept
+Viewport RHIFrameBuffer::GetFullViewport(const gu::uint32 index) const noexcept
 {
 	assert(index < _renderTargets.Size());
 	return
@@ -85,7 +85,7 @@ Viewport RHIFrameBuffer::GetFullViewport(const size_t index) const noexcept
 		0.0f, 1.0f
 	};
 }
-ScissorRect RHIFrameBuffer::GetFullScissorRect(const size_t index) const noexcept
+ScissorRect RHIFrameBuffer::GetFullScissorRect(const gu::uint32 index) const noexcept
 {
 	assert(index < _renderTargets.Size());
 	return 
@@ -107,7 +107,7 @@ void RHIFrameBuffer::SetRenderTargets(const gu::DynamicArray<TexturePtr>& textur
 	}
 }
 
-void RHIFrameBuffer::SetRenderTarget(const TexturePtr& texture, const size_t index)
+void RHIFrameBuffer::SetRenderTarget(const TexturePtr& texture, const gu::uint32 index)
 {
 	assert(index < _renderTargets.Size());
 	_renderTargetViews[index]->SetTexture(texture);

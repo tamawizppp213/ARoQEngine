@@ -57,7 +57,7 @@ public:
 	#pragma region Static Const
 	static constexpr gu::uint32 FRAME_BUFFER_COUNT = 3;
 
-	static constexpr gu::uint32 VSYNC = 0; // 0: don't wait, 1:wait(60fps)
+	static constexpr gu::uint32 VSYNC = 1; // 0: don't wait, 1:wait(60fps)
 	#pragma endregion
 
 	#pragma region Public Function
@@ -70,21 +70,36 @@ public:
 	*************************************************************************/
 	void StartUp(const rhi::core::GraphicsAPI apiVersion, void* hwnd, void* hInstance);
 
-	/* @brief : The first call to the Draw function generates the back buffer image and executes the Default render pass. */
+	/*!**********************************************************************
+	*  @brief     CommandListを開き, 描画フレームをスタートします.
+	*  @param[in] void
+	*  @return    void
+	*************************************************************************/
 	void BeginDrawFrame();
 
-	/* @brief : Draw back buffer render pass*/
+	/*!**********************************************************************
+	*  @brief     バックバッファに書き込むためのRenderPassを開始します.
+	*  @param[in] void
+	*  @return    void
+	*************************************************************************/
 	void BeginSwapchainRenderPass();
 	
-	/* @brief : Call at the end of the Draw function to execute the command list and Flip the Swapchain. */
-	void EndDrawFrame();   // call at end draw frame
+	/*!**********************************************************************
+	*  @brief     CommandListを閉じ, 描画フレームを終了し, バックバッファを切り替えます.
+	*  @param[in] void
+	*  @return    void
+	*************************************************************************/
+	void EndDrawFrame();
 	
-	/* @brief : Resize swapchain*/
-	void OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight);
-	
-	/* @brief : Release all render resources*/
+	/*!**********************************************************************
+	*  @brief     グラフィクスエンジンを終了します. 
+	*  @param[in] void
+	*  @return    void
+	*************************************************************************/
 	void ShutDown();
 
+	/* @brief : Resize swapchain*/
+	void OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight);
 
 	/* @brief : Execute command queue. Return fence signal value */
 	std::uint64_t FlushGPUCommands(const rhi::core::CommandListType type, const bool stillMidFrame = false);
@@ -93,6 +108,7 @@ public:
 	void WaitExecutionGPUCommands(const rhi::core::CommandListType type, const std::uint64_t waitValue, const bool stopCPU);
 	
 	#pragma endregion
+
 	#pragma region Public Property
 	/* @brief : Device (Create GPU Resource Function List)*/
 	DevicePtr GetDevice() const noexcept { return _device; }

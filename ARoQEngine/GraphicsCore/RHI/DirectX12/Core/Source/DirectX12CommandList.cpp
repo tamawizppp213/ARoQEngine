@@ -204,20 +204,19 @@ void RHICommandList::Reset(const gu::SharedPointer<rhi::core::RHICommandAllocato
 	_beginRenderPass = false;
 }
 
-/****************************************************************************
-*                     BeginRenderPass
-****************************************************************************/
-/* @fn        void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer)
-*
-*  @brief     Begin render pass and frame buffer.
-*
-*  @param[in] const gu::SharedPointer<core::RHIRenderPass>& renderPass
-*  @param[in] const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer
-*
+/*!**********************************************************************
+*  @brief     コマンドリストを記録状態に変更します. これはDraw関数の最初に使用します @n
+*  @param[in] 描画フレーム中に呼ばれる場合にコマンドアロケータの中身をResetするかを決定するbool値.@n
+*             描画フレーム中に呼ぶのは, コマンドリストを切り替える際に使用される可能性があるためです.
 *  @return    void
-*****************************************************************************/
+*************************************************************************/
 void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass>& renderPass, const gu::SharedPointer<core::RHIFrameBuffer>& frameBuffer)
 {
+	if (_renderPass == renderPass && _frameBuffer == frameBuffer)
+	{
+		return;
+	}
+
 	/*-------------------------------------------------------------------
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/
@@ -249,20 +248,15 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 	_beginRenderPass = true;
 }
 
-/****************************************************************************
-*                     EndRenderPass
-****************************************************************************/
-/* @fn        void RHICommandList::EndRenderPass()
-*
-*  @brief     End render pass
-*
+/*!**********************************************************************
+*  @brief     既存のRenderPassを終了します.
 *  @param[in] void
-*
 *  @return    void
-*****************************************************************************/
+*************************************************************************/
 void RHICommandList::EndRenderPass()
 {
 	if (!_beginRenderPass) { return; }
+
 	if (_device->IsSupportedRenderPass()) 
 	{
 		_commandList->EndRenderPass(); 
@@ -1041,7 +1035,7 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 	---------------------------------------------------------------------*/
 	// render target 
 	gu::DynamicArray<D3D12_RENDER_PASS_RENDER_TARGET_DESC> rtvDescs(frameBuffer->GetRenderTargetSize());
-	for (uint64 i = 0; i < rtvDescs.Size(); ++i)
+	for (uint32 i = 0; i < rtvDescs.Size(); ++i)
 	{
 		// get rtv handle
 		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
@@ -1119,7 +1113,7 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 	-          Set CPU rtv and dsv descriptor handle
 	---------------------------------------------------------------------*/
 	gu::DynamicArray<D3D12_CPU_DESCRIPTOR_HANDLE> rtvHandle(renderTargets.Size());
-	for (size_t i = 0; i < rtvHandle.Size(); ++i)
+	for (gu::uint32 i = 0; i < rtvHandle.Size(); ++i)
 	{
 		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
 
