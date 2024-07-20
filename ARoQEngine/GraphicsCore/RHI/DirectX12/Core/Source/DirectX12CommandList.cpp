@@ -82,15 +82,12 @@ RHICommandList::RHICommandList(const gu::SharedPointer<rhi::core::RHIDevice>& de
 #pragma endregion Constructor and Destructor
 
 #pragma region Call Draw Frame
-/****************************************************************************
-*                     BeginRecording
-****************************************************************************/
-/* @brief     コマンドリストを記録状態に変更します. これはDraw関数の最初に使用します @n
+/*!**********************************************************************
+*  @brief     コマンドリストを記録状態に変更します. これはDraw関数の最初に使用します @n
 *  @param[in] 描画フレーム中に呼ばれる場合にコマンドアロケータの中身をResetするかを決定するbool値.@n
 *             描画フレーム中に呼ぶのは, コマンドリストを切り替える際に使用される可能性があるためです.
-*
 *  @return    void
-*****************************************************************************/
+*************************************************************************/
 void RHICommandList::BeginRecording(const bool stillMidFrame)
 {
 	/*-------------------------------------------------------------------
@@ -117,15 +114,11 @@ void RHICommandList::BeginRecording(const bool stillMidFrame)
 	_beginRenderPass = false;
 }
 
-/****************************************************************************
-*                     EndRecording
-****************************************************************************/
-/*  @brief     コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
-* 
+/*!**********************************************************************
+*  @brief     コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
 *  @param[in] void
-*
 *  @return    void
-*****************************************************************************/
+*************************************************************************/
 void RHICommandList::EndRecording()
 {
 	/*-------------------------------------------------------------------
@@ -133,6 +126,22 @@ void RHICommandList::EndRecording()
 	---------------------------------------------------------------------*/
 	if (IsClosed()) { _RPT0(_CRT_WARN, "Already closed. \n");  return; }
 	
+	/*-------------------------------------------------------------------
+	-          描画完了したFrameBufferを使って, レンダーターゲットの状態をPresentに変更します
+	---------------------------------------------------------------------*/
+	if (_frameBuffer)
+	{
+		/*-------------------------------------------------------------------
+		-          Layout Transition (RenderTarget -> Present)
+		---------------------------------------------------------------------*/
+		gu::DynamicArray<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
+		for (uint64 i = 0; i < _frameBuffer->GetRenderTargetSize(); ++i)
+		{
+			PushTransitionBarrier(_frameBuffer->GetRenderTargets()[i], states[i]);
+		}
+		FlushResourceBarriers();
+	}
+
 	/*-------------------------------------------------------------------
 	-      　記録状態からクローズ状態に以降する
 	---------------------------------------------------------------------*/
@@ -222,12 +231,19 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 	/*-------------------------------------------------------------------
 	-          Select renderpass and frame buffer action
 	---------------------------------------------------------------------*/
-	if (_device->IsSupportedRenderPass()) { BeginRenderPassImpl(gu::StaticPointerCast<directX12::RHIRenderPass>(renderPass), gu::StaticPointerCast<directX12::RHIFrameBuffer>(frameBuffer)); }
-	else                                  { OMSetFrameBuffer   (gu::StaticPointerCast<directX12::RHIRenderPass>(renderPass), gu::StaticPointerCast<directX12::RHIFrameBuffer>(frameBuffer)); }
+	if (_device->IsSupportedRenderPass()) 
+	{
+		BeginRenderPassImpl(gu::StaticPointerCast<directX12::RHIRenderPass>(renderPass), gu::StaticPointerCast<directX12::RHIFrameBuffer>(frameBuffer));
+	}
+	else 
+	{
+		OMSetFrameBuffer(gu::StaticPointerCast<directX12::RHIRenderPass>(renderPass), gu::StaticPointerCast<directX12::RHIFrameBuffer>(frameBuffer)); 
+	}
 
 	// 参照カウントが無限に増えつつけるバグ対応に使用しました.
 	if (_renderPass ) { _renderPass.Reset(); }
 	if (_frameBuffer) { _frameBuffer.Reset(); }
+
 	_renderPass  = renderPass;
 	_frameBuffer = frameBuffer;
 	_beginRenderPass = true;
@@ -247,17 +263,10 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 void RHICommandList::EndRenderPass()
 {
 	if (!_beginRenderPass) { return; }
-	if (_device->IsSupportedRenderPass()) { _commandList->EndRenderPass(); }
-
-	/*-------------------------------------------------------------------
-	-          Layout Transition (RenderTarget -> Present)
-	---------------------------------------------------------------------*/
-	gu::DynamicArray<core::ResourceState> states(_frameBuffer->GetRenderTargetSize(), core::ResourceState::Present);
-	for (uint64 i = 0; i < _frameBuffer->GetRenderTargetSize(); ++i)
+	if (_device->IsSupportedRenderPass()) 
 	{
-		PushTransitionBarrier(_frameBuffer->GetRenderTargets()[i], states[i]);
+		_commandList->EndRenderPass(); 
 	}
-	FlushResourceBarriers();
 
 	_beginRenderPass = false;
 }
@@ -265,22 +274,63 @@ void RHICommandList::EndRenderPass()
 #pragma endregion Call Draw Frame
 
 #pragma region GPU Command
-/****************************************************************************
-*                       SetDepthBounds
-****************************************************************************/
-/* @brief     深度が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させます.
-*  
-*  @param[in] const float 最小の深度情報
-*  @param[in] const float 最大の深度情報
-* 
-*  @return 　　void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     深度が指定の範囲に入っているかをテストし, 範囲内ならばピクセルシェーダーを動作させます.
+*  @param[in] const gu::float32 : 最小の深度情報
+*  @param[in] const gu::float32 : 最大の深度情報
+*  @return    void
+*************************************************************************/
 void RHICommandList::SetDepthBounds(const float minDepth, const float maxDepth)
 {
 #if PLATFORM_OS_WINDOWS
 	if (_device->IsSupportedDepthBoundsTest())
 	{
 		_commandList->OMSetDepthBounds(minDepth, maxDepth);
+	}
+#endif
+}
+
+/*!**********************************************************************
+*  @brief     Variable Rate ShadingをGraphics Pipeline上で有効化します. PerTile, PerPrimitiveを使用する場合はSetShadingRateImageも使用してください
+*  @note      https://sites.google.com/site/monshonosuana/directx%E3%81%AE%E8%A9%B1/directx%E3%81%AE%E8%A9%B1-%E7%AC%AC168%E5%9B%9E
+*  @oaram[in] 描画ピクセルの単位
+*  @param[in] const gu::DynamicArray<core::ShadingRateCombiner>& Imageの結合方法
+*  @return    void
+*************************************************************************/
+void RHICommandList::SetShadingRate(const core::ShadingRate shadingRate, const gu::DynamicArray<core::ShadingRateCombiner>& combiners)
+{
+	if constexpr (D3D12_MAX_COMMANDLIST_INTERFACE >= 5)
+	{
+		if (_device->IsSupportedVariableRateShading())
+		{
+			D3D12_SHADING_RATE dxShadingRate = EnumConverter::Convert(shadingRate);
+			gu::DynamicArray<D3D12_SHADING_RATE_COMBINER> dxCombiners(combiners.Size());
+
+			for (uint32 i = 0; i < combiners.Size(); ++i)
+			{
+				dxCombiners[i] = EnumConverter::Convert(combiners[i]);
+			}
+
+			_commandList->RSSetShadingRate(dxShadingRate, dxCombiners.Data());
+		}
+	}
+}
+
+/*!**********************************************************************
+*  @brief     VariableRateShading : ピクセルシェーダーの起動を1ピクセルごとではなく, 複数ピクセルを合わせて1回のシェーダー起動で処理するためのイメージを設定
+*  @param[in] const gu::SharedPointer<core::GPUTexture> : VariableRateShadingを適用するテクスチャ@n
+*             単一のミップを持つ2Dテクスチャで, DXGI_FORMAT_R8_UINTである必要がある. (D3D12_TEXTURE_LAYOUT_UNKNOWN)
+*  @return    void
+*************************************************************************/
+void RHICommandList::SetShadingRateImage(const gu::SharedPointer<core::GPUTexture>& texture)
+{
+#if D3D12_MAX_COMMANDLIST_INTERFACE >= 5
+	Check(texture);
+
+	if(_device->IsSupportedVariableRateShading())
+	{
+		const auto dxTexture = gu::StaticPointerCast<directX12::GPUTexture>(texture);
+		_commandList->RSSetShadingRateImage(dxTexture->GetResource().Get());
 	}
 #endif
 }
@@ -347,27 +397,21 @@ void RHICommandList::EndQuery(const core::QueryResultLocation& location)
 	_commandList->EndQuery(query->GetHeap().Get(), query->GetDxQueryType(), location.QueryID);
 }
 #pragma endregion Query
-/****************************************************************************
-*                       SetPrimitiveTopology
-****************************************************************************/
-/* @brief    頂点情報のつなぎ方を設定します. 
-* 
-*  @param[in] プリミティブのトポロジー種類
-* 
-*  @return 　　void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     頂点情報のつなぎ方を設定します.
+*  @param[in] const core::PrimitiveTopology : プリミティブのトポロジー種類
+*  @return    void
+*************************************************************************/
 void RHICommandList::SetPrimitiveTopology(const core::PrimitiveTopology topology)
 {
 	_commandList->IASetPrimitiveTopology(EnumConverter::Convert(topology));
 }
 
-/****************************************************************************
-*                       SetViewport
-****************************************************************************/
-/*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
-*  @param[in] const core::Viewport* : 描画領域を示す単一のビューポート
-*  @return 　　void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
+*  @param[in] const core::Viewport& : 描画領域を示す単一のビューポート
+*  @return    void
+*************************************************************************/
 void RHICommandList::SetViewport(const core::Viewport& viewport)
 {
 	const D3D12_VIEWPORT v = 
@@ -394,14 +438,12 @@ void RHICommandList::SetViewport(const core::Viewport& viewport)
 }
 
 
-/****************************************************************************
-*                       SetViewport
-****************************************************************************/
-/*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します
+/*!**********************************************************************
+*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
 *  @param[in] const core::Viewport* : 描画領域を記述した配列, もしくは単一のViewportのアドレス
-*  @param[in] const gu::uint32 : ビューポートの配列数
-*  @return 　　void
-*****************************************************************************/
+*  @param[in] const gu::uint32 : ビューポートの配列数 (Defaultは1)
+*  @return    void
+*************************************************************************/
 void RHICommandList::SetViewport(const core::Viewport* viewport, const gu::uint32 numViewport)
 {
 	gu::DynamicArray<D3D12_VIEWPORT> v(numViewport);
@@ -427,16 +469,12 @@ void RHICommandList::SetViewport(const core::Viewport* viewport, const gu::uint3
 	_commandList->RSSetScissorRects(numViewport, r.Data());
 }
 
-/****************************************************************************
-*                       SetViewport
-****************************************************************************/
-/* @brief     VRのような立体視を行う時に設定する描画領域です
-* 
+/*!**********************************************************************
+*  @brief     VRのような立体視を行う時に設定する描画領域です.シザー矩形もViewportに合わせて自動で設定します
 *  @param[in] const core::Viewport& 左側の視野を示す描画領域
 *  @param[in] const core::Viewport& 右側の視野を示す描画領域
-* 
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void RHICommandList::SetStereoViewport(const core::Viewport& leftView, const core::Viewport& rightView)
 {
 	D3D12_VIEWPORT viewports[2] = {};
@@ -465,16 +503,12 @@ void RHICommandList::SetStereoViewport(const core::Viewport& leftView, const cor
 	_commandList->RSSetScissorRects(2, scissorRects);
 }
 
-/****************************************************************************
-*                       SetScissorRect
-****************************************************************************/
-/*  @brief     ビューポート内で実際に描画される領域を制限するためのシザー矩形を手動で設定します.
-* 
+/*!**********************************************************************
+*  @brief     ビューポート内で実際に描画される領域を制限するためのシザー矩形を手動で設定します.
 *  @param[in] const core::ScissorRect* : 描画領域を制限するためのシザー矩形の配列
 *  @param[in] const gu::uint32 : シザー矩形の配列数
-* 
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void RHICommandList::SetScissor(const core::ScissorRect* rect, const gu::uint32 numRect)
 {
 	gu::DynamicArray<D3D12_RECT> r(numRect);
@@ -488,16 +522,12 @@ void RHICommandList::SetScissor(const core::ScissorRect* rect, const gu::uint32 
 	_commandList->RSSetScissorRects(numRect, r.Data());
 }
 
-/****************************************************************************
-*                       SetViewportAndScissor
-****************************************************************************/
-/* @brief     描画領域を示すビューポートと, その中で実際に描画される範囲を指定するシザー矩形をそれぞれ手動で設定します.
-* 
+/*!**********************************************************************
+*  @brief     描画領域を示すビューポートと, その中で実際に描画される範囲を指定するシザー矩形をそれぞれ手動で設定します.
 *  @param[in] const core::Viewport& 描画領域を示すビューポート
 *  @param[in] const core::ScissorRect& 実際に描画される範囲を示すシザー矩形
-* 
-*  @return 　　void
-*****************************************************************************/
+*  @return    void
+*************************************************************************/
 void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect)
 {
 	D3D12_VIEWPORT v = {};
@@ -520,11 +550,6 @@ void RHICommandList::SetViewportAndScissor(const core::Viewport& viewport, const
 
 void RHICommandList::SetVertexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer)
 {
-#if __DEBUG
-	// Is vertex buffer
-	assert(buffer->GetUsage() == core::BufferCreateFlags::VertexBuffer);
-#endif
-
 	// Set up vertex buffer view
 	D3D12_VERTEX_BUFFER_VIEW view = {
 		gu::StaticPointerCast<directX12::GPUBuffer>(buffer)->GetResourcePtr()->GetGPUVirtualAddress(),
@@ -558,44 +583,65 @@ void RHICommandList::SetComputePipeline(const gu::SharedPointer<core::GPUCompute
 void RHICommandList::SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot)
 {
 	auto views = gu::DynamicArray<D3D12_VERTEX_BUFFER_VIEW>(buffers.Size());
-	for (size_t i = 0; i < views.Size(); ++i)
+	for (uint64 i = 0; i < views.Size(); ++i)
 	{
-#if __DEBUG
-		assert(buffers[i]->GetUsage() == core::BufferCreateFlags::VertexBuffer);
-#endif
+		Check(buffers[i]->GetUsage() == core::BufferCreateFlags::VertexBuffer);
 		views[i].BufferLocation = gu::StaticPointerCast<directX12::GPUBuffer>(buffers[i])->GetResourcePtr()->GetGPUVirtualAddress();
-		views[i].SizeInBytes    = static_cast<UINT>(buffers[i]->GetTotalByteSize());
-		views[i].StrideInBytes  = static_cast<UINT>(buffers[i]->GetElementByteSize());
+		views[i].SizeInBytes    = static_cast<gu::uint32>(buffers[i]->GetTotalByteSize());
+		views[i].StrideInBytes  = static_cast<gu::uint32>(buffers[i]->GetElementByteSize());
 	}
 
-	_commandList->IASetVertexBuffers(static_cast<UINT>(startSlot), static_cast<UINT>(views.Size()), views.Data());
+	_commandList->IASetVertexBuffers(static_cast<gu::uint32>(startSlot), static_cast<UINT>(views.Size()), views.Data());
 }
 
+/*!**********************************************************************
+*  @brief     インデックスバッファを設定します. インデックスバッファはGPUバッファの形で渡されます.
+*  @param[in] const gu::SharedPointer<core::GPUBuffer>& インデックスバッファ
+*  @param[in] const core::PixelFormat インデックスの型 (DefaultはR32_UINT)
+*  @return    void
+*************************************************************************/
 void RHICommandList::SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::PixelFormat indexType)
 {
-#if __DEBUG
-	assert(buffer->GetUsage() == core::BufferCreateFlags::IndexBuffer);
-#endif
-
 	D3D12_INDEX_BUFFER_VIEW view = {};
 	view.BufferLocation = gu::StaticPointerCast<directX12::GPUBuffer>(buffer)->GetResourcePtr()->GetGPUVirtualAddress();
-	view.SizeInBytes    = static_cast<UINT>(buffer->GetTotalByteSize());
+	view.SizeInBytes    = static_cast<gu::uint32>(buffer->GetTotalByteSize());
 	view.Format         = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(indexType).PlatformFormat;
 
 	_commandList->IASetIndexBuffer(&view);
 }
 
-void RHICommandList::DrawIndexed(gu::uint32 indexCount, gu::uint32 startIndexLocation, gu::uint32 baseVertexLocation)
+/*!**********************************************************************
+*  @brief     インデックスがついているモデルでかつ, インスタンシング描画が必要ないプリミティブを描画します.
+*  @param[in] indexCount            : インデックスの総数
+*  @param[in] startIndexLocation    : インデックスを読み取り始める, インデックスバッファ中の配列要素数
+*  @param[in] baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
+*  @return    void
+*************************************************************************/
+void RHICommandList::DrawIndexed(const gu::uint32 indexCount, const gu::uint32 startIndexLocation, const gu::uint32 baseVertexLocation)
 {
 	_commandList->DrawIndexedInstanced(indexCount, 1, startIndexLocation, baseVertexLocation, 0);
 }
 
-
-void RHICommandList::DrawIndexedInstanced(gu::uint32 indexCountPerInstance, gu::uint32 instanceCount, gu::uint32 startIndexLocation, gu::uint32 baseVertexLocation, gu::uint32 startInstanceLocation)
+/*!**********************************************************************DrawIndexedIndirect
+*  @brief     インデックスがついているモデルでかつ, インスタンシング描画が必要となるプリミティブを描画します.
+*  @param[in] indexCountPerInstance : インスタンス毎に必要となるインデックスの総数
+*  @param[in] instance Count        : インスタンスの数
+*  @param[in] startIndexLocation    : インデックスを読み取り始める, インデックスバッファ中の配列要素数
+*  @param[in] baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
+*  @param[in] startInstanceLocation : 描画を行う最初のインスタンス番号
+*  @return    void
+*************************************************************************/
+void RHICommandList::DrawIndexedInstanced(const gu::uint32 indexCountPerInstance, const gu::uint32 instanceCount, const gu::uint32 startIndexLocation, const gu::uint32 baseVertexLocation, const gu::uint32 startInstanceLocation)
 {
 	_commandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 }
 
+/*!**********************************************************************
+*  @brief     インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です.
+*  @param[in] const gu::SharedPointer<core::GPUBuffer>& 引数バッファ
+*  @param[in] const gu::uint32 ドローコールの総数
+*  @return    void
+*************************************************************************/
 void RHICommandList::DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const gu::uint32 drawCallCount)
 {
 	const auto dxDevice = gu::StaticPointerCast<directX12::RHIDevice>(_device);
@@ -603,11 +649,28 @@ void RHICommandList::DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer
 	_commandList->ExecuteIndirect(dxDevice->GetDefaultDrawIndexedIndirectCommandSignature().Get(), drawCallCount, dxBuffer->GetResourcePtr(), 0, nullptr, 0);
 }
 
+/*!**********************************************************************
+*  @brief     Mesh shaderで使用する描画関数です.
+*  @param[in] const gu::uint32 threadGroupCountX : X方向のスレッドグループ数
+*  @param[in] const gu::uint32 threadGroupCountY : Y方向のスレッドグループ数
+*  @param[in] const gu::uint32 threadGroupCountZ : Z方向のスレッドグループ数
+*  @return    void
+*************************************************************************/
 void RHICommandList::DispatchMesh(const gu::uint32 threadGroupCountX, const gu::uint32 threadGroupCountY, const gu::uint32 threadGroupCountZ)
 {
-	_commandList->DispatchMesh(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
+	if constexpr (D3D12_MAX_COMMANDLIST_INTERFACE >= 6)
+	{
+		_commandList->DispatchMesh(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
+	}
 }
 
+/*!**********************************************************************
+*  @brief     Compute shaderで使用する描画関数です.
+*  @param[in] const gu::uint32 threadGroupCountX : X方向のスレッドグループ数
+*  @param[in] const gu::uint32 threadGroupCountY : Y方向のスレッドグループ数
+*  @param[in] const gu::uint32 threadGroupCountZ : Z方向のスレッドグループ数
+*  @return    void
+*************************************************************************/
 void RHICommandList::Dispatch(gu::uint32 threadGroupCountX, gu::uint32 threadGroupCountY, gu::uint32 threadGroupCountZ)
 {
 	_commandList->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
@@ -978,13 +1041,11 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 	---------------------------------------------------------------------*/
 	// render target 
 	gu::DynamicArray<D3D12_RENDER_PASS_RENDER_TARGET_DESC> rtvDescs(frameBuffer->GetRenderTargetSize());
-	for (size_t i = 0; i < rtvDescs.Size(); ++i)
+	for (uint64 i = 0; i < rtvDescs.Size(); ++i)
 	{
 		// get rtv handle
 		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
-#ifdef _DEBUG
-		assert(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
-#endif
+		Check(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
 
 		const auto rtvHandle = view->GetCPUHandler();
 		if (!rtvHandle.ptr) { continue; }
@@ -1012,9 +1073,7 @@ void RHICommandList::BeginRenderPassImpl(const gu::SharedPointer<directX12::RHIR
 		// get dsv handle
 		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
 
-#if __DEBUG
-		assert(view->GetResourceViewType() == core::ResourceViewType::DepthStencil);
-#endif
+		Check(view->GetResourceViewType() == core::ResourceViewType::DepthStencil);
 
 		const auto dsvHandle = view->GetCPUHandler();
 
@@ -1052,7 +1111,7 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 	/*-------------------------------------------------------------------
 	-          Get frame buffer resources
 	---------------------------------------------------------------------*/
-	auto renderTargets = frameBuffer->GetRenderTargets();
+	auto& renderTargets = frameBuffer->GetRenderTargets();
 	auto depthStencil  = frameBuffer->GetDepthStencil();
 	const bool hasRTV  = frameBuffer->GetRenderTargetSize() != 0;
 	const bool hasDSV  = frameBuffer->GetDepthStencil();
@@ -1064,9 +1123,7 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 	{
 		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetRenderTargetView(i));
 
-#if _DEBUG
-		assert(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
-#endif 
+		Check(view->GetResourceViewType() == core::ResourceViewType::RenderTarget);
 
 		rtvHandle[i] = view->GetCPUHandler();
 	}
@@ -1074,9 +1131,8 @@ void RHICommandList::OMSetFrameBuffer(const gu::SharedPointer<directX12::RHIRend
 	if (hasDSV)
 	{
 		const auto view = gu::StaticPointerCast<directX12::GPUResourceView>(frameBuffer->GetDepthStencilView());
-#if _DEBUG
-		assert(view->GetResourceViewType() == core::ResourceViewType::DepthStencil);
-#endif
+		Check(view->GetResourceViewType() == core::ResourceViewType::DepthStencil);
+
 		dsvHandle = view->GetCPUHandler();
 	}
 	/*-------------------------------------------------------------------

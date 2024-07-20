@@ -66,6 +66,22 @@ namespace rhi::vulkan
 		---------------------------------------------------------------------*/
 		void SetDepthBounds(const float minDepth, const float maxDepth) override {};
 
+		/*!**********************************************************************
+		*  @brief     Variable Rate ShadingをGraphics Pipeline上で有効化します. PerTile, PerPrimitiveを使用する場合はSetShadingRateImageも使用してください
+		*  @note      https://sites.google.com/site/monshonosuana/directx%E3%81%AE%E8%A9%B1/directx%E3%81%AE%E8%A9%B1-%E7%AC%AC168%E5%9B%9E
+		*  @oaram[in] 描画ピクセルの単位
+		*  @param[in] const gu::DynamicArray<core::ShadingRateCombiner>& Imageの結合方法
+		*  @return    void
+		*************************************************************************/
+		virtual void SetShadingRate(const core::ShadingRate shadingRate, const gu::DynamicArray<core::ShadingRateCombiner>& combiners) override {};
+
+		/*!**********************************************************************
+		*  @brief     VariableRateShading : ピクセルシェーダーの起動を1ピクセルごとではなく, 複数ピクセルを合わせて1回のシェーダー起動で処理するためのイメージを設定
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : VariableRateShadingを適用するテクスチャ
+		*  @return    void
+		*************************************************************************/
+		virtual void SetShadingRateImage(const gu::SharedPointer<core::GPUTexture>& texture) override {};
+
 		void SetDescriptorHeap(const gu::SharedPointer<core::RHIDescriptorHeap>& heap) override {};
 		
 		void SetResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& layout) override;
@@ -119,9 +135,9 @@ namespace rhi::vulkan
 		
 		void SetIndexBuffer  (const gu::SharedPointer<core::GPUBuffer>& buffer, const core::PixelFormat indexType = core::PixelFormat::R32_UINT) override;
 		
-		void DrawIndexed(gu::uint32 indexCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0)override;
+		void DrawIndexed(const gu::uint32 indexCount, const gu::uint32 startIndexLocation = 0, const gu::uint32 baseVertexLocation = 0)override;
 		
-		void DrawIndexedInstanced(gu::uint32 indexCountPerInstance, gu::uint32 instanceCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0, gu::uint32 startInstanceLocation = 0)override;
+		void DrawIndexedInstanced(const gu::uint32 indexCountPerInstance, const gu::uint32 instanceCount, const gu::uint32 startIndexLocation = 0, const gu::uint32 baseVertexLocation = 0, const gu::uint32 startInstanceLocation = 0)override;
 		
 		/*----------------------------------------------------------------------
 		*  @brief :インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です
@@ -204,7 +220,7 @@ namespace rhi::vulkan
 		/****************************************************************************
 		**                Public Property
 		*****************************************************************************/
-		VkCommandBuffer GetCommandList() { return _commandBuffer; }
+		VkCommandBuffer GetCommandList() const { return _commandBuffer; }
 		
 		void SetName(const gu::tstring& name);
 		/****************************************************************************

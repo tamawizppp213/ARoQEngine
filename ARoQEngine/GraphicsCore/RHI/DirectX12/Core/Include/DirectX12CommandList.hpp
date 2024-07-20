@@ -45,11 +45,14 @@ namespace rhi::directX12
 		*  @brief     コマンドリストを記録状態に変更します. これはDraw関数の最初に使用します @n
 		*  @param[in] 描画フレーム中に呼ばれる場合にコマンドアロケータの中身をResetするかを決定するbool値.@n
 		*             描画フレーム中に呼ぶのは, コマンドリストを切り替える際に使用される可能性があるためです.
+		*  @return    void
 		*************************************************************************/
 		virtual void BeginRecording(const bool stillMidFrame) override;
 
 		/*!**********************************************************************
-		*  @brief  コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
+		*  @brief     コマンドリストを記録状態から実行可能状態に変更します. これはDraw関数の最後に使用します
+		*  @param[in] void
+		*  @return    void
 		*************************************************************************/
 		virtual void EndRecording () override;
 
@@ -62,6 +65,14 @@ namespace rhi::directX12
 		*  @brief : RenderPassを終了します.基本的には各Draw関数のEndRecording前に呼ばれます
 		*----------------------------------------------------------------------*/
 		virtual void EndRenderPass() override;
+
+		/*!**********************************************************************
+		*  @brief     マルチレンダーターゲット, およびデプスステンシルの消去を行います. RenderPass, OMSetRenderTarget両方とも消去可能です
+		*  @param[in] const gu::SharedPointer<core::RHIRenderPass> & レンダーパス
+		*  @param[in] const gu::SharedPointer<core::RHIFrameBuffer>& フレームバッファ
+		*  @return    void
+		*************************************************************************/
+
 
 		/*!**********************************************************************
 		*  @brief     コマンドリストを記録状態に変更します.またコマンドアロケータ中のコマンドバッファの内容を先頭に戻します.
@@ -98,14 +109,34 @@ namespace rhi::directX12
 		virtual void SetDepthBounds(const float minDepth, const float maxDepth) override;
 
 		/*!**********************************************************************
+		*  @brief     Variable Rate ShadingをGraphics Pipeline上で有効化します. PerTile, PerPrimitiveを使用する場合はSetShadingRateImageも使用してください
+		*  @note      https://sites.google.com/site/monshonosuana/directx%E3%81%AE%E8%A9%B1/directx%E3%81%AE%E8%A9%B1-%E7%AC%AC168%E5%9B%9E
+		*  @oaram[in] 描画ピクセルの単位
+		*  @param[in] const gu::DynamicArray<core::ShadingRateCombiner>& Imageの結合方法
+		*  @return    void
+		*************************************************************************/
+		virtual void SetShadingRate(const core::ShadingRate shadingRate, const gu::DynamicArray<core::ShadingRateCombiner>& combiners) override;
+
+		/*!**********************************************************************
+		*  @brief     VariableRateShading : ピクセルシェーダーの起動を1ピクセルごとではなく, 複数ピクセルを合わせて1回のシェーダー起動で処理するためのイメージを設定
+		*  @param[in] const gu::SharedPointer<core::GPUTexture> : VariableRateShadingを適用するテクスチャ@n
+		*             単一のミップを持つ2Dテクスチャで, DXGI_FORMAT_R8_UINTである必要がある. (D3D12_TEXTURE_LAYOUT_UNKNOWN)
+		*  @note      https://learn.microsoft.com/en-us/windows/win32/api/d3d12/nf-d3d12-id3d12graphicscommandlist5-rssetshadingrateimage
+		*  @return    void
+		*************************************************************************/
+		virtual void SetShadingRateImage(const gu::SharedPointer<core::GPUTexture>& texture) override;
+
+		/*!**********************************************************************
 		*  @brief     頂点情報のつなぎ方を設定します. 
 		*  @param[in] const core::PrimitiveTopology : プリミティブのトポロジー種類
+		*  @return    void
 		*************************************************************************/
 		virtual void SetPrimitiveTopology(const core::PrimitiveTopology topology) override;
 
 		/*!**********************************************************************
 		*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
 		*  @param[in] const core::Viewport& : 描画領域を示す単一のビューポート
+		*  @return    void
 		*************************************************************************/
 		virtual void SetViewport(const core::Viewport& viewport) override;
 
@@ -113,6 +144,7 @@ namespace rhi::directX12
 		*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
 		*  @param[in] const core::Viewport* : 描画領域を記述した配列, もしくは単一のViewportのアドレス
 		*  @param[in] const gu::uint32 : ビューポートの配列数 (Defaultは1)
+		*  @return    void
 		*************************************************************************/
 		virtual void SetViewport(const core::Viewport* viewport, const gu::uint32 numViewport) override;
 		
@@ -120,6 +152,7 @@ namespace rhi::directX12
 		*  @brief     VRのような立体視を行う時に設定する描画領域です.シザー矩形もViewportに合わせて自動で設定します
 		*  @param[in] const core::Viewport& 左側の視野を示す描画領域
 		*  @param[in] const core::Viewport& 右側の視野を示す描画領域
+		*  @return    void
 		*************************************************************************/
 		virtual void SetStereoViewport(const core::Viewport& leftView, const core::Viewport& rightView) override ;
 
@@ -127,6 +160,7 @@ namespace rhi::directX12
 		*  @brief     ビューポート内で実際に描画される領域を制限するためのシザー矩形を手動で設定します.
 		*  @param[in] const core::ScissorRect* : 描画領域を制限するためのシザー矩形の配列
 		*  @param[in] const gu::uint32 : シザー矩形の配列数
+		*  @return    void
 		*************************************************************************/
 		virtual void SetScissor (const core::ScissorRect* rect, const gu::uint32 numRect = 1) override;
 		
@@ -134,6 +168,7 @@ namespace rhi::directX12
 		*  @brief     描画領域を示すビューポートと, その中で実際に描画される範囲を指定するシザー矩形をそれぞれ手動で設定します.
 		*  @param[in] const core::Viewport& 描画領域を示すビューポート
 		*  @param[in] const core::ScissorRect& 実際に描画される範囲を示すシザー矩形
+		*  @return    void
 		*************************************************************************/
 		virtual void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
 		
@@ -145,33 +180,53 @@ namespace rhi::directX12
 		
 		void SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
 		
+		/*!**********************************************************************
+		*  @brief     インデックスバッファを設定します. インデックスバッファはGPUバッファの形で渡されます.
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer>& インデックスバッファ
+		*  @param[in] const core::PixelFormat インデックスの型 (DefaultはR32_UINT)
+		*  @return    void
+		*************************************************************************/
 		void SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::PixelFormat indexType = core::PixelFormat::R32_UINT) override;
-		
-		/*----------------------------------------------------------------------
-		*  @brief : インデックスがついているモデルでかつ, インスタンシング描画が必要となるプリミティブを描画します.
-		*           indexCountPerInstance : インスタンス毎に必要となるインデックスの総数
-		*           instance Count        : インスタンスの数
-		*           startIndexLocation    : インデックスを読み取り始める, インデックスバッファ中の配列要素数
-		* 　　　　　　 baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
-		*           startInstanceLocation : 描画を行う最初のインスタンス番号
-		*----------------------------------------------------------------------*/
-		void DrawIndexedInstanced(gu::uint32 indexCountPerInstance, gu::uint32 instanceCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0, gu::uint32 startInstanceLocation = 0) override;
-		
-		/*----------------------------------------------------------------------
-		*  @brief : インデックスがついているモデルでかつ, インスタンシング描画が必要ないプリミティブを描画します.
-		*----------------------------------------------------------------------*/
-		void DrawIndexed(gu::uint32 indexCount, gu::uint32 startIndexLocation = 0, gu::uint32 baseVertexLocation = 0) override;
-		
-		/*----------------------------------------------------------------------
-		*  @brief :インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です
-		*----------------------------------------------------------------------*/
-		void DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const gu::uint32 drawCallCount) override;
 
-		/*----------------------------------------------------------------------
-		*  @brief :Mesh shaderで使用する描画関数です. 
-		*----------------------------------------------------------------------*/
-		void DispatchMesh(const gu::uint32 threadGroupCountX = 1, const gu::uint32 threadGroupCountY = 1, const gu::uint32 threadGroupCountZ = 1) override;
-        #pragma endregion Graphics Command Function
+		/*!**********************************************************************
+		*  @brief     インデックスがついているモデルでかつ, インスタンシング描画が必要ないプリミティブを描画します.
+		*  @param[in] indexCount            : インデックスの総数
+		*  @param[in] startIndexLocation    : インデックスを読み取り始める, インデックスバッファ中の配列要素数
+		*  @param[in] baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
+		*  @return    void
+		*************************************************************************/
+		virtual void DrawIndexed(const gu::uint32 indexCount, const gu::uint32 startIndexLocation = 0, const gu::uint32 baseVertexLocation = 0) override;
+		
+		/*!**********************************************************************DrawIndexedIndirect
+		*  @brief     インデックスがついているモデルでかつ, インスタンシング描画が必要となるプリミティブを描画します.
+		*  @param[in] indexCountPerInstance : インスタンス毎に必要となるインデックスの総数
+		*  @param[in] instance Count        : インスタンスの数
+		*  @param[in] startIndexLocation    : インデックスを読み取り始める, インデックスバッファ中の配列要素数
+		*  @param[in] baseVertexLocation    : 頂点バッファーから頂点を読み取る前に, 各インデックスに追加する値
+		*  @param[in] startInstanceLocation : 描画を行う最初のインスタンス番号
+		*  @return    void
+		*************************************************************************/
+		virtual void DrawIndexedInstanced(const gu::uint32 indexCountPerInstance, const gu::uint32 instanceCount, const gu::uint32 startIndexLocation = 0, const gu::uint32 baseVertexLocation = 0, const gu::uint32 startInstanceLocation = 0) override;
+
+		/*!**********************************************************************
+		*  @brief     インデックスバッファを持つモデルに対して, 引数バッファをGPUで設定, 描画を実行出来る関数です.
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer>& 引数バッファ
+		*  @param[in] const gu::uint32 ドローコールの総数
+		*  @return    void
+		*************************************************************************/
+		virtual void DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const gu::uint32 drawCallCount) override;
+
+		/*!**********************************************************************
+		*  @brief     Mesh shaderで使用する描画関数です. 
+		*  @param[in] const gu::uint32 threadGroupCountX : X方向のスレッドグループ数
+		*  @param[in] const gu::uint32 threadGroupCountY : Y方向のスレッドグループ数
+		*  @param[in] const gu::uint32 threadGroupCountZ : Z方向のスレッドグループ数
+		*  @return    void
+		*************************************************************************/
+		virtual void DispatchMesh(const gu::uint32 threadGroupCountX = 1, const gu::uint32 threadGroupCountY = 1, const gu::uint32 threadGroupCountZ = 1) override;
+        
+
+		#pragma endregion Graphics Command Function
 		/*-------------------------------------------------------------------
 		-                Compute Command
 		---------------------------------------------------------------------*/
@@ -179,6 +234,13 @@ namespace rhi::directX12
 		
 		void SetComputePipeline(const gu::SharedPointer<core::GPUComputePipelineState>& pipeline) override;
 		
+		/*!**********************************************************************
+		*  @brief     Compute shaderで使用する描画関数です.
+		*  @param[in] const gu::uint32 threadGroupCountX : X方向のスレッドグループ数
+		*  @param[in] const gu::uint32 threadGroupCountY : Y方向のスレッドグループ数
+		*  @param[in] const gu::uint32 threadGroupCountZ : Z方向のスレッドグループ数
+		*  @return    void
+		*************************************************************************/
 		void Dispatch(gu::uint32 threadGroupCountX = 1, gu::uint32 threadGroupCountY = 1, gu::uint32 threadGroupCountZ = 1) override;
 		
 		#pragma region Copy Function

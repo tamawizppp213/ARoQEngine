@@ -212,16 +212,48 @@ namespace rhi::core
 	#pragma endregion
 
 	#pragma region Pixel
+	/****************************************************************************
+	*				  			AxisShadingRate
+	****************************************************************************/
+	/*  @brief  ShadingRateのタイル辺
+	*****************************************************************************/
+	enum class AxisShadingRate : gu::uint8
+	{
+		Rate_1x = 0x0,
+		Rate_2x = 0x1,
+		Rate_4x = 0x2
+	};
 
+	/****************************************************************************
+	*				  			ShadingRate
+	****************************************************************************/
+	/*  @brief  ピクセルシェーダーの起動を1ピクセルごとではなく, 複数ピクセルを合わせて1回のシェーダー起動で処理する@n
+	*           その際の描画ピクセルの単位を指定します. 
+	*   @note   https://sites.google.com/site/monshonosuana/directx%E3%81%AE%E8%A9%B1/directx%E3%81%AE%E8%A9%B1-%E7%AC%AC168%E5%9B%9E
+	*****************************************************************************/
 	enum class ShadingRate : gu::uint8
 	{
-		K_1x1,
-		K_1x2,
-		K_2x1,
-		K_2x2,
-		K_2x4,
-		K_4x2,
-		K_4x4
+		Rate_1x1 = ((gu::uint8)AxisShadingRate::Rate_1x << 2) + (gu::uint8)AxisShadingRate::Rate_1x, //!< 1x1ピクセル
+		Rate_1x2 = ((gu::uint8)AxisShadingRate::Rate_1x << 2) + (gu::uint8)AxisShadingRate::Rate_2x, //!< 1x2ピクセル
+		Rate_2x1 = ((gu::uint8)AxisShadingRate::Rate_2x << 2) + (gu::uint8)AxisShadingRate::Rate_1x, //!< 2x1ピクセル
+		Rate_2x2 = ((gu::uint8)AxisShadingRate::Rate_2x << 2) + (gu::uint8)AxisShadingRate::Rate_2x, //!< 2x2ピクセル
+		Rate_2x4 = ((gu::uint8)AxisShadingRate::Rate_2x << 2) + (gu::uint8)AxisShadingRate::Rate_4x, //!< 2x4ピクセル
+		Rate_4x2 = ((gu::uint8)AxisShadingRate::Rate_4x << 2) + (gu::uint8)AxisShadingRate::Rate_2x, //!< 4x2ピクセル
+		Rate_4x4 = ((gu::uint8)AxisShadingRate::Rate_4x << 2) + (gu::uint8)AxisShadingRate::Rate_4x  //!< 4x4ピクセル
+	};
+
+	/****************************************************************************
+	*				  			ShadingRateCombiner
+	****************************************************************************/
+	/*  @brief  Global Shading RateとPrimitive毎のShading Rateが結合された後のimageに適用する方法
+	*****************************************************************************/
+	enum class ShadingRateCombiner : gu::uint8
+	{
+		PassThrough, //!< C.xy = A.xy
+		Override,	 //!< C.xy = B.xy
+		Min,         //!< C.xy = min(A.xy, B.xy)
+		Max,         //!< C.xy = max(A.xy, B.xy)
+		Sum          //!< C.xy = A.xy + B.xy
 	};
 
 	/****************************************************************************
