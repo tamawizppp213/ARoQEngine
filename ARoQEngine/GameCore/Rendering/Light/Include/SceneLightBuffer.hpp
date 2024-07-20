@@ -240,7 +240,7 @@ namespace engine
 		-              Create Light Data View
 		---------------------------------------------------------------------*/
 		{
-			const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(TLight), count);
+			const auto bufferInfo = GPUBufferMetaData::ConstantBuffer(sizeof(TLight), (gu::uint32)count);
 			const auto buffer     = device->CreateBuffer(bufferInfo, L"LightData");
 
 			_lightDataView = device->CreateResourceView(ResourceViewType::ConstantBuffer, buffer,0,0, nullptr);
