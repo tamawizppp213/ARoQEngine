@@ -719,7 +719,7 @@ void RHIDevice::CheckRenderPassSupport()
 		return;
 	}
 
-	_isSupportedRenderPass = options.RenderPassesTier >= D3D12_RENDER_PASS_TIER_0;
+	_isSupportedRenderPass = options.RenderPassesTier > D3D12_RENDER_PASS_TIER_0;
 	_renderPassTier        = options.RenderPassesTier;
 }
 

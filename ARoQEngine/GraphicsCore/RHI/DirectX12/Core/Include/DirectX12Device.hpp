@@ -352,6 +352,8 @@ namespace rhi::directX12
 		bool _isSupportedVariableRateShadingTier1 = true;
 		bool _isSupportedVariableRateShadingTier2 = true;
 		bool _isSupportedMeshShading              = true;
+
+		/*! @brief RenderPassのソフトウェアエミュレータを使用する場合, 処理性能が大幅に落ちるので, それ以外の場合にtrueになります. */
 		bool _isSupportedRenderPass               = true;
 		bool _isSupportedRayQuery                 = true;
 
