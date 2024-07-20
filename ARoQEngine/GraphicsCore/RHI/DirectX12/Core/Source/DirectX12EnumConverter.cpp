@@ -524,3 +524,39 @@ D3D12_QUERY_TYPE EnumConverter::Convert1(const rhi::core::QueryHeapType heapType
 	}
 }
 #pragma endregion Query
+#pragma region Variable Shading Rate
+D3D12_SHADING_RATE EnumConverter::Convert(const rhi::core::ShadingRate shadingRate)
+{
+	using enum core::ShadingRate;
+
+	switch(shadingRate)
+	{
+		case Rate_1x1: return D3D12_SHADING_RATE_1X1;
+		case Rate_1x2: return D3D12_SHADING_RATE_1X2;
+		case Rate_2x1: return D3D12_SHADING_RATE_2X1;
+		case Rate_2x2: return D3D12_SHADING_RATE_2X2;
+		case Rate_2x4: return D3D12_SHADING_RATE_2X4;
+		case Rate_4x2: return D3D12_SHADING_RATE_4X2;
+		case Rate_4x4: return D3D12_SHADING_RATE_4X4;
+		default:
+			throw std::runtime_error("not support shading rate (directX12 api)");
+	}
+}
+
+D3D12_SHADING_RATE_COMBINER EnumConverter::Convert(const rhi::core::ShadingRateCombiner combiner)
+{
+	using enum core::ShadingRateCombiner;
+
+	switch(combiner)
+	{
+		case PassThrough: return D3D12_SHADING_RATE_COMBINER_PASSTHROUGH;
+		case Override   : return D3D12_SHADING_RATE_COMBINER_OVERRIDE;
+		case Min        : return D3D12_SHADING_RATE_COMBINER_MIN;
+		case Max        : return D3D12_SHADING_RATE_COMBINER_MAX;
+		case Sum        : return D3D12_SHADING_RATE_COMBINER_SUM;
+		default:
+			throw std::runtime_error("not support shading rate combiner (directX12 api)");
+	}
+}
+
+#pragma endregion Variable Shading Rate

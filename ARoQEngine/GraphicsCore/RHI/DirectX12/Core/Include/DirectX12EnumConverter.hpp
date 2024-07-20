@@ -93,6 +93,10 @@ namespace rhi::directX12
 		static D3D12_QUERY_HEAP_TYPE Convert (const rhi::core::QueryHeapType heapType);
 		static D3D12_QUERY_TYPE      Convert1(const rhi::core::QueryHeapType heapType);
 #pragma endregion Query
+#pragma region Variable Shading Rate
+		static D3D12_SHADING_RATE Convert(const rhi::core::ShadingRate shadingRate);
+		static D3D12_SHADING_RATE_COMBINER Convert(const rhi::core::ShadingRateCombiner combiner);
+#pragma endregion Variable Shading Rate
 #pragma endregion GPUResource
 	};
 }
