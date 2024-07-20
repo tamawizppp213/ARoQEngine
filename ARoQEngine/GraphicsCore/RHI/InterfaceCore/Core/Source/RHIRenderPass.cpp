@@ -60,8 +60,15 @@ bool RHIRenderPass::Compatible(const gu::SharedPointer<RHIFrameBuffer>& frameBuf
 {
 	// the number of color attachments should greater than the number of render targets
 			// the depth attachment can not be null when the depth stencil is existed.
-	if (_colorAttachments.Size() < frameBuffer->GetRenderTargetSize()) return false;
-	if (!_depthAttachment.HasValue() && frameBuffer->GetDepthStencil()) return false;
+	if (_colorAttachments.Size() < frameBuffer->GetRenderTargetSize())
+	{
+		return false;
+	}
+
+	if (!_depthAttachment.HasValue() && frameBuffer->GetDepthStencil())
+	{
+		return false;
+	}
 
 	return true;
 }

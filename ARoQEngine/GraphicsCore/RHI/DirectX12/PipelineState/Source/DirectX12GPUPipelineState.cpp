@@ -68,7 +68,7 @@ void GPUGraphicsPipelineState::CompleteSetting(const gu::tstring& name)
 		desc.CachedPSO = D3D12_CACHED_PIPELINE_STATE{ _cachePSO->GetBufferPointer(), _cachePSO->GetBufferSize() };
 	}
 
-	for (int i = 0; i < _renderPass->GetColorAttachmentSize(); ++i)
+	for (gu::uint32 i = 0; i < _renderPass->GetColorAttachmentSize(); ++i)
 	{
 		desc.RTVFormats[i] = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_renderPass->GetColorAttachment(i)->Format).PlatformFormat;
 	}
