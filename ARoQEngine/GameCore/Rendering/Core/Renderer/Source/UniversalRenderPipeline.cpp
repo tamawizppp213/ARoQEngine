@@ -158,7 +158,7 @@ void URP::PrepareModelPipeline()
 	---------------------------------------------------------------------*/
 	auto blend = BlendProperty::AlphaBlend();
 
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(blend));
 	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid(false, FrontFace::Clockwise, CullingMode::Back)));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultSkinVertexElement()));

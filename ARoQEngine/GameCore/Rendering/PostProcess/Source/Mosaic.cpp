@@ -139,7 +139,7 @@ void Mosaic::PreparePipelineState(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
 	---------------------------------------------------------------------*/
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite(true)));
 	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));

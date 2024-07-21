@@ -146,7 +146,7 @@ void DebugDrawer::PreparePipelineState(const gu::tstring& name)
 	/*-------------------------------------------------------------------
 	-             Setup blend state (all alpha blend)
 	---------------------------------------------------------------------*/
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::AlphaBlend()));
 	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::WireFrame()));
 	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());

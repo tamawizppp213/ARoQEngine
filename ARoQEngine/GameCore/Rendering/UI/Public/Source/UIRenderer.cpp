@@ -322,7 +322,7 @@ void UIRenderer::PreparePipelineState(const gu::tstring& name)
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
 	---------------------------------------------------------------------*/
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState(factory->CreateSingleBlendState(core::BlendProperty::AlphaBlend()));
 	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));

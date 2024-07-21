@@ -251,7 +251,7 @@ void SampleRayTracingRectangle::BuildPipelineState()
 	/*-------------------------------------------------------------------
 	-             Set up graphic pipeline state
 	---------------------------------------------------------------------*/
-	_pipelineState = rhiDevice->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipelineState = rhiDevice->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipelineState->SetBlendState(factory->CreateBlendState());
 	_pipelineState->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipelineState->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));

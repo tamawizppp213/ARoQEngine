@@ -101,7 +101,7 @@ void SSAO::Draw(const ResourceViewPtr& scene)
 	/*-------------------------------------------------------------------
 	-            Execute SSAO
 	---------------------------------------------------------------------*/
-	commandList->BeginRenderPass(_engine->GetRenderPass(), frameBuffer);
+	commandList->BeginRenderPass(_engine->GetDrawClearRenderPass(), frameBuffer);
 	commandList->SetDescriptorHeap(_settingView->GetHeap());
 	commandList->SetResourceLayout(_ssaoResourceLayout);
 	commandList->SetGraphicsPipeline(_ssaoPipeline);
@@ -328,7 +328,7 @@ void SSAO::PreparePipelineState(const gu::tstring& name)
 	/*-------------------------------------------------------------------
 	-			Build Graphics pipeline state
 	---------------------------------------------------------------------*/
-	_ssaoPipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _ssaoResourceLayout);
+	_ssaoPipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _ssaoResourceLayout);
 	_ssaoPipeline->SetBlendState     (factory->CreateSingleBlendState(BlendProperty::OverWrite()));
 	_ssaoPipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid(false, FrontFace::Clockwise, CullingMode::Back)));
 	_ssaoPipeline->SetInputAssemblyState(factory->CreateInputAssemblyState({ GPUInputAssemblyState::GetDefaultVertexElement() }));
@@ -337,7 +337,7 @@ void SSAO::PreparePipelineState(const gu::tstring& name)
 	_ssaoPipeline->CompleteSetting();
 	_ssaoPipeline->SetName(name + SP("mainPSO"));
 
-	_blurPipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _ssaoResourceLayout);
+	_blurPipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _ssaoResourceLayout);
 	_blurPipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
 	_blurPipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid(false, FrontFace::Clockwise, CullingMode::Back)));
 	_blurPipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));

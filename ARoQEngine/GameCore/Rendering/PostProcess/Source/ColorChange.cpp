@@ -161,7 +161,7 @@ void ColorChange::PreparePipelineState(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
 	---------------------------------------------------------------------*/
-	_pipeline = CreateDefaultFullScreenGraphicsPipelineState(_engine->GetRenderPass(), _resourceLayout, vs, ps);
+	_pipeline = CreateDefaultFullScreenGraphicsPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout, vs, ps);
 	_pipeline->CompleteSetting();
 	_pipeline->SetName(addName + SP("PSO"));
 }

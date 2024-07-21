@@ -1806,18 +1806,30 @@ namespace rhi::core
 	#pragma endregion 
 
 	#pragma endregion GPUResource
-#pragma region Render Pass
+	#pragma region Render Pass
+	/****************************************************************************
+	*				  			AttachmentLoad
+	****************************************************************************/
+	/* @brief  RenderPassの開始時に, 既存のデータを特定の値で消去するかどうかを設定できます.
+	*****************************************************************************/
 	enum class AttachmentLoad : gu::uint8
 	{
-		Clear,    // at the beginning of a render path, erase already existing data with a specific value
-		Load,     
-		DontCare
+		Clear,   //!< すでにあるデータを特定の値で消去します. 
+		Load,    //!< すでにあるデータを読み込みます.
+		DontCare //!< ドライバやハードウェアに任せるようにします
 	};
+
+	/****************************************************************************
+	*				  			AttachmentStore
+	****************************************************************************/
+	/* @brief  RenderPassの終了時に, データをメモリに保存するかどうかを設定できます.
+	*****************************************************************************/
 	enum class AttachmentStore : gu::uint8
 	{
-		Store,
-		DontCare
+		Store,   //!< メモリを保存します. 
+		DontCare //!< ドライバやハードウェアに任せるようにします
 	};
+
 	/****************************************************************************
 	*				  			Attachment
 	****************************************************************************/
@@ -1829,6 +1841,17 @@ namespace rhi::core
 		/****************************************************************************
 		**                Static Function
 		*****************************************************************************/
+		static Attachment DrawContinue( const PixelFormat format,
+			const ResourceState initialState  = ResourceState::RenderTarget,
+			const ResourceState finalState    = ResourceState::RenderTarget,
+			const AttachmentLoad load         = AttachmentLoad::Load,
+			const AttachmentStore store       = AttachmentStore::Store,
+			const MultiSample sample          = MultiSample::Count1
+		)
+		{
+			return Attachment(format, initialState, finalState, load, store, AttachmentLoad::DontCare, AttachmentStore::DontCare, sample);
+		}
+
 		static Attachment RenderTarget( const PixelFormat format,
 			const ResourceState  initialState  = ResourceState::RenderTarget,
 			const ResourceState  finalState    = ResourceState::Present,
@@ -1904,8 +1927,8 @@ namespace rhi::core
 
 		
 	};
-#pragma endregion       Render Pass
-#pragma region Query
+	#pragma endregion       Render Pass
+	#pragma region Query
 	/****************************************************************************
 	*				  			QueryType
 	****************************************************************************/

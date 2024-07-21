@@ -128,13 +128,26 @@ public:
 	*************************************************************************/
 	DevicePtr GetDevice() const noexcept { return _device; }
 
-	/* @brief : CommandList (Regist GPU Commands) */
+	/*!**********************************************************************
+	*  @brief     ComandListを取得します.
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @return    CommandListPtr : CommandListのSharedPointer
+	*************************************************************************/
 	CommandListPtr GetCommandList(const rhi::core::CommandListType type) const noexcept { return _commandLists.At(type); }
 	
+	/*!**********************************************************************
+	*  @brief     ComandQueueを取得します.
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @return    CommandQueuePtr : CommandQueueのSharedPointer
+	*************************************************************************/
 	CommandQueuePtr GetCommandQueue(const rhi::core::CommandListType type) const noexcept { return _commandQueues.At(type); }
 
-	/* @brief : Default RenderPass*/
-	gu::SharedPointer<rhi::core::RHIRenderPass> GetRenderPass() const noexcept { return _renderPass; }
+	/*!**********************************************************************
+	*  @brief     デフォルトのRenderPassの取得. 
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @return    CommandQueuePtr : CommandQueueのSharedPointer
+	*************************************************************************/
+	gu::SharedPointer<rhi::core::RHIRenderPass> GetDrawClearRenderPass() const noexcept { return _renderPass; }
 
 	/* @brief : Non clear render pass*/
 	gu::SharedPointer<rhi::core::RHIRenderPass> GetDrawContinueRenderPass() const noexcept { return _drawContinueRenderPass; }

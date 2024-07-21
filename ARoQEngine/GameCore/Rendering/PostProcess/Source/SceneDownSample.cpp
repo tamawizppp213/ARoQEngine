@@ -162,7 +162,7 @@ void SceneDownSample::PreparePipelineState(const gu::tstring& addName)
 		vs->Compile({ ShaderType::Vertex, SP("Shader\\PostProcess\\ShaderScreenPass.hlsl"     ), SP("MainVS"), { SP("Shader\\Core")} });
 		ps->Compile({ ShaderType::Pixel , SP("Shader\\PostProcess\\ShaderSceneDownSample.hlsl"), SP("MainPS"), { SP("Shader\\Core")}, _useMacros });
 
-		_pipeline = CreateDefaultFullScreenGraphicsPipelineState(_engine->GetRenderPass(), _resourceLayout, vs, ps);
+		_pipeline = CreateDefaultFullScreenGraphicsPipelineState(_engine->GetDrawContinueRenderPass(), _resourceLayout, vs, ps);
 		_pipeline->SetName(CombineDebugName(addName, SP("PSO")));
 	}
 }

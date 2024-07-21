@@ -205,7 +205,7 @@ void SkyDome::PreparePipelineState(const gu::tstring& addName)
 	vs->Compile({ ShaderType::Vertex, SP("Shader\\EnvironmentMap\\ShaderSkybox.hlsl"), SP("VSMain"),  { SP("Shader\\Core") } });
 	ps->Compile({ ShaderType::Pixel , SP("Shader\\EnvironmentMap\\ShaderSkybox.hlsl"), SP("PSMain"),  { SP("Shader\\Core") } });
 
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetRenderPass(), _resourceLayout);
+	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
 	_pipeline->SetBlendState        (factory->CreateSingleBlendState(BlendProperty::AlphaBlend()));
 	_pipeline->SetRasterizerState   (factory->CreateRasterizerState(RasterizerProperty::Solid()));
 	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
