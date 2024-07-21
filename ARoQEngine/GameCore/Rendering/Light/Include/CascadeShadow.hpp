@@ -80,7 +80,7 @@ namespace engine
 		/****************************************************************************
 		**                Public Property
 		*****************************************************************************/
-		ResourceViewPtr GetShadowInfoView() const noexcept { return _shadowInfoView; }
+		GPUResourceViewPtr GetShadowInfoView() const noexcept { return _shadowInfoView; }
 
 
 
@@ -107,9 +107,9 @@ namespace engine
 		gu::DynamicArray<GameModelPtr> _gameModels = {};
 
 		// GPU binding resource
-		ResourceLayoutPtr   _resourceLayout = nullptr;
-		GraphicsPipelinePtr _pipeline       = nullptr;
-		ResourceViewPtr     _shadowInfoView = nullptr;
+		RHIResourceLayoutPtr   _resourceLayout = nullptr;
+		GPUGraphicsPipelinePtr _pipeline       = nullptr;
+		GPUResourceViewPtr     _shadowInfoView = nullptr;
 
 		// Camera game world position
 		CameraPtr        _lightCamera   = nullptr;

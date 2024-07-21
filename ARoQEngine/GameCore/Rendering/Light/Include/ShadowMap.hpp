@@ -45,16 +45,16 @@ namespace engine
 		/****************************************************************************
 		**                Public Function
 		*****************************************************************************/
-		void Draw(const ResourceViewPtr& scene);
+		void Draw(const GPUResourceViewPtr& scene);
 
 		void Add(const GameModelPtr& gameModel);
 
 		/****************************************************************************
 		**                Public Property
 		*****************************************************************************/
-		FrameBufferPtr GetFrameBuffer() const noexcept { return _frameBuffer; }
+		RHIFrameBufferPtr GetFrameBuffer() const noexcept { return _frameBuffer; }
 
-		ResourceViewPtr GetHalfDownSampledSRV() const noexcept;
+		GPUResourceViewPtr GetHalfDownSampledSRV() const noexcept;
 
 		/****************************************************************************
 		**                Constructor and Destructor
@@ -82,14 +82,14 @@ namespace engine
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 		
 		// GPU resource binding
-		FrameBufferPtr      _frameBuffer    = nullptr;
-		RenderPassPtr       _renderPass     = nullptr;
-		GraphicsPipelinePtr _pipeline       = nullptr;
-		ResourceLayoutPtr   _resourceLayout = nullptr;
+		RHIFrameBufferPtr      _frameBuffer    = nullptr;
+		RHIRenderPassPtr       _renderPass     = nullptr;
+		GPUGraphicsPipelinePtr _pipeline       = nullptr;
+		RHIResourceLayoutPtr   _resourceLayout = nullptr;
 
 		// texture rectangle mesh
-		gu::DynamicArray<BufferPtr> _vertexBuffers = {};
-		gu::DynamicArray<BufferPtr> _indexBuffers = {};
+		gu::DynamicArray<GPUBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<GPUBufferPtr> _indexBuffers = {};
 
 		// registered game models.
 		gu::DynamicArray<GameModelPtr> _gameModels = {};

@@ -39,8 +39,8 @@ namespace engine
 	class Mesh : public gu::NonCopyable
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
-		using VertexBufferPtr  = BufferPtr;
-		using IndexBufferPtr   = BufferPtr;
+		using VertexBufferPtr  = GPUBufferPtr;
+		using IndexBufferPtr   = GPUBufferPtr;
 		using MaterialPtr      = gu::SharedPointer<Material>;
 	public:
 		/****************************************************************************

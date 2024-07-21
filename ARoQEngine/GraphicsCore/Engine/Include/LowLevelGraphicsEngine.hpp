@@ -14,6 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHIDevice.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHICommandList.hpp"
 
@@ -24,20 +25,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace rhi::core
-{
-	class RHIInstance;
-	//class RHIDevice;
-	class RHIDisplayAdapter;
-	//class RHICommandList;
-	class RHICommandQueue;
-	class RHISwapchain;
-	class RHIFence;
-	class RHIDescriptorHeap;
-	class RHIRenderPass;
-	class RHIFrameBuffer;
-	class RHIQuery;
-}
+
 /****************************************************************************
 *				  			LowLevelGraphicsEngine
 ****************************************************************************/
@@ -46,13 +34,6 @@ namespace rhi::core
 *****************************************************************************/
 class LowLevelGraphicsEngine final : public gu::NonCopyAndMove
 {
-protected:
-	using InstancePtr     = gu::SharedPointer<rhi::core::RHIInstance>;
-	using AdapterPtr      = gu::SharedPointer<rhi::core::RHIDisplayAdapter>;
-	using DevicePtr       = gu::SharedPointer<rhi::core::RHIDevice>;
-	using CommandListPtr  = gu::SharedPointer<rhi::core::RHICommandList>;
-	using CommandQueuePtr = gu::SharedPointer<rhi::core::RHICommandQueue>;
-
 public:
 	#pragma region Static Const
 	static constexpr gu::uint32 FRAME_BUFFER_COUNT = 3;
@@ -126,21 +107,21 @@ public:
 	*  @param[in] void
 	*  @return    DevicePtr : 論理デバイスのSharedPointer
 	*************************************************************************/
-	__forceinline DevicePtr GetDevice() const noexcept { return _device; }
+	__forceinline RHIDevicePtr GetDevice() const noexcept { return _device; }
 
 	/*!**********************************************************************
 	*  @brief     ComandListを取得します.
 	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
 	*  @return    CommandListPtr : CommandListのSharedPointer
 	*************************************************************************/
-	__forceinline CommandListPtr GetCommandList(const rhi::core::CommandListType type) const noexcept { return _commandLists.At(type); }
+	__forceinline RHICommandListPtr GetCommandList(const rhi::core::CommandListType type) const noexcept { return _commandLists.At(type); }
 	
 	/*!**********************************************************************
 	*  @brief     ComandQueueを取得します.
 	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
 	*  @return    CommandQueuePtr : CommandQueueのSharedPointer
 	*************************************************************************/
-	__forceinline CommandQueuePtr GetCommandQueue(const rhi::core::CommandListType type) const noexcept { return _commandQueues.At(type); }
+	__forceinline RHICommandQueuePtr GetCommandQueue(const rhi::core::CommandListType type) const noexcept { return _commandQueues.At(type); }
 
 	/*!**********************************************************************
 	*  @brief     デフォルトのRenderPassの取得. レンダーパス開始時に, 画面のクリアを行います.  
@@ -215,19 +196,19 @@ protected:
 	rhi::core::GraphicsAPI _apiVersion = rhi::core::GraphicsAPI::Unknown;
 
 	/* @brief : graphics API instance (select graphics api)*/
-	InstancePtr _instance = nullptr;
+	RHIInstancePtr _instance = nullptr;
 
 	/* @brief : gpu display adapter (basically discrete gpu adapter)*/
-	AdapterPtr _adapter = nullptr;
+	RHIDisplayAdapterPtr _adapter = nullptr;
 
 	/* @brief : Logical Device*/
-	DevicePtr  _device = nullptr;
+	RHIDevicePtr  _device = nullptr;
 
 	/* @ brief : Command queue (graphics, compute, transfer)*/
 	gu::SortedMap<rhi::core::CommandListType, gu::SharedPointer<rhi::core::RHICommandQueue>> _commandQueues;
 
 	/* @brief : Command List*/
-	gu::SortedMap<rhi::core::CommandListType, CommandListPtr> _commandLists;
+	gu::SortedMap<rhi::core::CommandListType, RHICommandListPtr> _commandLists;
 	
 	/* @brief : Default rendering pass*/
 	gu::SharedPointer<rhi::core::RHIRenderPass> _renderPass = { nullptr }; 

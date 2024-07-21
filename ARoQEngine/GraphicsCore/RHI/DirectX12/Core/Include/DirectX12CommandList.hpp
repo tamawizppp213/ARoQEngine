@@ -33,8 +33,7 @@ namespace rhi::directX12
 	/****************************************************************************
 	*				  			RHICommandList
 	****************************************************************************/
-	/* @class     RHICommandList
-	*  @brief     GPUの描画命令をまとめたクラス. BeginRecordingとEndRecordingは1フレームの開始と終了時に呼んでください.
+	/* @brief     GPUの描画命令をまとめたクラス. BeginRecordingとEndRecordingは1フレームの開始と終了時に呼んでください.
 	*****************************************************************************/
 	class RHICommandList : public rhi::core::RHICommandList, public gu::EnableSharedFromThis<RHICommandList>
 	{
@@ -169,13 +168,18 @@ namespace rhi::directX12
 		*************************************************************************/
 		virtual void SetViewportAndScissor(const core::Viewport& viewport, const core::ScissorRect& rect) override;
 		
-		void SetResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override;
+		/*!**********************************************************************
+		*  @brief     リソースレイアウトを設定します. リソースレイアウトはGPUリソースのバインド方法を設定します.
+		*  @param[in] const gu::SharedPointer<core::RHIResourceLayout>& リソースレイアウト
+		*  @return    void
+		*************************************************************************/
+		virtual void SetResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override;
 		
-		void SetGraphicsPipeline(const gu::SharedPointer<core::GPUGraphicsPipelineState>& pipelineState) override;
+		virtual void SetGraphicsPipeline(const gu::SharedPointer<core::GPUGraphicsPipelineState>& pipelineState) override;
 		
-		void SetVertexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer) override ;
+		virtual void SetVertexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer) override ;
 		
-		void SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
+		virtual void SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
 		
 		/*!**********************************************************************
 		*  @brief     インデックスバッファを設定します. インデックスバッファはGPUバッファの形で渡されます.

@@ -55,11 +55,11 @@ namespace engine
 
 		struct PSResource
 		{
-			GraphicsPipelinePtr Pipeline    = nullptr;
-			RenderPassPtr       RenderPass  = nullptr;
-			FrameBufferPtr      FrameBuffer = nullptr;
-			gu::DynamicArray<BufferPtr> VB = {};
-			gu::DynamicArray<BufferPtr> IB = {};
+			GPUGraphicsPipelinePtr Pipeline    = nullptr;
+			RHIRenderPassPtr       RenderPass  = nullptr;
+			RHIFrameBufferPtr      FrameBuffer = nullptr;
+			gu::DynamicArray<GPUBufferPtr> VB = {};
+			gu::DynamicArray<GPUBufferPtr> IB = {};
 			~PSResource() { VB.Clear(); IB.Clear(); VB.ShrinkToFit(); IB.ShrinkToFit(); }
 		};
 
@@ -69,17 +69,17 @@ namespace engine
 		*****************************************************************************/
 		void OnResize(const std::uint32_t newWidth, const std::uint32_t newHeight);
 		
-		void Draw(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex = 0);
+		void Draw(const RHIFrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex = 0);
 
-		void DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPtr& destUAV);
+		void DrawCS(const GPUResourceViewPtr& sourceSRV, const GPUResourceViewPtr& destUAV);
 		
-		void DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex = 0);
+		void DrawPS(const RHIFrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex = 0);
 		/****************************************************************************
 		**                Public Property
 		*****************************************************************************/
-		ResourceViewPtr GetHalfDownSampledSRV() const noexcept { return _shaderResourceViews[1]; }
+		GPUResourceViewPtr GetHalfDownSampledSRV() const noexcept { return _shaderResourceViews[1]; }
 
-		ResourceViewPtr GetHalfDownSampledUAV() const noexcept { return _unorderedResourceViews[1]; }
+		GPUResourceViewPtr GetHalfDownSampledUAV() const noexcept { return _unorderedResourceViews[1]; }
 
 		void SetUpWeightTable(float sigma);
 		
@@ -119,13 +119,13 @@ namespace engine
 
 		// original + xBlur + yBlur texture size
 		TextureSizeParameter _textureSize;
-		ResourceViewPtr      _textureSizeView = nullptr;
+		GPUResourceViewPtr      _textureSizeView = nullptr;
 
 		// gaussian blur weight parameters [in total 8 count]
-		ResourceViewPtr      _blurParameterView = nullptr;
+		GPUResourceViewPtr      _blurParameterView = nullptr;
 
 		// pipeline state resources
-		ResourceLayoutPtr _resourceLayout = nullptr;
+		RHIResourceLayoutPtr _resourceLayout = nullptr;
 
 		bool _useCS = true;
 
@@ -134,21 +134,21 @@ namespace engine
 		/*-------------------------------------------------------------------
 		-               Compute Shader Variables
 		---------------------------------------------------------------------*/
-		ComputePipelinePtr _computePipeline = nullptr;
+		GPUComputePipelinePtr _computePipeline = nullptr;
 
 		/*-------------------------------------------------------------------
 		-               Vertex and Pixel Shader Variables
 		---------------------------------------------------------------------*/
 		PSResource _xBlur;
 		PSResource _yBlur;
-		GraphicsPipelinePtr _graphicsPipeline = nullptr;
+		GPUGraphicsPipelinePtr _graphicsPipeline = nullptr;
 
-		gu::DynamicArray<BufferPtr> _vertexBuffers = {};
-		gu::DynamicArray<BufferPtr> _indexBuffers  = {};
+		gu::DynamicArray<GPUBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<GPUBufferPtr> _indexBuffers  = {};
 
-		ResourceViewPtr _shaderResourceViews[ViewCount];
-		ResourceViewPtr _unorderedResourceViews[ViewCount];
-		ResourceViewPtr _renderTargetResourceViews[ViewCount];
+		GPUResourceViewPtr _shaderResourceViews[ViewCount];
+		GPUResourceViewPtr _unorderedResourceViews[ViewCount];
+		GPUResourceViewPtr _renderTargetResourceViews[ViewCount];
 
 		/*-------------------------------------------------------------------
 		-               Const value

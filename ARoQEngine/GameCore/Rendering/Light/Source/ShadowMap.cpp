@@ -75,7 +75,7 @@ ShadowMap::~ShadowMap()
 *
 *  @return Å@Å@void
 *****************************************************************************/
-void ShadowMap::Draw(const ResourceViewPtr& scene)
+void ShadowMap::Draw(const GPUResourceViewPtr& scene)
 {
 	/*-------------------------------------------------------------------
 	-               Set variables

@@ -103,9 +103,12 @@ namespace rhi::core
 		bool IsClosed() const { return !_isOpen; }
 
 		#pragma endregion Main Draw Frame
-		/*-------------------------------------------------------------------
-		-               Common command
-		---------------------------------------------------------------------*/
+
+		/*!**********************************************************************
+		*  @brief     リソースレイアウトを設定します. リソースレイアウトはGPUリソースのバインド方法を設定します.
+		*  @param[in] const gu::SharedPointer<core::RHIResourceLayout>& リソースレイアウト
+		*  @return    void
+		*************************************************************************/
 		virtual void SetResourceLayout(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0;
 		virtual void SetDescriptorHeap(const gu::SharedPointer<RHIDescriptorHeap>& heap) = 0;
 		//virtual void SetConstant32Bits(gu::DynamicArray<Value32Bit>& values) = 0;

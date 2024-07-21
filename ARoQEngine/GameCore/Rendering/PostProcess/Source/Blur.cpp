@@ -98,7 +98,7 @@ void GaussianBlur::OnResize(const std::uint32_t newWidth, const std::uint32_t ne
 *  @param[in,out] GPUResource* renderTarget
 *  @return @@void
 *****************************************************************************/
-void GaussianBlur::DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPtr& destUAV)
+void GaussianBlur::DrawCS(const GPUResourceViewPtr& sourceSRV, const GPUResourceViewPtr& destUAV)
 {
 	const auto device      = _engine->GetDevice();
 	const auto commandList = _engine->GetCommandList(CommandListType::Compute);
@@ -138,7 +138,7 @@ void GaussianBlur::DrawCS(const ResourceViewPtr& sourceSRV, const ResourceViewPt
 	_engine->WaitExecutionGPUCommands(CommandListType::Graphics, waitValue, false);
 }
 
-void GaussianBlur::DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex)
+void GaussianBlur::DrawPS(const RHIFrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex)
 {
 	Check(!_useCS);
 
@@ -199,7 +199,7 @@ void GaussianBlur::DrawPS(const FrameBufferPtr& frameBuffer, const std::uint32_t
 	commandList->EndRenderPass();
 }
 
-void GaussianBlur::Draw(const FrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex)
+void GaussianBlur::Draw(const RHIFrameBufferPtr& frameBuffer, const std::uint32_t renderTargetIndex)
 {
 	// compute shader draw function
 	if (_useCS)
