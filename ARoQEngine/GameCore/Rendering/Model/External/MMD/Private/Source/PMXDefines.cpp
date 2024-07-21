@@ -15,7 +15,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-using namespace gc::file::pmx;
+using namespace engine::file::pmx;
 using namespace platform::core::file;
 using namespace gu;
 
@@ -173,7 +173,7 @@ void PMXVertex::Read(const gu::SharedPointer<platform::core::file::IFileHandle>&
 		/*-------------------------------------------------------------------
 		-             Weight: BDEF 1 (boneIndices[0])
 		---------------------------------------------------------------------*/
-		case gc::file::pmx::PMXBoneWeightType::BDEF1:
+		case engine::file::pmx::PMXBoneWeightType::BDEF1:
 		{
 			BoneIndex[0] = ReadIndex(fileHandle, header.BoneIndexSize);
 			break;
@@ -181,7 +181,7 @@ void PMXVertex::Read(const gu::SharedPointer<platform::core::file::IFileHandle>&
 		/*-------------------------------------------------------------------
 		-             Weight: BDEF 2 (boneIndices[0-1] + boneWeights[0]  (PMD Format weight(0.0-1.0))
 		---------------------------------------------------------------------*/
-		case gc::file::pmx::PMXBoneWeightType::BDEF2:
+		case engine::file::pmx::PMXBoneWeightType::BDEF2:
 		{
 			BoneIndex[0] = ReadIndex(fileHandle, header.BoneIndexSize);
 			BoneIndex[1] = ReadIndex(fileHandle, header.BoneIndexSize);
@@ -191,7 +191,7 @@ void PMXVertex::Read(const gu::SharedPointer<platform::core::file::IFileHandle>&
 		/*-------------------------------------------------------------------
 		-             Weight: BDEF 4 (boneIndices[0-3] + boneWeights[0-3] (may not weight total = 1.0))
 		---------------------------------------------------------------------*/
-		case gc::file::pmx::PMXBoneWeightType::BDEF4:
+		case engine::file::pmx::PMXBoneWeightType::BDEF4:
 		{
 			BoneIndex[0] = ReadIndex(fileHandle, header.BoneIndexSize);
 			BoneIndex[1] = ReadIndex(fileHandle, header.BoneIndexSize);
@@ -203,7 +203,7 @@ void PMXVertex::Read(const gu::SharedPointer<platform::core::file::IFileHandle>&
 		/*-------------------------------------------------------------------
 		-             Weight: SDEF (boneIndices[0-1] + boneWeights[0] + SDefC + SDefR0 + SDefR1)
 		---------------------------------------------------------------------*/
-		case gc::file::pmx::PMXBoneWeightType::SDEF:
+		case engine::file::pmx::PMXBoneWeightType::SDEF:
 		{
 			BoneIndex[0] = ReadIndex(fileHandle, header.BoneIndexSize);
 			BoneIndex[1] = ReadIndex(fileHandle, header.BoneIndexSize);
@@ -216,7 +216,7 @@ void PMXVertex::Read(const gu::SharedPointer<platform::core::file::IFileHandle>&
 		/*-------------------------------------------------------------------
 		-             Weight: QDEF (boneIndices[0-3] + boneWeights[0-3])
 		---------------------------------------------------------------------*/
-		case gc::file::pmx::PMXBoneWeightType::QDEF:
+		case engine::file::pmx::PMXBoneWeightType::QDEF:
 		{
 			BoneIndex[0] = ReadIndex(fileHandle, header.BoneIndexSize);
 			BoneIndex[1] = ReadIndex(fileHandle, header.BoneIndexSize);
