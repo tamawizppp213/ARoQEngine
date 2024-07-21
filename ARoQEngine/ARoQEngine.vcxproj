@@ -527,7 +527,7 @@
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameUtility\Math\Include\GMScalar.hpp">
+    <ClInclude Include="GameUtility\Math\Include\GMMath.hpp">
       <SubType>
       </SubType>
     </ClInclude>

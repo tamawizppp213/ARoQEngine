@@ -46,10 +46,10 @@ namespace engine
 		**                Public Function
 		*****************************************************************************/
 		/* @brief : Resize frame buffer (Not implement)*/
-		void OnResize(gu::uint32 newWidth, gu::uint32 newHeight) override;
+		virtual void OnResize(gu::uint32 newWidth, gu::uint32 newHeight) override;
 
 		/*@brief : Render to back buffer*/
-		void Draw() override;
+		virtual void Draw() override;
 		/****************************************************************************
 		**                Public Property
 		*****************************************************************************/
