@@ -134,7 +134,7 @@ gu::tstring IFullScreenEffector::CombineDebugName(const gu::tstring& addName, co
 *  @param[in] const gu::SharedPointer<rhi::core::RHIResourceLayout>& リソースレイアウト
 *  @return    void
 *************************************************************************/
-IFullScreenEffector::PipelineStatePtr IFullScreenEffector::CreateDefaultFullScreenGraphicsPipelineState (
+GPUGraphicsPipelinePtr IFullScreenEffector::CreateDefaultFullScreenGraphicsPipelineState (
 	const gu::SharedPointer<rhi::core::RHIRenderPass>& renderPass,
 	const gu::SharedPointer<rhi::core::RHIResourceLayout>& resourceLayout, 
 	const gu::SharedPointer<rhi::core::GPUShaderState>& vs, 
@@ -160,10 +160,11 @@ IFullScreenEffector::PipelineStatePtr IFullScreenEffector::CreateDefaultFullScre
 
 /*!**********************************************************************
 *  @brief     FullScreenStateの基本のComputeパイプラインの設定を行います.
-*  @param[in] void
+*  @param[in] const gu::SharedPointer<rhi::core::RHIResourceLayout>& リソースレイアウト
+*  @param[in] const gu::SharedPointer<rhi::core::GPUShaderState>& コンピュートシェーダー
 *  @return    void
 *************************************************************************/
-IFullScreenEffector::ComputePipelineStatePtr IFullScreenEffector::CreateDefaultFullScreenComputePipelineState(
+GPUComputePipelinePtr IFullScreenEffector::CreateDefaultFullScreenComputePipelineState(
 	const gu::SharedPointer<rhi::core::RHIResourceLayout>& resourceLayout,
 	const gu::SharedPointer<rhi::core::GPUShaderState>& cs
 )

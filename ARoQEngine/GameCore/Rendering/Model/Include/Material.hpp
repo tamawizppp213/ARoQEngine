@@ -54,7 +54,6 @@ namespace engine
 	class Material : public gu::NonCopyable
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
-		using GPUBufferPtr              = gu::SharedPointer<rhi::core::GPUBuffer>;
 		using GPUResourceViewPtr        = gu::SharedPointer<rhi::core::GPUResourceView>;
 		using RHIDescriptorHeapPtr      = gu::SharedPointer<rhi::core::RHIDescriptorHeap>;
 		using GPUResourceCachePtr       = gu::SharedPointer<rhi::core::GPUResourceCache>;

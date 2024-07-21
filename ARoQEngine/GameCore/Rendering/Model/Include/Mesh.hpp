@@ -33,36 +33,30 @@ namespace engine
 	/****************************************************************************
 	*				  			Mesh
 	****************************************************************************/
-	/* @class     Mesh
-	*  @brief     Mesh
+	/* @brief  メッシュを描画するためのクラス.
 	*****************************************************************************/
 	class Mesh : public gu::NonCopyable
 	{
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
-		using VertexBufferPtr  = GPUBufferPtr;
-		using IndexBufferPtr   = GPUBufferPtr;
-		using MaterialPtr      = gu::SharedPointer<Material>;
+		using MaterialPtr               = gu::SharedPointer<Material>;
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
-		virtual void Draw(const gu::SharedPointer<rhi::core::RHICommandList>& graphicsCommandList, 
-			const std::uint32_t frameIndex);
+		#pragma region Public Function
+		
+		virtual void Draw(const RHICommandListPtr& graphicsCommandList, const gu::uint32 frameIndex);
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
-		const gu::DynamicArray<VertexBufferPtr>& GetVertexBuffers() const noexcept { return _vertexBuffers; }
+		#pragma endregion
 
-		IndexBufferPtr GetIndexBuffer() const noexcept { return _indexBuffer; }
+		#pragma region Public Property 
+		const gu::DynamicArray<GPUBufferPtr>& GetVertexBuffers() const noexcept { return _vertexBuffers; }
+
+		GPUBufferPtr GetIndexBuffer() const noexcept { return _indexBuffer; }
 
 		MaterialPtr GetMaterial() const noexcept { return _material; }
 
 		void SetMaterial(const MaterialPtr& material) { _material = material; }
+		#pragma endregion
 
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
 		Mesh() = default;
 		
 		Mesh(const LowLevelGraphicsEnginePtr& engine, const PrimitiveMesh& mesh, const MaterialPtr& material = nullptr, const gu::tstring& addName = SP(""));
@@ -76,41 +70,43 @@ namespace engine
 
 		// @brief : This constructor is used, when sharing one VB and Index and separating each material. (e.g. Model drawing)
 		Mesh(const LowLevelGraphicsEnginePtr& engine,
-			const gu::DynamicArray<VertexBufferPtr>& vertexBuffers,
-			const IndexBufferPtr& indexBuffer,
-			const std::uint64_t indexCount = 0,
-			const std::uint32_t indexOffset = 0,
+			const gu::DynamicArray<GPUBufferPtr>& vertexBuffers,
+			const GPUBufferPtr& indexBuffer,
+			const gu::uint64 indexCount = 0,
+			const gu::uint32 indexOffset = 0,
 			const MaterialPtr& material = nullptr);
 
 		virtual ~Mesh();
+		#pragma endregion 
 
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Constructor and Destructor
+		#pragma endregion
+
+		#pragma region Protected Function
 		void Prepare(const PrimitiveMesh& mesh, const gu::tstring& name);
 		
 		void Prepare(const rhi::core::GPUBufferMetaData& vertexInfo, const rhi::core::GPUBufferMetaData& indexInfo, const gu::tstring& name);
 
-
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		#pragma endregion
+		#pragma region Protected Property
 		LowLevelGraphicsEnginePtr _engine = nullptr;
 
 		/* @brief : frame count size vertex buffer*/
-		gu::DynamicArray<VertexBufferPtr> _vertexBuffers = {};
+		gu::DynamicArray<GPUBufferPtr> _vertexBuffers = {};
 
 		/* @brief : index data buffer*/
-		IndexBufferPtr _indexBuffer  = nullptr;
+		GPUBufferPtr _indexBuffer  = nullptr;
 
 		/* @brief : If you use material, you should set this variable.*/
 		MaterialPtr _material = nullptr;
 
-		std::uint64_t _indexCount  = 0; // index bufferのCountはIndexBuffer全体のCount数だが, こっちはMaterialに対応したIndexCount
-		std::uint32_t _indexOffset = 0;
+		gu::uint64 _indexCount  = 0; // index bufferのCountはIndexBuffer全体のCount数だが, こっちはMaterialに対応したIndexCount
+		gu::uint32 _indexOffset = 0;
 
 		bool _hasCreatedNewBuffer = false;
+
+		#pragma endregion
 
 	};
 }

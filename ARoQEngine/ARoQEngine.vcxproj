@@ -223,6 +223,26 @@
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelImporter.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Include\SceneImporter.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFMesh.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFScene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFTexture.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameCore\Rendering\PostProcess\Include\GaussianBlur.hpp">
       <SubType>
       </SubType>

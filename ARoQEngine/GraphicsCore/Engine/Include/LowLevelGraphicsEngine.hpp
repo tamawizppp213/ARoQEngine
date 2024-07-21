@@ -79,7 +79,12 @@ public:
 	*************************************************************************/
 	void ShutDown();
 
-	/* @brief : Resize swapchain*/
+	/*!**********************************************************************
+	*  @brief     Swapchainをリサイズします.
+	*  @param[in] const gu::uint32 新しい幅
+	*  @param[in] const gu::uint32 新しい高さ
+	*  @return    void
+	*************************************************************************/
 	void OnResize(const gu::uint32 newWidth, const gu::uint32 newHeight);
 
 	/*!**********************************************************************
@@ -158,18 +163,22 @@ public:
 	*************************************************************************/
 	__forceinline rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
 
-	/*----------------------------------------------------------------------
-	*  @brief :  描画バッファを毎フレーム交換するためのSwapchainのポインタを返します
-	*----------------------------------------------------------------------*/
-	__forceinline gu::SharedPointer<rhi::core::RHISwapchain> GetSwapchain() const noexcept 
+	/*!**********************************************************************
+	*  @brief     描画バッファを毎フレーム交換するためのSwapchainのポインタを返します
+	*  @param[in] void
+	*  @return    RHISwapchainPtr
+	*************************************************************************/
+	__forceinline RHISwapchainPtr GetSwapchain() const noexcept 
 	{
 		return _swapchain; 
 	}
 	
-	/*----------------------------------------------------------------------
-	*  @brief : GPU計測のQueryHeapを返します
-	*----------------------------------------------------------------------*/
-	__forceinline gu::SharedPointer<rhi::core::RHIQuery> GetQuery(const rhi::core::QueryHeapType queryType) 
+	/*!**********************************************************************
+	*  @brief     GPU計測のQueryHeapを返します
+	*  @param[in] const rhi::core::QueryHeapType QueryHeapの種類
+	*  @return    RHIQueryPtr
+	*************************************************************************/
+	__forceinline RHIQueryPtr GetQuery(const rhi::core::QueryHeapType queryType) 
 	{
 		return _queryHeaps.At(queryType); 
 	}
@@ -192,7 +201,7 @@ protected:
 	#pragma endregion 
 
 	#pragma region Protected Property
-	/* @brief : Graphics API version. (DirectX12 or Vulkan)*/
+	/*! @brief Graphics API バージョン (現在はDirectX12 or Vulkan)*/
 	rhi::core::GraphicsAPI _apiVersion = rhi::core::GraphicsAPI::Unknown;
 
 	/* @brief : graphics API instance (select graphics api)*/
@@ -205,7 +214,7 @@ protected:
 	RHIDevicePtr  _device = nullptr;
 
 	/* @ brief : Command queue (graphics, compute, transfer)*/
-	gu::SortedMap<rhi::core::CommandListType, gu::SharedPointer<rhi::core::RHICommandQueue>> _commandQueues;
+	gu::SortedMap<rhi::core::CommandListType, RHICommandQueuePtr> _commandQueues;
 
 	/* @brief : Command List*/
 	gu::SortedMap<rhi::core::CommandListType, RHICommandListPtr> _commandLists;

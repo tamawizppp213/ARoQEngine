@@ -105,11 +105,9 @@ void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandL
 	const std::uint32_t bindID,
 	const gu::DynamicArray<std::uint32_t>& bindTextureIDs)
 {
-#ifdef _DEBUG
 	Check(commandList->GetType() == CommandListType::Graphics);
 	Check(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);
 	Check(bindTextureIDs.Size() == (size_t)UsageTexture::CountOf);
-#endif
 
 	_materialBufferView->Bind(commandList, bindID);
 
@@ -129,7 +127,7 @@ void Material::Bind(const gu::SharedPointer<rhi::core::RHICommandList>& commandL
 *
 *  @return @@void
 *****************************************************************************/
-void Material::PackMaterial(const void* data)
+void Material::PackMaterial([[maybe_unused]]const void* data)
 {
 	const auto buffer = _materialBufferView->GetBuffer();
 	//buffer->Update(data, 1);

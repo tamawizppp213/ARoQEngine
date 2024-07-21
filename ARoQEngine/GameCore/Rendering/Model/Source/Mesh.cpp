@@ -18,6 +18,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 using namespace engine;
 using namespace rhi::core;
+using namespace gu;
 
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
@@ -63,10 +64,10 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine,
 	Prepare(vertexInfo, indexInfo, name);
 }
 
-Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const gu::DynamicArray<VertexBufferPtr>& vertexBuffers,
-	const IndexBufferPtr& indexBuffer,
-	const std::uint64_t indexCount, 
-	const std::uint32_t indexOffset,
+Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const gu::DynamicArray<GPUBufferPtr>& vertexBuffers,
+	const GPUBufferPtr& indexBuffer,
+	const uint64 indexCount, 
+	const uint32 indexOffset,
 	const MaterialPtr& material):
 	_engine(engine), _vertexBuffers(vertexBuffers), _indexBuffer(indexBuffer), _indexCount(indexCount), _material(material), _indexOffset(indexOffset)
 {
@@ -92,12 +93,10 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const gu::DynamicArray<Verte
 * 
 *  @return @@void
 *****************************************************************************/
-void Mesh::Draw(const gu::SharedPointer<RHICommandList>& commandList, const std::uint32_t frameIndex)
+void Mesh::Draw(const gu::SharedPointer<RHICommandList>& commandList, const uint32 frameIndex)
 {
-#ifdef _DEBUG
 	Check(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);
 	Check(commandList->GetType() == CommandListType::Graphics);
-#endif
 
 	if (_hasCreatedNewBuffer)
 	{
@@ -106,7 +105,7 @@ void Mesh::Draw(const gu::SharedPointer<RHICommandList>& commandList, const std:
 		commandList->SetIndexBuffer(_indexBuffer);
 	}
 
-	commandList->DrawIndexedInstanced(static_cast<std::uint32_t>(_indexCount), 1, _indexOffset);
+	commandList->DrawIndexedInstanced(static_cast<uint32>(_indexCount), 1, _indexOffset);
 }
 
 /****************************************************************************

@@ -33,7 +33,7 @@ namespace
 //                              Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Main Function
-bool PMXConverter::Load(const gu::tstring& filePath, GameModelPtr model)
+bool PMXConverter::Load([[maybe_unused]]const gu::tstring& filePath, [[maybe_unused]]GameModelPtr model)
 {
 	//if (model == nullptr)          { OutputDebugStringA("model is nullptr.");  return false; }
 	//if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }
@@ -59,7 +59,7 @@ bool PMXConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 }
 
 
-bool PMDConverter::Load(const gu::tstring& filePath, GameModelPtr model)
+bool PMDConverter::Load([[maybe_unused]]const gu::tstring& filePath, [[maybe_unused]]GameModelPtr model)
 {
 	//if (model == nullptr)          { OutputDebugStringA("model is nullptr") ; return false; }
 	//if (!model->_engine) { OutputDebugStringA("engine is nullptr"); return false; }
@@ -90,7 +90,7 @@ bool PMDConverter::Load(const gu::tstring& filePath, GameModelPtr model)
 *
 *  @return 　　void
 *****************************************************************************/
-void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file)
+void PMXConverter::PrepareTotalMesh([[maybe_unused]]const GameModelPtr model, [[maybe_unused]]pmx::PMXFile& file)
 {
 	//*-------------------------------------------------------------------
 	//-            Copy PMXvertex -> skin vertex
@@ -127,7 +127,7 @@ void PMXConverter::PrepareTotalMesh(const GameModelPtr model, pmx::PMXFile& file
 *
 *  @return 　　void
 *****************************************************************************/
-void PMXConverter::PrepareEachMaterialMesh(const GameModelPtr model, pmx::PMXFile& file)
+void PMXConverter::PrepareEachMaterialMesh([[maybe_unused]]const GameModelPtr model, [[maybe_unused]]pmx::PMXFile& file)
 {
 	//model->_materialCount = file.Materials.Size();
 	//model->_meshes.Resize(file.Materials.Size());

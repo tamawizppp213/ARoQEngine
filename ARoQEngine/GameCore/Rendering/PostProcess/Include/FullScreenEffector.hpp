@@ -12,6 +12,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
+#include "GraphicsCore/RHI/InterfaceCore/Core/Include/RHITypeCore.hpp"
 #include "GameUtility/Base/Include/GUClassUtility.hpp"
 #include "GameUtility/Container/Include/GUDynamicArray.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
@@ -20,17 +21,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 class LowLevelGraphicsEngine;
-namespace rhi::core
-{
-	class RHIResourceLayout;
-	class GPUResourceView;
-	class GPUGraphicsPipelineState;
-	class GPUComputePipelineState;
-	class GPUBuffer;
-	class GPUTexture;
-	class RHIRenderPass;
-	class GPUShaderState;
-}
+
 //////////////////////////////////////////////////////////////////////////////////
 //                         Template Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -46,10 +37,6 @@ namespace engine
 	protected:
 		using VertexBufferPtr           = gu::SharedPointer<rhi::core::GPUBuffer>;
 		using IndexBufferPtr            = gu::SharedPointer<rhi::core::GPUBuffer>;
-		using ResourceLayoutPtr         = gu::SharedPointer<rhi::core::RHIResourceLayout>;
-		using ResourceViewPtr           = gu::SharedPointer<rhi::core::GPUResourceView>;
-		using PipelineStatePtr          = gu::SharedPointer<rhi::core::GPUGraphicsPipelineState>;
-		using ComputePipelineStatePtr   = gu::SharedPointer<rhi::core::GPUComputePipelineState>;
 		using LowLevelGraphicsEnginePtr = gu::SharedPointer<LowLevelGraphicsEngine>;
 
 	public:
@@ -110,7 +97,7 @@ namespace engine
 		*  @param[in] const gu::SharedPointer<rhi::core::GPUShaderState>& ピクセルシェーダ
 		*  @return    void
 		*************************************************************************/
-		PipelineStatePtr CreateDefaultFullScreenGraphicsPipelineState(
+		GPUGraphicsPipelinePtr CreateDefaultFullScreenGraphicsPipelineState(
 			const gu::SharedPointer<rhi::core::RHIRenderPass>& renderPass, 
 			const gu::SharedPointer<rhi::core::RHIResourceLayout>& resourceLayout,
 			const gu::SharedPointer<rhi::core::GPUShaderState>& vs,
@@ -122,7 +109,7 @@ namespace engine
 		*  @param[in] const gu::SharedPointer<rhi::core::GPUShaderState>& コンピュートシェーダー
 		*  @return    void
 		*************************************************************************/
-		ComputePipelineStatePtr CreateDefaultFullScreenComputePipelineState(
+		GPUComputePipelinePtr CreateDefaultFullScreenComputePipelineState(
 			const gu::SharedPointer<rhi::core::RHIResourceLayout>& resourceLayout,
 			const gu::SharedPointer<rhi::core::GPUShaderState>& cs);
 
@@ -162,16 +149,16 @@ namespace engine
 		gu::DynamicArray<gu::tstring> _useMacros = {};
 
 		/*! @brief グラフィックスパイプライン*/
-		PipelineStatePtr  _pipeline       = nullptr;
+		GPUGraphicsPipelinePtr  _pipeline       = nullptr;
 
 		/*! @brief コンピュートパイプライン*/
-		ComputePipelineStatePtr _computePipeline = nullptr;
+		GPUComputePipelinePtr _computePipeline = nullptr;
 
 		/*! @brief GPUのリソースのバインド方法を設定するリソースレイアウト*/
-		ResourceLayoutPtr _resourceLayout = nullptr;
+		RHIResourceLayoutPtr _resourceLayout = nullptr;
 		
 		/*! @brief GPUのリソースビュー*/
-		gu::DynamicArray<ResourceViewPtr> _resourceViews = {};
+		gu::DynamicArray<GPUResourceViewPtr> _resourceViews = {};
 
 		/* @brief : 幅*/
 		gu::uint32 _width  = 0;
