@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   DirectX12GPUPipelineState.hpp
-///             @brief  PipelineState.hpp
-///             @author Toide Yutaro
-///             @date   2022_08_14
+///  @file   DirectX12GPUPipelineState.hpp
+///  @brief  グラフィクスパイプラインの基本クラス (VS, PS, GS, HS, DSが使用できます.)
+///  @author Toide Yutaro
+///  @date   2024_07_21
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef DIRECTX12_GPU_PIPELINE_STATE_HPP
@@ -26,10 +26,9 @@ namespace rhi::directX12
 {
 
 	/****************************************************************************
-	*				  			GPUBlendState
+	*				  			GPUGraphicsPipelineStat
 	****************************************************************************/
-	/* @class     GPUBlendState
-	*  @brief     BlendState
+	/* @brief     グラフィクスパイプラインの基本クラス (VS, PS, GS, HS, DSが使用できます.)
 	*****************************************************************************/
 	class GPUGraphicsPipelineState : public rhi::core::GPUGraphicsPipelineState
 	{

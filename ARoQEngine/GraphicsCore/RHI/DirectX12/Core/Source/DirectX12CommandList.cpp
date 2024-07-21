@@ -217,6 +217,18 @@ void RHICommandList::BeginRenderPass(const gu::SharedPointer<core::RHIRenderPass
 		return;
 	}
 
+	if (_renderPass)
+	{
+	    // レンダーパスが違う場合は, レンダーパスを終了する
+		EndRenderPass();
+	}
+
+	// 既にレンダーパスが開始されている場合は, 何もしない
+	if (_beginRenderPass)
+	{
+		return;
+	}
+
 	/*-------------------------------------------------------------------
 	-          Layout Transition (Present -> RenderTarget)
 	---------------------------------------------------------------------*/

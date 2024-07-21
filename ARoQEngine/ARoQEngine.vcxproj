@@ -527,6 +527,10 @@
       <SubType>
       </SubType>
     </ClInclude>
+    <ClInclude Include="GameUtility\Math\Include\GMScalar.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
     <ClInclude Include="GameUtility\Math\Include\GMVectorInt.hpp">
       <SubType>
       </SubType>

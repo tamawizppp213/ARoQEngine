@@ -83,6 +83,7 @@ void WhiteBalance::Draw()
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
 	---------------------------------------------------------------------*/
+	graphicsCommandList->BeginRenderPass(_pipeline->GetRenderPass(), _engine->GetFrameBuffer(frameIndex));
 	graphicsCommandList->SetResourceLayout(_resourceLayout);
 	graphicsCommandList->SetGraphicsPipeline(_pipeline);
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
@@ -91,6 +92,7 @@ void WhiteBalance::Draw()
 	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 1);
 	graphicsCommandList->DrawIndexedInstanced(
 		static_cast<gu::uint32>(_indexBuffer->GetElementCount()), 1);
+	graphicsCommandList->EndRenderPass();
 }
 #pragma endregion Main Function
 
@@ -141,13 +143,8 @@ void WhiteBalance::PreparePipelineState(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
 	---------------------------------------------------------------------*/
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
-	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite()));
-	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
-	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultScreenElement()));
-	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());
-	_pipeline->SetVertexShader(vs);
-	_pipeline->SetPixelShader(ps);
+	_pipeline = CreateDefaultFullScreenGraphicsPipelineState(_engine->GetDrawContinueRenderPass(), _resourceLayout, vs, ps);
+	
 	_pipeline->CompleteSetting();
 	_pipeline->SetName(addName + L"PSO");
 }

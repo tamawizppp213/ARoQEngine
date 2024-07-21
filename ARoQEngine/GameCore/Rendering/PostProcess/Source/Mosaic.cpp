@@ -78,6 +78,7 @@ void Mosaic::Draw()
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
 	---------------------------------------------------------------------*/
+	graphicsCommandList->BeginRenderPass(_pipeline->GetRenderPass(), _engine->GetFrameBuffer(frameIndex));
 	graphicsCommandList->SetResourceLayout(_resourceLayout);
 	graphicsCommandList->SetGraphicsPipeline(_pipeline);
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
@@ -85,7 +86,8 @@ void Mosaic::Draw()
 	_resourceViews[0]->Bind(graphicsCommandList, 0);
 	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 1);
 	graphicsCommandList->DrawIndexedInstanced(
-		static_cast<std::uint32_t>(_indexBuffer->GetElementCount()), 1);
+		static_cast<gu::uint32>(_indexBuffer->GetElementCount()), 1);
+	graphicsCommandList->EndRenderPass();
 }
 #pragma endregion Main Function
 
@@ -139,13 +141,7 @@ void Mosaic::PreparePipelineState(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
 	---------------------------------------------------------------------*/
-	_pipeline = device->CreateGraphicPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout);
-	_pipeline->SetBlendState(factory->CreateSingleBlendState(BlendProperty::OverWrite(true)));
-	_pipeline->SetRasterizerState(factory->CreateRasterizerState(RasterizerProperty::Solid()));
-	_pipeline->SetInputAssemblyState(factory->CreateInputAssemblyState(GPUInputAssemblyState::GetDefaultVertexElement()));
-	_pipeline->SetDepthStencilState(factory->CreateDepthStencilState());
-	_pipeline->SetVertexShader(vs);
-	_pipeline->SetPixelShader(ps);
+	_pipeline = CreateDefaultFullScreenGraphicsPipelineState(_engine->GetDrawContinueRenderPass(), _resourceLayout, vs, ps);
 	_pipeline->CompleteSetting();
 	_pipeline->SetName(addName + SP("PSO"));
 }

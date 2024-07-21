@@ -437,8 +437,7 @@ void LowLevelGraphicsEngine::SetUpRenderResource()
 	-      set continue drawing render pass (for texture rendering)
 	---------------------------------------------------------------------*/
 	{
-		core::Attachment colorAttachment = core::Attachment::RenderTarget(_pixelFormat, core::ResourceState::RenderTarget,
-			core::ResourceState::Present, core::AttachmentLoad::Load);
+		core::Attachment colorAttachment = core::Attachment::DrawContinue(_pixelFormat, core::ResourceState::RenderTarget, core::ResourceState::Present);
 
 		core::Attachment depthAttachment = core::Attachment::DepthStencil(_depthStencilFormat, core::ResourceState::DepthStencil, 
 			core::ResourceState::DepthStencil,core::AttachmentLoad::Load);

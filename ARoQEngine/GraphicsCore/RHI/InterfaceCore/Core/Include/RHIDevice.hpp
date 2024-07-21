@@ -85,13 +85,33 @@ namespace rhi::core
 		*************************************************************************/
 		virtual void SetUpDefaultHeap(const core::DefaultHeapCount& heapCount) = 0;
 		
-		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
+		/*!**********************************************************************
+		*  @brief     レンダーターゲットとデプスステンシルのテクスチャやResourceViewを使用するクラスを作成します
+		*  @param[in] const gu::SharedPointer<core::RHIRenderPass>& : レンダーパス
+		*  @param[in] const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& : レンダーターゲット
+		*  @param[in] const gu::SharedPointer<core::GPUTexture>& : デプスステンシル
+		*  @return    gu::SharedPointer<core::RHIFrameBuffer> フレームバッファのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<RHIFrameBuffer> CreateFrameBuffer(
+			const gu::SharedPointer<RHIRenderPass>& renderPass, 
+			const gu::DynamicArray<gu::SharedPointer<GPUTexture>>& renderTargets, 
+			const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
 		
-		virtual gu::SharedPointer<RHIFrameBuffer>             CreateFrameBuffer(const gu::SharedPointer<RHIRenderPass>& renderPass, const gu::SharedPointer<GPUTexture>& renderTarget, const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
+		/*!**********************************************************************
+		*  @brief     レンダーターゲットとデプスステンシルのテクスチャやResourceViewを使用するクラスを作成します
+		*  @param[in] const gu::SharedPointer<core::RHIRenderPass>& : レンダーパス
+		*  @param[in] const gu::DynamicArray<gu::SharedPointer<core::GPUTexture>>& : レンダーターゲット
+		*  @param[in] const gu::SharedPointer<core::GPUTexture>& : デプスステンシル
+		*  @return    gu::SharedPointer<core::RHIFrameBuffer> フレームバッファのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<RHIFrameBuffer> CreateFrameBuffer(
+			const gu::SharedPointer<RHIRenderPass>& renderPass, 
+			const gu::SharedPointer<GPUTexture>& renderTarget, 
+			const gu::SharedPointer<GPUTexture>& depthStencil = nullptr) = 0;
 		
-		virtual gu::SharedPointer<RHIFence>                   CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("Fence")) = 0;
+		virtual gu::SharedPointer<RHIFence> CreateFence(const gu::uint64 fenceValue = 0, const gu::tstring& name = SP("Fence")) = 0;
 		
-		virtual gu::SharedPointer<RHICommandList>             CreateCommandList(const gu::SharedPointer<RHICommandAllocator>& commandAllocator, const gu::tstring& name = SP("CommandList")) = 0;
+		virtual gu::SharedPointer<RHICommandList> CreateCommandList(const gu::SharedPointer<RHICommandAllocator>& commandAllocator, const gu::tstring& name = SP("CommandList")) = 0;
 		
 		/*!**********************************************************************
 		*  @brief     コマンドリストによって貯められた描画コマンドをまとめてGPU側に送信するコマンドキューを作成します

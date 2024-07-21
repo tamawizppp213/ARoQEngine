@@ -15,7 +15,7 @@
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
 using namespace rhi::core;
-
+using namespace gu;
 //////////////////////////////////////////////////////////////////////////////////
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
@@ -24,15 +24,15 @@ RHIRenderPass::RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const g
 {
 	_colorClearValues = gu::DynamicArray<ClearValue>(colors.Size(), ClearValue());
 
-	std::uint32_t maxSample = 1;
+	uint32 maxSample = 1;
 	for (int i = 0; i < _colorAttachments.Size(); ++i)
 	{
-		maxSample = std::max(maxSample, static_cast<std::uint32_t>(_colorAttachments[i].SampleCount));
+		maxSample = std::max(maxSample, static_cast<uint32>(_colorAttachments[i].SampleCount));
 	}
 
 	if (_depthAttachment.HasValue())
 	{
-		maxSample = std::max(maxSample, static_cast<std::uint32_t>(_depthAttachment.Value().SampleCount));
+		maxSample = std::max(maxSample, static_cast<uint32>(_depthAttachment.Value().SampleCount));
 	}
 
 	_maxSample = static_cast<core::MultiSample>(maxSample);
@@ -42,15 +42,15 @@ RHIRenderPass::RHIRenderPass(const gu::SharedPointer<RHIDevice>& device, const A
 {
 	_colorClearValues = gu::DynamicArray<ClearValue>(1, ClearValue());
 
-	std::uint32_t maxSample = 1;
+	uint32 maxSample = 1;
 	for (int i = 0; i < _colorAttachments.Size(); ++i)
 	{
-		maxSample = std::max(maxSample, static_cast<std::uint32_t>(_colorAttachments[i].SampleCount));
+		maxSample = std::max(maxSample, static_cast<uint32>(_colorAttachments[i].SampleCount));
 	}
 
 	if (_depthAttachment.HasValue())
 	{
-		maxSample = std::max(maxSample, static_cast<std::uint32_t>(_depthAttachment.Value().SampleCount));
+		maxSample = std::max(maxSample, static_cast<uint32>(_depthAttachment.Value().SampleCount));
 	}
 
 	_maxSample = static_cast<core::MultiSample>(maxSample);

@@ -126,39 +126,56 @@ public:
 	*  @param[in] void
 	*  @return    DevicePtr : 論理デバイスのSharedPointer
 	*************************************************************************/
-	DevicePtr GetDevice() const noexcept { return _device; }
+	__forceinline DevicePtr GetDevice() const noexcept { return _device; }
 
 	/*!**********************************************************************
 	*  @brief     ComandListを取得します.
 	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
 	*  @return    CommandListPtr : CommandListのSharedPointer
 	*************************************************************************/
-	CommandListPtr GetCommandList(const rhi::core::CommandListType type) const noexcept { return _commandLists.At(type); }
+	__forceinline CommandListPtr GetCommandList(const rhi::core::CommandListType type) const noexcept { return _commandLists.At(type); }
 	
 	/*!**********************************************************************
 	*  @brief     ComandQueueを取得します.
 	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
 	*  @return    CommandQueuePtr : CommandQueueのSharedPointer
 	*************************************************************************/
-	CommandQueuePtr GetCommandQueue(const rhi::core::CommandListType type) const noexcept { return _commandQueues.At(type); }
+	__forceinline CommandQueuePtr GetCommandQueue(const rhi::core::CommandListType type) const noexcept { return _commandQueues.At(type); }
 
 	/*!**********************************************************************
-	*  @brief     デフォルトのRenderPassの取得. 
+	*  @brief     デフォルトのRenderPassの取得. レンダーパス開始時に, 画面のクリアを行います.  
 	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
-	*  @return    CommandQueuePtr : CommandQueueのSharedPointer
+	*  @return    gu::SharedPointer<rhi::core::RHIRenderPass>
 	*************************************************************************/
-	gu::SharedPointer<rhi::core::RHIRenderPass> GetDrawClearRenderPass() const noexcept { return _renderPass; }
+	__forceinline gu::SharedPointer<rhi::core::RHIRenderPass> GetDrawClearRenderPass() const noexcept { return _renderPass; }
 
-	/* @brief : Non clear render pass*/
-	gu::SharedPointer<rhi::core::RHIRenderPass> GetDrawContinueRenderPass() const noexcept { return _drawContinueRenderPass; }
+	/*!**********************************************************************
+	*  @brief     RenderPassの取得. レンダーパス開始時に, 画面のクリアは行いません.
+	*  @param[in] const rhi::core::CommandListType コマンドリストの種類
+	*  @return    gu::SharedPointer<rhi::core::RHIRenderPass>
+	*************************************************************************/
+	__forceinline gu::SharedPointer<rhi::core::RHIRenderPass> GetDrawContinueRenderPass() const noexcept { return _drawContinueRenderPass; }
 
-	/* @brief : Frame buffer*/
-	gu::SharedPointer<rhi::core::RHIFrameBuffer> GetFrameBuffer(const std::uint32_t frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
+	/*!**********************************************************************
+	*  @brief     レンダーターゲットとデプスステンシルのテクスチャやResourceViewを使用するクラスです.
+	*  @param[in] const gu::uint32 Frameのインデックス
+	*  @return    gu::SharedPointer<rhi::core::RHIFrameBuffer>
+	*************************************************************************/
+	__forceinline gu::SharedPointer<rhi::core::RHIFrameBuffer> GetFrameBuffer(const gu::uint32 frameIndex) const noexcept { return _frameBuffers[frameIndex]; }
 
-	/* @brief : Return Current Frame Index*/
-	gu::uint32 GetCurrentFrameIndex() const { return _currentFrameIndex; }
+	/*!**********************************************************************
+	*  @brief     現在書き込み中のフレーム番号を取得します. 
+	*  @param[in] void
+	*  @return    gu::uint32 フレーム番号
+	*************************************************************************/
+	__forceinline gu::uint32 GetCurrentFrameIndex() const { return _currentFrameIndex; }
 
-	rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
+	/*!**********************************************************************
+	*  @brief     バックバッファのピクセルフォーマットを取得します
+	*  @param[in] void
+	*  @return    rhi::core::PixelFormat
+	*************************************************************************/
+	__forceinline rhi::core::PixelFormat GetBackBufferFormat() const { return _pixelFormat; }
 
 	/*----------------------------------------------------------------------
 	*  @brief :  描画バッファを毎フレーム交換するためのSwapchainのポインタを返します

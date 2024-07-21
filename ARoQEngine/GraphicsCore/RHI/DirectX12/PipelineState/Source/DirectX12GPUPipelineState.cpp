@@ -70,7 +70,8 @@ void GPUGraphicsPipelineState::CompleteSetting(const gu::tstring& name)
 
 	for (gu::uint32 i = 0; i < _renderPass->GetColorAttachmentSize(); ++i)
 	{
-		desc.RTVFormats[i] = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(_renderPass->GetColorAttachment(i)->Format).PlatformFormat;
+		const auto format = _renderPass->GetColorAttachment(i)->Format;
+		desc.RTVFormats[i] = (DXGI_FORMAT)core::PixelFormatInfo::GetConst(format).PlatformFormat;
 	}
 	
 	/*-------------------------------------------------------------------

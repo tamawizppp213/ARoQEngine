@@ -111,6 +111,7 @@ void ColorChange::Draw()
 	/*-------------------------------------------------------------------
 	-               Execute commandlist
 	---------------------------------------------------------------------*/
+	graphicsCommandList->BeginRenderPass(_engine->GetDrawContinueRenderPass(), _engine->GetFrameBuffer(frameIndex));
 	graphicsCommandList->SetResourceLayout(_resourceLayout);
 	graphicsCommandList->SetGraphicsPipeline(_pipeline);
 	graphicsCommandList->SetVertexBuffer(_vertexBuffers[frameIndex]);
@@ -118,6 +119,7 @@ void ColorChange::Draw()
 	_engine->GetFrameBuffer(frameIndex)->GetRenderTargetSRV()->Bind(graphicsCommandList, 0);
 	graphicsCommandList->DrawIndexedInstanced(
 		static_cast<gu::uint32>(_indexBuffer->GetElementCount()), 1);
+	graphicsCommandList->EndRenderPass();
 }
 #pragma endregion Main Function
 
@@ -161,7 +163,7 @@ void ColorChange::PreparePipelineState(const gu::tstring& addName)
 	/*-------------------------------------------------------------------
 	-			Build Graphics Pipeline State
 	---------------------------------------------------------------------*/
-	_pipeline = CreateDefaultFullScreenGraphicsPipelineState(_engine->GetDrawClearRenderPass(), _resourceLayout, vs, ps);
+	_pipeline = CreateDefaultFullScreenGraphicsPipelineState(_engine->GetDrawContinueRenderPass(), _resourceLayout, vs, ps);
 	_pipeline->CompleteSetting();
 	_pipeline->SetName(addName + SP("PSO"));
 }
