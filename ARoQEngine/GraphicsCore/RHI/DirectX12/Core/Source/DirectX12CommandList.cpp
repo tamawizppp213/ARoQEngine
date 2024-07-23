@@ -586,7 +586,7 @@ void RHICommandList::SetComputePipeline(const gu::SharedPointer<core::GPUCompute
 {
 	_commandList->SetPipelineState(gu::StaticPointerCast<directX12::GPUComputePipelineState>(pipelineState)->GetPipeline().Get());
 }
-void RHICommandList::SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot)
+void RHICommandList::SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const gu::uint64 startSlot)
 {
 	auto views = gu::DynamicArray<D3D12_VERTEX_BUFFER_VIEW>(buffers.Size());
 	for (uint64 i = 0; i < views.Size(); ++i)

@@ -110,6 +110,12 @@ namespace rhi::core
 		*  @return    void
 		*************************************************************************/
 		virtual void SetResourceLayout(const gu::SharedPointer<RHIResourceLayout>& resourceLayout) = 0;
+
+		/*!**********************************************************************
+		*  @brief     Descriptor Heapを設定します
+		*  @param[in] const gu::SharedPointer<core::RHIDescriptorHeap>&
+		*  @return    void
+		*************************************************************************/
 		virtual void SetDescriptorHeap(const gu::SharedPointer<RHIDescriptorHeap>& heap) = 0;
 		//virtual void SetConstant32Bits(gu::DynamicArray<Value32Bit>& values) = 0;
 		//virtual void CopyBuffer(const gu::SharedPointer<GPUBuffer>& source, const gu::SharedPointer<GPUBuffer>& destination, const size_t size, const size_t sourceOffset = 0, const size_t destinationOffset = 0) = 0;*/
@@ -117,14 +123,18 @@ namespace rhi::core
 		//virtual void TransitLayout(const gu::SharedPointer<GPUBuffer>& buffer, const ResourceLayout& newLayout) = 0;
 
 		#pragma region Query
-		/*----------------------------------------------------------------------
-		*  @brief :  Starts the query to get GPU information.
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     GPU情報を取得するためのクエリを開始します
+		*  @param[in] const core::QueryResultLocation
+		*  @return    void
+		*************************************************************************/
 		virtual void BeginQuery(const QueryResultLocation& location) = 0;
 
-		/*----------------------------------------------------------------------
-		*  @brief :  End the query to get GPU information.
-		*----------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     GPU情報を取得するためのクエリを終了します
+		*  @param[in] const core::QueryResultLocation
+		*  @return    void
+		*************************************************************************/
 		virtual void EndQuery(const QueryResultLocation& location) = 0;
 		#pragma endregion Query
 
@@ -155,20 +165,22 @@ namespace rhi::core
 
 		/*!**********************************************************************
 		*  @brief     頂点情報のつなぎ方を設定します.
-		*  @param[in] プリミティブのトポロジー種類
+		*  @param[in] const core::PrimitiveTopology : プリミティブのトポロジー種類
+		*  @return    void
 		*************************************************************************/
 		virtual void SetPrimitiveTopology(const PrimitiveTopology topology) = 0;
 
 		/*!**********************************************************************
-		*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
+		*  @brief     ビューポートによって描画領域を設定します.
 		*  @param[in] const core::Viewport& : 描画領域を示す単一のビューポート
+		*  @return    void
 		*************************************************************************/
 		virtual void SetViewport(const core::Viewport& viewport) = 0;
 
 		/*!**********************************************************************
 		*  @brief     ビューポートの配列(アドレス)を入れて描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
 		*  @param[in] const core::Viewport* : 描画領域を記述した配列, もしくは単一のViewportのアドレス
-		*  @param[in] const gu::uint32 : ビューポートの配列数
+		*  @param[in] const gu::uint32 : ビューポートの配列数 (Defaultは1)
 		*  @return    void
 		*************************************************************************/
 		virtual void SetViewport (const Viewport* viewport, const gu::uint32 numViewport = 1) = 0;
@@ -197,12 +209,34 @@ namespace rhi::core
 		*************************************************************************/
 		virtual void SetViewportAndScissor(const Viewport& viewport, const ScissorRect& rect) = 0;
 		
+		/*!**********************************************************************
+		*  @brief     頂点バッファの登録
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer>& buffer
+		*  @return    void
+		*************************************************************************/
 		virtual void SetVertexBuffer(const gu::SharedPointer<GPUBuffer>& buffer) = 0;
 		
+		/*!**********************************************************************
+		*  @brief     頂点バッファの登録
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer>& buffer
+		*  @param[in] const gu::uint64 スロット
+		*  @return    void
+		*************************************************************************/
 		virtual void SetVertexBuffers     (const gu::DynamicArray<gu::SharedPointer<GPUBuffer>>& buffers, const size_t startSlot = 0) = 0;
 		
+		/*!**********************************************************************
+		*  @brief     インデックスバッファを設定します. インデックスバッファはGPUバッファの形で渡されます.
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer>& インデックスバッファ
+		*  @param[in] const core::PixelFormat インデックスの型 (DefaultはR32_UINT)
+		*  @return    void
+		*************************************************************************/
 		virtual void SetIndexBuffer       (const gu::SharedPointer<GPUBuffer>& buffer, const PixelFormat indexType = PixelFormat::R32_UINT) = 0;
 		
+		/*!**********************************************************************
+		*  @brief     グラフィックパイプラインの設定
+		*  @param[in] const gu::SharedPointer<core::GPUGraphicsPipelineState>& pipelineState
+		*  @return    void
+		*************************************************************************/
 		virtual void SetGraphicsPipeline  (const gu::SharedPointer<GPUGraphicsPipelineState>& pipeline) = 0;
 		
 		/*!**********************************************************************
@@ -233,13 +267,27 @@ namespace rhi::core
 		*************************************************************************/
 		virtual void DrawIndexedIndirect(const gu::SharedPointer<core::GPUBuffer>& argumentBuffer, const gu::uint32 drawCallCount) = 0;
 
-		/*-------------------------------------------------------------------
-		-                Compute Command
-		---------------------------------------------------------------------*/
+		/*!**********************************************************************
+		*  @brief     Compute pipelineのリソースレイアウトの設定
+		*  @param[in] const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout
+		*  @return    void
+		*************************************************************************/
 		virtual void SetComputeResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) = 0;
 		
+		/*!**********************************************************************
+		*  @brief     コンピュートパイプラインの設定
+		*  @param[in] const gu::SharedPointer<core::GPUComputePipelineState>& pipelineState
+		*  @return    void
+		*************************************************************************/
 		virtual void SetComputePipeline(const gu::SharedPointer<GPUComputePipelineState>& pipeline) = 0;
 		
+		/*!**********************************************************************
+		*  @brief     Compute shaderで使用する描画関数です.
+		*  @param[in] const gu::uint32 threadGroupCountX : X方向のスレッドグループ数
+		*  @param[in] const gu::uint32 threadGroupCountY : Y方向のスレッドグループ数
+		*  @param[in] const gu::uint32 threadGroupCountZ : Z方向のスレッドグループ数
+		*  @return    void
+		*************************************************************************/
 		virtual void Dispatch(gu::uint32 threadGroupCountX  = 1, gu::uint32 threadGroupCountY = 1, gu::uint32 threadGroupCountZ = 1) = 0;
 
 		/*!**********************************************************************
@@ -353,7 +401,9 @@ namespace rhi::core
 		void SetDevice(gu::SharedPointer<RHIDevice> device) { _device = device; }
 
 		/*!**********************************************************************
-		*  @brief     デバッグ名を設定します
+		*  @brief     デバッグ表示名を設定します
+		*  @param[in] const gu::tstring& 表示名
+		*  @return    void
 		*************************************************************************/
 		virtual void SetName(const gu::tstring& name) = 0;
 

@@ -77,22 +77,28 @@ namespace rhi::directX12
 		*************************************************************************/
 		virtual void Reset(const gu::SharedPointer<core::RHICommandAllocator>& changeAllocator = nullptr) override;
 
-		/*-------------------------------------------------------------------
-		-               Common command
-		---------------------------------------------------------------------*/
-		void SetDescriptorHeap(const gu::SharedPointer<core::RHIDescriptorHeap>& heap) override;
+		/*!**********************************************************************
+		*  @brief     Descriptor Heapを設定します
+		*  @param[in] const gu::SharedPointer<core::RHIDescriptorHeap>&
+		*  @return    void
+		*************************************************************************/
+		virtual void SetDescriptorHeap(const gu::SharedPointer<core::RHIDescriptorHeap>& heap) override;
 
 		#pragma endregion Main Draw Frame
         #pragma region Query
-		/*----------------------------------------------------------------------
-		*  @brief : GPU情報を取得するためのクエリを開始します
-		*----------------------------------------------------------------------*/
-		void BeginQuery(const core::QueryResultLocation& location) override;
+		/*!**********************************************************************
+		*  @brief     GPU情報を取得するためのクエリを開始します
+		*  @param[in] const core::QueryResultLocation
+		*  @return    void
+		*************************************************************************/
+		virtual void BeginQuery(const core::QueryResultLocation& location) override;
 
-		/*----------------------------------------------------------------------
-		*  @brief : GPU情報を取得するためのクエリを終了します
-		*----------------------------------------------------------------------*/
-		void EndQuery(const core::QueryResultLocation& location) override;
+		/*!**********************************************************************
+		*  @brief     GPU情報を取得するためのクエリを終了します
+		*  @param[in] const core::QueryResultLocation
+		*  @return    void
+		*************************************************************************/
+		virtual void EndQuery(const core::QueryResultLocation& location) override;
 
 		#pragma endregion Query
 		#pragma region Graphics Command Function
@@ -130,7 +136,7 @@ namespace rhi::directX12
 		virtual void SetPrimitiveTopology(const core::PrimitiveTopology topology) override;
 
 		/*!**********************************************************************
-		*  @brief     ビューポートによって描画領域を設定します. シザー矩形もViewportに合わせて自動で設定します
+		*  @brief     ビューポートによって描画領域を設定します. 
 		*  @param[in] const core::Viewport& : 描画領域を示す単一のビューポート
 		*  @return    void
 		*************************************************************************/
@@ -175,11 +181,27 @@ namespace rhi::directX12
 		*************************************************************************/
 		virtual void SetResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override;
 		
+		/*!**********************************************************************
+		*  @brief     グラフィックパイプラインの設定
+		*  @param[in] const gu::SharedPointer<core::GPUGraphicsPipelineState>& pipelineState
+		*  @return    void
+		*************************************************************************/
 		virtual void SetGraphicsPipeline(const gu::SharedPointer<core::GPUGraphicsPipelineState>& pipelineState) override;
 		
+		/*!**********************************************************************
+		*  @brief     頂点バッファの登録
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer>& buffer
+		*  @return    void
+		*************************************************************************/
 		virtual void SetVertexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer) override ;
 		
-		virtual void SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const size_t startSlot = 0) override;
+		/*!**********************************************************************
+		*  @brief     頂点バッファの登録
+		*  @param[in] const gu::SharedPointer<core::GPUBuffer>& buffer
+		*  @param[in] const gu::uint64 スロット
+		*  @return    void
+		*************************************************************************/
+		virtual void SetVertexBuffers(const gu::DynamicArray<gu::SharedPointer<core::GPUBuffer>>& buffers, const gu::uint64 startSlot = 0) override;
 		
 		/*!**********************************************************************
 		*  @brief     インデックスバッファを設定します. インデックスバッファはGPUバッファの形で渡されます.
@@ -187,7 +209,7 @@ namespace rhi::directX12
 		*  @param[in] const core::PixelFormat インデックスの型 (DefaultはR32_UINT)
 		*  @return    void
 		*************************************************************************/
-		void SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::PixelFormat indexType = core::PixelFormat::R32_UINT) override;
+		virtual void SetIndexBuffer(const gu::SharedPointer<core::GPUBuffer>& buffer, const core::PixelFormat indexType = core::PixelFormat::R32_UINT) override;
 
 		/*!**********************************************************************
 		*  @brief     インデックスがついているモデルでかつ, インスタンシング描画が必要ないプリミティブを描画します.
@@ -228,12 +250,19 @@ namespace rhi::directX12
         
 
 		#pragma endregion Graphics Command Function
-		/*-------------------------------------------------------------------
-		-                Compute Command
-		---------------------------------------------------------------------*/
-		void SetComputeResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override;
+		/*!**********************************************************************
+		*  @brief     Compute pipelineのリソースレイアウトの設定
+		*  @param[in] const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout
+		*  @return    void
+		*************************************************************************/
+		virtual void SetComputeResourceLayout(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override;
 		
-		void SetComputePipeline(const gu::SharedPointer<core::GPUComputePipelineState>& pipeline) override;
+		/*!**********************************************************************
+		*  @brief     コンピュートパイプラインの設定
+		*  @param[in] const gu::SharedPointer<core::GPUComputePipelineState>& pipelineState
+		*  @return    void
+		*************************************************************************/
+		virtual void SetComputePipeline(const gu::SharedPointer<core::GPUComputePipelineState>& pipeline) override;
 		
 		/*!**********************************************************************
 		*  @brief     Compute shaderで使用する描画関数です.
@@ -242,7 +271,7 @@ namespace rhi::directX12
 		*  @param[in] const gu::uint32 threadGroupCountZ : Z方向のスレッドグループ数
 		*  @return    void
 		*************************************************************************/
-		void Dispatch(gu::uint32 threadGroupCountX = 1, gu::uint32 threadGroupCountY = 1, gu::uint32 threadGroupCountZ = 1) override;
+		virtual void Dispatch(gu::uint32 threadGroupCountX = 1, gu::uint32 threadGroupCountY = 1, gu::uint32 threadGroupCountZ = 1) override;
 		
 		#pragma region Copy Function
 		/*!**********************************************************************
@@ -328,13 +357,15 @@ namespace rhi::directX12
 		#pragma region Public Property
 		/*!**********************************************************************
 		*  @brief     コマンドリストのComptrを返します
-		*  @return CommandListComPtr コマンドリスト
+		*  @param[in] void
+		*  @return    CommandListComPtr コマンドリスト
 		*************************************************************************/
-		CommandListComPtr GetCommandList() const noexcept { return _commandList; }
+		__forceinline CommandListComPtr GetCommandList() const noexcept { return _commandList; }
 
 		/*!**********************************************************************
 		*  @brief     デバッグ表示名を設定します
 		*  @param[in] const gu::tstring& 表示名 
+		*  @return    void
 		*************************************************************************/
 		virtual void SetName(const gu::tstring& name) override;
 		
