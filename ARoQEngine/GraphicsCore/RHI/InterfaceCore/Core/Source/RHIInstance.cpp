@@ -27,17 +27,13 @@ using namespace gu;
 //                          Implement
 //////////////////////////////////////////////////////////////////////////////////
 #pragma region Public Function
-/****************************************************************************
-*                     CreateInstance
-****************************************************************************/
-/* @brief     手動でGraphics APIを選択します. @n
-              そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
-*
+/*!**********************************************************************
+*  @brief     手動でGraphics APIを選択します. @n
+*             そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
 *  @param[in] const core::GraphicsAPI グラフィクスAPI
-*  @param[in] const RHIInstanceCreateInfo デバッガの指定用構造体
-*
-*  @return    void
-*****************************************************************************/
+*  @param[in] const RHIInstanceCreateInfo&  CPU, GPUデバッガの有無を指定する構造体
+*  @return gu::SharedPointer<RHIInstance> RHIInstanceのポインタ
+*************************************************************************/
 gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core::GraphicsAPI graphicsAPI, const RHIDebugCreateInfo& debugCreateInfo)
 {
 	switch (graphicsAPI)
@@ -60,16 +56,12 @@ gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core
 	}
 }
 
-/****************************************************************************
-*                     CreateInstance
-****************************************************************************/
-/* @brief     プラットフォームに合わせて自動でGraphics APIを選択します. @n
-              そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
-*
-*  @param[in] const RHIInstanceCreateInfo デバッガの指定用構造体
-*
-*  @return    void
-*****************************************************************************/
+/*!**********************************************************************
+*  @brief     プラットフォームに合わせて自動でGraphics APIを選択します. @n
+*             そのほかCPU, GPUデバッガを使用するかも選択できますが, リリースモードでは使用することが出来ません
+*  @param[in] const RHIDebugCreateInfo& CPU, GPUデバッガの有無を指定する構造体
+*  @return gu::SharedPointer<RHIInstance> RHIInstanceのポインタ
+*************************************************************************/
 gu::SharedPointer<RHIInstance> rhi::core::RHIInstance::CreateInstance(const core::RHIDebugCreateInfo& debugCreateInfo)
 {
 	return gu::MakeShared<DEFAULT_GRAPHICS_API::RHIInstance>(debugCreateInfo);
