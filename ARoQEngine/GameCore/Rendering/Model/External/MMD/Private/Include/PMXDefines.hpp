@@ -277,8 +277,8 @@ namespace engine::file::pmx
 		/*! @brief トゥーンテクスチャのインデックス */
 		gu::int32 ToonTextureIndex = 0;
 
-		/*! @brief 面の個数 (必ず3の倍数になります)*/
-		gu::int32 FaceCount = 0;
+		/*! @brief 必要なIndexの個数 (必ず3の倍数になります)*/
+		gu::int32 IndexCount = 0;
 
 		/*!**********************************************************************
 		*  @brief     pmxファイルをもとにデータ読み込み

@@ -276,7 +276,7 @@ void PMXMaterial::Read(const gu::SharedPointer<platform::core::file::IFileHandle
 	}
 
 	Memo = ReadString(fileHandle, header.Encode); // Memo
-	fileHandle->Read(&FaceCount, sizeof(int32));
+	fileHandle->Read(&IndexCount, sizeof(int32));
 }
 
 /*!**********************************************************************

@@ -22,26 +22,29 @@ using namespace gu;
 
 namespace
 {
-	int32 ReadIndex(const gu::SharedPointer<file::IFileHandle>& fileHandle, const uint32 size)
+	uint32 ReadIndex(const gu::SharedPointer<file::IFileHandle>& fileHandle, const uint32 size)
 	{
 		switch (size)
 		{
 			case 1:
 			{
-				gu::int8 value = 0;
-				fileHandle->Read(&value, sizeof(gu::int8));
-				return static_cast<int32>(value);
+				gu::uint8 value = 0;
+				fileHandle->Read(&value, sizeof(gu::uint8));
+				return static_cast<uint32>(value);
 			}
 			case 2:
 			{
-				gu::int16 value = 0;
-				fileHandle->Read(&value, sizeof(gu::int16));
-				return static_cast<int32>(value);
+				gu::uint16 value = 0;
+				if (!fileHandle->Read(&value, sizeof(gu::uint16)))
+				{
+					return -1;
+				}
+				return static_cast<uint32>(value);
 			}
 			case 4:
 			{
-				gu::int32 value = 0;
-				fileHandle->Read(&value, sizeof(gu::int32));
+				gu::uint32 value = 0;
+				fileHandle->Read(&value, sizeof(gu::uint32));
 				return value;
 			}
 			default:
