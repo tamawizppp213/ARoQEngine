@@ -60,6 +60,9 @@ namespace engine::file::sf
 		/*! @brief このメッシュに適用されるマテリアルIndex*/
 		gu::uint32 MaterialIndex = 0;
 
+		/*! @brief メッシュの名前*/
+		gu::tstring Name = SP("");
+
 		/*!**********************************************************************
 		*  @brief     3次元位置を取得しているか
 		*  @param[in] void
@@ -95,7 +98,7 @@ namespace engine::file::sf
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor
-
+		
 		#pragma endregion 
 
 	protected:

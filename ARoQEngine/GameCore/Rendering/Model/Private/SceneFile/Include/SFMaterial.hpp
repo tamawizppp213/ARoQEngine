@@ -1,18 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   SceneImporter.hpp
-///  @brief  外部3Dモデル, 3Dシーンのデータファイルを読み込みます.
+///  @file   SFTexture.hpp
+///  @brief  テクスチャ読み込み情報の取得. 実際のテクスチャロードは別途行う.
 ///  @author toide
-///  @date   2024/07/21 22:32:34
+///  @date   2024/07/22 0:54:48
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SCENE_IMPORTER_HPP
-#define SCENE_IMPORTER_HPP
+#ifndef SF_MATERIAL_HPP
+#define SF_MATERIAL_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "GameUtility/Base/Include/GUClassUtility.hpp"
-
+#include "SFTexture.hpp"
+#include "GameUtility/Base/Include/GUOptional.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -20,15 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-
-namespace engine
+namespace engine::file::sf
 {
 	/****************************************************************************
-	*				  			   ModelFileImporter
+	*				  			   SFMaterial
 	****************************************************************************/
-	/* @brief  temp
+	/* @brief  テクスチャの情報を一時的に格納するための構造体.
 	*****************************************************************************/
-	class ISceneImporter : public gu::NonCopyable
+	struct SFMaterial
 	{
 	public:
 		#pragma region Public Function
@@ -36,7 +35,23 @@ namespace engine
 		#pragma endregion 
 
 		#pragma region Public Property
+		/*! @brief マテリアル名*/
+		gu::tstring Name = SP("");
 
+		/*! @brief マテリアルの拡散色*/
+		gm::Float4 Diffuse = gm::Float4(1.0f, 1.0f, 1.0f, 1.0f);
+
+		/*! @brief マテリアルの反射色*/
+		gm::Float3 Specular = gm::Float3(1.0f, 1.0f, 1.0f);
+
+		/*! @brief マテリアルの反射強度*/
+		gu::float32 SpecularPower = 1.0f;
+
+		/*! @brief マテリアルの環境色*/
+		gm::Float3 Ambient = gm::Float3(1.0f, 1.0f, 1.0f);
+
+		/*! @brief DiffuseMapのテクスチャ*/
+		gu::Optional<SFTexture> DiffuseMap = {};
 		#pragma endregion 
 
 		#pragma region Public Operator 
@@ -75,5 +90,6 @@ namespace engine
 
 	};
 }
+
 
 #endif

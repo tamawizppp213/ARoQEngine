@@ -5,14 +5,14 @@
 ///  @date   2024/07/21 23:18:03
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SF_SCENE_HPP
-#define SF_SCENE_HPP
+#ifndef SF_SCENE_NODE_HPP
+#define SF_SCENE_NODE_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "SFSceneNode.hpp"
-
+#include "SFMesh.hpp"
+#include "SFMaterial.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
@@ -23,43 +23,40 @@
 namespace engine::file::sf
 {
 	/****************************************************************************
-	*				  			   SFSceneFlag
-	****************************************************************************/
-	/* @brief  シーン情報を作成する時のフラグ
-	*****************************************************************************/
-	enum class SFSceneFlag : gu::uint8
-	{
-		None = 0,		//!< 何もしない
-
-	};
-
-	/****************************************************************************
 	*				  			   SFScene
 	****************************************************************************/
 	/* @brief  シーン情報を一時的に格納するための構造体. 
 	*****************************************************************************/
-	struct SFScene
+	struct SFSceneNode
 	{
 	public:
 		#pragma region Public Function
-		
+		/*!**********************************************************************
+		*  @brief     対象の名前のSceneNode確認
+		*  @param[in] const gu::tstring& メッシュ名
+		*  @return    SFSceneNode*
+		*************************************************************************/
+		SFSceneNode* FindNode(const gu::tstring& name);
+
+		/*!**********************************************************************
+		*  @brief     対象の名前のSceneNode確認
+		*  @param[in] const gu::tstring& メッシュ名
+		*  @return    SFSceneNode*
+		*************************************************************************/
+		const SFSceneNode* FindNode(const gu::tstring& name) const;
+
 		#pragma endregion 
 
 		#pragma region Public Property
-		/*! @brief Root. Importが成功した場合, 常にRootNodeは存在します. */
-		SFSceneNode* RootSceneNode = nullptr;
+		/*! @brief 親ノード*/
+		SFSceneNode* Parent = nullptr;
 
-		/*! @brief 3次元メッシュ[マテリアルの数分だけ作成されます.*/
-		gu::DynamicArray<SFMesh> Meshes = {};
+		/*! @brief 子ノード*/
+		gu::DynamicArray<SFSceneNode*> Children = {};
 
-		/*! @brief マテリアル*/
-		gu::DynamicArray<SFMaterial> Materials = {};
+		/*! @brief ノード名*/
+		gu::tstring Name = SP("");
 
-		/*! @brief テクスチャ*/
-		gu::DynamicArray<SFTexture> Textures = {};
-
-		/*! @brief シーン生成フラグ*/
-		SFSceneFlag Flag = SFSceneFlag::None;
 		#pragma endregion 
 
 		#pragma region Public Operator 
@@ -68,10 +65,12 @@ namespace engine::file::sf
 
 		#pragma region Public Constructor and Destructor
 		/*! @brief デフォルトコンストラクタ*/
-		SFScene() = default;
+		SFSceneNode() = default;
 
 		/*! @brief デストラクタ*/
-		~SFScene() = default;
+		~SFSceneNode() = default;
+
+		explicit SFSceneNode(const gu::tstring& name);
 		#pragma endregion 
 
 	protected:

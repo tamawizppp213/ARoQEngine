@@ -1,65 +1,61 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   SFScene.hpp
-///  @brief  temp
+///  @file   SceneImporter.hpp
+///  @brief  外部3Dモデル, 3Dシーンのデータファイルを読み込みます.　
 ///  @author toide
-///  @date   2024/07/21 23:18:03
+///  @date   2024/07/21 22:32:34
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SF_SCENE_HPP
-#define SF_SCENE_HPP
+#ifndef EXTERNAL_SCENE_PROCESSOR_HPP
+#define EXTERNAL_SCENE_PROCESSOR_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "SFSceneNode.hpp"
-
+#include "GameUtility/Base/Include/GUClassUtility.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
+namespace engine::file::sf
+{
+	class ISceneProcessor;
+	struct SFScene;
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
-namespace engine::file::sf
+
+namespace engine
 {
 	/****************************************************************************
-	*				  			   SFSceneFlag
+	*				  			 ExternalSceneProcessor
 	****************************************************************************/
-	/* @brief  シーン情報を作成する時のフラグ
+	/* @brief  外部ファイルのシーン読み込みを行うクラス
 	*****************************************************************************/
-	enum class SFSceneFlag : gu::uint8
-	{
-		None = 0,		//!< 何もしない
-
-	};
-
-	/****************************************************************************
-	*				  			   SFScene
-	****************************************************************************/
-	/* @brief  シーン情報を一時的に格納するための構造体. 
-	*****************************************************************************/
-	struct SFScene
+	class ExternalSceneProcessor : public gu::NonCopyable
 	{
 	public:
 		#pragma region Public Function
-		
+		/*!**********************************************************************
+		*  @brief     各拡張子に基づいてシーンを読み込みます
+		*  @param[in] const gu::tstring& ファイルパス
+		*  @return    gu::SharedPointer<file::sf::ISceneProcessor>
+		*************************************************************************/
+		static gu::SharedPointer<file::sf::ISceneProcessor> Import(const gu::tstring& filePath);
+
+		/*!**********************************************************************
+		*  @brief     各拡張子に基づいてシーンを保存します
+		*  @param[in] const gu::tstring& ファイルパス
+		*  @return    bool
+		*************************************************************************/
+		static void Export(const gu::tstring& filePath);
+
 		#pragma endregion 
 
 		#pragma region Public Property
-		/*! @brief Root. Importが成功した場合, 常にRootNodeは存在します. */
-		SFSceneNode* RootSceneNode = nullptr;
 
-		/*! @brief 3次元メッシュ[マテリアルの数分だけ作成されます.*/
-		gu::DynamicArray<SFMesh> Meshes = {};
-
-		/*! @brief マテリアル*/
-		gu::DynamicArray<SFMaterial> Materials = {};
-
-		/*! @brief テクスチャ*/
-		gu::DynamicArray<SFTexture> Textures = {};
-
-		/*! @brief シーン生成フラグ*/
-		SFSceneFlag Flag = SFSceneFlag::None;
 		#pragma endregion 
 
 		#pragma region Public Operator 
@@ -68,10 +64,10 @@ namespace engine::file::sf
 
 		#pragma region Public Constructor and Destructor
 		/*! @brief デフォルトコンストラクタ*/
-		SFScene() = default;
+		ExternalSceneProcessor() = default;
 
 		/*! @brief デストラクタ*/
-		~SFScene() = default;
+		~ExternalSceneProcessor() = default;
 		#pragma endregion 
 
 	protected:
@@ -97,10 +93,10 @@ namespace engine::file::sf
 		#pragma endregion 
 
 		#pragma region Private Property
-
+		
 		#pragma endregion 
 
 	};
-
 }
+
 #endif

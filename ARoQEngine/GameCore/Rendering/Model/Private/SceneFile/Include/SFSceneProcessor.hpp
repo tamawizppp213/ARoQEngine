@@ -1,17 +1,18 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   SFScene.hpp
+///  @file   SFSceneImporter.hpp
 ///  @brief  temp
 ///  @author toide
-///  @date   2024/07/21 23:18:03
+///  @date   2024/07/23 0:06:38
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef SF_SCENE_HPP
-#define SF_SCENE_HPP
+#ifndef SF_SCENE_PROCESSOR_HPP
+#define SF_SCENE_PROCESSOR_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "SFSceneNode.hpp"
+#include "GameUtility/Base/Include/GUString.hpp"
+#include "GameUtility/Base/Include/GUSmartPointer.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -20,46 +21,38 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
+
 namespace engine::file::sf
 {
-	/****************************************************************************
-	*				  			   SFSceneFlag
-	****************************************************************************/
-	/* @brief  シーン情報を作成する時のフラグ
-	*****************************************************************************/
-	enum class SFSceneFlag : gu::uint8
-	{
-		None = 0,		//!< 何もしない
-
-	};
+	struct SFScene;
 
 	/****************************************************************************
-	*				  			   SFScene
+	*				  			   SFSceneImporter
 	****************************************************************************/
-	/* @brief  シーン情報を一時的に格納するための構造体. 
+	/* @brief  temp
 	*****************************************************************************/
-	struct SFScene
+	class ISceneProcessor
 	{
 	public:
 		#pragma region Public Function
-		
+		/*!**********************************************************************
+		*  @brief     各拡張子に基づいてシーンを読み込みます
+		*  @param[in] const gu::tstring& ファイルパス
+		*  @return    gu::SharedPointer<SFScene>
+		*************************************************************************/
+		virtual gu::SharedPointer<SFScene> Import(const gu::tstring& filePath) = 0;
+
+		/*!**********************************************************************
+		*  @brief     各拡張子に基づいてシーンを保存します
+		*  @param[in] const gu::tstring& ファイルパス
+		*  @return    bool
+		*************************************************************************/
+		virtual void Export(const gu::tstring& filePath) = 0;
+
 		#pragma endregion 
 
 		#pragma region Public Property
-		/*! @brief Root. Importが成功した場合, 常にRootNodeは存在します. */
-		SFSceneNode* RootSceneNode = nullptr;
-
-		/*! @brief 3次元メッシュ[マテリアルの数分だけ作成されます.*/
-		gu::DynamicArray<SFMesh> Meshes = {};
-
-		/*! @brief マテリアル*/
-		gu::DynamicArray<SFMaterial> Materials = {};
-
-		/*! @brief テクスチャ*/
-		gu::DynamicArray<SFTexture> Textures = {};
-
-		/*! @brief シーン生成フラグ*/
-		SFSceneFlag Flag = SFSceneFlag::None;
+		
 		#pragma endregion 
 
 		#pragma region Public Operator 
@@ -67,11 +60,7 @@ namespace engine::file::sf
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor
-		/*! @brief デフォルトコンストラクタ*/
-		SFScene() = default;
 
-		/*! @brief デストラクタ*/
-		~SFScene() = default;
 		#pragma endregion 
 
 	protected:
@@ -101,6 +90,7 @@ namespace engine::file::sf
 		#pragma endregion 
 
 	};
-
 }
+
+
 #endif
