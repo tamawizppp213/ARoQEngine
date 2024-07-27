@@ -133,14 +133,16 @@ namespace gu
 		}
 
 		/*! ƒ€[ƒu‘ã“ü‰‰Zq */
-		Optional& operator=(Optional<ElementType>&& other)
+		Optional& operator=(Optional<ElementType>&& other) noexcept
 		{
 			if (this != &other)
 			{
-				_value = Forward<Optional<ElementType>>(other._value);
+				_value = other.Value();
 				_hasValue = other._hasValue;
 				other._hasValue = false;
 			}
+
+			return *this;
 		}
 
 		#pragma endregion Public Constructor and Destructor
