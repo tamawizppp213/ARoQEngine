@@ -116,15 +116,33 @@ namespace rhi::directX12
 		
 		virtual gu::SharedPointer<core::GPUComputePipelineState>    CreateComputePipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override; // after action: setting pipeline
 		
-		virtual gu::SharedPointer<core::RHIResourceLayout>          CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const gu::Optional<core::Constant32Bits>& constant32Bits = {}, const gu::tstring& name=SP("ResourceLayout")) override;
+		/*!**********************************************************************
+		*  @brief     GPUのリソースのバインド方法を設定するリソースレイアウト
+		*  @param[in] const gu::DynamicArray<core::ResourceLayoutElement>& リソースレイアウト,
+		*  @param[in] const gu::DynamicArray<core::SamplerLayoutElement>& サンプラー, 
+		*  @param[in] const gu::Optional<core::Constant32Bits>& constant32Bits, 
+		*  @param[in] const gu::tstring& デバッグ表示名
+		*  @return    gu::SharedPointer<core::RHIResourceLayout>
+		*************************************************************************/
+		virtual gu::SharedPointer<core::RHIResourceLayout> CreateResourceLayout(const gu::DynamicArray<core::ResourceLayoutElement>& elements = {}, const gu::DynamicArray<core::SamplerLayoutElement>& samplers = {}, const gu::Optional<core::Constant32Bits>& constant32Bits = {}, const gu::tstring& name=SP("ResourceLayout")) override;
 		
-		virtual gu::SharedPointer<core::GPUPipelineFactory>         CreatePipelineFactory() override;
+		/*!**********************************************************************
+		*  @brief     Graphcis Pipelineにおいて, 各パイプラインステートを生成します.
+		*  @param[in] void
+		*  @return    gu::SharedPointer<core::GPUPipelineFactory>
+		*************************************************************************/
+		virtual gu::SharedPointer<core::GPUPipelineFactory> CreatePipelineFactory() override;
 		
 		virtual gu::SharedPointer<core::GPUResourceView>            CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUTexture>& texture, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
 		virtual gu::SharedPointer<core::GPUResourceView>            CreateResourceView(const core::ResourceViewType viewType, const gu::SharedPointer<core::GPUBuffer>& buffer, const gu::uint32 mipSlice = 0, const gu::uint32 placeSlice = 0, const gu::SharedPointer<core::RHIDescriptorHeap>& customHeap = nullptr) override;
 		
-		virtual gu::SharedPointer<core::GPUSampler>                 CreateSampler(const core::SamplerInfo& samplerInfo); // both
+		/*!**********************************************************************
+		*  @brief     テクスチャサンプリングの方法の設定項目を記述するクラスです.
+		*  @param[in] const core::SamplerInfo& : サンプラーの設定項目
+		*  @return    gu::SharedPointer<core::GPUSampler>
+		*************************************************************************/
+		virtual gu::SharedPointer<core::GPUSampler> CreateSampler(const core::SamplerInfo& samplerInfo) override; // both
 		
 		/*!**********************************************************************
 		*  @brief     GPUで確保するバッファを作成します. (頂点データやインデックスデータの確保などに使用します.)
@@ -134,9 +152,20 @@ namespace rhi::directX12
 		*************************************************************************/
 		virtual gu::SharedPointer<core::GPUBuffer> CreateBuffer(const core::GPUBufferMetaData& metaData, const gu::tstring& name = SP("")) override;
 		
-		virtual gu::SharedPointer<core::GPUTexture>                 CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("")) override;
+		/*!**********************************************************************
+		*  @brief     GPUで確保するテクスチャを作成します. 
+		*  @param[in] const core::GPUTextureMetaData& metaData& : テクスチャを作る際に必要な情報をまとめた構造体
+		*  @param[in] const gu::tstring& : デバッグ名
+		*  @return    gu::SharedPointer<GPUTexture> : GPUテクスチャのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<core::GPUTexture> CreateTexture(const core::GPUTextureMetaData& metaData, const gu::tstring& name = SP("")) override;
 		
-		virtual gu::SharedPointer<core::GPUTexture>                 CreateTextureEmpty() override;
+		/*!**********************************************************************
+		*  @brief     GPUで確保する空のテクスチャを作成します. 
+		*  @param[in] void
+		*  @return    gu::SharedPointer<GPUTexture> : GPUテクスチャのポインタ
+		*************************************************************************/
+		virtual gu::SharedPointer<core::GPUTexture> CreateTextureEmpty() override;
 
 		//gu::SharedPointer<core::GPURayTracingPipelineState> CreateRayTracingPipelineState(const gu::SharedPointer<core::RHIResourceLayout>& resourceLayout) override;
 		

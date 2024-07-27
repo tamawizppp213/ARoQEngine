@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///             @file   GPUPipelineFactory.hpp
-///             @brief  Blend State
+///             @brief  Graphcis Pipelineにおいて, 各パイプラインステートを生成します. 
 ///             @author Toide Yutaro
 ///             @date   2022_06_28
 //////////////////////////////////////////////////////////////////////////////////
@@ -32,10 +32,9 @@ namespace rhi::core
 	class GPUShaderState;
 	class GPUBlendState;
 	/****************************************************************************
-	*				  			RHIPipelineState
+	*				  			GPUPipelineFactory
 	****************************************************************************/
-	/* @class     RHIPipelineState
-	*  @brief     PipelineState
+	/* @brief  Graphcis Pipelineにおいて, 各パイプラインステートを生成します. 
 	*****************************************************************************/
 	class GPUPipelineFactory : public gu::NonCopyable
 	{
