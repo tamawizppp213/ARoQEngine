@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   MMDModelImporter.hpp
-///  @brief  temp
+///  @file   PMDSceneProcessor.hpp
+///  @brief  拡張子が.pmdのファイルから, 共通のSceneFileMeshに相互変換するクラス. Importがファイル読み込み, Exportが書き出し
 ///  @author toide
 ///  @date   2024/07/21 23:20:08
 //////////////////////////////////////////////////////////////////////////////////
@@ -16,16 +16,22 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+namespace engine::file::sf
+{
+	struct SFMesh;
+	struct SFMaterial;
+}
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
 namespace engine::file::pmd
 {
+	struct PMDFile;
+
 	/****************************************************************************
-	*				  			   MMDModelImporter
+	*				  			  PMDSceneProcessor
 	****************************************************************************/
-	/* @brief  temp
+	/* @brief  拡張子が.pmdのファイルから, 共通のSceneFileMeshに相互変換するクラス. Importがファイル読み込み, Exportが書き出し
 	*****************************************************************************/
 	class PMDSceneProcessor : public sf::ISceneProcessor
 	{
@@ -78,7 +84,15 @@ namespace engine::file::pmd
 		#pragma endregion
 
 		#pragma region Private Function
-
+		/*!**********************************************************************
+		*  @brief     メッシュを作成します.
+		*  @param[in]  const gu::SharedPointer<PMXFile> モデルデータ
+		*  @param[out] const sf::SFMesh& メッシュ
+		*  @param[in]  const gu::uint64 開始Index
+		*  @param[in]  const gu::uint64 Indexの個数
+		*  @return     void
+		*************************************************************************/
+		void CreateMesh(const gu::SharedPointer<PMDFile>& file, sf::SFMesh& mesh, const gu::uint64 indexStart, const gu::uint64 indexCount);
 		#pragma endregion 
 
 		#pragma region Private Property

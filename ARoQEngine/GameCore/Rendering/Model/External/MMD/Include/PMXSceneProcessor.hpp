@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   PMXModelImporter.hpp
-///  @brief  temp
+///  @file   PMXSceneProcessor.hpp
+///  @brief  拡張子が.pmxのファイルから, 共通のSceneFileMeshに相互変換するクラス. Importがファイル読み込み, Exportが書き出し
 ///  @author toide
 ///  @date   2024/07/22 1:26:19
 //////////////////////////////////////////////////////////////////////////////////
@@ -30,9 +30,9 @@ namespace engine::file::pmx
 	struct PMXFile;
 
 	/****************************************************************************
-	*				  			   MMDModelImporter
+	*				  			  PMXSceneProcessor
 	****************************************************************************/
-	/* @brief  temp
+	/* @brief  拡張子が.pmxのファイルから, 共通のSceneFileMeshに相互変換するクラス. Importがファイル読み込み, Exportが書き出し
 	*****************************************************************************/
 	class PMXSceneProcessor : public sf::ISceneProcessor
 	{
