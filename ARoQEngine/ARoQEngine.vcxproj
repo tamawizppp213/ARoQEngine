@@ -1390,7 +1390,7 @@
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJParser.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\External\OBJ\Source\OBJUtils.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\Material.cpp" />
-    <ClCompile Include="GameCore\Rendering\Model\Source\Mesh.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\Source\MeshOld.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\GameModel.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\ModelConverter.cpp" />
     <ClCompile Include="GameCore\Rendering\Model\Source\PrimitiveMesh.cpp" />

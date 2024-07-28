@@ -29,6 +29,7 @@
 #include "GameUtility/Base/Include/GUCommandLine.hpp"
 #include "GameUtility/Base/Include/GUParse.hpp"
 #include "GameUtility/Math/Include/GMVector.hpp"
+#include "GameCore/Rendering/Model/Include/ExternalSceneProcessor.hpp"
 
 #include "GameUtility/File/Private/Json/Include/JsonReader.hpp"
 // 
@@ -74,6 +75,7 @@
    /* gu::file::json::JsonReader reader;
     reader.Read(SP("Resources/test.json"), false);*/
 
+    const auto scene = engine::ExternalSceneProcessor::Import(SP("D:\\Program\\ARoQEngine\\ARoQEngine\\Resources\\YYB Hatsune Miku_10th\\YYB Hatsune Miku_10th_v1.02.pmx"));
     /********************************************
     **         Initialize
     *********************************************/
