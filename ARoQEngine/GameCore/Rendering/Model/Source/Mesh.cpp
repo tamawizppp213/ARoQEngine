@@ -9,7 +9,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "../Include/Mesh.hpp"
+#include "../Include/MeshOld.hpp"
 #include "../Include/PrimitiveMesh.hpp"
 #include "GraphicsCore/Engine/Include/LowLevelGraphicsEngine.hpp"
 #include "GraphicsCore/RHI/InterfaceCore/Resource/Include/GPUBuffer.hpp"
@@ -93,7 +93,7 @@ Mesh::Mesh(const LowLevelGraphicsEnginePtr& engine, const gu::DynamicArray<GPUBu
 * 
 *  @return @@void
 *****************************************************************************/
-void Mesh::Draw(const gu::SharedPointer<RHICommandList>& commandList, const uint32 frameIndex)
+void Mesh::Draw(const RHICommandListPtr& commandList, const uint32 frameIndex)
 {
 	Check(frameIndex < LowLevelGraphicsEngine::FRAME_BUFFER_COUNT);
 	Check(commandList->GetType() == CommandListType::Graphics);

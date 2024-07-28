@@ -11,7 +11,7 @@
 #include "../Include/GLTFModelConverter.hpp"
 #include "../Include/GLTFParser.hpp"
 #include "../../../../Include/GameModel.hpp"
-#include "../../../../Include/Mesh.hpp"
+#include "../../../../Include/MeshOld.hpp"
 #include "../../../../Include/Material.hpp"
 #include "../../../../Include/MaterialType.hpp"
 #include "GameUtility/File/Include/UnicodeUtility.hpp"

@@ -148,7 +148,7 @@
     <FxCompile>
       <ShaderModel>6.6</ShaderModel>
       <EntryPointName>MainPS</EntryPointName>
-      <EnableDebuggingInformation>true</EnableDebuggingInformation>
+      <EnableDebuggingInformation>false</EnableDebuggingInformation>
       <AssemblerOutput>AssemblyCode</AssemblerOutput>
       <AssemblerOutputFile>$(OutDir)Assembly\%(Filename).asm</AssemblerOutputFile>
     </FxCompile>
@@ -223,11 +223,23 @@
     <ClInclude Include="GameCore\Network\Private\Include\PacketQueue.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBufferDesc.hpp" />
     <ClInclude Include="GameCore\Rendering\Core\Interface\Include\GBuffer.hpp" />
-    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\MMDModelImporter.hpp">
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\PMDSceneProcessor.hpp">
       <SubType>
       </SubType>
     </ClInclude>
-    <ClInclude Include="GameCore\Rendering\Model\Include\SceneImporter.hpp">
+    <ClInclude Include="GameCore\Rendering\Model\External\MMD\Include\PMXSceneProcessor.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Include\ExternalSceneProcessor.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\Model\Include\BaseMesh.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFMaterial.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -236,6 +248,14 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFScene.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFSceneNode.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="GameCore\Rendering\Model\Private\SceneFile\Include\SFSceneProcessor.hpp">
       <SubType>
       </SubType>
     </ClInclude>
@@ -776,7 +796,7 @@
     <ClInclude Include="GameCore\Rendering\Model\External\OBJ\Include\OBJUtils.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\Material.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\MaterialType.hpp" />
-    <ClInclude Include="GameCore\Rendering\Model\Include\Mesh.hpp" />
+    <ClInclude Include="GameCore\Rendering\Model\Include\MeshOld.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\GameModel.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\GameModelConverter.hpp" />
     <ClInclude Include="GameCore\Rendering\Model\Include\PrimitiveMesh.hpp" />
@@ -1149,6 +1169,22 @@
     <ClCompile Include="GameCore\Rendering\Core\Renderer\Source\UniversalRenderPipeline.cpp" />
     <ClCompile Include="GameCore\Rendering\Debugger\Source\DebugDrawer.cpp" />
     <ClCompile Include="GameCore\Rendering\Debugger\Source\ScreenCapture.cpp" />
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\PMDSceneProcessor.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\External\MMD\Source\PMXSceneProcessor.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\Private\Model\Source\BaseMesh.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
+    <ClCompile Include="GameCore\Rendering\Model\Source\ExternalSceneProcessor.cpp">
+      <SubType>
+      </SubType>
+    </ClCompile>
     <ClCompile Include="GameCore\Rendering\PostProcess\Source\FullScreenEffector.cpp" />
     <ClCompile Include="GameCore\Rendering\PostProcess\Source\Mosaic.cpp" />
     <ClCompile Include="GameCore\Rendering\PostProcess\Source\ParticleEffect.cpp" />

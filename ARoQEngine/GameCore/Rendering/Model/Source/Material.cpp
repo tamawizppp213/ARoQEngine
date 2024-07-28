@@ -33,11 +33,8 @@ Material::GPUResourceCachePtr Material::ResourceCache = nullptr;
 Material::Material(const LowLevelGraphicsEnginePtr& engine, const GPUBufferMetaData& bufferInfo, const gu::tstring& addName, 
 	const RHIDescriptorHeapPtr& customHeap): _engine(engine), _customHeap(customHeap)
 {
-#ifdef _DEBUG
 	Check(bufferInfo.Count == 1);
 	Check(bufferInfo.Usage == BufferCreateFlags::ConstantBuffer);
-
-#endif
 
 	/*-------------------------------------------------------------------
 	-            Set debug name

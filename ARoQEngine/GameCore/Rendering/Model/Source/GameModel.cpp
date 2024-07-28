@@ -10,7 +10,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 #include "../Include/GameModel.hpp"
 #include "../Include/PrimitiveMesh.hpp"
-#include "../Include/Mesh.hpp"
+#include "../Include/MeshOld.hpp"
 #include "../Include/Material.hpp"
 #include "../../../Core/Include/GameWorldInfo.hpp"
 #include "../External/MMD/Include/MMDModelConverter.hpp"
