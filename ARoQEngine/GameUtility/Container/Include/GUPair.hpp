@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUPair.hpp
-///             @brief  temp
-///             @author toide
-///             @date   2024/02/01 21:06:26
+///  @file   GUPair.hpp
+///  @brief  キーバリューを結びつける構造体. Templateのため, 最初にキーバリューそれぞれの型を定義してください.
+///  @author toide
+///  @date   2024/02/01 21:06:26
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GU_PAIR_HPP
@@ -22,34 +22,36 @@
 namespace gu
 {
 	/****************************************************************************
-	*				  			   GUPair
+	*				  			   Pair
 	****************************************************************************/
-	/* @class     GUPair
-	*  @brief     ペア
+	/* @brief  キーバリューを結びつける構造体. Templateのため, 最初にキーバリューそれぞれの型を定義してください
 	*****************************************************************************/
 	template<typename KeyType, typename ValueType>
 	struct Pair
 	{
 	public:
-		/****************************************************************************
-		**                Public Function
-		*****************************************************************************/
+		#pragma region Public Function
+		#pragma endregion
+
+		#pragma region Public Property
+		
+		/*! @brief キー*/
+		KeyType Key;
+
+		/*! @brief キーに照らし合わせて参照される値*/
+		ValueType Value;
+
+		#pragma endregion
+
+		#pragma region Public Operator
 		__forceinline bool operator == (const Pair& other) const { return Key == other.Key; }
 		__forceinline bool operator != (const Pair& other) const { return Key != other.Key; }
 		__forceinline bool operator <  (const Pair& other) const { return Key <  other.Key;}
 		__forceinline bool operator >  (const Pair& other) const { return Key >  other.Key; }
 		__forceinline bool operator() (const Pair& a, const Pair& b) const {return a.Key < B.Key; }
+		#pragma endregion
 
-		/****************************************************************************
-		**                Public Property
-		*****************************************************************************/
-		KeyType Key;
-
-		ValueType Value;
-
-		/****************************************************************************
-		**                Constructor and Destructor
-		*****************************************************************************/
+		#pragma region Public Constructor and Destructor
 		Pair(const KeyType& key, const ValueType& value) : Key(key), Value(value) {};
 
 		Pair(const KeyType& key) : Key(key), Value(ValueType()) {};
@@ -65,14 +67,13 @@ namespace gu
 		}
 
 		Pair(Pair&& other) = default;
+		#pragma endregion
 	protected:
-		/****************************************************************************
-		**                Protected Function
-		*****************************************************************************/
+		#pragma region Protected Function
+		#pragma endregion 
 
-		/****************************************************************************
-		**                Protected Property
-		*****************************************************************************/
+		#pragma region Protected Property
+		#pragma endregion
 	};
 
 }

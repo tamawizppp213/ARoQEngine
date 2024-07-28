@@ -896,8 +896,6 @@ UnicodeConvertResult UnicodeConverter::CheckUTF16Surrogate(const uint16* sourceS
 *************************************************************************/
 bool UnicodeConverter::IsLegalUTF8(const uint8* sourceStart, const uint64 length)
 {
-	uint8 result = 0;
-
 	const uint8* source = sourceStart;
 
 	switch(length)

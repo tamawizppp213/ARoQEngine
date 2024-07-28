@@ -58,7 +58,7 @@ bool WindowsOS::QueryRegistryKey(void* hKey, const gu::tstring& subKey, const gu
 		// 必要な文字列バッファの大きさを取得します.
 		::DWORD bufferSize = 0;
 		::DWORD valueType  = 0;
-		const auto valueRegQuery = RegQueryValueExW(key, valueName.CString(), NULL, &valueType, NULL, &bufferSize);
+		RegQueryValueExW(key, valueName.CString(), NULL, &valueType, NULL, &bufferSize);
 		if (RegQueryValueExW(key, valueName.CString(), NULL, &valueType, NULL, &bufferSize) != ERROR_SUCCESS || bufferSize == 0)
 		{
 			RegCloseKey(key);
@@ -138,7 +138,7 @@ bool WindowsOS::SetRegistryKeyValue(const gu::tstring& keyPlace, const gu::tstri
 		return false;
 	}
 
-	const auto result = RegSetValueExW(key, valueName.CString(), 0, REG_SZ, reinterpret_cast<const BYTE*>(value.CString()), (value.Size() + 1) * sizeof(wchar)) == ERROR_SUCCESS;
+	const auto result = RegSetValueExW(key, valueName.CString(), 0, REG_SZ, reinterpret_cast<const BYTE*>(value.CString()), static_cast<DWORD>((value.Size() + 1) * sizeof(wchar))) == ERROR_SUCCESS;
 	RegCloseKey(key);
 
 	return result;

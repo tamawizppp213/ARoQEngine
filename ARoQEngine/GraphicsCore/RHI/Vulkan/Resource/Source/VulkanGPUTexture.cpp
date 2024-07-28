@@ -152,11 +152,11 @@ void GPUTexture::Load(const gu::tstring& filePath, const gu::SharedPointer<core:
 	}
 	else if (dxMetaData.IsVolumemap())
 	{
-		_metaData = core::GPUTextureMetaData::Texture3D(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), dxMetaData.depth, ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
+		_metaData = core::GPUTextureMetaData::Texture3D(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.depth), ::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	else
 	{
-		_metaData = core::GPUTextureMetaData::Texture2DArray(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), dxMetaData.arraySize,
+		_metaData = core::GPUTextureMetaData::Texture2DArray(static_cast<gu::uint32>(image->width), static_cast<gu::uint32>(image->height), static_cast<gu::uint16>(dxMetaData.arraySize),
 			::ConvertDXGIIntoRHICoreFormat(dxMetaData.format), static_cast<gu::uint8>(dxMetaData.mipLevels));
 	}
 	// ïKÇ∏ç≈èâÇÕUndefinedÇ©ÇÁénÇﬂÇÈ.
