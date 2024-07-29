@@ -35,10 +35,7 @@ namespace
 			case 2:
 			{
 				gu::uint16 value = 0;
-				if (!fileHandle->Read(&value, sizeof(gu::uint16)))
-				{
-					return -1;
-				}
+				fileHandle->Read(&value, sizeof(gu::uint16));
 				return static_cast<uint32>(value);
 			}
 			case 4:
