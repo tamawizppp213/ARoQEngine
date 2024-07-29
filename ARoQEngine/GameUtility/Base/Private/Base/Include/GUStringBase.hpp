@@ -305,6 +305,8 @@ namespace gu::details::string
 		uint16 ToUInt16(const uint64 radix = 0) const;
 		uint32 ToUInt32(const uint64 radix = 0) const;
 		uint64 ToUInt64(const uint64 radix = 0) const;
+		float  ToFloat() const;
+		double ToDouble() const;
 
 		bool TryToInt8  (int8* outValue, const uint64 radix = 0) const;
 		bool TryToInt16 (int16* outValue, const uint64 radix = 0) const;
@@ -1116,6 +1118,54 @@ namespace gu::details::string
 	uint64 StringBase<Char, CharByte>::ToUInt64(const uint64 radix) const
 	{
 		TO_INT_DEF(uint64, ToUInt64);
+	}
+
+	template<class Char, int CharByte>
+	float StringBase<Char, CharByte>::ToFloat() const
+	{
+		const  Char* begin = nullptr; 
+		const  Char* end   = nullptr; 
+		uint64 length = 0;
+		NumberConversionResult result = NumberConversionResult::Success;
+		StringUtility::Trim(CString(), Size(), &begin, &length);    
+		const auto num = StringUtility::ToFloat(begin, length, &end, &result);
+		if (result == NumberConversionResult::ArgumentsError)
+		{  
+			Ensure(0); 
+		} 
+		if (result == NumberConversionResult::FormatError)
+		{ 
+			Ensure(0);
+		} 
+		if (result == NumberConversionResult::Overflow)
+		{ 
+			Ensure(0); 
+		}
+		return num;
+	}
+
+	template<class Char, int CharByte>
+	double StringBase<Char, CharByte>::ToDouble() const
+	{
+		const  Char* begin = nullptr;
+		const  Char* end = nullptr;
+		uint64 length = 0;
+		NumberConversionResult result = NumberConversionResult::Success;
+		StringUtility::Trim(CString(), Size(), &begin, &length);
+		const auto num = StringUtility::ToDouble(begin, length, &end, &result);
+		if (result == NumberConversionResult::ArgumentsError)
+		{
+			Ensure(0);
+		}
+		if (result == NumberConversionResult::FormatError)
+		{
+			Ensure(0);
+		}
+		if (result == NumberConversionResult::Overflow)
+		{
+			Ensure(0);
+		}
+		return num;
 	}
 
 	template<class Char, int CharByte>

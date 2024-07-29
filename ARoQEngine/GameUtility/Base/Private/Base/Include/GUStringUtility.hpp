@@ -291,7 +291,7 @@ namespace gu::details::string
 			{
 				if (outResult != nullptr)
 				{
-					*outResult != NumberConversionResult::ArgumentsError;
+					*outResult = NumberConversionResult::ArgumentsError;
 				}
 				return 0.0;
 			}
@@ -313,7 +313,7 @@ namespace gu::details::string
 				*outEndPointer = string + (end - temp);
 			}
 
-			if (value == HUGE_VAL || value == -HUGE_VAL)
+			/*if (value == HUGE_VAL || value == -HUGE_VAL)
 			{
 				if (outResult != nullptr)
 				{
@@ -321,7 +321,7 @@ namespace gu::details::string
 				}
 
 				return value;
-			}
+			}*/
 
 			return value;
 		}
@@ -405,7 +405,7 @@ namespace gu::details::string
 			{
 				destinationLength--;
 				sourceLength--;
-				*destination++ = static_cast<DestinationType*>(*source++);
+				*destination++ = static_cast<DestinationType>(*source++);
 			}
 		}
 
