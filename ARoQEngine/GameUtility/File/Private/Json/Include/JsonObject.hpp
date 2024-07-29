@@ -121,7 +121,6 @@ namespace gu::file::json
 		/* @brief 名前を使ってオブジェクトを取得*/
 		SharedPointer<JsonValue>& operator[](const tstring& key) { return _values[key]; }
 
-		/* @brief 名前を使ってオブジェクトを取得*/
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor
