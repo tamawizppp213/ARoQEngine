@@ -14,6 +14,7 @@
 #include "JsonCommon.hpp"
 #include "GameUtility/Base/Include/GUString.hpp"
 #include "GameUtility/Base/Include/GUSmartPointer.hpp"
+#include "GameUtility/Container/Include/GUStack.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -46,13 +47,64 @@ namespace gu::file::json
 		/*!**********************************************************************
 		*  @brief     次の値を読み込みます
 		*  @param[out]JsonNotation&  
-		*  @return    bool : 読み込みに成功したかどうか
+		*  @return    bool : 読み込み成功したかではなく, まだ後続の読み込みが存在するか
 		*************************************************************************/
 		bool ReadNext(JsonNotation& notation);
 
 		#pragma endregion 
 
 		#pragma region Public Property
+		/*!**********************************************************************
+		*  @brief     Jsonのキー名を取得します. 
+		*  @param[in] void
+		*  @return    bool
+		*************************************************************************/
+		__forceinline const tstring& GetKey() const { return _key; }
+
+		/*!**********************************************************************
+		*  @brief     JsonのValueとして, Stringを取得します.
+		*  @param[in] void
+		*  @return    const tstring
+		*************************************************************************/
+		__forceinline const tstring& GetValueAsString() const
+		{
+			Check(_token == JsonToken::String);
+			return _stringValue;
+		}
+
+		/*!**********************************************************************
+		*  @brief     JsonのValueとして, Numberを取得します.
+		*  @param[in] void
+		*  @return    double
+		*************************************************************************/
+		__forceinline double GetValueAsNumber() const
+		{
+			Check(_token == JsonToken::Number);
+			return _numberValue;
+		}
+
+		/*!**********************************************************************
+		*  @brief     JsonのValueとして, Number文字列を取得します.
+		*  @param[in] void
+		*  @return    coknst tstring
+		*************************************************************************/
+		__forceinline const tstring& GetValueAsNumberString() const
+		{
+			Check(_token == JsonToken::String);
+			return _stringValue;
+		}
+
+		/*!**********************************************************************
+		*  @brief     JsonのValueとして, Number文字列を取得します.
+		*  @param[in] void
+		*  @return    coknst tstring
+		*************************************************************************/
+		__forceinline bool GetValueAsBoolean() const
+		{
+			Check(_token == JsonToken::True || _token == JsonToken::False);
+			return _boolValue;
+		}
+
 
 		#pragma endregion 
 
@@ -84,19 +136,79 @@ namespace gu::file::json
 		bool Initialize(const gu::tstring& filePath, const bool useAsync);
 
 		/*!**********************************************************************
+		*  @brief     JsonTokenを取得します
+		*  @param[out]JsonToken&
+		*  @return    bool
+		*************************************************************************/
+		bool ReadStart(JsonToken& token);
+
+		/*!**********************************************************************
+		*  @brief     JsonObjectを取得します
+		*  @param[out]JsonToken&
+		*  @return    bool
+		*************************************************************************/
+		bool ReadNextObjectValue(JsonToken& token);
+
+		/*!**********************************************************************
+		*  @brief     JsonArrayを取得します
+		*  @param[out]JsonToken&
+		*  @return    bool
+		*************************************************************************/
+		bool ReadNextArrayValue(JsonToken& token);
+
+		/*!**********************************************************************
 		*  @brief      次のトークンが見つかるまでファイルポインタを進めます. 
-		*  @param[in]  const tstring& jsonファイルを文字列化したもの
 		*  @param[out] JsonToken token : 次のトークン
 		*  @return     bool : 読み込みに成功したかどうか
 		*************************************************************************/
-		bool ParseNextToken(const tstring& json, JsonToken& token);
+		bool ParseNextToken(JsonToken& token);
 
 		/*!**********************************************************************
 		*  @brief      数値型を読み取ります. 
+		*  @param[in]  void
+		*  @return     bool : 読み込みに成功したかどうか
+		*************************************************************************/
+		bool ParseNumberToken();
+
+		/*!**********************************************************************
+		*  @brief      文字列型を読み取ります.
+		*  @param[in]  void
+		*  @return     bool : 読み込みに成功したかどうか
+		*************************************************************************/
+		bool ParseStringToken();
+
+		/*!**********************************************************************
+		*  @brief      空白文字列が続くまで進みます
 		*  @param[in]  const tchar 文字列
 		*  @return     bool : 読み込みに成功したかどうか
 		*************************************************************************/
-		bool ParseNumberToken(const tstring& json);
+		bool ParseWhiteSpace();
+
+		/*!**********************************************************************
+		*  @brief      最後まで文字列を読み込んだか
+		*  @param[in]  void
+		*  @return     bool : 読み込みに成功したかどうか
+		*************************************************************************/
+		__forceinline bool ReadAtEnd() const
+		{
+			return (_parseIndex >= _rawData.Size() && _parseIndex != static_cast<gu::uint64>(-1));
+		}
+
+		/*!**********************************************************************
+		*  @brief      次の文字に進めるかを確認し, 問題なければIndexを次に進める.
+		*  @param[in]  void
+		*  @return     bool
+		*************************************************************************/
+		__forceinline bool TryToNextIndex()
+		{
+			const auto index = _parseIndex + 1;
+			const auto enable = index < _rawData.Size();
+			if (enable)
+			{
+				_parseIndex = index;
+			}
+			return enable;
+		}
 
 		#pragma endregion 
 
@@ -114,16 +226,6 @@ namespace gu::file::json
 
 		#pragma region Private Function
 		/*!**********************************************************************
-		*  @brief      空白文字かどうかを返します
-		*  @param[out] tchar 文字
-		*  @return     bool
-		*************************************************************************/
-		__forceinline bool IsWhiteSpace(const tchar character)
-		{
-			return character == SP(' ') || character == SP('\t') || character == SP('\n') || character == SP('\r');
-		}
-
-		/*!**********************************************************************
 		*  @brief      Jsonの数値型の判定
 		*  @param[out] const tchar character
 		*  @return     bool
@@ -139,7 +241,7 @@ namespace gu::file::json
 		#pragma region Private Property 
 		
 		/*! @brief Parseを行っているインデックス*/
-		gu::uint64 _parseIndex = 0;
+		gu::uint64 _parseIndex = static_cast<gu::uint64>(-1);
 
 		/*! @brief キー名*/
 		gu::tstring _key = SP("");
@@ -147,11 +249,23 @@ namespace gu::file::json
 		/*! @brief 生データ*/
 		gu::tstring _rawData = SP("");
 
+		/*! @brief Jsonの状態を保持しておく変数. (Json文字列階層構造を考慮したものです.)*/
+		gu::Stack<JsonValueType> _parseStates = {};
+
 		/*! @brief 現在のToken*/
 		JsonToken _token = JsonToken::None;
 
-		/*! @brief */
+		/*! @brief RootObjectが読み込み終了したかどうか*/
+		bool _hasReadRootObject = false;
 
+		/*! @brief ブール値*/
+		bool _boolValue = false;
+
+		/*! @brief 数値*/
+		double _numberValue = 0.0;
+
+		/*! @brief 文字列*/
+		gu::tstring _stringValue = SP("");
 		#pragma endregion 
 
 	};

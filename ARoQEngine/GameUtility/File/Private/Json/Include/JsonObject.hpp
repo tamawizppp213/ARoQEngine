@@ -31,7 +31,7 @@ namespace gu::file::json
 	/****************************************************************************
 	*				  			   JsonObject
 	****************************************************************************/
-	/*  @brief  Jsonのオブジェクトを扱うクラス
+	/*  @brief  Jsonのオブジェクトを扱うクラス@n
 	*           Jsonのオブジェクトとは, {"key":"value"}のような形式のデータです.@n
 	*****************************************************************************/
 	struct JsonObject
@@ -63,10 +63,9 @@ namespace gu::file::json
 		/*!**********************************************************************
 		*  @brief     自身のMemberを取得します.
 		*  @param[in] const tstring& key : 取得したいFieldの名前
-		*  @param[in] const JsonValueType type : 取得したいFieldのデータ型
 		*  @return    SharedPointer<JsonValue>
 		*************************************************************************/
-		SharedPointer<JsonValue> GetMember(const tstring& key, const JsonValueType type) const;
+		SharedPointer<JsonValue> GetMember(const tstring& key) const;
 
 		/*!**********************************************************************
 		*  @brief     既存のMemberに値を設定します.

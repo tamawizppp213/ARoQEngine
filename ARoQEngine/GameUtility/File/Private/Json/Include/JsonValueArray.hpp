@@ -67,15 +67,15 @@ namespace gu::file::json
 		}
 
 		/*! @brief コピーコンストラクタ*/
-		JsonValueArray(const JsonValueArray& other) : JsonValue(JsonValueType::Array)
+		JsonValueArray(const gu::DynamicArray<gu::SharedPointer<JsonValue>>& other) : JsonValue(JsonValueType::Array)
 		{
-			_array = other._array;
+			_array = other;
 		}
 
 		/*! @brief ムーブコンストラクタ*/
-		JsonValueArray(JsonValueArray&& other) noexcept : JsonValue(JsonValueType::Array)
+		JsonValueArray(gu::DynamicArray<gu::SharedPointer<JsonValue>>&& other) noexcept : JsonValue(JsonValueType::Array)
 		{
-			_array = gu::type::Forward<DynamicArray<SharedPointer<JsonValue>>>(other._array);
+			_array = gu::type::Forward<DynamicArray<SharedPointer<JsonValue>>>(other);
 		}
 
 		#pragma endregion 

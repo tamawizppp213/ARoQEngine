@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
 //////////////////////////////////////////////////////////////////////////////////
-
+#undef GetObject
 //////////////////////////////////////////////////////////////////////////////////
 //                               Class
 //////////////////////////////////////////////////////////////////////////////////
@@ -225,16 +225,15 @@ namespace gu::file::json
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor
-
-		#pragma endregion 
-
-	protected:
-		#pragma region Protected Constructor and Destructor
 		/*! @brief デフォルトコンストラクタ*/
 		JsonValue() = default;
 
 		/*! @brief デストラクタ*/
 		virtual ~JsonValue() = default;
+		#pragma endregion 
+
+	protected:
+		#pragma region Protected Constructor and Destructor
 
 		/*! @brief Typeを指定する*/
 		JsonValue(const JsonValueType type) : _type(type) {};

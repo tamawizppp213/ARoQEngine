@@ -278,10 +278,16 @@ namespace gu::details::string
 		template<typename Char>
 		static double ToDouble(const Char* string, uint64 stringLength, const Char** outEndPointer, NumberConversionResult* outResult)
 		{
-			if (outResult != nullptr) { *outResult = NumberConversionResult::Success; }
+			if (outResult != nullptr)
+			{ 
+				*outResult = NumberConversionResult::Success; 
+			}
 			if (string == nullptr)
 			{
-				if (outResult != nullptr) { *outResult = NumberConversionResult::ArgumentsError; }
+				if (outResult != nullptr) 
+				{ 
+					*outResult = NumberConversionResult::ArgumentsError; 
+				}
 				return 0.0;
 			}
 
@@ -303,7 +309,7 @@ namespace gu::details::string
 			// 0 は 308 個並べられることになるが、512 文字分のサイズがあれば十分。
 			char temp[512] = {};
 			CopySimpleAsciiString(temp, 512, string, stringLength);
-			temp[stringLength] = '0';
+			temp[stringLength] = '\0';
 
 			char* end    = nullptr;
 			double value = strtod(temp, &end);

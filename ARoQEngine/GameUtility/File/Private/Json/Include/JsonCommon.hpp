@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///  @file   JsonType.hpp
-///  @brief  temp
+///  @brief  Jsonの型を定義するファイル
 ///  @author toide
 ///  @date   2024/06/08 13:43:20
 //////////////////////////////////////////////////////////////////////////////////
@@ -47,19 +47,21 @@ namespace gu::file::json
 	enum class JsonToken : gu::uint16
 	{
 		None		= 0, //!< 未設定
-		CurlyOpen   = 1, //!< {
-		CurlyClose  = 2, //!< }
-		SquareOpen  = 3, //!< [
-		SquareClose = 4, //!< ]
-		Colon       = 5, //!< :
-		Comma       = 6, //!< ,
+		Comma       = 1, //!< ,
+		CurlyOpen   = 2, //!< {
+		CurlyClose  = 3, //!< }
+		SquareOpen  = 4, //!< [
+		SquareClose = 5, //!< ]
+		Colon       = 6, //!< :
 		String      = 7, //!< 文字列
 
 		// short value
 		Number      = 8, //!< 数値
 		True        = 9, //!< true
 		False       = 10, //!< false
-		Null        = 11  //!< null
+		Null        = 11,  //!< null
+
+		Key         = 12, 
 	};
 
 	/****************************************************************************

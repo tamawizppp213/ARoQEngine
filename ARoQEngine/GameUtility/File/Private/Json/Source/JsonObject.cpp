@@ -30,10 +30,9 @@ using namespace gu;
 /*!**********************************************************************
 *  @brief     自身のMemberを取得します.
 *  @param[in] const tstring& key : 取得したいFieldの名前
-*  @param[in] const JsonValueType type : 取得したいFieldのデータ型
 *  @return    SharedPointer<JsonValue>
 *************************************************************************/
-SharedPointer<JsonValue> JsonObject::GetMember(const tstring& key, const JsonValueType type) const
+SharedPointer<JsonValue> JsonObject::GetMember(const tstring& key) const
 {
 	const auto member = _values.Find(key);
 
@@ -43,12 +42,6 @@ SharedPointer<JsonValue> JsonObject::GetMember(const tstring& key, const JsonVal
 		return MakeShared<JsonValueNull>();
 	}
 	
-	// 見つかった場合は, 型が一致しているかを確認
-	if (member->Value->GetValueType() != type)
-	{
-		return MakeShared<JsonValueNull>();
-	}
-
 	return member->Value;
 }
 
