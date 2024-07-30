@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////
-///             @file   GUType.hpp
-///             @brief  primitive‚ÈŒ^‚Ì’è‹`‚Å‚·
-///             @author Toide Yutaro
-///             @date   2023_11_08
+///  @file   GUType.hpp
+///  @brief  primitive‚ÈŒ^‚Ì’è‹`‚Å‚·
+///  @author Toide Yutaro
+///  @date   2023_11_08
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
 #ifndef GU_TYPE
