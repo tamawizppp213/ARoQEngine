@@ -1141,7 +1141,7 @@ namespace gu::details::string
 		{ 
 			Ensure(0); 
 		}
-		return num;
+		return static_cast<float>(num);
 	}
 
 	template<class Char, int CharByte>

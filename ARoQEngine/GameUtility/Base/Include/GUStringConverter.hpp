@@ -108,6 +108,14 @@ namespace gu
 		*  @return    tstring
 		*************************************************************************/
 		static string ConvertTStringToString(const tstring& tString);
+
+		/*!**********************************************************************
+		*  @brief     TString‚©‚ç‚ÉUTF8‚É•¶Žš—ñ‚ð•ÏŠ·‚µ‚Ü‚·.
+		*  @param[in] const tstring& tString
+		*  @return    tstring
+		*************************************************************************/
+		static u8string ConvertTStringToUTF8(const tstring& tString);
+
 		#pragma endregion 
 
 		#pragma region Public Property

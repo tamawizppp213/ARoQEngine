@@ -343,6 +343,36 @@ string StringConverter::ConvertTStringToString(const tstring& tString)
 	return result;
 
 }
+
+/*!**********************************************************************
+*  @brief     TString‚©‚ç‚ÉUTF8‚É•¶Žš—ñ‚ð•ÏŠ·‚µ‚Ü‚·.
+*  @param[in] const tstring& tString
+*  @return    tstring
+*************************************************************************/
+u8string StringConverter::ConvertTStringToUTF8(const tstring& tString)
+{
+	/*-------------------------------------------------------------------
+	-              •ÏŠ·
+	---------------------------------------------------------------------*/
+	const auto source                 = CharacterCode::TStringCharacterCode();
+	const auto destination            = CharacterCode::GetCharacterCode(gu::CharacterCodeType::UTF8);
+	const auto characterCodeConverter = MakeShared<CharacterCodeConverter>(source, destination);
+
+	Check(source);
+	Check(destination);
+
+	const auto& byteArray = characterCodeConverter->Convert(reinterpret_cast<const uint8*>(tString.CString()), tString.Size() * sizeof(tchar));
+
+	/*-------------------------------------------------------------------
+	-              •¶Žš—ñ‚É‘ã“ü
+	---------------------------------------------------------------------*/
+	u8string result = u8"";
+	result.Assign(reinterpret_cast<const char8*>(byteArray.Data()), byteArray.Size() / sizeof(char8));
+
+	return result;
+
+}
+
 #pragma endregion Public Function
 
 #pragma region Private Function

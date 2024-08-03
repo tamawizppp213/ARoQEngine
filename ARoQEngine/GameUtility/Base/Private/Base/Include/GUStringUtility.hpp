@@ -339,7 +339,7 @@ namespace gu::details::string
 
 			if (outResult != nullptr &&
 				*outResult == NumberConversionResult::Success &&
-				-FLT_MAX <= value && value <= FLT_MAX)
+				-MAX_FLOAT32 <= value && value <= MAX_FLOAT32)
 			{
 				*outResult = NumberConversionResult::Overflow;
 			}
