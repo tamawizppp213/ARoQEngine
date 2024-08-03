@@ -174,7 +174,7 @@ namespace gu
 		*************************************************************************/
 		Iterator begin()
 		{
-			for (Element* Iterator = _elements; iterator != end(); ++iterator)
+			for (Element* iterator = _elements; iterator != end(); ++iterator)
 			{
 				if (iterator->HasValue()) { return iterator; }
 			}
