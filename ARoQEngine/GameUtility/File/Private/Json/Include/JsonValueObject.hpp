@@ -62,7 +62,7 @@ namespace gu::file::json
 		JsonValueObject() : JsonValue(JsonValueType::Object) {}
 
 		/*! @brief オブジェクト型を使って初期化*/
-		JsonValueObject(SharedPointer<JsonObject>& object) : JsonValue(JsonValueType::Object), _object(object) {}
+		JsonValueObject(const SharedPointer<JsonObject>& object) : JsonValue(JsonValueType::Object), _object(object) {}
 
 		#pragma endregion 
 

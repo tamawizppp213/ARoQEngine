@@ -78,8 +78,9 @@ namespace gu::file::json
 			bool IsKeyValue = false;
 
 			Element(const gu::SharedPointer<JsonValue>& value) : Value(value) {}
-			Element(const gu::SharedPointer<JsonObject>& object);
-			Element(const gu::DynamicArray<gu::SharedPointer<JsonValue>>& array);
+			Element(const gu::SharedPointer<JsonObject>& object) : Value(gu::MakeShared<JsonValueObject>(object)) {};
+			Element(const gu::DynamicArray<gu::SharedPointer<JsonValue>>& arrayData) :
+				Value(gu::MakeShared<JsonValueArray>(arrayData)) {};
 			Element(const gu::tstring& key, const gu::SharedPointer<JsonValue>& value) : Key(key), Value(value), IsKeyValue(true) {}
 		};
 
@@ -97,9 +98,9 @@ namespace gu::file::json
 		*  @param[in] const gu::SharedPointer<JsonValue>& シリアライズしたいオブジェクト
 		*  @return    bool 成功したかどうか
 		*************************************************************************/
-		static bool Serialize(const gu::SharedPointer<JsonWriter>& writer, const gu::SharedPointer<JsonValue>& value)
+		__forceinline bool Serialize(const gu::tstring& filePath, const gu::SharedPointer<JsonValue>& value, const bool writeAsync = false)
 		{
-			return false;
+			return Serialize(filePath, gu::MakeShared<Element>(value), writeAsync);
 		}
 
 		/*!**********************************************************************
@@ -108,9 +109,9 @@ namespace gu::file::json
 		*  @param[in] const gu::SharedPointer<JsonObject>& シリアライズしたいオブジェクト
 		*  @return    bool 成功したかどうか
 		*************************************************************************/
-		static bool Serialize(const gu::SharedPointer<JsonWriter>& writer, const gu::SharedPointer<JsonObject>& object)
+		bool Serialize(const gu::tstring& filePath, const gu::SharedPointer<JsonObject>& object, const bool writeAsync = false)
 		{
-			return false;
+			return Serialize(filePath, gu::MakeShared<Element>(object), writeAsync);
 		}
 
 		/*!**********************************************************************
@@ -119,20 +120,9 @@ namespace gu::file::json
 		*  @param[in] const gu::SharedPointer<JsonObject>& シリアライズしたいオブジェクト
 		*  @return    bool 成功したかどうか
 		*************************************************************************/
-		static bool Serialize(const gu::SharedPointer<JsonWriter>& writer, const gu::DynamicArray<gu::SharedPointer<JsonValue>>& object)
+		bool Serialize(const gu::tstring& filePath, const gu::DynamicArray<gu::SharedPointer<JsonValue>>& object, const bool writeAsync = false)
 		{
-			return false;
-		}
-
-		/*!**********************************************************************
-		*  @brief     デシリアライズを行います.　デシリアライズとはJson形式の文字列をオブジェクトに変換することです.
-		*  @param[in] const gu::SharedPointer<JsonReader>& jsonを読み込むクラス
-		*  @param[in] const gu::SharedPointer<JsonValue>& デシリアライズしたいオブジェクト
-		*  @return    bool 成功したかどうか
-		*************************************************************************/
-		bool Deserialize(const gu::SharedPointer<JsonValue>& value)
-		{
-			return false;
+			return Serialize(filePath, gu::MakeShared<Element>(object), writeAsync);
 		}
 
 		/*!**********************************************************************
@@ -189,7 +179,7 @@ namespace gu::file::json
 		#pragma endregion 
 
 		#pragma region Protected Property
-		/*! @brief JsonReader*/
+
 		#pragma endregion
 
 	private:
@@ -202,10 +192,10 @@ namespace gu::file::json
 		*  @brief     シリアライズを行います.　シリアライズとはオブジェクトをJson形式の文字列に変換することです.
 		*  @param[in] const gu::SharedPointer<JsonWriter>& jsonを書き込むクラス
 		*  @param[in] const gu::SharedPointer<JsonObject>& シリアライズしたいオブジェクト
+		*  @param[in]
 		*  @return    bool 成功したかどうか
 		*************************************************************************/
-		bool Serialize(const gu::SharedPointer<JsonWriter>& writer, const gu::SharedPointer<Element>& startElement);
-
+		bool Serialize(const gu::tstring& filePath, const gu::SharedPointer<Element>& startElement, const bool writeAsync);
 
 		/*!**********************************************************************
 		*  @brief     デシリアライズを行います.　デシリアライズとはJson形式の文字列をオブジェクトに変換することです.

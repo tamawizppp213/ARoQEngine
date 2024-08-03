@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 ///  @file   JsonValue.hpp
-///  @brief  temp
+///  @brief  Jsonの値の取得などを扱うクラス
 ///  @author toide
 ///  @date   2024/06/08 13:38:55
 //////////////////////////////////////////////////////////////////////////////////
@@ -215,6 +215,13 @@ namespace gu::file::json
 		*  @return    bool
 		* ************************************************************************/
 		__forceinline bool IsObject() const { return HasAnyFlags(_type, JsonValueType::Object); }
+
+		/*!**********************************************************************
+		*  @brief     自身の型でなく, 文字列表現として落とし込みたいかどうか (JsonWriterに使用します)
+		*  @param[in] void
+		*  @return    bool 
+		*************************************************************************/
+		__forceinline virtual bool UseStringRepresentation() const { return false; }
 
 		#pragma endregion Type Check
 

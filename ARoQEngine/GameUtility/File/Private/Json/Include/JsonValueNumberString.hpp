@@ -1,17 +1,17 @@
 //////////////////////////////////////////////////////////////////////////////////
-///  @file   JsonValueString.hpp
-///  @brief  Jsonの文字列型の値を扱うクラス
+///  @file   JsonValueNumberString.hpp
+///  @brief  文字列表現からなる数値型のJsonの値を扱うクラス
 ///  @author toide
-///  @date   2024/06/09 1:42:57
+///  @date   2024/06/08 22:50:12
 //////////////////////////////////////////////////////////////////////////////////
 #pragma once
-#ifndef JSON_VALUE_STRING_HPP
-#define JSON_VALUE_STRING_HPP
+#ifndef JSON_VALUE_NUMBER_STRING_HPP
+#define JSON_VALUE_NUMBER_STRING_HPP
 
 //////////////////////////////////////////////////////////////////////////////////
 //                             Include
 //////////////////////////////////////////////////////////////////////////////////
-#include "JsonValue.hpp"
+#include "GameUtility/File/Private/Json/Include/JsonValue.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////
 //                              Define
@@ -23,27 +23,26 @@
 namespace gu::file::json
 {
 	/****************************************************************************
-	*				  		JsonValueString
+	*				  		JsonValueNumber
 	****************************************************************************/
-	/*  @brief  Jsonの文字列型の値を扱うクラス
+	/*  @brief  Jsonの数値型の値を扱うクラス
 	*****************************************************************************/
-	struct JsonValueString : public JsonValue
+	struct JsonValueNumberString : public JsonValue
 	{
 	public:
 		#pragma region Public Function
+
+		#pragma endregion 
+
+		#pragma region Public Property
+
+		#pragma region GetValue
 		/*!**********************************************************************
 		*  @brief     String型の値を取得します.
 		*  @param[in] void
 		*  @return    tstring : 文字列の結果
 		*************************************************************************/
 		virtual tstring GetString() const override;
-
-		/*!**********************************************************************
-		*  @brief     boolの値を取得します
-		*  @param[in] void
-		*  @return    int8
-		*************************************************************************/
-		virtual bool GetBool() const;
 
 		/*!**********************************************************************
 		*  @brief     Int8の値を取得します
@@ -120,10 +119,9 @@ namespace gu::file::json
 		*  @param[in] void
 		*  @return    bool
 		*************************************************************************/
-		__forceinline virtual bool UseStringRepresentation() const override { return true; }
-		#pragma endregion 
+		__forceinline virtual bool UseStringRepresentation() const override{ return true; }
 
-		#pragma region Public Property
+		#pragma endregion GetValue
 
 		#pragma endregion 
 
@@ -134,11 +132,10 @@ namespace gu::file::json
 		#pragma region Public Constructor and Destructor
 
 		/*! @brief デフォルトコンストラクタ*/
-		JsonValueString() : JsonValue(JsonValueType::String) {}
+		JsonValueNumberString() : JsonValue(JsonValueType::Number) {}
 
-		/*! @brief 文字列で取得*/
-		JsonValueString(const tstring& value) : JsonValue(JsonValueType::String), _value(value) {}
-
+		/*! @brief double値で取得*/
+		JsonValueNumberString(const gu::tstring& value) : JsonValue(JsonValueType::Number), _value(value) {}
 		#pragma endregion 
 
 	protected:
@@ -165,11 +162,12 @@ namespace gu::file::json
 
 		#pragma region Private Property
 
-		/*! @brief 保存する文字列*/
-		tstring _value = SP("");
+		/*! @brief 保存する値*/
+		gu::tstring _value = SP("");
 
 		#pragma endregion 
+
 	};
-};
+}
 
 #endif
