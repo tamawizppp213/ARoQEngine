@@ -178,6 +178,8 @@ namespace gu
 			{
 				if (iterator->HasValue()) { return iterator; }
 			}
+
+			return end();
 		}
 
 		/*!**********************************************************************
@@ -191,6 +193,8 @@ namespace gu
 			{
 				if (iterator->HasValue()) { return iterator; }
 			}
+
+			return end();
 		}
 
 		/*!**********************************************************************
