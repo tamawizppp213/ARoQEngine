@@ -46,7 +46,7 @@ namespace
 *  @param[in] const bool 非同期読み込みを行うか
 *  @return    bool : 読み込みに成功したかどうか
 *************************************************************************/
-bool JsonReader::Initialize(const gu::tstring& filePath, const bool useAsync)
+bool JsonReader::Load(const gu::tstring& filePath, const bool useAsync)
 {
 	/*-------------------------------------------------------------------
 	-            ファイルハンドルを取得

@@ -45,6 +45,14 @@ namespace gu::file::json
 	public:
 		#pragma region Public Function
 		/*!**********************************************************************
+		*  @brief     Jsonファイルを最後まで読み込み, _rawDataに格納します.
+		*  @param[in] const gu::tstring& filePath : 読み込みたいJsonファイルのパス
+		*  @param[in] const bool 非同期読み込みを行うか
+		*  @return    bool : 読み込みに成功したかどうか
+		*************************************************************************/
+		bool Load(const gu::tstring& filePath, const bool useAsync);
+
+		/*!**********************************************************************
 		*  @brief     次の値を読み込みます
 		*  @param[out]JsonNotation&  
 		*  @return    bool : 読み込み成功したかではなく, まだ後続の読み込みが存在するか
@@ -113,10 +121,13 @@ namespace gu::file::json
 		#pragma endregion 
 
 		#pragma region Public Constructor and Destructor
+		JsonReader() = default;
+
+		~JsonReader() = default;
 
 		JsonReader(const gu::tstring& filePath, const bool useAsync = false)
 		{
-			Initialize(filePath, useAsync);
+			Load(filePath, useAsync);
 		}
 		
 		#pragma endregion 
@@ -127,14 +138,6 @@ namespace gu::file::json
 		#pragma endregion 
 
 		#pragma region Protected Function
-		/*!**********************************************************************
-		*  @brief     Jsonファイルを最後まで読み込みます.
-		*  @param[in] const gu::tstring& filePath : 読み込みたいJsonファイルのパス
-		*  @param[in] const bool 非同期読み込みを行うか
-		*  @return    bool : 読み込みに成功したかどうか
-		*************************************************************************/
-		bool Initialize(const gu::tstring& filePath, const bool useAsync);
-
 		/*!**********************************************************************
 		*  @brief     JsonTokenを取得します
 		*  @param[out]JsonToken&
