@@ -163,6 +163,18 @@ namespace gu
 			return *this;
 		}
 
+		// operator== for nullptr comparison
+		__forceinline bool operator==(decltype(nullptr)) const noexcept
+		{
+			return _elementPointer == nullptr;
+		}
+
+		// operator!= for nullptr comparison
+		__forceinline bool operator!=(decltype(nullptr)) const noexcept
+		{
+			return _elementPointer != nullptr;
+		}
+
 		/*----------------------------------------------------------------------
 		*  for static_pointer_cast. 
 		*----------------------------------------------------------------------*/
